@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
+namespace DCL.Social.Passports
 {
-    [SerializeField] private GameObject aboutPanel;
-    [SerializeField] private GameObject wearablesPanel;
-
-    private void EnableAboutPanel()
+    public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
     {
-        wearablesPanel.SetActive(false);
-        aboutPanel.SetActive(true);
-    }
+        [SerializeField] private GameObject aboutPanel;
+        [SerializeField] private GameObject wearablesPanel;
 
-    private void EnableWearablesPanel()
-    {
-        aboutPanel.SetActive(false);
-        wearablesPanel.SetActive(true);
-    }
+        private void EnableAboutPanel()
+        {
+            wearablesPanel.SetActive(false);
+            aboutPanel.SetActive(true);
+        }
 
-    public override void RefreshControl()
-    {
-    }
+        private void EnableWearablesPanel()
+        {
+            aboutPanel.SetActive(false);
+            wearablesPanel.SetActive(true);
+        }
 
+        public override void RefreshControl()
+        {
+        }
+
+    }
 }

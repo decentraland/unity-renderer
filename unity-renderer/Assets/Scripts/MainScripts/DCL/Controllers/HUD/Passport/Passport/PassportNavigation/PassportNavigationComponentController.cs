@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PassportNavigationComponentController
+namespace DCL.Social.Passports
 {
-    private IPassportNavigationComponentView view;
-    
-    public PassportNavigationComponentController(IPassportNavigationComponentView view)
+    public class PassportNavigationComponentController
     {
-        this.view = view;
+        private IPassportNavigationComponentView view;
+        
+        public PassportNavigationComponentController(IPassportNavigationComponentView view)
+        {
+            this.view = view;
+        }
     }
 }

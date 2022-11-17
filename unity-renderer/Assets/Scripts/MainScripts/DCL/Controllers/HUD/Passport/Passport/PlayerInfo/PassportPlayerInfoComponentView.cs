@@ -5,67 +5,70 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView
+namespace DCL.Social.Passports
 {
-    [SerializeField] internal TextMeshProUGUI name;
-    [SerializeField] internal Button walletCopyButton;
-    [SerializeField] internal TextMeshProUGUI wallet;
-    [SerializeField] internal Button addFriendButton;
-    [SerializeField] internal GameObject onlineStatus;
-    [SerializeField] internal GameObject offlineStatus;
-
-    public event Action OnAddFriend;
-
-    private string fullWalletAddress;
-
-    private void Start() 
+    public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView
     {
-        walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
-        addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
-    }
+        [SerializeField] internal TextMeshProUGUI name;
+        [SerializeField] internal Button walletCopyButton;
+        [SerializeField] internal TextMeshProUGUI wallet;
+        [SerializeField] internal Button addFriendButton;
+        [SerializeField] internal GameObject onlineStatus;
+        [SerializeField] internal GameObject offlineStatus;
 
-    public void SetName(string name)
-    {
-        this.name.text = name;
-    }
+        public event Action OnAddFriend;
 
-    public void SetWallet(string wallet)
-    {
-        fullWalletAddress = wallet;
-        this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
-    }
+        private string fullWalletAddress;
 
-    public void SetPresence(PresenceStatus status)
-    {
-        if(status == PresenceStatus.ONLINE)
+        private void Start() 
         {
-            onlineStatus.SetActive(true);
-            offlineStatus.SetActive(false);
+            walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
+            addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
         }
-        else
+
+        public void SetName(string name)
         {
-            onlineStatus.SetActive(false);
-            offlineStatus.SetActive(true);
+            this.name.text = name;
         }
-    }
 
-    internal void CopyWalletToClipboard()
-    {
-        if(fullWalletAddress == null)
-            return;
-        
-        GUIUtility.systemCopyBuffer = fullWalletAddress;
-    }
+        public void SetWallet(string wallet)
+        {
+            fullWalletAddress = wallet;
+            this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
+        }
 
-    public override void RefreshControl() 
-    {
-    }
+        public void SetPresence(PresenceStatus status)
+        {
+            if(status == PresenceStatus.ONLINE)
+            {
+                onlineStatus.SetActive(true);
+                offlineStatus.SetActive(false);
+            }
+            else
+            {
+                onlineStatus.SetActive(false);
+                offlineStatus.SetActive(true);
+            }
+        }
 
-    public override void Dispose()
-    {
-        base.Dispose();
+        private void CopyWalletToClipboard()
+        {
+            if(fullWalletAddress == null)
+                return;
+            
+            GUIUtility.systemCopyBuffer = fullWalletAddress;
+        }
 
-        walletCopyButton.onClick.RemoveAllListeners();
-        addFriendButton.onClick.RemoveAllListeners();
+        public override void RefreshControl() 
+        {
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            walletCopyButton.onClick.RemoveAllListeners();
+            addFriendButton.onClick.RemoveAllListeners();
+        }
     }
 }

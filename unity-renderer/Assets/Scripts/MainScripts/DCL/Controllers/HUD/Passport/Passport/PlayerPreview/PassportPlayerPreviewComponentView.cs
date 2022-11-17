@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public class PassportPlayerPreviewComponentView : BaseComponentView, IPassportPlayerPreviewComponentView
+namespace DCL.Social.Passports
 {
-    public override void RefreshControl()
+    public class PassportPlayerPreviewComponentView : BaseComponentView, IPassportPlayerPreviewComponentView
     {
+        public override void RefreshControl()
+        {
+        }
     }
 }

@@ -7,84 +7,83 @@ using DCL;
 using DCL.Helpers;
 using SocialFeaturesAnalytics;
 
-public class PlayerPassportHUDController : IHUD
+namespace DCL.Social.Passports
 {
-    internal readonly PlayerPassportHUDView view;
-    internal readonly StringVariable currentPlayerId;
-    internal readonly IUserProfileBridge userProfileBridge;
-    internal UserProfile currentUserProfile;
-
-    private readonly ISocialAnalytics socialAnalytics;
-
-    private PassportPlayerInfoComponentController playerInfoController;
-    private PassportPlayerPreviewComponentController playerPreviewController;
-    private PassportNavigationComponentController passportNavigationController;
-
-    public PlayerPassportHUDController(
-        PlayerPassportHUDView view,
-        PassportPlayerInfoComponentController playerInfoController,
-        PassportPlayerPreviewComponentController playerPreviewController,
-        PassportNavigationComponentController passportNavigationController,
-        StringVariable currentPlayerId,
-        IUserProfileBridge userProfileBridge,
-        ISocialAnalytics socialAnalytics)
+    public class PlayerPassportHUDController : IHUD
     {
-        this.view = view;
-        this.playerInfoController = playerInfoController;
-        this.playerPreviewController = playerPreviewController;
-        this.passportNavigationController = passportNavigationController;
-        this.currentPlayerId = currentPlayerId;
-        this.userProfileBridge = userProfileBridge;
-        this.socialAnalytics = socialAnalytics;
+        internal readonly PlayerPassportHUDView view;
+        internal readonly StringVariable currentPlayerId;
+        internal readonly IUserProfileBridge userProfileBridge;
+        private readonly ISocialAnalytics socialAnalytics;
 
-        view.Initialize(() => currentPlayerId.Set(null));
+        internal UserProfile currentUserProfile;
 
-        currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-        OnCurrentPlayerIdChanged(currentPlayerId, null);
-    }
+        private PassportPlayerInfoComponentController playerInfoController;
+        private PassportPlayerPreviewComponentController playerPreviewController;
+        private PassportNavigationComponentController passportNavigationController;
 
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisibility(visible);
-    }
-
-    public void Dispose()
-    {
-        if (view != null)
-            Object.Destroy(view.gameObject);
-    }
-
-    private void OnCurrentPlayerIdChanged(string current, string previous)
-    {
-        if (currentUserProfile != null)
-            currentUserProfile.OnUpdate -= UpdateUserProfile;
-
-        currentUserProfile = string.IsNullOrEmpty(current)
-            ? null
-            : userProfileBridge.Get(current);
-
-        if (currentUserProfile == null)
+        public PlayerPassportHUDController(
+            PlayerPassportHUDView view,
+            PassportPlayerInfoComponentController playerInfoController,
+            PassportPlayerPreviewComponentController playerPreviewController,
+            PassportNavigationComponentController passportNavigationController,
+            StringVariable currentPlayerId,
+            IUserProfileBridge userProfileBridge,
+            ISocialAnalytics socialAnalytics)
         {
-            view.SetPassportPanelVisibility(false);
+            this.view = view;
+            this.playerInfoController = playerInfoController;
+            this.playerPreviewController = playerPreviewController;
+            this.passportNavigationController = passportNavigationController;
+            this.currentPlayerId = currentPlayerId;
+            this.userProfileBridge = userProfileBridge;
+            this.socialAnalytics = socialAnalytics;
+
+            view.Initialize();
+            view.OnClose += RemoveCurrentPlayer;
+
+            currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
+            OnCurrentPlayerIdChanged(currentPlayerId, null);
         }
-        else
+
+        public void SetVisibility(bool visible)
         {
-            currentUserProfile.OnUpdate += UpdateUserProfile;
-
-            TaskUtils.Run(async () =>
-                    {
-                        view.SetPassportPanelVisibility(true);
-                        await AsyncSetUserProfile(currentUserProfile);
-                    })
-                    .Forget();
+            view.SetVisibility(visible);
         }
-    }
 
-    private async UniTask AsyncSetUserProfile(UserProfile userProfile)
-    {
-        await UniTask.SwitchToMainThread();
-        playerInfoController.UpdateWithUserProfile(userProfile);
-    }
+        public void Dispose()
+        {
+            if (view != null)
+                view.Dispose();
+        }
 
-    private void UpdateUserProfile(UserProfile userProfile) => TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
+        private void OnCurrentPlayerIdChanged(string current, string previous)
+        {
+            if (currentUserProfile != null)
+                currentUserProfile.OnUpdate -= UpdateUserProfile;
+
+            currentUserProfile = string.IsNullOrEmpty(current)
+                ? null
+                : userProfileBridge.Get(current);
+
+            if (currentUserProfile == null)
+            {
+                view.SetPassportPanelVisibility(false);
+            }
+            else
+            {
+                currentUserProfile.OnUpdate += UpdateUserProfile;
+                view.SetPassportPanelVisibility(true);
+                playerInfoController.UpdateWithUserProfile(currentUserProfile);
+            }
+        }
+
+        private void UpdateUserProfile(UserProfile userProfile) => playerInfoController.UpdateWithUserProfile(userProfile);
+
+        private void RemoveCurrentPlayer()
+        {
+            currentPlayerId.Set(null);
+        }
+
+    }
 }

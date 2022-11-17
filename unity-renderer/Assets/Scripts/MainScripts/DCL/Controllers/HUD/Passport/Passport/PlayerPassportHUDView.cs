@@ -1,44 +1,48 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class PlayerPassportHUDView : BaseComponentView
+namespace DCL.Social.Passports
 {
-    [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
-    [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
-    [SerializeField] private PassportNavigationComponentView passportNavigationView;
-
-    public PassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
-    public PassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
-    public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
-
-    [SerializeField] internal Button hideCardButton;
-    [SerializeField] internal GameObject container;
-
-    public static PlayerPassportHUDView CreateView()
+    public class PlayerPassportHUDView : BaseComponentView
     {
-        return Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
-    }
+        [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
+        [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
+        [SerializeField] private PassportNavigationComponentView passportNavigationView;
+        [SerializeField] internal Button hideCardButton;
+        [SerializeField] internal GameObject container;
 
-    public void Initialize(UnityAction cardClosedCallback)
-    {
-        hideCardButton?.onClick.RemoveAllListeners();
-        hideCardButton?.onClick.AddListener(cardClosedCallback);
-    }
+        public PassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
+        public PassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
+        public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
+        public event Action OnClose;
 
-    public void SetVisibility(bool visible)
-    {
-        gameObject.SetActive(visible);
-    }
+        public static PlayerPassportHUDView CreateView()
+        {
+            return Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
+        }
 
-    public void SetPassportPanelVisibility(bool visible)
-    {
-        container.SetActive(visible);
-    }
+        public void Initialize()
+        {
+            hideCardButton?.onClick.RemoveAllListeners();
+            hideCardButton?.onClick.AddListener(() => OnClose?.Invoke());
+        }
 
-    public override void RefreshControl()
-    {
+        public void SetVisibility(bool visible)
+        {
+            gameObject.SetActive(visible);
+        }
+
+        public void SetPassportPanelVisibility(bool visible)
+        {
+            container.SetActive(visible);
+        }
+
+        public override void RefreshControl()
+        {
+        }
     }
 }

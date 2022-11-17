@@ -1,3 +1,6 @@
-public interface IPassportPlayerPreviewComponentView
+namespace DCL.Social.Passports
 {
+    public interface IPassportPlayerPreviewComponentView
+    {
+    }
 }

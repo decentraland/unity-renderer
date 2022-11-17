@@ -1,11 +1,14 @@
 using System;
 using UnityEngine;
 
-public interface IPassportPlayerInfoComponentView
+namespace DCL.Social.Passports
 {
-    event Action OnAddFriend;
+    public interface IPassportPlayerInfoComponentView
+    {
+        event Action OnAddFriend;
 
-    void SetName(string name);
-    void SetWallet(string wallet);
-    void SetPresence(PresenceStatus status);
+        void SetName(string name);
+        void SetWallet(string wallet);
+        void SetPresence(PresenceStatus status);
+    }
 }

@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassportPlayerPreviewComponentController
+namespace DCL.Social.Passports
 {
-    public IPassportPlayerPreviewComponentView view;
-
-    public PassportPlayerPreviewComponentController(IPassportPlayerPreviewComponentView view)
+    public class PassportPlayerPreviewComponentController
     {
-        this.view = view;
+        public IPassportPlayerPreviewComponentView view;
+
+        public PassportPlayerPreviewComponentController(IPassportPlayerPreviewComponentView view)
+        {
+            this.view = view;
+        }
     }
 }
