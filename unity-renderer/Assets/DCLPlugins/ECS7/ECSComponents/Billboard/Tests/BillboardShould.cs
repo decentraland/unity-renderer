@@ -20,10 +20,10 @@ namespace DCL.ECSComponents.Test
 {
     public class BillboardShould
     {
-        private IDCLEntity entity;
-        private GameObject gameObject;
+        private IDCLEntity testEntity;
+        private GameObject testGameObject;
+        private GameObject cameraGameObject;
         
-        private Transform cameraTransform;
         private IList<IParcelScene> scenes;
         private BillboardRegister billboardRegister;
         private ECSBillboardSystem systemUpdate;
@@ -41,17 +41,17 @@ namespace DCL.ECSComponents.Test
                     id = "temptation", basePosition = new Vector2Int(1, 0)
                 });
 
-            cameraTransform = (new GameObject("GO")).transform;
-            cameraTransform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
+            cameraGameObject = new GameObject("GO");
+            cameraGameObject.transform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
             
             CommonScriptableObjects.rendererState.Set(true);
             CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
             
-            gameObject = new GameObject();
-            entity = Substitute.For<IDCLEntity>();
+            testGameObject = new GameObject();
+            testEntity = Substitute.For<IDCLEntity>();
 
-            entity.entityId.Returns(1); 
-            entity.gameObject.Returns(gameObject);
+            testEntity.entityId.Returns(1); 
+            testEntity.gameObject.Returns(testGameObject);
 
             ECSComponentsFactory componentFactory = new ECSComponentsFactory();
             ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
@@ -62,7 +62,7 @@ namespace DCL.ECSComponents.Test
             billboards = (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD);
             
             dataStoreCamera = new DataStore_Camera();
-            dataStoreCamera.transform.Set(cameraTransform);
+            dataStoreCamera.transform.Set(cameraGameObject.transform);
             
             systemUpdate = new ECSBillboardSystem(
                 billboards,
@@ -72,22 +72,23 @@ namespace DCL.ECSComponents.Test
         [TearDown]
         protected void TearDown()
         {
-            // componentHandler.OnComponentRemoved(scene, entity);
-            GameObject.Destroy(gameObject);
+            GameObject.Destroy(testGameObject);
+            GameObject.Destroy(cameraGameObject);
+            CommonScriptableObjects.UnloadAll();
         }
 
         [Test]
         public void UpdateComponentCorrectly()
         {
-            billboards.Create(scenes[0], entity);
-            billboards.SetModel(scenes[0], entity, CreateModel());
+            billboards.Create(scenes[0], testEntity);
+            billboards.SetModel(scenes[0], testEntity, CreateModel());
             
-            var currentRotation = gameObject.transform.rotation;
-            cameraTransform.position = new UnityEngine.Vector3(30, 2, 15);
+            var currentRotation = testGameObject.transform.rotation;
+            cameraGameObject.transform.position = new UnityEngine.Vector3(30, 2, 15);
             systemUpdate.Update();
             
             // Assert
-            Assert.AreNotEqual(currentRotation,  gameObject.transform.rotation);
+            Assert.AreNotEqual(currentRotation,  testGameObject.transform.rotation);
         }
 
         [Test]

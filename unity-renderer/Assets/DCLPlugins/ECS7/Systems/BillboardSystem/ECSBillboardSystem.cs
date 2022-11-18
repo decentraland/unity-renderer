@@ -6,35 +6,21 @@ using DCL.Models;
 
 namespace ECSSystems.BillboardSystem
 {
-    public class ECSBillboardSystem : IDisposable
+    public class ECSBillboardSystem
     {
-        
-        private class State
-        {
-            public ECSComponent<PBBillboard> billboards;
-            public DataStore_Camera camera;
-        }
-
-        private readonly State state;
+        private readonly ECSComponent<PBBillboard> billboardComponent;
+        private readonly DataStore_Camera camera;
 
         public ECSBillboardSystem(ECSComponent<PBBillboard> billboards,  DataStore_Camera camera)
         {
-            state = new State()
-            {
-                billboards = billboards,
-                camera = camera
-            };
-
-        }
-
-        public void Dispose()
-        {
+            this.billboardComponent = billboards;
+            this.camera = camera;
         }
 
         public void Update()
         {
-            UnityEngine.Vector3 cameraPosition = state.camera.transform.Get().position;
-            var billboards = state.billboards.Get();
+            UnityEngine.Vector3 cameraPosition = camera.transform.Get().position;
+            var billboards = billboardComponent.Get();
 
             for (var i = 0; i < billboards.Count; i++)
             {
