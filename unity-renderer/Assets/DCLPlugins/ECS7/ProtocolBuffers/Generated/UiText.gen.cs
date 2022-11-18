@@ -29,7 +29,7 @@ namespace DCL.ECSComponents {
             "bW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25lbnRz",
             "L2NvbW1vbi90ZXh0cy5wcm90byKbAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
             "KAkSLwoFY29sb3IYAiABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9y",
-            "M0gAiAEBEkoKCnRleHRfYWxpZ24YAyABKA4yMS5kZWNlbnRyYWxhbmQuc2Rr",
+            "NEgAiAEBEkoKCnRleHRfYWxpZ24YAyABKA4yMS5kZWNlbnRyYWxhbmQuc2Rr",
             "LmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbk1vZGVIAYgBARI7CgRmb250",
             "GAQgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5G",
             "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQFCCAoGX2NvbG9yQg0K",
@@ -109,13 +109,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 2;
-    private global::DCL.ECSComponents.Color3 color_;
+    private global::DCL.ECSComponents.Color4 color_;
     /// <summary>
-    /// default=(1.0,1.0,1.0)
+    /// default=(1.0,1.0,1.0,1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color3 Color {
+    public global::DCL.ECSComponents.Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -348,7 +348,7 @@ namespace DCL.ECSComponents {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::DCL.ECSComponents.Color3();
+          Color = new global::DCL.ECSComponents.Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -382,7 +382,7 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color3();
+              Color = new global::DCL.ECSComponents.Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -420,7 +420,7 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color3();
+              Color = new global::DCL.ECSComponents.Color4();
             }
             input.ReadMessage(Color);
             break;

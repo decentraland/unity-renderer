@@ -45,7 +45,7 @@ namespace Tests
                 Substitute.For<IECSComponentWriter>(), internalComponents);
 
             worldState = Substitute.For<IWorldState>();
-            worldState.ContainsScene(Arg.Any<string>()).Returns(true);
+            worldState.ContainsScene(Arg.Any<int>()).Returns(true);
 
             dataStoreEcs7 = new DataStore_ECS7();
             interactionHoverCanvas = Substitute.For<IECSInteractionHoverCanvas>();
@@ -62,7 +62,7 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
             inputEventResultsComponent = internalComponents.inputEventResultsComponent;
 
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity1 = scene.CreateEntity(10111);
             entity2 = scene.CreateEntity(10112);
 

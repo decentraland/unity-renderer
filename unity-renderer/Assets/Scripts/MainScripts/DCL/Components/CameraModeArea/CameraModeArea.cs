@@ -148,7 +148,7 @@ namespace DCL.Components
                 return false;
             }
 
-            if (areaScene.sceneData.id != CommonScriptableObjects.sceneID.Get())
+            if (areaScene.sceneData.sceneNumber != CommonScriptableObjects.sceneNumber.Get())
             {
                 return false;
             }

@@ -41,7 +41,7 @@ namespace DCL
         private IParcelScene FindSceneForPlayer()
         {
             var currentPos = player.playerGridPosition.Get();
-            if (worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), 
+            if (worldState.TryGetScene(worldState.GetSceneNumberByCoords(currentPos), 
                     out IParcelScene resultScene))
                 return resultScene;
 

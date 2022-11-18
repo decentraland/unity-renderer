@@ -33,7 +33,7 @@ namespace Tests
             componentWriter = Substitute.For<IECSComponentWriter>();
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
 
             var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
             updateSystems = () =>
@@ -70,7 +70,7 @@ namespace Tests
 
             componentWriter.Received(1)
                            .PutComponent(
-                               scene.sceneData.id,
+                               scene.sceneData.sceneNumber,
                                SpecialEntityId.SCENE_ROOT_ENTITY,
                                ComponentID.POINTER_EVENTS_RESULT,
                                Arg.Do<PBPointerEventsResult>(r =>
@@ -110,7 +110,7 @@ namespace Tests
 
             componentWriter.DidNotReceive()
                            .PutComponent(
-                               scene.sceneData.id,
+                               scene.sceneData.sceneNumber,
                                SpecialEntityId.SCENE_ROOT_ENTITY,
                                ComponentID.POINTER_EVENTS_RESULT,
                                Arg.Any<PBPointerEventsResult>(),
