@@ -9,14 +9,11 @@ using DCL;
 public class PassportHUDViewShould
 {
     private PlayerPassportHUDView view;
-    private MouseCatcher mouseCatcher;
 
     [SetUp]
     public void SetUp()
     {
-        mouseCatcher = Substitute.For<MouseCatcher>();
         view = PlayerPassportHUDView.CreateView();
-        view.mouseCatcher = mouseCatcher;
         view.Initialize();
     }
 
