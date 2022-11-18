@@ -735,37 +735,6 @@ resharper_space_after_operator_keyword = true
 
 #resharper_configure_await_analysis_mode = disabled/library/ui
 
-# ############################### ReSharper old but different settings ###############################
-
-## Different
-# resharper_align_multiline_extends_list = true
-# resharper_blank_lines_after_block_statements = 0
-# resharper_blank_lines_around_property = 0
-# resharper_keep_existing_attribute_arrangement = true
-# resharper_keep_existing_embedded_block_arrangement = true
-# resharper_keep_existing_enum_arrangement = true
-# resharper_keep_existing_initializer_arrangement = true
-# resharper_max_formal_parameters_on_line = 1000
-# resharper_max_initializer_elements_on_line = 30
-# resharper_place_simple_accessorholder_on_single_line = true
-# resharper_place_simple_embedded_statement_on_same_line = false
-# resharper_place_simple_method_on_single_line = true
-# resharper_remove_blank_lines_near_braces_in_code = false
-# resharper_remove_blank_lines_near_braces_in_declarations = false
-# resharper_csharp_blank_lines_around_invocable = 0
-
-## Not found
-# resharper_case_block_braces = next_line_shifted_2
-# resharper_csharp_extra_spaces = leave_all
-# resharper_csharp_use_indent_from_previous_element = false
-# resharper_show_autodetect_configure_formatting_tip = false
-# resharper_use_indent_from_vs = false
-# resharper_wrap_lines = true
-# resharper_indent_preprocessor_directives = normal
-# resharper_enforce_line_ending_style = true
-# resharper_csharp_wrap_lines = false
-
-
 # ############################### ReSharper inspection severities ###############################
 
 # # ReSharper inspection severities 1
