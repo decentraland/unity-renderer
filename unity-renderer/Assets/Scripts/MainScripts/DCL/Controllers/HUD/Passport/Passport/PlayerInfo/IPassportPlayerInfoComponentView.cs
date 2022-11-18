@@ -10,5 +10,6 @@ namespace DCL.Social.Passports
         void SetName(string name);
         void SetWallet(string wallet);
         void SetPresence(PresenceStatus status);
+        void SetGuestUser(bool isGuest);
     }
 }

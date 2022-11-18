@@ -87,11 +87,17 @@ namespace DCL.Social.Passports
             {
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 view.SetPassportPanelVisibility(true);
-                playerInfoController.UpdateWithUserProfile(currentUserProfile);
+                UpdateUserProfileInSubpanels(currentUserProfile);
             }
         }
 
-        private void UpdateUserProfile(UserProfile userProfile) => playerInfoController.UpdateWithUserProfile(userProfile);
+        private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanels(userProfile);
+
+        private void UpdateUserProfileInSubpanels(UserProfile userProfile)
+        {
+            playerInfoController.UpdateWithUserProfile(userProfile);
+            passportNavigationController.UpdateWithUserProfile(userProfile);
+        }
 
         private void RemoveCurrentPlayer()
         {
