@@ -15,6 +15,9 @@ namespace DCLPlugins.ECSComponents.Raycast
 {
     public class RaycastComponentHandler : IECSComponentHandler<PBRaycast>
     {
+        // Lamport timestamp for raycast responses, we may want to move it to scene-level in the future
+        private static int responseTimestamp = 0;
+        
         private IECSComponentWriter componentWriter;
         private LayerMask raycastLayerMaskTarget;
         private IInternalECSComponent<InternalColliders> physicsColliderComponent;
@@ -47,7 +50,8 @@ namespace DCLPlugins.ECSComponents.Raycast
             PBRaycastResult result = new PBRaycastResult();
             result.Direction = model.Direction.Clone();
             result.Origin = model.Origin.Clone();
-            result.Timestamp = model.Timestamp;
+            result.Timestamp = responseTimestamp;
+            responseTimestamp++;
             
             RaycastHit[] hits = null;
             if (model.QueryType == RaycastQueryType.RqtHitFirst)

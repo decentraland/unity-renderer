@@ -26,18 +26,17 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CilkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvcmF5Y2FzdC5wcm90bxIb",
             "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiFkZWNlbnRyYWxhbmQvY29t",
-            "bW9uL3ZlY3RvcnMucHJvdG8i1gEKCVBCUmF5Y2FzdBIRCgl0aW1lc3RhbXAY",
-            "ASABKAUSLAoGb3JpZ2luGAIgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5W",
-            "ZWN0b3IzEi8KCWRpcmVjdGlvbhgDIAEoCzIcLmRlY2VudHJhbGFuZC5jb21t",
-            "b24uVmVjdG9yMxIUCgxtYXhfZGlzdGFuY2UYBCABKAISQQoKcXVlcnlfdHlw",
-            "ZRgFIAEoDjItLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5SYXljYXN0",
-            "UXVlcnlUeXBlKjgKEFJheWNhc3RRdWVyeVR5cGUSEQoNUlFUX0hJVF9GSVJT",
-            "VBAAEhEKDVJRVF9RVUVSWV9BTEwQAUIUqgIRRENMLkVDU0NvbXBvbmVudHNi",
-            "BnByb3RvMw=="));
+            "bW9uL3ZlY3RvcnMucHJvdG8iwwEKCVBCUmF5Y2FzdBIsCgZvcmlnaW4YASAB",
+            "KAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMSLwoJZGlyZWN0aW9u",
+            "GAIgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEhQKDG1heF9k",
+            "aXN0YW5jZRgDIAEoAhJBCgpxdWVyeV90eXBlGAQgASgOMi0uZGVjZW50cmFs",
+            "YW5kLnNkay5jb21wb25lbnRzLlJheWNhc3RRdWVyeVR5cGUqOAoQUmF5Y2Fz",
+            "dFF1ZXJ5VHlwZRIRCg1SUVRfSElUX0ZJUlNUEAASEQoNUlFUX1FVRVJZX0FM",
+            "TBABQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.RaycastQueryType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycast), global::DCL.ECSComponents.PBRaycast.Parser, new[]{ "Timestamp", "Origin", "Direction", "MaxDistance", "QueryType" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBRaycast), global::DCL.ECSComponents.PBRaycast.Parser, new[]{ "Origin", "Direction", "MaxDistance", "QueryType" }, null, null, null, null)
           }));
     }
     #endregion
@@ -86,7 +85,6 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBRaycast(PBRaycast other) : this() {
-      timestamp_ = other.timestamp_;
       origin_ = other.origin_ != null ? other.origin_.Clone() : null;
       direction_ = other.direction_ != null ? other.direction_.Clone() : null;
       maxDistance_ = other.maxDistance_;
@@ -100,20 +98,8 @@ namespace DCL.ECSComponents {
       return new PBRaycast(this);
     }
 
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 1;
-    private int timestamp_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
-      }
-    }
-
     /// <summary>Field number for the "origin" field.</summary>
-    public const int OriginFieldNumber = 2;
+    public const int OriginFieldNumber = 1;
     private global::DCL.ECSComponents.Vector3 origin_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -125,7 +111,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "direction" field.</summary>
-    public const int DirectionFieldNumber = 3;
+    public const int DirectionFieldNumber = 2;
     private global::DCL.ECSComponents.Vector3 direction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -137,7 +123,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "max_distance" field.</summary>
-    public const int MaxDistanceFieldNumber = 4;
+    public const int MaxDistanceFieldNumber = 3;
     private float maxDistance_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -149,7 +135,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "query_type" field.</summary>
-    public const int QueryTypeFieldNumber = 5;
+    public const int QueryTypeFieldNumber = 4;
     private global::DCL.ECSComponents.RaycastQueryType queryType_ = global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -175,7 +161,6 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Timestamp != other.Timestamp) return false;
       if (!object.Equals(Origin, other.Origin)) return false;
       if (!object.Equals(Direction, other.Direction)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MaxDistance, other.MaxDistance)) return false;
@@ -187,7 +172,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (direction_ != null) hash ^= Direction.GetHashCode();
       if (MaxDistance != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxDistance);
@@ -210,24 +194,20 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Timestamp != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Timestamp);
-      }
       if (origin_ != null) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteMessage(Origin);
       }
       if (direction_ != null) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteMessage(Direction);
       }
       if (MaxDistance != 0F) {
-        output.WriteRawTag(37);
+        output.WriteRawTag(29);
         output.WriteFloat(MaxDistance);
       }
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
-        output.WriteRawTag(40);
+        output.WriteRawTag(32);
         output.WriteEnum((int) QueryType);
       }
       if (_unknownFields != null) {
@@ -240,24 +220,20 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Timestamp != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Timestamp);
-      }
       if (origin_ != null) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteMessage(Origin);
       }
       if (direction_ != null) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteMessage(Direction);
       }
       if (MaxDistance != 0F) {
-        output.WriteRawTag(37);
+        output.WriteRawTag(29);
         output.WriteFloat(MaxDistance);
       }
       if (QueryType != global::DCL.ECSComponents.RaycastQueryType.RqtHitFirst) {
-        output.WriteRawTag(40);
+        output.WriteRawTag(32);
         output.WriteEnum((int) QueryType);
       }
       if (_unknownFields != null) {
@@ -270,9 +246,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Timestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Timestamp);
-      }
       if (origin_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Origin);
       }
@@ -296,9 +269,6 @@ namespace DCL.ECSComponents {
     public void MergeFrom(PBRaycast other) {
       if (other == null) {
         return;
-      }
-      if (other.Timestamp != 0) {
-        Timestamp = other.Timestamp;
       }
       if (other.origin_ != null) {
         if (origin_ == null) {
@@ -333,29 +303,25 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Timestamp = input.ReadInt32();
-            break;
-          }
-          case 18: {
+          case 10: {
             if (origin_ == null) {
               Origin = new global::DCL.ECSComponents.Vector3();
             }
             input.ReadMessage(Origin);
             break;
           }
-          case 26: {
+          case 18: {
             if (direction_ == null) {
               Direction = new global::DCL.ECSComponents.Vector3();
             }
             input.ReadMessage(Direction);
             break;
           }
-          case 37: {
+          case 29: {
             MaxDistance = input.ReadFloat();
             break;
           }
-          case 40: {
+          case 32: {
             QueryType = (global::DCL.ECSComponents.RaycastQueryType) input.ReadEnum();
             break;
           }
@@ -374,29 +340,25 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            Timestamp = input.ReadInt32();
-            break;
-          }
-          case 18: {
+          case 10: {
             if (origin_ == null) {
               Origin = new global::DCL.ECSComponents.Vector3();
             }
             input.ReadMessage(Origin);
             break;
           }
-          case 26: {
+          case 18: {
             if (direction_ == null) {
               Direction = new global::DCL.ECSComponents.Vector3();
             }
             input.ReadMessage(Direction);
             break;
           }
-          case 37: {
+          case 29: {
             MaxDistance = input.ReadFloat();
             break;
           }
-          case 40: {
+          case 32: {
             QueryType = (global::DCL.ECSComponents.RaycastQueryType) input.ReadEnum();
             break;
           }
