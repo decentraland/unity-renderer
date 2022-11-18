@@ -1577,6 +1577,12 @@ namespace DCL.Interface
 
             SendMessage("JumpIn", jumpInPayload);
         }
+        
+        public static void JumpInHome(string mostPopulatedRealm)
+        {
+            jumpInPayload.realm.serverName = mostPopulatedRealm;
+            SendMessage("JumpInHome", jumpInPayload);
+        }
 
         public static void SendChatMessage(ChatMessage message)
         {

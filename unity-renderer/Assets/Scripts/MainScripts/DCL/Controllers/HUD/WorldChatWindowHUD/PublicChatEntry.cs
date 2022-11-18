@@ -15,6 +15,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text memberCountLabel;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal Button leaveButton;
+        [SerializeField] internal Button joinButton;
         [SerializeField] internal GameObject leaveButtonContainer;
         [SerializeField] internal GameObject openChatContainer;
         [SerializeField] internal GameObject joinedContainer;
@@ -26,6 +27,7 @@ namespace DCL.Chat.HUD
 
         public event Action<PublicChatEntry> OnOpenChat;
         public event Action<PublicChatEntry> OnLeave;
+        public event Action<PublicChatEntry> OnJoin;
         public event Action<PublicChatEntry> OnOpenOptions;
 
         public static PublicChatEntry Create()
@@ -43,6 +45,9 @@ namespace DCL.Chat.HUD
         
             if (leaveButton)
                 leaveButton.onClick.AddListener(() => OnLeave?.Invoke(this));
+            
+            if (joinButton)
+                joinButton.onClick.AddListener(() => OnJoin?.Invoke(this));
         }
 
         public void Initialize(IChatController chatController)

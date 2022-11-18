@@ -27,25 +27,25 @@ namespace DCL.ECSComponents
         public static Color3 GetAlbedoColor(this PBMaterial self)
         {
             if (self.Pbr != null)
-                return self.Pbr.AlbedoColor ?? new Color3(Color3_Defaults.colorWhite);
+                return self.Pbr.AlbedoColor ?? new Color3(Color_Defaults.colorWhite);
             
-            return new Color3(Color3_Defaults.colorWhite);
+            return new Color3(Color_Defaults.colorWhite);
         }
 
         public static Color3 GetEmissiveColor(this PBMaterial self)
         {
             if (self.Pbr != null)
-                return self.Pbr.EmissiveColor ?? new Color3(Color3_Defaults.colorBlack);
+                return self.Pbr.EmissiveColor ?? new Color3(Color_Defaults.colorBlack);
             
-            return new Color3(Color3_Defaults.colorBlack);
+            return new Color3(Color_Defaults.colorBlack);
         }
 
         public static Color3 GetReflectiveColor(this PBMaterial self)
         {
             if (self.Pbr != null)
-                return self.Pbr.ReflectivityColor ?? new Color3(Color3_Defaults.colorWhite);
+                return self.Pbr.ReflectivityColor ?? new Color3(Color_Defaults.colorWhite);
             
-            return new Color3(Color3_Defaults.colorWhite);
+            return new Color3(Color_Defaults.colorWhite);
         }
 
         public static MaterialTransparencyMode GetTransparencyMode(this PBMaterial self)

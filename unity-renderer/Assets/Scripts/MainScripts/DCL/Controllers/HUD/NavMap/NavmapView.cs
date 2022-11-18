@@ -7,7 +7,6 @@ namespace DCL
 
     public class NavmapView : MonoBehaviour
     {
-        [SerializeField] private Button closeButton;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] private Transform scrollRectContentTransform;
 
@@ -20,7 +19,6 @@ namespace DCL
         [SerializeField] private NavmapZoom zoom;
         
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
-        private NavmapCloseButtonBehaviour closeButtonBehaviour;
         
         private RectTransform rectTransform;
 
@@ -31,7 +29,6 @@ namespace DCL
 
         void Start()
         {
-            closeButtonBehaviour = new NavmapCloseButtonBehaviour(closeButton, DataStore.i.HUDs.navmapVisible, DataStore.i.exploreV2.configureMapInFullscreenMenu);
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, scrollRect, scrollRectContentTransform, zoom, toastView);
             
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
@@ -58,7 +55,6 @@ namespace DCL
         
         private void OnDestroy()
         {
-            closeButtonBehaviour.Dispose();
             navmapVisibilityBehaviour.Dispose();
         }
 
