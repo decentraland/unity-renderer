@@ -133,7 +133,7 @@ public class WorldChatWindowController : IHUD
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
-            dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
+            dataStore.channels.channelToBeOpened.OnChange += HandleChannelOpened;
 
             view.ShowChannelsLoading();
             view.SetSearchAndCreateContainerActive(true);
@@ -171,7 +171,7 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
-        dataStore.channels.channelToBeOpenedFromLink.OnChange -= HandleChannelOpenedFromLink;
+        dataStore.channels.channelToBeOpened.OnChange -= HandleChannelOpened;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -205,6 +205,11 @@ public class WorldChatWindowController : IHUD
                 {
                     RequestJoinedChannels();
                     SetAutomaticChannelsInfoUpdatingActive(true);
+                }
+                else if (ownUserProfile.isGuest)
+                {
+                    // TODO: channels are not allowed for guests. When we support it in the future, remove this call
+                    view.HideChannelsLoading();
                 }
 
                 if (!areUnseenMessajesRequestedByFirstTime)
@@ -574,7 +579,7 @@ public class WorldChatWindowController : IHUD
         socialAnalytics.SendLeaveChannel(channel?.Name ?? channelId, dataStore.channels.channelLeaveSource.Get());
     }
 
-    private void HandleChannelOpenedFromLink(string channelId, string previousChannelId)
+    private void HandleChannelOpened(string channelId, string previousChannelId)
     {
         if (string.IsNullOrEmpty(channelId))
             return;
