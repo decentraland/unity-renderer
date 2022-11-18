@@ -57,6 +57,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
+            pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,
                 NotificationScriptableObjects.pendingFriendRequests,

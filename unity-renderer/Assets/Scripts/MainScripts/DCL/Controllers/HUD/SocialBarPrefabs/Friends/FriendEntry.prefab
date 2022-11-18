@@ -141,6 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a62ca82e21d64101955248fdc2abcb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   playerBlockedImage: {fileID: 7592512081161049891}
   menuPositionReference: {fileID: 2396126356780351439}
   playerNameText: {fileID: 5460751659792233842}
