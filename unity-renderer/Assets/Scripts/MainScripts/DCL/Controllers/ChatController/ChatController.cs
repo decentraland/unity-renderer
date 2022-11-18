@@ -117,28 +117,30 @@ namespace DCL.Social.Chat
         {
             if (msg.channelInfoPayload.Length == 0) return;
 
-            var channelInfo = msg.channelInfoPayload[0];
-            var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages,
-                channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
-            var channelId = channel.ChannelId;
+            foreach (var channelInfo in msg.channelInfoPayload)
+            {
+                var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages,
+                    channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
+                var channelId = channel.ChannelId;
 
-            if (channels.ContainsKey(channelId))
-                channels[channelId].CopyFrom(channel);
-            else
-                channels[channelId] = channel;
+                if (channels.ContainsKey(channelId))
+                    channels[channelId].CopyFrom(channel);
+                else
+                    channels[channelId] = channel;
 
-            if (autoJoinChannelList.Contains(channelId))
-                OnAutoChannelJoined?.Invoke(channel);
-            else
-                OnChannelJoined?.Invoke(channel);
+                if (autoJoinChannelList.Contains(channelId))
+                    OnAutoChannelJoined?.Invoke(channel);
+                else
+                    OnChannelJoined?.Invoke(channel);
 
-            OnChannelUpdated?.Invoke(channel);
-            autoJoinChannelList.Remove(channelId);
+                OnChannelUpdated?.Invoke(channel);
+                autoJoinChannelList.Remove(channelId);
+                
+                SendChannelWelcomeMessage(channel);
+            }
 
             // TODO (responsibility issues): extract to another class
             AudioScriptableObjects.joinChannel.Play(true);
-
-            SendChannelWelcomeMessage(channel);
         }
 
         private void JoinChannelFailed(JoinChannelErrorPayload msg)
