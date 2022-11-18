@@ -17,7 +17,7 @@ namespace ECSSystems.ScenesUiSystem
             public IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
             public IWorldState worldState;
             public BaseList<IParcelScene> loadedScenes;
-            public string lastSceneId;
+            public int lastSceneNumber;
             public bool isPendingSceneUI;
             public IParcelScene currentScene;
         }
@@ -35,7 +35,7 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent = internalUiContainerComponent,
                 worldState = worldState,
                 loadedScenes = loadedScenes,
-                lastSceneId = null,
+                lastSceneNumber = -1,
                 isPendingSceneUI = true,
                 currentScene = null
             };
@@ -50,11 +50,11 @@ namespace ECSSystems.ScenesUiSystem
 
         public void Update()
         {
-            string currentSceneId = state.worldState.GetCurrentSceneId();
-            bool sceneChanged = state.lastSceneId != currentSceneId;
-            state.lastSceneId = currentSceneId;
+            int currentSceneNumber = state.worldState.GetCurrentSceneNumber();
+            bool sceneChanged = state.lastSceneNumber != currentSceneNumber;
+            state.lastSceneNumber = currentSceneNumber;
 
-            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(state.uiDocument, state.internalUiContainerComponent, currentSceneId);
+            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(state.uiDocument, state.internalUiContainerComponent, currentSceneNumber);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
@@ -66,9 +66,10 @@ namespace ECSSystems.ScenesUiSystem
             if (sceneChanged && !state.isPendingSceneUI)
             {
                 ClearCurrentSceneUI(state.uiDocument);
-                state.isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
+                state.isPendingSceneUI = currentSceneNumber > 0;
             }
-            if (sceneChanged && state.currentScene != null && currentSceneId != state.currentScene.sceneData.id)
+            
+            if (sceneChanged && state.currentScene != null && currentSceneNumber != state.currentScene.sceneData.sceneNumber)
             {
                 state.currentScene = null;
             }
@@ -77,7 +78,7 @@ namespace ECSSystems.ScenesUiSystem
             if (state.isPendingSceneUI)
             {
                 // we get current scene reference
-                state.currentScene ??= GetCurrentScene(currentSceneId, state.loadedScenes);
+                state.currentScene ??= GetCurrentScene(currentSceneNumber, state.loadedScenes);
 
                 // we apply current scene UI
                 if (state.currentScene != null)
@@ -92,14 +93,14 @@ namespace ECSSystems.ScenesUiSystem
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
         {
-            if (scene.sceneData.id == state.lastSceneId)
+            if (scene.sceneData.sceneNumber == state.lastSceneNumber)
             {
-                state.lastSceneId = null;
+                state.lastSceneNumber = -1;
             }
         }
 
         internal static HashSet<IParcelScene> ApplyParenting(UIDocument uiDocument,
-            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, string currentSceneId)
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
         {
             HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
 
@@ -111,7 +112,7 @@ namespace ECSSystems.ScenesUiSystem
 
                 // check if ui should be sort (only current and global scenes)
                 if (uiContainerData.model.shouldSort
-                    && (uiContainerData.scene.isPersistent || uiContainerData.scene.sceneData.id == currentSceneId))
+                    && (uiContainerData.scene.isPersistent || uiContainerData.scene.sceneData.sceneNumber == currentSceneNumber))
                 {
                     scenesToSort.Add(uiContainerData.scene);
                 }
@@ -161,15 +162,15 @@ namespace ECSSystems.ScenesUiSystem
             }
         }
 
-        internal static IParcelScene GetCurrentScene(string sceneId, IList<IParcelScene> loadedScenes)
+        internal static IParcelScene GetCurrentScene(int sceneNumber, IList<IParcelScene> loadedScenes)
         {
-            if (string.IsNullOrEmpty(sceneId))
+            if (sceneNumber <= 0)
                 return null;
 
             IParcelScene currentScene = null;
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if (loadedScenes[i].sceneData.id == sceneId)
+                if (loadedScenes[i].sceneData.sceneNumber == sceneNumber)
                 {
                     currentScene = loadedScenes[i];
                     break;

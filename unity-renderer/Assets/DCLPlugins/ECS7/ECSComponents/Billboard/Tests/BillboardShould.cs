@@ -38,7 +38,7 @@ namespace DCL.ECSComponents.Test
             scenes[0]
                 .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
-                    id = "temptation", basePosition = new Vector2Int(1, 0)
+                    id = "temptation", basePosition = new Vector2Int(1, 0), sceneNumber = 1
                 });
 
             cameraGameObject = new GameObject("GO");

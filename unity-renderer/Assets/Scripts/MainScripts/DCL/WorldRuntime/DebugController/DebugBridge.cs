@@ -14,7 +14,7 @@ namespace DCL
         [Serializable]
         class ToggleSceneBoundingBoxesPayload
         {
-            public string sceneId;
+            public int sceneNumber; // TODO: change something kernel-side ???
             public bool enabled;
         }
 
@@ -77,7 +77,7 @@ namespace DCL
             foreach (var kvp in DCL.Environment.i.world.state.GetLoadedScenes())
             {
                 IParcelScene scene = kvp.Value;
-                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
+                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.sceneNumber);
                 scene.GetWaitingComponentsDebugInfo();
             }
 
@@ -220,7 +220,7 @@ namespace DCL
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
-            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneNumber, data.enabled);
         }
 
         public void TogglePreviewMenu(string payload)

@@ -160,16 +160,16 @@ namespace DCL.Components
             if (isInitialized) return;
             isInitialized = true;
 
-            string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
+            string videoId = scene.sceneData.sceneNumber > 0 ? scene.sceneData.sceneNumber + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
 
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
-            CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
+            CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
             scene.OnEntityRemoved += SetPlayStateDirty;
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
-            OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
+            OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), -1);
         }
 
         public float GetVolume() { return ((Model) model).volume; }
@@ -228,7 +228,7 @@ namespace DCL.Components
             var videoStatus = (int)videoState;
             var currentOffset = texturePlayer.GetTime();
             var length = texturePlayer.GetDuration();
-            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
+            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.sceneNumber, lastVideoClipID, videoStatus, currentOffset, length );
         }
 
         private bool IsTimeToReportVideoProgress()
@@ -293,7 +293,7 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get()))
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneNumber.Get()))
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
@@ -305,19 +305,19 @@ namespace DCL.Components
             texturePlayer.SetVolume(targetVolume);
         }
 
-        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
+        private bool IsPlayerInSameSceneAsComponent(int currentSceneNumber)
         {
             if (scene == null)
                 return false;
-            if (string.IsNullOrEmpty(currentSceneId))
+            if (currentSceneNumber <= 0)
                 return false;
 
-            return (scene.sceneData.id == currentSceneId) || (scene.isPersistent);
+            return (scene.sceneData.sceneNumber == currentSceneNumber) || (scene.isPersistent);
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
 
-        private void OnSceneIDChanged(string current, string previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+        private void OnSceneNumberChanged(int current, int previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -365,7 +365,7 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
-            CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
+            CommonScriptableObjects.sceneNumber.OnChange -= OnSceneNumberChanged;
 
             if (scene != null)
                 scene.OnEntityRemoved -= SetPlayStateDirty;

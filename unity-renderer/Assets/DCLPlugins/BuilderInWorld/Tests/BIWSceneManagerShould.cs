@@ -56,6 +56,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     [TestCase(IBuilderScene.SceneType.LAND)]
     [TestCase(IBuilderScene.SceneType.PROJECT)]
     public void StartExitModeScreenShot(IBuilderScene.SceneType sceneType)
@@ -73,24 +74,26 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
     {
         // Arrange
         mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
         scene.CreateEntity(1);
-        mainController.sceneToEditId = scene.sceneData.id;
+        // mainController.sceneToEditId = scene.sceneData.sceneNumber;
 
         // Act
         mainController.StartFlow(builderScene, "source");
         scene.CreateEntity(2);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
 
         // Assert
         Assert.AreEqual(SceneManager.State.SCENE_LOADED, mainController.currentState );
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetFlagProperlyWhenBuilderInWorldIsExited()
     {
         // Arrange
@@ -100,7 +103,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 
         mainController.StartFlowFromLandWithPermission(scene, "Test");
         scene.CreateEntity(2);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
 
         // Act
         mainController.ExitEditMode();
@@ -110,11 +113,12 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void FindSceneToEdit()
     {
         // Arrange
         scene.CreateEntity(1);
-        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.sceneNumber);
         DataStore.i.player.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
         // Act
@@ -125,6 +129,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ActivateLandAccessBackground()
     {
         // Arrange
@@ -139,6 +144,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void RequestCatalog()
     {
         // Arrange
@@ -156,6 +162,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeEditModeByShortcut()
     {
         // Act
@@ -166,13 +173,14 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void NewSceneAdded()
     {
         // Arrange
         mainController.sceneToEdit = builderScene;
         var mockedScene = Substitute.For<IParcelScene>();
         mockedScene.Configure().sceneData.Returns(scene.sceneData);
-        mainController.sceneToEditId = scene.sceneData.id;
+        // mainController.sceneToEditId = scene.sceneData.sceneNumber;
 
         // Act
         mainController.NewSceneAdded(mockedScene);
@@ -182,6 +190,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UserHasPermission()
     {
         // Arrange
@@ -195,6 +204,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ReturnTrueWhenParcelSceneDeployedFromSDKIsCalled()
     {
         // Arrange
@@ -229,6 +239,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CatalogReceived()
     {
         // Arrange
@@ -236,7 +247,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
         mainController.sceneToEdit = Substitute.For<IBuilderScene>();
-        mainController.sceneToEdit.scene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { id = "Test id" });
+        // mainController.sceneToEdit.scene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { sceneNumber = "Test id" });
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);
@@ -246,6 +257,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckSceneToEditByShortcut()
     {
         // Arrange
@@ -274,6 +286,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ExitAfterTeleport()
     {
         // Arrange

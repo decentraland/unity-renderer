@@ -904,7 +904,7 @@ namespace Tests
             onPointerEvent.uuid = onPointerId;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerEvent;
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
@@ -968,7 +968,7 @@ namespace Tests
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
@@ -1033,7 +1033,7 @@ namespace Tests
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
@@ -1113,14 +1113,14 @@ namespace Tests
 
             var sceneEventHoverEnter = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 payload = onPointerHoverEnterEvent,
                 eventType = "uuidEvent"
             };
 
             var sceneEventHoverExit = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 payload = onPointerHoverExitEvent,
                 eventType = "uuidEvent"
             };
@@ -1206,7 +1206,7 @@ namespace Tests
             onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
 
@@ -1301,7 +1301,7 @@ namespace Tests
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 payload = onPointerHoverEnterEvent,
                 eventType = "uuidEvent"
             };
@@ -1405,7 +1405,7 @@ namespace Tests
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             EntityIdHelper idHelper = new EntityIdHelper();
@@ -1505,7 +1505,7 @@ namespace Tests
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 payload = onPointerHoverEnterEvent,
                 eventType = "uuidEvent"
             };
@@ -1609,7 +1609,7 @@ namespace Tests
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             EntityIdHelper idHelper = new EntityIdHelper();
@@ -1716,7 +1716,7 @@ namespace Tests
             var onPointerHoverEnterEvent = new WebInterface.UUIDEvent<WebInterface.EmptyPayload> {uuid = onPointerId};
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.EmptyPayload>>
-                {sceneId = scene.sceneData.id, payload = onPointerHoverEnterEvent, eventType = "uuidEvent"};
+                {sceneNumber = scene.sceneData.sceneNumber, payload = onPointerHoverEnterEvent, eventType = "uuidEvent"};
 
             // Check the target entity is not hit behind the 'isPointerBlocker' shape
             bool targetEntityHit = false;
@@ -1818,7 +1818,7 @@ namespace Tests
             onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             

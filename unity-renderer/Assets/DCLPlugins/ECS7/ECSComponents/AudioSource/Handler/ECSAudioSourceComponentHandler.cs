@@ -26,14 +26,14 @@ namespace DCL.ECSComponents
         private DataStore dataStore;
         private Settings settings;
         private AssetPromiseKeeper_AudioClip keeperAudioClip;
-        private StringVariable sceneID;
+        private IntVariable sceneNumber;
 
-        public ECSAudioSourceComponentHandler(DataStore dataStoreInstance, Settings settingsInstance, AssetPromiseKeeper_AudioClip keeperInstance, StringVariable sceneId)
+        public ECSAudioSourceComponentHandler(DataStore dataStoreInstance, Settings settingsInstance, AssetPromiseKeeper_AudioClip keeperInstance, IntVariable sceneNumber)
         {
             dataStore = dataStoreInstance;
             settings = settingsInstance;
             keeperAudioClip = keeperInstance;
-            this.sceneID = sceneId;
+            this.sceneNumber = sceneNumber;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -48,7 +48,7 @@ namespace DCL.ECSComponents
     
             dataStore.sceneBoundariesChecker.Add(entity,this);
             dataStore.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
-            sceneID.OnChange += OnCurrentSceneChanged;
+            sceneNumber.OnChange += OnCurrentSceneChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -66,7 +66,7 @@ namespace DCL.ECSComponents
             {
                 isAudioClipReady = false;
                 if (audioClip != null)
-                    dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
+                    dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.sceneNumber, audioClip);
                 DisposePromise();
             }
             
@@ -106,10 +106,10 @@ namespace DCL.ECSComponents
             DisposePromise();
             
             if (audioClip != null)
-                dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.id, audioClip);
+                dataStore.sceneWorldObjects.RemoveAudioClip(scene.sceneData.sceneNumber, audioClip);
             dataStore.sceneBoundariesChecker.Remove(entity,this);
             
-            sceneID.OnChange -= OnCurrentSceneChanged;
+            sceneNumber.OnChange -= OnCurrentSceneChanged;
 
             if (settings != null)
                 settings.audioSettings.OnChanged -= OnAudioSettingsChanged;
@@ -168,7 +168,7 @@ namespace DCL.ECSComponents
 
             audioClip = assetAudioClip.audioClip;
 
-            dataStore.sceneWorldObjects.AddAudioClip(scene.sceneData.id, audioClip);
+            dataStore.sceneWorldObjects.AddAudioClip(scene.sceneData.sceneNumber, audioClip);
             
             ApplyLoadedAudioClip(assetAudioClip.audioClip);
         }
@@ -203,19 +203,19 @@ namespace DCL.ECSComponents
                     audioSettingsData.masterVolume);
             }
 
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.id == sceneID.Get();
+            bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == sceneNumber.Get();
 
             audioSource.volume = isCurrentScene ? newVolume : 0f;
         }
         
-        private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
+        private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
         {
             if (audioSource == null || model == null)
                 return;
             
             float volume = 0;
 
-            if (scene.isPersistent || scene.sceneData.id == currentSceneId)
+            if (scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber)
                 volume = model.GetVolume();
             
             audioSource.volume = volume;

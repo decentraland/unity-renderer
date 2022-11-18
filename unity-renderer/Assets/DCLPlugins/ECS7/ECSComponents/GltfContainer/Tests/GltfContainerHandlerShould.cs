@@ -36,7 +36,7 @@ namespace Tests
             InternalECSComponents internalEcsComponents = new InternalECSComponents(componentsManager, componentFactory);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(23423);
 
             var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
@@ -144,25 +144,25 @@ namespace Tests
         [UnityTest]
         public IEnumerator SetAssetAsLoaded()
         {
-            Assert.IsFalse(dataStoreEcs7.pendingSceneResources.ContainsKey(scene.sceneData.id));
+            Assert.IsFalse(dataStoreEcs7.pendingSceneResources.ContainsKey(scene.sceneData.sceneNumber));
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].GetRefCount("palmtree"));
+            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].GetRefCount("palmtree"));
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].Count());
+            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].Count());
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
-            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].GetRefCount("sharknado"));
+            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].GetRefCount("sharknado"));
             yield return new WaitUntil(() => handler.gltfLoader.isFinished);
-            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].Count());
+            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].Count());
         }
 
         [Test]
         public void RemoveAssetAsPendingIfComponentRemovedWhileLoading()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].GetRefCount("palmtree"));
+            Assert.AreEqual(1, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].GetRefCount("palmtree"));
             handler.OnComponentRemoved(scene, entity);
-            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.id].Count());
+            Assert.AreEqual(0, dataStoreEcs7.pendingSceneResources[scene.sceneData.sceneNumber].Count());
         }
 
         [UnityTest]

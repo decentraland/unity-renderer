@@ -36,7 +36,7 @@ namespace DCL
         public readonly BaseVariable<string> openedChat = new BaseVariable<string>("");
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
-        public readonly BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<string, Queue<IUIRefreshable>>>(new Dictionary<string, Queue<IUIRefreshable>>());
+        public readonly BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<int, Queue<IUIRefreshable>>>(new Dictionary<int, Queue<IUIRefreshable>>());
         public readonly BaseVariable<bool> enableNewPassport = new BaseVariable<bool>(false);
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 

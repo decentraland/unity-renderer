@@ -11,7 +11,7 @@ public class ExternalUrlPromptHUDController : IHUD
 {
     internal ExternalUrlPromptView view { get; private set; }
 
-    internal Dictionary<string, HashSet<string>> trustedDomains = new Dictionary<string, HashSet<string>>();
+    internal Dictionary<int, HashSet<string>> trustedDomains = new Dictionary<int, HashSet<string>>();
 
     public ExternalUrlPromptHUDController()
     {
@@ -58,7 +58,7 @@ public class ExternalUrlPromptHUDController : IHUD
         Uri uri;
         if (Uri.TryCreate(url, UriKind.Absolute, out uri))
         {
-            if (trustedDomains.ContainsKey(scene.sceneData.id) && trustedDomains[scene.sceneData.id].Contains(uri.Host))
+            if (trustedDomains.ContainsKey(scene.sceneData.sceneNumber) && trustedDomains[scene.sceneData.sceneNumber].Contains(uri.Host))
             {
                 OpenUrl(url);
                 return;
@@ -71,12 +71,12 @@ public class ExternalUrlPromptHUDController : IHUD
                 switch (result)
                 {
                     case ExternalUrlPromptView.ResultType.APPROVED_TRUSTED:
-                        if (!trustedDomains.ContainsKey(scene.sceneData.id))
+                        if (!trustedDomains.ContainsKey(scene.sceneData.sceneNumber))
                         {
-                            trustedDomains.Add(scene.sceneData.id, new HashSet<string>());
+                            trustedDomains.Add(scene.sceneData.sceneNumber, new HashSet<string>());
                         }
 
-                        trustedDomains[scene.sceneData.id].Add(uri.Host);
+                        trustedDomains[scene.sceneData.sceneNumber].Add(uri.Host);
                         OpenUrl(url);
                         break;
                     case ExternalUrlPromptView.ResultType.APPROVED:

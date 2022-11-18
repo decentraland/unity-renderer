@@ -23,7 +23,7 @@ namespace DCL.NotificationModel
         public string message;
         public string buttonMessage;
         public float timer;
-        public string scene;
+        public int scene;
         public Action callback;
         public string externalCallbackID;
 

@@ -32,7 +32,7 @@ namespace DCL.Tutorial_Tests
             genesisPlazaSimulator = TestUtils.CreateTestScene(new LoadParcelScenesMessage.UnityParcelScene() {basePosition = genesisPlazaLocation});
             genesisPlazaSimulator.isPersistent = false;
             IWorldState worldState = Environment.i.world.state;
-            worldState.TryGetScene(Arg.Any<string>(), out Arg.Any<IParcelScene>()).Returns(param => param[1] = genesisPlazaSimulator);
+            worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>()).Returns(param => param[1] = genesisPlazaSimulator);
             
             CreateAndConfigureTutorial();
         }
