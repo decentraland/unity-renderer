@@ -14,7 +14,7 @@ namespace DCL.Components
 {
     public class DCLVideoTexture : DCLTexture
     {
-        public static bool VERBOSE = false;
+        public static bool VERBOSE = true;
         public static Logger logger = new Logger("DCLVideoTexture") {verboseEnabled = VERBOSE};
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
@@ -59,14 +59,15 @@ namespace DCL.Components
 
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
 
-            DebugLogTest ("Contructor - object.id = " + this.id);
+            DebugLogFDTest ("Contructor - object.id = " + this.id);
         }
 
-        private void DebugLogTest (string debugString)
+        private void DebugLogFDTest (string debugString)
         {
             bool currentDebugState = UnityEngine.Debug.unityLogger.logEnabled;
             UnityEngine.Debug.unityLogger.logEnabled = true;
             Debug.Log ("FD::DCLVideoTexture() - " + debugString);
+            logger.Info ("FD::LOGGER-DCLVideoTexture() - " + debugString);
             UnityEngine.Debug.unityLogger.logEnabled = currentDebugState;
         }
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -169,7 +170,7 @@ namespace DCL.Components
             if (isInitialized) return;
             isInitialized = true;
 
-            DebugLogTest("Initialize() called");
+            DebugLogFDTest("Initialize() called");
 
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
@@ -330,7 +331,7 @@ namespace DCL.Components
         {
             SetPlayStateDirty();
 
-            DebugLogTest("In Coords: " + coords + 
+            DebugLogFDTest("In Coords: " + coords + 
                         "\n scene in SO: " + CommonScriptableObjects.sceneID.Get() +
                         "\n object id " + this.id);
         }
@@ -338,7 +339,7 @@ namespace DCL.Components
         {
             isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
-            DebugLogTest("OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
+            DebugLogFDTest("OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
                 + "\n -current scene: " + current 
                 + "\n isPlayerInScene " + isPlayerInScene
                 + "\n CommonScriptableObjects.sceneID.Get(): " + CommonScriptableObjects.sceneID.Get());
@@ -387,7 +388,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            DebugLogTest ("FD:: DCLVideoTexture::Dispose() called");
+            DebugLogFDTest ("FD:: DCLVideoTexture::Dispose() called");
 
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
