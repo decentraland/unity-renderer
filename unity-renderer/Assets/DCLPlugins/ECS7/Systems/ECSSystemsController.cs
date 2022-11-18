@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
@@ -22,6 +23,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentWriteSystem;
     private readonly ECSScenesUiSystem uiSystem;
+    private readonly ECSBillboardSystem billboardSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -45,6 +47,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.uiContainerComponent,
             DataStore.i.ecs7.scenes, Environment.i.world.state);
 
+        billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
+        
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -63,7 +67,8 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            uiSystem.Update
+            uiSystem.Update,
+            billboardSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
