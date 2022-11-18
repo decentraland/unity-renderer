@@ -77,6 +77,12 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         }
     }
 
+    public void RefreshPresence(string userId, bool isOnline)
+    {
+        if (Entries.TryGetValue(userId, out PrivateChatEntry directMessage))
+            directMessage.SetPresence(isOnline);
+    }
+
     private void CreateEntry(string userId)
     {
         entryPool = GetEntryPool();
