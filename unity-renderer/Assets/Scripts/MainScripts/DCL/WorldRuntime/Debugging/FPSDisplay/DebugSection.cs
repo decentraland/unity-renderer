@@ -13,6 +13,7 @@ public class DebugSection : MonoBehaviour
         rootTransform = transform.parent.GetComponent<RectTransform>();
         closeSectionButton.onClick.AddListener(CloseSection);
         closeSectionButtonTransform = closeSectionButton.GetComponent<RectTransform>();
+        CloseSection();
     }
     private void CloseSection()
     {

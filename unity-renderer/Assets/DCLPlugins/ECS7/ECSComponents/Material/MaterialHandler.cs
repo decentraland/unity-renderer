@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -10,6 +13,7 @@ namespace DCL.ECSComponents
         private PBMaterial lastModel = null;
         internal AssetPromise_Material promiseMaterial;
 
+        private readonly Queue<AssetPromise_Material> activePromises = new Queue<AssetPromise_Material>();
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
 
         public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent)
@@ -22,7 +26,11 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
-            AssetPromiseKeeper_Material.i.Forget(promiseMaterial);
+
+            while (activePromises.Count > 0)
+            {
+                AssetPromiseKeeper_Material.i.Forget(activePromises.Dequeue());
+            }
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBMaterial model)
@@ -32,37 +40,76 @@ namespace DCL.ECSComponents
 
             lastModel = model;
 
-            AssetPromise_Material_Model? promiseModel = null;
-            AssetPromise_Material_Model.Texture? albedoTexture = CreateMaterialPromiseTextureModel(model.Texture, scene);
+            TextureUnion texture = model.Pbr != null ? model.Pbr.Texture : model.Unlit != null ? model.Unlit.Texture : null;
 
-            if (IsPbrMaterial(model))
+            AssetPromise_Material_Model promiseModel;
+            AssetPromise_Material_Model.Texture? albedoTexture = texture != null ? CreateMaterialPromiseTextureModel (
+                texture.GetTextureUrl(scene),
+                texture.GetWrapMode(),
+                texture.GetFilterMode()
+            ) : null;
+            
+            if (model.Pbr != null)
             {
-                AssetPromise_Material_Model.Texture? alphaTexture = CreateMaterialPromiseTextureModel(model.AlphaTexture, scene);
-                AssetPromise_Material_Model.Texture? emissiveTexture = CreateMaterialPromiseTextureModel(model.EmissiveTexture, scene);
-                AssetPromise_Material_Model.Texture? bumpTexture = CreateMaterialPromiseTextureModel(model.BumpTexture, scene);
+                AssetPromise_Material_Model.Texture? alphaTexture = model.Pbr.AlphaTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.AlphaTexture.GetTextureUrl(scene),
+                    model.Pbr.AlphaTexture.GetWrapMode(),
+                    model.Pbr.AlphaTexture.GetFilterMode()
+                ) : null;
+                
+                AssetPromise_Material_Model.Texture? emissiveTexture = model.Pbr.EmissiveTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.EmissiveTexture.GetTextureUrl(scene),
+                    model.Pbr.EmissiveTexture.GetWrapMode(),
+                    model.Pbr.EmissiveTexture.GetFilterMode()
+                ) : null;
+                
+                AssetPromise_Material_Model.Texture? bumpTexture = model.Pbr.BumpTexture != null ? CreateMaterialPromiseTextureModel (
+                    model.Pbr.BumpTexture.GetTextureUrl(scene),
+                    model.Pbr.BumpTexture.GetWrapMode(),
+                    model.Pbr.BumpTexture.GetFilterMode()
+                ) : null;
+                
                 promiseModel = CreatePBRMaterialPromiseModel(model, albedoTexture, alphaTexture, emissiveTexture, bumpTexture);
             }
-            else if (albedoTexture.HasValue)
+            else
             {
-                promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture.Value);
+                promiseModel = CreateBasicMaterialPromiseModel(model, albedoTexture);
             }
 
-            AssetPromise_Material prevPromise = promiseMaterial;
-
-            if (promiseModel.HasValue)
+            promiseMaterial = new AssetPromise_Material(promiseModel);
+            promiseMaterial.OnSuccessEvent += materialAsset =>
             {
-                promiseMaterial = new AssetPromise_Material(promiseModel.Value);
-                promiseMaterial.OnSuccessEvent += materialAsset =>
+                materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                 {
-                    materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
-                    {
-                        material = materialAsset.material
-                    });
-                };
-                AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
-            }
+                    material = materialAsset.material
+                });
 
-            AssetPromiseKeeper_Material.i.Forget(prevPromise);
+                // Run task to forget previous material after update to avoid forgetting a
+                // material that has not be changed from the renderers yet, since material change
+                // is done by a system during update
+                UniTask.RunOnThreadPool(async () =>
+                {
+                    await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+                    ForgetPreviousPromises(activePromises, materialAsset);
+                });
+            };
+            promiseMaterial.OnFailEvent += (material, exception) =>
+            {
+                ForgetPreviousPromises(activePromises, material);
+            };
+            activePromises.Enqueue(promiseMaterial);
+            AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
+        }
+
+        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
+        {
+            if (promises.Count <= 1)
+                return;
+
+            while (promises.Count > 1 && promises.Peek().asset != currentAppliedMaterial)
+            {
+                AssetPromiseKeeper_Material.i.Forget(promises.Dequeue());
+            }
         }
 
         private static AssetPromise_Material_Model CreatePBRMaterialPromiseModel(PBMaterial model,
@@ -76,36 +123,17 @@ namespace DCL.ECSComponents
                 model.GetEmissiveIntensity(), model.GetDirectIntensity());
         }
 
-        private static AssetPromise_Material_Model CreateBasicMaterialPromiseModel(PBMaterial model, AssetPromise_Material_Model.Texture albedoTexture)
+        private static AssetPromise_Material_Model CreateBasicMaterialPromiseModel(PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
         {
             return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest());
         }
 
-        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(PBMaterial.Types.Texture textureModel, IParcelScene scene)
+        private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(string textureUrl, UnityEngine.TextureWrapMode wrapMode, FilterMode filterMode)
         {
-            if (textureModel == null)
+            if (string.IsNullOrEmpty(textureUrl))
                 return null;
 
-            if (string.IsNullOrEmpty(textureModel.Src))
-                return null;
-
-            if (!scene.contentProvider.TryGetContentsUrl(textureModel.Src, out string url))
-            {
-                return null;
-            }
-
-            return new AssetPromise_Material_Model.Texture(url,
-                (UnityEngine.TextureWrapMode)textureModel.GetWrapMode(),
-                (UnityEngine.FilterMode)textureModel.GetFilterMode());
-        }
-
-        private static bool IsPbrMaterial(PBMaterial model)
-        {
-            return (model.AlphaTexture != null || model.BumpTexture != null || model.EmissiveTexture != null
-                    || model.HasGlossiness || model.HasMetallic || model.HasRoughness || model.HasDirectIntensity
-                    || model.HasEmissiveIntensity || model.HasSpecularIntensity
-                    || model.AlbedoColor != null || model.EmissiveColor != null || model.ReflectivityColor != null
-                    || model.HasTransparencyMode);
+            return new AssetPromise_Material_Model.Texture(textureUrl, wrapMode, filterMode);
         }
     }
 }

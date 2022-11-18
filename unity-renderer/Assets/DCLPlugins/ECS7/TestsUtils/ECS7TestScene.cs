@@ -19,6 +19,7 @@ public class ECS7TestScene : IParcelScene
     public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true) => _entityRemover(id);
     public Transform GetSceneTransform() => _go.transform;
     public ContentProvider contentProvider { get; } = new ContentProvider();
+    public bool isPersistent { set; get; } = false;
 
 // INTERNAL CONFIG FOR MOCKING    
     internal GameObject _go;
@@ -39,7 +40,6 @@ public class ECS7TestScene : IParcelScene
         return CreateEntity(id);
     }
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
-    bool IParcelScene.isPersistent => throw new NotImplementedException();
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
     string IParcelScene.GetSceneName()
@@ -47,7 +47,10 @@ public class ECS7TestScene : IParcelScene
         throw new NotImplementedException();
     }
     ISceneMetricsCounter IParcelScene.metricsCounter => throw new NotImplementedException();
-    public HashSet<Vector2Int> GetParcels() { throw new NotImplementedException(); }
+    public HashSet<Vector2Int> GetParcels()
+    {
+        throw new NotImplementedException();
+    }
     bool IParcelScene.IsInsideSceneBoundaries(Bounds objectBounds)
     {
         throw new NotImplementedException();

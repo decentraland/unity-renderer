@@ -15,6 +15,7 @@ public class MinimapHUDController : IHUD
     private Vector2Int homeCoords = new Vector2Int(0,0);
     private MinimapMetadataController metadataController;
     private IHomeLocationController locationController;
+    private BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
@@ -30,6 +31,7 @@ public class MinimapHUDController : IHUD
         this.locationController = locationController;
         if(metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
+        minimapVisible.OnChange += SetVisibility;
     }
 
     protected internal virtual MinimapHUDView CreateView() { return MinimapHUDView.Create(this); }
@@ -51,6 +53,7 @@ public class MinimapHUDController : IHUD
         
         if (metadataController != null)
             metadataController.OnHomeChanged -= SetNewHome;
+        minimapVisible.OnChange -= SetVisibility;
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
@@ -166,4 +169,7 @@ public class MinimapHUDController : IHUD
             UpdateSceneName(sceneInfo.name);
         }
     }
+    
+    private void SetVisibility(bool current, bool _) => 
+        SetVisibility(current);
 }

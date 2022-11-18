@@ -57,6 +57,6 @@ Material:
     - _PatternSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
     - _RefractionSpeed: {r: 0.01, g: 0.02, b: 0, a: 0}
     - _RevealNormal: {r: 0, g: -1, b: 0, a: 0}
-    - _RevealPosition: {r: 0, g: 2, b: 0, a: 0}
+    - _RevealPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SecondColor: {r: 0, g: 3.9999995, b: 3.7699447, a: 0.972549}
   m_BuildTextureStacks: []

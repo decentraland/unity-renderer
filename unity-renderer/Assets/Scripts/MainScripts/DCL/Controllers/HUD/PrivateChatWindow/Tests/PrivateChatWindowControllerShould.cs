@@ -32,7 +32,7 @@ public class PrivateChatWindowControllerShould
         internalChatView = Substitute.For<IChatHUDComponentView>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         view.ChatHUD.Returns(internalChatView);
-        
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         friendsController = Substitute.For<IFriendsController>();
 
@@ -41,8 +41,6 @@ public class PrivateChatWindowControllerShould
         GivenFriend(BLOCKED_FRIEND_ID, "blockedFriendName", PresenceStatus.OFFLINE);
 
         chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedEntries().ReturnsForAnyArgs(new List<ChatMessage>());
-        chatController.GetPrivateAllocatedEntriesByUser(Arg.Any<string>()).ReturnsForAnyArgs(new List<ChatMessage>());
 
         mouseCatcher = Substitute.For<IMouseCatcher>();
         controller = new PrivateChatWindowController(
@@ -50,7 +48,6 @@ public class PrivateChatWindowControllerShould
             userProfileBridge,
             chatController,
             friendsController,
-            ScriptableObject.CreateInstance<InputAction_Trigger>(),
             socialAnalytics,
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>());
@@ -66,7 +63,7 @@ public class PrivateChatWindowControllerShould
     public void ClearAllMessagesWhenInitialize()
     {
         WhenControllerInitializes(FRIEND_ID);
-        
+
         internalChatView.Received(1).ClearAllEntries();
     }
 
@@ -79,9 +76,9 @@ public class PrivateChatWindowControllerShould
         var msg2 = new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "message2");
         var msg3 = new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "message3");
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg1);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg2);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg3);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg2});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg3});
 
         internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
@@ -122,7 +119,7 @@ public class PrivateChatWindowControllerShould
         WhenControllerInitializes(FRIEND_ID);
 
         var eventCalled = false;
-        controller.OnPressBack += () => eventCalled = true;
+        controller.OnBack += () => eventCalled = true;
 
         controller.SetVisibility(true);
         view.OnPressBack += Raise.Event<Action>();
@@ -156,7 +153,7 @@ public class PrivateChatWindowControllerShould
         controller.SetVisibility(false);
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        
+
         chatController.ReceivedWithAnyArgs(1).GetPrivateMessages(default, default, default);
     }
 
@@ -167,17 +164,17 @@ public class PrivateChatWindowControllerShould
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
         view.IsActive.Returns(info => isViewActive);
-        
+
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        
+
         internalChatView.Received(1).FocusInputField();
         view.Received().Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
         view.Received(1).Show();
         Assert.IsTrue(isViewActive);
         chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
     }
-    
+
     [Test]
     public void Hide()
     {
@@ -185,87 +182,36 @@ public class PrivateChatWindowControllerShould
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
         view.IsActive.Returns(info => isViewActive);
-        
+
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
         controller.SetVisibility(false);
-        
+
         internalChatView.Received(1).UnfocusInputField();
         view.Received(1).Hide();
         Assert.IsFalse(isViewActive);
     }
 
     [Test]
-    public void ActivatePreviewMode()
+    public void HideViewWhenMouseIsLocked()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.ActivatePreview();
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
-    }
-
-    [Test]
-    public void ActivatePreviewModeWhenMouseIsLocked()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-        controller.SetVisibility(true);
+        view.IsActive.Returns(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+
+        view.Received(1).Hide();
+        internalChatView.Received(1).UnfocusInputField();
     }
 
     [Test]
-    public void DeactivatePreviewMode()
+    public void ActivatePanel()
     {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        controller.DeactivatePreview();
-        
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
-    }
 
-    [Test]
-    public void DeactivatePreviewModeWhenInputFieldIsSelected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldSelected += Raise.Event<Action>();
-        
-        view.Received(1).DeactivatePreview();
-        internalChatView.Received(1).DeactivatePreview();
-        Assert.IsFalse(isPreviewMode);
-    }
-
-    [UnityTest]
-    public IEnumerator ActivatePreviewModeAfterSomeTimeWhenInputFieldIsDeselected()
-    {
-        var isPreviewMode = false;
-        controller.OnPreviewModeChanged += b => isPreviewMode = b;
-        view.IsFocused.Returns(false);
-        WhenControllerInitializes(FRIEND_ID);
-
-        internalChatView.OnInputFieldDeselected += Raise.Event<Action>();
-        yield return new WaitForSeconds(4f);
-        
-        view.Received(1).ActivatePreview();
-        internalChatView.Received(1).ActivatePreview();
-        Assert.IsTrue(isPreviewMode);
+        view.Received(1).Show();
     }
 
     [Test]
@@ -286,8 +232,6 @@ public class PrivateChatWindowControllerShould
     public void RequestOldConversationsCorrectly()
     {
         WhenControllerInitializes(FRIEND_ID);
-        controller.ConversationUserId = FRIEND_ID;
-        GivenPrivateMessages(FRIEND_ID, 3);
 
         controller.RequestOldConversations();
 
@@ -295,7 +239,31 @@ public class PrivateChatWindowControllerShould
         chatController.Received(1).GetPrivateMessages(
             FRIEND_ID,
             PrivateChatWindowController.USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE,
-            Arg.Any<string>());
+            null);
+    }
+
+    [Test]
+    public void MarkAsSeenOnlyOnceWhenManyMessagesReceived()
+    {
+        WhenControllerInitializes(FRIEND_ID);
+        chatController.ClearReceivedCalls();
+        view.IsActive.Returns(true);
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+        {
+            new ChatMessage(
+                "msg1", ChatMessage.Type.PRIVATE, FRIEND_ID, "hey", 100)
+            {
+                recipient = OWN_USER_ID
+            },
+            new ChatMessage(
+                "msg2", ChatMessage.Type.PRIVATE, FRIEND_ID, "hey", 101)
+            {
+                recipient = OWN_USER_ID
+            }
+        });
+
+        chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
     }
 
     private void WhenControllerInitializes(string friendId)
@@ -315,7 +283,7 @@ public class PrivateChatWindowControllerShould
 
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(ownProfileModel);
-        
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);
@@ -335,16 +303,5 @@ public class PrivateChatWindowControllerShould
             presence = presence,
             friendshipStatus = FriendshipStatus.FRIEND,
         });
-    }
-    
-    private void GivenPrivateMessages(string friendId, int count)
-    {
-        var messages = new List<ChatMessage>();
-        for (var i = 0; i < count; i++)
-            messages.Add(new ChatMessage(Guid.NewGuid().ToString(), ChatMessage.Type.PRIVATE, friendId, $"message{i}")
-                {recipient = friendId});
-        
-        chatController.GetAllocatedEntries().ReturnsForAnyArgs(messages);
-        chatController.GetPrivateAllocatedEntriesByUser(friendId).ReturnsForAnyArgs(messages);
     }
 }

@@ -153,6 +153,7 @@ namespace DCL.Rendering
         {
             Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
             float currentStartTime = Time.realtimeSinceStartup;
+
             foreach (Renderer r in renderers)
             {
                 if (r == null)

@@ -67,7 +67,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         });
     }
 
-    public bool IsFriend(string userId) => friends.ContainsKey(userId);
+    public bool IsFriend(string userId) => friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
 
     public void RemoveFriend(string friendId)
     {

@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using DCL.Chat.HUD;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
@@ -40,6 +40,24 @@ public class WorldChatWindowComponentViewShould
     }
 
     [Test]
+    public void ShowChannelsLoading()
+    {
+        view.ShowChannelsLoading();
+
+        Assert.IsTrue(view.channelsLoadingContainer.activeSelf);
+        Assert.IsFalse(view.publicChannelList.gameObject.activeSelf);
+    }
+
+    [Test]
+    public void HideChannelsLoading()
+    {
+        view.HideChannelsLoading();
+
+        Assert.IsFalse(view.channelsLoadingContainer.activeSelf);
+        Assert.IsTrue(view.publicChannelList.gameObject.activeSelf);
+    }
+
+    [Test]
     public void ShowPrivateChatsLoading()
     {
         view.ShowPrivateChatsLoading();
@@ -76,6 +94,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (1)", view.directChatsHeaderLabel.text);
+        Assert.AreEqual("Channels (0)", view.channelsHeaderLabel.text);
         Assert.AreEqual("Results (0)", view.searchResultsHeaderLabel.text);
         Assert.IsNotNull(view.directChatList.Get(userId));
     }
@@ -92,6 +111,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (2)", view.directChatsHeaderLabel.text);
+        Assert.AreEqual("Channels (0)", view.channelsHeaderLabel.text);
         Assert.AreEqual("Results (0)", view.searchResultsHeaderLabel.text);
         Assert.IsNotNull(view.directChatList.Get("pepe"));
         Assert.IsNotNull(view.directChatList.Get("bleh"));
@@ -149,16 +169,19 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (1)", view.directChatsHeaderLabel.text);
+        Assert.AreEqual("Channels (0)", view.channelsHeaderLabel.text);
         Assert.AreEqual("Results (0)", view.searchResultsHeaderLabel.text);
         Assert.IsNotNull(view.directChatList.Get(userId));
     }
 
-    [Test]
-    public void CreatePublicChannel()
+    [UnityTest]
+    public IEnumerator CreatePublicChannel()
     {
         const string channelId = "nearby";
 
         GivenPublicChannel(channelId, "nearby");
+        
+        yield return null;
 
         Assert.AreEqual(0, view.directChatList.Count());
         Assert.AreEqual(0, view.searchResultsList.Count());
@@ -166,11 +189,13 @@ public class WorldChatWindowComponentViewShould
         Assert.IsNotNull(view.publicChannelList.Get(channelId));
     }
     
-    [Test]
-    public void CreateManyPublicChannels()
+    [UnityTest]
+    public IEnumerator CreateManyPublicChannels()
     {
         GivenPublicChannel("nearby", "nearby");
         GivenPublicChannel("nfts", "nfts");
+
+        yield return null;
 
         Assert.AreEqual(0, view.directChatList.Count());
         Assert.AreEqual(0, view.searchResultsList.Count());
@@ -184,18 +209,18 @@ public class WorldChatWindowComponentViewShould
     {
         const string channelId = "nearby";
 
-        var model = new PublicChatChannelModel(channelId, "nearby", "any description");
-        view.SetPublicChannel(model);
+        var model = new PublicChatModel(channelId, "nearby", "any description", true, 0, false, true);
+        view.SetPublicChat(model);
 
         yield return null;
 
         model.name = "hoho";
-        view.SetPublicChannel(model);
+        view.SetPublicChat(model);
 
         yield return null;
 
         model.description = "another description";
-        view.SetPublicChannel(model);
+        view.SetPublicChat(model);
 
         yield return null;
 
@@ -205,13 +230,15 @@ public class WorldChatWindowComponentViewShould
         Assert.IsNotNull(view.publicChannelList.Get(channelId));
     }
 
-    [Test]
-    public void TriggerOpenPublicChannel()
+    [UnityTest]
+    public IEnumerator TriggerOpenPublicChannel()
     {
         const string expectedChannelId = "nearby";
         var channelId = "";
-        view.OnOpenPublicChannel += s => channelId = s;
-        GivenPublicChannel(expectedChannelId, "nearby");
+        view.OnOpenPublicChat += s => channelId = s;
+        GivenPublicChannel(expectedChannelId, expectedChannelId);
+
+        yield return null;
 
         view.publicChannelList.Get(expectedChannelId).openChatButton.onClick.Invoke();
 
@@ -248,7 +275,7 @@ public class WorldChatWindowComponentViewShould
     public void TriggerSearchChannel()
     {
         var search = "";
-        view.OnSearchChannelRequested += s => search = s;
+        view.OnSearchChatRequested += s => search = s;
 
         view.searchBar.SubmitSearch("hello");
 
@@ -275,6 +302,7 @@ public class WorldChatWindowComponentViewShould
     public void UpdateHeadersOnStart()
     {
         Assert.AreEqual("Direct Messages (0)", view.directChatsHeaderLabel.text);
+        Assert.AreEqual("Channels (0)", view.channelsHeaderLabel.text);
         Assert.AreEqual("Results (0)", view.searchResultsHeaderLabel.text);
     }
 
@@ -286,6 +314,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual("5 chats hidden. Use the search bar to find them or click below to show more.",
             view.loadMoreEntriesLabel.text);
         Assert.IsTrue(view.loadMoreEntriesContainer.activeSelf);
+        Assert.IsFalse(view.emptyDirectChatsContainer.activeSelf);
     }
 
     [Test]
@@ -294,6 +323,7 @@ public class WorldChatWindowComponentViewShould
         view.HideMoreChatsToLoadHint();
 
         Assert.IsFalse(view.loadMoreEntriesContainer.activeSelf);
+        Assert.IsTrue(view.emptyDirectChatsContainer.activeSelf);
     }
 
     [UnityTest]
@@ -318,7 +348,7 @@ public class WorldChatWindowComponentViewShould
             user = GivenProfile("pepe"),
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
         });
-        view.SetPublicChannel(new PublicChatChannelModel("nearby", "nearby", ""));
+        view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false, true));
 
         yield return null;
         
@@ -332,6 +362,7 @@ public class WorldChatWindowComponentViewShould
         Assert.IsTrue(view.searchResultsHeader.activeSelf);
         Assert.IsTrue(view.searchResultsList.isVisible);
         Assert.IsFalse(view.directChannelHeader.activeSelf);
+        Assert.IsFalse(view.channelsHeader.activeSelf);
         Assert.IsFalse(view.directChatList.isVisible);
         Assert.IsFalse(view.publicChannelList.isVisible);
     }
@@ -346,6 +377,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(3, view.directChatList.Count());
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (3)", view.directChatsHeaderLabel.text);
+        Assert.AreEqual("Channels (1)", view.channelsHeaderLabel.text);
         Assert.IsNotNull(view.directChatList.Get("genio"));
         Assert.IsNotNull(view.directChatList.Get("pepe"));
         Assert.IsNotNull(view.directChatList.Get("bleh"));
@@ -353,6 +385,7 @@ public class WorldChatWindowComponentViewShould
         Assert.IsFalse(view.searchResultsHeader.activeSelf);
         Assert.IsFalse(view.searchResultsList.isVisible);
         Assert.IsTrue(view.directChannelHeader.activeSelf);
+        Assert.IsTrue(view.channelsHeader.activeSelf);
         Assert.IsTrue(view.directChatList.isVisible);
         Assert.IsTrue(view.publicChannelList.isVisible);
     }
@@ -406,6 +439,63 @@ public class WorldChatWindowComponentViewShould
         Assert.IsTrue(view.searchLoading.activeSelf);
     }
 
+    [UnityTest]
+    public IEnumerator LeaveChannel()
+    {
+        var expectedChannelId = "channelId";
+        var leaveChannelId = "";
+        view.OnLeaveChannel += s => leaveChannelId = s;
+        GivenPublicChannel(expectedChannelId, "hehe");
+
+        yield return null;
+
+        var entry = view.publicChannelList.Get(expectedChannelId);
+        entry.optionsButton.onClick.Invoke();
+        view.channelContextualMenu.leaveButton.onClick.Invoke();
+
+        Assert.AreEqual(expectedChannelId, leaveChannelId);
+    }
+
+    [Test]
+    public void ShowConnectWallet()
+    {
+        view.ShowConnectWallet();
+        
+        Assert.IsTrue(view.connectWalletContainer.activeSelf);
+        Assert.IsFalse(view.searchBarContainer.activeSelf);
+    }
+
+    [Test]
+    public void HideConnectWallet()
+    {
+        view.HideConnectWallet();
+        
+        Assert.IsFalse(view.connectWalletContainer.activeSelf);
+        Assert.IsTrue(view.searchBarContainer.activeSelf);
+    }
+
+    [Test]
+    public void TriggerSignUpWhenConnectWalletButtonClicks()
+    {
+        var called = false;
+        view.OnSignUp += () => called = true; 
+        
+        view.connectWalletButton.onClick.Invoke();
+        
+        Assert.IsTrue(called);
+    }
+
+    [Test]
+    public void TriggerWalletReadmeWhenButtonClicks()
+    {
+        var called = false;
+        view.OnRequireWalletReadme += () => called = true;
+
+        view.whatIsWalletButton.onClick.Invoke();
+
+        Assert.IsTrue(called);
+    }
+
     private void GivenPrivateChat(string userId)
     {
         var profile = GivenProfile(userId);
@@ -421,7 +511,7 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPublicChannel(string channelId, string name)
     {
-        view.SetPublicChannel(new PublicChatChannelModel(channelId, name, "any description"));
+        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", true, 0, false, true));
     }
 
     private UserProfile GivenProfile(string userId)

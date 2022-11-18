@@ -44,9 +44,15 @@ public class ECSTestScene : MonoBehaviour
 
         PBMaterial model = new PBMaterial()
         {
-            Texture = new PBMaterial.Types.Texture()
+            Pbr = new PBMaterial.Types.PbrMaterial()
             {
-                Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                Texture = new DCL.ECSComponents.TextureUnion()
+                {
+                    Texture = new DCL.ECSComponents.Texture()
+                    {
+                        Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
+                    }
+                }
             }
         };
 

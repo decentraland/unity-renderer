@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
+using DCL.Chat.HUD;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
@@ -59,7 +60,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         return base.Remove(key);
     }
 
-    public void Set(string userId, PrivateChatEntry.PrivateChatEntryModel entryModel)
+    public void Set(string userId, PrivateChatEntryModel entryModel)
     {
         if (!Contains(entryModel.userId))
             CreateEntry(userId);

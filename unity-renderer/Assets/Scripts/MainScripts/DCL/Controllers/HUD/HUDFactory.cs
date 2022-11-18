@@ -1,10 +1,14 @@
 using DCL;
+using DCL.Browser;
+using DCL.Chat;
+using DCL.Chat.Channels;
+using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
-using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -35,17 +39,42 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
-                hudElement = new PlayerInfoCardHUDController(
-                    FriendsController.i,
-                    Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                    new UserProfileWebInterfaceBridge(),
-                    new WearablesCatalogControllerBridge(),
-                    new SocialAnalytics(
-                        Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
-                    ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i,
-                    CommonScriptableObjects.playerInfoCardVisibleState);
+                if(DataStore.i.HUDs.enableNewPassport.Get())
+                {
+                    //TODO: this is temporary, once the old passport flow is removed 
+                    //this can be moved to the passport plugin
+                    PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
+                    hudElement = new PlayerPassportHUDController(
+                        view,
+                        new PassportPlayerInfoComponentController(
+                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"), 
+                            view.PlayerInfoView, 
+                            DataStore.i, 
+                            ProfanityFilterSharedInstances.regexFilter, 
+                            FriendsController.i, 
+                            new UserProfileWebInterfaceBridge()),
+                        new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
+                        new PassportNavigationComponentController(view.PassportNavigationView),
+                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                        new UserProfileWebInterfaceBridge(),
+                        new SocialAnalytics(
+                            Environment.i.platform.serviceProviders.analytics,
+                            new UserProfileWebInterfaceBridge()));
+                }
+                else
+                {
+                    hudElement = new PlayerInfoCardHUDController(
+                        FriendsController.i,
+                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                        new UserProfileWebInterfaceBridge(),
+                        new WearablesCatalogControllerBridge(),
+                        new SocialAnalytics(
+                            Environment.i.platform.serviceProviders.analytics,
+                            new UserProfileWebInterfaceBridge()),
+                        ProfanityFilterSharedInstances.regexFilter,
+                        DataStore.i,
+                        CommonScriptableObjects.playerInfoCardVisibleState);
+                }
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
@@ -60,13 +89,21 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    ChatController.i);
+                    ChatController.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
-                    ChatController.i);
+                    ChatController.i,
+                    DataStore.i,
+                    SceneReferences.i.mouseCatcher,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
+                    new WebInterfaceBrowserBridge());
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -74,15 +111,14 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     ChatController.i,
                     FriendsController.i,
-                    Resources.Load<InputAction_Trigger>("CloseWindow"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
-            case HUDElementID.PUBLIC_CHAT_CHANNEL:
-                hudElement = new PublicChatChannelController(
+            case HUDElementID.PUBLIC_CHAT:
+                hudElement = new PublicChatWindowController(
                     ChatController.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
@@ -90,8 +126,36 @@ public class HUDFactory : IHUDFactory
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
+            case HUDElementID.CHANNELS_CHAT:
+                hudElement = new ChatChannelHUDController(
+                    DataStore.i,
+                    new UserProfileWebInterfaceBridge(),
+                    ChatController.i,
+                    SceneReferences.i.mouseCatcher,
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    ProfanityFilterSharedInstances.regexFilter);
+                break;
+            case HUDElementID.CHANNELS_SEARCH:
+                hudElement = new SearchChannelsWindowController(
+                    ChatController.i,
+                    SceneReferences.i.mouseCatcher,
+                    DataStore.i,
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()),
+                    Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
+                break;
+            case HUDElementID.CHANNELS_CREATE:
+                hudElement = new CreateChannelWindowController(ChatController.i, DataStore.i);
+                break;
+            case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
+                hudElement = new LeaveChannelConfirmationWindowController(ChatController.i);
+                break;
             case HUDElementID.TASKBAR:
-                hudElement = new TaskbarHUDController();
+                hudElement = new TaskbarHUDController(ChatController.i, FriendsController.i);
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();
@@ -116,7 +180,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     DataStore.i,
-                    Settings.i);
+                    Settings.i,
+                    SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();

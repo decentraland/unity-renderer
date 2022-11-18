@@ -329,6 +329,8 @@ GameObject:
   - component: {fileID: 7607127335931061082}
   - component: {fileID: 157340988008856442}
   - component: {fileID: 9029093572074442589}
+  - component: {fileID: 1486261044637553431}
+  - component: {fileID: 4469379106547376070}
   m_Layer: 5
   m_Name: _AvatarModifierAreaFeedbackHUD
   m_TagString: Untagged
@@ -452,6 +454,30 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &1486261044637553431
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759081851182207893}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &4469379106547376070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759081851182207893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8523391416563304957
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: wave
@@ -35,6 +36,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 544b36ccadf87a144afb72046e48bc03, type: 2}
     maleAnimation: {fileID: 7400000, guid: 5c74b911f7b8dd4439007b10d3321304, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -42,6 +44,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: fistpump
@@ -57,6 +60,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: f11b8366219e6df4a9eee9498a8ace47, type: 2}
     maleAnimation: {fileID: 7400000, guid: 56ec5d1dfc9e9ee4eacb6dac46499ddd, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -64,6 +68,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: robot
@@ -79,6 +84,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
     maleAnimation: {fileID: 7400000, guid: f45ea28ca4b4286449c5f6197d2b949e, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -86,6 +92,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: raiseHand
@@ -101,6 +108,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 2bc887428537da942a51e429ecc8d964, type: 2}
     maleAnimation: {fileID: 7400000, guid: b9c1a6c391fcafc4ab9f7c5a5160adf9, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -108,6 +116,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: clap
@@ -123,6 +132,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: a9e42f25626414f52bac71a3fbae289e, type: 2}
     maleAnimation: {fileID: 7400000, guid: 49d9b4849d6d849f4a75d0df1257548e, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -130,6 +140,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: money
@@ -145,6 +156,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: ce6c0aea0eee24c19a690a636036111d, type: 2}
     maleAnimation: {fileID: 7400000, guid: b58e9d14f849d4a0495e2f69ebcb53ce, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -152,6 +164,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: kiss
@@ -167,6 +180,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: d83509ddd9d384358a7ad3c186542046, type: 2}
     maleAnimation: {fileID: 7400000, guid: f62348884a81444b391ee2b6be68bd05, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -174,6 +188,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: hammer
@@ -189,6 +204,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
     maleAnimation: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -196,6 +212,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: tik
@@ -211,6 +228,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
     maleAnimation: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -218,6 +236,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: tektonik
@@ -233,6 +252,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
     maleAnimation: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -240,6 +260,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: dontsee
@@ -255,6 +276,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 9475b3f1b6d0bec4199599d7e60d4786, type: 2}
     maleAnimation: {fileID: 7400000, guid: 9475b3f1b6d0bec4199599d7e60d4786, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -262,6 +284,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: handsair
@@ -277,6 +300,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 0766769861ef79f4a8290532f12dba22, type: 2}
     maleAnimation: {fileID: 7400000, guid: 0766769861ef79f4a8290532f12dba22, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -284,6 +308,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: shrug
@@ -299,6 +324,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 35376f228f19d0a41b260d754ef21ae0, type: 2}
     maleAnimation: {fileID: 7400000, guid: 35376f228f19d0a41b260d754ef21ae0, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -306,6 +332,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: disco
@@ -321,6 +348,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 3e0e78f668397014a9fe1da22b9d34b7, type: 2}
     maleAnimation: {fileID: 7400000, guid: 3e0e78f668397014a9fe1da22b9d34b7, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -328,6 +356,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: dab
@@ -343,6 +372,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: fa1d4a4f93f7f4041bd6cba468cf5cce, type: 2}
     maleAnimation: {fileID: 7400000, guid: d46b1af13bd8fd94eabb1ee09e49475e, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -350,6 +380,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: headexplode
@@ -365,6 +396,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 2fbc1acf78dbfae4cbc82cfcaa2d6242, type: 2}
     maleAnimation: {fileID: 7400000, guid: e9118272c0ad59d418b397e5951b80aa, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -372,6 +404,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 1
     id: dance
@@ -387,6 +420,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 2b13c53240afd3544ab8ae540126186e, type: 2}
     maleAnimation: {fileID: 7400000, guid: 161fa66b8f65fa648ac7772a609280aa, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -394,6 +428,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: snowfall
@@ -409,6 +444,7 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 55d92aab28fd8aa4bb5276b859402565, type: 2}
     maleAnimation: {fileID: 7400000, guid: dfed002d5efb1e040b9b5ce6caae8305, type: 2}
+    dontShowInBackpack: 0
   - data:
       representations: []
       category: 
@@ -416,6 +452,7 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      loop: 0
     emoteDataV0:
       loop: 0
     id: hohoho
@@ -431,3 +468,292 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: c9d790909990ed64ca2326c86e1c4033, type: 2}
     maleAnimation: {fileID: 7400000, guid: 7ce91a41fdad8e648b9d5d46ec1f5fba, type: 2}
+    dontShowInBackpack: 0
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Accessories_v01
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Accessories_v01
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 45d3b70a16ff3bd42979469a84160b7e, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 45d3b70a16ff3bd42979469a84160b7e, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Accessories_v02
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Accessories_v02
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
+    maleAnimation: {fileID: 7400000, guid: a3c3983f018d1df4a8b0b6cc3e5d00d7, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Accessories_v03
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Accessories_v03
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 0ced2ca364b8ee04895e3121897e60ad, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 0ced2ca364b8ee04895e3121897e60ad, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Lower_v01
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Shoes_v01
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: e20f3d4dba221fc42ae5cd827c7066f7, type: 2}
+    maleAnimation: {fileID: 7400000, guid: e20f3d4dba221fc42ae5cd827c7066f7, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Lower_v02
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Lower_v02
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 2872158ae1038f44caeb563cd7907727, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 2872158ae1038f44caeb563cd7907727, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Lower_v03
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Lower_v03
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 5b7834be0b67e164a86e1a656f2fecfa, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 5b7834be0b67e164a86e1a656f2fecfa, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Shoes_v01
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Shoes_v01
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 8cfedfa628a166447a1f8f51d691d8cd, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 8cfedfa628a166447a1f8f51d691d8cd, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Shoes_v02
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Shoes_v02
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: a721652055da83a4f9b45006368e02ab, type: 2}
+    maleAnimation: {fileID: 7400000, guid: a721652055da83a4f9b45006368e02ab, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Upper_v01
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Upper_v01
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: b36c7fb112becf140b38c2e92201c94e, type: 2}
+    maleAnimation: {fileID: 7400000, guid: b36c7fb112becf140b38c2e92201c94e, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Upper_v02
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Upper_v02
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 95c3c3e1cf152d244b537c3683352050, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 95c3c3e1cf152d244b537c3683352050, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Outfit_Upper_v03
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Outfit_Upper_v03
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 95355e76e9a17b44a9f6b63cb66524b7, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 95355e76e9a17b44a9f6b63cb66524b7, type: 2}
+    dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: Spawn_Pose_v01
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Ho Ho Ho!
+    thumbnail: 
+    thumbnailSprite: {fileID: 0}
+    rarity: 
+    description: Spawn_Pose_v01
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
+    dontShowInBackpack: 1
