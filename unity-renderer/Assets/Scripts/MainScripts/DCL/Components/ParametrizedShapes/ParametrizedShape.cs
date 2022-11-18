@@ -229,7 +229,7 @@ namespace DCL.Components
             if (!attachedRendereables.ContainsKey(entity))
                 return;
 
-            DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, attachedRendereables[entity]);
+            DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.sceneNumber, attachedRendereables[entity]);
             attachedRendereables.Remove(entity);
         }
 
@@ -253,7 +253,7 @@ namespace DCL.Components
             newRendereable.ownerId = entity.entityId;
 
             attachedRendereables.Add(entity, newRendereable);
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, newRendereable);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, newRendereable);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Tests
 {
     public class CrdtExecutorsManagerShould
     {
-        private Dictionary<string, ICRDTExecutor> crdtExecutors;
+        private Dictionary<int, ICRDTExecutor> crdtExecutors;
         private ECSComponentsManager componentsManager;
         private ISceneController sceneController;
         private IWorldState worldState;
@@ -25,7 +25,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            crdtExecutors = new Dictionary<string, ICRDTExecutor>();
+            crdtExecutors = new Dictionary<int, ICRDTExecutor>();
             componentsManager = new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
             rpcCrdtServiceContext = new CRDTServiceContext();
             sceneController = Substitute.For<ISceneController>();
@@ -44,9 +44,9 @@ namespace Tests
         [Test]
         public void DisposeCorrectly()
         {
-            crdtExecutors.Add("1", new CRDTExecutor(testUtils.CreateScene("1"), componentsManager));
-            crdtExecutors.Add("2", new CRDTExecutor(testUtils.CreateScene("2"), componentsManager));
-            crdtExecutors.Add("3", new CRDTExecutor(testUtils.CreateScene("3"), componentsManager));
+            crdtExecutors.Add(1, new CRDTExecutor(testUtils.CreateScene(1), componentsManager));
+            crdtExecutors.Add(2, new CRDTExecutor(testUtils.CreateScene(2), componentsManager));
+            crdtExecutors.Add(3, new CRDTExecutor(testUtils.CreateScene(3), componentsManager));
 
             executorsManager.Dispose();
             Assert.AreEqual(0, crdtExecutors.Count);
@@ -55,10 +55,10 @@ namespace Tests
         [Test]
         public void RemoveCrdtExecutorOnSceneUnload()
         {
-            const string sceneId = "temptation";
-            IParcelScene scene = testUtils.CreateScene(sceneId);
+            const int sceneNumber = 666;
+            IParcelScene scene = testUtils.CreateScene(sceneNumber);
 
-            crdtExecutors.Add(sceneId, new CRDTExecutor(scene, componentsManager));
+            crdtExecutors.Add(sceneNumber, new CRDTExecutor(scene, componentsManager));
 
             sceneController.OnSceneRemoved += Raise.Event<Action<IParcelScene>>(scene);
             Assert.AreEqual(0, crdtExecutors.Count);
@@ -67,19 +67,19 @@ namespace Tests
         [Test]
         public void IgnoreCrdtMessageWhenSceneNotLoaded()
         {
-            const string sceneId = "temptation";
-            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneId, new CRDTMessage());
-            LogAssert.Expect(LogType.Error, $"CrdtExecutor not found for sceneId {sceneId}");
+            const int sceneNumber = 666;
+            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, new CRDTMessage());
+            LogAssert.Expect(LogType.Error, $"CrdtExecutor not found for sceneNumber {sceneNumber}");
         }
 
         [Test]
         public void ReceiveCrdtMessage()
         {
-            const string sceneId = "temptation";
-            ECS7TestScene scene = testUtils.CreateScene(sceneId);
+            const int sceneNumber = 666;
+            ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
 
-            worldState.TryGetScene(sceneId, out Arg.Any<IParcelScene>())
+            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
                       .Returns(param =>
                       {
                           param[1] = scene;
@@ -94,19 +94,19 @@ namespace Tests
                 key2 = 2
             };
 
-            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneId, crdtMessage);
-            CRDTMessage crtState = crdtExecutors[sceneId].crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
+            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage);
+            CRDTMessage crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
             AssertCrdtMessageEqual(crdtMessage, crtState);
         }
 
         [Test]
         public void UseCachedExecutorWhenSeveralMessagesFromSameScene()
         {
-            const string sceneId = "temptation";
-            ECS7TestScene scene = testUtils.CreateScene(sceneId);
+            const int sceneNumber = 666;
+            ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
 
-            worldState.TryGetScene(sceneId, out Arg.Any<IParcelScene>())
+            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
                       .Returns(param =>
                       {
                           param[1] = scene;
@@ -130,12 +130,12 @@ namespace Tests
             };
 
             // Send first message
-            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneId, crdtMessage1);
-            ICRDTExecutor sceneExecutor = crdtExecutors[sceneId];
+            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage1);
+            ICRDTExecutor sceneExecutor = crdtExecutors[sceneNumber];
 
             // Clear executors dictionary and make worldState.TryGetScene assert
             crdtExecutors.Clear();
-            worldState.TryGetScene(sceneId, out Arg.Any<IParcelScene>())
+            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
                       .Returns(param =>
                       {
                           Assert.Fail("this shouldn't be called");
@@ -143,7 +143,7 @@ namespace Tests
                       });
 
             // Send second message for same scene
-            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneId, crdtMessage2);
+            rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage2);
 
             CRDTMessage crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.key1, crdtMessage1.key2);
             CRDTMessage crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.key1, crdtMessage2.key2);

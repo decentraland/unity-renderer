@@ -109,7 +109,7 @@ namespace DCLPlugins.ECSComponents.Raycast
             }
 
             componentWriter.PutComponent(
-                scene.sceneData.id, entity.entityId, 
+                scene.sceneData.sceneNumber, entity.entityId, 
                 ComponentID.RAYCAST_RESULT, 
                 result, 
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE

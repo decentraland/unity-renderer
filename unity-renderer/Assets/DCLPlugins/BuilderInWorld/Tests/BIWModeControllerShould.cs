@@ -47,6 +47,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetFirstPersonMode()
     {
         //Arrange
@@ -61,6 +62,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetGodMode()
     {
         //Arrange
@@ -75,6 +77,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InactiveMode()
     {
         //Arrange

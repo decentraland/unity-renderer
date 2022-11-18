@@ -34,7 +34,7 @@ namespace Tests
         {
             yield return UniTask.ToCoroutine(async () =>
             {
-                const string SCENE_ID = "temptation";
+                const int SCENE_NUMBER = 666;
                 const int ENTITY_ID = 500;
                 const int COMPONENT_ID = ComponentID.MESH_RENDERER;
                 IMessage COMPONENT_DATA = new PBMeshRenderer()
@@ -65,9 +65,9 @@ namespace Tests
                     context.crdtContext.MessagingControllersManager = Environment.i.messaging.manager;
 
                     TestClient testClient = await TestClient.Create(clientTransport, CRDTServiceCodeGen.ServiceName);
-                    await LoadScene(SCENE_ID).ToCoroutine();
+                    await LoadScene(SCENE_NUMBER).ToCoroutine();
 
-                    IParcelScene scene = Environment.i.world.state.GetScene(SCENE_ID);
+                    IParcelScene scene = Environment.i.world.state.GetScene(SCENE_NUMBER);
                     Assert.NotNull(scene);
 
                     CRDTMessage crdtCreateBoxMessage = new CRDTMessage()
@@ -80,7 +80,7 @@ namespace Tests
 
                     await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
                     {
-                        SceneId = SCENE_ID,
+                        SceneNumber = SCENE_NUMBER,
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtCreateBoxMessage))
                     });
 
@@ -91,10 +91,10 @@ namespace Tests
                     Assert.IsTrue(component.HasComponent(scene, entity));
 
                     // Do hot reload
-                    await UnloadScene(SCENE_ID);
-                    await LoadScene(SCENE_ID);
+                    await UnloadScene(SCENE_NUMBER);
+                    await LoadScene(SCENE_NUMBER);
 
-                    scene = Environment.i.world.state.GetScene(SCENE_ID);
+                    scene = Environment.i.world.state.GetScene(SCENE_NUMBER);
                     Assert.NotNull(scene);
 
                     crdtCreateBoxMessage = new CRDTMessage()
@@ -107,7 +107,7 @@ namespace Tests
 
                     await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
                     {
-                        SceneId = SCENE_ID,
+                        SceneNumber = SCENE_NUMBER,
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtCreateBoxMessage))
                     });
 
@@ -133,7 +133,7 @@ namespace Tests
         private static ECSComponentsManager LoadEcs7Dependencies()
         {
             ISceneController sceneController = Environment.i.world.sceneController;
-            Dictionary<string, ICRDTExecutor> crdtExecutors = new Dictionary<string, ICRDTExecutor>(1);
+            Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(1);
 
             ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
             ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
@@ -152,20 +152,20 @@ namespace Tests
             serviceLocator.Initialize();
         }
 
-        private static async UniTask LoadScene(string sceneId)
+        private static async UniTask LoadScene(int sceneNumber)
         {
             LoadParcelScenesMessage.UnityParcelScene scene = new LoadParcelScenesMessage.UnityParcelScene()
             {
                 basePosition = new Vector2Int(0, 0),
                 parcels = new Vector2Int[] { new Vector2Int(0, 0) },
-                id = sceneId
+                sceneNumber = sceneNumber
             };
 
             Environment.i.world.sceneController.LoadParcelScenes(JsonUtility.ToJson(scene));
 
             var message = new QueuedSceneMessage_Scene
             {
-                sceneId = scene.id,
+                sceneNumber = scene.sceneNumber,
                 tag = "",
                 type = QueuedSceneMessage.Type.SCENE_MESSAGE,
                 method = MessagingTypes.INIT_DONE,
@@ -173,12 +173,12 @@ namespace Tests
             };
             Environment.i.world.sceneController.EnqueueSceneMessage(message);
 
-            await UniTask.WaitWhile(() => Environment.i.messaging.manager.HasScenePendingMessages(sceneId));
+            await UniTask.WaitWhile(() => Environment.i.messaging.manager.HasScenePendingMessages(sceneNumber));
         }
 
-        private static async UniTask UnloadScene(string sceneId)
+        private static async UniTask UnloadScene(int sceneNumber)
         {
-            Environment.i.world.sceneController.UnloadScene(sceneId);
+            Environment.i.world.sceneController.UnloadScene(sceneNumber);
             await UniTask.WaitWhile(() => Environment.i.messaging.manager.hasPendingMessages);
         }
 

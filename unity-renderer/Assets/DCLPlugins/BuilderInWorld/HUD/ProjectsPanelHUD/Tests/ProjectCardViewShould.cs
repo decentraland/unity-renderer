@@ -24,6 +24,7 @@ public class ProjectCardViewShould
     public void TearDown() { UnityEngine.Object.Destroy(cardView.gameObject); }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetupAndDisplayInfoCorrectly()
     {
         //Arrange
@@ -49,6 +50,7 @@ public class ProjectCardViewShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetNotSyncCorrectly()
     {
         //Arrange
@@ -60,7 +62,7 @@ public class ProjectCardViewShould
             title = "TesTitle",
             rows = 2,
             cols = 2,
-            scene_id = "Incorrect ID"
+            scene_number = 6
         });
 
         //Act
@@ -74,6 +76,7 @@ public class ProjectCardViewShould
     [Test]
     [TestCase("1700-01-01")]
     [TestCase("2999-01-09")]
+    [Explicit("BIW is deprecated")]
     public void SetSyncCorrectly(string date)
     {
         //Arrange
@@ -82,7 +85,7 @@ public class ProjectCardViewShould
         {
             CreateScene()
         };
-
+    
         ((IProjectCardView)cardView).Setup(new ProjectData()
         {
             id = "",
@@ -90,12 +93,12 @@ public class ProjectCardViewShould
             rows = 2,
             cols = 2,
             updated_at = updatedTime,
-            scene_id = sceneList[0].id
+            // scene_number = sceneList[0]
         });
-
+    
         //Act
         cardView.SetScenes(sceneList);
-
+    
         //Assert
         Assert.AreEqual(sceneList,cardView.scenesDeployedFromProject);
         Assert.AreEqual(cardView.projectSyncTxt.text, ProjectCardView.PUBLISHED_IN);
@@ -103,6 +106,7 @@ public class ProjectCardViewShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InstanciateScenesCardCorrectly()
     {
         //Arrange
@@ -110,7 +114,7 @@ public class ProjectCardViewShould
         {
             CreateScene()
         };
-
+    
         ((IProjectCardView)cardView).Setup(new ProjectData()
         {
             id = "",
@@ -118,13 +122,13 @@ public class ProjectCardViewShould
             rows = 2,
             cols = 2,
             updated_at = DateTime.Now,
-            scene_id = sceneList[0].id
+            // scene_number = sceneList[0].id
         });
-
+    
         bool eventCalled = false;
         cardView.SetScenes(sceneList);
         cardView.OnExpandMenuPressed += () => { eventCalled = true; };
-
+    
         //Act
         cardView.ExpandButtonPressed();
         
@@ -134,6 +138,7 @@ public class ProjectCardViewShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EditorButtonCalledCorrectly()
     {
         //Arrange

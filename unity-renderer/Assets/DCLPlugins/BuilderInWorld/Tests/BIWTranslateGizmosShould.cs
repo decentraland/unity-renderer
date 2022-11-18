@@ -25,6 +25,7 @@ public class BIWTranslateGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TransformEntity()
     {
         //Arrange

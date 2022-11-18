@@ -40,6 +40,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
+    [Explicit("BIW is deprecated")]
     public IEnumerator FocusOnEntities()
     {
         //Arrange

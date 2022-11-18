@@ -36,6 +36,7 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InitializeController()
     {
         // Arrange
@@ -49,6 +50,7 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerEnterEditMode()
     {
         // Arrange
@@ -63,6 +65,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerExitEditMode()
     {
         // Arrange
@@ -79,6 +82,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerOnGUI()
     {
         // Arrange
@@ -95,6 +99,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerLateUpdate()
     {
         // Arrange
@@ -111,6 +116,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerNoActiveReceivingUpdate()
     {
         // Arrange
@@ -125,6 +131,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ControllerUpdate()
     {
         // Arrange
@@ -141,6 +148,7 @@ var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetupNewScene()
     {
         // Arrange

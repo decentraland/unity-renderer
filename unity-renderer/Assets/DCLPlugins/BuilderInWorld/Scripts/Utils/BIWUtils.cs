@@ -176,12 +176,18 @@ public static partial class BIWUtils
     public static ILand CreateILandFromManifest(IManifest manifest, Vector2Int initialCoord)
     {
         ILand land = new ILand();
-        land.sceneId = manifest.project.scene_id;
+        
+        // We don't use scene ids in the client anymore
+        // land.sceneNumber = manifest.project.scene_id;
+        
         land.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
 
         land.mappingsResponse = new MappingsResponse();
-        land.mappingsResponse.parcel_id = land.sceneId;
-        land.mappingsResponse.root_cid = land.sceneId;
+        
+        // We don't use scene ids in the client anymore
+        // land.mappingsResponse.parcel_id = land.sceneNumber;
+        // land.mappingsResponse.root_cid = land.sceneNumber;
+        
         land.mappingsResponse.contents = new List<ContentServerUtils.MappingPair>();
 
         land.sceneJsonData = new SceneJsonData();
@@ -215,13 +221,16 @@ public static partial class BIWUtils
     public static ILand CreateILandFromParcelScene(IParcelScene scene)
     {
         ILand land = new ILand();
-        land.sceneId = scene.sceneData.id;
+        land.sceneNumber = scene.sceneData.sceneNumber;
         land.baseUrl = scene.sceneData.baseUrl;
         land.baseUrlBundles = scene.sceneData.baseUrlBundles;
 
         land.mappingsResponse = new MappingsResponse();
-        land.mappingsResponse.parcel_id = land.sceneId;
-        land.mappingsResponse.root_cid = land.sceneId;
+        
+        // We don't use scene ids in the client anymore
+        // land.mappingsResponse.parcel_id = land.id;
+        // land.mappingsResponse.root_cid = land.id;
+        
         land.mappingsResponse.contents = scene.sceneData.contents;
 
         land.sceneJsonData = new SceneJsonData();
@@ -323,7 +332,7 @@ public static partial class BIWUtils
         manifest.project = data;
         manifest.scene = scene;
 
-        manifest.project.scene_id = manifest.scene.id;
+        manifest.project.scene_number = manifest.scene.sceneNumber;
         return manifest;
     }
 
@@ -334,7 +343,7 @@ public static partial class BIWUtils
         manifest.project = projectData;
         manifest.scene = CreateEmtpyBuilderScene(projectData.rows, projectData.cols);
 
-        manifest.project.scene_id = manifest.scene.id;
+        manifest.project.scene_number = manifest.scene.sceneNumber;
         return manifest;
     }
 
@@ -400,7 +409,7 @@ public static partial class BIWUtils
 
         WebBuilderScene scene = new WebBuilderScene
         {
-            id = Guid.NewGuid().ToString(),
+            sceneNumber = Guid.NewGuid().GetHashCode(),
             entities = entities,
             components =  components,
             assets = assets,
@@ -433,7 +442,7 @@ public static partial class BIWUtils
         //We create an empty scene
         manifest.scene = CreateEmtpyBuilderScene(size.x, size.y);
 
-        projectData.scene_id = manifest.scene.id;
+        projectData.scene_number = manifest.scene.sceneNumber;
         manifest.project = projectData;
         return manifest;
     }

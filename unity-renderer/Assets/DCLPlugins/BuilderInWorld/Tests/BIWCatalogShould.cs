@@ -28,6 +28,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
 
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void BuilderInWorldSearch()
     {
         string nameToFilter = "Sandy";
@@ -52,6 +53,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void BuilderInWorldQuickBar()
     {
         BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
@@ -88,6 +90,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void BuilderInWorldToggleFavorite()
     {
         BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
@@ -103,6 +106,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CatalogItemsSceneObject()
     {
         BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
@@ -113,6 +117,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CatalogItemsNfts()
     {
         BIWTestUtils.CreateNFT();

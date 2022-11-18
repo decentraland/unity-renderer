@@ -82,16 +82,16 @@ public class SceneDebugMetricModule : IDebugMetricModule
     private IParcelScene GetActiveScene()
     {
         IWorldState worldState = DCL.Environment.i.world.state;
-        string debugSceneId = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneId;
+        int debugSceneNumber = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneNumber;
 
-        if (!string.IsNullOrEmpty(debugSceneId))
+        if (debugSceneNumber > 0)
         {
-            if (worldState.TryGetScene(debugSceneId, out IParcelScene scene))
+            if (worldState.TryGetScene(debugSceneNumber, out IParcelScene scene))
                 return scene;
         }
 
         var currentPos = DataStore.i.player.playerGridPosition.Get();
-        worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), out IParcelScene resultScene);
+        worldState.TryGetScene(worldState.GetSceneNumberByCoords(currentPos), out IParcelScene resultScene);
 
         return resultScene;
     }

@@ -40,6 +40,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void LockValue()
     {
         //Arrange
@@ -53,6 +54,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DescriptiveName()
     {
         //Arrange
@@ -66,6 +68,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetRotation()
     {
         //Arrange
@@ -79,6 +82,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void AddRotation()
     {
         //Arrange
@@ -94,6 +98,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SmartItemComponent()
     {
         SmartItemComponent.Model model = new SmartItemComponent.Model();

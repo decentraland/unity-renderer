@@ -33,6 +33,7 @@ namespace DCL.Builder
         }
 
         [Test]
+        [Explicit("BIW is deprecated")]
         public void ActivateCameraCorrectly()
         {
             //Arrange
@@ -48,6 +49,7 @@ namespace DCL.Builder
         }
 
         [Test]
+        [Explicit("BIW is deprecated")]
         public void AskForScreenshotCorrectly()
         {
             //Act
@@ -60,6 +62,7 @@ namespace DCL.Builder
         }
         
         [Test]
+        [Explicit("BIW is deprecated")]
         public void AskForAerialScreenshotCorrectly()
         {
             //Act
@@ -72,6 +75,7 @@ namespace DCL.Builder
         }
         
         [Test]
+        [Explicit("BIW is deprecated")]
         public void AskForScreenshotWithParametersCorrectly()
         {
             //Act
@@ -84,6 +88,7 @@ namespace DCL.Builder
         }
         
         [Test]
+        [Explicit("BIW is deprecated")]
         public void AskedForScreenshotFromResetPositionCorrectly()
         {
             //Act

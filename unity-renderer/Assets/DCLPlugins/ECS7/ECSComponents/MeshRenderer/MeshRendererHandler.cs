@@ -48,7 +48,7 @@ namespace DCL.ECSComponents
             renderersInternalComponent.RemoveRenderer(scene, entity, componentMeshRenderer);
 
             if (prevModel != null)
-                ecs7DataStore.RemovePendingResource(scene.sceneData.id, prevModel);
+                ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, prevModel);
 
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
             Object.Destroy(componentGameObject);
@@ -79,7 +79,7 @@ namespace DCL.ECSComponents
                 AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
 
                 if (prevModel != null)
-                    ecs7DataStore.RemovePendingResource(scene.sceneData.id, prevModel);
+                    ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, prevModel);
 
                 return;
             }
@@ -91,15 +91,15 @@ namespace DCL.ECSComponents
             primitiveMeshPromise.OnSuccessEvent += shape =>
             {
                 componentMeshFilter.sharedMesh = shape.mesh;
-                ecs7DataStore.RemovePendingResource(scene.sceneData.id, model);
+                ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
             };
             primitiveMeshPromise.OnFailEvent += (mesh, exception) =>
             {
-                ecs7DataStore.RemovePendingResource(scene.sceneData.id, model);
+                ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
                 Debug.LogException(exception);
             };
 
-            ecs7DataStore.AddPendingResource(scene.sceneData.id, model);
+            ecs7DataStore.AddPendingResource(scene.sceneData.sceneNumber, model);
             AssetPromiseKeeper_PrimitiveMesh.i.Keep(primitiveMeshPromise);
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(prevPromise);
         }
