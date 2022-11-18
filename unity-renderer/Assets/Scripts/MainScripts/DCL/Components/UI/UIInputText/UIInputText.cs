@@ -109,7 +109,7 @@ namespace DCL.Components
 
             inputField.customCaretColor = true;
             inputField.caretColor = Color.white;
-            Interface.WebInterface.ReportOnFocusEvent(scene.sceneData.id, model.onFocus);
+            Interface.WebInterface.ReportOnFocusEvent(scene.sceneData.sceneNumber, model.onFocus);
         }
 
         public void OnChanged(string changedText)
@@ -124,14 +124,14 @@ namespace DCL.Components
             #endif
 
             // NOTE: we keep `ReportOnTextInputChangedEvent` for backward compatibility (it won't be called for scenes using latest sdk)
-            Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText);
-            Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, changedText, false);
+            Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.sceneNumber, model.onChanged, changedText);
+            Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.sceneNumber, model.onTextChanged, changedText, false);
         }
 
         public void OnBlur(string call)
         {
             HideCaret();
-            Interface.WebInterface.ReportOnBlurEvent(scene.sceneData.id, model.onBlur);
+            Interface.WebInterface.ReportOnBlurEvent(scene.sceneData.sceneNumber, model.onBlur);
         }
 
         public void HideCaret()
@@ -161,8 +161,8 @@ namespace DCL.Components
             if (validString)
             {
                 // NOTE: we keep `ReportOnTextSubmitEvent` for backward compatibility (it won't be called for scenes using latest sdk)
-                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, call);
-                Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, call, true);
+                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.sceneNumber, model.onTextSubmit, call);
+                Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.sceneNumber, model.onTextChanged, call, true);
             }
             else if (scene.isPersistent) // DCL UI Chat text input
             {

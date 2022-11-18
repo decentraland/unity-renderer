@@ -11,24 +11,24 @@ namespace Tests
 {
     public class ECSComponentWriterShould
     {
-        private const string SCENE_ID = "temptation";
+        private const int SCENE_NUMBER = 666;
         private const long ENTITY_ID = 42;
         private const int COMPONENT_ID = 26;
 
         private ECSComponentWriter componentWriter;
-        private IDummyEventSubscriber<string, long, int, byte[], long, ECSComponentWriteType> writeComponentSubscriber;
+        private IDummyEventSubscriber<int, long, int, byte[], long, ECSComponentWriteType> writeComponentSubscriber;
         private IParcelScene scene;
         private IDCLEntity entity;
 
         [SetUp]
         public void SetUp()
         {
-            writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<string, long, int, byte[], long, ECSComponentWriteType>>();
+            writeComponentSubscriber = Substitute.For<IDummyEventSubscriber<int, long, int, byte[], long, ECSComponentWriteType>>();
             componentWriter = new ECSComponentWriter(writeComponentSubscriber.React);
             scene = Substitute.For<IParcelScene>();
             entity = Substitute.For<IDCLEntity>();
 
-            scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { id = SCENE_ID });
+            scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene() { sceneNumber = SCENE_NUMBER });
             entity.entityId.Returns(ENTITY_ID);
 
             componentWriter.AddOrReplaceComponentSerializer<TestingComponent>(COMPONENT_ID,
@@ -50,7 +50,7 @@ namespace Tests
 
             componentWriter.PutComponent(scene, entity, COMPONENT_ID, model, ECSComponentWriteType.DEFAULT);
             writeComponentSubscriber.Received(1)
-                                    .React(SCENE_ID, ENTITY_ID, COMPONENT_ID, Arg.Any<byte[]>(),
+                                    .React(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, Arg.Any<byte[]>(),
                                         Arg.Any<long>(), Arg.Any<ECSComponentWriteType>());
         }
 
@@ -59,7 +59,7 @@ namespace Tests
         {
             componentWriter.RemoveComponent(scene, entity, COMPONENT_ID, ECSComponentWriteType.DEFAULT);
             writeComponentSubscriber.Received(1)
-                                    .React(SCENE_ID, ENTITY_ID, COMPONENT_ID, null,
+                                    .React(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, null,
                                         Arg.Any<long>(), Arg.Any<ECSComponentWriteType>());
         }
     }

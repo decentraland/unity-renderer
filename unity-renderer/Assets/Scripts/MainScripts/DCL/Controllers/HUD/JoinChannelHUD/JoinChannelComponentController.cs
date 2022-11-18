@@ -76,7 +76,7 @@ public class JoinChannelComponentController : IDisposable
         if (alreadyJoinedChannel == null)
             chatController.JoinOrCreateChannel(channelName);
         else
-            dataStore.channels.channelToBeOpenedFromLink.Set(alreadyJoinedChannel.ChannelId);
+            dataStore.channels.channelToBeOpened.Set(alreadyJoinedChannel.ChannelId);
 
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());

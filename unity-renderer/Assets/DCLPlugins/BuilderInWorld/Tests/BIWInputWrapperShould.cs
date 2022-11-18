@@ -21,6 +21,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void StopInput()
     {
         //Act
@@ -31,6 +32,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ResumeInput()
     {
         //Act
@@ -41,6 +43,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseWheelInput()
     {
         //Arrange
@@ -51,6 +54,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseUpOnUI()
     {
         //Arrange
@@ -62,6 +66,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseOnUIUpInvoke()
     {
         //Arrange
@@ -72,6 +77,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseOnUpInvoke()
     {
         //Arrange
@@ -83,6 +89,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseOnDownInvoke()
     {
         //Arrange
@@ -93,6 +100,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseDragInvoke()
     {
         //Arrange
@@ -103,6 +111,7 @@ public class BIWInputWrapperShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseDragRawInvoke()
     {
         //Arrange

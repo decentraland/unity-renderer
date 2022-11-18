@@ -36,6 +36,7 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void BuilderInWorldChangeFeedbackStyleChange()
     {
         //Arrange
@@ -49,6 +50,7 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    [Explicit("BIW is deprecated")]
     public IEnumerator BuilderInWorldRendererEnableOutsideParcel()
     {
         //Arrange

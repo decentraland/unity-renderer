@@ -114,7 +114,7 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
         IDCLEntity entity = CreateEntityWithTransform();
         IDCLEntity entity2 = CreateEntityWithTransform();
 
-        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
 
         ConeShape coneShape = CreateCone();
         PlaneShape planeShape = CreatePlane();
@@ -133,6 +133,6 @@ public class WithParametrizedShape_SceneMetricsCounterShould : IntegrationTestSu
             textures: 0);
 
 
-        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
     }
 }

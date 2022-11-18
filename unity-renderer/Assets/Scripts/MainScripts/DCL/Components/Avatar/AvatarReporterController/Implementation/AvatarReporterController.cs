@@ -12,7 +12,7 @@ using UnityEngine;
 public class AvatarReporterController : IAvatarReporterController
 {
     private string avatarId;
-    private string lastSceneId;
+    private int lastSceneNumber;
     private Vector2Int lastCoords;
     private Vector3 lastPositionChecked;
     private bool isInitialReport = true;
@@ -26,20 +26,20 @@ public class AvatarReporterController : IAvatarReporterController
         this.worldState = worldState;
     }
 
-    void IAvatarReporterController.SetUp(string sceneId, string avatarId)
+    void IAvatarReporterController.SetUp(int sceneNumber, string avatarId)
     {
         // NOTE: do not report avatars that doesn't belong to the global scene
-        if (sceneId != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
+        if (sceneNumber != EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER)
             return;
         
         this.avatarId = avatarId;
         isInitialReport = true;
-        lastSceneId = null;
+        lastSceneNumber = -1;
     }
     
-    string GetcurrentSceneIdNonAlloc(Vector2Int coords)
+    int GetcurrentSceneNumberNonAlloc(Vector2Int coords)
     {
-        return worldState.GetSceneIdByCoords(coords);
+        return worldState.GetSceneNumberByCoords(coords);
     }
 
     void IAvatarReporterController.ReportAvatarPosition(Vector3 position)
@@ -59,16 +59,16 @@ public class AvatarReporterController : IAvatarReporterController
             return;
         }
         
-        string currentSceneId = GetcurrentSceneIdNonAlloc(coords);
+        int currentSceneNumber = GetcurrentSceneNumberNonAlloc(coords);
 
-        if (currentSceneId == lastSceneId && !isInitialReport)
+        if (currentSceneNumber == lastSceneNumber && !isInitialReport)
         {
             return;
         }
 
-        ((IAvatarReporterController)this).reporter.ReportAvatarSceneChange(avatarId, currentSceneId);
+        ((IAvatarReporterController)this).reporter.ReportAvatarSceneChange(avatarId, currentSceneNumber);
 
-        lastSceneId = currentSceneId;
+        lastSceneNumber = currentSceneNumber;
         lastCoords = coords;
         lastPositionChecked = position;
         isInitialReport = false;
@@ -82,7 +82,7 @@ public class AvatarReporterController : IAvatarReporterController
         ((IAvatarReporterController)this).reporter.ReportAvatarRemoved(avatarId);
         
         avatarId = null;
-        lastSceneId = null;
+        lastSceneNumber = -1;
         isInitialReport = true;
     }
 
@@ -98,6 +98,6 @@ public class AvatarReporterController : IAvatarReporterController
 
     private bool WasInLoadedScene()
     {
-        return !string.IsNullOrEmpty(lastSceneId);
+        return lastSceneNumber > 0;
     }
 }

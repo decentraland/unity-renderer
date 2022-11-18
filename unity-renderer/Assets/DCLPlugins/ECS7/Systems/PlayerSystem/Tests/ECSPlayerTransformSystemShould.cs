@@ -27,7 +27,7 @@ namespace Tests
             scenes[0]
                 .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
-                    id = "temptation", basePosition = new Vector2Int(1, 0)
+                    sceneNumber = 666, basePosition = new Vector2Int(1, 0)
                 });
 
             componentsWriter = Substitute.For<IECSComponentWriter>();
@@ -54,7 +54,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.PLAYER_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Any<ECSTransform>(),
@@ -63,7 +63,7 @@ namespace Tests
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
                                 ComponentID.TRANSFORM,
                                 Arg.Any<ECSTransform>(),
@@ -74,7 +74,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.DidNotReceive()
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.PLAYER_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Any<ECSTransform>());
@@ -88,7 +88,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.PLAYER_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x => x.position == UnityEngine.Vector3.zero),
@@ -97,7 +97,7 @@ namespace Tests
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x => x.position == UnityEngine.Vector3.zero),
@@ -110,7 +110,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.PLAYER_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x =>
@@ -120,7 +120,7 @@ namespace Tests
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x =>

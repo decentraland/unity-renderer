@@ -12,7 +12,7 @@ namespace DCL.Helpers
 {
     public static class CrashPayloadUtils
     {
-        public static CrashPayload ComputePayload(IEnumerable<KeyValuePair<string, IParcelScene>> allScenes,
+        public static CrashPayload ComputePayload(IEnumerable<KeyValuePair<int, IParcelScene>> allScenes,
             List<Vector3> trackedMovements,
             List<Vector3> trackedTeleports)
         {
@@ -177,7 +177,7 @@ namespace DCL.Helpers
         [System.Serializable]
         public struct LoadedScenesDump
         {
-            public string id;
+            public int sceneNumber;
         }
 
         [System.Serializable]
@@ -187,7 +187,7 @@ namespace DCL.Helpers
             public int quantity;
         }
 
-        public static void Dump(IEnumerable<KeyValuePair<string, IParcelScene>> allScenes, AssetLibrary_Texture library,
+        public static void Dump(IEnumerable<KeyValuePair<int, IParcelScene>> allScenes, AssetLibrary_Texture library,
             Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
         {
             var componentsDump = new List<ComponentsDump>();
@@ -197,7 +197,7 @@ namespace DCL.Helpers
                 .Select(x =>
                     new LoadedScenesDump
                     {
-                        id = x.Key
+                        sceneNumber = x.Key
                     }
                 )
                 .ToList();
@@ -215,7 +215,7 @@ namespace DCL.Helpers
 
                 loadedScenes.Add(new LoadedScenesDump
                     {
-                        id = kvp.Key
+                        sceneNumber = kvp.Key
                     }
                 );
 

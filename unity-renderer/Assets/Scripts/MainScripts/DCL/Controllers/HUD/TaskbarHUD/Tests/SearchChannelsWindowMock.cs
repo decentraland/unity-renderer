@@ -12,6 +12,7 @@ public class SearchChannelsWindowMock : MonoBehaviour, ISearchChannelsWindowView
     public event Action<string> OnJoinChannel;
     public event Action<string> OnLeaveChannel;
     public event Action OnCreateChannel;
+    public event Action<string> OnOpenChannel;
     public RectTransform Transform => (RectTransform) transform;
     public int EntryCount { get; }
     public bool IsActive { get; }

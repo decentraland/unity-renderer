@@ -38,7 +38,7 @@ namespace Tests
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
 
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             
             entityRaycaster = scene.CreateEntity(512);
             
@@ -81,7 +81,7 @@ namespace Tests
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);           
             
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.id, 
+                scene.sceneData.sceneNumber, 
                 entityRaycaster.entityId, 
                 ComponentID.RAYCAST_RESULT, 
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 0),
@@ -104,7 +104,7 @@ namespace Tests
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.id, 
+                scene.sceneData.sceneNumber, 
                 entityRaycaster.entityId, 
                 ComponentID.RAYCAST_RESULT, 
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1),
@@ -128,7 +128,7 @@ namespace Tests
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.id, 
+                scene.sceneData.sceneNumber, 
                 entityRaycaster.entityId, 
                 ComponentID.RAYCAST_RESULT, 
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 2),
