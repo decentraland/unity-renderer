@@ -9,12 +9,12 @@ root = true # Top-most EditorConfig file. Remove the line below if you want to i
 charset = utf-8
 
 indent_style = space # Don't use tabs for indentation.
+end_of_line = crlf
+trim_trailing_whitespace = false
+
+[*.{appxmanifest,asax,ascx,aspx,axaml,build,cg,cginc,compute,cs,cshtml,dtd,fs,fsi,fsscript,fsx,hlsl,hlsli,hlslinc,master,ml,mli,nuspec,paml,razor,resw,resx,shader,skin,usf,ush,vb,xaml,xamlx,xoml,xsd}]
 indent_size = 4
 tab_width = 4
-
-end_of_line = crlf
-
-trim_trailing_whitespace = false
 max_line_length = 120
 
 # C# files
