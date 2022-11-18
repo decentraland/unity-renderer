@@ -21,7 +21,7 @@ max_line_length = 120
 [*.cs]
 insert_final_newline = true
 trim_trailing_whitespace = true
-max_line_length = 180
+max_line_length = 250
 
 
 
@@ -458,9 +458,9 @@ resharper_indent_nested_usings_stmt = false
 resharper_indent_nested_fixed_stmt = false
 resharper_indent_nested_lock_stmt = false
 
-resharper_indent_nested_for_stmt = true
-resharper_indent_nested_foreach_stmt = true
-resharper_indent_nested_while_stmt = true
+resharper_indent_nested_for_stmt = false
+resharper_indent_nested_foreach_stmt = false
+resharper_indent_nested_while_stmt = false
 
 # Parenthesis
 resharper_use_continuous_indent_inside_parens = true
@@ -482,12 +482,14 @@ resharper_indent_switch_labels = true
 resharper_outdent_statement_labels = true
 resharper_indent_type_constraints = true
 resharper_stick_comment = false
+resharper_place_comments_at_first_column = true
 resharper_use_indent_from_previous_element = true
 resharper_indent_braces_inside_statement_conditions = true
 
 # Align multiline constructs
 resharper_alignment_tab_fill_style = use_spaces
 resharper_allow_far_alignment = false
+resharper_align_multiline_parameter = false
 resharper_align_multiline_extends_list = false
 resharper_align_linq_query = false
 resharper_align_multiline_binary_expressions_chain = true
