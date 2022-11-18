@@ -22,12 +22,12 @@ namespace DCL.Components
         {
             base.Initialize(scene, entity);
 
-            DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+            DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
         }
 
         public override void Cleanup()
         {
-            DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
+            DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
             base.Cleanup();
         }
 

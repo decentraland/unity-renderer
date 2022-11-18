@@ -159,7 +159,7 @@ namespace DCL
                 {
                     var metrics = activeScene.metricsCounter.currentCount;
                     var limits = activeScene.metricsCounter.maxCount;
-                    statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.CURRENT_SCENE, $"{activeScene.sceneData.id}");
+                    statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.CURRENT_SCENE, $"{activeScene.sceneData.sceneNumber}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.POLYGONS_VS_LIMIT, $"{metrics.triangles} of {limits.triangles}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.TEXTURES_VS_LIMIT, $"{metrics.textures} of {limits.textures}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.MATERIALS_VS_LIMIT, $"{metrics.materials} of {limits.materials}");
@@ -176,16 +176,15 @@ namespace DCL
         private IParcelScene GetActiveScene()
         {
             IWorldState worldState = Environment.i.world.state;
-            string debugSceneId = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneId;
-
-            if (!string.IsNullOrEmpty(debugSceneId))
+            int debugSceneNumber = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneNumber;
+            if (debugSceneNumber > 0)
             {
-                if (worldState.TryGetScene(debugSceneId, out IParcelScene scene))
+                if (worldState.TryGetScene(debugSceneNumber, out IParcelScene scene))
                     return scene;
             }
 
             var currentPos = DataStore.i.player.playerGridPosition.Get();
-            worldState.TryGetScene(worldState.GetSceneIdByCoords(currentPos), out IParcelScene resultScene);
+            worldState.TryGetScene(worldState.GetSceneNumberByCoords(currentPos), out IParcelScene resultScene);
 
             return resultScene;
         }

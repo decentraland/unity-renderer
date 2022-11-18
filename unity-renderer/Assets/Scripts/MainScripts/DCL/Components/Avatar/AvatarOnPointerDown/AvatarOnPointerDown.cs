@@ -110,7 +110,7 @@ namespace DCL.Components
             if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
                 WebInterface.ReportAvatarClick(
-                    playerScene.sceneData.id,
+                    playerScene.sceneData.sceneNumber,
                     avatarPlayer.id,
                     WorldStateUtils.ConvertUnityToScenePosition(ray.origin, playerScene),
                     ray.direction,
@@ -176,9 +176,8 @@ namespace DCL.Components
                 return false;
             }
 
-            string playerSceneId = CommonScriptableObjects.sceneID.Get();
-
-            if (string.IsNullOrEmpty(playerSceneId))
+            int playerSceneNumber = CommonScriptableObjects.sceneNumber.Get();
+            if (playerSceneNumber <= 0)
             {
                 return false;
             }

@@ -22,7 +22,7 @@ namespace Tests
         public void SetUp()
         {
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
-            scene = sceneTestHelper.CreateScene("temptation1");
+            scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
             worldState = Substitute.For<IWorldState>();
@@ -121,8 +121,7 @@ namespace Tests
         [Test]
         public void MoveCharacterWhenSameSceneAndValidPosition()
         {
-            string sceneId = scene.sceneData.id;
-            worldState.GetCurrentSceneId().Returns(sceneId);
+            worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(8, 0, 0);
@@ -134,7 +133,7 @@ namespace Tests
         public void MoveCharacterWhenGlobalSceneTriggerIt()
         {
             scene.isPersistent = true;
-            worldState.GetCurrentSceneId().Returns("not-temptation");
+            worldState.GetCurrentSceneNumber().Returns(5); // scene number different than Setup() scene
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(8, 0, 0);
@@ -146,8 +145,7 @@ namespace Tests
         [Test]
         public void NotMoveCharacterWhenSameSceneButInvalidPosition()
         {
-            string sceneId = scene.sceneData.id;
-            worldState.GetCurrentSceneId().Returns(sceneId);
+            worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(1000, 0, 0);
@@ -158,7 +156,7 @@ namespace Tests
         [Test]
         public void NotMoveCharacterWhenPlayerIsNotInScene()
         {
-            worldState.GetCurrentSceneId().Returns("NOTtemptation");
+            worldState.GetCurrentSceneNumber().Returns(5); // scene number different than Setup() scene
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
 
             Vector3 position = new Vector3(1000, 0, 0);

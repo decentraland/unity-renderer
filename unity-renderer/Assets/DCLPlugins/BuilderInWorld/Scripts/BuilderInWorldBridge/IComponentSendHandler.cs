@@ -12,10 +12,10 @@ namespace DCL.Builder
         /// <summary>
         /// Send the new entity to the kernel
         /// </summary>
-        /// <param name="sceneId"></param>
+        /// <param name="sceneNumber"></param>
         /// <param name="entityId"></param>
         /// <param name="componentsPayload"></param>
-        void SendNewEntityToKernel(string sceneId, long entityId, ComponentPayload[] componentsPayload);
+        void SendNewEntityToKernel(int sceneNumber, long entityId, ComponentPayload[] componentsPayload);
         
         /// <summary>
         /// Update an entity component with the new model

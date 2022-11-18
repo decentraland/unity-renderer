@@ -42,12 +42,12 @@ public static class ECSComponentsUtils
         }
     }
     
-    public static void RemoveRendereableFromDataStore(string sceneId, Rendereable rendereable)
+    public static void RemoveRendereableFromDataStore(int sceneNumber, Rendereable rendereable)
     {
-        DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, rendereable);
+        DataStore.i.sceneWorldObjects.RemoveRendereable(sceneNumber, rendereable);
     }
 
-    public static Rendereable AddRendereableToDataStore(string sceneId, long entityId, Mesh mesh, GameObject gameObject, Renderer[] renderers)
+    public static Rendereable AddRendereableToDataStore(int sceneNumber, long entityId, Mesh mesh, GameObject gameObject, Renderer[] renderers)
     {
         int triangleCount = mesh.triangles.Length;
 
@@ -63,7 +63,7 @@ public static class ECSComponentsUtils
         newRendereable.renderers = new HashSet<Renderer>(renderers); 
         newRendereable.ownerId = entityId;
 
-        DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
+        DataStore.i.sceneWorldObjects.AddRendereable(sceneNumber, newRendereable);
         return newRendereable;
     }
     

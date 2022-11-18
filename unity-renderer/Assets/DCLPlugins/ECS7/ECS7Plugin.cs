@@ -21,7 +21,7 @@ namespace DCL.ECS7
             DataStore.i.ecs7.isEcs7Enabled = true;
 
             ISceneController sceneController = Environment.i.world.sceneController;
-            Dictionary<string, ICRDTExecutor> crdtExecutors = new Dictionary<string, ICRDTExecutor>(10);
+            Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);

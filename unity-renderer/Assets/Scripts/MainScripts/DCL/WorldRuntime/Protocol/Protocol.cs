@@ -361,7 +361,7 @@ namespace DCL.Models
     [System.Serializable]
     public class RaycastQuery
     {
-        public string sceneId;
+        public int sceneNumber;
         public string id;
         public RaycastType raycastType;
         public Ray ray;
