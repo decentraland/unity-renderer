@@ -17,12 +17,12 @@ namespace DCL.Social.Passports
         [SerializeField] internal Button hideCardButton;
         [SerializeField] internal GameObject container;
 
-        public PassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
-        public PassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
-        public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
+        public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
+        public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
+        public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
         public event Action OnClose;
 
-        private MouseCatcher mouseCatcher;
+        internal MouseCatcher mouseCatcher;
 
         public static PlayerPassportHUDView CreateView()
         {

@@ -1,0 +1,23 @@
+{
+    "name": "PassportHUDTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5cfd1f58341ff4a53aae27fc4e575a40",
+        "GUID:81f3218b29e049144b175dad2ebbac1b",
+        "GUID:858f845923fcab3448cf8b66614b41a1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
