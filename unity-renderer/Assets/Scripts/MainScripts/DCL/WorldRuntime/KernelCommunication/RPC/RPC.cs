@@ -12,6 +12,7 @@ namespace DCL
         {
             rpc.emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
         }
+
         public void Initialize()
         {
         }

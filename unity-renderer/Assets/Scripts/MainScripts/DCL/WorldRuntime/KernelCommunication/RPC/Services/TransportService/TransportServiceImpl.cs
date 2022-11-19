@@ -39,7 +39,7 @@ namespace RPC.Services
             TransportServiceCodeGen.RegisterService(port, new TransportServiceImpl());
         }
 
-        TransportServiceImpl()
+        public TransportServiceImpl()
         {
             queue = new ProtocolHelpers.AsyncQueue<Payload>((_, __) => {});
         }
