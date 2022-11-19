@@ -30,7 +30,7 @@ namespace Tests
             coreComponentsPlugin = new CoreComponentsPlugin();
             uiRefresherPlugin = new UIRefresherPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
             DataStore.i.camera.hudsCamera.Set(null, true);

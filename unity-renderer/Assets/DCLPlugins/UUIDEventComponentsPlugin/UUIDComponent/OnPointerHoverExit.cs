@@ -14,7 +14,7 @@ namespace DCL.Components
             if (!hoverState && isHovering)
             {
                 Model model = this.model as Model;
-                WebInterface.ReportOnPointerHoverExitEvent(scene.sceneData.id, model.uuid);
+                WebInterface.ReportOnPointerHoverExitEvent(scene.sceneData.sceneNumber, model.uuid);
             }
 
             isHovering = hoverState;

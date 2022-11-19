@@ -66,10 +66,10 @@ namespace ECSSystems.PlayerSystem
 
                 var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
 
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
+                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
                     transform, state.timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
 
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION, ComponentID.TRANSFORM,
+                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION, ComponentID.TRANSFORM,
                     transform, ECSComponentWriteType.EXECUTE_LOCALLY);
             }
             state.timeStamp++;

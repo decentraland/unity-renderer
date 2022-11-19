@@ -872,9 +872,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
-    private string GetConvertedUniqueKeyForEntity(long entityID) { return sceneToEdit.sceneData.id + entityID; }
+    private string GetConvertedUniqueKeyForEntity(long entityID) { return sceneToEdit.sceneData.sceneNumber.ToString() + entityID; }
 
-    private string GetConvertedUniqueKeyForEntity(IDCLEntity entity) { return entity.scene.sceneData.id + entity.entityId; }
+    private string GetConvertedUniqueKeyForEntity(IDCLEntity entity) { return entity.scene.sceneData.sceneNumber.ToString() + entity.entityId; }
 
     public bool AreAllEntitiesInsideBoundaries()
     {

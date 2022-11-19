@@ -2,9 +2,9 @@ namespace DCL.ECSComponents
 {
     public static class PBUiText_Defaults
     {
-        public static Color3 GetColor(this PBUiText self)
+        public static Color4 GetColor(this PBUiText self)
         {
-            return self.Color ?? Color3_Defaults.colorWhite;
+            return self.Color ?? Color_Defaults.color4White;
         }
 
         public static TextAlignMode GetTextAlign(this PBUiText self)

@@ -55,9 +55,9 @@ namespace Tests
             ClientCRDTService clientCrdtService = await CreateClientCrdtService(testClientTransport);
 
             var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
-            messagingControllersManager.HasScenePendingMessages(Arg.Any<string>()).Returns(false);
+            messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
 
-            string sceneId = "temptation";
+            int sceneNumber = 666;
             CRDTMessage crdtMessage = new CRDTMessage()
             {
                 key1 = 7693,
@@ -67,9 +67,9 @@ namespace Tests
             bool messageReceived = false;
 
             // Check if incoming CRDT is dispatched as scene message
-            void OnCrdtMessageReceived(string incommingSceneId, CRDTMessage incommingCrdtMessage)
+            void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
             {
-                Assert.AreEqual(sceneId, incommingSceneId);
+                Assert.AreEqual(sceneNumber, incommingSceneNumber);
                 Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
                 Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
                 Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
@@ -84,7 +84,7 @@ namespace Tests
             {
                 await clientCrdtService.SendCrdt(new CRDTManyMessages()
                 {
-                    SceneId = sceneId,
+                    SceneNumber = sceneNumber,
                     Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                 });
             }
@@ -103,8 +103,8 @@ namespace Tests
         [Test]
         public async void SendCRDTtoScene()
         {
-            string scene1 = "temptation1";
-            string scene2 = "temptation2";
+            int scene1 = 666;
+            int scene2 = 777;
 
             CRDTProtocol sceneState1 = new CRDTProtocol();
             CRDTProtocol sceneState2 = new CRDTProtocol();
@@ -124,7 +124,7 @@ namespace Tests
                 ClientCRDTService clientCrdtService = await CreateClientCrdtService(testClientTransport);
 
                 // request for `scene1`
-                CRDTManyMessages response1 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneId = scene1 });
+                CRDTManyMessages response1 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneNumber = scene1 });
 
                 var deserializer = CRDTDeserializer.DeserializeBatch(response1.Payload.Memory);
                 deserializer.MoveNext();
@@ -136,7 +136,7 @@ namespace Tests
                 Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene1));
 
                 // request for `scene2`
-                CRDTManyMessages response2 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneId = scene2 });
+                CRDTManyMessages response2 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneNumber = scene2 });
 
                 deserializer = CRDTDeserializer.DeserializeBatch(response2.Payload.Memory);
                 deserializer.MoveNext();

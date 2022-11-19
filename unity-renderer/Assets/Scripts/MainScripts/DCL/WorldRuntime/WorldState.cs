@@ -8,64 +8,68 @@ namespace DCL
 {
     public class WorldState : IWorldState
     {
-        private Dictionary<string, IParcelScene> loadedScenes { get; } = new Dictionary<string, IParcelScene>();
-        private Dictionary<Vector2Int, string> loadedScenesByCoordinate { get; } = new Dictionary<Vector2Int, string>();
+        private Dictionary<int, IParcelScene> loadedScenes { get; } = new Dictionary<int, IParcelScene>();
+        private Dictionary<string, IParcelScene> loadedPortableExperienceScenes { get; } = new Dictionary<string, IParcelScene>();
+        private Dictionary<Vector2Int, int> loadedScenesByCoordinate { get; } = new Dictionary<Vector2Int, int>();
         private List<IParcelScene> scenesSortedByDistance { get; } = new List<IParcelScene>();
-        private List<string> globalSceneIds { get; } = new List<string>();
+        private List<int> globalSceneNumbers { get; } = new List<int>();
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private readonly List<IParcelScene> globalScenes = new List<IParcelScene>();
-        private string currentSceneId;
+        private int currentSceneNumber;
         
-        public string GetCurrentSceneId() => currentSceneId;
+        public int GetCurrentSceneNumber() => currentSceneNumber;
         
-        public IEnumerable<KeyValuePair<string, IParcelScene>> GetLoadedScenes() => loadedScenes;
+        public IEnumerable<KeyValuePair<int, IParcelScene>> GetLoadedScenes() => loadedScenes;
 
         public List<IParcelScene> GetGlobalScenes() => globalScenes;
         
         public List<IParcelScene> GetScenesSortedByDistance() => scenesSortedByDistance;
+
+        public IParcelScene GetScene(int sceneNumber)
+        {
+            if (!ContainsScene(sceneNumber))
+                return null;
+
+            return loadedScenes[sceneNumber];
+        }
         
         public IParcelScene GetScene(Vector2Int coords)
         {
-            var id = GetSceneIdByCoords(coords);
-            
-            if (!ContainsScene(id))
+            return GetScene(GetSceneNumberByCoords(coords));
+        }
+        
+        public IParcelScene GetPortableExperienceScene(string sceneId)
+        {
+            if (string.IsNullOrEmpty(sceneId) || !loadedPortableExperienceScenes.ContainsKey(sceneId))
                 return null;
 
-            return loadedScenes[id];
+            return loadedPortableExperienceScenes[sceneId];
         }
 
-        public IParcelScene GetScene(string id)
+        public bool ContainsScene(int sceneNumber)
         {
-            if (!ContainsScene(id))
-                return null;
-
-            return loadedScenes[id];
-        }
-
-        public bool ContainsScene(string id)
-        {
-            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
             return true;
         }
 
-        public bool TryGetScene(string id, out IParcelScene scene)
+        public bool TryGetScene(int sceneNumber, out IParcelScene scene)
         {
             scene = null;
 
-            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
-            scene = loadedScenes[id];
+            scene = loadedScenes[sceneNumber];
             return true;
         }
 
-        public bool TryGetScene<T>(string id, out T scene)
+        public bool TryGetScene<T>(int sceneNumber, out T scene)
             where T : class, IParcelScene
         {
             scene = default(T);
-            bool result = TryGetScene(id, out IParcelScene baseScene);
+            bool result = TryGetScene(sceneNumber, out IParcelScene baseScene);
 
             if (result)
                 scene = baseScene as T;
@@ -129,17 +133,17 @@ namespace DCL
             attachedLoaders.Remove(entity.meshRootGameObject);
         }
         
-        public string GetSceneIdByCoords(Vector2Int coords)
+        public int GetSceneNumberByCoords(Vector2Int coords)
         {
             if (loadedScenesByCoordinate.ContainsKey(coords))
                 return loadedScenesByCoordinate[coords];
             
-            return null;
+            return -1;
         }
         
         public void SortScenesByDistance(Vector2Int position)
         {
-            currentSceneId = null;
+            currentSceneNumber = -1;
             scenesSortedByDistance.Sort((sceneA, sceneB) =>
             {
                 sortAuxiliaryVector = sceneA.sceneData.basePosition - position;
@@ -161,48 +165,57 @@ namespace DCL
                     continue;
 
                 bool characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
-                bool isGlobalScene = globalSceneIds.Contains(scene.sceneData.id);
+                bool isGlobalScene = globalSceneNumbers.Contains(scene.sceneData.sceneNumber);
 
                 if (isGlobalScene || !characterIsInsideScene)
                     continue;
 
-                currentSceneId = scene.sceneData.id;
+                currentSceneNumber = scene.sceneData.sceneNumber;
 
                 break;
             }
 
         }
-        public void ForceCurrentScene(string id)
+        
+        public void ForceCurrentScene(int sceneNumber)
         {
-            currentSceneId = id;
+            currentSceneNumber = sceneNumber;
         }
         
-        public void AddScene(string id, IParcelScene newScene)
+        public void AddScene(IParcelScene newScene)
         {
-            if (loadedScenes.ContainsKey(id))
+            int sceneNumber = newScene.sceneData.sceneNumber;
+            if (loadedScenes.ContainsKey(sceneNumber))
             {
-                Debug.LogWarning($"This scene already exists! {id}");
+                Debug.LogWarning($"The scene {newScene.sceneData.id} already exists! scene number: {sceneNumber}");
                 return;
             }
             
-            loadedScenes.Add(id, newScene);
+            if (newScene.isPersistent)
+            {
+                globalSceneNumbers.Add(sceneNumber);
+                globalScenes.Add(newScene);
+
+                if (newScene.isPortableExperience)
+                    loadedPortableExperienceScenes.Add(newScene.sceneData.id, newScene);
+            }
+            
+            loadedScenes.Add(sceneNumber, newScene);
             
             foreach (Vector2Int parcelPosition in newScene.GetParcels())
             {
-                loadedScenesByCoordinate[parcelPosition] = id;
+                loadedScenesByCoordinate[parcelPosition] = sceneNumber;
             }
                 
             scenesSortedByDistance.Add(newScene);
 
-            if (currentSceneId == null)
-            {
-                currentSceneId = id;
-            }
+            if (currentSceneNumber <= 0)
+                currentSceneNumber = sceneNumber;
         }
         
-        public void RemoveScene(string id)
+        public void RemoveScene(int sceneNumber)
         {
-            IParcelScene loadedScene = loadedScenes[id];
+            IParcelScene loadedScene = loadedScenes[sceneNumber];
 
             foreach (Vector2Int sceneParcel in loadedScene.GetParcels())
             {
@@ -211,27 +224,16 @@ namespace DCL
             
             scenesSortedByDistance.Remove(loadedScene);
             
-            loadedScenes.Remove(id);
-            globalSceneIds.Remove(id);
+            loadedScenes.Remove(sceneNumber);
+            globalSceneNumbers.Remove(sceneNumber);
 
             if (globalScenes.Contains(loadedScene))
             {
                 globalScenes.Remove(loadedScene);
-            }
-        }
-        
-        public void AddGlobalScene(string sceneId, IParcelScene newScene)
-        {
-            if (globalSceneIds.Contains(sceneId))
-            {
-                Debug.LogWarning($"This GLOBAL scene already exists! {sceneId}");
-                return;
-            }
-            
-            globalSceneIds.Add(sceneId);
-            globalScenes.Add(newScene);
 
-            AddScene(sceneId, newScene);
+                if (!string.IsNullOrEmpty(loadedScene.sceneData.id) && loadedPortableExperienceScenes.ContainsKey(loadedScene.sceneData.id))
+                    loadedPortableExperienceScenes.Remove(loadedScene.sceneData.id);
+            }
         }
 
         public void Dispose()
@@ -240,8 +242,9 @@ namespace DCL
             loadedScenesByCoordinate.Clear();
             scenesSortedByDistance.Clear();
             globalScenes.Clear();
-            globalScenes.Clear();
-            currentSceneId = null;
+            globalSceneNumbers.Clear();
+            loadedPortableExperienceScenes.Clear();
+            currentSceneNumber = -1;
         }
 
         public void Initialize()

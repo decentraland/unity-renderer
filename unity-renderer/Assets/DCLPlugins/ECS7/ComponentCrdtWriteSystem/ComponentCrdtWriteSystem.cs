@@ -10,7 +10,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 {
     private class MessageData
     {
-        public string sceneId;
+        public int sceneNumber;
         public long entityId;
         public int componentId;
         public byte[] data;
@@ -22,7 +22,7 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly ISceneController sceneController;
     private readonly IWorldState worldState;
 
-    private readonly Dictionary<string, CRDTProtocol> outgoingCrdt = new Dictionary<string, CRDTProtocol>(60);
+    private readonly Dictionary<int, CRDTProtocol> outgoingCrdt = new Dictionary<int, CRDTProtocol>(60);
     private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
     private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
 
@@ -40,11 +40,11 @@ public class ComponentCrdtWriteSystem : IDisposable
         sceneController.OnSceneRemoved -= OnSceneRemoved;
     }
 
-    public void WriteMessage(string sceneId, long entityId, int componentId, byte[] data, long minTimeStamp, ECSComponentWriteType writeType)
+    public void WriteMessage(int sceneNumber, long entityId, int componentId, byte[] data, long minTimeStamp, ECSComponentWriteType writeType)
     {
         MessageData messageData = messagesPool.Count > 0 ? messagesPool.Dequeue() : new MessageData();
 
-        messageData.sceneId = sceneId;
+        messageData.sceneNumber = sceneNumber;
         messageData.entityId = entityId;
         messageData.componentId = componentId;
         messageData.data = data;
@@ -68,7 +68,7 @@ public class ComponentCrdtWriteSystem : IDisposable
             var message = queuedMessages.Dequeue();
             messagesPool.Enqueue(message);
 
-            if (!worldState.TryGetScene(message.sceneId, out IParcelScene scene))
+            if (!worldState.TryGetScene(message.sceneNumber, out IParcelScene scene))
                 continue;
 
             CRDTMessage crdt = scene.crdtExecutor.crdtProtocol.Create((int)message.entityId, message.componentId, message.data);
@@ -92,10 +92,10 @@ public class ComponentCrdtWriteSystem : IDisposable
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
             {
-                if (!outgoingCrdt.TryGetValue(message.sceneId, out CRDTProtocol sceneCrdtState))
+                if (!outgoingCrdt.TryGetValue(message.sceneNumber, out CRDTProtocol sceneCrdtState))
                 {
                     sceneCrdtState = new CRDTProtocol();
-                    outgoingCrdt[message.sceneId] = sceneCrdtState;
+                    outgoingCrdt[message.sceneNumber] = sceneCrdtState;
                 }
 
                 sceneCrdtState.ProcessMessage(crdt);
@@ -110,8 +110,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 
     private void OnSceneRemoved(IParcelScene scene)
     {
-        string sceneId = scene.sceneData.id;
-        outgoingCrdt.Remove(sceneId);
-        rpcContext.crdt.scenesOutgoingCrdts.Remove(sceneId);
+        outgoingCrdt.Remove(scene.sceneData.sceneNumber);
+        rpcContext.crdtContext.scenesOutgoingCrdts.Remove(scene.sceneData.sceneNumber);
     }
 }

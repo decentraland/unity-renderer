@@ -28,7 +28,7 @@ namespace Tests
 
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene() as ParcelScene;
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
             
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
@@ -66,7 +66,7 @@ namespace Tests
 
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 componentId = component.id,
                 videoLength = 0,
                 videoTextureId = id,
@@ -96,7 +96,7 @@ namespace Tests
 
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 componentId = component.id,
                 videoLength = 0,
                 videoTextureId = id,
@@ -128,7 +128,7 @@ namespace Tests
 
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
-                sceneId = scene.sceneData.id,
+                sceneNumber = scene.sceneData.sceneNumber,
                 componentId = component.id,
                 videoLength = 0,
                 videoTextureId = id,
@@ -297,7 +297,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("non-existent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -356,7 +356,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -384,7 +384,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
             yield return null;
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
@@ -402,7 +402,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // to force the video player to update its volume
             CommonScriptableObjects.playerCoords.Set(new Vector2Int(666, 666));
@@ -420,7 +420,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -437,7 +437,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             // to force the video player to update its volume
             CommonScriptableObjects.playerCoords.Set(new Vector2Int(666, 666));

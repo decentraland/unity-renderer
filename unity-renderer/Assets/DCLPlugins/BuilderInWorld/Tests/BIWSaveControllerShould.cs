@@ -30,6 +30,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestSaveActivate()
     {
         //Arrange
@@ -43,6 +44,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestCanSave()
     {
         //Act
@@ -53,6 +55,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestCantSave()
     {
         //Act

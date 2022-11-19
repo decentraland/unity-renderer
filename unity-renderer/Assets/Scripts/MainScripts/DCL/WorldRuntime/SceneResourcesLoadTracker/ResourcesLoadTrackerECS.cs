@@ -23,20 +23,20 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
     private int resourcesReady;
     
     private readonly List<object> resourcesNotReady = new List<object>();
-    private readonly string sceneId;
+    private readonly int sceneNumber;
     private readonly DataStore_ECS7 dataStore;
     
-    public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7,string sceneId)
+    public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7, int sceneNumber)
     {
         this.dataStore = dataStoreEcs7;
-        this.sceneId = sceneId;
-        dataStore.pendingSceneResources.AddOrSet(sceneId, new BaseRefCountedCollection<object>());
-        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated += ResourcesUpdate;
+        this.sceneNumber = sceneNumber;
+        dataStore.pendingSceneResources.AddOrSet(sceneNumber, new BaseRefCountedCollection<object>());
+        dataStore.pendingSceneResources[sceneNumber].OnRefCountUpdated += ResourcesUpdate;
     }
 
     public void Dispose()
     {
-        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated -= ResourcesUpdate;
+        dataStore.pendingSceneResources[sceneNumber].OnRefCountUpdated -= ResourcesUpdate;
     }
 
     public void PrintWaitingResourcesDebugInfo()

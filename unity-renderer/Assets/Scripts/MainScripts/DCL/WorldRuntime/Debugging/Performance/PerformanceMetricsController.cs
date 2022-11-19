@@ -31,7 +31,7 @@ namespace DCL
         private int currentIndex = 0;
         private long totalAllocSample;
         private bool isTrackingProfileRecords = false;
-        private readonly Dictionary<string, long> scenesMemoryScore = new Dictionary<string, long>();
+        private readonly Dictionary<int, long> scenesMemoryScore = new Dictionary<int, long>();
 
         public PerformanceMetricsController()
         {
@@ -101,7 +101,7 @@ namespace DCL
                 if (parcelSceneValue.isPersistent)
                     continue; 
 
-                scenesMemoryScore.Add(parcelSceneValue.sceneData.id, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
+                scenesMemoryScore.Add(parcelSceneValue.sceneData.sceneNumber, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
             }
 
             object drawCalls = null;

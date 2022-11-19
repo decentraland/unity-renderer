@@ -29,9 +29,9 @@ namespace Tests
         public void SetUp()
         {
             testUtils = new ECS7TestUtilsScenesAndEntities();
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(111);
-
+                
             renderersInternalComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
             ECSComponentData<InternalRenderers> internalCompData = null;
             renderersInternalComponent.GetFor(scene, entity).Returns((info) => internalCompData);

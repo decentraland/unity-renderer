@@ -38,8 +38,8 @@ namespace Tests
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            scene0 = testUtils.CreateScene("temptation0");
-            scene1 = testUtils.CreateScene("temptation1");
+            scene0 = testUtils.CreateScene(666);
+            scene1 = testUtils.CreateScene(777);
         }
 
         [TearDown]
