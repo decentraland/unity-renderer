@@ -28,6 +28,12 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         TestUtils.SharedComponentAttach(texture3, entity);
         TestUtils.SharedComponentAttach(texture4, entity);
 
+        yield return texture1.routine;
+        yield return texture2.routine;
+        yield return texture2.routine;
+        yield return texture3.routine;
+        yield return texture4.routine;
+        yield return planeShape.routine;
         yield return material1.routine;
 
         Assert.That( scene.metricsCounter.currentCount.textures, Is.EqualTo(1) );
