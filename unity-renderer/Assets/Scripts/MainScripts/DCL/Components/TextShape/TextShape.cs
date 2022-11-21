@@ -79,9 +79,7 @@ namespace DCL.Components
         private void OnUpdate()
         {
             if (cachedModel.billboard && mainCamera != null)
-            {
                 transform.forward = mainCamera.transform.forward;
-            }
         }
 
         new public Model GetModel() { return cachedModel; }
