@@ -52,6 +52,7 @@ namespace DCL
 
         public int usedObjectsCount => usedObjects.Count;
 
+
         public Pool(string name, int maxPrewarmCount)
         {
             if (PoolManager.USE_POOL_CONTAINERS)

@@ -36,7 +36,7 @@ namespace DCL
         public CustomYieldInstruction msgYieldInstruction;
 
         public MessagingBusType type;
-        public string debugTag;
+        public int debugSceneNumber;
 
         public MessagingController owner;
         private IMessagingControllersManager manager;
@@ -88,7 +88,8 @@ namespace DCL
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
             lock (unreliableMessages)
-            {
+            {                
+                // TODO: If we check here for 'if (message == null || string.IsNullOrEmpty(message.message))' loading the scene breaks, as we get empty messages every frame... 
                 if (message == null)
                     throw new Exception("A null message?");
 
@@ -192,7 +193,7 @@ namespace DCL
                     RemoveUnreliableMessage(m);
 
                 bool shouldLogMessage = VERBOSE;
-
+                
                 try
                 {
                     switch (m.type)
@@ -241,7 +242,7 @@ namespace DCL
 
                             break;
                         case QueuedSceneMessage.Type.UNLOAD_PARCEL:
-                            handler.UnloadParcelSceneExecute(m.message);
+                        handler.UnloadParcelSceneExecute(m.sceneNumber);
                             ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
 
                             break;
@@ -324,7 +325,7 @@ namespace DCL
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
-            string finalTag = WorldStateUtils.TryToGetSceneCoordsID(bus.debugTag);
+            string finalTag = WorldStateUtils.TryToGetSceneCoordsFromSceneNumber(bus.debugSceneNumber);
 
             if (logType)
             {

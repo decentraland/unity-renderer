@@ -25,10 +25,9 @@ namespace SocialFeaturesAnalytics
         void SendPlayerJoin(PlayerActionSource source);
         void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation);
         void SendEmptyChannelCreated(string channelName, ChannelJoinedSource source);
-        void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source);
+        void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source, string method);
         void SendLeaveChannel(string channelId, ChannelLeaveSource source);
         void SendChannelSearch(string text);
-        void SendMessageSentToChannel(string channelName, int bodyLength, string source);
         void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source);
     }
 }

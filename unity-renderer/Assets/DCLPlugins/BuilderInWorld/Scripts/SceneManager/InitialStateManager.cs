@@ -149,7 +149,7 @@ namespace DCL.Builder
                 StatelessManifest statelessManifest = JsonConvert.DeserializeObject<StatelessManifest>(statelesString);
                 manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(size, landCoords);
                 manifest.scene = ManifestTranslator.StatelessToWebBuilderScene(statelessManifest, size);
-                manifest.project.scene_id = manifest.scene.id;
+                manifest.project.scene_number = manifest.scene.sceneNumber;
             }
             catch { }
 

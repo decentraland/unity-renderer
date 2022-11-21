@@ -51,7 +51,7 @@ namespace DCL
 
         public bool dirty { get; private set; }
 
-        private string sceneId;
+        private int sceneNumber;
 
         private Vector2Int scenePosition;
 
@@ -60,10 +60,10 @@ namespace DCL
         private DataStore_WorldObjects data;
         private bool enabled = false;
 
-        public SceneMetricsCounter(DataStore_WorldObjects dataStore, string sceneId, Vector2Int scenePosition, int sceneParcelCount)
+        public SceneMetricsCounter(DataStore_WorldObjects dataStore, int sceneNumber, Vector2Int scenePosition, int sceneParcelCount)
         {
             this.data = dataStore;
-            Configure(sceneId, scenePosition, sceneParcelCount);
+            Configure(sceneNumber, scenePosition, sceneParcelCount);
         }
 
         public SceneMetricsCounter(DataStore_WorldObjects dataStore)
@@ -71,13 +71,13 @@ namespace DCL
             this.data = dataStore;
         }
 
-        public void Configure(string sceneId, Vector2Int scenePosition, int sceneParcelCount)
+        public void Configure(int sceneNumber, Vector2Int scenePosition, int sceneParcelCount)
         {
-            this.sceneId = sceneId;
+            this.sceneNumber = sceneNumber;
             this.scenePosition = scenePosition;
             this.sceneParcelCount = sceneParcelCount;
 
-            Assert.IsTrue( !string.IsNullOrEmpty(sceneId), "Scene must have an ID!" );
+            Assert.IsTrue( sceneNumber > 0, "Scene must have a scene number!" );
             maxCountValue = ComputeMaxCount();
         }
 
@@ -85,13 +85,12 @@ namespace DCL
         {
         }
 
-
         public void Enable()
         {
             if ( enabled )
                 return;
 
-            var sceneData = data.sceneData[sceneId];
+            var sceneData = data.sceneData[sceneNumber];
 
             sceneData.materials.OnAdded += OnDataChanged;
             sceneData.materials.OnRemoved += OnDataChanged;
@@ -127,7 +126,7 @@ namespace DCL
             if ( !enabled )
                 return;
 
-            var sceneData = data.sceneData[sceneId];
+            var sceneData = data.sceneData[sceneNumber];
 
             sceneData.materials.OnAdded -= OnDataChanged;
             sceneData.materials.OnRemoved -= OnDataChanged;
@@ -217,7 +216,7 @@ namespace DCL
 
             UpdateMetrics();
 
-            Interface.WebInterface.ReportOnMetricsUpdate(sceneId, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
+            Interface.WebInterface.ReportOnMetricsUpdate(sceneNumber, currentCountValue.ToMetricsModel(), maxCount.ToMetricsModel());
         }
 
         void OnMeshAdded(Mesh mesh)
@@ -349,12 +348,12 @@ namespace DCL
 
         private void UpdateMetrics()
         {
-            if (string.IsNullOrEmpty(sceneId) || data == null || !data.sceneData.ContainsKey(sceneId))
+            if (sceneNumber <= 0 || data == null || !data.sceneData.ContainsKey(sceneNumber))
                 return;
 
-            if (data != null && data.sceneData.ContainsKey(sceneId))
+            if (data != null && data.sceneData.ContainsKey(sceneNumber))
             {
-                var sceneData = data.sceneData[sceneId];
+                var sceneData = data.sceneData[sceneNumber];
 
                 if (sceneData != null)
                 {
@@ -384,23 +383,23 @@ namespace DCL
 
                 bool firstOffense = false;
 
-                if (!metricsData.worstMetricOffenses.ContainsKey(sceneId))
+                if (!metricsData.worstMetricOffenses.ContainsKey(sceneNumber))
                 {
                     firstOffense = true;
-                    metricsData.worstMetricOffenses[sceneId] = currentCountValue.Clone();
+                    metricsData.worstMetricOffenses[sceneNumber] = currentCountValue.Clone();
                 }
 
-                SceneMetricsModel worstOffense = metricsData.worstMetricOffenses[sceneId];
+                SceneMetricsModel worstOffense = metricsData.worstMetricOffenses[sceneNumber];
                 SceneMetricsModel currentOffense = maxCountValue - currentCountValue;
 
                 if ( firstOffense )
-                    logger.Verbose($"New offending scene {sceneId} ({scenePosition})!\n{currentCountValue}");
+                    logger.Verbose($"New offending scene with scene number {sceneNumber} ({scenePosition})!\n{currentCountValue}");
 
                 if ( currentOffense < worstOffense )
                     return;
 
-                metricsData.worstMetricOffenses[sceneId] = currentOffense;
-                logger.Verbose($"New offending scene {sceneId} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
+                metricsData.worstMetricOffenses[sceneNumber] = currentOffense;
+                logger.Verbose($"New offending scene with scene number {sceneNumber} {scenePosition}!\nmetrics: {currentCountValue}\nlimits: {maxCountValue}\ndelta:{currentOffense}");
             }
         }
         

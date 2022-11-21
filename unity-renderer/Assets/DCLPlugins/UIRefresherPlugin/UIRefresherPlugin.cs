@@ -12,13 +12,13 @@ namespace DCLPlugins.UIRefresherPlugin
         public UIRefresherPlugin()
         {
             controller = new UIRefresherController(Environment.i.platform.updateEventHandler, 
-                CommonScriptableObjects.sceneID,
+                CommonScriptableObjects.sceneNumber,
                 DataStore.i.HUDs.dirtyShapes);
         }
         
         public void Dispose()
         {
-            DataStore.i.HUDs.dirtyShapes.Set(new Dictionary<string, Queue<IUIRefreshable>>());
+            DataStore.i.HUDs.dirtyShapes.Set(new Dictionary<int, Queue<IUIRefreshable>>());
             controller.Dispose();
         }
     }

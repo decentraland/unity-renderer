@@ -1,10 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Channel = DCL.Chat.Channels.Channel;
-using System.Collections.Generic;
 using SocialFeaturesAnalytics;
-using DCL.Chat.Channels;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
 {
@@ -17,7 +16,6 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly DataStore dataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly IUserProfileBridge userProfileBridge;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private ISearchChannelsWindowView view;
         private DateTime loadStartedTimestamp = DateTime.MinValue;
@@ -38,14 +36,12 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
-            IUserProfileBridge userProfileBridge,
             IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.chatController = chatController;
             this.mouseCatcher = mouseCatcher;
             this.dataStore = dataStore;
             this.socialAnalytics = socialAnalytics;
-            this.userProfileBridge = userProfileBridge;
             this.channelsFeatureFlagService = channelsFeatureFlagService;
         }
 
@@ -98,6 +94,7 @@ namespace DCL.Chat.HUD
                 view.OnJoinChannel += HandleJoinChannel;
                 view.OnLeaveChannel += HandleLeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
+                view.OnOpenChannel += NavigateToChannel;
                 chatController.OnChannelSearchResult += ShowRequestedChannels;
                 chatController.OnChannelUpdated += UpdateChannelInfo;
                 
@@ -118,6 +115,14 @@ namespace DCL.Chat.HUD
                 ClearListeners();
                 view.Hide();
             }
+        }
+
+        private void NavigateToChannel(string channelId)
+        {
+            var channel = chatController.GetAllocatedChannel(channelId);
+            if (channel == null) return;
+            if (!channel.Joined) return;
+            dataStore.channels.channelToBeOpened.Set(channelId, true);
         }
 
         private void OpenChannelCreationWindow()
@@ -210,6 +215,7 @@ namespace DCL.Chat.HUD
             view.OnJoinChannel -= HandleJoinChannel;
             view.OnLeaveChannel -= HandleLeaveChannel;
             view.OnCreateChannel -= OpenChannelCreationWindow;
+            view.OnOpenChannel -= NavigateToChannel;
         }
 
         private async UniTask WaitTimeoutThenHideLoading(CancellationToken cancellationToken)

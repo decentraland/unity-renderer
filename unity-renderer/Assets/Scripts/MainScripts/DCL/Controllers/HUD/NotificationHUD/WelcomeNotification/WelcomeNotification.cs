@@ -19,7 +19,7 @@ public static class WelcomeNotification
         return new Model()
         {
             message = notificationText,
-            scene = "",
+            scene = -1,
             type = Type.GENERIC_WITHOUT_BUTTON,
             timer = NOTIFICATION_DURATION
         };

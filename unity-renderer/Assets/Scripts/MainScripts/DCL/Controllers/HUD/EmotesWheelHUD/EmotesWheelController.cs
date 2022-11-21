@@ -154,7 +154,7 @@ namespace DCL.EmotesWheel
 
         public void SetVisibility_Internal(bool visible)
         {
-            if (isStartMenuOpen.Get())
+            if (visible && isStartMenuOpen.Get())
                 return;
 
             if (emoteJustTriggeredFromShortcut.Get())

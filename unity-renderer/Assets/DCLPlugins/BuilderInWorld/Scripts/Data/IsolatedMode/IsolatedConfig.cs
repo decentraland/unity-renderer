@@ -23,7 +23,7 @@ public class IsolatedBuilderConfig
 
 public class ILand
 {
-    public string sceneId;
+    public int sceneNumber;
     public string baseUrl;
     public string baseUrlBundles;
 

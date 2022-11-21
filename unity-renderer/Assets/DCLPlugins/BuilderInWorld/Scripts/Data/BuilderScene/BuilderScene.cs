@@ -34,7 +34,7 @@ namespace DCL.Builder
         {
             manifest.scene = ManifestTranslator.ParcelSceneToWebBuilderScene((ParcelScene)scene);
             manifest.project.updated_at = DateTime.UtcNow;
-            manifest.project.scene_id = manifest.scene.id;
+            manifest.project.scene_number = manifest.scene.sceneNumber;
         }
 
         public void SetScene(IParcelScene scene) { this.scene = scene; }
