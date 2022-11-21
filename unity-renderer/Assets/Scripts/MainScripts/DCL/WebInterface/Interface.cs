@@ -864,7 +864,6 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
-    [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(int sceneNumber, byte[] bytes, int size);
 
     public static System.Action<string, string> OnMessageFromEngine;
 #else
