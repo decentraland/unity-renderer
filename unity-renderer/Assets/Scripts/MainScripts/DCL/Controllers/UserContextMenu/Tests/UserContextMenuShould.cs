@@ -25,6 +25,7 @@ public class UserContextMenuShould
 
         friendsApiBridge = Substitute.For<IFriendsApiBridge>();
         FriendsController.CreateSharedInstance(friendsApiBridge);
+        profileController = new GameObject().AddComponent<UserProfileController>();
         profileController.AddUserProfileToCatalog(new UserProfileModel()
         {
             name = TEST_USER_ID,
