@@ -4353,7 +4353,6 @@ GameObject:
   - component: {fileID: 8415235494724703300}
   - component: {fileID: 3022169264631731963}
   - component: {fileID: 3342182611059737052}
-  - component: {fileID: 730766713376546607}
   m_Layer: 5
   m_Name: PreviewInput
   m_TagString: Untagged
@@ -4520,23 +4519,6 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!114 &730766713376546607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3916400858442282480}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 625701827872125648}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!1 &4016688292994618293
 GameObject:
   m_ObjectHideFlags: 0
@@ -5950,7 +5932,6 @@ GameObject:
   - component: {fileID: 5460771661579434760}
   - component: {fileID: 672885884720987175}
   - component: {fileID: 3034082306534631928}
-  - component: {fileID: 7579873655745138155}
   m_Layer: 5
   m_Name: EditInput
   m_TagString: Untagged
@@ -6117,23 +6098,6 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!114 &7579873655745138155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4879461777387720195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 625701827872125648}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!1 &4897826523860607294
 GameObject:
   m_ObjectHideFlags: 0
@@ -6323,9 +6287,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8183230728845705687}
-  - component: {fileID: 7364899855077846383}
-  - component: {fileID: 4665175409159933928}
-  - component: {fileID: 625701827872125648}
   - component: {fileID: 7020272023182402879}
   - component: {fileID: 3977902523449707136}
   m_Layer: 5
@@ -6354,53 +6315,6 @@ RectTransform:
   m_AnchoredPosition: {x: -24.434937, y: -19.99997}
   m_SizeDelta: {x: 13.130005, y: 14}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!225 &7364899855077846383
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4916867080408054342}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
---- !u!95 &4665175409159933928
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4916867080408054342}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &625701827872125648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4916867080408054342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hideOnEnable: 1
-  animSpeedFactor: 1
-  disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
 --- !u!222 &7020272023182402879
 CanvasRenderer:
   m_ObjectHideFlags: 0
