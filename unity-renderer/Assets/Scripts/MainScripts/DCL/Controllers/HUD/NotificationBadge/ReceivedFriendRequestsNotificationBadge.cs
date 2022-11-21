@@ -1,3 +1,5 @@
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 

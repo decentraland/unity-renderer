@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using DCL.Social.Friends;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;

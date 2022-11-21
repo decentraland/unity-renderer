@@ -4,6 +4,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 

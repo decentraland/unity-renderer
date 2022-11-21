@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL.Social.Friends;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

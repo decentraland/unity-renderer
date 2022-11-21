@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System.Collections;
 using DCL;
+using DCL.Social.Friends;
 using NSubstitute.ReceivedExtensions;
 using UnityEngine;
 using UnityEngine.TestTools;

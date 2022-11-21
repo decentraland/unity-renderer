@@ -1,4 +1,5 @@
 using System;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

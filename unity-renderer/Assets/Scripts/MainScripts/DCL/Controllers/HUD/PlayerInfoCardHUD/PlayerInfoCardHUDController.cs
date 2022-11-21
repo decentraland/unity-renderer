@@ -5,6 +5,8 @@ using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.Assertions;
 
