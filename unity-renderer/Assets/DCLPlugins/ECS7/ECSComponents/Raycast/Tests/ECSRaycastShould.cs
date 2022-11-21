@@ -140,6 +140,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator ReturnResultsWithDifferentTimestamps()
         {
+            RaycastComponentHandler.ResetRaycastResponseTimestamp();
+            
             PBRaycast raycast = new PBRaycast()
             {
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },

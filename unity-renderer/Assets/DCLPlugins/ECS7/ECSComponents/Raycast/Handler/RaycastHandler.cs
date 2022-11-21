@@ -119,5 +119,10 @@ namespace DCLPlugins.ECSComponents.Raycast
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
         }
+
+        public static void ResetRaycastResponseTimestamp()
+        {
+            responseTimestamp = 0;
+        }
     }
 } 
