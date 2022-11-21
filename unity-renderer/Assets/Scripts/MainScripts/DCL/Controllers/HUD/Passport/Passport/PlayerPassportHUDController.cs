@@ -11,7 +11,7 @@ namespace DCL.Social.Passports
 {
     public class PlayerPassportHUDController : IHUD
     {
-        internal readonly PlayerPassportHUDView view;
+        internal readonly IPlayerPassportHUDView view;
         internal readonly StringVariable currentPlayerId;
         internal readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -25,7 +25,7 @@ namespace DCL.Social.Passports
         private PassportNavigationComponentController passportNavigationController;
 
         public PlayerPassportHUDController(
-            PlayerPassportHUDView view,
+            IPlayerPassportHUDView view,
             PassportPlayerInfoComponentController playerInfoController,
             PassportPlayerPreviewComponentController playerPreviewController,
             PassportNavigationComponentController passportNavigationController,

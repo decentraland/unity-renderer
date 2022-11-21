@@ -9,7 +9,7 @@ using DCL.Helpers;
 
 namespace DCL.Social.Passports
 {
-    public class PlayerPassportHUDView : BaseComponentView
+    public class PlayerPassportHUDView : BaseComponentView, IPlayerPassportHUDView
     {
         [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
         [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;

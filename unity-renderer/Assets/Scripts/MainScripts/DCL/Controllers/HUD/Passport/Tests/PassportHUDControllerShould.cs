@@ -7,75 +7,78 @@ using DCL.Social.Passports;
 using DCL;
 using SocialFeaturesAnalytics;
 
-public class PassportHUDControllerShould
+namespace DCL.Social.Passports
 {
-    private PlayerPassportHUDController controller;
-    private PlayerPassportHUDView view;
-    private PassportPlayerInfoComponentController playerInfoController;
-    private PassportPlayerPreviewComponentController playerPreviewController;
-    private PassportNavigationComponentController passportNavigationController;
-    private StringVariable currentPlayerInfoCardId;
-    private IUserProfileBridge userProfileBridge;
-    private ISocialAnalytics socialAnalytics;
-    private DataStore dataStore;
-    private IProfanityFilter profanityFilter;
-    private IFriendsController friendsController;
-
-    [SetUp]
-    public void SetUp()
+    public class PassportHUDControllerShould
     {
-        view = PlayerPassportHUDView.CreateView();
-        
-        currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
-        userProfileBridge = Substitute.For<IUserProfileBridge>();
-        socialAnalytics = Substitute.For<ISocialAnalytics>();
-        dataStore = Substitute.For<DataStore>();
-        profanityFilter = Substitute.For<IProfanityFilter>();
-        friendsController = Substitute.For<IFriendsController>();
-        playerInfoController = new PassportPlayerInfoComponentController(
-                            currentPlayerInfoCardId, 
-                            view.PlayerInfoView, 
-                            dataStore, 
-                            profanityFilter, 
-                            friendsController, 
-                            userProfileBridge);
+        private PlayerPassportHUDController controller;
+        private IPlayerPassportHUDView view;
+        private PassportPlayerInfoComponentController playerInfoController;
+        private PassportPlayerPreviewComponentController playerPreviewController;
+        private PassportNavigationComponentController passportNavigationController;
+        private StringVariable currentPlayerInfoCardId;
+        private IUserProfileBridge userProfileBridge;
+        private ISocialAnalytics socialAnalytics;
+        private DataStore dataStore;
+        private IProfanityFilter profanityFilter;
+        private IFriendsController friendsController;
 
-        playerPreviewController = new PassportPlayerPreviewComponentController(view.PlayerPreviewView);
-        passportNavigationController = new PassportNavigationComponentController(
-                            view.PassportNavigationView,
-                            profanityFilter,
-                            dataStore);
+        [SetUp]
+        public void SetUp()
+        {
+            view = Substitute.For<IPlayerPassportHUDView>();
+            
+            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
+            dataStore = Substitute.For<DataStore>();
+            profanityFilter = Substitute.For<IProfanityFilter>();
+            friendsController = Substitute.For<IFriendsController>();
+            playerInfoController = new PassportPlayerInfoComponentController(
+                                currentPlayerInfoCardId, 
+                                Substitute.For<IPassportPlayerInfoComponentView>(), 
+                                dataStore, 
+                                profanityFilter, 
+                                friendsController, 
+                                userProfileBridge);
 
-        controller = new PlayerPassportHUDController(
-            view,
-            playerInfoController,
-            playerPreviewController,
-            passportNavigationController,
-            currentPlayerInfoCardId,
-            userProfileBridge,
-            socialAnalytics
-        );
+            playerPreviewController = new PassportPlayerPreviewComponentController(Substitute.For<IPassportPlayerPreviewComponentView>());
+            passportNavigationController = new PassportNavigationComponentController(
+                                Substitute.For<IPassportNavigationComponentView>(),
+                                profanityFilter,
+                                dataStore);
+
+            controller = new PlayerPassportHUDController(
+                view,
+                playerInfoController,
+                playerPreviewController,
+                passportNavigationController,
+                currentPlayerInfoCardId,
+                userProfileBridge,
+                socialAnalytics
+            );
+        }
+
+        [TearDown]    
+        public void TearDown()
+        {
+            controller.Dispose();
+        }
+
+        [Test]
+        public void SetVisibilityTrueCorrectly()
+        {
+            controller.SetVisibility(true);
+
+            view.Received(1).SetVisibility(true);
+        }
+
+        [Test]
+        public void SetVisibilityFalseCorrectly()
+        {
+            controller.SetVisibility(false);
+
+            view.Received(1).SetVisibility(false);
+        }
     }
-
-    [TearDown]    
-    public void TearDown()
-    {
-        controller.Dispose();
     }
-
-    [Test]
-    public void SetVisibilityTrueCorrectly()
-    {
-        controller.SetVisibility(true);
-
-        Assert.IsTrue(view.gameObject.activeSelf);
-    }
-
-    [Test]
-    public void SetVisibilityFalseCorrectly()
-    {
-        controller.SetVisibility(false);
-
-        Assert.IsFalse(view.gameObject.activeSelf);
-    }
-}
