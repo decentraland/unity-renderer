@@ -51,6 +51,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntitySelectDeselect()
     {
         Assert.IsFalse(entity.isSelected);
@@ -65,6 +66,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntitySelectionOperations()
     {
         BIWEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
@@ -83,6 +85,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntityCreationDelete()
     {
         BIWEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
@@ -94,6 +97,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntityDuplicateName()
     {
         string name = "Test";
@@ -107,6 +111,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntityDuplicate()
     {
         IDCLEntity duplicateEntity = entityHandler.DuplicateEntity(entity).rootEntity;
@@ -116,6 +121,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ReportTransform()
     {
         //Act
@@ -127,6 +133,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestEntityInPointer()
     {
         //Act
@@ -137,6 +144,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntityClicked()
     {
         //Arrange
@@ -150,6 +158,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EntityDoubleClicked()
     {
         //Act
@@ -161,6 +170,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CancelLastSelection()
     {
         //Arrange
@@ -174,6 +184,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeLockStateSelectedEntities()
     {
         //Arrange
@@ -188,6 +199,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeShowStateSelectedEntities()
     {
         //Arrange
@@ -202,6 +214,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ShowAllEntities()
     {
         //Arrange
@@ -215,6 +228,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GetAllVoxelEntities()
     {
         //Arrange
@@ -228,6 +242,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DestroyLastCreatedEntities()
     {
         //Arrange
@@ -242,6 +257,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DeleteSingleEntity()
     {
         //Arrange
@@ -256,6 +272,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
+    [Explicit("BIW is deprecated")]
     public IEnumerator DeleteEntitiesOutsideBoundaries()
     {
         //Arrange
@@ -281,6 +298,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckEntitiesOutsideBoundaries()
     {
         //Arrange
@@ -295,6 +313,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InputMouseDown()
     {
         //Arrange
@@ -308,6 +327,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InputMouseUp()
     {
         //Arrange
@@ -321,6 +341,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetMultiSelectionActive()
     {
         //Arrange
@@ -334,6 +355,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ReportTransformUpdateTime()
     {
         //Act
@@ -344,6 +366,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void IsPointerInSelectedEntity()
     {
         //Arrange
@@ -358,6 +381,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DeleteSelectedEntitiesInput()
     {
         //Arrange
@@ -373,6 +397,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DuplicateSelectedEntitiesInput()
     {
         //Arrange
@@ -389,6 +414,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SelectEntityFromList()
     {
         //Arrange
@@ -404,6 +430,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ReselectEntities()
     {
         //Arrange
@@ -418,6 +445,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CreateNFTEntityFromJSON()
     {
         //Arrange
@@ -432,6 +460,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeEntityBoundsCheckerStatus()
     {
         //Act
@@ -442,6 +471,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GetNameFromCatalog()
     {
         //Arrange
@@ -459,6 +489,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeEntityVisibilityStatus()
     {
         //Arrange
@@ -473,6 +504,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeEntityLockStatus()
     {
         //Arrange

@@ -36,12 +36,12 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(DataStore.i,Settings.i, AssetPromiseKeeper_AudioClip.i, CommonScriptableObjects.sceneID);
+            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(DataStore.i,Settings.i, AssetPromiseKeeper_AudioClip.i, CommonScriptableObjects.sceneNumber);
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.sceneNumber = 1;
 
             ContentProvider_Dummy providerDummy = new ContentProvider_Dummy();
 
@@ -119,7 +119,7 @@ namespace DCL.ECSComponents.Test
         {
             // Arrange
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
-            CommonScriptableObjects.sceneID.Set("1");
+            CommonScriptableObjects.sceneNumber.Set(1);
             
             PBAudioSource model = CreateAudioSourceModel();
             model.Volume = 0f;

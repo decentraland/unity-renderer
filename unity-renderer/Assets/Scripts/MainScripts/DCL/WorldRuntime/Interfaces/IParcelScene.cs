@@ -21,6 +21,7 @@ namespace DCL.Controllers
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
+        bool isPortableExperience { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
         string GetSceneName();

@@ -139,7 +139,7 @@ namespace DCL.Components
 
             canvas.sortingOrder = -1;
 
-            if (scene.isPersistent && scene.sceneData.id != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
+            if (scene.isPersistent && scene.sceneData.sceneNumber != EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER)
             {
                 canvas.sortingOrder -= 1;
             }

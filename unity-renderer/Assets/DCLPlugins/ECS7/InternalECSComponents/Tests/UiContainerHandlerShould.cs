@@ -22,7 +22,7 @@ namespace Tests
             internalUiContainer = internalComponents.uiContainerComponent;
 
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities(manager);
-            scene = sceneTestHelper.CreateScene("temptation");
+            scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(111);
 
             var initialModel = new InternalUiContainer();

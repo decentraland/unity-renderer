@@ -11,7 +11,7 @@ public class AvatarReporterControllerShould
 {
     private IAvatarReporterController reporterController;
     private IWorldState worldState;
-    private Dictionary<string, IParcelScene> scenes;
+    private Dictionary<int, IParcelScene> scenes;
 
     [SetUp]
     public void SetUp()
@@ -24,68 +24,70 @@ public class AvatarReporterControllerShould
         var scene0 = Substitute.For<IParcelScene>();
         scene0.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = "scene0",
+            sceneNumber = 1,
+            // id = "scene0",
             parcels = new[] { Vector2Int.zero }
         });
 
-        scenes = new Dictionary<string, IParcelScene>() { { "scene0", scene0 } };
+        scenes = new Dictionary<int, IParcelScene>() { { 1, scene0 } };
 
         worldState.GetLoadedScenes().Returns(scenes);
-        worldState.GetSceneIdByCoords(Vector2Int.zero).Returns("scene0");
-        worldState.GetSceneIdByCoords(Arg.Is<Vector2Int>(v => v != Vector2Int.zero)).Returns(default(string));
+        worldState.GetSceneNumberByCoords(Vector2Int.zero).Returns(1);
+        worldState.GetSceneNumberByCoords(Arg.Is<Vector2Int>(v => v != Vector2Int.zero)).Returns(default(int));
     }
 
     [Test]
     public void ReportSceneWhenIsSetup()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "1");
+        // reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
     public void DontReportSceneWhenIsNotSetup()
     {
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
     public void DontReportSceneWhenIsNotFromAvatarGlobalScene()
     {
-        reporterController.SetUp("Temptation", "1");
+        reporterController.SetUp(3, "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
     public void DontReportSceneAfterAvatarRemoved()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
         reporterController.ReportAvatarRemoved();
         reporterController.reporter.Received(1).ReportAvatarRemoved( "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.DidNotReceive().ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
     public void DontReportSceneIfAvatarDidntMove()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID,  "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER,  "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
     public void ReportSceneWhenMovingFromNotLoadedToLoadedScene()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", null);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", -1);
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
     }
 
     [Test]
@@ -93,70 +95,70 @@ public class AvatarReporterControllerShould
     {
         var position = new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
 
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID,  "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER,  "1");
         reporterController.ReportAvatarPosition(position);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", null);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", -1);
 
         var loadScene = Substitute.For<IParcelScene>();
         Vector2Int scenePos = new Vector2Int(1, 0);
 
-        string sceneId = "sceneLoaded";
+        int sceneNumber = 100;
 
         loadScene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = sceneId,
+            sceneNumber = sceneNumber,
             parcels = new[] { scenePos }
         });
 
-        scenes.Add(sceneId, loadScene);
-        worldState.GetSceneIdByCoords(scenePos).Returns(sceneId);
+        scenes.Add(sceneNumber, loadScene);
+        worldState.GetSceneNumberByCoords(scenePos).Returns(sceneNumber);
 
         reporterController.ReportAvatarPosition(position);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneId);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneNumber);
     }
 
     [Test]
     public void ReportSceneWhenMovingFromLoadedToLoadedScene()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID,  "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER,  "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
 
         var loadScene = Substitute.For<IParcelScene>();
         Vector2Int position = new Vector2Int(1, 0);
 
-        string sceneId = "sceneLoaded";
+        int sceneNumber = 100;
 
         loadScene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = sceneId,
+            sceneNumber = sceneNumber,
             parcels = new[] { position }
         });
 
-        scenes.Add(sceneId, loadScene);
-        worldState.GetSceneIdByCoords(position).Returns(sceneId);
+        scenes.Add(sceneNumber, loadScene);
+        worldState.GetSceneNumberByCoords(position).Returns(sceneNumber);
         
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneId);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", sceneNumber);
     }
 
     [Test]
     public void ReportSceneWhenMovingFromLoadedToNotLoadedScene()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
         reporterController.ReportAvatarPosition(Vector3.one);
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", "scene0");
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", 1);
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", null);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", -1);
     }
 
     [Test]
     public void DontReportSceneWhenMovingFromNotLoadedToNotLoadedScene()
     {
-        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER, "1");
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", null);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange("1", -1);
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE * 2, 0, 0));
-        reporterController.reporter.Received(1).ReportAvatarSceneChange( "1", null);
+        reporterController.reporter.Received(1).ReportAvatarSceneChange( "1", -1);
     }
 }

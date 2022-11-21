@@ -62,7 +62,7 @@ namespace Tests
         public void CreateEntity()
         {
             const int ENTITY_ID = 42;
-            ECS7TestScene scene = testUtils.CreateScene("temptation");
+            ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
             CRDTMessage addComponentMessage = new CRDTMessage()
             {
@@ -85,7 +85,7 @@ namespace Tests
         public void RemoveEntity()
         {
             const int ENTITY_ID = 42;
-            ECS7TestScene scene = testUtils.CreateScene("temptation");
+            ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentMessage = new CRDTMessage()
@@ -120,7 +120,7 @@ namespace Tests
         public void NotRemoveEntityIfHasComponentLeft()
         {
             const int ENTITY_ID = 42;
-            ECS7TestScene scene = testUtils.CreateScene("temptation");
+            ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
@@ -177,7 +177,7 @@ namespace Tests
         public void RemoveComponentsIfEntityRemoved()
         {
             const int ENTITY_ID = 42;
-            ECS7TestScene scene = testUtils.CreateScene("temptation");
+            ECS7TestScene scene = testUtils.CreateScene(666);
             CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage addComponentString = new CRDTMessage()
@@ -209,7 +209,7 @@ namespace Tests
         [Test]
         public void TestSanityCheck()
         {
-            ECS7TestScene scene = testUtils.CreateScene("temptation");
+            ECS7TestScene scene = testUtils.CreateScene(666);
 
             IDCLEntity entity = null;
             scene.entities.TryGetValue(0, out entity);

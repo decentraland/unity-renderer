@@ -173,7 +173,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -196,7 +196,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -220,7 +220,7 @@ namespace Tests
             scene.isPersistent = false;
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -233,7 +233,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // Check the volume
             Assert.AreEqual(unityAudioSource.volume, 0f);
@@ -246,7 +246,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -259,7 +259,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             // Check the volume
             Assert.AreEqual(unityAudioSource.volume, dclAudioSource.volume);
@@ -273,7 +273,7 @@ namespace Tests
             scene.isPersistent = true;
 
             // Set current scene with this scene's id
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             var entity = TestUtils.CreateSceneEntity(scene);
             yield return null;
@@ -286,7 +286,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneNumber.Set(666666);
 
             // Check the volume
             Assert.AreNotEqual(unityAudioSource.volume, 0);
@@ -339,10 +339,10 @@ namespace Tests
 
             yield return component.routine;
 
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
             Assert.IsTrue(component.isPlaying);
 
-            CommonScriptableObjects.sceneID.Set("Other_id");
+            CommonScriptableObjects.sceneNumber.Set(2);
             Assert.IsFalse(component.isPlaying);
         }
 
@@ -365,11 +365,11 @@ namespace Tests
             // IsPersistent value should be set manually because the test scenes have it set 
             // as true by default.
             scene.isPersistent = false;
-            CommonScriptableObjects.sceneID.Set("Fake_Id");
+            CommonScriptableObjects.sceneNumber.Set(6);
             Assert.IsFalse(component.isPlaying);
 
             scene.isPersistent = true;
-            CommonScriptableObjects.sceneID.Set("Another_Fake_Id");
+            CommonScriptableObjects.sceneNumber.Set(7);
             Assert.IsTrue(component.isPlaying);
         }
 

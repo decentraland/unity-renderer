@@ -37,6 +37,7 @@ public class BIWNftsShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void NftsOneTimeUsage()
     {
         string idToTest = BIWNFTController.i.GetNfts()[0].assetContract.address;
@@ -51,6 +52,7 @@ public class BIWNftsShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void NftComponent()
     {
         BIWTestUtils.CreateNFT();

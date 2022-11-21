@@ -27,7 +27,7 @@ namespace Tests
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
             handler = new MaterialHandler(internalMaterialComponent);
             testUtils = new ECS7TestUtilsScenesAndEntities();
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
 
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
