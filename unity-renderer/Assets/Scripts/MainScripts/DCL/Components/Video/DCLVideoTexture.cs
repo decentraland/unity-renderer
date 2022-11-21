@@ -58,8 +58,20 @@ namespace DCL.Components
             model = new Model();
 
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+
+            DebugLogFDTest ("Contructor - object.id = " + this.id);
         }
 
+        private void DebugLogFDTest (string debugString)
+        {
+            VERBOSE = true;
+            bool currentDebugState = UnityEngine.Debug.unityLogger.logEnabled;
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            Debug.Log ("FD::DCLVideoTexture() - " + debugString);
+            logger.Info ("FD::LOGGER-DCLVideoTexture() - " + debugString);
+            UnityEngine.Debug.unityLogger.logEnabled = currentDebugState;
+            VERBOSE = false;
+        }
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
@@ -159,6 +171,8 @@ namespace DCL.Components
         {
             if (isInitialized) return;
             isInitialized = true;
+
+            DebugLogFDTest("Initialize() called");
 
             string videoId = scene.sceneData.sceneNumber > 0 ? scene.sceneData.sceneNumber + id : scene.GetHashCode().ToString() + id;
             texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
@@ -315,9 +329,24 @@ namespace DCL.Components
             return (scene.sceneData.sceneNumber == currentSceneNumber) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) //=> SetPlayStateDirty();
+        {
+            SetPlayStateDirty();
 
-        private void OnSceneNumberChanged(int current, int previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+            DebugLogFDTest("In Coords: " + coords + 
+                        "\n scene in SO: " + CommonScriptableObjects.sceneNumber.Get() +
+                        "\n object id " + this.id);
+        }
+
+        private void OnSceneNumberChanged(int current, int previous) //=> isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+        {
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+
+            DebugLogFDTest("OnSceneIDChanged -SceneCaller: " + scene.sceneData.id 
+                + "\n -current scene: " + current 
+                + "\n isPlayerInScene " + isPlayerInScene
+                + "\n CommonScriptableObjects.sceneID.Get(): " + CommonScriptableObjects.sceneNumber.Get());
+        }
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -362,6 +391,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            DebugLogFDTest ("FD:: DCLVideoTexture::Dispose() called");
+
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
