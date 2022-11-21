@@ -133,7 +133,7 @@ jobs:
                 bash ci-editmode-test.sh
                 exit $?
             fi;
-          no_output_timeout: 60m
+          no_output_timeout: 30m
       - run:
           name: nunit-to-junit
           when: always
@@ -179,7 +179,7 @@ jobs:
                 bash ci-playmode-test.sh
                 exit $?
             fi;
-          no_output_timeout: 60m
+          no_output_timeout: 30m
       - run:
           name: nunit-to-junit
           when: always
@@ -228,7 +228,7 @@ jobs:
                 bash ci-benchmark.sh
                 exit $?
             fi;
-          no_output_timeout: 60m
+          no_output_timeout: 30m
       - run:
           name: nunit-to-junit
           when: always
@@ -272,7 +272,7 @@ jobs:
           command: |
             bash ./ci-asset-bundle-test.sh
             exit $?
-          no_output_timeout: 60m
+          no_output_timeout: 30m
       - run:
           name: Cat logs
           when: always
@@ -313,7 +313,7 @@ jobs:
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
-          no_output_timeout: 60m
+          no_output_timeout: 30m
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "./unity-renderer/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
