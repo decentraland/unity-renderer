@@ -10,7 +10,6 @@ using UnityEngine.TestTools;
 
 public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneMetricsCounter
 {
-    [Explicit] // This started failing in Unity 2021.3.6f1 update
     [UnityTest]
     public IEnumerator NotCountIdenticalTexturesWhenManyTextureComponentsAreAdded()
     {
@@ -140,8 +139,7 @@ public class WithTexture_SceneMetricsCounterShould : IntegrationTestSuite_SceneM
         Assert.That( sceneMetrics.textures, Is.EqualTo(0), "Texture count fail" );
     }
 
-
-    [Explicit] // This started failing in Unity 2021.3.6f1 update
+    
     [UnityTest]
     public IEnumerator CountManyAttachedTexturesToSinglePBRMaterial()
     {
