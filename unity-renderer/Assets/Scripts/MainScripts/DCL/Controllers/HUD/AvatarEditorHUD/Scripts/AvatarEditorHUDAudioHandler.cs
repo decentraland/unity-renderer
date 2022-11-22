@@ -1,6 +1,5 @@
 using DCL;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Categories = WearableLiterals.Categories;
@@ -111,7 +110,12 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
     void ResetLastClickedWearable() { lastSelectedWearable = null; }
 
-    void OnAvatarAppear(AvatarModel model)
+    private void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
+    {
+        PlayAudio(avatarModelToUpdate);
+    }
+
+    void PlayAudio(AvatarModel model)
     {
         if (!view.isOpen)
             return;
@@ -221,7 +225,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
             view.eyeColorPickerComponent.OnColorChanged += OnEyeColorChanged;
             view.skinColorSelector.OnColorSelectorChange += OnSkinColorChanged;
             view.hairColorPickerComponent.OnColorChanged += OnHairColorChanged;
-            view.OnAvatarAppear += OnAvatarAppear;
+            view.OnAvatarAppearFeedback += AvatarAppearFeedback;
         }
         else
         {
@@ -234,7 +238,12 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
             view.eyeColorPickerComponent.OnColorChanged -= OnEyeColorChanged;
             view.skinColorSelector.OnColorSelectorChange -= OnSkinColorChanged;
             view.hairColorPickerComponent.OnColorChanged -= OnHairColorChanged;
-            view.OnAvatarAppear -= OnAvatarAppear;
+            view.OnAvatarAppearFeedback -= AvatarAppearFeedback;
         }
+    }
+
+    private void OnDestroy()
+    {
+        view.OnSetVisibility -= OnSetAvatarEditorVisibility;
     }
 }

@@ -39,7 +39,7 @@ namespace DCL.ECSComponents.Tests
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
         }
 
@@ -114,7 +114,7 @@ namespace DCL.ECSComponents.Tests
             avatarShape.ApplyHideAvatarModifier();
             
             // Assert
-            avatar.Received(1).AddVisibilityConstrain(AvatarShape.IN_HIDE_AREA);
+            avatar.Received(1).AddVisibilityConstraint(AvatarShape.IN_HIDE_AREA);
             Assert.IsFalse(avatarShape.playerNameContainer.activeInHierarchy);
         }
         

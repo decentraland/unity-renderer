@@ -216,7 +216,7 @@ namespace Tests
             bool eventResult = false;
 
             yield return TestUtils.TestUIClickEventPropagation(
-                scene.sceneData.id,
+                scene.sceneData.sceneNumber,
                 uiContainerRectShape.model.onClick,
                 uiContainerRectShape.referencesContainer.childHookRectTransform,
                 (bool res) =>

@@ -234,11 +234,11 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         Promise<Texture2D> screenshotPromise = new Promise<Texture2D>();
         BIWUtils.MakeGetTextureCall(url, screenshotPromise);
 
-        string scene_id = Guid.NewGuid().ToString();
+        int scene_number = Guid.NewGuid().GetHashCode();
         manifest.project.title += " Copy";
         manifest.project.id = Guid.NewGuid().ToString();
-        manifest.project.scene_id = scene_id;
-        manifest.scene.id = scene_id;
+        manifest.project.scene_number = scene_number;
+        manifest.scene.sceneNumber = scene_number;
         manifest.project.created_at = DateTime.UtcNow;
         manifest.project.updated_at = DateTime.UtcNow;
 
@@ -561,7 +561,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void GoToCoords(Vector2Int coords)
     {
-        WebInterface.GoTo(coords.x, coords.y);
+        Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         SetVisibility(false);
         OnJumpInOrEdit?.Invoke();
     }

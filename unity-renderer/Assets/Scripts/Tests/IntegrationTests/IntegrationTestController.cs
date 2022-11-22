@@ -12,7 +12,7 @@ using UnityEngine.Assertions;
 public class IntegrationTestController : MonoBehaviour
 {
     long entityId = "a5f571bd-bce1-4cf8-a158-b8f3e92e4fb0".GetHashCode();
-    string sceneName = "the-loaded-scene";
+    int sceneNumber = 666;
 
     public IEnumerator Initialize()
     {
@@ -27,7 +27,7 @@ public class IntegrationTestController : MonoBehaviour
 
         var scenesToLoad = new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = sceneName,
+            sceneNumber = sceneNumber,
             basePosition = new Vector2Int(3, 3),
             parcels = new[]
             {
@@ -44,12 +44,12 @@ public class IntegrationTestController : MonoBehaviour
 
         yield return new WaitForAllMessagesProcessed();
 
-        ParcelScene scene = Environment.i.world.state.GetScene(sceneName) as ParcelScene;
+        ParcelScene scene = Environment.i.world.state.GetScene(sceneNumber) as ParcelScene;
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
             TestUtils.CreateSceneMessage(
-                sceneName,
+                sceneNumber,
                 "entityId",
                 "CreateEntity",
                 JsonConvert.SerializeObject(
@@ -62,7 +62,7 @@ public class IntegrationTestController : MonoBehaviour
         //NOTE(Brian): This is making my eyes bleed. (Zak): Twice
         sceneController.SendSceneMessage(
             TestUtils.CreateSceneMessage(
-                sceneName,
+                sceneNumber,
                 "entityId",
                 "SetEntityParent",
                 JsonConvert.SerializeObject(
@@ -106,7 +106,7 @@ public class IntegrationTestController : MonoBehaviour
 
     public IEnumerator Verify()
     {
-        var scene = Environment.i.world.state.GetScene(sceneName) as ParcelScene;
+        var scene = Environment.i.world.state.GetScene(sceneNumber) as ParcelScene;
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);

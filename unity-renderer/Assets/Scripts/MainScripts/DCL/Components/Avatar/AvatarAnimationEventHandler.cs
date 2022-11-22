@@ -5,8 +5,10 @@ using DCL;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
+    const string FOOTSTEP_NAME = "footstep", HEART_NAME = "heart";
     const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
     const float MIN_EVENT_WAIT_TIME = 0.1f;
+    const float HOHOHO_OFFSET = 1.5f;
 
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
@@ -63,13 +65,13 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_FootstepRunLeft()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker("footstep", footL.position, Vector3.up);
+        PlaySticker(FOOTSTEP_NAME, footL.position, Vector3.up);
     }
 
     public void AnimEvent_FootstepRunRight()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker("footstep", footR.position, Vector3.up);
+        PlaySticker(FOOTSTEP_NAME, footR.position, Vector3.up);
     }
 
     public void AnimEvent_ClothesRustleShort() { PlayAudioEvent(clothesRustleShort); }
@@ -83,7 +85,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(clap);
-        PlaySticker("clap", handR.position, Vector3.up);
+        PlaySticker(ANIM_NAME_CLAP, handR.position, Vector3.up, true);
         UpdateEventTime();
     }
 
@@ -96,7 +98,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(throwMoney);
-        PlaySticker("money", handL.position, handL.rotation.eulerAngles);
+        PlaySticker(ANIM_NAME_MONEY, handL.position, handL.rotation.eulerAngles, true);
         UpdateEventTime();
     }
 
@@ -116,7 +118,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     IEnumerator EmitHeartParticle()
     {
         yield return new WaitForSeconds(0.8f);
-        PlaySticker("heart", handR.position, transform.rotation.eulerAngles);
+        PlaySticker(HEART_NAME, handR.position, transform.rotation.eulerAngles, true);
     }
 
     public void AnimEvent_Snowflakes()
@@ -127,17 +129,18 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_SNOWFLAKE))
             return;
 
-        PlaySticker("snowflakes", transform.position, Vector3.zero);
+        PlaySticker("snowflakes", transform.position, Vector3.zero, true);
     }
 
-    public void AnimEvent_Hohoho() {
+    public void AnimEvent_Hohoho()
+    {
         if (LastEventWasTooRecent())
             return;
-
+        
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HOHOHO))
             return;
 
-        PlaySticker("hohoho", transform.position + transform.up * 1.5f, Vector3.zero);
+        PlaySticker(ANIM_NAME_HOHOHO, transform.position + Vector3.up * HOHOHO_OFFSET, Vector3.zero, true);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)
@@ -183,9 +186,9 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     /// <param name="id">ID string of sticker</param>
     /// <param name="position">Position in world space</param>
     /// <param name="rotation">Euler angles</param>
-    void PlaySticker(string id, Vector3 position, Vector3 direction)
+    void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform = false)
     {
         if (stickersController != null)
-            stickersController.PlaySticker(id, position, direction, false);
+            stickersController.PlaySticker(id, position, direction, followTransform);
     }
 }

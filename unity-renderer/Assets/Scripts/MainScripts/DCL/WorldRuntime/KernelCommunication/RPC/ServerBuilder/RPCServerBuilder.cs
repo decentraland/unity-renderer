@@ -13,8 +13,8 @@ namespace RPC
     {
         public static void BuildDefaultServer()
         {
-            RPCContext context = DataStore.i.rpcContext.context;
-            context.crdtContext.messageQueueHandler = Environment.i.world.sceneController;
+            RPCContext context = DataStore.i.rpc.context;
+            context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             BuildDefaultServer(context);
         }
 
@@ -32,6 +32,8 @@ namespace RPC
         {
             return BuildServer(context, transport)
                    .RegisterService(CRDTServiceImpl.RegisterService)
+                   .RegisterService(TransportServiceImpl.RegisterService)
+                   .RegisterService(EmotesRendererServiceImpl.RegisterService)
                    .Build();
         }
 

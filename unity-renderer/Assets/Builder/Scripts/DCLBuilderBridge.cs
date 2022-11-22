@@ -284,11 +284,11 @@ namespace Builder
             }
         }
 
-        public void UnloadBuilderScene(string sceneKey)
+        public void UnloadBuilderScene(int sceneNumber)
         {
             if (LOG_MESSAGES)
-                Debug.Log($"RECEIVE: UnloadBuilderScene {sceneKey}");
-            Environment.i.world.sceneController.UnloadScene(sceneKey);
+                Debug.Log($"RECEIVE: UnloadBuilderScene - scene number:{sceneNumber}");
+            Environment.i.world.sceneController.UnloadScene(sceneNumber);
         }
 
         public void SetSelectedEntities(string msj)
@@ -336,7 +336,7 @@ namespace Builder
         private static ParcelScene GetLoadedScene()
         {
             IWorldState worldState = Environment.i.world.state;
-            return worldState.GetScene(worldState.GetCurrentSceneId()) as ParcelScene;
+            return worldState.GetScene(worldState.GetCurrentSceneNumber()) as ParcelScene;
         }
 
         private void Awake()
@@ -382,7 +382,7 @@ namespace Builder
         private void Start()
         {
             SetCurrentScene();
-            builderWebInterface.SendBuilderSceneStart(currentScene.sceneData.id);
+            builderWebInterface.SendBuilderSceneStart(currentScene.sceneData.sceneNumber);
         }
 
         private void Update()
@@ -496,9 +496,9 @@ namespace Builder
 
         private void OnSelectionChanged(Transform selectionParent, List<EditableEntity> selectedEntitiesList) { selectedEntities = selectedEntitiesList; }
 
-        private void NotifyGizmosTransformEvent(List<EditableEntity> entities, string gizmoType) { builderWebInterface.SendEntitiesTransform(entities, gizmoType, currentScene.sceneData.id); }
+        private void NotifyGizmosTransformEvent(List<EditableEntity> entities, string gizmoType) { builderWebInterface.SendEntitiesTransform(entities, gizmoType, currentScene.sceneData.sceneNumber); }
 
-        private void NotifyGizmosSelectedEvent(EditableEntity entity, string gizmoType) { builderWebInterface.SendEntitySelected(entity, gizmoType, currentScene.sceneData.id); }
+        private void NotifyGizmosSelectedEvent(EditableEntity entity, string gizmoType) { builderWebInterface.SendEntitySelected(entity, gizmoType, currentScene.sceneData.sceneNumber); }
 
         private IEnumerator TakeScreenshotRoutine(string id)
         {
@@ -627,7 +627,7 @@ namespace Builder
             Environment.i.world.sceneBoundsChecker?.RunEntityEvaluation(entity.rootEntity);
         }
 
-        private void SendOutOfBoundariesEntities() { builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.id); }
+        private void SendOutOfBoundariesEntities() { builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.sceneNumber); }
 
         private void EvaluateSelectedEntitiesPosition()
         {
@@ -656,7 +656,7 @@ namespace Builder
         {
             QualitySettings settings = new QualitySettings
             {
-                baseResolution = QualitySettings.BaseResolution.BaseRes_1080,
+                baseResolution = QualitySettings.BaseResolution.BaseRes_Normal,
                 antiAliasing = UnityEngine.Rendering.Universal.MsaaQuality._2x,
                 renderScale = 1,
                 shadows = true,

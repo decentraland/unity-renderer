@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Configuration;
 using UnityEngine;
 using UnityEngine.UI;
 #pragma warning disable CS4014
@@ -25,7 +26,8 @@ public class ItemSelector : MonoBehaviour
     public event Action<string> OnItemClicked;
     public event Action<string> OnSellClicked;
 
-    internal readonly Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
+    internal Dictionary<string, ItemToggle> currentItemToggles = new Dictionary<string, ItemToggle>();
+    internal Dictionary<string, ItemToggle> newItemToggles = new Dictionary<string, ItemToggle>();
     internal readonly Dictionary<string, WearableSettings> totalWearables = new Dictionary<string, WearableSettings>();
     internal List<WearableSettings> availableWearables = new List<WearableSettings>();
     internal readonly List<string> selectedItems = new List<string>();
@@ -88,15 +90,16 @@ public class ItemSelector : MonoBehaviour
             
             maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * columns;
 
-            SetupWearablePagination();
+            SetupWearablePagination(true);
         }
         catch (OperationCanceledException) { }
     }
 
-    private void SetupWearablePagination()
+    private void SetupWearablePagination(bool forceRebuild = false)
     {
+        if (!isActiveAndEnabled && !forceRebuild && !EnvironmentSettings.RUNNING_TESTS) return;
         itemToggleContainer.Setup(maxVisibleWearables);
-        pageSelector.Setup(GetMaxPages());
+        pageSelector.Setup(GetMaxPages(), forceRebuild);
         UpdateWearableList(lastPage);
     }
 
@@ -105,7 +108,10 @@ public class ItemSelector : MonoBehaviour
     private void UpdateWearableList( int page )
     {
         lastPage = page;
-        itemToggles.Clear();
+        
+        //we use this buffer to prevent items from being initialized with the same data twice after a screen resize or catalog refresh
+        newItemToggles.Clear();
+        
         for (int itemToggleIndex = 0; itemToggleIndex < maxVisibleWearables; itemToggleIndex++)
         {
             var baseIndex = page * maxVisibleWearables;
@@ -115,20 +121,29 @@ public class ItemSelector : MonoBehaviour
             {
                 WearableSettings wearableSettings = availableWearables[wearableIndex];
                 var item = wearableSettings.Item;
-                var itemToggle = itemToggleContainer.LoadItem(itemToggleIndex, wearableSettings);
-                itemToggle.SetCallbacks(ToggleClicked, SellClicked);
-                itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
 
+                if (!currentItemToggles.ContainsKey(item.id))
+                {
+                    var itemToggle = itemToggleContainer.LoadItem(itemToggleIndex, wearableSettings);
+                    itemToggle.SetCallbacks(ToggleClicked, SellClicked);
+                    itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
+                    newItemToggles[item.id] = itemToggle;
+                }
+                else
+                {
+                    newItemToggles[item.id] = currentItemToggles[item.id];
+                }
+                
                 if (selectedItems.Contains(item.id))
-                    itemToggle.selected = true;
-
-                itemToggles[item.id] = itemToggle;
+                    newItemToggles[item.id].selected = true;
             }
             else
             {
                 itemToggleContainer.HideItem(itemToggleIndex);
             }
         }
+
+        currentItemToggles = new Dictionary<string, ItemToggle>(newItemToggles);
     }
 
     public void AddWearable(
@@ -136,7 +151,8 @@ public class ItemSelector : MonoBehaviour
         string collectionName,
         int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
-        Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
+        Func<WearableItem, bool> replaceOtherWearablesToastStrategy,
+        Func<WearableItem, bool> incompatibleWearableToastStrategy)
     {
         if (item == null)
             return;
@@ -144,13 +160,10 @@ public class ItemSelector : MonoBehaviour
         if (totalWearables.ContainsKey(item.id))
             return;
         
-        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
+        WearableSettings wearableSettings = new WearableSettings(item, collectionName, amount, hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy, incompatibleWearableToastStrategy);
         totalWearables.Add(item.id, wearableSettings);
 
-        if (item.SupportsBodyShape(currentBodyShape) || item.data.category == WearableLiterals.Categories.BODY_SHAPE)
-        {
-            availableWearables.Add(wearableSettings);
-        }
+        availableWearables.Add(wearableSettings);
     }
 
     public void RemoveWearable(string itemID)
@@ -159,7 +172,7 @@ public class ItemSelector : MonoBehaviour
             return;
 
         totalWearables.Remove(itemID);
-        itemToggles.Remove(itemID);
+        currentItemToggles.Remove(itemID);
 
         RefreshAvailableWearables();
     }
@@ -168,7 +181,7 @@ public class ItemSelector : MonoBehaviour
     {
         totalWearables.Clear();
         availableWearables.Clear();
-        itemToggles.Clear();
+        currentItemToggles.Clear();
 
         UpdateSelectorLayout();
     }
@@ -189,7 +202,7 @@ public class ItemSelector : MonoBehaviour
 
     private void RefreshAvailableWearables()
     {
-        availableWearables = totalWearables.Values.Where(w => w.Item.SupportsBodyShape(currentBodyShape)).ToList();
+        availableWearables = totalWearables.Values.ToList();
         SetupWearablePagination();
     }
 
@@ -224,7 +237,7 @@ public class ItemSelector : MonoBehaviour
     public void UnselectAll()
     {
         selectedItems.Clear();
-        using (var iterator = itemToggles.GetEnumerator())
+        using (var iterator = currentItemToggles.GetEnumerator())
         {
             while (iterator.MoveNext())
             {
@@ -233,7 +246,7 @@ public class ItemSelector : MonoBehaviour
         }
     }
 
-    private void ToggleClicked(ItemToggle toggle) { OnItemClicked?.Invoke(toggle.wearableItem.id); }
+    internal void ToggleClicked(ItemToggle toggle) { OnItemClicked?.Invoke(toggle.wearableItem.id); }
 
     private void SellClicked(ItemToggle toggle) { OnSellClicked?.Invoke(toggle.wearableItem.id); }
 
@@ -241,6 +254,6 @@ public class ItemSelector : MonoBehaviour
     {
         if (string.IsNullOrEmpty(itemID))
             return null;
-        return itemToggles.ContainsKey(itemID) ? itemToggles[itemID] : null;
+        return currentItemToggles.ContainsKey(itemID) ? currentItemToggles[itemID] : null;
     }
 }

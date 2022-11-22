@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using DCL.Interface;
 using UnityEngine;
 
@@ -361,7 +360,7 @@ namespace DCL.Models
     [System.Serializable]
     public class RaycastQuery
     {
-        public string sceneId;
+        public int sceneNumber;
         public string id;
         public RaycastType raycastType;
         public Ray ray;

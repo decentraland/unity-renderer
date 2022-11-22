@@ -5,6 +5,7 @@ using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
+using Environment = System.Environment;
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
@@ -13,7 +14,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         EmotesWheel,
         Shortcut,
-        Command
+        Command,
+        Backpack
     }
 
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -25,8 +27,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
-    public string bodySnapshotURL => model.snapshots.body;
-    public string face256SnapshotURL => model.snapshots.face256;
+    public string bodySnapshotURL => model.ComposeCorrectUrl(model.snapshots.body);
+    public string face256SnapshotURL => model.ComposeCorrectUrl(model.snapshots.face256);
+    public string baseUrl => model.baseUrl;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
@@ -64,6 +67,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.name = newModel.name;
         model.email = newModel.email;
         model.description = newModel.description;
+        model.baseUrl = newModel.baseUrl;
         model.avatar.CopyFrom(newModel.avatar);
         model.snapshots = newModel.snapshots;
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
@@ -72,12 +76,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         if (model.snapshots != null && faceSnapshotDirty)
         {
-            this.snapshotObserver.RefreshWithUri(model.snapshots.face256);
+            snapshotObserver.RefreshWithUri(face256SnapshotURL);
         }
 
         if (model.snapshots != null && bodySnapshotDirty)
         {
-            bodySnapshotObserver.RefreshWithUri(model.snapshots.body);
+            bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
         }
 
         OnUpdate?.Invoke(this);
@@ -101,10 +105,17 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void SetAvatarExpression(string id, EmoteSource source)
     {
-        var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
+        long timestamp = (long)(DateTime.UtcNow - epochStart).TotalMilliseconds;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
-        WebInterface.SendExpression(id, timestamp);
+
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        emotes?.TriggerExpression(new TriggerExpressionRequest()
+        {
+            Id = id,
+            Timestamp = timestamp
+        });
+        
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
@@ -124,7 +135,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     }
 
     public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
-    
+
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
@@ -151,9 +162,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         blocked.Add(userId);
     }
-    
+
     public void Unblock(string userId) { blocked.Remove(userId); }
-    
+
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR

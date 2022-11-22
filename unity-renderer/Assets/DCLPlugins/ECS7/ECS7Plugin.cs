@@ -1,4 +1,4 @@
-using DCL.Controllers;
+using System.Collections.Generic;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -14,21 +14,22 @@ namespace DCL.ECS7
         private readonly ECSComponentsFactory componentsFactory;
         private readonly ECSComponentsManager componentsManager;
         private readonly InternalECSComponents internalEcsComponents;
-        private readonly CanvasPainter canvasPainter;
-
-        private readonly ISceneController sceneController;
+        private readonly CrdtExecutorsManager crdtExecutorsManager;
 
         public ECS7Plugin()
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
 
-            sceneController = Environment.i.world.sceneController;
+            ISceneController sceneController = Environment.i.world.sceneController;
+            Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
+                Environment.i.world.state, DataStore.i.rpc.context.crdt);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpc.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
@@ -36,14 +37,10 @@ namespace DCL.ECS7
             SystemsContext systemsContext = new SystemsContext(componentWriter,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
-                (ECSComponent<PBOnPointerDown>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_DOWN),
-                (ECSComponent<PBOnPointerUp>)componentsManager.GetOrCreateComponent(ComponentID.ON_POINTER_UP));
+                (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK),
+                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
-            systemsController = new ECSSystemsController(Environment.i.platform.updateEventHandler, crdtWriteSystem.LateUpdate, systemsContext);
-
-            canvasPainter = new CanvasPainter(DataStore.i.ecs7, CommonScriptableObjects.rendererState, Environment.i.platform.updateEventHandler, componentsManager, Environment.i.world.state);
-
-            sceneController.OnNewSceneAdded += OnSceneAdded;
+            systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
         }
 
         public void Dispose()
@@ -53,15 +50,7 @@ namespace DCL.ECS7
             componentWriter.Dispose();
             systemsController.Dispose();
             internalEcsComponents.Dispose();
-
-            canvasPainter.Dispose();
-
-            sceneController.OnNewSceneAdded -= OnSceneAdded;
-        }
-
-        private void OnSceneAdded(IParcelScene scene)
-        {
-            scene.crdtExecutor = new CRDTExecutor(scene, componentsManager);
+            crdtExecutorsManager.Dispose();
         }
     }
 }

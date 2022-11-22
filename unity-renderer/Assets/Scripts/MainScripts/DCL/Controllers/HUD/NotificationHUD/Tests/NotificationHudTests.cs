@@ -52,7 +52,7 @@ namespace Tests
                 type = Type.GENERIC,
                 message = "text",
                 timer = -1,
-                scene = ""
+                scene = -1
             };
 
             controller.ShowNotification(model);
@@ -77,7 +77,7 @@ namespace Tests
                 type = Type.GENERIC,
                 message = "text",
                 timer = -1,
-                scene = ""
+                scene = -1
             };
 
             controller.ShowNotification(model);
@@ -87,7 +87,7 @@ namespace Tests
                 type = Type.SCRIPTING_ERROR,
                 message = "text",
                 timer = -1,
-                scene = ""
+                scene = -1
             };
 
             controller.ShowNotification(model2);
@@ -106,7 +106,7 @@ namespace Tests
                 type = Type.GENERIC,
                 message = "text",
                 timer = 0.25f,
-                scene = ""
+                scene = -1
             };
 
             controller.ShowNotification(model);

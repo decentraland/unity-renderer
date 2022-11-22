@@ -1,46 +1,49 @@
-using System;
 using DCL.CameraTool;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
-    public static class ProtoConvertUtils 
+    public static class ProtoConvertUtils
     {
-        public static PBOnPointerUpResult GetPointerUpResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
+        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray, HitInfo rawHit)
         {
-            PBOnPointerUpResult result = new PBOnPointerUpResult();
-            result.Button = buttonId;
-            result.Direction = UnityVectorToPBVector(ray.direction);
-            result.Distance = hit.distance;
-            result.Normal = UnityVectorToPBVector(hit.normal);
-            result.Origin = UnityVectorToPBVector(ray.origin);
-            result.Point = UnityVectorToPBVector(hit.point);
-            
-            // This null check will disappear when we introduce optionals to the proto
-            if(meshName == null)
-                meshName = String.Empty;
-            result.MeshName = meshName;
-            return result;
+            var hit = new RaycastHit();
+            hit.Length = rawHit.distance;
+            hit.Origin = UnityVectorToPBVector(ray.origin);
+            hit.EntityId = (int)entityId;
+            hit.MeshName = meshName;
+            hit.Position = UnityVectorToPBVector(rawHit.point);
+            hit.NormalHit = UnityVectorToPBVector(rawHit.normal);
+            hit.Direction = UnityVectorToPBVector(ray.direction);
+
+            return hit;
         }
-        
-        public static PBOnPointerDownResult GetPointerDownResultModel(ActionButton buttonId, string meshName, Ray ray, HitInfo hit)
+
+        public static RaycastHit ToPBRaycasHit(long entityId, string meshName, Ray ray,
+            float hitDistance, UnityEngine.Vector3 hitPoint, UnityEngine.Vector3 hitNormal, bool isValidEntity = true)
         {
-            PBOnPointerDownResult result = new PBOnPointerDownResult();
-            result.Button = buttonId;
-            result.Direction = UnityVectorToPBVector(ray.direction);
-            result.Distance = hit.distance;
-            result.Normal = UnityVectorToPBVector(hit.normal);
-            result.Origin = UnityVectorToPBVector(ray.origin);
-            result.Point = UnityVectorToPBVector(hit.point);
-            
-            // This null check will disappear when we introduce optionals to the proto
-            if(meshName == null)
-                meshName = String.Empty;
-            result.MeshName = meshName;
-            return result;
+            var ret = new RaycastHit
+            {
+                Length = hitDistance,
+                Origin = UnityVectorToPBVector(ray.origin),
+                Position = UnityVectorToPBVector(hitPoint),
+                NormalHit = UnityVectorToPBVector(hitNormal),
+                Direction = UnityVectorToPBVector(ray.direction)
+            };
+
+            if (isValidEntity)
+            {
+                ret.EntityId = entityId;
+            }
+            if (!string.IsNullOrEmpty(meshName))
+            {
+                ret.MeshName = meshName;
+            }
+
+            return ret;
         }
-        
+
         public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original)
         {
             Vector3 vector = new Vector3();
@@ -49,7 +52,7 @@ namespace DCL.ECSComponents
             vector.Z = original.z;
             return vector;
         }
-        
+
         public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original)
         {
             UnityEngine.Vector3 vector = new UnityEngine.Vector3();
@@ -58,35 +61,57 @@ namespace DCL.ECSComponents
             vector.z = original.Z;
             return vector;
         }
-        
-        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraModeValue mode)
+
+        public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraType mode)
         {
             switch (mode)
             {
-                case CameraModeValue.FirstPerson:
+                case CameraType.CtFirstPerson:
                     return CameraMode.ModeId.FirstPerson;
-                case CameraModeValue.ThirdPerson:
+                case CameraType.CtThirdPerson:
                     return CameraMode.ModeId.ThirdPerson;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }
         }
 
-        public static CameraModeValue UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
+        public static CameraType UnityEnumToPBCameraEnum(CameraMode.ModeId mode)
         {
             switch (mode)
             {
                 case CameraMode.ModeId.FirstPerson:
-                    return CameraModeValue.FirstPerson;
+                    return CameraType.CtFirstPerson;
                 case CameraMode.ModeId.ThirdPerson:
                 default:
-                    return CameraModeValue.ThirdPerson;
+                    return CameraType.CtThirdPerson;
             }
         }
 
         public static Color ToUnityColor(this Color3 color)
         {
             return new Color(color.R, color.G, color.B);
+        }
+
+        public static Color ToUnityColor(this Color4 color)
+        {
+            return new Color(color.R, color.G, color.B, color.A);
+        }
+
+        public static string ToFontName(this Font font)
+        {
+            // TODO: add support for the rest of the fonts and discuss old font deprecation
+            const string SANS_SERIF = "SansSerif";
+            const string LIBERATION_SANS = "builtin:LiberationSans SDF";
+
+            switch (font)
+            {
+                case Font.FLiberationSans:
+                    return LIBERATION_SANS;
+                case Font.FSansSerif:
+                    return SANS_SERIF;
+                default:
+                    return SANS_SERIF;
+            }
         }
     }
 }

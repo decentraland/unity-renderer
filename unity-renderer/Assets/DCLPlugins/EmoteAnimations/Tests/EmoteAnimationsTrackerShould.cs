@@ -46,6 +46,8 @@ namespace DCL.Emotes
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void ReactToEquipEmotesIncreasingReference()
         {
             string bodyShapeId = WearableLiterals.BodyShapes.FEMALE;
@@ -54,7 +56,7 @@ namespace DCL.Emotes
             WearableItem emote = new WearableItem { id = "emote0" };
             resolver.Resolve("emote0", Arg.Any<CancellationToken>()).Returns(new UniTask<WearableItem>(emote));
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
-            loader.animation.Returns(tikAnim);
+            loader.loadedAnimationClip.Returns(tikAnim);
             loaderFactory.Get().Returns(loader);
 
             dataStore.emotesOnUse.IncreaseRefCount((bodyShapeId, "emote0"));

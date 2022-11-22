@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.CRDT;
 using Google.Protobuf;
@@ -10,7 +10,6 @@ using NSubstitute;
 using NUnit.Framework;
 using RPC;
 using rpc_csharp;
-using rpc_csharp_test;
 using rpc_csharp.transport;
 using RPC.Services;
 using UnityEngine;
@@ -36,7 +35,7 @@ namespace Tests
 
             rpcServer.SetHandler((port, t, c) =>
             {
-                CRDTServiceImpl.RegisterService(port);
+                CRDTServiceCodeGen.RegisterService(port, new CRDTServiceImpl());
             });
             testClientTransport = clientTransport;
             testCancellationSource = new CancellationTokenSource();
@@ -53,38 +52,39 @@ namespace Tests
         [Test]
         public async void ProcessIncomingCRDT()
         {
-            TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+            ClientCRDTService clientCrdtService = await CreateClientCrdtService(testClientTransport);
 
-            var messageQueueHandler = Substitute.For<IMessageQueueHandler>();
-            messageQueueHandler.sceneMessagesPool.Returns(new ConcurrentQueue<QueuedSceneMessage_Scene>());
-            context.crdtContext.messageQueueHandler = messageQueueHandler;
+            var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
+            messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
 
-            string sceneId = "temptation";
+            int sceneNumber = 666;
             CRDTMessage crdtMessage = new CRDTMessage()
             {
                 key1 = 7693,
                 timestamp = 799,
                 data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
             };
+            bool messageReceived = false;
 
             // Check if incoming CRDT is dispatched as scene message
-            messageQueueHandler.WhenForAnyArgs(x => x.EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>()))
-                               .Do(info =>
-                               {
-                                   QueuedSceneMessage_Scene message = info.Arg<QueuedSceneMessage_Scene>();
-                                   Assert.AreEqual(message.sceneId, sceneId);
-                                   CRDTMessage received = (CRDTMessage)message.payload;
-                                   Assert.AreEqual(crdtMessage.key1, received.key1);
-                                   Assert.AreEqual(crdtMessage.timestamp, received.timestamp);
-                                   Assert.IsTrue(AreEqual((byte[])received.data, (byte[])crdtMessage.data));
-                               });
+            void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
+            {
+                Assert.AreEqual(sceneNumber, incommingSceneNumber);
+                Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
+                Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                messageReceived = true;
+            }
+
+            context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
+            context.crdt.MessagingControllersManager = messagingControllersManager;
 
             // Simulate client sending `crdtMessage` CRDT
             try
             {
-                await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
+                await clientCrdtService.SendCrdt(new CRDTManyMessages()
                 {
-                    SceneId = sceneId,
+                    SceneNumber = sceneNumber,
                     Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                 });
             }
@@ -92,15 +92,19 @@ namespace Tests
             {
                 Debug.LogError(e);
             }
+            finally
+            {
+                context.crdt.CrdtMessageReceived -= OnCrdtMessageReceived;
+            }
 
-            messageQueueHandler.Received(1).EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>());
+            Assert.IsTrue(messageReceived);
         }
 
         [Test]
         public async void SendCRDTtoScene()
         {
-            string scene1 = "temptation1";
-            string scene2 = "temptation2";
+            int scene1 = 666;
+            int scene2 = 777;
 
             CRDTProtocol sceneState1 = new CRDTProtocol();
             CRDTProtocol sceneState2 = new CRDTProtocol();
@@ -111,39 +115,37 @@ namespace Tests
             sceneState1.ProcessMessage(messageToScene1);
             sceneState2.ProcessMessage(messageToScene2);
 
-            context.crdtContext.scenesOutgoingCrdts.Add(scene1, sceneState1);
-            context.crdtContext.scenesOutgoingCrdts.Add(scene2, sceneState2);
+            context.crdt.scenesOutgoingCrdts.Add(scene1, sceneState1);
+            context.crdt.scenesOutgoingCrdts.Add(scene2, sceneState2);
 
             // Simulate client requesting scene's crdt
             try
             {
-                TestClient testClient = await TestClient.Create(testClientTransport, CRDTService<RPCContext>.ServiceName);
+                ClientCRDTService clientCrdtService = await CreateClientCrdtService(testClientTransport);
 
                 // request for `scene1`
-                CRDTManyMessages response1 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
-                    new PullCRDTRequest() { SceneId = scene1 });
+                CRDTManyMessages response1 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneNumber = scene1 });
 
-                var deserializer = KernelBinaryMessageDeserializer.Deserialize(response1.Payload.ToByteArray());
+                var deserializer = CRDTDeserializer.DeserializeBatch(response1.Payload.Memory);
                 deserializer.MoveNext();
                 CRDTMessage message = (CRDTMessage)deserializer.Current;
 
                 Assert.AreEqual(messageToScene1.key1, message.key1);
                 Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
                 Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
-                Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene1));
+                Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene1));
 
                 // request for `scene2`
-                CRDTManyMessages response2 = await testClient.CallProcedure<CRDTManyMessages>("PullCrdt",
-                    new PullCRDTRequest() { SceneId = scene2 });
+                CRDTManyMessages response2 = await clientCrdtService.PullCrdt(new PullCRDTRequest() { SceneNumber = scene2 });
 
-                deserializer = KernelBinaryMessageDeserializer.Deserialize(response2.Payload.ToByteArray());
+                deserializer = CRDTDeserializer.DeserializeBatch(response2.Payload.Memory);
                 deserializer.MoveNext();
                 message = (CRDTMessage)deserializer.Current;
 
                 Assert.AreEqual(messageToScene2.key1, message.key1);
                 Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
                 Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
-                Assert.IsFalse(context.crdtContext.scenesOutgoingCrdts.ContainsKey(scene2));
+                Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene2));
             }
             catch (Exception e)
             {
@@ -181,6 +183,15 @@ namespace Tests
             }
 
             return true;
+        }
+
+        static async UniTask<ClientCRDTService> CreateClientCrdtService(ITransport transport)
+        {
+            RpcClient client = new RpcClient(transport);
+            RpcClientPort port = await client.CreatePort("test-port");
+            RpcClientModule module = await port.LoadModule(CRDTServiceCodeGen.ServiceName);
+            ClientCRDTService crdtService = new ClientCRDTService(module);
+            return crdtService;
         }
     }
 }

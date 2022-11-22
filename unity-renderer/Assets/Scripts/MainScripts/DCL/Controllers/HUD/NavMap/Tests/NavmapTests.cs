@@ -1,7 +1,8 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using NSubstitute;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -10,7 +11,7 @@ namespace Tests
     public class NavmapTests : IntegrationTestSuite_Legacy
     {
         private MinimapHUDController controller;
-        DCL.NavmapView navmapView;
+        private NavmapView navmapView;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -25,7 +26,8 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            controller = new MinimapHUDController();
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
+            controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }
 

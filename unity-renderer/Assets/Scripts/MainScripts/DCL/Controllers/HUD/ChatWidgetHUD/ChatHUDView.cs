@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Chat.HUD;
 using DCL.Helpers;
 using DCL.Interface;
 using TMPro;
@@ -24,15 +25,17 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public UserContextMenu contextMenu;
     public UserContextConfirmationDialog confirmationDialog;
     [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
+    [SerializeField] private PoolChatEntryFactory poolChatEntryFactory;
     [SerializeField] private Model model;
     [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
     
-    [NonSerialized] protected List<ChatEntry> entries = new List<ChatEntry>();
-
+    private readonly Dictionary<string, ChatEntry> entries = new Dictionary<string, ChatEntry>();
     private readonly ChatMessage currentMessage = new ChatMessage();
+
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
         new Dictionary<Action, UnityAction<string>>();
+
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
         new Dictionary<Action, UnityAction<string>>();
 
@@ -67,7 +70,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
         remove
         {
-            if (!inputFieldSelectedListeners.ContainsKey(value)) return;
+            if (!inputFieldSelectedListeners.ContainsKey(value))
+                return;
             inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
             inputFieldSelectedListeners.Remove(value);
         }
@@ -83,7 +87,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
         remove
         {
-            if (!inputFieldUnselectedListeners.ContainsKey(value)) return;
+            if (!inputFieldUnselectedListeners.ContainsKey(value))
+                return;
             inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
             inputFieldUnselectedListeners.Remove(value);
         }
@@ -91,12 +96,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public event Action OnPreviousChatInHistory;
     public event Action OnNextChatInHistory;
-
     public event Action<ChatMessage> OnSendMessage;
 
     public int EntryCount => entries.Count;
     public IChatEntryFactory ChatEntryFactory { get; set; }
-    public bool IsInputFieldSelected => inputField.isFocused;
 
     public static ChatHUDView Create()
     {
@@ -111,10 +114,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
-        ChatEntryFactory ??= defaultChatEntryFactory;
+        ChatEntryFactory ??= (IChatEntryFactory) poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
-    
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -137,11 +140,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         if (updateLayoutDelayedFrames > 0)
         {
             updateLayoutDelayedFrames--;
-            
+
             if (updateLayoutDelayedFrames <= 0)
                 chatEntriesContainer.ForceUpdateLayout(delayed: false);
         }
-        
+
         if (isSortingDirty)
             SortEntriesImmediate();
         isSortingDirty = false;
@@ -161,10 +164,6 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             FocusInputField();
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
-        if (model.isInPreviewMode)
-            ActivatePreview();
-        else
-            DeactivatePreview();
         ClearAllEntries();
         foreach (var entry in model.entries)
             AddEntry(entry);
@@ -185,103 +184,72 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.MoveTextEnd(false);
     }
 
-    public void ActivatePreview()
-    {
-        model.isInPreviewMode = true;
-        
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-            entry.ActivatePreview();
-        }
-    }
-    public void DeactivatePreview()
-    {
-        model.isInPreviewMode = false;
-        
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-            entry.DeactivatePreview();
-        }
-    }
-    public void FadeOutMessages()
-    {
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-            entry.FadeOut();
-        }
-    }
-
     private void SetFadeoutMode(bool enabled)
     {
         model.enableFadeoutMode = enabled;
 
-        for (int i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-
-            if (enabled)
-            {
-                entry.SetFadeout(IsEntryVisible(entry));
-            }
-            else
-            {
-                entry.SetFadeout(false);
-            }
-        }
+        foreach (var entry in entries.Values)
+            entry.SetFadeout(enabled && IsEntryVisible(entry));
 
         if (enabled)
-        {
             confirmationDialog.Hide();
-        }
     }
 
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
     {
-        var chatEntry = ChatEntryFactory.Create(model);
-        chatEntry.transform.SetParent(chatEntriesContainer, false);
-
-        if(this.model.enableFadeoutMode)
-            chatEntry.SetFadeout(true);
+        if (entries.ContainsKey(model.messageId))
+        {
+            var chatEntry = entries[model.messageId];
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
+            
+            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
+        }
         else
-            chatEntry.SetFadeout(false);
+        {
+            var chatEntry = ChatEntryFactory.Create(model);
+            chatEntry.SetFadeout(this.model.enableFadeoutMode);
+            chatEntry.Populate(model);
 
-        chatEntry.Populate(model);
-        
-        if (model.messageType == ChatMessage.Type.PUBLIC
-            || model.messageType == ChatMessage.Type.PRIVATE)
-            chatEntry.OnPressRightButton += OnOpenContextMenu;
+            if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
+                chatEntry.OnUserNameClicked += OnOpenContextMenu;
 
-        chatEntry.OnTriggerHover += OnMessageTriggerHover;
-        chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
-        chatEntry.OnCancelHover += OnMessageCancelHover;
-        chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+            chatEntry.OnTriggerHover += OnMessageTriggerHover;
+            chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
+            chatEntry.OnCancelHover += OnMessageCancelHover;
+            chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+            
+            SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
+        }
+    }
 
-        entries.Add(chatEntry);
-        
-        if (this.model.isInPreviewMode)
-            chatEntry.ActivatePreviewInstantly();
+    public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
+    {
+        chatEntry.transform.SetParent(chatEntriesContainer, false);
+        entries[messageId] = chatEntry;
 
         SortEntries();
         UpdateLayout();
-
+        
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
     }
 
-    public void RemoveFirstEntry()
+    public void RemoveOldestEntry()
     {
         if (entries.Count <= 0) return;
-        Destroy(entries[0].gameObject);
-        entries.Remove(entries[0]);
+        var firstEntry = GetFirstEntry();
+        if (!firstEntry) return;
+        entries.Remove(firstEntry.Model.messageId);
+        ChatEntryFactory.Destroy(firstEntry);
+        UpdateLayout();
     }
 
     public override void Hide(bool instant = false)
     {
         base.Hide(instant);
-        if (contextMenu == null) return;
+        if (contextMenu == null)
+            return;
         contextMenu.Hide();
         confirmationDialog.Hide();
     }
@@ -294,9 +262,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public virtual void ClearAllEntries()
     {
-        foreach (var entry in entries)
-            Destroy(entry.gameObject);
+        foreach (var entry in entries.Values)
+            ChatEntryFactory.Destroy(entry);
         entries.Clear();
+        UpdateLayout();
     }
 
     private bool IsEntryVisible(ChatEntry entry)
@@ -328,34 +297,29 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         OnSendMessage?.Invoke(currentMessage);
     }
 
-    private void OnInputFieldSelect(string message)
-    {
-        AudioScriptableObjects.inputFieldFocus.Play(true);
-    }
+    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
 
-    private void OnInputFieldDeselect(string message)
-    {
-        AudioScriptableObjects.inputFieldUnfocus.Play(true);
-    }
+    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
 
-    private void OnOpenContextMenu(DefaultChatEntry chatEntry)
+    private void OnOpenContextMenu(ChatEntry chatEntry)
     {
         chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
-        contextMenu.transform.parent = transform;
+        contextMenu.transform.parent = transform.parent;
+        contextMenu.transform.SetAsLastSibling();
         contextMenu.Show(chatEntry.Model.senderId);
     }
 
-    protected virtual void OnMessageTriggerHover(DefaultChatEntry chatEntry)
+    private void OnMessageTriggerHover(ChatEntry chatEntry)
     {
         if (contextMenu == null || contextMenu.isVisible)
             return;
 
-        messageHoverText.text = chatEntry.messageLocalDateTime;
+        messageHoverText.text = chatEntry.DateString;
         chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
         messageHoverPanel.SetActive(true);
     }
 
-    private void OnMessageCoordinatesTriggerHover(DefaultChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
+    private void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates} INFO";
         chatEntry.DockHoverPanel((RectTransform) messageHoverGotoPanel.transform);
@@ -372,18 +336,19 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void SortEntriesImmediate()
     {
-        entries = entries.OrderBy(x => x.Model.timestamp).ToList();
+        if (this.entries.Count <= 0) return;
 
-        int count = entries.Count;
-        for (int i = 0; i < count; i++)
+        var entries = this.entries.Values.OrderBy(x => x.Model.timestamp).ToList();
+
+        for (var i = 0; i < entries.Count; i++)
         {
             if (entries[i].transform.GetSiblingIndex() != i)
                 entries[i].transform.SetSiblingIndex(i);
         }
     }
-    
+
     private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
-    
+
     private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
 
     private void UpdateLayout()
@@ -394,11 +359,27 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         // TODO: simplify this change to a bool when we update to a working TextMeshPro version
         updateLayoutDelayedFrames = 4;
     }
+    
+    private ChatEntry GetFirstEntry()
+    {
+        ChatEntry firstEntry = null;
+
+        for (var i = 0; i < chatEntriesContainer.childCount; i++)
+        {
+            var firstChildTransform = chatEntriesContainer.GetChild(i);
+            if (!firstChildTransform) continue;
+            var entry = firstChildTransform.GetComponent<ChatEntry>();
+            if (!entry) continue;
+            firstEntry = entry;
+            break;
+        }
+
+        return firstEntry;
+    }
 
     [Serializable]
     private struct Model
     {
-        public bool isInPreviewMode;
         public bool isInputFieldFocused;
         public string inputFieldText;
         public bool enableFadeoutMode;

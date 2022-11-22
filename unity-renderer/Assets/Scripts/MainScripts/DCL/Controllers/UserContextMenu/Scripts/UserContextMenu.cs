@@ -63,6 +63,7 @@ public class UserContextMenu : MonoBehaviour
     public static event System.Action<string> OnOpenPrivateChatRequest;
 
     public bool isVisible => gameObject.activeSelf;
+    public string UserId => userId;
 
     public event System.Action OnShowMenu;
     public event System.Action<string> OnPassport;
@@ -72,6 +73,7 @@ public class UserContextMenu : MonoBehaviour
     public event System.Action<string> OnAddFriend;
     public event System.Action<string> OnCancelFriend;
     public event System.Action<string> OnMessage;
+    public event System.Action OnHide;
 
     private static StringVariable currentPlayerId = null;
     private RectTransform rectTransform;
@@ -114,7 +116,16 @@ public class UserContextMenu : MonoBehaviour
     /// <summary>
     /// Hides the context menu.
     /// </summary>
-    public void Hide() { gameObject.SetActive(false); }
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+        OnHide?.Invoke();
+    }
+
+    /// <summary>
+    /// Shows/Hides the friendship container
+    /// </summary>
+    public void SetFriendshipContentActive(bool isActive) => friendshipContainer.SetActive(isActive);
 
     private void Awake()
     {
@@ -186,14 +197,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void UnfriendUser()
     {
-        FriendsController.FriendshipUpdateStatusMessage newFriendshipStatusMessage = new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.DELETED
-        };
-
-        FriendsController.i.UpdateFriendshipStatus(newFriendshipStatusMessage);
-        WebInterface.UpdateFriendshipStatus(newFriendshipStatusMessage);
+        FriendsController.i.RemoveFriend(userId);
     }
 
     private void OnAddFriendButtonPressed()
@@ -212,16 +216,7 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.REQUESTED_TO
-        });
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.REQUESTED_TO
-        });
+        FriendsController.i.RequestFriendship(userId);
 
         GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
     }
@@ -235,16 +230,7 @@ public class UserContextMenu : MonoBehaviour
             return;
         }
 
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId,
-            action = FriendshipAction.CANCELLED
-        });
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = userId, action = FriendshipAction.CANCELLED
-        });
+        FriendsController.i.CancelRequest(userId);
 
         GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }
@@ -328,7 +314,7 @@ public class UserContextMenu : MonoBehaviour
         }
         if ((configFlags & usesFriendsApiFlags) != 0 && FriendsController.i)
         {
-            if (FriendsController.i.friends.TryGetValue(userId, out FriendsController.UserStatus status))
+            if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
             {
                 SetupFriendship(status.friendshipStatus);
             }

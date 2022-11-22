@@ -12,6 +12,7 @@ using ECSSystems.CameraSystem;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using CameraType = DCL.ECSComponents.CameraType;
 
 namespace Tests
 {
@@ -29,7 +30,7 @@ namespace Tests
             scenes[0]
                 .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
-                    id = "temptation", basePosition = new Vector2Int(1, 0)
+                    sceneNumber = 666, basePosition = new Vector2Int(1, 0)
                 });
 
             componentsWriter = Substitute.For<IECSComponentWriter>();
@@ -56,7 +57,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Any<ECSTransform>());
@@ -66,7 +67,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.DidNotReceive()
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Any<ECSTransform>());
@@ -80,7 +81,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x => x.position == UnityEngine.Vector3.zero));
@@ -92,7 +93,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.TRANSFORM,
                                 Arg.Is<ECSTransform>(x =>
@@ -109,10 +110,10 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.FirstPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraType.CtFirstPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
 
             componentsWriter.ClearReceivedCalls();
@@ -122,10 +123,10 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.CAMERA_MODE,
-                                Arg.Is<PBCameraMode>(x => x.Mode == CameraModeValue.ThirdPerson),
+                                Arg.Is<PBCameraMode>(x => x.Mode == CameraType.CtThirdPerson),
                                 ECSComponentWriteType.SEND_TO_SCENE);
         }
 
@@ -139,7 +140,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.POINTER_LOCK,
                                 Arg.Is<PBPointerLock>(x => x.IsPointerLocked),
@@ -152,7 +153,7 @@ namespace Tests
             update.Invoke();
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
+                                scenes[0].sceneData.sceneNumber,
                                 SpecialEntityId.CAMERA_ENTITY,
                                 ComponentID.POINTER_LOCK,
                                 Arg.Is<PBPointerLock>(x => !x.IsPointerLocked),

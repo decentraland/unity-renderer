@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
-using Google.Protobuf;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -14,11 +10,12 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public UITransformRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public UITransformRegister(int componentId, ECSComponentsFactory factory,
+            IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
-            var handler = new UITransformComponentHandler(DataStore.i.ecs7.uiDataContainer);
-            factory.AddOrReplaceComponent(componentId, UITransformSerializer.Deserialize, () => handler);
-            componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, UITransformSerializer.Serialize);
+            var handler = new UITransformHandler(internalUiContainer, componentId);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiTransform>, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

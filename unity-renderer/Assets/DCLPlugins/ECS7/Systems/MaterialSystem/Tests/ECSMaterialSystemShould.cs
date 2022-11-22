@@ -1,11 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using ECSSystems.MaterialSystem;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 namespace Tests
@@ -16,35 +21,50 @@ namespace Tests
         private ECS7TestScene scene1;
         private InternalECSComponents internalEcsComponents;
         private ECS7TestUtilsScenesAndEntities testUtils;
-        private Action materialSystemUpdate;
+        private Action systemsUpdate;
         private Material materialResource;
+        private ECSComponent<PBMaterial> materialComponent;
 
         [SetUp]
         public void SetUp()
         {
+            const int MATERIAL_COMPONENT_ID = 0;
+
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
+            var materialRegister = new MaterialRegister(MATERIAL_COMPONENT_ID, componentsFactory,
+                Substitute.For<IECSComponentWriter>(), internalEcsComponents);
+
             var texturizableGroup = componentsManager.CreateComponentGroup<InternalMaterial, InternalTexturizable>
                 ((int)InternalECSComponentsId.MATERIAL, (int)InternalECSComponentsId.TEXTURIZABLE);
 
-            materialSystemUpdate = ECSMaterialSystem.CreateSystem(texturizableGroup,
+            var materialSystemUpdate = ECSMaterialSystem.CreateSystem(texturizableGroup,
                 internalEcsComponents.texturizableComponent,
                 internalEcsComponents.materialComponent);
 
+            systemsUpdate = () =>
+            {
+                materialSystemUpdate();
+                internalEcsComponents.WriteSystemUpdate();
+            };
+
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            scene0 = testUtils.CreateScene("temptation0");
-            scene1 = testUtils.CreateScene("temptation1");
+            scene0 = testUtils.CreateScene(666);
+            scene1 = testUtils.CreateScene(222);
 
             materialResource = Resources.Load("Materials/ShapeMaterial") as Material;
+            materialComponent = (ECSComponent<PBMaterial>)componentsManager.GetOrCreateComponent(MATERIAL_COMPONENT_ID);
         }
 
         [TearDown]
         public void TearDown()
         {
             testUtils.Dispose();
+            AssetPromiseKeeper_Material.i.Cleanup();
+            AssetPromiseKeeper_Texture.i.Cleanup();
         }
 
         [Test]
@@ -80,7 +100,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // nothing should change since we don't have a material yet
             Assert.IsNull(renderer00.sharedMaterial);
@@ -101,7 +121,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // scene0's entities should have material set
             Assert.NotNull(renderer00.sharedMaterial);
@@ -132,7 +152,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             // scene1's entity should have material set
             Assert.NotNull(renderer10.sharedMaterial);
@@ -156,7 +176,7 @@ namespace Tests
             });
 
             // update system
-            materialSystemUpdate();
+            systemsUpdate();
 
             Assert.AreEqual(scene0Material, renderer00.sharedMaterial);
             Assert.AreEqual(scene0Material, renderer01.sharedMaterial);
@@ -205,16 +225,67 @@ namespace Tests
             });
 
             // apply material
-            materialSystemUpdate();
+            systemsUpdate();
 
             // remove material for entity00
-            materialComponent.RemoveFor(scene0, entity00);
+            materialComponent.RemoveFor(scene0, entity00, new InternalMaterial()
+            {
+                material = null,
+            });
 
             // apply changes
-            materialSystemUpdate();
+            systemsUpdate();
 
             // entity00 should have it material removed from it renderers
             Assert.IsNull(renderer00.sharedMaterial);
+        }
+
+        [UnityTest]
+        public IEnumerator NotLeaveNullMaterialWhenMaterialChange()
+        {
+            ECS7TestEntity entity = scene0.CreateEntity(100);
+            Renderer renderer = entity.gameObject.AddComponent<MeshRenderer>();
+            internalEcsComponents.texturizableComponent.PutFor(scene0, entity, new InternalTexturizable()
+            {
+                renderers = new List<Renderer>() { renderer }
+            });
+            materialComponent.Create(scene0, entity);
+
+            PBMaterial CreateModel(Color color)
+            {
+                return new PBMaterial()
+                {
+                    Pbr = new PBMaterial.Types.PbrMaterial()
+                    {
+                        AlbedoColor = new Color3() { R = color.r, G = color.g, B = color.b }
+                    }
+                };
+            }
+
+            // Set first material to component
+            materialComponent.SetModel(scene0, entity, CreateModel(Color.black));
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+            systemsUpdate();
+
+            Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
+
+            // Update material
+            materialComponent.SetModel(scene0, entity, CreateModel(Color.white));
+
+            systemsUpdate();
+            yield return null;
+
+            // Material should not have changed since new material is not loaded yet.
+            // if delayed material forget fails `renderer.sharedMaterial` would be null here
+            Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
+
+            // Wait until material is loaded
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+
+            systemsUpdate();
+
+            // Material should now be changed
+            Assert.AreEqual(Color.white, renderer.sharedMaterial.color);
         }
     }
 }

@@ -6,15 +6,15 @@ public static class AnalyticsHelper
     public static void AddSceneNameAndBasePositionToDictionary(Dictionary<string, string> analyticDict)
     {
         IWorldState worldState = Environment.i.world.state;
-        string sceneId = worldState.GetCurrentSceneId();
+        int sceneNumber = worldState.GetCurrentSceneNumber();
 
-        if (!worldState.TryGetScene(sceneId, out var scene))
+        if (!worldState.TryGetScene(sceneNumber, out var scene))
             return;
         
-        if (!string.IsNullOrEmpty(sceneId))
+        if (sceneNumber > 0)
         {
             analyticDict.Add("base_parcel_position", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
-            analyticDict.Add("scene", sceneId);
+            analyticDict.Add("scene", $"scene number: {sceneNumber}");
         }
     }
 

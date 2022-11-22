@@ -1,13 +1,24 @@
-using DCL;
+using System;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class SceneControllerBridge : MonoBehaviour
 {
     public void LoadParcelScenes(string payload) { Environment.i.world.sceneController.LoadParcelScenes(payload); }
 
     public void SendSceneMessage(string payload) { Environment.i.world.sceneController.SendSceneMessage(payload); }
-
-    public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId); }
+    
+    // sceneNumber comes as a string because WebSocketCommunication can only receive strings as kernel message parameters
+    public void UnloadSceneV2(string sceneNumber)
+    {
+        if (!Int32.TryParse(sceneNumber, out int targetSceneNumber))
+        {
+            Debug.LogError($"UnloadSceneV2() Int32 failed to parse the received scene number...{sceneNumber}.");
+            return;
+        }
+        
+        Environment.i.world.sceneController.UnloadScene(targetSceneNumber);
+    }
 
     public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
 

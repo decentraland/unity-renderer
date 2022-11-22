@@ -17,10 +17,10 @@ namespace DCL
         private const float GLTF_BUDGET_MAX = 0.033f;
         private const float GLTF_BUDGET_MIN = 0.008f;
 
-        public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
+        private const int GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER = 999999;
 
-        public ConcurrentDictionary<string, MessagingController> messagingControllers { get; set; } =
-            new ConcurrentDictionary<string, MessagingController>();
+        public ConcurrentDictionary<int, MessagingController> messagingControllers { get; set; } =
+            new ConcurrentDictionary<int, MessagingController>();
 
         private Coroutine mainCoroutine;
 
@@ -35,8 +35,8 @@ namespace DCL
 
         public bool paused { get; set; }
 
-        private readonly ConcurrentDictionary<string, MessagingController> globalSceneControllers =
-            new ConcurrentDictionary<string, MessagingController>();
+        private readonly ConcurrentDictionary<int, MessagingController> globalSceneControllers =
+            new ConcurrentDictionary<int, MessagingController>();
 
         private readonly List<MessagingController> sortedControllers = new List<MessagingController>();
         private readonly List<MessagingBus> busesToProcess = new List<MessagingBus>();
@@ -58,11 +58,8 @@ namespace DCL
             if (messageHandler == null)
                 messageHandler = Environment.i.world.sceneController;
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] =
-                new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER);
-
-            if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
-                messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
+            globalController = new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER);
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER] = globalController;
 
             Environment.i.world.sceneController.OnSortScenes += MarkBusesDirty;
 
@@ -85,7 +82,7 @@ namespace DCL
             lock (busesToProcess)
             {
                 IWorldState worldState = Environment.i.world.state;
-                string currentSceneId = worldState.GetCurrentSceneId();
+                int currentSceneNumber = worldState.GetCurrentSceneNumber();
                 var scenesSortedByDistance = worldState.GetScenesSortedByDistance();
 
                 int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
@@ -93,19 +90,19 @@ namespace DCL
 
                 sortedControllers.Clear();
 
-                if (!string.IsNullOrEmpty(currentSceneId) && messagingControllers.ContainsKey(currentSceneId))
-                    currentSceneController = messagingControllers[currentSceneId];
+                if (currentSceneNumber > 0 && messagingControllers.ContainsKey(currentSceneNumber))
+                    currentSceneController = messagingControllers[currentSceneNumber];
 
                 for (int i = 0; i < count; i++)
                 {
-                    string controllerId = scenesSortedByDistance[i].sceneData.id;
+                    int controllerSceneNumber = scenesSortedByDistance[i].sceneData.sceneNumber;
 
-                    if (controllerId != currentSceneId)
+                    if (controllerSceneNumber != currentSceneNumber)
                     {
-                        if (!messagingControllers.ContainsKey(controllerId))
+                        if (!messagingControllers.ContainsKey(controllerSceneNumber))
                             continue;
 
-                        sortedControllers.Add(messagingControllers[controllerId]);
+                        sortedControllers.Add(messagingControllers[controllerSceneNumber]);
                     }
                 }
 
@@ -187,53 +184,53 @@ namespace DCL
             messagingControllers.Clear();
         }
 
-        public bool ContainsController(string sceneId)
+        public bool ContainsController(int sceneNumber)
         {
-            return messagingControllers.ContainsKey(sceneId);
+            return messagingControllers.ContainsKey(sceneNumber);
         }
 
-        public void AddController(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false)
+        public void AddController(IMessageProcessHandler messageHandler, int sceneNumber, bool isGlobal = false)
         {
-            if (!messagingControllers.ContainsKey(sceneId))
+            if (!messagingControllers.ContainsKey(sceneNumber))
             {
-                messagingControllers.TryAdd(sceneId, new MessagingController(this, messageHandler, sceneId));
+                messagingControllers.TryAdd(sceneNumber, new MessagingController(this, messageHandler, sceneNumber));
             }
 
-            if (isGlobal && !string.IsNullOrEmpty(sceneId))
+            if (isGlobal && sceneNumber > 0)
             {
-                messagingControllers.TryGetValue(sceneId, out MessagingController newGlobalSceneController);
+                messagingControllers.TryGetValue(sceneNumber, out MessagingController newGlobalSceneController);
 
-                if (!globalSceneControllers.ContainsKey(sceneId))
-                    globalSceneControllers.TryAdd(sceneId, newGlobalSceneController);
+                if (!globalSceneControllers.ContainsKey(sceneNumber))
+                    globalSceneControllers.TryAdd(sceneNumber, newGlobalSceneController);
             }
 
             PopulateBusesToBeProcessed();
         }
 
-        public void AddControllerIfNotExists(IMessageProcessHandler messageHandler, string sceneId,
+        public void AddControllerIfNotExists(IMessageProcessHandler messageHandler, int sceneNumber,
             bool isGlobal = false)
         {
-            if (!ContainsController(sceneId))
-                AddController(messageHandler, sceneId, isGlobal);
+            if (!ContainsController(sceneNumber))
+                AddController(messageHandler, sceneNumber, isGlobal);
         }
 
-        public void RemoveController(string sceneId)
+        public void RemoveController(int sceneNumber)
         {
-            if (messagingControllers.ContainsKey(sceneId))
+            if (messagingControllers.ContainsKey(sceneNumber))
             {
                 // In case there is any pending message from a scene being unloaded we decrease the count accordingly
-                pendingMessagesCount -= messagingControllers[sceneId].messagingBuses[MessagingBusType.INIT]
-                                            .pendingMessagesCount +
-                                        messagingControllers[sceneId].messagingBuses[MessagingBusType.UI]
-                                            .pendingMessagesCount +
-                                        messagingControllers[sceneId].messagingBuses[MessagingBusType.SYSTEM]
-                                            .pendingMessagesCount;
+                pendingMessagesCount -= messagingControllers[sceneNumber].messagingBuses[MessagingBusType.INIT]
+                                                                         .pendingMessagesCount +
+                                        messagingControllers[sceneNumber].messagingBuses[MessagingBusType.UI]
+                                                                         .pendingMessagesCount +
+                                        messagingControllers[sceneNumber].messagingBuses[MessagingBusType.SYSTEM]
+                                                                         .pendingMessagesCount;
 
-                DisposeController(messagingControllers[sceneId]);
-                messagingControllers.TryRemove(sceneId, out MessagingController _);
+                DisposeController(messagingControllers[sceneNumber]);
+                messagingControllers.TryRemove(sceneNumber, out MessagingController _);
             }
 
-            globalSceneControllers.TryRemove(sceneId, out MessagingController _);
+            globalSceneControllers.TryRemove(sceneNumber, out MessagingController _);
         }
 
         void DisposeController(MessagingController controller)
@@ -245,26 +242,36 @@ namespace DCL
         public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage)
         {
             PerformanceAnalytics.MessagesEnqueuedTracker.Track();
-            messagingControllers[queuedMessage.sceneId].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId);
+            messagingControllers[queuedMessage.sceneNumber].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId);
         }
 
         public void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage)
         {
             PerformanceAnalytics.MessagesEnqueuedTracker.Track();
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage);
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER_SCENE_NUMBER].ForceEnqueue(busId, queuedMessage);
         }
 
-        public void SetSceneReady(string sceneId)
+        public void SetSceneReady(int sceneNumber)
         {
             // Start processing SYSTEM queue
-            if (messagingControllers.ContainsKey(sceneId))
+            if (messagingControllers.ContainsKey(sceneNumber))
             {
                 // Start processing SYSTEM queue
-                MessagingController sceneMessagingController = messagingControllers[sceneId];
+                MessagingController sceneMessagingController = messagingControllers[sceneNumber];
                 sceneMessagingController.StartBus(MessagingBusType.SYSTEM);
                 sceneMessagingController.StartBus(MessagingBusType.UI);
                 sceneMessagingController.StopBus(MessagingBusType.INIT);
             }
+        }
+
+        public bool HasScenePendingMessages(int sceneNumber)
+        {
+            if (!messagingControllers.TryGetValue(sceneNumber, out MessagingController newGlobalSceneController))
+                return false;
+
+            return newGlobalSceneController.initBus.hasPendingMessages
+                   || newGlobalSceneController.systemBus.hasPendingMessages
+                   || newGlobalSceneController.uiBus.hasPendingMessages;
         }
 
         IEnumerator ProcessMessages()

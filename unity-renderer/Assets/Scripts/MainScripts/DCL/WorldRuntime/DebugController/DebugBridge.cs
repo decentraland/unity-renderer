@@ -14,10 +14,17 @@ namespace DCL
         [Serializable]
         class ToggleSceneBoundingBoxesPayload
         {
-            public string sceneId;
+            public int sceneNumber; // TODO: change something kernel-side ???
             public bool enabled;
         }
 
+        [Serializable]
+        class MemoryDescriptionPayload
+        {
+            public long jsHeapSizeLimit;
+            public long totalJSHeapSize;
+            public long usedJSHeapSize;
+        }
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -36,17 +43,25 @@ namespace DCL
 
         public void HideFPSPanel()
         {
-            debugController.HideFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void ShowFPSPanel()
         {
-            debugController.ShowFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void SetSceneDebugPanel()
         {
             debugController.SetSceneDebugPanel();
+        }
+        
+        public void SetMemoryUsage(string payload)
+        {
+            var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize);
+            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize);
         }
 
         public void SetEngineDebugPanel()
@@ -62,7 +77,7 @@ namespace DCL
             foreach (var kvp in DCL.Environment.i.world.state.GetLoadedScenes())
             {
                 IParcelScene scene = kvp.Value;
-                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
+                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.sceneNumber);
                 scene.GetWaitingComponentsDebugInfo();
             }
 
@@ -205,7 +220,7 @@ namespace DCL
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
-            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneNumber, data.enabled);
         }
 
         public void TogglePreviewMenu(string payload)

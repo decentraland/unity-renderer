@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace ECSSystems.VisibilitySystem
 {
@@ -53,12 +51,6 @@ namespace ECSSystems.VisibilitySystem
                     Renderer renderer = renderers[j];
                     renderer.enabled = visibilityModel.visible;
                 }
-
-                renderersModel.dirty = false;
-                visibilityModel.dirty = false;
-
-                state.renderersComponent.PutFor(entityData.scene, entityData.entity, renderersModel);
-                state.visibilityComponent.PutFor(entityData.scene, entityData.entity, visibilityModel);
             }
         }
     }

@@ -86,6 +86,12 @@ public static class AudioScriptableObjects
     private static AudioEvent chatSendEvent;
     public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
 
+    private static AudioEvent joinChannelEvent;
+    public static AudioEvent joinChannel => CommonScriptableObjects.GetOrLoad(ref joinChannelEvent, "ScriptableObjects/AudioEvents/HUDCommon/JoinChannel");
+
+    private static AudioEvent leaveChannelEvent;
+    public static AudioEvent leaveChannel => CommonScriptableObjects.GetOrLoad(ref leaveChannelEvent, "ScriptableObjects/AudioEvents/HUDCommon/LeaveChannel");
+
     private static AudioEvent notificationEvent;
     public static AudioEvent notification => CommonScriptableObjects.GetOrLoad(ref notificationEvent, "ScriptableObjects/AudioEvents/HUDCommon/Notification");
 
@@ -129,6 +135,8 @@ public static class AudioScriptableObjects
         Resources.UnloadAsset(chatReceiveGlobalEvent);
         Resources.UnloadAsset(chatReceivePrivateEvent);
         Resources.UnloadAsset(chatSendEvent);
+        Resources.UnloadAsset(joinChannelEvent);
+        Resources.UnloadAsset(leaveChannelEvent);
         Resources.UnloadAsset(notificationEvent);
         Resources.UnloadAsset(sliderValueChangeEvent);
         Resources.UnloadAsset(inputFieldFocusEvent);
@@ -159,8 +167,10 @@ public static class CommonScriptableObjects
     private static QuaternionVariable movingPlatformRotationDeltaValue;
     public static QuaternionVariable movingPlatformRotationDelta => GetOrLoad(ref movingPlatformRotationDeltaValue, "ScriptableObjects/MovingPlatformRotationDelta");
 
-    private static StringVariable sceneIDValue;
-    public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+    // private static StringVariable sceneIDValue;
+    // public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+    private static IntVariable sceneNumbervalue;
+    public static IntVariable sceneNumber => GetOrLoad(ref sceneNumbervalue, "ScriptableObjects/SceneNumber");
 
     private static FloatVariable minimapZoomValue;
     public static FloatVariable minimapZoom => GetOrLoad(ref minimapZoomValue, "ScriptableObjects/MinimapZoom");
@@ -221,6 +231,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isFullscreenHUDOpenValue;
     public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
+    
+    private static BooleanVariable isLoadingHUDOpenValue;
+    public static BooleanVariable isLoadingHUDOpen => GetOrLoad(ref isLoadingHUDOpenValue, "ScriptableObjects/IsLoadingHUDOpen");
 
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");
@@ -230,6 +243,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
+    
+    private static BooleanVariable userMovementKeysBlockedValue;
+    public static BooleanVariable userMovementKeysBlocked => GetOrLoad(ref userMovementKeysBlockedValue, "ScriptableObjects/UserMovementKeysBlocked");
 
     private static BooleanVariable emailPromptActiveValue;
     public static BooleanVariable emailPromptActive => GetOrLoad(ref emailPromptActiveValue, "ScriptableObjects/EmailPromptActive");
@@ -255,7 +271,7 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(playerCoordsValue);
         Resources.UnloadAsset(playerIsOnMovingPlatformValue);
         Resources.UnloadAsset(movingPlatformRotationDeltaValue);
-        Resources.UnloadAsset(sceneIDValue);
+        Resources.UnloadAsset(sceneNumbervalue);
         Resources.UnloadAsset(minimapZoomValue);
         Resources.UnloadAsset(characterForwardValue);
         Resources.UnloadAsset(cameraForwardValue);
@@ -279,6 +295,7 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(isTaskbarHUDInitializedValue);
         Resources.UnloadAsset(tutorialActiveValue);
         Resources.UnloadAsset(featureKeyTriggersBlockedValue);
+        Resources.UnloadAsset(userMovementKeysBlockedValue);
         Resources.UnloadAsset(emailPromptActiveValue);
         Resources.UnloadAsset(voiceChatDisabledValue);
     }

@@ -146,7 +146,7 @@ namespace DCL.ECSComponents
         {
             this.entity = entity;
             
-            isGlobalSceneAvatar = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
+            isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
             DisablePassport();
             
@@ -317,7 +317,7 @@ namespace DCL.ECSComponents
                 avatarReporterController.ReportAvatarRemoved();
             }
 
-            avatarReporterController.SetUp(entity.scene.sceneData.id, player.id);
+            avatarReporterController.SetUp(entity.scene.sceneData.sceneNumber, player.id);
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
@@ -393,7 +393,7 @@ namespace DCL.ECSComponents
 
         public void ApplyHideAvatarModifier()
         {
-            avatar.AddVisibilityConstrain(IN_HIDE_AREA);
+            avatar.AddVisibilityConstraint(IN_HIDE_AREA);
             onPointerDown.gameObject.SetActive(false);
             playerNameContainer.SetActive(false);
         }

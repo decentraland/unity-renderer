@@ -16,6 +16,7 @@ public class VoiceChatWindowControllerShould
     private IUserProfileBridge userProfileBridge;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private IMouseCatcher mouseCatcher;
     private DataStore dataStore;
 
     [SetUp]
@@ -27,10 +28,11 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.Configure().CreateVoiceChatWindowView().Returns(info => voiceChatWindowComponentView);
         voiceChatWindowController.Configure().CreateVoiceChatBatView().Returns(info => voiceChatBarComponentView);
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        mouseCatcher = Substitute.For<IMouseCatcher>();
         userProfileBridge.Configure().GetOwn().Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         userProfileBridge.Configure().Get(Arg.Any<string>()).Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.Configure().GetFriends().Returns(info => new Dictionary<string, FriendsController.UserStatus>());
+        friendsController.Configure().GetAllocatedFriends().Returns(info => new Dictionary<string, UserStatus>());
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         dataStore = new DataStore();
 
@@ -39,7 +41,7 @@ public class VoiceChatWindowControllerShould
         dataStore.featureFlags.flags.Set(testFeatureFlag);
 
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
-        voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i);
+        voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i, mouseCatcher);
     }
 
     [TearDown]

@@ -207,7 +207,7 @@ namespace DCL
 
             foreach ( var flag in current.flags )
             {
-                SetFlag(flag.Key, flag.Value);
+                SetFlag(flag.Key, current.IsFeatureEnabled(flag.Key));
             }
         }
 

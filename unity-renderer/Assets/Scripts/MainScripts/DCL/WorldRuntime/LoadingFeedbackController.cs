@@ -15,7 +15,7 @@ namespace DCL
     {
         private class SceneLoadingStatus
         {
-            public int sceneId;
+            public int sceneInstanceId;
             public int componentsLoading;
         }
 
@@ -63,7 +63,7 @@ namespace DCL
         {
             SceneLoadingStatus refreshedScene = new SceneLoadingStatus
             {
-                sceneId = scene.GetInstanceID(),
+                sceneInstanceId = scene.GetInstanceID(),
                 componentsLoading = scene.sceneLifecycleHandler.sceneResourcesLoadTracker.pendingResourcesCount
             };
 
@@ -82,7 +82,7 @@ namespace DCL
 
         private void AddOrUpdateLoadedScene(SceneLoadingStatus scene)
         {
-            SceneLoadingStatus existingScene = loadedScenes.FirstOrDefault(x => x.sceneId == scene.sceneId);
+            SceneLoadingStatus existingScene = loadedScenes.FirstOrDefault(x => x.sceneInstanceId == scene.sceneInstanceId);
             if (existingScene == null)
                 loadedScenes.Add(scene);
             else

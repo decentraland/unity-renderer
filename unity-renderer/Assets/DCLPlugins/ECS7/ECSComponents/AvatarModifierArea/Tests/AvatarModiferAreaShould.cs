@@ -37,7 +37,7 @@ namespace DCL.ECSComponents.Test
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "1";
+            sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
             
             componentHandler.OnComponentCreated(scene, entity);
@@ -124,7 +124,7 @@ namespace DCL.ECSComponents.Test
             model.Area.Y = 2f;
             model.Area.Z = 2f;
 
-            model.Modifiers.Add(AvatarModifier.HideAvatars);
+            model.Modifiers.Add(AvatarModifierType.AmtHideAvatars);
             model.ExcludeIds.Add("IdToExclude");
             
             return model;

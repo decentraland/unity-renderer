@@ -17,6 +17,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void StartDectectingMovement()
     {
         //Arrange
@@ -31,6 +32,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void StopDectectingMovement()
     {
         //Arrange
@@ -44,6 +46,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InputMouseDown()
     {
         //Act
@@ -54,6 +57,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void HandleCameraMovementPositiveInput()
     {
         //Arrange
@@ -70,6 +74,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void HandleCameraMovementNegativeInput()
     {
         //Arrange
@@ -86,6 +91,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CameraCanMove()
     {
         //Arrange
@@ -99,6 +105,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseScroll()
     {
         //Act
@@ -109,6 +116,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseDragRaw()
     {
         //Arrange
@@ -126,6 +134,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void MouseDrag()
     {
         //Arrange
@@ -142,6 +151,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GetGameObjectRotation()
     {
         //Act
@@ -152,6 +162,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetResetConfiguration()
     {
         //Act
@@ -163,6 +174,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ResetCameraPosition()
     {
         //Arrange
@@ -178,6 +190,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InputMouseUp()
     {
         //Act

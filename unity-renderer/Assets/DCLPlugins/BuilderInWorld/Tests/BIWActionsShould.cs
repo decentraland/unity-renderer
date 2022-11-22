@@ -65,6 +65,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UndoRedoMoveAction()
     {
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
@@ -89,6 +90,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UndoRedoRotateAction()
     {
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
@@ -113,6 +115,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UndoRedoScaleAction()
     {
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
@@ -137,6 +140,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void UndoRedoCreateDeleteActions()
     {
         context.editorContext.actionController.CreateActionEntityCreated(scene.entities[ENTITY_ID]);
@@ -158,6 +162,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
+    [Explicit("BIW is deprecated")]
     public IEnumerator UndoRedoChangeFloorAction()
     {
         BIWCatalogManager.Init();

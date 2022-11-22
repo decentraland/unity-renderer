@@ -1,6 +1,9 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using NSubstitute;
 using NUnit.Framework;
 using SocialBar.UserThumbnail;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -15,6 +18,8 @@ public class PrivateChatWindowComponentViewShould
 {
     private PrivateChatWindowComponentView view;
     private UserThumbnailComponentViewMock userThumbnail;
+    private IFriendsController friendsController;
+    private ISocialAnalytics socialAnalytics;
 
     [SetUp]
     public void SetUp()
@@ -22,6 +27,11 @@ public class PrivateChatWindowComponentViewShould
         view = PrivateChatWindowComponentView.Create();
         userThumbnail = new GameObject("userThumbnail").AddComponent<UserThumbnailComponentViewMock>();
         view.userThumbnail = userThumbnail;
+
+        friendsController = Substitute.For<IFriendsController>();
+        friendsController.GetAllocatedFriends().Returns(x => new Dictionary<string, UserStatus>());
+        socialAnalytics = Substitute.For<ISocialAnalytics>();
+        view.Initialize(friendsController, socialAnalytics);
     }
 
     [TearDown]
@@ -118,25 +128,27 @@ public class PrivateChatWindowComponentViewShould
         Assert.IsFalse(focused);
     }
 
-    [UnityTest]
-    public IEnumerator ActivatePreview()
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetLoadingMessagesActiveCorrectly(bool isActive)
     {
-        view.ActivatePreview();
+        view.messagesLoading.SetActive(!isActive);
 
-        yield return new WaitForSeconds(1f);
+        view.SetLoadingMessagesActive(isActive);
 
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(0f, canvas.alpha);
+        Assert.AreEqual(isActive, view.messagesLoading.activeSelf);
     }
-    
-    [UnityTest]
-    public IEnumerator DeactivatePreview()
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetOldMessagesLoadingActiveCorrectly(bool isActive)
     {
-        view.DeactivatePreview();
+        view.oldMessagesLoadingContainer.SetActive(!isActive);
 
-        yield return new WaitForSeconds(1f);
+        view.SetOldMessagesLoadingActive(isActive);
 
-        foreach (var canvas in view.previewCanvasGroup)
-            Assert.AreEqual(1f, canvas.alpha);
+        Assert.AreEqual(isActive, view.oldMessagesLoadingContainer.activeSelf);
     }
 }

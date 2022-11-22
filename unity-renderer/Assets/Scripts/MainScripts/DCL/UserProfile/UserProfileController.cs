@@ -49,6 +49,7 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
+        
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
@@ -57,16 +58,20 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfilesToCatalog(string payload)
     {
-        UserProfileModel[] items = JsonUtility.FromJson<UserProfileModel[]>(payload);
-        int count = items.Length;
-        for (int i = 0; i < count; ++i)
-        {
-            AddUserProfileToCatalog(items[i]);
-        }
+        var usersPayload = JsonUtility.FromJson<AddUserProfilesToCatalogPayload>(payload);
+        var users = usersPayload.users;
+        var count = users.Length;
+        
+        for (var i = 0; i < count; ++i)
+            AddUserProfileToCatalog(users[i]);
     }
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
+        // TODO: the renderer should not alter the userId nor ethAddress, this is just a patch derived from a kernel issue
+        model.userId = model.userId.ToLower();
+        model.ethAddress = model.ethAddress?.ToLower();
+        
         if (!userProfilesCatalog.TryGetValue(model.userId, out UserProfile userProfile))
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
 

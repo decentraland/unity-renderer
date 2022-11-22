@@ -26,6 +26,8 @@ namespace DCL
         private readonly ISceneBoundsChecker sceneBoundsChecker;
         private readonly IPhysicsSyncController physicsSyncController;
         private readonly ICullingController cullingController;
+        private readonly DataStore_FeatureFlag dataStoreFeatureFlag;
+        private readonly bool isSBCNerfEnabled;
 
         public event Action<string, ISharedComponent> OnAddSharedComponent;
 
@@ -35,14 +37,16 @@ namespace DCL
                 Environment.i.platform.parcelScenesCleaner,
                 Environment.i.world.sceneBoundsChecker,
                 Environment.i.platform.physicsSyncController,
-                Environment.i.platform.cullingController) { }
+                Environment.i.platform.cullingController,
+                DataStore.i.featureFlags.flags.Get()) { }
 
         public ECSComponentsManagerLegacy(IParcelScene scene,
             IRuntimeComponentFactory componentFactory,
             IParcelScenesCleaner parcelScenesCleaner,
             ISceneBoundsChecker sceneBoundsChecker,
             IPhysicsSyncController physicsSyncController,
-            ICullingController cullingController)
+            ICullingController cullingController, 
+            FeatureFlag featureFlags)
         {
             this.scene = scene;
             this.componentFactory = componentFactory;
@@ -50,6 +54,8 @@ namespace DCL
             this.sceneBoundsChecker = sceneBoundsChecker;
             this.physicsSyncController = physicsSyncController;
             this.cullingController = cullingController;
+
+            isSBCNerfEnabled = featureFlags.IsFeatureEnabled("NERF_SBC");
         }
 
         public void AddSharedComponent(IDCLEntity entity, Type componentType, ISharedComponent component)
@@ -352,7 +358,7 @@ namespace DCL
 
             if (factory.createConditions.ContainsKey(classId))
             {
-                if (!factory.createConditions[(int)classId].Invoke(scene.sceneData.id, classId))
+                if (!factory.createConditions[(int)classId].Invoke(scene.sceneData.sceneNumber, classId))
                     return null;
             }
 
@@ -395,7 +401,7 @@ namespace DCL
 
             if (entity == null)
             {
-                Debug.LogError($"scene '{scene.sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
+                Debug.LogError($"scene '{scene.sceneData.sceneNumber}': Can't create entity component if the entity {entityId} doesn't exist!");
                 return null;
             }
 
@@ -406,10 +412,11 @@ namespace DCL
             if (overrideCreate.ContainsKey((int)classId))
             {
                 int classIdAsInt = (int)classId;
-                overrideCreate[(int)classId].Invoke(scene.sceneData.id, entityId, ref classIdAsInt, data);
+                overrideCreate[(int)classId].Invoke(scene.sceneData.sceneNumber, entityId, ref classIdAsInt, data);
                 classId = (CLASS_ID_COMPONENT)classIdAsInt;
             }
 
+            bool wasCreated = false;
             if (!HasComponent(entity, classId))
             {
                 targetComponent = componentFactory.CreateComponent((int) classId) as IEntityComponent;
@@ -424,15 +431,20 @@ namespace DCL
                         targetComponent.UpdateFromJSON(json);
                     else
                         targetComponent.UpdateFromModel(data as BaseModel);
+                    
+                    wasCreated = true;
                 }
             }
             else
             {
                 targetComponent = EntityComponentUpdate(entity, classId, data as string);
             }
+            
+            var isTransform = classId == CLASS_ID_COMPONENT.TRANSFORM;
+            var avoidThrottling = isSBCNerfEnabled ? isTransform && wasCreated : isTransform;
 
             if (targetComponent != null && targetComponent is IOutOfSceneBoundariesHandler)
-                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: classId == CLASS_ID_COMPONENT.TRANSFORM);
+                sceneBoundsChecker?.AddEntityToBeChecked(entity, runPreliminaryEvaluation: avoidThrottling);
 
             physicsSyncController.MarkDirty();
             cullingController.MarkDirty();

@@ -9,9 +9,8 @@ namespace DCL.SettingsCommon
     {
         public enum BaseResolution
         {
-            BaseRes_720,
-            BaseRes_1080,
-            BaseRes_Unlimited
+            BaseRes_Normal,
+            BaseRes_Match_display
         }
 
         public enum SSAOQualityLevel
