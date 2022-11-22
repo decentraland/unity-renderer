@@ -11,39 +11,32 @@ Those messages are defined in the [Decentraland Protocol](https://github.com/dec
 To add a message in the Renderer Protocol, you must change the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol), and then update the package in the `protocol-gen` of the `unity-renderer` repository [here](https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen).
 
 Example of messages
-```
+```protobuf
 syntax = "proto3";
-import "google/protobuf/empty.proto";
 
-message Teleport {
-  message FromKernel {
-    message RequestTeleport {
-      string destination = 1;
-    }
-  }
+package decentraland.renderer;
 
-  message FromRenderer {
-    oneof message {
-      TeleportTo teleport_to = 3;
-      TeleportToCrowd teleport_to_crowd = 4;
-      TeleportToMagic teleport_to_magic = 5;
-      JumpIn jump_in = 6;
-    }
+message TriggerSelfUserExpressionRequest {
+  string id = 1;
+}
 
-    message TeleportTo {
-      int32 x = 1;
-      int32 y = 2;
-    }
+message TriggerExpressionRequest {
+  string id = 1;
+  float timestamp = 2;
+}
 
-    message TeleportToMagic {}
-    message TeleportToCrowd {}
+message EmotesResponse {}
 
-    message JumpIn {
-      string realm = 1;
-      int32 parcel_x = 2;
-      int32 parcel_y = 3;
-    }
-  }
+// Service implemented in Renderer and used in Kernel
+service EmotesRendererService {
+  // Triggers an expression in our own avatar (use example: SDK triggers a expression)
+  rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (EmotesResponse) {}
+}
+
+// Service implemented in Kernel and used in Renderer through the inverse RPC transport
+service EmotesKernelService {
+  // Request Kernel to Trigger the Expression (it will be broadcasted to the avatars in the area)
+  rpc TriggerExpression(TriggerExpressionRequest) returns (EmotesResponse) {}
 }
 ```
 
@@ -52,28 +45,175 @@ After that, just run `npm run build-renderer-protocol` and the Renderer Protocol
 ## RPC
 
 The Renderer works as a `RPC Server` that is connected by the Kernel, the `RPC Client`.
+And the Renderer implements a service called `TransportService` which is used to create a RPC Transport which is used as a InverseRPC where we can use the Kernel as a `RPC Server` and the Renderer as `RPC Client`.
+
+So the services can be implemented both ways. We have Kernel services an Renderer service for the Renderer protocol.
 
 > **_NOTE:_**  You can read the following articles to understand RPC [article 1](https://www.techtarget.com/searchapparchitecture/definition/Remote-Procedure-Call-RPC); [article 2](https://grpc.io/docs/what-is-grpc/introduction/)
 
-### Example
+### Implement Renderer Service
 
-In order to execute RPC Procedures from the Kernel to the Renderer, you must add a Service in the same protobuf.
-
+In the example, we're going to implement the following service from the protobuf above:
 ```
-service TeleportService {
-  rpc RequestTeleport(Teleport.FromKernel.RequestTeleport) returns (google.protobuf.Empty) {}
-  rpc OnMessage(google.protobuf.Empty) returns (stream Teleport.FromRenderer) {}
+// Service implemented in Renderer and used in Kernel
+service EmotesRendererService {
+  // Triggers an expression in our own avatar (use example: SDK triggers a expression)
+  rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (EmotesResponse) {}
 }
 ```
 
-Here you can execute from the Kernel to the Renderer the `RequestTeleport`.
+After we generated the code, need to create a folder named `EmotesService` in the following path:
+`Assets\Scripts\MainScripts\DCL\WorldRuntime\KernelCommunication\RPC\Services\EmotesService`
 
-And to receive messages, you subscribe the `OnMessage functions` that receives one of the `Teleport.FromRenderer` messages.
+Inside it, we create the following files:
+```
+RPC.Service.Emotes.asmdef
+EmotesServiceImpl.cs
+```
 
-### Messages from the Renderer to the Kernel
+And the `EmotesRendererServiceImpl.cs` we add the following code:
 
-If you want to send multiple messages to the Kernel, you have two options.
+```csharp
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using rpc_csharp;
 
-#### 1. Create a stream message from the Kernel, to receive all messages you want
+namespace RPC.Services
+{
+    public class EmotesRendererServiceImpl : IEmotesRendererService<RPCContext>
+    {
+        public static void RegisterService(RpcServerPort<RPCContext> port)
+        {
+            EmotesRendererServiceCodeGen.RegisterService(port, new EmotesRendererServiceImpl());
+        }
 
-#### 2. Create an event list and consume that list from the Kernel
+        public UniTask<EmotesResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)
+        {
+            UserProfile.GetOwnUserProfile().SetAvatarExpression(request.Id, UserProfile.EmoteSource.Command);
+            return default;
+        }
+    }
+}
+```
+
+To execute this code in the Kernel, we need to go to the Kernel, create the following file:
+`packages/renderer-protocol/services/emotesRendererService.ts`
+with this code:
+```ts
+import { RpcClientPort } from '@dcl/rpc'
+import * as codegen from '@dcl/rpc/dist/codegen'
+import { EmotesRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/emotes.gen'
+
+export function registerEmotesRendererService<Context>(
+  clientPort: RpcClientPort
+): codegen.RpcClientModule<EmotesRendererServiceDefinition, Context> {
+  return codegen.loadService<Context, EmotesRendererServiceDefinition>(clientPort, EmotesRendererServiceDefinition)
+}
+```
+
+in `packages/renderer-protocol/rpcClient.ts`
+
+we add the following lines:
+```ts
+  ...
+  const emotesService = registerEmotesService(clientPort) // add this line
+
+  rendererProtocol.resolve({
+    ...,
+    emotesService // and this line
+  })
+```
+
+and finally in `packages/renderer-protocol/types.ts`
+we add the service in the RendererProtocol type:
+```ts
+export type RendererProtocol = {
+  ...
+  emotesService: codegen.RpcClientModule<EmotesRendererServiceDefinition, any> // here
+}
+```
+
+and to use it, we call it as:
+```ts
+void rendererProtocol.then(async (protocol) => {
+  await protocol.emotesService.triggerSelfUserExpression({ id: req.predefinedEmote })
+})
+```
+> Note: When you're migrating messages, remember that the Kernel must send the message with the renderer protocol and must maintain for a good period of time the old way (with JSONs) to avoid compatibility issues.
+
+### Implement Kernel Services
+
+Create the service:
+
+in: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
+```ts
+import { RpcServerPort } from '@dcl/rpc'
+import { RendererProtocolContext } from '../context'
+import * as codegen from '@dcl/rpc/dist/codegen'
+import { EmotesKernelServiceDefinition, EmotesResponse } from '@dcl/protocol/out-ts/decentraland/renderer/emotes.gen'
+import { allScenesEvent } from 'shared/world/parcelSceneManager'
+import { sendPublicChatMessage } from 'shared/comms'
+
+export function registerEmotesKernelService(port: RpcServerPort<RendererProtocolContext>) {
+  codegen.registerService(port, EmotesKernelServiceDefinition, async () => ({
+    async triggerExpression(req, _) {
+      allScenesEvent({
+        eventType: 'playerExpression',
+        payload: {
+          expressionId: req.id
+        }
+      })
+
+      const body = `␐${req.id} ${req.timestamp}`
+
+      sendPublicChatMessage(body)
+      return EmotesResponse
+    }
+  }))
+}
+```
+
+Add the service to the registering list:
+
+in: `packages/renderer-protocol/inverseRpc/rpcServer.ts`
+```ts
+async function registerKernelServices(serverPort: RpcServerPort<RendererProtocolContext>) {
+  ...
+  registerEmotesKernelService(serverPort)
+}
+```
+
+And done! We implemented the Kernel Service.
+
+To use it from the Renderer we add the Client Service to the `IRPC`:
+
+in `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/Interfaces/IRPC.cs`
+```csharp
+public interface IRPC : IService
+{
+  ...
+  public ClientEmotesKernelService emotes { get; internal set; }
+}
+```
+
+And we load the module:
+
+in: `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/RPC.cs`
+```csharp
+ClientEmotesKernelService IRPC.emotes { get; set; }
+
+public static async UniTask LoadModules(RpcClientPort port, IRPC rpc)
+{
+    rpc.emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+}
+```
+
+And finally we can use it with the following code:
+```csharp
+ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+emotes?.TriggerExpression(new TriggerExpressionRequest()
+{
+    Id = id,
+    Timestamp = timestamp
+});
+```
