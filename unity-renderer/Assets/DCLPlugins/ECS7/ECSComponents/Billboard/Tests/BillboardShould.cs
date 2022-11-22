@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7;
+using DCL.ECSRuntime;
 using DCL.Models;
+using ECSSystems.BillboardSystem;
 using Google.Protobuf;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -16,49 +20,75 @@ namespace DCL.ECSComponents.Test
 {
     public class BillboardShould
     {
-        private IDCLEntity entity;
-        private IParcelScene scene;
-        private BillboardComponentHandler componentHandler;
-        private GameObject gameObject;
+        private IDCLEntity testEntity;
+        private GameObject testGameObject;
+        private GameObject cameraGameObject;
+        
+        private IList<IParcelScene> scenes;
+        private BillboardRegister billboardRegister;
+        private ECSBillboardSystem systemUpdate;
+        private DataStore_Camera dataStoreCamera;
+        private ECSComponent<PBBillboard> billboards;
 
         [SetUp]
         protected void SetUp()
         {
-            gameObject = new GameObject();
-            entity = Substitute.For<IDCLEntity>();
-            scene = Substitute.For<IParcelScene>();
-            componentHandler = new BillboardComponentHandler(Substitute.For<IUpdateEventHandler>());
+            scenes = DataStore.i.ecs7.scenes;
+            scenes.Add(Substitute.For<IParcelScene>());
+            scenes[0]
+                .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
+                {
+                    id = "temptation", basePosition = new Vector2Int(1, 0), sceneNumber = 1
+                });
 
-            entity.entityId.Returns(1); 
-            entity.gameObject.Returns(gameObject);
-            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.sceneNumber = 1;
-            scene.sceneData.Configure().Returns(sceneData);
+            cameraGameObject = new GameObject("GO");
+            cameraGameObject.transform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
             
-            componentHandler.OnComponentCreated(scene, entity);
+            CommonScriptableObjects.rendererState.Set(true);
+            CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
+            
+            testGameObject = new GameObject();
+            testEntity = Substitute.For<IDCLEntity>();
+
+            testEntity.entityId.Returns(1); 
+            testEntity.gameObject.Returns(testGameObject);
+
+            ECSComponentsFactory componentFactory = new ECSComponentsFactory();
+            ECSComponentsManager componentsManager = new ECSComponentsManager(componentFactory.componentBuilders);
+            var internalComponents = new InternalECSComponents(componentsManager, componentFactory);
+            var componentsComposer = new ECS7ComponentsComposer(componentFactory,
+                Substitute.For<IECSComponentWriter>(), internalComponents);
+            
+            billboards = (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD);
+            
+            dataStoreCamera = new DataStore_Camera();
+            dataStoreCamera.transform.Set(cameraGameObject.transform);
+            
+            systemUpdate = new ECSBillboardSystem(
+                billboards,
+                dataStoreCamera);
         }
 
         [TearDown]
         protected void TearDown()
         {
-            componentHandler.OnComponentRemoved(scene, entity);
-            GameObject.Destroy(gameObject);
+            GameObject.Destroy(testGameObject);
+            GameObject.Destroy(cameraGameObject);
+            CommonScriptableObjects.UnloadAll();
         }
 
         [Test]
         public void UpdateComponentCorrectly()
         {
-            // Arrange
-            var model = CreateModel();
-            componentHandler.OnComponentCreated(scene,entity);
-            var currentRotation = gameObject.transform.rotation;
-            CommonScriptableObjects.cameraPosition.Set(new UnityEngine.Vector3(10, 10, 10));
-                
-            // Act
-            componentHandler.OnComponentModelUpdated(scene, entity, model);
-
+            billboards.Create(scenes[0], testEntity);
+            billboards.SetModel(scenes[0], testEntity, CreateModel());
+            
+            var currentRotation = testGameObject.transform.rotation;
+            cameraGameObject.transform.position = new UnityEngine.Vector3(30, 2, 15);
+            systemUpdate.Update();
+            
             // Assert
-            Assert.AreNotEqual(currentRotation,  gameObject.transform.rotation);
+            Assert.AreNotEqual(currentRotation,  testGameObject.transform.rotation);
         }
 
         [Test]

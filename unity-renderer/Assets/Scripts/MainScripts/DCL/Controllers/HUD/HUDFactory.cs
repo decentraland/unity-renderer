@@ -54,7 +54,10 @@ public class HUDFactory : IHUDFactory
                             FriendsController.i, 
                             new UserProfileWebInterfaceBridge()),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
-                        new PassportNavigationComponentController(view.PassportNavigationView),
+                        new PassportNavigationComponentController(
+                            view.PassportNavigationView,
+                            ProfanityFilterSharedInstances.regexFilter,
+                            DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new SocialAnalytics(
