@@ -45,7 +45,7 @@ public class ECSSystemsController : IDisposable
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
-            DataStore.i.ecs7.scenes, Environment.i.world.state);
+            DataStore.i.ecs7.scenes, Environment.i.world.state, DataStore.i.HUDs.loadingHUD.visible);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
         
