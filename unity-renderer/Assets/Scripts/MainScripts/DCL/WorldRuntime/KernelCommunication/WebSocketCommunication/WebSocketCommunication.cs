@@ -263,7 +263,10 @@ public class WebSocketCommunication : IKernelCommunication
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
 
-                        ConsoleLog($"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}");
+                        var str = $"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}";
+                        Console.WriteLine(str);
+                        Debug.Log(str);
+                        ConsoleLog(str);
                         
                         switch (msg.type)
                         {

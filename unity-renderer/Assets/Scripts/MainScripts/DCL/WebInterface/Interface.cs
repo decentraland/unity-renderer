@@ -902,7 +902,10 @@ namespace DCL.Interface
 
                 OnMessageFromEngine.Invoke(type, message);
                 
-                ConsoleLog($"VV:: UnitySend:: type = {type} ---AND--- {message}");
+                var str = $"VV:: UnitySend:: type = {type} ---AND--- {message}";
+                Console.WriteLine(str);
+                Debug.Log(str);
+                ConsoleLog(str);
 
                 if (VERBOSE)
                 {
