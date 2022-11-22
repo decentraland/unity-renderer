@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using SocialFeaturesAnalytics;
 
 namespace DCL.Social.Passports
 {
@@ -16,8 +17,10 @@ namespace DCL.Social.Passports
         [SerializeField] internal GameObject onlineStatus;
         [SerializeField] internal GameObject offlineStatus;
         [SerializeField] internal GameObject normalUserPanel;
+        [SerializeField] internal JumpInButton jumpInButton;
 
         public event Action OnAddFriend;
+        public event Action OnJumpIn;
 
         private string fullWalletAddress;
 
@@ -75,6 +78,12 @@ namespace DCL.Social.Passports
 
             walletCopyButton.onClick.RemoveAllListeners();
             addFriendButton.onClick.RemoveAllListeners();
+        }
+
+        public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
+        {
+            jumpInButton.gameObject.SetActive(true);
+            jumpInButton.Initialize(friendsController, userId, socialAnalytics);
         }
     }
 }

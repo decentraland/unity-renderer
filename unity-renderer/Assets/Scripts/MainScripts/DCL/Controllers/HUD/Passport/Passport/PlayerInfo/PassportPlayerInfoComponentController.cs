@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DCL;
 using DCL.Helpers;
+using SocialFeaturesAnalytics;
 
 namespace DCL.Social.Passports
 {
@@ -14,6 +15,7 @@ namespace DCL.Social.Passports
         private readonly IProfanityFilter profanityFilter;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly ISocialAnalytics socialAnalytics;
 
         private StringVariable currentPlayerId;
 
@@ -23,7 +25,8 @@ namespace DCL.Social.Passports
             DataStore dataStore, 
             IProfanityFilter profanityFilter,
             IFriendsController friendsController,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            ISocialAnalytics socialAnalytics)
         {
             this.currentPlayerId = currentPlayerId;
             this.view = view;
@@ -31,6 +34,7 @@ namespace DCL.Social.Passports
             this.profanityFilter = profanityFilter;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
+            this.socialAnalytics = socialAnalytics;
 
             view.OnAddFriend += AddPlayerAsFriend;
         }
@@ -46,6 +50,7 @@ namespace DCL.Social.Passports
             {
                 view.SetWallet(userProfile.userId);
                 view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
+                view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
             }
         }
 

@@ -40,7 +40,8 @@ namespace DCL.Social.Passports
                                 dataStore, 
                                 profanityFilter, 
                                 friendsController, 
-                                userProfileBridge);
+                                userProfileBridge,
+                                socialAnalytics);
 
             playerPreviewController = new PassportPlayerPreviewComponentController(Substitute.For<IPassportPlayerPreviewComponentView>());
             passportNavigationController = new PassportNavigationComponentController(
