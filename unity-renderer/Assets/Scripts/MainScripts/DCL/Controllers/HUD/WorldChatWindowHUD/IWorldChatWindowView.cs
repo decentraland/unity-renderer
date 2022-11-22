@@ -30,6 +30,7 @@ public interface IWorldChatWindowView
     void ShowPrivateChatsLoading();
     void HidePrivateChatsLoading();
     void RefreshBlockedDirectMessages(List<string> blockedUsers);
+    void RefreshPrivateChatPresence(string userId, bool isOnline);
     void Dispose();
     void DisableSearchMode();
     void HideMoreChatsToLoadHint();
