@@ -21,6 +21,7 @@ namespace Tests
             yield return base.SetUp();
             
             FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
+            ChatController.CreateSharedInstance(Substitute.For<IChatApiBridge>(), new DataStore());
             hudController = new HUDController(new HUDFactory());
             hudController.Initialize();
             yield return null;
