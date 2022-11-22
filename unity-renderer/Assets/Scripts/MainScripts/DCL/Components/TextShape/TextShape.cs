@@ -65,6 +65,23 @@ namespace DCL.Components
 
         public override string componentName => "text";
 
+
+        private bool CameraFound
+        {
+            get
+            {
+                if (!cameraFound)
+                {
+                    mainCamera = Camera.main;
+                    if (mainCamera != null)
+                        cameraFound = true;
+                }
+
+                return cameraFound;
+            }
+        }
+
+
         private void Awake()
         {
             model = new Model();
@@ -79,14 +96,7 @@ namespace DCL.Components
         private void OnUpdate()
         {
             // Cameras are not detected while loading, so we can not load the camera on Awake or Start
-            if (!cameraFound)
-            {
-                mainCamera = Camera.main;
-                if (mainCamera != null)
-                    cameraFound = true;
-            }
-
-            if (cachedModel.billboard && mainCamera != null)
+            if (cachedModel.billboard && CameraFound)
                 transform.forward = mainCamera.transform.forward;
         }
 
