@@ -29,7 +29,7 @@ namespace Builder
         [System.Serializable]
         public class BuilderSceneStartEvent
         {
-            public string sceneId;
+            public int sceneNumber;
             public string eventType = "builderSceneStart";
         };
 
@@ -70,7 +70,7 @@ namespace Builder
             onGetLoadingEntity.payload.type = "onEntityLoading";
             if (LOG_MESSAGES)
                 Debug.Log($"SEND: OnEntityLoadingEvent {entity.entityId}");
-            WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
+            WebInterface.SendSceneEvent(entity.scene.sceneData.sceneNumber, "uuidEvent", onGetLoadingEntity);
         }
 
         public void SendEntityFinishLoad(IDCLEntity entity)
@@ -80,22 +80,22 @@ namespace Builder
             onGetLoadingEntity.payload.type = "onEntityFinishLoading";
             if (LOG_MESSAGES)
                 Debug.Log($"SEND: onEntityFinishLoading {entity.entityId}");
-            WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
+            WebInterface.SendSceneEvent(entity.scene.sceneData.sceneNumber, "uuidEvent", onGetLoadingEntity);
         }
 
-        public void SendEntitiesOutOfBoundaries(long[] entitiesId, string sceneId)
+        public void SendEntitiesOutOfBoundaries(long[] entitiesId, int sceneNumber)
         {
             outOfBoundariesEventPayload.entities = entitiesId;
             if (LOG_MESSAGES)
                 Debug.Log($"SEND: entitiesOutOfBoundaries {outOfBoundariesEventPayload.entities.Length}");
-            WebInterface.SendSceneEvent<EntitiesOutOfBoundariesEventPayload>(sceneId, "entitiesOutOfBoundaries", outOfBoundariesEventPayload);
+            WebInterface.SendSceneEvent<EntitiesOutOfBoundariesEventPayload>(sceneNumber, "entitiesOutOfBoundaries", outOfBoundariesEventPayload);
         }
 
-        public void SendBuilderSceneStart(string sceneId)
+        public void SendBuilderSceneStart(int sceneNumber)
         {
             if (LOG_MESSAGES)
-                Debug.Log($"SEND: BuilderSceneStartEvent {sceneId}");
-            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneId = sceneId });
+                Debug.Log($"SEND: BuilderSceneStartEvent - scene number: {sceneNumber}");
+            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneNumber = sceneNumber });
         }
 
         public void SendCameraTargetPosition(Vector3 targetPosition, string promiseId)
@@ -107,7 +107,7 @@ namespace Builder
             WebInterface.SendMessage("ReportBuilderCameraTarget", onReportCameraTarget);
         }
 
-        public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
+        public void SendEntitySelected(EditableEntity entity, string gizmoType, int sceneNumber)
         {
             onGizmoEventPayload.type = "gizmoSelected";
             onGizmoEventPayload.entities = entity ? new long[] { entity.rootEntity.entityId } : null;
@@ -116,10 +116,10 @@ namespace Builder
 
             if (LOG_MESSAGES)
                 Debug.Log($"SEND: NotifyGizmosSelectedEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
-            WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
+            WebInterface.SendSceneEvent(sceneNumber, "gizmoEvent", onGizmoEventPayload);
         }
 
-        public void SendEntitiesTransform(List<EditableEntity> entities, string gizmoType, string sceneId)
+        public void SendEntitiesTransform(List<EditableEntity> entities, string gizmoType, int sceneNumber)
         {
             onGizmoEventPayload.type = "gizmoDragEnded";
             onGizmoEventPayload.entities = null;
@@ -139,7 +139,7 @@ namespace Builder
 
             if (LOG_MESSAGES)
                 Debug.Log($"SEND: NotifyGizmosTransformEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
-            WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
+            WebInterface.SendSceneEvent(sceneNumber, "gizmoEvent", onGizmoEventPayload);
         }
     }
 }

@@ -33,6 +33,7 @@ public class BIWScaleGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TransformEntity()
     {
         //Act
@@ -43,6 +44,7 @@ public class BIWScaleGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ProportionalTransform()
     {
         //Arrange
@@ -56,6 +58,7 @@ public class BIWScaleGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void SetPreviousAxisValues()
     {
         //Act
@@ -66,6 +69,7 @@ public class BIWScaleGizmosShould
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void GetHitPointToAxisValue()
     {
         //Arrange

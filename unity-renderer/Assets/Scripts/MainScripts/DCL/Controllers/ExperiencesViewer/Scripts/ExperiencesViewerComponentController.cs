@@ -136,7 +136,7 @@ namespace DCL.ExperiencesViewer
                     PortableExperienceUtils.GetActivePortableExperienceScenes();
                 foreach (GlobalScene pexScene in activePortableExperiences)
                 {
-                    OnPEXSceneAdded(pexScene.sceneData.id);
+                    OnPEXSceneAdded(pexScene);
                 }
             }
 
@@ -145,7 +145,11 @@ namespace DCL.ExperiencesViewer
 
         public void OnPEXSceneAdded(string id)
         {
-            IParcelScene scene = Environment.i.world.state.GetScene(id);
+            OnPEXSceneAdded(Environment.i.world.state.GetPortableExperienceScene(id));
+        }
+        
+        public void OnPEXSceneAdded(IParcelScene scene)
+        {
             ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
 
             if (activePEXScenes.ContainsKey(scene.sceneData.id))

@@ -187,7 +187,7 @@ namespace DCL.Builder
                 }
             }
 
-            SendNewEntityToKernel(scene.sceneData.id, entity.entityId, list.ToArray());
+            SendNewEntityToKernel(scene.sceneData.sceneNumber, entity.entityId, list.ToArray());
         }
 
         public void EntityTransformReport(IDCLEntity entity, IParcelScene scene)
@@ -208,7 +208,9 @@ namespace DCL.Builder
 
             IsolatedBuilderConfig builderConfig = new IsolatedBuilderConfig();
 
-            builderConfig.sceneId = land.sceneId;
+            // We don't use scene id in the client anymore
+            // builderConfig.sceneId = land.sceneNumber;
+            
             builderConfig.recreateScene = true;
             builderConfig.killPortableExperiences = true;
             builderConfig.land = land;
@@ -236,9 +238,9 @@ namespace DCL.Builder
             WebInterface.PublishStatefulScene(payload);
         }
         
-        private void SendNewEntityToKernel(string sceneId, long entityId, ComponentPayload[] componentsPayload)
+        private void SendNewEntityToKernel(int sceneNumber, long entityId, ComponentPayload[] componentsPayload)
         {
-            componentSendHandler.SendNewEntityToKernel(sceneId,entityId,componentsPayload);
+            componentSendHandler.SendNewEntityToKernel(sceneNumber, entityId, componentsPayload);
             OnKernelUpdated?.Invoke();
         }
 

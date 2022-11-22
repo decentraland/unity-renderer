@@ -72,16 +72,16 @@ namespace ECSSystems.CameraSystem
             {
                 scene = loadedScenes[i];
 
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE,
+                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE,
                     reusableCameraMode, ECSComponentWriteType.SEND_TO_SCENE);
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK,
+                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK,
                     reusablePointerLock, ECSComponentWriteType.SEND_TO_SCENE);                
 
                 if (!updateTransform)
                     continue;
 
                 var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref worldOffset);
-                componentsWriter.PutComponent(scene.sceneData.id, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
+                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
                     transform);
             }
         }

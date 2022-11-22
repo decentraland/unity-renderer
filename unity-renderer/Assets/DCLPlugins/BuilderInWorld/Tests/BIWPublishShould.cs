@@ -47,6 +47,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestEntityOutsidePublish()
     {
         //Arrange
@@ -60,6 +61,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
+    [Explicit("BIW is deprecated")]
     public IEnumerator TestEntityInsidePublish()
     {
         //Arrange
@@ -82,6 +84,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestMetricsPublish()
     {
         //Act
@@ -95,6 +98,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestPublishFeedbackMessage()
     {
         //Act

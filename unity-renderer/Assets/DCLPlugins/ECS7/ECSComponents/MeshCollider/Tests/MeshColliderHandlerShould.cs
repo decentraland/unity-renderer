@@ -34,7 +34,7 @@ namespace Tests
                 internalComponents.physicColliderComponent);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 
             keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());

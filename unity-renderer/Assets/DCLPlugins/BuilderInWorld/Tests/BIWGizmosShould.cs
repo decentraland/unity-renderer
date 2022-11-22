@@ -42,6 +42,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestBeginDrag()
     {
         //Arrange
@@ -52,6 +53,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestDrag()
     {
         //Arrange 
@@ -65,6 +67,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     private void AssertValue(Vector3 value) { Assert.AreEqual(value, Vector3.zero); }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestEndDrag()
     {
         //Arrange
@@ -78,6 +81,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     private void AssertGizmosType(string type) { Assert.AreEqual(type, BIWSettings.TRANSLATE_GIZMO_NAME); }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestDesactivateGizmos()
     {
         //Act
@@ -88,6 +92,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestActivationTranslateGizmos()
     {
         //Act
@@ -98,6 +103,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestActivationRotateGizmos()
     {
         //Act
@@ -108,6 +114,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestActivationScaleGizmos()
     {
         //Act
@@ -118,6 +125,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestTranslateGizmosType()
     {
         //Arrange
@@ -128,6 +136,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestRotateGizmosType()
     {
         //Act
@@ -138,6 +147,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestScaleGizmosType()
     {
         //Act
@@ -148,6 +158,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestMouseDrag()
     {
         //Arrange
@@ -161,6 +172,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     private void OnChangeTransformValue(Vector3 value) { Assert.AreEqual(value, Vector3.one * 5f); }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void TestMouseUp()
     {
         //Arrange

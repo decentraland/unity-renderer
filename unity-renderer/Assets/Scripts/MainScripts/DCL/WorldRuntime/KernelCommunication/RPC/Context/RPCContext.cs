@@ -4,6 +4,6 @@ namespace RPC
 {
     public class RPCContext
     {
-        public CRDTServiceContext crdtContext = new CRDTServiceContext();
+        public CRDTServiceContext crdt = new CRDTServiceContext();
     }
 }
