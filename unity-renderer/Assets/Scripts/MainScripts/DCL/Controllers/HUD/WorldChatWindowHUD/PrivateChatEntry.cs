@@ -94,7 +94,7 @@ namespace DCL.Chat.HUD
             blockedContainer.SetActive(isBlocked);
         }
 
-        private void SetPresence(bool isOnline)
+        public void SetPresence(bool isOnline)
         {
             model.isOnline = isOnline;
             onlineStatusContainer.SetActive(isOnline && !model.isBlocked);
