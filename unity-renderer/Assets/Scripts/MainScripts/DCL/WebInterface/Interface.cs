@@ -396,13 +396,6 @@ namespace DCL.Interface
         public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities> { }
 
         [System.Serializable]
-        public class SendExpressionPayload
-        {
-            public string id;
-            public long timestamp;
-        }
-
-        [System.Serializable]
         public class UserAcceptedCollectiblesPayload
         {
             public string id;
@@ -1425,15 +1418,6 @@ namespace DCL.Interface
                 dontShowAgain = dontShowAgain
             };
             SendMessage("TermsOfServiceResponse", payload);
-        }
-
-        public static void SendExpression(string expressionID, long timestamp)
-        {
-            SendMessage("TriggerExpression", new SendExpressionPayload()
-            {
-                id = expressionID,
-                timestamp = timestamp
-            });
         }
 
         public static void OpenURL(string url)

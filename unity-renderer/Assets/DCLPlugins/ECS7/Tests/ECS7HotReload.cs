@@ -16,7 +16,6 @@ using NSubstitute;
 using NUnit.Framework;
 using RPC;
 using rpc_csharp;
-using rpc_csharp_test;
 using rpc_csharp.transport;
 using RPC.Services;
 using UnityEngine;
@@ -45,7 +44,7 @@ namespace Tests
                     }
                 };
 
-                RPCContext context = DataStore.i.rpcContext.context;
+                RPCContext context = DataStore.i.rpc.context;
 
                 var (clientTransport, serverTransport) = MemoryTransport.Create();
 
@@ -62,9 +61,9 @@ namespace Tests
                     LoadEnvironment();
                     ECSComponentsManager componentsManager = LoadEcs7Dependencies();
 
-                    context.crdtContext.MessagingControllersManager = Environment.i.messaging.manager;
-
-                    TestClient testClient = await TestClient.Create(clientTransport, CRDTServiceCodeGen.ServiceName);
+                    context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+                    
+                    ClientCRDTService clientCrdtService = await CreateClientCrdtService(clientTransport);
                     await LoadScene(SCENE_NUMBER).ToCoroutine();
 
                     IParcelScene scene = Environment.i.world.state.GetScene(SCENE_NUMBER);
@@ -78,7 +77,7 @@ namespace Tests
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };
 
-                    await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
+                    await clientCrdtService.SendCrdt(new CRDTManyMessages()
                     {
                         SceneNumber = SCENE_NUMBER,
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtCreateBoxMessage))
@@ -105,7 +104,7 @@ namespace Tests
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };
 
-                    await testClient.CallProcedure<CRDTResponse>("SendCrdt", new CRDTManyMessages()
+                    await clientCrdtService.SendCrdt(new CRDTManyMessages()
                     {
                         SceneNumber = SCENE_NUMBER,
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtCreateBoxMessage))
@@ -138,7 +137,7 @@ namespace Tests
             ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
             ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
-                Environment.i.world.state, DataStore.i.rpcContext.context.crdtContext);
+                Environment.i.world.state, DataStore.i.rpc.context.crdt);
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
                 Substitute.For<IECSComponentWriter>(),
                 Substitute.For<IInternalECSComponents>());
@@ -192,6 +191,15 @@ namespace Tests
                     return msgStream.ToArray();
                 }
             }
+        }
+        
+        static async UniTask<ClientCRDTService> CreateClientCrdtService(ITransport transport)
+        {
+            RpcClient client = new RpcClient(transport);
+            RpcClientPort port = await client.CreatePort("test-port");
+            RpcClientModule module = await port.LoadModule(CRDTServiceCodeGen.ServiceName);
+            ClientCRDTService crdtService = new ClientCRDTService(module);
+            return crdtService;
         }
     }
 }
