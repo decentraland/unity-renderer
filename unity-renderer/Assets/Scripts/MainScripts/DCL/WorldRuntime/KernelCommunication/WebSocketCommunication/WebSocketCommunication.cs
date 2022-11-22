@@ -259,10 +259,8 @@ public class WebSocketCommunication : IKernelCommunication
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
                         
-                        Debug.unityLogger.logEnabled = true;
-                        Debug.Log ($"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}");
-                        Debug.unityLogger.logEnabled = false;
-                        
+                        Application.ExternalCall( "console.log", $"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}" );
+  
                         switch (msg.type)
                         {
                             // Add to this list the messages that are used a lot and you want better performance
