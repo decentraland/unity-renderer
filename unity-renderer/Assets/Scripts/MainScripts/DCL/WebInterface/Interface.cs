@@ -23,7 +23,7 @@ namespace DCL.Interface
      */
     public static class WebInterface
     {
-        public static bool VERBOSE = false;
+        public static bool VERBOSE = true;
 
         [System.Serializable]
         public class ReportPositionPayload
@@ -905,7 +905,18 @@ namespace DCL.Interface
                 var str = $"VV:: UnitySend:: type = {type} ---AND--- {message}";
                 Console.WriteLine(str);
                 Debug.Log(str);
+                Debug.LogWarning(str);
+                Debug.LogError (str);
                 ConsoleLog(str);
+
+                var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
+                UnityEngine.Debug.unityLogger.logEnabled = true;
+                Debug.Log(str);
+                Debug.LogWarning(str);
+                Debug.LogError (str);
+                UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
+                        
+                Debug.unityLogger.Log(str);
 
                 if (VERBOSE)
                 {

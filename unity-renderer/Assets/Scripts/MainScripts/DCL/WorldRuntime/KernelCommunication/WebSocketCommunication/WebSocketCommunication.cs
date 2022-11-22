@@ -13,14 +13,14 @@ public class WebSocketCommunication : IKernelCommunication
     public static DCLWebSocketService service;
 
     [System.NonSerialized]
-    public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
+    public static Queue <DCLWebSocketService.Message> queuedMessages = new Queue <DCLWebSocketService.Message>();
 
     [System.NonSerialized]
     public static volatile bool queuedMessagesDirty;
 
-    private Dictionary<string, GameObject> bridgeGameObjects = new Dictionary<string, GameObject>();
+    private Dictionary <string, GameObject> bridgeGameObjects = new Dictionary <string, GameObject>();
 
-    public Dictionary<string, string> messageTypeToBridgeName = new Dictionary<string, string>(); // Public to be able to modify it from `explorer-desktop`
+    public Dictionary <string, string> messageTypeToBridgeName = new Dictionary <string, string>(); // Public to be able to modify it from `explorer-desktop`
     private bool requestStop = false;
     private Coroutine updateCoroutine;
 
@@ -44,8 +44,10 @@ public class WebSocketCommunication : IKernelCommunication
     }
 
     public bool isServerReady => ws.IsListening;
+
     public void Dispose() { ws.Stop(); }
-    public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
+
+    public static event Action <DCLWebSocketService> OnWebSocketServiceAdded;
 
     private string StartServer(int port, int maxPort, bool withSSL, bool verbose = false)
     {
@@ -53,13 +55,16 @@ public class WebSocketCommunication : IKernelCommunication
         {
             throw new SocketException((int)SocketError.AddressAlreadyInUse);
         }
+
         string wssServerUrl;
         string wssServiceId = "dcl";
+
         try
         {
             if (withSSL)
             {
                 wssServerUrl = $"wss://localhost:{port}/";
+
                 ws = new WebSocketServer(wssServerUrl)
                 {
                     SslConfiguration =
@@ -83,6 +88,7 @@ public class WebSocketCommunication : IKernelCommunication
             {
                 service = new DCLWebSocketService();
                 OnWebSocketServiceAdded?.Invoke(service);
+
                 return service;
             });
 
@@ -91,23 +97,28 @@ public class WebSocketCommunication : IKernelCommunication
                 ws.Log.Level = LogLevel.Debug;
                 ws.Log.Output += OnWebSocketLog;
             }
+
             ws.Start();
         }
         catch (InvalidOperationException e)
         {
             ws.Stop();
+
             if (withSSL) // Search for available ports only if we're using SSL
             {
                 SocketException se = (SocketException)e.InnerException;
+
                 if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
                 {
                     return StartServer(port + 1, maxPort, withSSL);
                 }
             }
+
             throw new InvalidOperationException(e.Message, e.InnerException);
         }
 
         string wssUrl = wssServerUrl + wssServiceId;
+
         return wssUrl;
     }
     private void OnWebSocketLog(LogData logData, string message)
@@ -116,15 +127,19 @@ public class WebSocketCommunication : IKernelCommunication
         {
             case LogLevel.Debug:
                 Debug.Log($"[WebSocket] {logData.Message}");
+
                 break;
             case LogLevel.Warn:
                 Debug.LogWarning($"[WebSocket] {logData.Message}");
+
                 break;
             case LogLevel.Error:
                 Debug.LogError($"[WebSocket] {logData.Message}");
+
                 break;
             case LogLevel.Fatal:
                 Debug.LogError($"[WebSocket] {logData.Message}");
+
                 break;
         }
     }
@@ -266,28 +281,43 @@ public class WebSocketCommunication : IKernelCommunication
                         var str = $"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}";
                         Console.WriteLine(str);
                         Debug.Log(str);
+                        Debug.LogWarning(str);
+                        Debug.LogError (str);
                         ConsoleLog(str);
+
+                        var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
+                        UnityEngine.Debug.unityLogger.logEnabled = true;
+                        Debug.Log(str);
+                        Debug.LogWarning(str);
+                        Debug.LogError (str);
+                        UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
                         
+                        Debug.unityLogger.Log(str);
+
                         switch (msg.type)
                         {
                             // Add to this list the messages that are used a lot and you want better performance
                             case "SendSceneMessage":
                                 DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
+
                                 break;
                             case "Reset":
                                 DCL.Environment.i.world.sceneController.UnloadAllScenesQueued();
+
                                 break;
                             case "SetVoiceChatEnabledByScene":
                                 if (int.TryParse(msg.payload, out int value)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
                                     hudControllerGO.SendMessage(msg.type, value);
                                 }
+
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
                                     mainGO.SendMessage(msg.type, durationInSeconds);
                                 }
+
                                 break;
                             default:
                                 if (!messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
@@ -305,6 +335,7 @@ public class WebSocketCommunication : IKernelCommunication
                                 {
                                     bridgeObject.SendMessage(msg.type, msg.payload);
                                 }
+
                                 break;
                         }
 
@@ -317,6 +348,7 @@ public class WebSocketCommunication : IKernelCommunication
                     }
                 }
             }
+
             yield return null;
         }
     }
