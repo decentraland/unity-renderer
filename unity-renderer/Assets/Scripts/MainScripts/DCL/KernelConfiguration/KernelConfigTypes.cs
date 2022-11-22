@@ -103,14 +103,14 @@ namespace KernelConfigurationTypes
     public class Debugging
     {
         public bool sceneDebugPanelEnabled = false;
-        public string sceneDebugPanelTargetSceneId = string.Empty;
-        public string sceneLimitsWarningSceneId = string.Empty;
+        public int sceneDebugPanelTargetSceneNumber = -1;
+        public int sceneLimitsWarningSceneNumber = -1;
 
         public bool Equals(Debugging other)
         {
             return sceneDebugPanelEnabled == other?.sceneDebugPanelEnabled &&
-                   sceneDebugPanelTargetSceneId == other?.sceneDebugPanelTargetSceneId &&
-                   sceneLimitsWarningSceneId == other?.sceneLimitsWarningSceneId;
+                   sceneDebugPanelTargetSceneNumber == other?.sceneDebugPanelTargetSceneNumber &&
+                   sceneLimitsWarningSceneNumber == other?.sceneLimitsWarningSceneNumber;
         }
 
         public Debugging Clone()

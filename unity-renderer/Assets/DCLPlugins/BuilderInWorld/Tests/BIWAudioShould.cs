@@ -19,6 +19,7 @@ public class BIWAudioShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void EnterBiw()
     {
         //Act
@@ -29,6 +30,7 @@ public class BIWAudioShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ExitBiw()
     {
         //Act

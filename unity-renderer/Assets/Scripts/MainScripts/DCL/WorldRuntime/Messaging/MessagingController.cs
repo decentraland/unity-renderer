@@ -21,7 +21,7 @@ namespace DCL
             new Dictionary<MessagingBusType, MessagingBus>();
 
         public IMessageProcessHandler messageHandler;
-        public string debugTag;
+        public int debugSceneNumber;
         public bool enabled = true;
 
         private QueueState currentQueueState;
@@ -33,10 +33,10 @@ namespace DCL
         public IMessagingControllersManager messagingManager;
 
         public MessagingController(IMessagingControllersManager messagingManager, IMessageProcessHandler messageHandler,
-            string debugTag = null)
+            int debugSceneNumber = -1)
         {
             this.messagingManager = messagingManager;
-            this.debugTag = debugTag;
+            this.debugSceneNumber = debugSceneNumber;
             this.messageHandler = messageHandler;
 
             //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
@@ -53,7 +53,7 @@ namespace DCL
         private MessagingBus AddMessageBus(MessagingBusType type)
         {
             var newMessagingBus = new MessagingBus(type, messageHandler, this);
-            newMessagingBus.debugTag = debugTag;
+            newMessagingBus.debugSceneNumber = debugSceneNumber;
 
             messagingBuses.Add(type, newMessagingBus);
             return newMessagingBus;

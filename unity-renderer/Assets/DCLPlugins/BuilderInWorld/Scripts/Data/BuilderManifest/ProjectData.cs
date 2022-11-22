@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.Builder
 {
@@ -12,7 +13,7 @@ namespace DCL.Builder
         public string description;
 
         public bool is_public = false;
-        public string scene_id;
+        [FormerlySerializedAs("scene_id")] public int scene_number;
         
         public string eth_address;
         

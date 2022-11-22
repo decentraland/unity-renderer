@@ -74,6 +74,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void OutlineEnity()
     {
         outlinerController.OutlineEntity(entity);
@@ -84,6 +85,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void OutlineLayer()
     {
         outlinerController.OutlineEntity(entity);
@@ -94,6 +96,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void OutlineLockEntities()
     {
         entity.SetIsLockedValue(true);
@@ -102,6 +105,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckOutline()
     {
         //Arrange
@@ -118,6 +122,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckCameraComponentAdded()
     {
         //Act
@@ -128,6 +133,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CheckCameraComponentRemoved()
     {
         //Act

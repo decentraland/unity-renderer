@@ -28,7 +28,7 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
-            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneId),
+            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
                 cancellationToken: ct);
 
             await UniTask.SwitchToMainThread(ct);
@@ -42,7 +42,7 @@ namespace RPC.Services
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        context.crdtContext.CrdtMessageReceived?.Invoke(messages.SceneId, crdtMessage);
+                        context.crdtContext.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
                     }
                 }
             }
@@ -56,23 +56,22 @@ namespace RPC.Services
 
         public UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request, RPCContext context, CancellationToken ct)
         {
-            string sceneId = request.SceneId;
-
             try
             {
-                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(sceneId, out CRDTProtocol sceneCrdtState))
+                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out CRDTProtocol sceneCrdtState))
                 {
                     return emptyResponse;
                 }
 
                 memoryStream.SetLength(0);
 
-                context.crdtContext.scenesOutgoingCrdts.Remove(sceneId);
+                context.crdtContext.scenesOutgoingCrdts.Remove(request.SceneNumber);
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
-
-                reusableCrdtMessage.SceneId = sceneId;
+                
+                reusableCrdtMessage.SceneId = request.SceneId;
+                reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
 
                 return UniTask.FromResult(reusableCrdtMessage);

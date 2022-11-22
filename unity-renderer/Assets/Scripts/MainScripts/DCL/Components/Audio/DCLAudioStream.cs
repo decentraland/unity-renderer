@@ -58,7 +58,7 @@ namespace DCL.Components
 
         private void Start()
         {
-            CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
+            CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
@@ -67,7 +67,7 @@ namespace DCL.Components
         private void OnDestroy()
         {
             isDestroyed = true;
-            CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
+            CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
@@ -82,7 +82,7 @@ namespace DCL.Components
                 return;
             }
 
-            bool canPlayStream = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            bool canPlayStream = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
             canPlayStream &= CommonScriptableObjects.rendererState;
             
             Model model = (Model) this.model;
@@ -110,7 +110,7 @@ namespace DCL.Components
             }
         }
 
-        private void OnSceneChanged(string sceneId, string prevSceneId) { UpdatePlayingState(false); }
+        private void OnSceneChanged(int currentSceneNumber, int previousSceneNumber) { UpdatePlayingState(false); }
 
         private void OnRendererStateChanged(bool isEnable, bool prevState)
         {

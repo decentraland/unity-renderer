@@ -26,7 +26,7 @@ namespace Tests
             entity.entityId.Returns(1);
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
             {
-                id = "1"
+                sceneNumber = 1
             };
 
             scene.sceneData.Configure().Returns(sceneData);

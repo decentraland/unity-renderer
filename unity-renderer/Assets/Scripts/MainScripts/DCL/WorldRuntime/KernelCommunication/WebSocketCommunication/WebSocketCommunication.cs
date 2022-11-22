@@ -115,6 +115,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SendSceneMessage"] = "Main";
         messageTypeToBridgeName["LoadParcelScenes"] = "Main";
         messageTypeToBridgeName["UnloadScene"] = "Main";
+        messageTypeToBridgeName["UnloadSceneV2"] = "Main";
         messageTypeToBridgeName["Reset"] = "Main";
         messageTypeToBridgeName["CreateGlobalScene"] = "Main";
         messageTypeToBridgeName["BuilderReady"] = "Main";

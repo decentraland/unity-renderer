@@ -57,7 +57,7 @@ namespace ECSSystems.InputSenderSystem
                     });
                 }
 
-                writer.PutComponent(scene.sceneData.id,
+                writer.PutComponent(scene.sceneData.sceneNumber,
                     entity.entityId,
                     ComponentID.POINTER_EVENTS_RESULT,
                     result,

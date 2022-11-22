@@ -159,7 +159,7 @@ namespace DCL.Components
         protected System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
-        private BaseVariable<Dictionary<string, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
+        private BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         public UIShape parentUIComponent { get; protected set; }
 
         public UIShape()
@@ -241,15 +241,15 @@ namespace DCL.Components
 
             var dirtyShapesByScene = dirtyShapesBySceneVariable.Get();
 
-            string sceneDataID = scene.sceneData.id;
-            if (string.IsNullOrEmpty(sceneDataID)) sceneDataID = "default";
+            int sceneDataSceneNumber = scene.sceneData.sceneNumber;
+            if (sceneDataSceneNumber <= 0) sceneDataSceneNumber = 666;
 
-            if (!dirtyShapesByScene.ContainsKey(sceneDataID))
+            if (!dirtyShapesByScene.ContainsKey(sceneDataSceneNumber))
             {
-                dirtyShapesByScene.Add(sceneDataID, new Queue<IUIRefreshable>());
+                dirtyShapesByScene.Add(sceneDataSceneNumber, new Queue<IUIRefreshable>());
             }
             
-            dirtyShapesByScene[sceneDataID].Enqueue(this);
+            dirtyShapesByScene[sceneDataSceneNumber].Enqueue(this);
         }
 
         private void RefreshRecursively()

@@ -6,7 +6,7 @@ public class TermsOfServiceHUDController : IHUD
     [Serializable]
     public class Model
     {
-        public string sceneId;
+        public int sceneNumber;
         public string sceneName;
         public bool adultContent;
         public bool gamblingContent;
@@ -40,13 +40,13 @@ public class TermsOfServiceHUDController : IHUD
 
     private void SendAgreed(bool dontShowAgain)
     {
-        WebInterface.SendTermsOfServiceResponse(model.sceneId, true, dontShowAgain);
+        WebInterface.SendTermsOfServiceResponse(model.sceneNumber, true, dontShowAgain);
         view.SetVisible(false);
     }
 
     private void SendDeclined(bool dontShowAgain)
     {
-        WebInterface.SendTermsOfServiceResponse(model.sceneId, false, dontShowAgain);
+        WebInterface.SendTermsOfServiceResponse(model.sceneNumber, false, dontShowAgain);
         view.SetVisible(false);
     }
 

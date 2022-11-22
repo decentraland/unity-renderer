@@ -6,8 +6,8 @@ namespace DCL
     {
         bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CustomYieldInstruction yieldInstruction);
         void LoadParcelScenesExecute(string scenePayload);
-        void UnloadParcelSceneExecute(string sceneId);
+        void UnloadParcelSceneExecute(int sceneNumber);
         void UnloadAllScenes(bool includePersistent = false);
-        void UpdateParcelScenesExecute(string sceneId);
+        void UpdateParcelScenesExecute(string sceneJSON);
     }
 }
