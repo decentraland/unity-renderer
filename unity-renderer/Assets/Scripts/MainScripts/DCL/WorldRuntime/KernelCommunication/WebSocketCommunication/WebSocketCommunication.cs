@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using DCL;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -244,6 +245,9 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["VoiceChatStatus"] = "VoiceChatController";
     }
 
+    [DllImport("__Internal")]
+    private static extern void ConsoleLog(string message);
+
     IEnumerator ProcessMessages()
     {
         var hudControllerGO = GameObject.Find("HUDController");
@@ -259,8 +263,7 @@ public class WebSocketCommunication : IKernelCommunication
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
 
-                        DCL.Components.Video.Plugin.WebGLVideoPlugin
-                           .WebVideoPlayerLog($"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}");
+                        ConsoleLog($"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}");
                         
                         switch (msg.type)
                         {

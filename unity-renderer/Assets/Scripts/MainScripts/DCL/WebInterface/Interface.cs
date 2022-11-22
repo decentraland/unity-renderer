@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL.CameraTool;
 using DCL.Models;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Ray = UnityEngine.Ray;
@@ -887,6 +888,9 @@ namespace DCL.Interface
         public static bool CheckURLParam(string targetParam) { return false; }
         public static string GetURLParam(string targetParam) { return String.Empty; }
 
+        [DllImport("__Internal")]
+        private static extern void ConsoleLog(string message);
+        
         public static void MessageFromEngine(string type, string message)
         {
             if (OnMessageFromEngine != null)
@@ -898,8 +902,7 @@ namespace DCL.Interface
 
                 OnMessageFromEngine.Invoke(type, message);
                 
-                DCL.Components.Video.Plugin.WebGLVideoPlugin
-                   .WebVideoPlayerLog($"VV:: UnitySend:: type = {type} ---AND--- {message}");
+                ConsoleLog($"VV:: UnitySend:: type = {type} ---AND--- {message}");
 
                 if (VERBOSE)
                 {
