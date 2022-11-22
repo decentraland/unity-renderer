@@ -897,6 +897,11 @@ namespace DCL.Interface
                 }
 
                 OnMessageFromEngine.Invoke(type, message);
+                
+                Debug.unityLogger.logEnabled = true;
+                Debug.Log ($"VV:: UnitySend:: type = {type} ---AND--- {message}");
+                Debug.unityLogger.logEnabled = false;
+                
                 if (VERBOSE)
                 {
                     Debug.Log("MessageFromEngine called with: " + type + ", " + message);
