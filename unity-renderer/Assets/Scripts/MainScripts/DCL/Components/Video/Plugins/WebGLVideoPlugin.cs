@@ -55,6 +55,7 @@ namespace DCL.Components.Video.Plugin
         public static void WebVideoPlayerSetTime(string id, float second) { }
         public static void WebVideoPlayerSetPlaybackRate(string id, float playbackRate) { }
         public static void WebVideoPlayerSetLoop(string id, bool loop) { }
+        public static void WebVideoPlayerLog(string message) { }
 #endif
     }
 }

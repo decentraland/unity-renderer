@@ -898,8 +898,9 @@ namespace DCL.Interface
 
                 OnMessageFromEngine.Invoke(type, message);
                 
-                Application.ExternalCall( "console.log", $"VV:: UnitySend:: type = {type} ---AND--- {message}" );
-                
+                DCL.Components.Video.Plugin.WebGLVideoPlugin
+                   .WebVideoPlayerLog($"VV:: UnitySend:: type = {type} ---AND--- {message}");
+
                 if (VERBOSE)
                 {
                     Debug.Log("MessageFromEngine called with: " + type + ", " + message);

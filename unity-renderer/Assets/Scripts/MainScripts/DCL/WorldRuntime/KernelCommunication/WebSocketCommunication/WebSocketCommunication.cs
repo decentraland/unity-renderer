@@ -258,9 +258,10 @@ public class WebSocketCommunication : IKernelCommunication
                     while (queuedMessages.Count > 0)
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
+
+                        DCL.Components.Video.Plugin.WebGLVideoPlugin
+                           .WebVideoPlayerLog($"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}");
                         
-                        Application.ExternalCall( "console.log", $"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}" );
-  
                         switch (msg.type)
                         {
                             // Add to this list the messages that are used a lot and you want better performance

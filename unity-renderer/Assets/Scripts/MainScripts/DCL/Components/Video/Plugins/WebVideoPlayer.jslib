@@ -260,6 +260,10 @@ var WebVideoPlayer = {
     WebVideoPlayerSetLoop: function (videoId, value) {
         videos[UTF8ToString(videoId)].video.loop = value;
     },
+    
+    WebVideoPlayerLog: function (message) {
+            console.log(message);
+    },
 
     WebVideoPlayerSetPlaybackRate: function (videoId, value) {
         videos[UTF8ToString(videoId)].video.playbackRate = value;
