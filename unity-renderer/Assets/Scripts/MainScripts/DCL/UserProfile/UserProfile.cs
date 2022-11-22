@@ -105,7 +105,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void SetAvatarExpression(string id, EmoteSource source)
     {
-        var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
+        long timestamp = (long)(DateTime.UtcNow - epochStart).TotalMilliseconds;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
@@ -135,7 +135,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     }
 
     public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
-    
+
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
@@ -162,9 +162,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         blocked.Add(userId);
     }
-    
+
     public void Unblock(string userId) { blocked.Remove(userId); }
-    
+
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR
