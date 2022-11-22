@@ -30,6 +30,11 @@ namespace RPC.Services
 
     public class TransportServiceImpl : ITransportService<RPCContext>, ITransport
     {
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
+
         private readonly ProtocolHelpers.AsyncQueue<Payload> queue;
         private RpcClient client;
         private RpcClientPort port;
@@ -44,14 +49,14 @@ namespace RPC.Services
             queue = new ProtocolHelpers.AsyncQueue<Payload>((_, __) => {});
         }
 
-        private async UniTask BuildClient(RPCContext context)
+        private async UniTaskVoid BuildClient(RPCContext context)
         {
             client = new RpcClient(this);
             port = await client.CreatePort("renderer-protocol");
             DCL.RPC.LoadModules(port, Environment.i.serviceLocator.Get<IRPC>());
         }
 
-        private async UniTask HandleMessages(IUniTaskAsyncEnumerable<Payload> streamRequest, CancellationToken token)
+        private async UniTaskVoid HandleMessages(IUniTaskAsyncEnumerable<Payload> streamRequest, CancellationToken token)
         {
             await foreach (Payload request in streamRequest)
             {
@@ -97,13 +102,5 @@ namespace RPC.Services
         {
             queue.Close();
         }
-
-        public event Action OnCloseEvent;
-
-        public event Action<string> OnErrorEvent;
-
-        public event Action<byte[]> OnMessageEvent;
-
-        public event Action OnConnectEvent;
     }
 }

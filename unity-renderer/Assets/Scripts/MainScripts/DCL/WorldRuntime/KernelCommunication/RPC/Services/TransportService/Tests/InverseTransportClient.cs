@@ -18,6 +18,12 @@ namespace Tests
 
     public class InverseTransportClient : ITransport
     {
+
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
+
         private bool closed = false;
         private AsyncQueueWrapper<Payload> queueWrapper;
         public InverseTransportClient(ClientTransportService service)
@@ -28,7 +34,7 @@ namespace Tests
             Handler(streamResponse).Forget();
         }
 
-        private async UniTask Handler(IUniTaskAsyncEnumerable<Payload> streamResponse)
+        private async UniTaskVoid Handler(IUniTaskAsyncEnumerable<Payload> streamResponse)
         {
             await foreach (Payload message in streamResponse)
             {
@@ -47,10 +53,5 @@ namespace Tests
             queueWrapper.queue.Close();
             closed = true;
         }
-
-        public event Action OnCloseEvent;
-        public event Action<string> OnErrorEvent;
-        public event Action<byte[]> OnMessageEvent;
-        public event Action OnConnectEvent;
     }
 }
