@@ -201,6 +201,21 @@ namespace DCL.Chat.HUD
             directChatList.RefreshBlockedEntries(blockedUsers);
         }
 
+        public void RefreshPrivateChatPresence(string userId, bool isOnline)
+        {
+            if (!ContainsPrivateChannel(userId))
+                return;
+
+            if (privateChatsCreationQueue.ContainsKey(userId))
+            {
+                PrivateChatModel refreshedPrivateChatModel = privateChatsCreationQueue[userId];
+                refreshedPrivateChatModel.isOnline = isOnline;
+                privateChatsCreationQueue[userId] = refreshedPrivateChatModel;
+            }
+            else
+                directChatList.RefreshPresence(userId, isOnline);
+        }
+
         public void HideMoreChatsToLoadHint()
         {
             loadMoreEntriesContainer.SetActive(false);
