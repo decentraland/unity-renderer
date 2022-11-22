@@ -2,8 +2,8 @@
     "name": "UserProfile",
     "rootNamespace": "",
     "references": [
-        "GUID:760a1d365aad58044916992b072cf2a6",
-        "GUID:43315b150e1df4592868fc0fe58b3429",
+      "GUID:760a1d365aad58044916992b072cf2a6",
+      "GUID:43315b150e1df4592868fc0fe58b3429",
       "GUID:4973650d2444c4561a15d50f24d91cd9",
       "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
       "GUID:acbde18c8fb16e14db706b65475405f8",
@@ -16,7 +16,12 @@
       "GUID:82a93299762ed164a99e475bc89d323c",
       "GUID:0663fad624d836944b40ae27c3414652",
       "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-      "GUID:28f74c468a54948bfa9f625c5d428f56"
+      "GUID:28f74c468a54948bfa9f625c5d428f56",
+      "GUID:74aca8d0fa88642fabc061875471dba2",
+      "GUID:f51ebe6a0ceec4240a699833d6309b23", 
+      "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+      "GUID:5db7e9d450464b96bfddf316690db751",
+      "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

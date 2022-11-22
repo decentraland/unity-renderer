@@ -66,6 +66,10 @@ public class WorldChatWindowViewMock : MonoBehaviour, IWorldChatWindowView
     {
     }
 
+    public void RefreshPrivateChatPresence(string userId, bool isOnline)
+    {
+    }
+
     public void Dispose()
     {
         if (isDestroyed) return;

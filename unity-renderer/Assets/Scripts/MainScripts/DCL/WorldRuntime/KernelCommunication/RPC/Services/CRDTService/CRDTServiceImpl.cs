@@ -28,7 +28,7 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
-            await UniTask.WaitWhile(() => context.crdtContext.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
+            await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
                 cancellationToken: ct);
 
             await UniTask.SwitchToMainThread(ct);
@@ -42,7 +42,7 @@ namespace RPC.Services
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        context.crdtContext.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
+                        context.crdt.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
                     }
                 }
             }
@@ -58,14 +58,14 @@ namespace RPC.Services
         {
             try
             {
-                if (!context.crdtContext.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out CRDTProtocol sceneCrdtState))
+                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out CRDTProtocol sceneCrdtState))
                 {
                     return emptyResponse;
                 }
 
                 memoryStream.SetLength(0);
 
-                context.crdtContext.scenesOutgoingCrdts.Remove(request.SceneNumber);
+                context.crdt.scenesOutgoingCrdts.Remove(request.SceneNumber);
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
