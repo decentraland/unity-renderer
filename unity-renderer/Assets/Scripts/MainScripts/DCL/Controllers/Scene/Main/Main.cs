@@ -44,7 +44,9 @@ namespace DCL
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
             // TODO: migrate chat controller singleton into a service in the service locator
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
-            FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
+            // FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
+            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready 
+            FriendsController.CreateSharedInstance(new NewFriendRequestsApiBridgeMock(GetComponent<WebInterfaceFriendsApiBridge>()));
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
