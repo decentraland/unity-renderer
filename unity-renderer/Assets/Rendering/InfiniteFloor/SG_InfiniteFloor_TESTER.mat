@@ -112,6 +112,8 @@ Material:
     - _OuterHardnessFog: 1
     - _OuterRadiusFog: 1.717
     - _PusleOpacity: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _RoadFade: 5000
     - _RoadScale: 5
     - _RoadsBalancer: 0
