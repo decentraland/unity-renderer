@@ -61,28 +61,45 @@ namespace DCL.Components
         private Model cachedModel;
         private Material cachedFontMaterial;
         private Camera mainCamera;
+        private bool cameraFound;
 
         public override string componentName => "text";
+
+
+        private bool CameraFound
+        {
+            get
+            {
+                if (!cameraFound)
+                {
+                    mainCamera = Camera.main;
+                    if (mainCamera != null)
+                        cameraFound = true;
+                }
+
+                return cameraFound;
+            }
+        }
+
 
         private void Awake()
         {
             model = new Model();
-            mainCamera = Camera.main;
 
             cachedFontMaterial = new Material(text.fontSharedMaterial);
             text.fontSharedMaterial = cachedFontMaterial;
             text.text = string.Empty;
-            
+
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnUpdate);
         }
 
         private void OnUpdate()
         {
-            if (cachedModel.billboard && mainCamera != null)
-            {
+            // Cameras are not detected while loading, so we can not load the camera on Awake or Start
+            if (cachedModel.billboard && CameraFound)
                 transform.forward = mainCamera.transform.forward;
-            }
         }
+
 
         new public Model GetModel() { return cachedModel; }
 
@@ -91,20 +108,20 @@ namespace DCL.Components
             if (rectTransform == null)
                 yield break;
 
-            Model model = (Model) newModel;
+            Model model = (Model)newModel;
             cachedModel = model;
             PrepareRectTransform();
 
             // We avoid using even yield break; as this instruction skips a frame and we don't want that.
-            if ( !DCLFont.IsFontLoaded(scene, model.font) )
+            if (!DCLFont.IsFontLoaded(scene, model.font))
             {
                 yield return DCLFont.WaitUntilFontIsReady(scene, model.font);
             }
 
             DCLFont.SetFontFromComponent(scene, model.font, text);
-            
+
             ApplyModelChanges(text, model);
-            
+
             if (entity.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = gameObject;
 
@@ -116,7 +133,7 @@ namespace DCL.Components
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);
-            text.fontSize = (int) model.fontSize;
+            text.fontSize = (int)model.fontSize;
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
             text.enableAutoSizing = model.fontAutoSize;
@@ -124,10 +141,10 @@ namespace DCL.Components
             text.margin =
                 new Vector4
                 (
-                    (int) model.paddingLeft,
-                    (int) model.paddingTop,
-                    (int) model.paddingRight,
-                    (int) model.paddingBottom
+                    (int)model.paddingLeft,
+                    (int)model.paddingTop,
+                    (int)model.paddingRight,
+                    (int)model.paddingBottom
                 );
 
             text.alignment = GetAlignment(model.vTextAlign, model.hTextAlign);
@@ -230,7 +247,7 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.TEXT_SHAPE; }
+        public override int GetClassId() { return (int)CLASS_ID_COMPONENT.TEXT_SHAPE; }
 
         public override void Cleanup()
         {

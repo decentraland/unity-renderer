@@ -65,7 +65,7 @@ namespace DCL
         public DataStore_TextureConfig textureConfig => i.Get<DataStore_TextureConfig>();
         public DataStore_FriendNotifications friendNotifications => i.Get<DataStore_FriendNotifications>();
         public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
-        public DataStore_RpcContext rpcContext => i.Get<DataStore_RpcContext>();
+        public DataStore_Rpc rpc => i.Get<DataStore_Rpc>();
         public DataStore_Channels channels => i.Get<DataStore_Channels>();
     }
 }

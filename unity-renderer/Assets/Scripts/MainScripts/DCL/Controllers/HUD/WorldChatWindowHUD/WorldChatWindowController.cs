@@ -12,6 +12,7 @@ using System.Threading;
 using DCL.Browser;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
+using DCL.Chat.HUD;
 
 public class WorldChatWindowController : IHUD
 {
@@ -341,6 +342,10 @@ public class WorldChatWindowController : IHUD
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
+        }
+        else
+        {
+            view.RefreshPrivateChatPresence(userId, status.presence == PresenceStatus.ONLINE);
         }
     }
 
