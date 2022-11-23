@@ -889,6 +889,16 @@ namespace DCL.Interface
 
         public static void MessageFromEngine(string type, string message)
         {
+#if UNITY_WEBGL
+            string str = "VV::UnitySend type =" + type + " message = " + message;
+                            
+            Debug.unityLogger.logEnabled = true;
+            Console.WriteLine(str);
+            Debug.Log(str);
+            Debug.unityLogger.logEnabled = false;
+            Application.ExternalCall( "console.log", str);
+#endif
+  
             if (OnMessageFromEngine != null)
             {
                 if (hasQueuedMessages)
