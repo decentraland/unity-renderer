@@ -279,17 +279,14 @@ public class WebSocketCommunication : IKernelCommunication
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
 
                         var str = $"VV:: UnityRecieve:: type = {msg.type} ---AND--- {msg.payload}";
+                        
                         Console.WriteLine(str);
                         Debug.Log(str);
-                        Debug.LogWarning(str);
-                        Debug.LogError (str);
                         ConsoleLog(str);
 
                         var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
                         UnityEngine.Debug.unityLogger.logEnabled = true;
                         Debug.Log(str);
-                        Debug.LogWarning(str);
-                        Debug.LogError (str);
                         UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
                         
                         Debug.unityLogger.Log(str);
