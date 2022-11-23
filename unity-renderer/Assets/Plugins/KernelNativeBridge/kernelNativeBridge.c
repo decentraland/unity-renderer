@@ -40,8 +40,8 @@ void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(char* a, char* b, char* c) {\
 }\
 
 #define EXTERNAL_CALLBACK_VI(NAME_PARAM)\
-callback_vis cb_ ## NAME_PARAM;\
-void SetCallback_ ## NAME_PARAM(callback_vis NAME_PARAM) {\
+callback_vi cb_ ## NAME_PARAM;\
+void SetCallback_ ## NAME_PARAM(callback_vi NAME_PARAM) {\
 cb_ ## NAME_PARAM = NAME_PARAM;\
 }\
 void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(int32_t a) {\
