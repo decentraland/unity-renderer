@@ -63,12 +63,8 @@ public class BillboardsController : IBillboardsController
 
     private IEnumerator UpdateCoroutine()
     {
-        WaitForEndOfFrame waitForFrameEnd = new WaitForEndOfFrame();
-
         while (true)
         {
-            yield return waitForFrameEnd;
-
             camUpdated = lastCamPosition != CameraPosition;
             lastCamPosition = CameraPosition;
             for (int i = billboards.Count - 1; i >= 0; i--)

@@ -73,6 +73,7 @@ namespace DCL
         {
             model = new Model();
             Tr = transform;
+            LastPosition = Vector3.up * float.MaxValue;
 
             Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
         }
