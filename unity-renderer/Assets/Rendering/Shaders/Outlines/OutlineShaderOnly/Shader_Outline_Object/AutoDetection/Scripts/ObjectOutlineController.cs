@@ -83,6 +83,8 @@ public class ObjectOutlineController : MonoBehaviour
 
     // variables
     [FormerlySerializedAs("outlineOutlinerMode")] [FormerlySerializedAs("outlineMode")]
+    
+    [Tooltip("Use OutlineAll combined with [ isOptimised ] and [ precomputeOutline ]  to get the best performance")]
     [SerializeField] private OutMode outlineOutMode;
 
     [SerializeField] private bool isOutlineEnabled = false; // will be mouse over enabled
@@ -95,9 +97,12 @@ public class ObjectOutlineController : MonoBehaviour
 
     [SerializeField] private bool isOptimized = true;
 
-    [Header("For Editor use only")]
+    [Header("For Editor and Runtime use")]
     [Tooltip("On enable outline wll be computed in editor , this is for testing only")]
-    [SerializeField] private bool precomputeOutline;
+    [SerializeField] private bool precomputeOutline = true;
+
+    [Space]
+    [SerializeField] private bool isDebug;
 
     [SerializeField, HideInInspector]
     private List<Mesh> bakeKeys = new List<Mesh>();
@@ -422,6 +427,13 @@ public class ObjectOutlineController : MonoBehaviour
             }
         }
 
+        if (isDebug)
+        {
+            // mesh normals debug check
+            Debug.Log("Mesh normals have been smoothed out");
+        }
+        
+
         return smoothNormals;
     }
 
@@ -447,6 +459,12 @@ public class ObjectOutlineController : MonoBehaviour
         // Append combined submesh
         mesh.subMeshCount++;
         mesh.SetTriangles(mesh.triangles, mesh.subMeshCount - 1);
+        
+        if (isDebug)
+        {
+            // mesh normals debug check
+            Debug.Log("Meshes have been combined");
+        }
     }
 
     void UpdateMaterialProperties()
