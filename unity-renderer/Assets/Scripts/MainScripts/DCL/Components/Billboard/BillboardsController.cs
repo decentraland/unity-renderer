@@ -67,17 +67,14 @@ public class BillboardsController : IBillboardsController
 
         while (true)
         {
-            List<Billboard> currentBillboards = new List<Billboard>(billboards);
-            int billboardCount = 0;
+            Debug.Log(Time.realtimeSinceStartup);
             yield return waitForFrameEnd;
 
             camUpdated = lastCamPosition != CameraPosition;
             lastCamPosition = CameraPosition;
-            foreach (Billboard billboard in currentBillboards)
+            foreach (Billboard billboard in billboards)
             {
-                billboardCount++;
-
-                if (billboard == null || billboard.Tr == null || billboard.EntityTransform == null)
+                if (billboard.Tr == null || billboard.EntityTransform == null)
                     continue;
                 if (!camUpdated && billboard.Tr.position == billboard.LastPosition)
                     continue;

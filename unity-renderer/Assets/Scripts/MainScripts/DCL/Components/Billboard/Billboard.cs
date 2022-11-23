@@ -76,10 +76,5 @@ namespace DCL
 
             Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
         }
-
-        private void OnDestroy()
-        {
-            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardRemoved(gameObject);
-        }
     }
 }
