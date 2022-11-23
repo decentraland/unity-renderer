@@ -7,11 +7,18 @@ namespace DCL.Social.Passports
     public interface IPassportPlayerInfoComponentView
     {
         event Action OnAddFriend;
+        event Action OnRemoveFriend;
+        event Action OnCancelFriendRequest;
+        event Action OnAcceptFriendRequest;
+        event Action OnBlockUser;
+        event Action OnReportUser;
+        event Action OnUnfriendUser;
 
         void SetName(string name);
         void SetWallet(string wallet);
         void SetPresence(PresenceStatus status);
         void SetGuestUser(bool isGuest);
+        void SetFriendStatus(FriendshipStatus friendStatus);
         void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
     }
 }
