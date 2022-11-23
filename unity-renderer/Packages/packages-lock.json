@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c7eedf85c79e2ce06658c8060ca38a282f2ca7ab"
+      "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
     },
     "com.decentraland.rpc-csharp": {
       "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
@@ -59,7 +59,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "b538913dd9e0656b1363db3ffc12a723563242d9"
+      "hash": "01770beeeb81d33f13f01f86720705cc004075c3"
     },
     "com.unity.burst": {
       "version": "1.7.3",
