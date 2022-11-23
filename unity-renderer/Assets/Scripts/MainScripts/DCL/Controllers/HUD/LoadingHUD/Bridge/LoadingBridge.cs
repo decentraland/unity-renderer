@@ -22,9 +22,26 @@ public class LoadingBridge : MonoBehaviour
         public string message;
     }
 
+    // [DllImport("__Internal")]
+    // private static extern void ConsoleLog(string message);
+    //
     public void SetLoadingScreen(string jsonMessage)
     {
-        Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
+#if UNITY_WEBGL
+        Console.WriteLine("VV::0");
+        Debug.Log("VV::0");
+        Debug.unityLogger.logEnabled = false;
+
+        Debug.unityLogger.logEnabled = true;
+        Console.WriteLine("VV::1");
+        Debug.Log("VV::1");
+        Debug.unityLogger.logEnabled = false;
+        
+        Application.ExternalCall( "console.log", "VV::2" );
+
+        // ConsoleLog("VV::3");
+#endif
+            Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
 
         if (payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeIn.Get() && !DataStore.i.HUDs.loadingHUD.visible.Get())
             DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
