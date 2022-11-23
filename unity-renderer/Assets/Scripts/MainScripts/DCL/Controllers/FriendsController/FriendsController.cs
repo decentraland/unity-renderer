@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 
 namespace DCL.Social.Friends
@@ -77,6 +78,17 @@ namespace DCL.Social.Friends
             return friends[friendId].friendshipStatus == status;
         }
 
+        public async UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody)
+        {
+            var payload = await apiBridge.RequestFriendship(friendUserId, messageBody);
+            var friendRequestPayload = payload.friendRequest;
+            return new FriendRequest(friendRequestPayload.friendRequestId,
+                friendRequestPayload.timestamp,
+                friendRequestPayload.from,
+                friendRequestPayload.to,
+                friendRequestPayload.messageBody);
+        }
+
         public Dictionary<string, UserStatus> GetAllocatedFriends()
         {
             return new Dictionary<string, UserStatus>(friends);
@@ -102,9 +114,6 @@ namespace DCL.Social.Friends
 
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
-
-        public void RequestFriendship(string friendUserId) =>
-            apiBridge.RequestFriendship(friendUserId);
 
         public void CancelRequest(string friendUserId) =>
             apiBridge.CancelRequest(friendUserId);

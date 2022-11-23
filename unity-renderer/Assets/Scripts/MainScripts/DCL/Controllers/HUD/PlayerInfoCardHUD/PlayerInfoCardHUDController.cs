@@ -93,7 +93,7 @@ public class PlayerInfoCardHUDController : IHUD
             name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
         });
 
-        friendsController.RequestFriendship(currentPlayerId);
+        friendsController.RequestFriendship(currentPlayerId, "").Forget();
         socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
     }
 

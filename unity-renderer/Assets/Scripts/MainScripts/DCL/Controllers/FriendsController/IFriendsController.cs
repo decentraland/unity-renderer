@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DCL.Social.Friends;
 
 namespace DCl.Social.Friends
@@ -26,7 +27,7 @@ namespace DCl.Social.Friends
         UserStatus GetUserStatus(string userId);
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
-        void RequestFriendship(string friendUserId);
+        UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody);
         void CancelRequest(string friendUserId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);

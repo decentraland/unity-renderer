@@ -59,9 +59,8 @@ namespace DCL.Social.Passports
 
         private void AddPlayerAsFriend()
         {
-            UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-
-            friendsController.RequestFriendship(currentPlayerId);
+            friendsController.RequestFriendship(currentPlayerId, "").Forget();
+            // UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
             //socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
         }
     }

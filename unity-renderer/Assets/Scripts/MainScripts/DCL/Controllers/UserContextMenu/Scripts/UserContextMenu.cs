@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -209,7 +210,7 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        FriendsController.i.RequestFriendship(userId);
+        FriendsController.i.RequestFriendship(userId, "").Forget();
 
         GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
     }

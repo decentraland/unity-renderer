@@ -90,7 +90,7 @@ namespace DCl.Social.Friends
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
-            friendsController.Received(1).RequestFriendship(OTHER_USER_NAME);
+            friendsController.Received(1).RequestFriendship(OTHER_USER_NAME, "");
             socialAnalytics.Received(1)
                 .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_NAME, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
@@ -103,7 +103,7 @@ namespace DCl.Social.Friends
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
-            friendsController.Received(1).RequestFriendship(OTHER_USER_ID);
+            friendsController.Received(1).RequestFriendship(OTHER_USER_ID, "");
             socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
         }

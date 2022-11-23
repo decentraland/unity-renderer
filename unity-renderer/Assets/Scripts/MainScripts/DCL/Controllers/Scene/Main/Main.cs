@@ -46,7 +46,8 @@ namespace DCL
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
             // FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready 
-            FriendsController.CreateSharedInstance(new NewFriendRequestsApiBridgeMock(GetComponent<WebInterfaceFriendsApiBridge>()));
+            FriendsController.CreateSharedInstance(new NewFriendRequestsApiBridgeMock(GetComponent<WebInterfaceFriendsApiBridge>(),
+                new UserProfileWebInterfaceBridge()));
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {

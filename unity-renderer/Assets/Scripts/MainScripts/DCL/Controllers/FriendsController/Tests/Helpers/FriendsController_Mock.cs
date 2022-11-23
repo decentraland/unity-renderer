@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 
@@ -76,11 +77,12 @@ public class FriendsController_Mock : IFriendsController
         return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
-    public void RequestFriendship(string friendUserId)
+    public UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody)
     {
         if (!friends.ContainsKey(friendUserId))
             friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
+        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
     }
 
     public void CancelRequest(string friendUserId)
