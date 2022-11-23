@@ -903,18 +903,16 @@ namespace DCL.Interface
                 OnMessageFromEngine.Invoke(type, message);
                 
                 var str = $"VV:: UnitySend:: type = {type} ---AND--- {message}";
+              
                 Console.WriteLine(str);
                 Debug.Log(str);
-                Debug.LogWarning(str);
-                Debug.LogError (str);
                 ConsoleLog(str);
 
-                var debugStatus = UnityEngine.Debug.unityLogger.logEnabled;
-                UnityEngine.Debug.unityLogger.logEnabled = true;
+                var debugStatus = Debug.unityLogger.logEnabled;
+                Debug.unityLogger.logEnabled = true;
+                Console.WriteLine(str);
                 Debug.Log(str);
-                Debug.LogWarning(str);
-                Debug.LogError (str);
-                UnityEngine.Debug.unityLogger.logEnabled = debugStatus;
+                Debug.unityLogger.logEnabled = debugStatus;
                         
                 Debug.unityLogger.Log(str);
 
