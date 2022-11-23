@@ -2,33 +2,43 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrivateChatHUDView : ChatHUDView
+namespace DCL.Chat.HUD
 {
-    [SerializeField] private DateSeparatorEntry separatorEntryPrefab;
+    public class PrivateChatHUDView : ChatHUDView
+    {
+        [SerializeField] private PoolPrivateChatEntryFactory chatEntryFactory;
     
-    private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new Dictionary<string, DateSeparatorEntry>();
+        private readonly Dictionary<string, DateSeparatorEntry> dateSeparators = new Dictionary<string, DateSeparatorEntry>();
 
-    public override void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
-    {
-        AddSeparatorEntryIfNeeded(model);
-        base.AddEntry(model, setScrollPositionToBottom);
-    }
+        public override void Awake()
+        {
+            base.Awake();
+            ChatEntryFactory = chatEntryFactory;
+        }
 
-    private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
-    {
-        var entryDateTime = GetDateTimeFromUnixTimestampMilliseconds(chatEntryModel.timestamp).Date;
-        var separatorId = $"{entryDateTime.Ticks}";
-        if (dateSeparators.ContainsKey(separatorId)) return;
-        var dateSeparatorEntry = Instantiate(separatorEntryPrefab, chatEntriesContainer);
-        dateSeparatorEntry.Populate(chatEntryModel);
-        dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
-        dateSeparators[separatorId] = dateSeparatorEntry;
-        SetEntry(separatorId, dateSeparatorEntry);
-    }
+        public override void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
+        {
+            AddSeparatorEntryIfNeeded(model);
+            base.AddEntry(model, setScrollPositionToBottom);
+        }
 
-    private DateTime GetDateTimeFromUnixTimestampMilliseconds(ulong milliseconds)
-    {
-        DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return result.AddMilliseconds(milliseconds);
+        public override void ClearAllEntries()
+        {
+            base.ClearAllEntries();
+            dateSeparators.Clear();
+        }
+
+        private void AddSeparatorEntryIfNeeded(ChatEntryModel chatEntryModel)
+        {
+            var entryDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp).Date;
+            var separatorId = entryDateTime.Ticks.ToString();
+            if (dateSeparators.ContainsKey(separatorId)) return;
+            var dateSeparatorEntry = chatEntryFactory.CreateDateSeparator();
+            dateSeparatorEntry.transform.SetParent(chatEntriesContainer, false);
+            dateSeparatorEntry.Populate(chatEntryModel);
+            dateSeparatorEntry.SetFadeout(IsFadeoutModeEnabled);
+            dateSeparators[separatorId] = dateSeparatorEntry;
+            SetEntry(separatorId, dateSeparatorEntry);
+        }
     }
 }

@@ -12,6 +12,7 @@ using System.Threading;
 using DCL.Browser;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
+using DCL.Chat.HUD;
 
 public class WorldChatWindowController : IHUD
 {
@@ -31,6 +32,7 @@ public class WorldChatWindowController : IHUD
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
+    private HashSet<string> autoJoinChannelList => dataStore.HUDs.autoJoinChannelList.Get();
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private int hiddenDMs;
     private string currentSearch = "";
@@ -41,11 +43,11 @@ public class WorldChatWindowController : IHUD
     private IWorldChatWindowView view;
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
-    private bool areJoinedChannelsRequestedByFirstTime;
     private bool areUnseenMessajesRequestedByFirstTime;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
+    private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
     public IWorldChatWindowView View => view;
 
@@ -66,7 +68,7 @@ public class WorldChatWindowController : IHUD
         IMouseCatcher mouseCatcher,
         ISocialAnalytics socialAnalytics,
         IChannelsFeatureFlagService channelsFeatureFlagService,
-        IBrowserBridge browserBridge) 
+        IBrowserBridge browserBridge)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -103,11 +105,9 @@ public class WorldChatWindowController : IHUD
             channel.Description,
             channel.Joined,
             channel.MemberCount,
-            false);
+            false,
+            showOnlyOnlineMembersOnPublicChannels);
         view.SetPublicChat(publicChannels[ChatUtils.NEARBY_CHANNEL_ID]);
-
-        foreach (var value in chatController.GetAllocatedEntries())
-            HandleMessageAdded(value);
 
         if (!friendsController.IsInitialized)
             if (ownUserProfile?.hasConnectedWeb3 ?? false)
@@ -130,10 +130,11 @@ public class WorldChatWindowController : IHUD
 
             chatController.OnChannelUpdated += HandleChannelUpdated;
             chatController.OnChannelJoined += HandleChannelJoined;
+            chatController.OnAutoChannelJoined += HandleAutoChannelJoined;
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
-            dataStore.channels.channelToBeOpenedFromLink.OnChange += HandleChannelOpenedFromLink;
+            dataStore.channels.channelToBeOpened.OnChange += HandleChannelOpened;
 
             view.ShowChannelsLoading();
             view.SetSearchAndCreateContainerActive(true);
@@ -163,6 +164,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnAddMessage -= HandleMessageAdded;
         chatController.OnChannelUpdated -= HandleChannelUpdated;
         chatController.OnChannelJoined -= HandleChannelJoined;
+        chatController.OnAutoChannelJoined -= HandleAutoChannelJoined;
         chatController.OnJoinChannelError -= HandleJoinChannelError;
         chatController.OnChannelLeaveError += HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
@@ -170,11 +172,11 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
-        dataStore.channels.channelToBeOpenedFromLink.OnChange -= HandleChannelOpenedFromLink;
+        dataStore.channels.channelToBeOpened.OnChange -= HandleChannelOpened;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
-        
+
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken?.Dispose();
         reloadingChannelsInfoCancellationToken.Cancel();
@@ -186,7 +188,7 @@ public class WorldChatWindowController : IHUD
     public void SetVisibility(bool visible)
     {
         SetVisiblePanelList(visible);
-        
+
         if (visible)
         {
             view.Show();
@@ -200,11 +202,17 @@ public class WorldChatWindowController : IHUD
 
             if (channelsFeatureFlagService.IsChannelsFeatureEnabled())
             {
-                if (!areJoinedChannelsRequestedByFirstTime)
+                if (chatController.IsInitialized)
+                {
                     RequestJoinedChannels();
-                else
                     SetAutomaticChannelsInfoUpdatingActive(true);
-                
+                }
+                else if (ownUserProfile.isGuest)
+                {
+                    // TODO: channels are not allowed for guests. When we support it in the future, remove this call
+                    view.HideChannelsLoading();
+                }
+
                 if (!areUnseenMessajesRequestedByFirstTime)
                     RequestUnreadChannelsMessages();
             }
@@ -221,7 +229,7 @@ public class WorldChatWindowController : IHUD
             SetAutomaticChannelsInfoUpdatingActive(false);
         }
     }
-    
+
     private void OpenChannelCreationWindow()
     {
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.ConversationList);
@@ -253,8 +261,6 @@ public class WorldChatWindowController : IHUD
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
 
-        areJoinedChannelsRequestedByFirstTime = true;
-        
         hideChannelsLoadingCancellationToken?.Cancel();
         hideChannelsLoadingCancellationToken = new CancellationTokenSource();
         WaitThenHideChannelsLoading(hideChannelsLoadingCancellationToken.Token).Forget();
@@ -269,9 +275,26 @@ public class WorldChatWindowController : IHUD
 
     private void HandleChatInitialization()
     {
-        if (areJoinedChannelsRequestedByFirstTime) return;
         // we do request joined channels as soon as possible to be able to display messages correctly in the notification panel
         RequestJoinedChannels();
+        ConnectToAutoJoinChannels();
+    }
+
+    private void ConnectToAutoJoinChannels()
+    {
+        AutomaticJoinChannelList joinChannelList = channelsFeatureFlagService.GetAutoJoinChannelsList();
+        if (joinChannelList == null) return;
+        if (joinChannelList.automaticJoinChannelList == null) return;
+        
+        foreach (var channel in joinChannelList.automaticJoinChannelList)
+        {
+            var channelId = channel.channelId;
+            if (string.IsNullOrEmpty(channelId)) continue;
+            autoJoinChannelList.Add(channelId);
+            chatController.JoinOrCreateChannel(channelId);
+            if (!channel.enableNotifications)
+                chatController.MuteChannel(channelId);
+        }
     }
 
     private void HandleFriendsControllerInitialization()
@@ -320,26 +343,33 @@ public class WorldChatWindowController : IHUD
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
         }
+        else
+        {
+            view.RefreshPrivateChatPresence(userId, status.presence == PresenceStatus.ONLINE);
+        }
     }
 
-    private void HandleMessageAdded(ChatMessage message)
+    private void HandleMessageAdded(ChatMessage[] messages)
     {
-        if (message.messageType != ChatMessage.Type.PRIVATE) return;
-        
-        var userId = ExtractRecipientId(message);
-        
-        if (lastPrivateMessages.ContainsKey(userId))
+        foreach (var message in messages)
         {
-            if (message.timestamp > lastPrivateMessages[userId].timestamp)
+            if (message.messageType != ChatMessage.Type.PRIVATE) continue;
+
+            var userId = ExtractRecipientId(message);
+
+            if (lastPrivateMessages.ContainsKey(userId))
+            {
+                if (message.timestamp > lastPrivateMessages[userId].timestamp)
+                    lastPrivateMessages[userId] = message;
+            }
+            else
                 lastPrivateMessages[userId] = message;
+
+            var profile = userProfileBridge.Get(userId);
+            if (profile == null) return;
+
+            view.SetPrivateChat(CreatePrivateChatModel(message, profile));
         }
-        else
-            lastPrivateMessages[userId] = message;
-
-        var profile = userProfileBridge.Get(userId);
-        if (profile == null) return;
-
-        view.SetPrivateChat(CreatePrivateChatModel(message, profile));
     }
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
@@ -418,14 +448,14 @@ public class WorldChatWindowController : IHUD
             .Where(model => model.name.ToLower().Contains(search.ToLower()));
         foreach (var channelMatch in matchedChannels)
             View.SetPublicChat(channelMatch);
-        
+
         RequestFriendsWithDirectMessagesFromSearch(search, USER_DM_ENTRIES_TO_REQUEST_FOR_SEARCH);
     }
 
     private void ShowMorePrivateChats()
     {
-        if (isRequestingDMs || 
-            hiddenDMs == 0 || 
+        if (isRequestingDMs ||
+            hiddenDMs == 0 ||
             !string.IsNullOrEmpty(currentSearch))
             return;
 
@@ -457,7 +487,7 @@ public class WorldChatWindowController : IHUD
         friendsController.GetFriendsWithDirectMessages(DMS_PAGE_SIZE, lastSkipForDMs);
         lastSkipForDMs += DMS_PAGE_SIZE;
         areDMsRequestedByFirstTime = true;
-        
+
         hidePrivateChatsLoadingCancellationToken.Cancel();
         hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
         HidePrivateChatsLoadingWhenTimeout(hidePrivateChatsLoadingCancellationToken.Token).Forget();
@@ -487,15 +517,16 @@ public class WorldChatWindowController : IHUD
             publicChannels.Remove(channel.ChannelId);
             return;
         }
-        
+
         var channelId = channel.ChannelId;
-        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.Joined, channel.MemberCount, channel.Muted);
-        
+        var model = new PublicChatModel(channelId, channel.Name, channel.Description, channel.Joined,
+            channel.MemberCount, channel.Muted, showOnlyOnlineMembersOnPublicChannels);
+
         if (publicChannels.ContainsKey(channelId))
             publicChannels[channelId].CopyFrom(model);
         else
             publicChannels[channelId] = model;
-        
+
         view.SetPublicChat(model);
         view.HideChannelsLoading();
 
@@ -511,14 +542,20 @@ public class WorldChatWindowController : IHUD
         channelsClearedUnseenNotifications.Add(channelId);
     }
 
+    private void HandleAutoChannelJoined(Channel channel) => ReportChannelJoinedToAnalytics(channel, "auto");
+
     private void HandleChannelJoined(Channel channel)
+    {
+        ReportChannelJoinedToAnalytics(channel, "manual");
+        OpenPublicChat(channel.ChannelId);
+    }
+
+    private void ReportChannelJoinedToAnalytics(Channel channel, string method)
     {
         if (channel.MemberCount <= 1)
             socialAnalytics.SendEmptyChannelCreated(channel.Name, dataStore.channels.channelJoinedSource.Get());
         else
-            socialAnalytics.SendPopulatedChannelJoined(channel.Name, dataStore.channels.channelJoinedSource.Get());
-        
-        OpenPublicChat(channel.ChannelId);
+            socialAnalytics.SendPopulatedChannelJoined(channel.Name, dataStore.channels.channelJoinedSource.Get(), method);
     }
 
     private void HandleJoinChannelError(string channelId, ChannelErrorCode errorCode)
@@ -535,8 +572,8 @@ public class WorldChatWindowController : IHUD
                 break;
         }
     }
-    
-    private void HandleLeaveChannelError(string channelId, ChannelErrorCode errorCode) => 
+
+    private void HandleLeaveChannelError(string channelId, ChannelErrorCode errorCode) =>
         dataStore.channels.leaveChannelError.Set(channelId, true);
 
     private void HandleChannelLeft(string channelId)
@@ -547,7 +584,7 @@ public class WorldChatWindowController : IHUD
         socialAnalytics.SendLeaveChannel(channel?.Name ?? channelId, dataStore.channels.channelLeaveSource.Get());
     }
 
-    private void HandleChannelOpenedFromLink(string channelId, string previousChannelId)
+    private void HandleChannelOpened(string channelId, string previousChannelId)
     {
         if (string.IsNullOrEmpty(channelId))
             return;
@@ -570,7 +607,7 @@ public class WorldChatWindowController : IHUD
         else
             dataStore.HUDs.connectWalletModalVisible.Set(true);
     }
-    
+
     private async UniTask HideSearchLoadingWhenTimeout(CancellationToken cancellationToken)
     {
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
@@ -596,7 +633,8 @@ public class WorldChatWindowController : IHUD
     {
         while (true)
         {
-            await UniTask.Delay(MINUTES_FOR_AUTOMATIC_CHANNELS_INFO_RELOADING * 60 * 1000, cancellationToken: cancellationToken);
+            await UniTask.Delay(MINUTES_FOR_AUTOMATIC_CHANNELS_INFO_RELOADING * 60 * 1000,
+                cancellationToken: cancellationToken);
 
             if (cancellationToken.IsCancellationRequested)
                 return;
@@ -608,12 +646,13 @@ public class WorldChatWindowController : IHUD
     private void GetCurrentChannelsInfo()
     {
         chatController.GetChannelInfo(publicChannels
-                .Select(x => x.Key)
-                .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
-                .ToArray());
+            .Select(x => x.Key)
+            .Where(x => x != ChatUtils.NEARBY_CHANNEL_ID)
+            .ToArray());
     }
 
-    private void OpenWalletReadme() => browserBridge.OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
+    private void OpenWalletReadme() =>
+        browserBridge.OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
 
     private void SignUp() => userProfileBridge.SignUp();
 }

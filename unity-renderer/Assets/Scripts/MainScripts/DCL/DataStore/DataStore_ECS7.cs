@@ -29,7 +29,7 @@ namespace DCL
         }
 
         public readonly BaseList<IParcelScene> scenes = new BaseList<IParcelScene>();
-        public readonly BaseDictionary<string, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<string, BaseRefCountedCollection<object>>();
+        public readonly BaseDictionary<int, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<int, BaseRefCountedCollection<object>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public bool isEcs7Enabled = false;
         public PointerEvent lastPointerInputEvent = new PointerEvent();

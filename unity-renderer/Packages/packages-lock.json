@@ -26,14 +26,14 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "6fc47e00219e7e2c3c6b990367c373a5b2aec0fc"
+      "hash": "1037ec392e68a966591e1710a8687a9a8602afd5"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "072527864133fedf7e4d6143df0b7cba84a9bb6c"
+      "hash": "df8e5a76a9b7ad1d3b266a5bd359257b0d60e09c"
     },
     "com.madsbangh.easybuttons": {
       "version": "1.3.0",

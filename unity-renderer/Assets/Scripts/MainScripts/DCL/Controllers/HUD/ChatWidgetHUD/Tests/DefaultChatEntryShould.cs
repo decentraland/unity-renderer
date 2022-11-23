@@ -1,5 +1,6 @@
 using System.Collections;
 using Cysharp.Threading.Tasks;
+using DCL.Chat.HUD;
 using DCL.Interface;
 using NUnit.Framework;
 using UnityEngine;

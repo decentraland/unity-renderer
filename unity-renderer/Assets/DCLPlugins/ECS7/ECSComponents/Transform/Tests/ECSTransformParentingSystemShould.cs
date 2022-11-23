@@ -18,7 +18,7 @@ namespace Tests
         public void SetUp()
         {
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
-            scene = sceneTestHelper.CreateScene("temptation");
+            scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
             handler = new ECSTransformHandler(Substitute.For<IWorldState>(),

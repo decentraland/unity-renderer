@@ -121,7 +121,7 @@ public class BIWEntity
         isVoxel = false;
 
 
-        entityUniqueId = rootEntity.scene.sceneData.id + rootEntity.entityId;
+        entityUniqueId = (rootEntity.scene.sceneData.sceneNumber + rootEntity.entityId).ToString();
         if (rootEntity.gameObject != null)
             isVisible = rootEntity.gameObject.activeSelf;
 
@@ -595,7 +595,7 @@ public class BIWEntity
             !meshInfo.currentShape.IsVisible())
             return;
 
-        if (collidersGameObjectDictionary.ContainsKey(entity.scene.sceneData.id + entity.entityId) && !isNFT)
+        if (collidersGameObjectDictionary.ContainsKey((entity.scene.sceneData.sceneNumber + entity.entityId).ToString()) && !isNFT)
             return;
 
         if (entity.children.Count > 0)
@@ -652,17 +652,18 @@ public class BIWEntity
 
             if (isNFT)
             {
-                if (collidersGameObjectDictionary.ContainsKey(entity.scene.sceneData.id + entity.entityId))
-                    collidersGameObjectDictionary.Remove(entity.scene.sceneData.id + entity.entityId);
+                string entityUniqueId = (entity.scene.sceneData.sceneNumber + entity.entityId).ToString();
+                if (collidersGameObjectDictionary.ContainsKey(entityUniqueId))
+                    collidersGameObjectDictionary.Remove(entityUniqueId);
 
-                collidersGameObjectDictionary.Add(entity.scene.sceneData.id + entity.entityId, colliderList);
+                collidersGameObjectDictionary.Add(entityUniqueId, colliderList);
 
                 colliderList = new List<GameObject>();
             }
         }
 
         if (!isNFT)
-            collidersGameObjectDictionary.Add(entity.scene.sceneData.id + entity.entityId, colliderList);
+            collidersGameObjectDictionary.Add((entity.scene.sceneData.sceneNumber + entity.entityId).ToString(), colliderList);
     }
 
     public bool IsEntityNFT()

@@ -35,7 +35,7 @@ namespace DCL.Builder
         public static WebBuilderScene StatelessToWebBuilderScene(StatelessManifest manifest, Vector2Int parcelSize)
         {
             WebBuilderScene builderScene = new WebBuilderScene();
-            builderScene.id = Guid.NewGuid().ToString();
+            builderScene.sceneNumber = Guid.NewGuid().GetHashCode();
 
             BuilderGround ground = new BuilderGround();
             List<string> namesList = new List<string>();
@@ -215,7 +215,7 @@ namespace DCL.Builder
         public static WebBuilderScene ParcelSceneToWebBuilderScene(ParcelScene scene)
         {
             WebBuilderScene builderScene = new WebBuilderScene();
-            builderScene.id = Guid.NewGuid().ToString();
+            builderScene.sceneNumber = Guid.NewGuid().GetHashCode();
 
             BuilderGround ground = new BuilderGround();
             List<string> namesList = new List<string>();
@@ -373,7 +373,7 @@ namespace DCL.Builder
 
         public static IParcelScene ManifestToParcelSceneWithOnlyData(Manifest.Manifest manifest)
         {
-            GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
+            GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.sceneNumber);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
 
             //We remove the old assets to they don't collide with the new ones
@@ -393,7 +393,9 @@ namespace DCL.Builder
 
             //We create and assign the data of the scene
             LoadParcelScenesMessage.UnityParcelScene parcelData = new LoadParcelScenesMessage.UnityParcelScene();
-            parcelData.id = manifest.scene.id;
+            
+            // We don't use scene id in the client anymore
+            // parcelData.sceneNumber = manifest.scene.id;
 
             //We set the current scene in the 0,0
             int x = 0;
@@ -436,7 +438,7 @@ namespace DCL.Builder
         
         public static IParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
         {
-            GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
+            GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.sceneNumber);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
 
             //We remove the old assets to they don't collide with the new ones

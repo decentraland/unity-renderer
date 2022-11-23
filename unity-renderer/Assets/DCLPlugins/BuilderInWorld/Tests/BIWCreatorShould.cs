@@ -44,6 +44,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CreateItem()
     {
         //Arrange
@@ -63,6 +64,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CreateLastItem()
     {
         //Arrange
@@ -86,6 +88,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void LoadingGameObjectCreation()
     {
         //Arrange
@@ -102,6 +105,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void LoadingGameObjectDestruction()
     {
         //Arrange
@@ -119,6 +123,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ErrorGameObjectCreation()
     {
         // Arrange
@@ -136,6 +141,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ErrorGameObjectDestruction()
     {
         //Arrange
@@ -154,6 +160,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CatalogItemAddMappings()
     {
         //Arrange

@@ -5,6 +5,7 @@ using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
+using Environment = System.Environment;
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
@@ -104,10 +105,17 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void SetAvatarExpression(string id, EmoteSource source)
     {
-        var timestamp = (long) (DateTime.UtcNow - epochStart).TotalMilliseconds;
+        long timestamp = (long)(DateTime.UtcNow - epochStart).TotalMilliseconds;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
-        WebInterface.SendExpression(id, timestamp);
+
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        emotes?.TriggerExpression(new TriggerExpressionRequest()
+        {
+            Id = id,
+            Timestamp = timestamp
+        });
+        
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
@@ -127,7 +135,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     }
 
     public void RemoveFromInventory(string wearableId) { inventory.Remove(wearableId); }
-    
+
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
     public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
@@ -154,9 +162,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         blocked.Add(userId);
     }
-    
+
     public void Unblock(string userId) { blocked.Remove(userId); }
-    
+
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 
 #if UNITY_EDITOR

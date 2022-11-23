@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DCL.Chat.Channels;
 using DCL.Interface;
 using NSubstitute;
@@ -37,7 +36,6 @@ namespace DCL.Chat.HUD
             chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedChannel(CHANNEL_ID)
                 .Returns(new Channel(CHANNEL_ID, CHANNEL_NAME, 4, 12, true, false, "desc"));
-            chatController.GetAllocatedEntries().Returns(new List<ChatMessage>());
 
             dataStore = new DataStore();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
@@ -102,18 +100,6 @@ namespace DCL.Chat.HUD
         }
 
         [Test]
-        public void TrackMessageSentEvent()
-        {
-            chatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {
-                body = "hey",
-                messageType = ChatMessage.Type.PUBLIC
-            });
-            
-            socialAnalytics.Received(1).SendMessageSentToChannel(CHANNEL_NAME, 3, "channel");
-        }
-
-        [Test]
         public void MuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(true);
@@ -127,6 +113,27 @@ namespace DCL.Chat.HUD
             view.OnMuteChanged += Raise.Event<Action<bool>>(false);
             
             chatController.Received(1).UnmuteChannel(CHANNEL_ID);
+        }
+
+        [Test]
+        public void MarkMessagesAsSeenOnlyOnceWhenReceivedManyMessages()
+        {
+            controller.SetVisibility(true);
+            view.IsActive.Returns(true);
+            chatController.ClearReceivedCalls();
+
+            var msg1 = new ChatMessage("msg1", ChatMessage.Type.PUBLIC, "user", "hey", 100)
+            {
+                recipient = CHANNEL_ID
+            };
+            var msg2 = new ChatMessage("msg1", ChatMessage.Type.PUBLIC, "user", "hey", 100)
+            {
+                recipient = CHANNEL_ID
+            };
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
+            
+            chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
         }
     }
 }

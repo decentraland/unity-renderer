@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using NSubstitute;
@@ -210,7 +209,7 @@ public class WorldChatWindowComponentViewShould
     {
         const string channelId = "nearby";
 
-        var model = new PublicChatModel(channelId, "nearby", "any description", true, 0, false);
+        var model = new PublicChatModel(channelId, "nearby", "any description", true, 0, false, true);
         view.SetPublicChat(model);
 
         yield return null;
@@ -349,7 +348,7 @@ public class WorldChatWindowComponentViewShould
             user = GivenProfile("pepe"),
             recentMessage = new ChatMessage(ChatMessage.Type.PRIVATE, "senderId", "buy my nft")
         });
-        view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false));
+        view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false, true));
 
         yield return null;
         
@@ -463,7 +462,6 @@ public class WorldChatWindowComponentViewShould
         view.ShowConnectWallet();
         
         Assert.IsTrue(view.connectWalletContainer.activeSelf);
-        Assert.IsFalse(view.walletConnectedContainer.activeSelf);
         Assert.IsFalse(view.searchBarContainer.activeSelf);
     }
 
@@ -473,7 +471,6 @@ public class WorldChatWindowComponentViewShould
         view.HideConnectWallet();
         
         Assert.IsFalse(view.connectWalletContainer.activeSelf);
-        Assert.IsTrue(view.walletConnectedContainer.activeSelf);
         Assert.IsTrue(view.searchBarContainer.activeSelf);
     }
 
@@ -514,7 +511,7 @@ public class WorldChatWindowComponentViewShould
 
     private void GivenPublicChannel(string channelId, string name)
     {
-        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", true, 0, false));
+        view.SetPublicChat(new PublicChatModel(channelId, name, "any description", true, 0, false, true));
     }
 
     private UserProfile GivenProfile(string userId)

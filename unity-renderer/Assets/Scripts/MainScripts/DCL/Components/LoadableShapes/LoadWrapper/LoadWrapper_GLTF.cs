@@ -76,7 +76,7 @@ namespace DCL.Components
             loadHelper.OnFailEvent -= failWrapperEvent;
 
             loadHelper.loadedAsset.ownerId = entity.entityId;
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }
 
@@ -89,7 +89,7 @@ namespace DCL.Components
             
             if ( loadHelper.loadedAsset != null )
             {
-                DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.sceneNumber, loadHelper.loadedAsset);
             }
 
             loadHelper.Unload();

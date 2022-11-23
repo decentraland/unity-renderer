@@ -3,9 +3,7 @@
     "rootNamespace": "",
     "references": [
         "GUID:80f579cff5cf4136aa8969bf6fa1098c",
-        "GUID:561c0622fe6f4025ae33ed99ed7d3fc8",
-        "GUID:211458814b4045e7ad894e13b8f8d919",
-        "GUID:374252a1740a422eb7762fc12ff3bf8a"
+        "GUID:561c0622fe6f4025ae33ed99ed7d3fc8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -13,7 +11,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "System.Memory.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

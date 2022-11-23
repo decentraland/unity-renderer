@@ -51,7 +51,6 @@ namespace DCL.Chat.HUD
         
         [Header("Guest")]
         [SerializeField] internal GameObject connectWalletContainer;
-        [SerializeField] internal GameObject walletConnectedContainer;
         [SerializeField] internal Button connectWalletButton;
         [SerializeField] internal Button whatIsWalletButton;
 
@@ -202,6 +201,21 @@ namespace DCL.Chat.HUD
             directChatList.RefreshBlockedEntries(blockedUsers);
         }
 
+        public void RefreshPrivateChatPresence(string userId, bool isOnline)
+        {
+            if (!ContainsPrivateChannel(userId))
+                return;
+
+            if (privateChatsCreationQueue.ContainsKey(userId))
+            {
+                PrivateChatModel refreshedPrivateChatModel = privateChatsCreationQueue[userId];
+                refreshedPrivateChatModel.isOnline = isOnline;
+                privateChatsCreationQueue[userId] = refreshedPrivateChatModel;
+            }
+            else
+                directChatList.RefreshPresence(userId, isOnline);
+        }
+
         public void HideMoreChatsToLoadHint()
         {
             loadMoreEntriesContainer.SetActive(false);
@@ -289,7 +303,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = true;
             connectWalletContainer.SetActive(true);
-            walletConnectedContainer.SetActive(false);
             searchBarContainer.SetActive(false);
             directChatsCollapseButton.SetInteractability(false);
             publicChatsChatsCollapseButton.SetInteractability(false);
@@ -299,7 +312,6 @@ namespace DCL.Chat.HUD
         {
             isConnectWalletMode = false;
             connectWalletContainer.SetActive(false);
-            walletConnectedContainer.SetActive(true);
             searchBarContainer.SetActive(true);
             directChatsCollapseButton.SetInteractability(true);
             publicChatsChatsCollapseButton.SetInteractability(true);
@@ -334,10 +346,10 @@ namespace DCL.Chat.HUD
                 model.isOnline,
                 model.recentMessage != null ? model.recentMessage.timestamp : 0);
 
-        if (isSearchMode)
-            searchResultsList.Set(entry);
-        else
-            directChatList.Set(userId, entry);
+            if (isSearchMode)
+                searchResultsList.Set(entry);
+            else
+                directChatList.Set(userId, entry);
 
             UpdateHeaders();
             UpdateLayout();
@@ -347,7 +359,7 @@ namespace DCL.Chat.HUD
         private void Set(PublicChatModel model)
         {
             var channelId = model.channelId;
-            var entryModel = new PublicChatEntryModel(channelId, model.name, model.joined, model.memberCount, showOnlyOnlineMembers: true, model.muted);
+            var entryModel = new PublicChatEntryModel(channelId, model.name, model.joined, model.memberCount, showOnlyOnlineMembers: model.showOnlyOnlineMembers, model.muted);
             PublicChatEntry entry;
 
             if (isSearchMode)

@@ -23,6 +23,7 @@ namespace DCL
             result.Register<IWebRequestController>(WebRequestController.Create);
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
+            result.Register<IRPC>(() => new RPC());
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
