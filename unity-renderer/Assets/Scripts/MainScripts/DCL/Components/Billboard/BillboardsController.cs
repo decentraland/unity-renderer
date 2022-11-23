@@ -67,7 +67,6 @@ public class BillboardsController : IBillboardsController
 
         while (true)
         {
-            Debug.Log(Time.realtimeSinceStartup);
             yield return waitForFrameEnd;
 
             camUpdated = lastCamPosition != CameraPosition;

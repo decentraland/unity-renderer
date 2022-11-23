@@ -57,6 +57,7 @@ namespace Tests
             Vector3 lookAt = GetLookAtVector(billboard.GetModel(), entityTransform);
 
             yield return null;
+            yield return null;
             Assert.AreApproximatelyEqual(lookAt.x, entityTransform.forward.x, "billboard entity forward vector should be the same as the calculated one");
             Assert.AreApproximatelyEqual(lookAt.y, entityTransform.forward.y, "billboard entity forward vector should be the same as the calculated one");
             Assert.AreApproximatelyEqual(lookAt.z, entityTransform.forward.z, "billboard entity forward vector should be the same as the calculated one");
