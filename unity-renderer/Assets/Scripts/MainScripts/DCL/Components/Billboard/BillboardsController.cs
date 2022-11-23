@@ -72,8 +72,14 @@ public class BillboardsController : IBillboardsController
 
             camUpdated = lastCamPosition != CameraPosition;
             lastCamPosition = CameraPosition;
-            foreach (Billboard billboard in billboards)
+            for (int i = billboards.Count - 1; i >= 0; i--)
             {
+                Billboard billboard = billboards[i];
+                if (billboard == null)
+                {
+                    billboards.RemoveAt(i);
+                    continue;
+                }
                 if (billboard.Tr == null || billboard.EntityTransform == null)
                     continue;
                 if (!camUpdated && billboard.Tr.position == billboard.LastPosition)
