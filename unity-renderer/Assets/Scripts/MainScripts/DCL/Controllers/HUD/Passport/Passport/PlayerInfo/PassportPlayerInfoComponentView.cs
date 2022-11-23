@@ -16,10 +16,10 @@ namespace DCL.Social.Passports
         [SerializeField] internal Button walletCopyButton;
         [SerializeField] internal TextMeshProUGUI wallet;
         [SerializeField] internal Button optionsButton;
-        [SerializeField] internal Button addFriendButton;
-        [SerializeField] internal Button removeFriendButton;
-        [SerializeField] internal Button cancelFriendRequestButton;
-        [SerializeField] internal Button acceptFriendButton;
+        [SerializeField] internal ButtonComponentView addFriendButton;
+        [SerializeField] internal ButtonComponentView removeFriendButton;
+        [SerializeField] internal ButtonComponentView cancelFriendRequestButton;
+        [SerializeField] internal ButtonComponentView acceptFriendButton;
         [SerializeField] internal Button blockButton;
         [SerializeField] internal Button reportButton;
         [SerializeField] internal Button unfriendButton;
