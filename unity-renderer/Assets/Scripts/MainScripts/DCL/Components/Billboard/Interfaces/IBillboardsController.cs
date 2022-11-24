@@ -4,7 +4,7 @@ namespace DCL
 {
     public interface IBillboardsController : IService
     {
-        void BillboardAdded(GameObject billboardContainer);
-        void BillboardRemoved(GameObject billboardContainer);
+        void BillboardAdded(IBillboard billboard);
+        void BillboardRemoved(IBillboard billboard);
     }
 }

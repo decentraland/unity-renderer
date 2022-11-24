@@ -25,19 +25,17 @@ public class BillboardsController : IBillboardsController
         updateCoroutine = CoroutineStarter.Start(UpdateCoroutine());
     }
 
-    public void BillboardAdded(GameObject billboardContainer)
+    public void BillboardAdded(IBillboard inBillboard)
     {
-        if (billboardContainer.TryGetComponent<Billboard>(out var billboard))
-        {
-            billboards.Add(billboard);
+        Billboard billboard = inBillboard as Billboard;
+        billboards.Add(billboard);
             ChangeOrientation(billboard);
-        }
     }
 
-    public void BillboardRemoved(GameObject billboardContainer)
+    public void BillboardRemoved(IBillboard inBillboard)
     {
-        Billboard billboard = billboardContainer.GetComponent<Billboard>();
-        if (billboard == null || !billboards.Contains(billboard))
+        Billboard billboard = inBillboard as Billboard;
+        if (!billboards.Contains(billboard))
             return;
 
         billboards.Remove(billboard);

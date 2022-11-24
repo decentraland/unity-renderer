@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class Billboard : BaseComponent
+    public class Billboard : BaseComponent, IBillboard
     {
         [Serializable]
         public class Model : BaseModel
@@ -75,7 +75,8 @@ namespace DCL
             Tr = transform;
             LastPosition = Vector3.up * float.MaxValue;
 
-            Environment.i.serviceLocator.Get<IBillboardsController>().BillboardAdded(gameObject);
+            IBillboardsController controller = Environment.i.serviceLocator.Get<IBillboardsController>();
+            controller.BillboardAdded(this);
         }
     }
 }
