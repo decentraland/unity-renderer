@@ -26,26 +26,26 @@ namespace DCL.Social.Friends
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
 
-            dataStore.HUDs.sendFriendRequest.OnChange += OpenOrClose;
+            dataStore.HUDs.sendFriendRequest.OnChange += ShowOrHide;
 
             view.OnMessageBodyChanged += OnMessageBodyChanged;
             view.OnSend += Send;
-            view.OnCancel += Close;
+            view.OnCancel += Hide;
         }
 
         public void Dispose()
         {
-            dataStore.HUDs.sendFriendRequest.OnChange -= OpenOrClose;
+            dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;
-            view.OnCancel -= Close;
+            view.OnCancel -= Hide;
             view.Dispose();
         }
 
-        private void OpenOrClose(string current, string previous)
+        private void ShowOrHide(string current, string previous)
         {
             if (string.IsNullOrEmpty(current))
-                Close();
+                Hide();
             else
                 Show(current);
         }
@@ -57,6 +57,7 @@ namespace DCL.Social.Friends
             var userProfile = userProfileBridge.Get(recipient);
             if (userProfile == null) return;
             view.SetName(userProfile.userName);
+            view.SetProfilePicture(userProfile.face256SnapshotURL);
             view.Show();
         }
 
@@ -81,7 +82,7 @@ namespace DCL.Social.Friends
             view.ShowSendSuccess();
         }
         
-        private void Close()
+        private void Hide()
         {
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             view.Close();

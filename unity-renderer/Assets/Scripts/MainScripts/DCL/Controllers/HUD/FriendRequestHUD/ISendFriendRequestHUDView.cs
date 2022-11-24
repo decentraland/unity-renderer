@@ -12,6 +12,7 @@ namespace DCL.Social.Friends
         void Show();
         void Dispose();
         void SetName(string name);
+        void SetProfilePicture(string imageUrl);
         void ShowPendingToSend();
         void ShowSendSuccess();
         void ShowSendFailed();
