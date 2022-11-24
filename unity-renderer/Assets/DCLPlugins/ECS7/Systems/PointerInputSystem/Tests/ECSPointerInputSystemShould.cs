@@ -565,5 +565,101 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipInput(1, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
         }
+        
+        [Test]
+        public void ReturnResultHitPositionInSceneSpace()
+        {
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+            
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            
+            // 1. Set scene coords at 0,0
+            Vector2Int sceneCoords = new Vector2Int(0, 0);
+            scene.sceneData.parcels = new [] { sceneCoords };
+            scene.sceneData.basePosition = sceneCoords;
+            
+            // 2. position collider entity inside scene space
+            ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
+                Substitute.For<BaseVariable<UnityEngine.Vector3>>());
+
+            var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
+            var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, scene);
+            var transformModel = new ECSTransform() { position = entityGlobalPosition };
+            transformHandler.OnComponentModelUpdated(scene, entity1, transformModel);
+            
+            // 3. update pointer ray hit values with object position
+            dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
+            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + UnityEngine.Vector3.back * 3;
+
+            // 4. Update to enqueue new events
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
+            
+            // 5. Check enqueued event has correct position and origin
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z
+            }, enqueuedEvent.hit.Position);
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z - 3
+            }, enqueuedEvent.hit.Origin);
+            
+            // 6. Change scene coords somewhere else
+            sceneCoords = new Vector2Int(66, 66);
+            scene.sceneData.parcels = new [] { sceneCoords };
+            scene.sceneData.basePosition = sceneCoords;
+            
+            // 7. position collider entity inside scene space again
+            entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, scene);
+            transformModel = new ECSTransform() { position = entityGlobalPosition };
+            transformHandler.OnComponentModelUpdated(scene, entity1, transformModel);
+            
+            // 8. update pointer ray hit values with new object position
+            dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
+            dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
+            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + UnityEngine.Vector3.back * 3;
+            
+            // 9. Toggle pointer event flags again to be recognized as a new pointer event
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+            
+            // 10. Update to enqueue new events
+            systemUpdate();
+
+            result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
+            
+            // 11. Check enqueued event still has correct position and origin
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z
+            }, enqueuedEvent.hit.Position);
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z - 3
+            }, enqueuedEvent.hit.Origin);
+        }
     }
 }
