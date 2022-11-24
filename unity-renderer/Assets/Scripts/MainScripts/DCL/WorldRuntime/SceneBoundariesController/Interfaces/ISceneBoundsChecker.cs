@@ -9,13 +9,10 @@ namespace DCL.Controllers
     {
         event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
 
-        float timeBetweenChecks { get; set; }
         bool enabled { get; }
         int entitiesToCheckCount { get; }
         void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle);
         ISceneBoundsFeedbackStyle GetFeedbackStyle();
-        List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
-        void Start();
         void Stop();
         void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false);
         void RemoveEntity(IDCLEntity entity, bool removeIfPersistent = false, bool resetState = false);
