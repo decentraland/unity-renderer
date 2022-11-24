@@ -37,6 +37,7 @@ public class DCLCharacterPosition
     public DCLCharacterPosition()
     {
         CommonScriptableObjects.worldOffset.Set(Vector3.zero);
+        //Shader.SetGlobalVector("_GlobalOffset", offset);
         DataStore.i.player.playerWorldPosition.Set(Vector3.zero);
     }
 
@@ -69,6 +70,7 @@ public class DCLCharacterPosition
 
             DataStore.i.player.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.worldOffset.Set(offset);
+            //Shader.SetGlobalVector("_GlobalOffset", offset);
             DCL.Environment.i.platform.physicsSyncController.MarkDirty();
         }
     }
