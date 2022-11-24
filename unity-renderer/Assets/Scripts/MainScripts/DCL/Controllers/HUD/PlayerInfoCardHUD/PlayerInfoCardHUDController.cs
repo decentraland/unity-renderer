@@ -5,6 +5,8 @@ using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -51,8 +53,9 @@ public class PlayerInfoCardHUDController : IHUD
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
         this.playerInfoCardVisibleState = playerInfoCardVisibleState;
+        currentPlayerId.OnSame += OnCurrentPlayerIdUpdated;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-        OnCurrentPlayerIdChanged(currentPlayerId, null);
+        OnCurrentPlayerIdUpdated(currentPlayerId);
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -114,6 +117,11 @@ public class PlayerInfoCardHUDController : IHUD
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)
+    {
+        OnCurrentPlayerIdUpdated(current);
+    }
+
+    private void OnCurrentPlayerIdUpdated(string current)
     {
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
@@ -217,7 +225,10 @@ public class PlayerInfoCardHUDController : IHUD
             currentUserProfile.OnUpdate -= SetUserProfile;
 
         if (currentPlayerId != null)
+        {
+            currentPlayerId.OnSame -= OnCurrentPlayerIdUpdated;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
+        }
 
         if (closeWindowTrigger != null)
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;

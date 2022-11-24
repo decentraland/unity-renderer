@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -149,8 +150,9 @@ namespace DCL
                 {
                     ext = "png";
                 }
-                else if (loadedAsset is Material)
+                else if (loadedAsset is Material material)
                 {
+                    ShaderUtils.UpgradeMaterial_2020_To_2021(material);
                     ext = "mat";
                 }
                 else if (loadedAsset is Animation || loadedAsset is AnimationClip)

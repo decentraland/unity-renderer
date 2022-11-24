@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "8210d169e5144c7a9cad7fd62d5ae666",
     "m_Properties": [
@@ -17,6 +17,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "f755c0df683949f0893075eab7913639"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "376b32bf8252472795e81dae9ac7c6a3"
@@ -316,10 +322,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "376b32bf8252472795e81dae9ac7c6a3"
@@ -356,9 +363,13 @@
         "m_GuidSerialized": "d9e3bdb6-f4ed-4174-a12a-ed767f9afa5f"
     },
     "m_Name": "RevealNormal",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_06e2baf93fff43649e899f035c78d17c",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -857,9 +868,13 @@
         "m_GuidSerialized": "d643066d-f463-4c3f-85b3-e1c007833a08"
     },
     "m_Name": "RevealPosition",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_4fcf56752d6849e4ab0c1cfbb819a8a2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -928,9 +943,13 @@
         "m_GuidSerialized": "2b6dc766-cc76-487b-ad8a-1522306a8db7"
     },
     "m_Name": "AlphaClip",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_5b481b78f39f486db90c8087ed357ebc",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1110,9 +1129,13 @@
         "m_GuidSerialized": "92e1baed-4e6f-470d-8709-d5fe65ff5276"
     },
     "m_Name": "DitherFade",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_728be312cd144b50b9103a3b87da4af8",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1306,7 +1329,8 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 0
+    "m_Space": 0,
+    "m_PositionSource": 0
 }
 
 {
@@ -1924,6 +1948,27 @@
         "z": 0.0,
         "w": 0.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "f755c0df683949f0893075eab7913639",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "728be312cd144b50b9103a3b87da4af8"
+        },
+        {
+            "m_Id": "5b481b78f39f486db90c8087ed357ebc"
+        },
+        {
+            "m_Id": "4fcf56752d6849e4ab0c1cfbb819a8a2"
+        },
+        {
+            "m_Id": "06e2baf93fff43649e899f035c78d17c"
+        }
+    ]
 }
 
 {

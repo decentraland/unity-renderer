@@ -1,4 +1,5 @@
 using System;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -108,6 +109,7 @@ public class FriendEntryBase : BaseComponentView
     {
         if (currentPlayerInfoCardId == null)
             currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        
         currentPlayerInfoCardId.Set(Model.userId);
     }
 }
