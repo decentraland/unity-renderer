@@ -7,13 +7,12 @@ namespace DCLPlugins.RealmPlugin
     public class RealmBlockerModifier : IRealmModifier
     {
 
+        private const int WORLD_BLOCKER_LIMIT = 2;
+        
         public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
         {
             bool shouldGreenBlockersBeActive = isCatalyst || ShouldGreenBlockersBeActive(realmConfiguration.Configurations.CityLoaderContentServer);
-            if (shouldGreenBlockersBeActive)
-                DataStore.i.worldBlockers.worldBlockerLimits.Set(0);
-            else
-                DataStore.i.worldBlockers.worldBlockerLimits.Set(2);
+            DataStore.i.worldBlockers.worldBlockerLimits.Set(shouldGreenBlockersBeActive ? 0 : WORLD_BLOCKER_LIMIT);
         }
 
         public void Dispose() { }
