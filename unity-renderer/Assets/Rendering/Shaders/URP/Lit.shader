@@ -149,6 +149,9 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
+            #pragma multi_compile _ _ENABLE_SB
+            #pragma multi_compile _ _ENABLE_SB_DEBUG
+
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
@@ -426,6 +429,10 @@ Shader "DCL/Universal Render Pipeline/Lit"
             // Unity defined keywords
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
+
+            #pragma multi_compile _ _ENABLE_SB
+            #pragma multi_compile _ _ENABLE_SB_DEBUG
+
             #pragma multi_compile_fog
 
             #pragma vertex LitPassVertex

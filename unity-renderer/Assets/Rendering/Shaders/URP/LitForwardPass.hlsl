@@ -3,6 +3,7 @@
 
 #include "Lighting.hlsl"
 #include "FadeDithering.hlsl"
+#include "SceneBoundaries.hlsl"
 
 #if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
 #define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
@@ -143,7 +144,8 @@ Varyings LitPassVertex(Attributes input)
     output.positionCS = vertexInput.positionCS;
 
 	//NOTE(Brian): needed for FadeDithering
-	output.positionSS = ComputeScreenPos(vertexInput.positionCS);
+	//output.positionSS = ComputeScreenPos(vertexInput.positionCS);
+	output.positionSS = mul (unity_ObjectToWorld, input.positionOS);
 
     return output;
 }
@@ -151,8 +153,11 @@ Varyings LitPassVertex(Attributes input)
 // Used in Standard (Physically Based) shader
 half4 LitPassFragment(Varyings input) : SV_Target
 {
+
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+    SCENE_BOUNDARIES_FILTER(input.positionSS);  
 
 #if defined(_PARALLAXMAP)
 #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)

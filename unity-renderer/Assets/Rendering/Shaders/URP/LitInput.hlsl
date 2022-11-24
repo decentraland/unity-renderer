@@ -38,6 +38,10 @@ int _BaseMapUVs;
 int _NormalMapUVs;
 int _MetallicMapUVs;
 int _EmissiveMapUVs;
+
+half4 _GlobalOffset;
+// half4 _ParcelCenters[1];
+// int _ParcelAmount;
 CBUFFER_END
 
 // NOTE: Do not ifdef the properties for dots instancing, but ifdef the actual usage.
