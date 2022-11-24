@@ -2,14 +2,18 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar Material
   m_Shader: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
-  m_ShaderKeywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+  m_ValidKeywords:
+  - _SSAO_OFF
+  m_InvalidKeywords:
+  - _EMISSION
+  - _NORMALMAP
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -83,8 +87,11 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _DitherFade: 1
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
     - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
@@ -92,5 +99,7 @@ Material:
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightDir: {r: -0.1, g: 0.8, b: -0.4, a: 0}
     - _MultiplyColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
+    - _RevealNormal: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealPosition: {r: 0, g: 100, b: 0, a: 0}
     - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

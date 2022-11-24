@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "cd64e28e44fa40b999cd28514d4e00ee",
     "m_Properties": [
@@ -11,6 +11,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "7231d3aea92e4db785d640b78e938715"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "726086e72b032c8d88b0a225fab2e067"
@@ -174,10 +180,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "726086e72b032c8d88b0a225fab2e067"
@@ -266,9 +273,13 @@
         "m_GuidSerialized": "29ca9e99-5936-48e9-a583-b3897616dc85"
     },
     "m_Name": "Map Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_20d6639c9fdd413a829b748f8d32667c",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -279,6 +290,7 @@
         "b": 0.0,
         "a": 0.0
     },
+    "isMainColor": false,
     "m_ColorMode": 0
 }
 
@@ -528,6 +540,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "7231d3aea92e4db785d640b78e938715",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "9560bd31b9bd4a8cb6fd6ee66a69080f"
+        },
+        {
+            "m_Id": "20d6639c9fdd413a829b748f8d32667c"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.SubGraphOutputNode",
     "m_ObjectId": "726086e72b032c8d88b0a225fab2e067",
     "m_Group": {
@@ -653,9 +680,13 @@
         "m_GuidSerialized": "267384a2-1e91-472b-847b-2f346f606a92"
     },
     "m_Name": "Base Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_DA7BBBB2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 1,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
