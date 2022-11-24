@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using DCL.Chat.HUD;
+using DCl.Social.Friends;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
 using TMPro;

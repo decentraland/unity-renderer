@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialBar.UserThumbnail;

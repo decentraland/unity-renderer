@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using DCL.Helpers;
+using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.TestTools;
 

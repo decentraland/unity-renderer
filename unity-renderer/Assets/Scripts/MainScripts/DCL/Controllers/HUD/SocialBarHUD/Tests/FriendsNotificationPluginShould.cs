@@ -1,5 +1,6 @@
 ﻿using DCL;
 using DCL.Helpers;
+using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
