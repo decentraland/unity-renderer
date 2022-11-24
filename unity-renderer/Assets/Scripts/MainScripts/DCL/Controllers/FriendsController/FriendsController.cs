@@ -1,8 +1,8 @@
+using Cysharp.Threading.Tasks;
+using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 
 namespace DCL.Social.Friends
 {
@@ -45,7 +45,6 @@ namespace DCL.Social.Friends
             apiBridge.OnInitialized += Initialize;
             apiBridge.OnFriendNotFound += FriendNotFound;
             apiBridge.OnFriendsAdded += AddFriends;
-            apiBridge.OnFriendRequestsAdded += AddFriendRequests;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
             apiBridge.OnFriendshipStatusUpdated += UpdateFriendshipStatus;
@@ -67,7 +66,7 @@ namespace DCL.Social.Friends
         public UserStatus GetUserStatus(string userId)
         {
             if (!friends.ContainsKey(userId))
-                return new UserStatus {userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND};
+                return new UserStatus { userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND };
 
             return friends[userId];
         }
@@ -103,11 +102,13 @@ namespace DCL.Social.Friends
 
         public void GetFriends(int limit, int skip) => apiBridge.GetFriends(limit, skip);
 
-        public void GetFriends(string usernameOrId, int limit) =>apiBridge.GetFriends(usernameOrId, limit);
+        public void GetFriends(string usernameOrId, int limit) => apiBridge.GetFriends(usernameOrId, limit);
 
-        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit,
-            int receivedSkip) =>
-            apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
+        public async UniTask GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        {
+            var payload = await apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
+            AddFriendRequests(payload);
+        }
 
         public void GetFriendsWithDirectMessages(int limit, int skip) =>
             apiBridge.GetFriendsWithDirectMessages("", limit, skip);
@@ -136,16 +137,16 @@ namespace DCL.Social.Friends
             TotalSentFriendRequestCount = msg.totalSentFriendRequests;
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
 
-            foreach (var userId in msg.requestedFrom)
+            foreach (var friendRequest in msg.requestedFrom)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    {action = FriendshipAction.REQUESTED_FROM, userId = userId});
+                    {action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.from});
             }
 
-            foreach (var userId in msg.requestedTo)
+            foreach (var friendRequest in msg.requestedTo)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    {action = FriendshipAction.REQUESTED_TO, userId = userId});
+                    {action = FriendshipAction.REQUESTED_TO, userId = friendRequest.to});
             }
         }
 

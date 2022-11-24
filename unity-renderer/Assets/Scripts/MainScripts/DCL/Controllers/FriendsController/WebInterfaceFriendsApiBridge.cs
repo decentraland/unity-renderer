@@ -16,7 +16,6 @@ namespace DCL.Social.Friends
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
         public event Action<AddFriendsPayload> OnFriendsAdded;
-        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         public event Action<UserStatus> OnUserPresenceUpdated;
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
@@ -35,8 +34,16 @@ namespace DCL.Social.Friends
             OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
 
         [PublicAPI]
-        public void AddFriendRequests(string json) =>
-            OnFriendRequestsAdded?.Invoke(JsonUtility.FromJson<AddFriendRequestsPayload>(json));
+        public void AddFriendRequests(string json)
+        {
+            var payload = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
+            var messageId = payload.messageId;
+            if (!pendingRequests.ContainsKey(messageId)) return;
+            var task =
+                (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
+            pendingRequests.Remove(messageId);
+            task.TrySetResult(payload);
+        }
 
         [PublicAPI]
         public void AddFriendsWithDirectMessages(string json) =>
@@ -106,8 +113,23 @@ namespace DCL.Social.Friends
         public void GetFriends(string usernameOrId, int limit) =>
             WebInterface.GetFriends(usernameOrId, limit);
 
-        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
-            WebInterface.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
+        public UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        {
+            var task = new UniTaskCompletionSource<AddFriendRequestsPayload>();
+            // TODO: optimize unique id length for performance reasons
+            var messageId = Guid.NewGuid().ToString("N");
+            pendingRequests[messageId] = task;
+
+            WebInterface.SendMessage("GetFriendRequests", new GetFriendRequestsPayload
+            {
+                messageId = messageId,
+                sentLimit = sentLimit,
+                sentSkip = sentSkip,
+                receivedLimit = receivedLimit,
+                receivedSkip = receivedSkip
+            });
+            return task.Task;
+        }
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             WebInterface.GetFriendsWithDirectMessages(usernameOrId, limit, skip);

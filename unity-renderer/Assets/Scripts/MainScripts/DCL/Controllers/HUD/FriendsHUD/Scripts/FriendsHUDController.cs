@@ -463,7 +463,7 @@ public class FriendsHUDController : IHUD
         
         friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
+            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests).Forget();
         
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
