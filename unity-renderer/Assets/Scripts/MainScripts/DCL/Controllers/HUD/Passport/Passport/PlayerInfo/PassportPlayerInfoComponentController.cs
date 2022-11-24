@@ -17,8 +17,10 @@ namespace DCL.Social.Passports
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
-
+        
+        private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private StringVariable currentPlayerId;
+        private string name;
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
@@ -42,21 +44,24 @@ namespace DCL.Social.Passports
             view.OnCancelFriendRequest += CancelFriendRequest;
             view.OnAcceptFriendRequest += AcceptFriendRequest;
             view.OnBlockUser += BlockUser;
+            view.OnUnblockUser += UnblockUser;
             view.OnReportUser += ReportUser;
-            view.OnUnfriendUser += UnfriendUser;
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
+            name = userProfile.name;
             string filteredName = await FilterName(userProfile);
             view.SetName(filteredName);
             view.SetGuestUser(userProfile.isGuest);
             if(!userProfile.isGuest)
             {
                 view.SetWallet(userProfile.userId);
+                view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
                 view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
+                view.SetIsBlocked(ownUserProfile.IsBlocked(userProfile.userId));
                 view.SetFriendStatus(friendsController.GetUserStatus(userProfile.userId).friendshipStatus);
                 view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
             }
@@ -84,7 +89,7 @@ namespace DCL.Social.Passports
 
         private void RemoveFriend()
         {
-
+            friendsController.RemoveFriend(currentPlayerId);
         }
 
         private void CancelFriendRequest()
@@ -101,22 +106,26 @@ namespace DCL.Social.Passports
 
         private void BlockUser()
         {
-            //if (ownUserProfile.IsBlocked(currentUserProfile.userId)) return;
-            //ownUserProfile.Block(currentUserProfile.userId);
-            //view.SetIsBlocked(true);
+            if (ownUserProfile.IsBlocked(currentPlayerId)) return;
+            ownUserProfile.Block(currentPlayerId);
+            view.SetIsBlocked(true);
             WebInterface.SendBlockPlayer(currentPlayerId);
             //socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
         }
 
-        private void ReportUser()
+        private void UnblockUser()
         {
-            //WebInterface.SendReportPlayer(currentPlayerId, currentUserProfile?.name);
-            //socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+            if (!ownUserProfile.IsBlocked(currentPlayerId)) return;
+            ownUserProfile.Unblock(currentPlayerId);
+            view.SetIsBlocked(false);
+            WebInterface.SendUnblockPlayer(currentPlayerId);
+            //socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
         }
 
-        private void UnfriendUser()
+        private void ReportUser()
         {
-
+            WebInterface.SendReportPlayer(currentPlayerId, name);
+            //SocialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
         }
     }
 }

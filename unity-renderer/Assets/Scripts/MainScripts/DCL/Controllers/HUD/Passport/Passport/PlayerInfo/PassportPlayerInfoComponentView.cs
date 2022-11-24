@@ -15,11 +15,12 @@ namespace DCL.Social.Passports
         [SerializeField] internal TextMeshProUGUI nameInOptionsPanel;
         [SerializeField] internal Button walletCopyButton;
         [SerializeField] internal TextMeshProUGUI wallet;
-        [SerializeField] internal Button optionsButton;
+        [SerializeField] internal ButtonComponentView optionsButton;
         [SerializeField] internal ButtonComponentView addFriendButton;
-        [SerializeField] internal ButtonComponentView removeFriendButton;
+        [SerializeField] internal ButtonComponentView alreadyFriendsButton;
         [SerializeField] internal ButtonComponentView cancelFriendRequestButton;
         [SerializeField] internal ButtonComponentView acceptFriendButton;
+        [SerializeField] internal ButtonComponentView blockedFriendButton;
         [SerializeField] internal Button blockButton;
         [SerializeField] internal Button reportButton;
         [SerializeField] internal Button unfriendButton;
@@ -29,6 +30,14 @@ namespace DCL.Social.Passports
         [SerializeField] internal GameObject offlineStatus;
         [SerializeField] internal GameObject normalUserPanel;
         [SerializeField] internal GameObject optionsPanel;
+        [SerializeField] internal GameObject friendsFlowContainer;
+        
+        [SerializeField] internal GameObject alreadyFriendsVariation;
+        [SerializeField] internal GameObject unfriendVariation;
+
+        [SerializeField] internal GameObject alreadyBlockedVariation;
+        [SerializeField] internal GameObject unblockVariation;
+        
         [SerializeField] internal JumpInButton jumpInButton;
         
         public event Action OnAddFriend;
@@ -36,24 +45,48 @@ namespace DCL.Social.Passports
         public event Action OnCancelFriendRequest;
         public event Action OnAcceptFriendRequest;
         public event Action OnBlockUser;
+        public event Action OnUnblockUser;
         public event Action OnReportUser;
-        public event Action OnUnfriendUser;
 
         private string fullWalletAddress;
         private bool areFriends;
+        private bool isBlocked = false;
 
         private void Start() 
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
             addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
-            removeFriendButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
+            alreadyFriendsButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
             cancelFriendRequestButton.onClick.AddListener(()=>OnCancelFriendRequest?.Invoke());
             acceptFriendButton.onClick.AddListener(()=>OnAcceptFriendRequest?.Invoke());
             blockButton.onClick.AddListener(()=>OnBlockUser?.Invoke());
+            blockedFriendButton.onClick.AddListener(()=>OnUnblockUser?.Invoke());
             reportButton.onClick.AddListener(()=>OnReportUser?.Invoke());
             unfriendButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
             whisperButton.onClick.AddListener(WhisperActionFlow);
             optionsButton.onClick.AddListener(OpenOptions);
+
+            alreadyFriendsButton.onFocused += RemoveFriendsFocused;
+            blockedFriendButton.onFocused += BlockFriendFocused;
+            optionsButton.onFocused += OptionsPanelFocused;
+        }
+
+        private void RemoveFriendsFocused(bool isFocused)
+        {
+            alreadyFriendsVariation.SetActive(!isFocused);
+            unfriendVariation.SetActive(isFocused);
+        }
+
+        private void BlockFriendFocused(bool isFocused)
+        {
+            alreadyBlockedVariation.SetActive(!isFocused);
+            unblockVariation.SetActive(isFocused);
+        }
+        
+        private void OptionsPanelFocused(bool isFocused)
+        {
+            if(!isFocused)
+                optionsPanel.SetActive(false);
         }
 
         public void SetName(string name)
@@ -66,6 +99,13 @@ namespace DCL.Social.Passports
         {
             fullWalletAddress = wallet;
             this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
+        }
+
+        public void SetIsBlocked(bool isBlocked)
+        {
+            this.isBlocked = isBlocked;
+            DisableAllFriendFlowButtons();
+            blockedFriendButton.gameObject.SetActive(true);
         }
 
         public void SetPresence(PresenceStatus status)
@@ -87,40 +127,48 @@ namespace DCL.Social.Passports
             normalUserPanel.SetActive(!isGuest);
         }
 
+        public void SetHasBlockedOwnUser(bool hasBlocked)
+        {
+            friendsFlowContainer.SetActive(!hasBlocked);
+        }
+
         public void SetFriendStatus(FriendshipStatus friendStatus)
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
+            
+            if(isBlocked) return;
 
             switch (friendStatus)
             {
                 case FriendshipStatus.NOT_FRIEND:
+                    DisableAllFriendFlowButtons();
                     addFriendButton.gameObject.SetActive(true);
-                    removeFriendButton.gameObject.SetActive(false);
-                    cancelFriendRequestButton.gameObject.SetActive(false);
-                    acceptFriendButton.gameObject.SetActive(false);
                 break;
                 case FriendshipStatus.FRIEND:
-                    addFriendButton.gameObject.SetActive(false);
-                    removeFriendButton.gameObject.SetActive(true);
-                    cancelFriendRequestButton.gameObject.SetActive(false);
-                    acceptFriendButton.gameObject.SetActive(false);
+                    DisableAllFriendFlowButtons();
+                    alreadyFriendsButton.gameObject.SetActive(true);
                 break;
                 case FriendshipStatus.REQUESTED_FROM:
-                    addFriendButton.gameObject.SetActive(false);
-                    removeFriendButton.gameObject.SetActive(false);
-                    cancelFriendRequestButton.gameObject.SetActive(false);
+                    DisableAllFriendFlowButtons();
                     acceptFriendButton.gameObject.SetActive(true);
                 break;
                 case FriendshipStatus.REQUESTED_TO:
-                    addFriendButton.gameObject.SetActive(false);
-                    removeFriendButton.gameObject.SetActive(false);
+                    DisableAllFriendFlowButtons();
                     cancelFriendRequestButton.gameObject.SetActive(true);
-                    acceptFriendButton.gameObject.SetActive(false);
                 break;
                 default:
                 break;
             }
             whisperNonFriendsPopup.SetActive(false);
+        }
+
+        private void DisableAllFriendFlowButtons()
+        {
+            alreadyFriendsButton.gameObject.SetActive(false);
+            addFriendButton.gameObject.SetActive(false);
+            cancelFriendRequestButton.gameObject.SetActive(false);
+            acceptFriendButton.gameObject.SetActive(false);
+            blockedFriendButton.gameObject.SetActive(false);
         }
 
         private void CopyWalletToClipboard()
