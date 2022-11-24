@@ -9,16 +9,16 @@ using UnityEngine;
 
 public class CrdtExecutorsManager : IDisposable
 {
-    private readonly Dictionary<string, ICRDTExecutor> crdtExecutors;
+    private readonly Dictionary<int, ICRDTExecutor> crdtExecutors;
     private readonly ISceneController sceneController;
     private readonly IWorldState worldState;
     private readonly ECSComponentsManager componentsManager;
     private readonly CRDTServiceContext rpcCrdtServiceContext;
 
-    private string cachedSceneId;
+    private int cachedSceneNumber;
     private ICRDTExecutor cachedCrdtExecutor;
 
-    public CrdtExecutorsManager(Dictionary<string, ICRDTExecutor> crdtExecutors,
+    public CrdtExecutorsManager(Dictionary<int, ICRDTExecutor> crdtExecutors,
         ECSComponentsManager componentsManager, ISceneController sceneController, IWorldState worldState,
         CRDTServiceContext rpcCrdtServiceContext)
     {
@@ -46,36 +46,37 @@ public class CrdtExecutorsManager : IDisposable
 
     private void OnSceneRemoved(IParcelScene scene)
     {
-        string sceneId = scene.sceneData.id;
-        if (crdtExecutors.TryGetValue(sceneId, out ICRDTExecutor crdtExecutor))
+        int sceneNumber = scene.sceneData.sceneNumber;
+        if (crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
         {
             crdtExecutor.Dispose();
-            crdtExecutors.Remove(sceneId);
+            crdtExecutors.Remove(sceneNumber);
         }
-        if (cachedSceneId == sceneId)
+        
+        if (cachedSceneNumber == sceneNumber)
         {
-            cachedSceneId = null;
+            cachedSceneNumber = -1;
         }
     }
 
-    private ICRDTExecutor GetCachedExecutor(string sceneId)
+    private ICRDTExecutor GetCachedExecutor(int sceneNumber)
     {
-        if (cachedSceneId != sceneId)
+        if (cachedSceneNumber != sceneNumber)
         {
             cachedCrdtExecutor = null;
-            cachedSceneId = null;
-            if (crdtExecutors.TryGetValue(sceneId, out cachedCrdtExecutor))
+            cachedSceneNumber = -1;
+            if (crdtExecutors.TryGetValue(sceneNumber, out cachedCrdtExecutor))
             {
-                cachedSceneId = sceneId;
+                cachedSceneNumber = sceneNumber;
             }
-            else if (worldState.TryGetScene(sceneId, out IParcelScene scene))
+            else if (worldState.TryGetScene(sceneNumber, out IParcelScene scene))
             {
-                cachedSceneId = sceneId;
+                cachedSceneNumber = sceneNumber;
                 if (scene.crdtExecutor == null)
                 {
                     cachedCrdtExecutor = new CRDTExecutor(scene, componentsManager);
                     scene.crdtExecutor = cachedCrdtExecutor;
-                    crdtExecutors[sceneId] = cachedCrdtExecutor;
+                    crdtExecutors[sceneNumber] = cachedCrdtExecutor;
                 }
                 else
                 {
@@ -86,9 +87,9 @@ public class CrdtExecutorsManager : IDisposable
         return cachedCrdtExecutor;
     }
 
-    private void CrdtMessageReceived(string sceneId, CRDTMessage crdtMessage)
+    private void CrdtMessageReceived(int sceneNumber, CRDTMessage crdtMessage)
     {
-        ICRDTExecutor executor = GetCachedExecutor(sceneId);
+        ICRDTExecutor executor = GetCachedExecutor(sceneNumber);
 
         if (executor != null)
         {
@@ -96,7 +97,7 @@ public class CrdtExecutorsManager : IDisposable
         }
         else
         {
-            Debug.LogError($"CrdtExecutor not found for sceneId {sceneId}");
+            Debug.LogError($"CrdtExecutor not found for sceneNumber {sceneNumber}");
         }
     }
 }

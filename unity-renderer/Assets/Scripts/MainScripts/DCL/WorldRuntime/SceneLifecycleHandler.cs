@@ -63,13 +63,13 @@ namespace DCL.Controllers
 
         private void ChangeTrackingSystem(IParcelScene scene)
         {
-            if (scene.sceneData.id != owner.sceneData.id)
+            if (scene.sceneData.sceneNumber != owner.sceneData.sceneNumber)
                 return;
             
             DataStore.i.ecs7.scenes.OnAdded -= ChangeTrackingSystem;
 
             sceneResourcesLoadTracker.Dispose();
-            sceneResourcesLoadTracker.Track(scene.sceneData.id);
+            sceneResourcesLoadTracker.Track(scene.sceneData.sceneNumber);
         }
 
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -145,7 +145,7 @@ namespace DCL.Controllers
 
             state = State.READY;
 
-            Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
+            Environment.i.world.sceneController.SendSceneReady(owner.sceneData.sceneNumber);
             owner.RefreshLoadingState();
 
             sceneResourcesLoadTracker.OnResourcesLoaded -= SetSceneReady;

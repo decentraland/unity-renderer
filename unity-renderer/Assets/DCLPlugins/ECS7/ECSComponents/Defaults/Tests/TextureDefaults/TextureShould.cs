@@ -14,7 +14,7 @@ namespace Tests
         public void SetUp()
         {
             testUtils = new ECS7TestUtilsScenesAndEntities();
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
         }
         
         [TearDown]

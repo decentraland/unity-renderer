@@ -20,6 +20,7 @@ public class ECS7TestScene : IParcelScene
     public Transform GetSceneTransform() => _go.transform;
     public ContentProvider contentProvider { get; } = new ContentProvider();
     public bool isPersistent { set; get; } = false;
+    public bool isPortableExperience { get; set; } = false;
 
 // INTERNAL CONFIG FOR MOCKING    
     internal GameObject _go;

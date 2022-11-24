@@ -18,7 +18,7 @@ namespace DCL.Builder
         private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
         private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
         
-        public void SendNewEntityToKernel(string sceneId, long entityId, ComponentPayload[] componentsPayload)
+        public void SendNewEntityToKernel(int sceneNumber, long entityId, ComponentPayload[] componentsPayload)
         {
             AddEntityEvent addEntityEvent = new AddEntityEvent();
             entityPayload.entityId = entityId;
@@ -27,7 +27,7 @@ namespace DCL.Builder
             addEntityEvent.payload = entityPayload;
 
             WebInterface.SceneEvent<AddEntityEvent> sceneEvent = new WebInterface.SceneEvent<AddEntityEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
             sceneEvent.payload = addEntityEvent;
 
@@ -41,7 +41,7 @@ namespace DCL.Builder
             modifyEntityComponentEvent.payload = payload;
 
             WebInterface.SceneEvent<ModifyEntityComponentEvent> sceneEvent = new WebInterface.SceneEvent<ModifyEntityComponentEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
             sceneEvent.payload = modifyEntityComponentEvent;
 
@@ -68,7 +68,7 @@ namespace DCL.Builder
             modifyEntityComponentEvent.payload = entitySingleComponentPayload;
 
             WebInterface.SceneEvent<ModifyEntityComponentEvent> sceneEvent = new WebInterface.SceneEvent<ModifyEntityComponentEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
             sceneEvent.payload = modifyEntityComponentEvent;
 
@@ -84,7 +84,7 @@ namespace DCL.Builder
             removeEntityPayLoad.entityId = entityId;
             removeEntityEvent.payload = removeEntityPayLoad;
 
-            WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, removeEntityEvent);
+            WebInterface.SendSceneEvent(scene.sceneData.sceneNumber, BIWSettings.STATE_EVENT_NAME, removeEntityEvent);
         }
     }
 }

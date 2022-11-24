@@ -23,24 +23,24 @@ public class ECSTestScene : MonoBehaviour
 
     private static ContentProvider contentProvider;
     
-    private static void SceneScript(string sceneId, IECSComponentWriter componentWriter)
+    private static void SceneScript(int sceneNumber, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, 101, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, 101, ComponentID.TRANSFORM,
             new ECSTransform() { position = new UnityEngine.Vector3(1, 1, 1), scale = UnityEngine.Vector3.one });
-        componentWriter.PutComponent(sceneId, 102, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, 102, ComponentID.TRANSFORM,
             new ECSTransform() { position = new UnityEngine.Vector3(3, 1, 1), scale = UnityEngine.Vector3.one });
-        componentWriter.PutComponent(sceneId, 103, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, 103, ComponentID.TRANSFORM,
             new ECSTransform() { position = new UnityEngine.Vector3(5, 1, 1), scale = UnityEngine.Vector3.one });
-        componentWriter.PutComponent(sceneId, 104, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, 104, ComponentID.TRANSFORM,
             new ECSTransform() { position = new UnityEngine.Vector3(7, 1, 1), scale = UnityEngine.Vector3.one });
-        componentWriter.PutComponent(sceneId, 105, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, 105, ComponentID.TRANSFORM,
             new ECSTransform() { position = new UnityEngine.Vector3(1, 3, 1), scale = UnityEngine.Vector3.one });
 
-        componentWriter.PutComponent(sceneId, 105, ComponentID.MESH_RENDERER, new PBMeshRenderer());
-        componentWriter.PutComponent(sceneId, 101, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
-        componentWriter.PutComponent(sceneId, 102, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() });
-        componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() { RadiusBottom = 1, RadiusTop = 1 } });
-        componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
+        componentWriter.PutComponent(sceneNumber, 105, ComponentID.MESH_RENDERER, new PBMeshRenderer());
+        componentWriter.PutComponent(sceneNumber, 101, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
+        componentWriter.PutComponent(sceneNumber, 102, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() });
+        componentWriter.PutComponent(sceneNumber, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() { RadiusBottom = 1, RadiusTop = 1 } });
+        componentWriter.PutComponent(sceneNumber, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
 
         PBMaterial model = new PBMaterial()
         {
@@ -56,40 +56,40 @@ public class ECSTestScene : MonoBehaviour
             }
         };
 
-        componentWriter.PutComponent(sceneId, 105, ComponentID.MATERIAL, model);
-        componentWriter.PutComponent(sceneId, 101, ComponentID.MATERIAL, model);
-        componentWriter.PutComponent(sceneId, 102, ComponentID.MATERIAL, model);
-        componentWriter.PutComponent(sceneId, 103, ComponentID.MATERIAL, model);
-        componentWriter.PutComponent(sceneId, 104, ComponentID.MATERIAL, model);
+        componentWriter.PutComponent(sceneNumber, 105, ComponentID.MATERIAL, model);
+        componentWriter.PutComponent(sceneNumber, 101, ComponentID.MATERIAL, model);
+        componentWriter.PutComponent(sceneNumber, 102, ComponentID.MATERIAL, model);
+        componentWriter.PutComponent(sceneNumber, 103, ComponentID.MATERIAL, model);
+        componentWriter.PutComponent(sceneNumber, 104, ComponentID.MATERIAL, model);
     }
 
-    private static void SceneUpdateScript(string sceneId, IECSComponentWriter componentWriter)
+    private static void SceneUpdateScript(int sceneNumber, IECSComponentWriter componentWriter)
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            componentWriter.PutComponent(sceneId, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
+            componentWriter.PutComponent(sceneNumber, 103, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            componentWriter.RemoveComponent(sceneId, 103, ComponentID.MESH_RENDERER);
+            componentWriter.RemoveComponent(sceneNumber, 103, ComponentID.MESH_RENDERER);
         }
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            componentWriter.PutComponent(sceneId, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
+            componentWriter.PutComponent(sceneNumber, 104, ComponentID.MESH_RENDERER, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
         }
         if (Input.GetKeyDown(KeyCode.Alpha7))
         {
-            componentWriter.RemoveComponent(sceneId, 104, ComponentID.MESH_RENDERER);
+            componentWriter.RemoveComponent(sceneNumber, 104, ComponentID.MESH_RENDERER);
         }
     }
 
-    private static void AddTransform(UnityEngine.Vector3 position, long entityId, string sceneId, IECSComponentWriter componentWriter)
+    private static void AddTransform(UnityEngine.Vector3 position, long entityId, int sceneNumber, IECSComponentWriter componentWriter)
     {
-        componentWriter.PutComponent(sceneId, entityId, ComponentID.TRANSFORM,
+        componentWriter.PutComponent(sceneNumber, entityId, ComponentID.TRANSFORM,
             new ECSTransform() { position = position, scale = UnityEngine.Vector3.one });
     }
 
-    private static void AddAvatarShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+    private static void AddAvatarShapeComponent(int sceneNumber, IECSComponentWriter componentWriter)
     {
         PBAvatarShape avatarShape = new PBAvatarShape();
         avatarShape.Id = "0xe7dd153081b0526e0a8c582497cbcee7cd44e464";
@@ -124,11 +124,11 @@ public class ECSTestScene : MonoBehaviour
         avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:5");
         avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xd89efd0be036410d4ff194cd6ecece4ef8851d86:0");
 
-        componentWriter.PutComponent(sceneId, 4, ComponentID.AVATAR_SHAPE,
+        componentWriter.PutComponent(sceneNumber, 4, ComponentID.AVATAR_SHAPE,
             avatarShape);
     }
 
-    private static void AddTextShapeComponent(string sceneId, IECSComponentWriter componentWriter)
+    private static void AddTextShapeComponent(int sceneNumber, IECSComponentWriter componentWriter)
     {
         PBTextShape model = new PBTextShape();
         model.Text = "Hi text";
@@ -141,19 +141,20 @@ public class ECSTestScene : MonoBehaviour
         model.TextWrapping = true;
         model.Width = 200;
         model.Height = 100;
-        componentWriter.PutComponent(sceneId, 3, ComponentID.TEXT_SHAPE,
+        // model.Opacity = 1f;
+        componentWriter.PutComponent(sceneNumber, 3, ComponentID.TEXT_SHAPE,
             model);
     }
 
-    private static void AddBillBoardComponent(string sceneId, IECSComponentWriter componentWriter)
+    private static void AddBillBoardComponent(int sceneNumber, IECSComponentWriter componentWriter)
     {
         PBBillboard model = new PBBillboard();
         model.BillboardMode = BillboardMode.BmAllAxes;
-        componentWriter.PutComponent(sceneId, 3, ComponentID.BILLBOARD,
+        componentWriter.PutComponent(sceneNumber, 3, ComponentID.BILLBOARD,
             model);
     }
 
-    private static void AddNFTComponent(string sceneId, IECSComponentWriter componentWriter)
+    private static void AddNFTComponent(int sceneNumber, IECSComponentWriter componentWriter)
     {
         PBNftShape model = new PBNftShape();
         model.Src = "ethereum://0x06012c8cf97bead5deae237070f9587f8e7a266d/1540722";
@@ -162,11 +163,11 @@ public class ECSTestScene : MonoBehaviour
         model.Color.R = 0.5f;
         model.Color.G = 0.5f;
         model.Color.B = 1f;
-        componentWriter.PutComponent(sceneId, 0, ComponentID.NFT_SHAPE,
+        componentWriter.PutComponent(sceneNumber, 0, ComponentID.NFT_SHAPE,
             model);
     }
 
-    private static IEnumerator LoadScene(Action<string, IECSComponentWriter> sceneScript, Action<string, IECSComponentWriter> updateScript)
+    private static IEnumerator LoadScene(Action<int, IECSComponentWriter> sceneScript, Action<int, IECSComponentWriter> updateScript)
     {
         LoadParcelScenesMessage.UnityParcelScene scene = new LoadParcelScenesMessage.UnityParcelScene()
         {
@@ -203,16 +204,16 @@ public class ECSTestScene : MonoBehaviour
                                               .GetField("componentWriter", BindingFlags.NonPublic | BindingFlags.Instance)
                                               .GetValue(ecs7Plugin) as IECSComponentWriter;
 
-        contentProvider = Environment.i.world.state.GetScene(scene.id).contentProvider;
+        contentProvider = Environment.i.world.state.GetScene(scene.sceneNumber).contentProvider;
         contentProvider.baseUrl = "";
 
-        sceneScript.Invoke(scene.id, componentWriter);
+        sceneScript.Invoke(scene.sceneNumber, componentWriter);
 
         mainGO.SendMessage("ActivateRendering");
 
         var message = new QueuedSceneMessage_Scene
         {
-            sceneId = scene.id,
+            sceneNumber = scene.sceneNumber,
             tag = "",
             type = QueuedSceneMessage.Type.SCENE_MESSAGE,
             method = MessagingTypes.INIT_DONE,
@@ -234,6 +235,6 @@ public class ECSTestScene : MonoBehaviour
         GameObject camera = GameObject.Find("MainCamera");
         camera.GetComponent<Camera>().enabled = true;
 
-        Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, () => updateScript(scene.id, componentWriter));
+        Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, () => updateScript(scene.sceneNumber, componentWriter));
     }
 }

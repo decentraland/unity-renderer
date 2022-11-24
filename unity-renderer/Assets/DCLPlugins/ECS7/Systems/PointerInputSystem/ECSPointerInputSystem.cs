@@ -31,7 +31,7 @@ namespace ECSSystems.PointerInputSystem
         {
             public IDCLEntity entity;
             public IParcelScene scene;
-            public string sceneId;
+            public int sceneNumber;
             public bool hasValue;
         }
 
@@ -100,7 +100,7 @@ namespace ECSSystems.PointerInputSystem
                     state.lastHoverFeedback.hasValue = true;
                     state.lastHoverFeedback.entity = colliderData.entity;
                     state.lastHoverFeedback.scene = colliderData.scene;
-                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                    state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                 }
             }
             // show hover tooltip for pointer up
@@ -112,7 +112,7 @@ namespace ECSSystems.PointerInputSystem
                     state.lastHoverFeedback.hasValue = true;
                     state.lastHoverFeedback.entity = colliderData.entity;
                     state.lastHoverFeedback.scene = colliderData.scene;
-                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                    state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                 }
             }
             // hide hover tooltip
@@ -138,7 +138,7 @@ namespace ECSSystems.PointerInputSystem
                 case InputHitType.PointerDown:
                     state.lastInputDown.entity = colliderData.entity;
                     state.lastInputDown.scene = colliderData.scene;
-                    state.lastInputDown.sceneId = colliderData.scene.sceneData.id;
+                    state.lastInputDown.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                     state.lastInputDown.hasValue = true;
 
                     state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
@@ -157,7 +157,7 @@ namespace ECSSystems.PointerInputSystem
 
                     // did it hit same entity as pointer down hit?
                     if (validInputDownExist && colliderData.entity.entityId == lastInputDownData.entity.entityId
-                                            && colliderData.scene.sceneData.id == lastInputDownData.sceneId)
+                                            && colliderData.scene.sceneData.sceneNumber == lastInputDownData.sceneNumber)
                     {
                         state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
                         {
@@ -171,8 +171,8 @@ namespace ECSSystems.PointerInputSystem
                     // did it hit different entity as pointer down hit?
                     else if (validInputDownExist)
                     {
-                        bool isEntityFromSameScene = colliderData.scene.sceneData.id == lastInputDownData.sceneId;
-                        bool isValidScene = isEntityFromSameScene || state.worldState.ContainsScene(lastInputDownData.sceneId);
+                        bool isEntityFromSameScene = colliderData.scene.sceneData.sceneNumber == lastInputDownData.sceneNumber;
+                        bool isValidScene = isEntityFromSameScene || state.worldState.ContainsScene(lastInputDownData.sceneNumber);
 
                         if (isValidScene)
                         {
@@ -193,13 +193,13 @@ namespace ECSSystems.PointerInputSystem
                     bool isPreviouslyHoveredEntity = state.lastInputHover.hasValue;
                     bool isHoveringNewEntity = !isPreviouslyHoveredEntity
                                                || state.lastInputHover.entity.entityId != colliderData.entity.entityId
-                                               || state.lastInputHover.sceneId != colliderData.scene.sceneData.id;
+                                               || state.lastInputHover.sceneNumber != colliderData.scene.sceneData.sceneNumber;
 
                     // was other entity previously hovered?
                     if (isPreviouslyHoveredEntity && isHoveringNewEntity)
                     {
-                        bool isValidScene = colliderData.scene.sceneData.id == state.lastInputHover.sceneId
-                                            || state.worldState.ContainsScene(state.lastInputHover.sceneId);
+                        bool isValidScene = colliderData.scene.sceneData.sceneNumber == state.lastInputHover.sceneNumber
+                                            || state.worldState.ContainsScene(state.lastInputHover.sceneNumber);
 
                         if (isValidScene)
                         {
@@ -219,7 +219,7 @@ namespace ECSSystems.PointerInputSystem
                     {
                         state.lastInputHover.entity = colliderData.entity;
                         state.lastInputHover.scene = colliderData.scene;
-                        state.lastInputHover.sceneId = colliderData.scene.sceneData.id;
+                        state.lastInputHover.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                         state.lastInputHover.hasValue = true;
 
                         state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
@@ -242,7 +242,7 @@ namespace ECSSystems.PointerInputSystem
                     if (state.lastInputDown.hasValue)
                     {
                         // input up without hit but with valid input down
-                        bool isValidScene = state.worldState.ContainsScene(state.lastInputDown.sceneId);
+                        bool isValidScene = state.worldState.ContainsScene(state.lastInputDown.sceneNumber);
                         if (isValidScene)
                         {
                             state.inputResultComponent.AddEvent(state.lastInputDown.scene, new InternalInputEventResults.EventData()
@@ -260,7 +260,7 @@ namespace ECSSystems.PointerInputSystem
                 }
                 if (isHoveringExit)
                 {
-                    bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneId);
+                    bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneNumber);
 
                     if (isValidScene)
                     {
