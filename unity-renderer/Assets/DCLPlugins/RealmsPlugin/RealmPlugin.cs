@@ -5,19 +5,21 @@ using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
-    public class RealmsPlugin : IPlugin
+    public class RealmPlugin : IPlugin
     {
         private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
         private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
-        private AboutResponse currentConfiguration;
-        
-        internal List<IRealmsModifier> realmsModifiers;
 
-        public RealmsPlugin()
+        private AboutResponse currentConfiguration;
+        private List<RealmModel> currentCatalystRealmList;
+
+        internal List<IRealmModifier> realmsModifiers;
+
+        public RealmPlugin()
         {
-            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier(), new RealmsMinimapModifier() };
+            realmsModifiers = new List<IRealmModifier>() { new RealmBlockerModifier(), new RealmMinimapModifier() };
             
             realmAboutConfiguration.OnChange += RealmChanged;
             realmsList.OnSet += RealmListSet;
@@ -25,23 +27,26 @@ namespace DCLPlugins.RealmsPlugin
 
         private void RealmListSet(IEnumerable<RealmModel> _)
         {
-            if (currentConfiguration != null)
+            if (!realmsList.Count().Equals(0))
+            {
+                currentCatalystRealmList = realmsList.Get().ToList();
                 SetRealmModifiers();
+                realmsList.OnSet -= RealmListSet;
+            }
         }
 
         private void RealmChanged(AboutResponse current, AboutResponse _)
         {
             currentConfiguration = current;
-            if (realmsList.Count().Equals(0))
-                return;
-
             SetRealmModifiers();
         }
 
         private void SetRealmModifiers()
         {
-            List<RealmModel> currentRealmsList = realmsList.Get().ToList();
-            bool isCatalyst = currentRealmsList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
+            if (currentConfiguration == null || currentCatalystRealmList == null)
+                return;
+            
+            bool isCatalyst = currentCatalystRealmList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
             realmsModifiers.ForEach(e => e.OnEnteredRealm(isCatalyst, currentConfiguration));
         }
 
@@ -50,7 +55,6 @@ namespace DCLPlugins.RealmsPlugin
             realmsModifiers.ForEach(e => e.Dispose());
             
             realmAboutConfiguration.OnChange -= RealmChanged;
-            realmsList.OnSet -= RealmListSet;
         }
     }
 }

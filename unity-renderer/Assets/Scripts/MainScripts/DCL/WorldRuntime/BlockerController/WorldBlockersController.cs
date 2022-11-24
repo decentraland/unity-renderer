@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using DCL.Helpers;
-using DCL.Rendering;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -38,6 +36,8 @@ namespace DCL.Controllers
             new Vector2Int(1, -1),
             new Vector2Int(-1, 1)
         };
+
+        private BaseVariable<int> worldBlockersLimit => DataStore.i.worldBlockers.worldBlockerLimits;
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
@@ -162,26 +162,8 @@ namespace DCL.Controllers
                         blockersToRemove.Add(item.Key);
                 }
             }
-
-            // Detect missing blockers to be added
-            using (var it = allLoadedParcelCoords.GetEnumerator())
-            {
-                while (it.MoveNext())
-                {
-                    Vector2Int pos = it.Current;
-
-                    for (int i = 0; i < aroundOffsets.Length; i++)
-                    {
-                        Vector2Int offset = aroundOffsets[i];
-                        Vector2Int checkedPosition = new Vector2Int(pos.x + offset.x, pos.y + offset.y);
-
-                        if (!allLoadedParcelCoords.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
-                        {
-                            blockersToAdd.Add(checkedPosition);
-                        }
-                    }
-                }
-            }
+            
+            blockersToAdd = LookForLimits(allLoadedParcelCoords, blockers, 0);
 
             // Remove extra blockers
             foreach (var coords in blockersToRemove)
@@ -193,6 +175,41 @@ namespace DCL.Controllers
             foreach (var coords in blockersToAdd)
             {
                 blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
+            }
+        }
+        
+        private HashSet<Vector2Int> LookForLimits(HashSet<Vector2Int> dontAddABlockerHere, Dictionary<Vector2Int, IPoolableObject> blockers, int currentLimitIterationEvaluation)
+        {
+            HashSet<Vector2Int> blockersCandidate = new HashSet<Vector2Int>();
+            
+            // Detect missing blockers to be added
+            using (var it = dontAddABlockerHere.GetEnumerator())
+            {
+                while (it.MoveNext())
+                {
+                    Vector2Int pos = it.Current;
+
+                    for (int i = 0; i < aroundOffsets.Length; i++)
+                    {
+                        Vector2Int offset = aroundOffsets[i];
+                        int xCandidate = pos.x + offset.x;
+                        int yCandidate = pos.y + offset.y;
+                        Vector2Int checkedPosition = new Vector2Int(xCandidate, yCandidate);
+
+                        if (!dontAddABlockerHere.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
+                        {
+                            blockersCandidate.Add(checkedPosition);
+                        }
+                    }
+                }
+            }
+
+            if (currentLimitIterationEvaluation == worldBlockersLimit.Get())
+                return blockersCandidate;
+            else
+            {
+                blockersCandidate.UnionWith(dontAddABlockerHere);
+                return LookForLimits(blockersCandidate, blockers, currentLimitIterationEvaluation + 1);
             }
         }
     }

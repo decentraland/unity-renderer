@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
     /// <summary>
     /// Controller for the Jump to Home logic.
