@@ -5,6 +5,8 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 

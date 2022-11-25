@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using SocialFeaturesAnalytics;
+using DCL.Social.Friends;
 
 namespace DCL.Social.Passports
 {

@@ -1,8 +1,11 @@
 using System;
 
-[Serializable]
-public class FriendshipUpdateStatusMessage
+namespace DCL.Social.Friends
 {
-    public string userId;
-    public FriendshipAction action;
+    [Serializable]
+    public class FriendshipUpdateStatusMessage
+    {
+        public string userId;
+        public FriendshipAction action;
+    }
 }

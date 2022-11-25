@@ -6,6 +6,7 @@ using DCL;
 using DCL.Interface;
 using DCL.Helpers;
 using SocialFeaturesAnalytics;
+using DCl.Social.Friends;
 
 namespace DCL.Social.Passports
 {

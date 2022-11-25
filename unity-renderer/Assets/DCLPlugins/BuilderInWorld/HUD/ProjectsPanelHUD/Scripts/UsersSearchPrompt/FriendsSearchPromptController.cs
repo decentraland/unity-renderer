@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 
 internal class FriendsSearchPromptController : IDisposable
 {

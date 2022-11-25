@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Interface;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
