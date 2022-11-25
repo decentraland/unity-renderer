@@ -127,12 +127,10 @@ namespace DCl.Social.Friends
             view.Received(1).Set(OTHER_USER_ID, Arg.Is<FriendEntryModel>(f => f.userId == OTHER_USER_ID));
         }
 
-        [TestCase(FriendshipAction.REQUESTED_FROM)]
-        [TestCase(FriendshipAction.REQUESTED_TO)]
-        public void DisplayFriendRequest(FriendshipAction friendshipAction)
+        public void DisplayFriendRequest()
         {
-            friendsController.OnUpdateFriendship +=
-                Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, friendshipAction);
+            friendsController.OnReceivedFriendRequestsAdded +=
+                Raise.Event<Action<List<FriendRequest>>>(new List<FriendRequest>() { new FriendRequest("test", 0, OTHER_USER_ID, "me", "test message") });
 
             view.Received(1).Set(OTHER_USER_ID, Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));
         }
@@ -153,8 +151,8 @@ namespace DCl.Social.Friends
         {
             view.FriendRequestCount.Returns(5);
 
-            friendsController.OnUpdateFriendship +=
-                Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_TO);
+            friendsController.OnSentFriendRequestsAdded +=
+                Raise.Event<Action<List<FriendRequest>>>(new List<FriendRequest>() { new FriendRequest("test", 0, "me", OTHER_USER_ID, "test message") });
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
@@ -165,8 +163,8 @@ namespace DCl.Social.Friends
         {
             view.FriendRequestCount.Returns(5);
 
-            friendsController.OnUpdateFriendship +=
-                Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_FROM);
+            friendsController.OnReceivedFriendRequestsAdded +=
+                Raise.Event<Action<List<FriendRequest>>>(new List<FriendRequest>() { new FriendRequest("test", 0, OTHER_USER_ID, "me", "test message") });
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
@@ -311,8 +309,8 @@ namespace DCl.Social.Friends
             view.ContainsFriendRequest(OTHER_USER_ID).Returns(true);
             view.FriendRequestCount.Returns(10000);
 
-            friendsController.OnUpdateFriendship +=
-                Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.REQUESTED_TO);
+            friendsController.OnReceivedFriendRequestsAdded +=
+                Raise.Event<Action<List<FriendRequest>>>(new List<FriendRequest>() { new FriendRequest("test", 0, OTHER_USER_ID, "me", "test message") });
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));

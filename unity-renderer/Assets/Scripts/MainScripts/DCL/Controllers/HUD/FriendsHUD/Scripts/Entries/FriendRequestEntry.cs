@@ -47,6 +47,9 @@ public class FriendRequestEntry : FriendEntryBase
 
     private void SetBodyMessage(string value)
     {
+        if (bodyMessage == null)
+            return;
+
         bodyMessage.text = value;
         bodyMessage.gameObject.SetActive(!string.IsNullOrEmpty(value));
     }
