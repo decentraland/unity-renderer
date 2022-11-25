@@ -237,7 +237,7 @@ namespace DCL.ECSComponents
                     eyesColor = model.GetEyeColor().ToUnityColor(),
                     skinColor = model.GetSkinColor().ToUnityColor(),
                     hairColor = model.GetHairColor().ToUnityColor(),
-                }, loadingCts.Token);
+                }, false, loadingCts.Token);
             }
             catch (OperationCanceledException)
             {

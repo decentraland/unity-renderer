@@ -29,6 +29,7 @@ public class AvatarModel : BaseModel
     public string stickerTriggerId = null;
     public long stickerTriggerTimestamp = -1;
     public bool talking = false;
+    public bool showSpawnParticles = false;
 
     public bool HaveSameWearablesAndColors(AvatarModel other)
     {

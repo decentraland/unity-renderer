@@ -9,7 +9,7 @@ namespace AvatarSystem
         SkinnedMeshRenderer meshRenderer { get; }
         IBaseAvatarRevealer avatarRevealer { get; set; }
 
-        void Initialize(bool allowSpawnParticles = true);
+        void Initialize(bool allowSpawnParticles);
         SkinnedMeshRenderer GetMainRenderer();
         GameObject GetArmatureContainer();
         UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);

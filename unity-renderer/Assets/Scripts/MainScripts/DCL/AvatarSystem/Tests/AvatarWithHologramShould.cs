@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -64,7 +64,7 @@ namespace Test.AvatarSystem
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
-            await TestUtils.ThrowsAsync<OperationCanceledException>(avatar.Load(new List<string>(), new List<string>(), new AvatarSettings(), cts.Token));
+            await TestUtils.ThrowsAsync<OperationCanceledException>(avatar.Load(new List<string>(), new List<string>(), new AvatarSettings(), false, cts.Token));
         });
 
         [UnityTest]
@@ -78,7 +78,7 @@ namespace Test.AvatarSystem
             var wearableIds = new List<string>();
             var emoteIds = new List<string>();
 
-            await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, emoteIds, settings));
+            await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, emoteIds, settings, false));
             visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, emoteIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
@@ -110,7 +110,7 @@ namespace Test.AvatarSystem
                       Arg.Any<CancellationToken>())
                   .Returns(x => throw new Exception("Loader failed"));
 
-            await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings));
+            await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings, false));
 
             loader.Received()
                 .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, Arg.Any<SkinnedMeshRenderer>(), Arg.Any<CancellationToken>());
@@ -129,7 +129,7 @@ namespace Test.AvatarSystem
             gpuSkinning.renderer.Returns(gpuSkinnedRenderer);
             Vector3 extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
 
-            await avatar.Load(new List<string>(), new List<string>(), settings);
+            await avatar.Load(new List<string>(), new List<string>(), settings, false);
 
             Assert.AreEqual(extents, avatar.extents);
             animator.Received().Prepare(settings.bodyshapeId, null);

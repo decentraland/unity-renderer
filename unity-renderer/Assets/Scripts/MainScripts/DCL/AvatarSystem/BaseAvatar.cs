@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -36,7 +34,7 @@ namespace AvatarSystem
             return avatarRevealer.GetMainRenderer();
         }
 
-        public void Initialize(bool allowSpawnParticles = true)
+        public void Initialize(bool allowSpawnParticles)
         {
             if (avatarRevealer == null)
             {

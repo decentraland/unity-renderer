@@ -49,7 +49,7 @@ namespace AvatarSystem
         /// <param name="settings"></param>
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, 
-            AvatarSettings settings, CancellationToken ct = default)
+            AvatarSettings settings, bool showSpawnParticles, CancellationToken ct = default)
         {
             disposeCts ??= new CancellationTokenSource();
 
@@ -67,7 +67,7 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                baseAvatar.Initialize();
+                baseAvatar.Initialize(showSpawnParticles);
                 animator.Prepare(settings.bodyshapeId, baseAvatar.GetArmatureContainer());
                 (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))

@@ -214,7 +214,7 @@ namespace DCL
                     eyesColor = model.eyeColor,
                     skinColor = model.skinColor,
                     hairColor = model.hairColor,
-                }, loadingCts.Token);
+                }, model.showSpawnParticles, loadingCts.Token);
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
                 yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);

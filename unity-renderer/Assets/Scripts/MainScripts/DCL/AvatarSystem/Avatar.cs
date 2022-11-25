@@ -46,7 +46,8 @@ namespace AvatarSystem
         /// <param name="emotesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
-        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, bool showSpawnParticles, 
+            CancellationToken ct = default)
         {
             disposeCts ??= new CancellationTokenSource();
 

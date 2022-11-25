@@ -36,7 +36,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     private bool isRevealing;
 
     public List<Renderer> targets = new List<Renderer>();
-    List<Material> _materials = new List<Material>();
+    private List<Material> _materials = new List<Material>();
 
     private void Start()
     {
