@@ -34,6 +34,7 @@ namespace DCL.Components
             else
                 loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
 
+            loadHelper.settings.visibleForScene = entity.scene;
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
 

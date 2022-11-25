@@ -9,6 +9,9 @@ namespace DCL.Helpers
 {
     public static class MaterialCachingHelper
     {
+        private static readonly int _ParcelAmount = Shader.PropertyToID("_ParcelAmount");
+        private static readonly int _ParcelCenters = Shader.PropertyToID("_ParcelCenters");
+
         [System.Flags]
         public enum Mode
         {
@@ -59,11 +62,7 @@ namespace DCL.Helpers
                 mat.shader = shaderByHash[shaderHash];
             }
 
-            //NOTE(Brian): Have to copy material because will be unloaded later.
-            var materialCopy = new Material(mat);
-            SRPBatchingHelper.OptimizeMaterial(materialCopy);
-
-            if ((cachingFlags & Mode.CACHE_MATERIALS) != 0)
+            if ((cachingFlags & Mode.CACHE_MATERIALS) != 0) // Cache Materials
             {
                 int crc = mat.ComputeCRC();
                 string hash = crc.ToString();
@@ -72,6 +71,8 @@ namespace DCL.Helpers
 
                 if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(hash))
                 {
+                    var materialCopy = new Material(mat);
+                    SRPBatchingHelper.OptimizeMaterial(materialCopy);
 #if UNITY_EDITOR
                     materialCopy.name += $" (crc: {materialCopy.ComputeCRC()})";
 #endif
@@ -82,8 +83,13 @@ namespace DCL.Helpers
                 refCountedMat.IncreaseRefCount();
                 return refCountedMat.material;
             }
-
-            return materialCopy;
+            else
+            {
+                //NOTE(Brian): Have to copy material because will be unloaded later.
+                var materialCopy = new Material(mat);
+                SRPBatchingHelper.OptimizeMaterial(materialCopy);
+                return materialCopy;
+            }
         }
 
         public static IEnumerator Process(List<Renderer> renderers, bool enableRenderers = true, Mode cachingFlags = Mode.CACHE_EVERYTHING)
@@ -128,6 +134,105 @@ namespace DCL.Helpers
                             timeBudget += timeBudgetMax;
                         }
                     }
+                }
+
+                if (r != null)
+                    r.sharedMaterials = matList.ToArray();
+            }
+        }
+
+        public static Material ProcessSingleMaterialForScene(Material mat, string sceneId, IEnumerable<Vector2Int> parcels, Mode cachingFlags = Mode.CACHE_EVERYTHING)
+        {
+
+            if ((cachingFlags & Mode.CACHE_SHADERS) != 0)
+            {
+                string shaderHash = mat.shader.name;
+
+                if (!shaderByHash.ContainsKey(shaderHash))
+                {
+                    if (!mat.shader.name.Contains("Error"))
+                    {
+                        shaderByHash.Add(shaderHash, Shader.Find(mat.shader.name));
+                    }
+                    else
+                    {
+                        shaderByHash.Add(shaderHash, EnsureMainShader());
+                    }
+                }
+
+                mat.shader = shaderByHash[shaderHash];
+            }
+
+            if ((cachingFlags & Mode.CACHE_MATERIALS) != 0) // Cache Materials
+            {
+                int crc = mat.ComputeCRC();
+                string hash = crc.ToString();
+                //hash += sceneId;
+
+                RefCountedMaterialData refCountedMat;
+
+                if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(hash))
+                {
+                    var materialCopy = new Material(mat);
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("sbc_debug"))
+                        materialCopy.EnableKeyword("_ENABLE_SB");
+                    else
+                        materialCopy.EnableKeyword("_ENABLE_SB_DEBUG");
+                    materialCopy.SetInt(_ParcelAmount, parcels.Count());
+                    materialCopy.SetVectorArray(_ParcelCenters, parcels.Select(x => new Vector4(x.x, 0, x.y, 16)).ToArray());
+
+                    SRPBatchingHelper.OptimizeMaterial(materialCopy);
+#if UNITY_EDITOR
+                    materialCopy.name += $" (crc: {materialCopy.ComputeCRC()})";
+#endif
+                    PersistentAssetCache.MaterialCacheByCRC.Add(hash, new RefCountedMaterialData(hash, materialCopy));
+                }
+
+                refCountedMat = PersistentAssetCache.MaterialCacheByCRC[hash];
+                refCountedMat.IncreaseRefCount();
+                return refCountedMat.material;
+            }
+            else
+            {
+                //NOTE(Brian): Have to copy material because will be unloaded later.
+                var materialCopy = new Material(mat);
+                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("sbc_debug"))
+                    materialCopy.EnableKeyword("_ENABLE_SB");
+                else
+                    materialCopy.EnableKeyword("_ENABLE_SB_DEBUG");
+                materialCopy.SetInt(_ParcelAmount, parcels.Count());
+                materialCopy.SetVectorArray(_ParcelCenters, parcels.Select(x => new Vector4(x.x, 0, x.y, 16)).ToArray());
+                SRPBatchingHelper.OptimizeMaterial(materialCopy);
+                return materialCopy;
+            }
+        }
+
+        public static void ProcessForScene(List<Renderer> renderers, string sceneId, IEnumerable<Vector2Int> parcels, bool enableRenderers = true, Mode cachingFlags = Mode.CACHE_EVERYTHING)
+        {
+            if (renderers == null)
+                return;
+
+            int renderersCount = renderers.Count;
+
+            if (renderersCount == 0)
+                return;
+
+            var matList = new List<Material>(1);
+            for (int i = 0; i < renderersCount; i++)
+            {
+                Renderer r = renderers[i];
+                if (!enableRenderers)
+                    r.enabled = false;
+
+                matList.Clear();
+                var sharedMats = r.sharedMaterials;
+
+                for (int i1 = 0; i1 < sharedMats.Length; i1++)
+                {
+                    Material mat = sharedMats[i1];
+
+                    matList.Add( ProcessSingleMaterialForScene(mat, sceneId, parcels, cachingFlags) );
+
                 }
 
                 if (r != null)

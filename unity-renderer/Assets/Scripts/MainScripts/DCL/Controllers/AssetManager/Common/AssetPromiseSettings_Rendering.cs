@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL
@@ -25,6 +26,7 @@ namespace DCL
 
         public bool forceNewInstance;
         public bool forceGPUOnlyMesh = false;
+        public IParcelScene visibleForScene;
 
         public void ApplyBeforeLoad(Transform t)
         {
@@ -57,8 +59,13 @@ namespace DCL
 
         public void ApplyAfterLoad(List<Renderer> renderers = null)
         {
-            int renderersCount = renderers.Count;
+            if (visibleForScene != null)
+            {
+                MaterialCachingHelper.ProcessForScene(renderers, visibleForScene.sceneData.id, visibleForScene.GetParcels(), visibleFlags != VisibleFlags.INVISIBLE);
+                return;
+            }
 
+            int renderersCount = renderers.Count;
             for (int i = 0; i < renderersCount; i++)
             {
                 Renderer renderer = renderers[i];
