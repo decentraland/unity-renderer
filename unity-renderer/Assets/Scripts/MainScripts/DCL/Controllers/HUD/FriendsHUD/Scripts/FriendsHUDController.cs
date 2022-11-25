@@ -11,6 +11,7 @@ public class FriendsHUDController : IHUD
 {
     private const int LOAD_FRIENDS_ON_DEMAND_COUNT = 30;
     private const int MAX_SEARCHED_FRIENDS = 100;
+    private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
     private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
@@ -21,6 +22,7 @@ public class FriendsHUDController : IHUD
     private readonly IChatController chatController;
     private readonly IMouseCatcher mouseCatcher;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private bool isQuickActionsForFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -290,7 +292,7 @@ public class FriendsHUDController : IHUD
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
                     ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, true)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = true };
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
@@ -300,7 +302,7 @@ public class FriendsHUDController : IHUD
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
                     ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, true)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = true };
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
@@ -515,7 +517,13 @@ public class FriendsHUDController : IHUD
 
             var requestReceived = friends.ContainsKey(userId)
                 ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, true, friendRequest.Timestamp, false)
-                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = true, timestamp = friendRequest.Timestamp, isShortcutButtonsActive = false };
+                : new FriendRequestEntryModel
+                {
+                    bodyMessage = friendRequest.MessageBody,
+                    isReceived = true,
+                    timestamp = friendRequest.Timestamp,
+                    isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
+                };
             requestReceived.CopyFrom(userProfile);
             requestReceived.blocked = IsUserBlocked(userId);
             friends[userId] = requestReceived;
@@ -541,7 +549,13 @@ public class FriendsHUDController : IHUD
 
             var requestSent = friends.ContainsKey(userId)
                 ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, false, friendRequest.Timestamp, false)
-                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = false, timestamp = friendRequest.Timestamp, isShortcutButtonsActive = false };
+                : new FriendRequestEntryModel
+                {
+                    bodyMessage = friendRequest.MessageBody,
+                    isReceived = false,
+                    timestamp = friendRequest.Timestamp,
+                    isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
+                };
             requestSent.CopyFrom(userProfile);
             requestSent.blocked = IsUserBlocked(userId);
             friends[userId] = requestSent;
