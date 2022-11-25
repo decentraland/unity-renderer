@@ -1,9 +1,5 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DCL;
-using DCL.Helpers;
+using DCl.Social.Friends;
 
 namespace DCL.Social.Passports
 {
@@ -39,10 +35,14 @@ namespace DCL.Social.Passports
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
-            view.SetWallet(userProfile.userId);
             string filteredName = await FilterName(userProfile);
             view.SetName(filteredName);
-            view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
+            view.SetGuestUser(userProfile.isGuest);
+            if(!userProfile.isGuest)
+            {
+                view.SetWallet(userProfile.userId);
+                view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
+            }
         }
 
         private async UniTask<string> FilterName(UserProfile userProfile)

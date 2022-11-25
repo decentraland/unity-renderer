@@ -157,12 +157,12 @@ namespace MessagingBusPerformanceTest
 
         public static QueuedSceneMessage_Scene ParseRawIntoQueuedMessage(string raw)
         {
-            if (!SceneMessageUtilities.DecodePayloadChunk(raw, out string sceneId, out string message, out string tag))
+            if (!SceneMessageUtilities.DecodePayloadChunk(raw, out int sceneNumber, out string message, out string tag))
             {
                 throw new InvalidDataException("Could not decode: " + raw);
             }
 
-            return SceneMessageUtilities.DecodeSceneMessage(sceneId, message, tag);
+            return SceneMessageUtilities.DecodeSceneMessage(sceneNumber, message, tag);
         }
     }
 }

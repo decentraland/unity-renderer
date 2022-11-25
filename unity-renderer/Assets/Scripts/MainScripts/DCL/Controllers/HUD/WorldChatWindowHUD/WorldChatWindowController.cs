@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
 using DCL.Chat.Channels;
-using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System;
@@ -10,8 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DCL.Browser;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
+using DCL.Chat.HUD;
 
 public class WorldChatWindowController : IHUD
 {
@@ -341,6 +343,10 @@ public class WorldChatWindowController : IHUD
         {
             // show only private chats from friends. Change it whenever the catalyst supports to send pms to any user
             view.RemovePrivateChat(userId);
+        }
+        else
+        {
+            view.RefreshPrivateChatPresence(userId, status.presence == PresenceStatus.ONLINE);
         }
     }
 

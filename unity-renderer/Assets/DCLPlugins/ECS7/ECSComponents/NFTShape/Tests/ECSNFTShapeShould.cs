@@ -33,7 +33,7 @@ namespace Tests
             var internalComponent = new InternalECSComponents(manager, factory);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(manager);
-            scene = testUtils.CreateScene("temptation");
+            scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(10399);
 
             renderersComponent = internalComponent.renderersComponent;

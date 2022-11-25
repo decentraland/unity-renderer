@@ -7,11 +7,11 @@ namespace DCL
 {
     public static class WorldStateUtils
     {
-        public static bool IsGlobalScene(string sceneId)
+        public static bool IsGlobalScene(int sceneNumber)
         {
             var worldState = Environment.i.world.state;
 
-            if (worldState.TryGetScene(sceneId, out IParcelScene scene))
+            if (worldState.TryGetScene(sceneNumber, out IParcelScene scene))
             {
                 return scene.isPersistent;
             }
@@ -19,16 +19,16 @@ namespace DCL
             return false;
         }
 
-        public static string TryToGetSceneCoordsID(string id)
+        public static string TryToGetSceneCoordsFromSceneNumber(int sceneNumber)
         {
             var worldState = Environment.i.world.state;
 
-            if (worldState.TryGetScene(id, out IParcelScene parcelScene))
+            if (worldState.TryGetScene(sceneNumber, out IParcelScene parcelScene))
             {
                 return parcelScene.sceneData.basePosition.ToString();
             }
 
-            return id;
+            return $"scene number {sceneNumber}";
         }
 
         public static Vector3 ConvertUnityToScenePosition(Vector3 pos, IParcelScene scene = null)
@@ -42,8 +42,7 @@ namespace DCL
             }
 
             Vector3 worldPosition = PositionUtils.UnityToWorldPosition(pos);
-            return worldPosition -
-                   Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+            return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         }
 
         public static Vector3 ConvertSceneToUnityPosition(Vector3 pos, IParcelScene scene = null)
@@ -86,12 +85,12 @@ namespace DCL
         public static IParcelScene GetCurrentScene()
         {
             var worldState = Environment.i.world.state;
-            string currentSceneId = worldState.GetCurrentSceneId();
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
 
-            if (string.IsNullOrEmpty(currentSceneId))
+            if (currentSceneNumber <= 0)
                 return null;
 
-            bool foundCurrentScene = worldState.TryGetScene(currentSceneId, out IParcelScene scene);
+            bool foundCurrentScene = worldState.TryGetScene(currentSceneNumber, out IParcelScene scene);
 
             if (!foundCurrentScene)
                 return null;

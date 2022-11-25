@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
+using DCL.Social.Friends;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
@@ -15,6 +14,7 @@ namespace DCL.Social.Passports
         [SerializeField] internal Button addFriendButton;
         [SerializeField] internal GameObject onlineStatus;
         [SerializeField] internal GameObject offlineStatus;
+        [SerializeField] internal GameObject normalUserPanel;
 
         public event Action OnAddFriend;
 
@@ -49,6 +49,11 @@ namespace DCL.Social.Passports
                 onlineStatus.SetActive(false);
                 offlineStatus.SetActive(true);
             }
+        }
+
+        public void SetGuestUser(bool isGuest)
+        {
+            normalUserPanel.SetActive(!isGuest);
         }
 
         private void CopyWalletToClipboard()

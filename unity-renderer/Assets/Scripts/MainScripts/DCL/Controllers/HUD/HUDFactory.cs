@@ -8,6 +8,8 @@ using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
+using DCL.Social.Friends;
 using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -23,7 +25,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController());
+                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
                 break;
             case HUDElementID.PROFILE_HUD:
                 hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
@@ -54,7 +56,10 @@ public class HUDFactory : IHUDFactory
                             FriendsController.i, 
                             new UserProfileWebInterfaceBridge()),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
-                        new PassportNavigationComponentController(view.PassportNavigationView),
+                        new PassportNavigationComponentController(
+                            view.PassportNavigationView,
+                            ProfanityFilterSharedInstances.regexFilter,
+                            DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new SocialAnalytics(

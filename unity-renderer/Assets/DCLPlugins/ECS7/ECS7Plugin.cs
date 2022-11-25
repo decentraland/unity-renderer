@@ -21,15 +21,15 @@ namespace DCL.ECS7
             DataStore.i.ecs7.isEcs7Enabled = true;
 
             ISceneController sceneController = Environment.i.world.sceneController;
-            Dictionary<string, ICRDTExecutor> crdtExecutors = new Dictionary<string, ICRDTExecutor>(10);
+            Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
-                Environment.i.world.state, DataStore.i.rpcContext.context.crdtContext);
+                Environment.i.world.state, DataStore.i.rpc.context.crdt);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpcContext.context);
+            crdtWriteSystem = new ComponentCrdtWriteSystem(Environment.i.world.state, sceneController, DataStore.i.rpc.context);
             componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
@@ -37,7 +37,8 @@ namespace DCL.ECS7
             SystemsContext systemsContext = new SystemsContext(componentWriter,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
-                (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK));
+                (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK),
+                (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
         }

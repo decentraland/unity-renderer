@@ -7,12 +7,9 @@ namespace DCL.Controllers
     public class GlobalScene : ParcelScene
     {
         [System.NonSerialized]
-        public bool isPortableExperience = false;
-
-        [System.NonSerialized]
         public string iconUrl;
 
-        protected override string prettyName => $"{sceneData.id}{ (isPortableExperience ? " (PE)" : "") }";
+        protected override string prettyName => $"{sceneData.sceneNumber}{ (isPortableExperience ? " (PE)" : "") }";
 
         public override bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f) { return true; }
 
@@ -30,7 +27,7 @@ namespace DCL.Controllers
             gameObject.transform.position =
                 PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
-            DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
+            DataStore.i.sceneWorldObjects.AddScene(sceneData.sceneNumber);
         }
 
         protected override void SendMetricsEvent() { }

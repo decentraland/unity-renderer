@@ -52,6 +52,7 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 0
+      enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
@@ -89,6 +90,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 87c2ea01f3aa94b648d225daa8b22214, type: 3}
   - {fileID: 21300000, guid: 44dd7b11a83bf4605916ad96f6ce3881, type: 3}
   - {fileID: 21300000, guid: 3354932168610498ebc347e78ae840d7, type: 3}
+  - {fileID: 21300000, guid: bab56821543b14cd099d751c74e5c0f0, type: 3}
   - {fileID: 21300000, guid: 38dc6a210cae34a439bd286f6c382165, type: 3}
   - {fileID: 21300000, guid: e8a30441514b5499ea02a9e5a4617028, type: 3}
   - {fileID: 21300000, guid: 5fc25d41256974b138a7c25b1c0b30de, type: 3}
@@ -263,6 +265,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6dca2ab88567048dea54964cd8fee779, type: 3}
   - {fileID: 21300000, guid: dd9591c87b7254d418d968179d9de74a, type: 3}
   - {fileID: 21300000, guid: cd958ac803911481ea50edce80f46f1c, type: 3}
+  - {fileID: 21300000, guid: 8152dcc881fb74a57b73473687603bcc, type: 3}
   - {fileID: 21300000, guid: 194fcbd882d15453b90e80d668ab4bad, type: 3}
   - {fileID: 21300000, guid: 874182f8d364145bd9836b8e817019eb, type: 3}
   - {fileID: 21300000, guid: 9ed344f88537e43a6b35556d00b77b39, type: 3}
@@ -453,6 +456,7 @@ SpriteAtlas:
   - Rarity
   - MenuButton
   - DownloadIconOutline
+  - GuestImg
   - ContainerShadowRadiusFour
   - NFTStarContainer
   - SpeakerOn
@@ -627,6 +631,7 @@ SpriteAtlas:
   - RejectButton
   - Container24Shadow10
   - ContainerRadius10
+  - BackgroundGuest
   - TutorialIcon
   - BackButton
   - ContainerShadow

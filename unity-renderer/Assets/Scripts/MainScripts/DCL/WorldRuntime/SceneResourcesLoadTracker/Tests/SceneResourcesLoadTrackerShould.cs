@@ -22,7 +22,7 @@ namespace DCL.Test
             // Configure Scene
             parcelScene = Substitute.For<IParcelScene>();
             var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "IdTest";
+            sceneData.sceneNumber = 666;
             parcelScene.Configure().sceneData.Returns(sceneData);
             
             // Configure entity
@@ -33,7 +33,7 @@ namespace DCL.Test
             
             // Create components
             resourcesLoadTracker = new SceneResourcesLoadTracker();
-            resourcesLoadTracker.Track(sceneData.id);
+            resourcesLoadTracker.Track(sceneData.sceneNumber);
         }
 
         [TearDown]
@@ -52,10 +52,10 @@ namespace DCL.Test
             {
                 resourceLoaded = true;
             };
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.sceneNumber, testModel);
 
             // Act
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.sceneNumber, testModel);
 
             // Assert
             Assert.IsTrue(resourceLoaded);
@@ -75,14 +75,14 @@ namespace DCL.Test
         {
             // Arrange
             string newModel = "NewModel";
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, testModel);
-            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.id, newModel);
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.sceneNumber, testModel);
+            DataStore.i.ecs7.AddPendingResource(parcelScene.sceneData.sceneNumber, newModel);
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
             
             // Act
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, testModel);
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.sceneNumber, testModel);
             Assert.IsTrue(resourcesLoadTracker.ShouldWaitForPendingResources());
-            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.id, newModel);
+            DataStore.i.ecs7.RemovePendingResource(parcelScene.sceneData.sceneNumber, newModel);
 
             // Assert
             Assert.IsFalse(resourcesLoadTracker.ShouldWaitForPendingResources());

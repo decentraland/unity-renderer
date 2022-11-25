@@ -40,7 +40,7 @@ namespace DCL.Builder
         private InputAction_Trigger editModeChangeInputAction;
 
         internal IContext context;
-        internal string sceneToEditId;
+        internal int sceneToEditSceneNumber;
         private UserProfile userProfile;
         internal Coroutine updateLandsWithAcessCoroutine;
 
@@ -399,7 +399,7 @@ namespace DCL.Builder
 
             DataStore.i.exploreV2.isOpen.Set(false);
 
-            sceneToEditId = targetScene.manifest.project.scene_id;
+            sceneToEditSceneNumber = targetScene.manifest.project.scene_number;
             sceneToEdit = targetScene;
 
             NotificationsController.i.allowNotifications = false;
@@ -467,12 +467,12 @@ namespace DCL.Builder
 
         internal void NewSceneAdded(IParcelScene newScene)
         {
-            if (newScene.sceneData.id != sceneToEditId)
+            if (newScene.sceneData.sceneNumber != sceneToEditSceneNumber)
                 return;
 
             Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
-            var scene = Environment.i.world.state.GetScene(sceneToEditId);
+            var scene = Environment.i.world.state.GetScene(sceneToEditSceneNumber);
             sceneToEdit.SetScene(scene);
             sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit.scene);
             sceneToEdit.scene.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
@@ -480,14 +480,14 @@ namespace DCL.Builder
             context.cameraController.ActivateCamera(sceneToEdit.scene);
         }
 
-        private void NewSceneReady(string id)
+        private void NewSceneReady(int sceneNumber)
         {
-            if (sceneToEditId != id)
+            if (sceneToEditSceneNumber != sceneNumber)
                 return;
 
             sceneToEdit.scene.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
             Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
-            sceneToEditId = null;
+            sceneToEditSceneNumber = -1;
             NextState();
         }
 

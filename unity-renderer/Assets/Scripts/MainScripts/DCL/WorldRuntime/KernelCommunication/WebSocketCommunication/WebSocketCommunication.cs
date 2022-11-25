@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using DCL;
 using UnityEngine;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 public class WebSocketCommunication : IKernelCommunication
@@ -45,7 +46,7 @@ public class WebSocketCommunication : IKernelCommunication
     public void Dispose() { ws.Stop(); }
     public static event Action<DCLWebSocketService> OnWebSocketServiceAdded;
 
-    private string StartServer(int port, int maxPort, bool withSSL)
+    private string StartServer(int port, int maxPort, bool withSSL, bool verbose = false)
     {
         if (port > maxPort)
         {
@@ -83,6 +84,12 @@ public class WebSocketCommunication : IKernelCommunication
                 OnWebSocketServiceAdded?.Invoke(service);
                 return service;
             });
+
+            if (verbose)
+            {
+                ws.Log.Level = LogLevel.Debug;
+                ws.Log.Output += OnWebSocketLog;
+            }
             ws.Start();
         }
         catch (InvalidOperationException e)
@@ -102,6 +109,24 @@ public class WebSocketCommunication : IKernelCommunication
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
+    private void OnWebSocketLog(LogData logData, string message)
+    {
+        switch (logData.Level)
+        {
+            case LogLevel.Debug:
+                Debug.Log($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Warn:
+                Debug.LogWarning($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Error:
+                Debug.LogError($"[WebSocket] {logData.Message}");
+                break;
+            case LogLevel.Fatal:
+                Debug.LogError($"[WebSocket] {logData.Message}");
+                break;
+        }
+    }
 
     private void InitMessageTypeToBridgeName()
     {
@@ -115,6 +140,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SendSceneMessage"] = "Main";
         messageTypeToBridgeName["LoadParcelScenes"] = "Main";
         messageTypeToBridgeName["UnloadScene"] = "Main";
+        messageTypeToBridgeName["UnloadSceneV2"] = "Main";
         messageTypeToBridgeName["Reset"] = "Main";
         messageTypeToBridgeName["CreateGlobalScene"] = "Main";
         messageTypeToBridgeName["BuilderReady"] = "Main";

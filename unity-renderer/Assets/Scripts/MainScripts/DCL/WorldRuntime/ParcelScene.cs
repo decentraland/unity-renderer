@@ -31,6 +31,8 @@ namespace DCL.Controllers
 
         public bool isTestScene { get; set; } = false;
         public bool isPersistent { get; set; } = false;
+        public bool isPortableExperience { get; set; } = false;
+
         public float loadingProgress { get; private set; }
 
         [System.NonSerialized]
@@ -77,7 +79,7 @@ namespace DCL.Controllers
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
-            Assert.IsTrue( !string.IsNullOrEmpty(data.id), "Scene must have an ID!" );
+            Assert.IsTrue( data.sceneNumber > 0, "Scene must have a valid scene number!" );
 
             this.sceneData = data;
 
@@ -88,9 +90,9 @@ namespace DCL.Controllers
             
             SetupPositionAndParcels();
 
-            DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
+            DataStore.i.sceneWorldObjects.AddScene(sceneData.sceneNumber);
 
-            metricsCounter.Configure(sceneData.id, sceneData.basePosition, sceneData.parcels.Length);
+            metricsCounter.Configure(sceneData.sceneNumber, sceneData.basePosition, sceneData.parcels.Length);
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
@@ -184,7 +186,7 @@ namespace DCL.Controllers
             {
                 RemoveAllEntitiesImmediate();
                 PoolManager.i.Cleanup(true, true);
-                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.sceneNumber);
             }
             else
             {
@@ -198,7 +200,7 @@ namespace DCL.Controllers
                 else
                 {
                     Destroy(this.gameObject);
-                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.sceneNumber);
 
                 }
             }
@@ -369,7 +371,7 @@ namespace DCL.Controllers
 
             entities.Add(id, newEntity);
 
-            DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Add(id);
+            DataStore.i.sceneWorldObjects.sceneData[sceneData.sceneNumber].owners.Add(id);
 
             OnEntityAdded?.Invoke(newEntity);
             
@@ -399,9 +401,9 @@ namespace DCL.Controllers
 
                 var data = DataStore.i.sceneWorldObjects.sceneData;
 
-                if (data.ContainsKey(sceneData.id))
+                if (data.ContainsKey(sceneData.sceneNumber))
                 {
-                    data[sceneData.id].owners.Remove(id);
+                    data[sceneData.sceneNumber].owners.Remove(id);
                 }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -507,7 +509,7 @@ namespace DCL.Controllers
             {
                 if (firstPersonCameraTransform == null)
                 {
-                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
+                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.sceneNumber);
                     return;
                 }
 
@@ -526,7 +528,7 @@ namespace DCL.Controllers
             {
                 if (avatarTransform == null)
                 {
-                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.id);
+                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.sceneNumber);
                     return;
                 }
 
@@ -633,9 +635,21 @@ namespace DCL.Controllers
                     break;
 
                 default:
-                    Debug.Log($"The scene {sceneData.id} is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
+                    Debug.Log($"The scene {sceneData.sceneNumber} is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
+        }
+        
+        [ContextMenu("Get Scene Info")]
+        public void GetSceneDebugInfo()
+        {
+            Debug.Log("-----------------");
+            Debug.Log("SCENE DEBUG INFO:");
+            Debug.Log($"Scene Id: {sceneData.id}");
+            Debug.Log($"Scene Number: {sceneData.sceneNumber}");
+            Debug.Log($"Scene Coords: {sceneData.basePosition.ToString()}");
+            Debug.Log($"Scene State: {sceneLifecycleHandler.state.ToString()}");            
+            Debug.Log("-----------------");
         }
 
         /// <summary>

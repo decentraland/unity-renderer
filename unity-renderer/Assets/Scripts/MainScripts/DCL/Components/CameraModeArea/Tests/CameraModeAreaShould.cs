@@ -22,7 +22,7 @@ namespace Tests
             scene = Substitute.For<IParcelScene>();
             scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
             {
-                id = "temptation"
+                sceneNumber = 666
             });
 
             player = new GameObject("Player")
@@ -34,7 +34,7 @@ namespace Tests
             playerCollider.center = Vector3.zero;
             playerCollider.size = Vector3.one;
 
-            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
         }
 
         [TearDown]
@@ -137,7 +137,7 @@ namespace Tests
             Assert.AreEqual(targetMode, CommonScriptableObjects.cameraMode.Get());
 
             // player outside scene
-            CommonScriptableObjects.sceneID.Set("not-temptation");
+            CommonScriptableObjects.sceneNumber.Set(5);
             component.Update();
             Assert.IsFalse(component.isPlayerInside);
             Assert.AreEqual(initialMode, CommonScriptableObjects.cameraMode.Get());

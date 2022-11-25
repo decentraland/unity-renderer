@@ -11,7 +11,7 @@ namespace DCL.Social.Passports
 {
     public class PlayerPassportHUDController : IHUD
     {
-        internal readonly PlayerPassportHUDView view;
+        internal readonly IPlayerPassportHUDView view;
         internal readonly StringVariable currentPlayerId;
         internal readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -25,7 +25,7 @@ namespace DCL.Social.Passports
         private PassportNavigationComponentController passportNavigationController;
 
         public PlayerPassportHUDController(
-            PlayerPassportHUDView view,
+            IPlayerPassportHUDView view,
             PassportPlayerInfoComponentController playerInfoController,
             PassportPlayerPreviewComponentController playerPreviewController,
             PassportNavigationComponentController passportNavigationController,
@@ -87,11 +87,17 @@ namespace DCL.Social.Passports
             {
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 view.SetPassportPanelVisibility(true);
-                playerInfoController.UpdateWithUserProfile(currentUserProfile);
+                UpdateUserProfileInSubpanels(currentUserProfile);
             }
         }
 
-        private void UpdateUserProfile(UserProfile userProfile) => playerInfoController.UpdateWithUserProfile(userProfile);
+        private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanels(userProfile);
+
+        private void UpdateUserProfileInSubpanels(UserProfile userProfile)
+        {
+            playerInfoController.UpdateWithUserProfile(userProfile);
+            passportNavigationController.UpdateWithUserProfile(userProfile);
+        }
 
         private void RemoveCurrentPlayer()
         {
