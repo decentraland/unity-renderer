@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL.Helpers;
+using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -37,7 +38,8 @@ namespace DCL.Controllers
             new Vector2Int(-1, 1)
         };
 
-        private BaseVariable<int> worldBlockersLimit => DataStore.i.worldBlockers.worldBlockerLimits;
+        private BaseVariable<int> worldBlockersLimit => DataStore.i.worldBlockers.worldBlockerLimit;
+        private BaseVariable<bool> worldBlockersEnabled => DataStore.i.worldBlockers.worldBlockerEnabled;
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
@@ -52,6 +54,7 @@ namespace DCL.Controllers
         {
             this.sceneHandler = sceneHandler;
             this.blockerInstanceHandler = blockerInstanceHandler;
+            worldBlockersEnabled.OnChange += OnWorldsBlockerEnabledChange;
         }
 
         public void SetupWorldBlockers()
@@ -94,6 +97,7 @@ namespace DCL.Controllers
 #endif
 
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            worldBlockersEnabled.OnChange -= OnWorldsBlockerEnabledChange;
             blockerInstanceHandler.DestroyAllBlockers();
 
             if (blockersParent != null)
@@ -162,7 +166,7 @@ namespace DCL.Controllers
                         blockersToRemove.Add(item.Key);
                 }
             }
-            
+
             blockersToAdd = LookForLimits(allLoadedParcelCoords, blockers, 0);
 
             // Remove extra blockers
@@ -177,11 +181,11 @@ namespace DCL.Controllers
                 blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
             }
         }
-        
+
         private HashSet<Vector2Int> LookForLimits(HashSet<Vector2Int> dontAddABlockerHere, Dictionary<Vector2Int, IPoolableObject> blockers, int currentLimitIterationEvaluation)
         {
             HashSet<Vector2Int> blockersCandidate = new HashSet<Vector2Int>();
-            
+
             // Detect missing blockers to be added
             using (var it = dontAddABlockerHere.GetEnumerator())
             {
@@ -211,6 +215,11 @@ namespace DCL.Controllers
                 blockersCandidate.UnionWith(dontAddABlockerHere);
                 return LookForLimits(blockersCandidate, blockers, currentLimitIterationEvaluation + 1);
             }
+        }
+
+        private void OnWorldsBlockerEnabledChange(bool newState, bool _)
+        {
+            SetEnabled(newState);
         }
     }
 }

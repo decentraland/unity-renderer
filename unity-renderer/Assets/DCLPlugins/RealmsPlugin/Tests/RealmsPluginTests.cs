@@ -53,7 +53,7 @@ namespace DCLPlugins.RealmPlugin
             for (int i = 0; i < realmNames.Length; i++)
             {
                 SetRealm(realmNames[i]);
-                Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimits.Get(), requiredLimit[i]);
+                Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
             }
         }
         
