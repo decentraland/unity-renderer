@@ -101,8 +101,8 @@ namespace DCL.Social.Friends
 
         public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
         {
-            await UniTask.Delay(Random.Range(100, 1000));
-            
+            await UniTask.Delay(Random.Range(100, 16000));
+
             // TODO: add user profile to catalog if necessary
 
             // if (Random.Range(0, 2) == 0)
@@ -120,13 +120,13 @@ namespace DCL.Social.Friends
                 },
                 messageId = Guid.NewGuid().ToString("N")
             };
-            
+
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REQUESTED_TO,
                 userId = userId
             });
-            
+
             return response;
         }
 

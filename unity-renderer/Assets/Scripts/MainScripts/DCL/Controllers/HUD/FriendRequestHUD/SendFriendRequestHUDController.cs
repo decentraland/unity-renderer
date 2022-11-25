@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using SocialFeaturesAnalytics;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -11,6 +12,7 @@ namespace DCL.Social.Friends
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
+        private readonly ISocialAnalytics socialAnalytics;
 
         private string messageBody;
         private string userId;
@@ -19,12 +21,14 @@ namespace DCL.Social.Friends
             ISendFriendRequestHUDView view,
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
-            IFriendsController friendsController)
+            IFriendsController friendsController,
+            ISocialAnalytics socialAnalytics)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
+            this.socialAnalytics = socialAnalytics;
 
             dataStore.HUDs.sendFriendRequest.OnChange += ShowOrHide;
 
@@ -73,17 +77,18 @@ namespace DCL.Social.Friends
 
             try
             {
-                // TODO: track analytics
+                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, userId, messageBody.Length,
+                    (PlayerActionSource) dataStore.HUDs.sendFriendRequestSource.Get());
                 await friendsController.RequestFriendship(userId, messageBody)
                     .Timeout(TimeSpan.FromSeconds(10));
+                view.ShowSendSuccess();
             }
             catch (Exception e)
             {
+                // TODO: track error to analytics
                 Debug.LogException(e);
                 view.ShowSendFailed();
             }
-
-            view.ShowSendSuccess();
         }
 
         private void Hide()

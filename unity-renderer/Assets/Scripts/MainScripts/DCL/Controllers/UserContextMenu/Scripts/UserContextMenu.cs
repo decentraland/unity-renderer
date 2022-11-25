@@ -154,7 +154,7 @@ public class UserContextMenu : MonoBehaviour
     {
         FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
     }
-    
+
     public void ClickReportButton() => reportButton.onClick.Invoke();
 
     private void OnPassportButtonPressed()
@@ -212,8 +212,7 @@ public class UserContextMenu : MonoBehaviour
         });
 
         DataStore.i.HUDs.sendFriendRequest.Set(userId);
-
-        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+        DataStore.i.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
@@ -260,7 +259,7 @@ public class UserContextMenu : MonoBehaviour
         };
         var raycastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-                
+
         if (raycastResults.All(result => result.gameObject != gameObject))
             Hide();
     }

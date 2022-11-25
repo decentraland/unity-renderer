@@ -40,6 +40,7 @@ namespace DCL
         public readonly BaseVariable<bool> enableNewPassport = new BaseVariable<bool>(false);
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
         public readonly BaseVariable<string> sendFriendRequest = new BaseVariable<string>();
+        public readonly BaseVariable<int> sendFriendRequestSource = new BaseVariable<int>();
 
         public class LoadingHUD
         {
