@@ -289,8 +289,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false };
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, true)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = true };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
@@ -299,8 +299,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true };
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, true)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = true };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
@@ -514,8 +514,8 @@ public class FriendsHUDController : IHUD
             userProfile.OnUpdate -= HandleFriendProfileUpdated;
 
             var requestReceived = friends.ContainsKey(userId)
-                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, true)
-                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = true };
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, true, friendRequest.Timestamp, false)
+                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = true, timestamp = friendRequest.Timestamp, isShortcutButtonsActive = false };
             requestReceived.CopyFrom(userProfile);
             requestReceived.blocked = IsUserBlocked(userId);
             friends[userId] = requestReceived;
@@ -540,8 +540,8 @@ public class FriendsHUDController : IHUD
             userProfile.OnUpdate -= HandleFriendProfileUpdated;
 
             var requestSent = friends.ContainsKey(userId)
-                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, false)
-                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = false };
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, false, friendRequest.Timestamp, false)
+                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = false, timestamp = friendRequest.Timestamp, isShortcutButtonsActive = false };
             requestSent.CopyFrom(userProfile);
             requestSent.blocked = IsUserBlocked(userId);
             friends[userId] = requestSent;

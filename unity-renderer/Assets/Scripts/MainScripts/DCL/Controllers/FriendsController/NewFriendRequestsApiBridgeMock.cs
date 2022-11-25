@@ -111,7 +111,7 @@ namespace DCL.Social.Friends
                     to = userProfileBridge.GetOwn().userId,
                     friendRequestId = Guid.NewGuid().ToString("N"),
                     messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    timestamp = DateTimeOffset.UtcNow.AddDays(-i).ToUnixTimeMilliseconds()
                 });
             }
 
@@ -138,7 +138,7 @@ namespace DCL.Social.Friends
                     to = fakeUserId,
                     friendRequestId = Guid.NewGuid().ToString("N"),
                     messageBody = Random.Range(0, 2) == 0 ? $"Test message to {fakeUserId}..." : string.Empty,
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    timestamp = DateTimeOffset.UtcNow.AddDays(-i).ToUnixTimeMilliseconds()
                 });
             }
 

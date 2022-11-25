@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 public class FriendRequestEntry : FriendEntryBase
 {
     [SerializeField] internal TMP_Text bodyMessage;
+    [SerializeField] internal TMP_Text requestDate;
+    [SerializeField] internal GameObject shortcutButtonsContainer;
     [SerializeField] internal Button acceptButton;
     [SerializeField] internal Button rejectButton;
     [SerializeField] internal Button cancelButton;
@@ -31,7 +34,9 @@ public class FriendRequestEntry : FriendEntryBase
     {
         base.Populate(model);
         SetBodyMessage(model.bodyMessage);
+        SetRequestDate(model.timestamp);
         SetReceived(model.isReceived);
+        SetShortcutButtonsActive(model.isShortcutButtonsActive);
     }
 
     public override void Populate(FriendEntryModel model)
@@ -41,7 +46,9 @@ public class FriendRequestEntry : FriendEntryBase
         if (model is FriendRequestEntryModel requestModel)
         {
             SetBodyMessage(requestModel.bodyMessage);
+            SetRequestDate(requestModel.timestamp);
             SetReceived(requestModel.isReceived);
+            SetShortcutButtonsActive(requestModel.isShortcutButtonsActive);
         }
     }
 
@@ -52,6 +59,14 @@ public class FriendRequestEntry : FriendEntryBase
 
         bodyMessage.text = value;
         bodyMessage.gameObject.SetActive(!string.IsNullOrEmpty(value));
+    }
+
+    private void SetRequestDate(long value)
+    {
+        if (requestDate == null)
+            return;
+
+        requestDate.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd").ToUpper();
     }
 
     private void SetReceived(bool value)
@@ -78,5 +93,14 @@ public class FriendRequestEntry : FriendEntryBase
         cancelButton.gameObject.SetActive(true);
         acceptButton.gameObject.SetActive(false);
         rejectButton.gameObject.SetActive(false);
+    }
+
+    private void SetShortcutButtonsActive(bool isActive)
+    {
+        if (shortcutButtonsContainer != null)
+            shortcutButtonsContainer.SetActive(isActive);
+
+        if (requestDate != null)
+            requestDate.gameObject.SetActive(!isActive);
     }
 }
