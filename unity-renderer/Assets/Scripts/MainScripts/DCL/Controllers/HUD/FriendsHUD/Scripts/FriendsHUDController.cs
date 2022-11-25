@@ -80,6 +80,8 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
             friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
             friendsController.OnFriendNotFound += OnFriendNotFound;
+            friendsController.OnReceivedFriendRequestsAdded += HandleReceivedFriendRequestsAdded;
+            friendsController.OnSentFriendRequestsAdded += HandleSentFriendRequestsAdded;
             
             if (friendsController.IsInitialized)
             {
@@ -287,8 +289,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
@@ -297,8 +299,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
@@ -342,26 +344,6 @@ public class FriendsHUDController : IHUD
                 approved.blocked = IsUserBlocked(userId);
                 friends[userId] = approved;
                 View.Set(userId, approved);
-                userProfile.OnUpdate += HandleFriendProfileUpdated;
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                var requestReceived = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
-                requestReceived.CopyFrom(userProfile);
-                requestReceived.blocked = IsUserBlocked(userId);
-                friends[userId] = requestReceived;
-                View.Set(userId, requestReceived);
-                userProfile.OnUpdate += HandleFriendProfileUpdated;
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                var requestSent = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
-                requestSent.CopyFrom(userProfile);
-                requestSent.blocked = IsUserBlocked(userId);
-                friends[userId] = requestSent;
-                View.Set(userId, requestSent);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
         }
@@ -514,5 +496,57 @@ public class FriendsHUDController : IHUD
         View.EnableSearchMode();
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
+    }
+
+    private void HandleReceivedFriendRequestsAdded(List<FriendRequest> receivedFriendRequests)
+    {
+        foreach (var friendRequest in receivedFriendRequests)
+        {
+            string userId = friendRequest.From;
+            var userProfile = userProfileBridge.Get(userId);
+
+            if (userProfile == null)
+            {
+                Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {FriendshipAction.REQUESTED_FROM}");
+                continue;
+            }
+
+            userProfile.OnUpdate -= HandleFriendProfileUpdated;
+
+            var requestReceived = friends.ContainsKey(userId)
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, true)
+                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = true };
+            requestReceived.CopyFrom(userProfile);
+            requestReceived.blocked = IsUserBlocked(userId);
+            friends[userId] = requestReceived;
+            View.Set(userId, requestReceived);
+            userProfile.OnUpdate += HandleFriendProfileUpdated;
+        }
+    }
+
+    private void HandleSentFriendRequestsAdded(List<FriendRequest> sentFriendRequests)
+    {
+        foreach (var friendRequest in sentFriendRequests)
+        {
+            string userId = friendRequest.To;
+            var userProfile = userProfileBridge.Get(userId);
+
+            if (userProfile == null)
+            {
+                Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {FriendshipAction.REQUESTED_TO}");
+                continue;
+            }
+
+            userProfile.OnUpdate -= HandleFriendProfileUpdated;
+
+            var requestSent = friends.ContainsKey(userId)
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, false)
+                : new FriendRequestEntryModel { bodyMessage = friendRequest.MessageBody, isReceived = false };
+            requestSent.CopyFrom(userProfile);
+            requestSent.blocked = IsUserBlocked(userId);
+            friends[userId] = requestSent;
+            View.Set(userId, requestSent);
+            userProfile.OnUpdate += HandleFriendProfileUpdated;
+        }
     }
 }

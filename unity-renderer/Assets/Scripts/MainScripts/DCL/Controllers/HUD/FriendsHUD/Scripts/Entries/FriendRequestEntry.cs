@@ -1,8 +1,10 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FriendRequestEntry : FriendEntryBase
 {
+    [SerializeField] internal TMP_Text bodyMessage;
     [SerializeField] internal Button acceptButton;
     [SerializeField] internal Button rejectButton;
     [SerializeField] internal Button cancelButton;
@@ -28,6 +30,7 @@ public class FriendRequestEntry : FriendEntryBase
     public void Populate(FriendRequestEntryModel model)
     {
         base.Populate(model);
+        SetBodyMessage(model.bodyMessage);
         SetReceived(model.isReceived);
     }
 
@@ -36,7 +39,16 @@ public class FriendRequestEntry : FriendEntryBase
         base.Populate(model);
 
         if (model is FriendRequestEntryModel requestModel)
+        {
+            SetBodyMessage(requestModel.bodyMessage);
             SetReceived(requestModel.isReceived);
+        }
+    }
+
+    private void SetBodyMessage(string value)
+    {
+        bodyMessage.text = value;
+        bodyMessage.gameObject.SetActive(!string.IsNullOrEmpty(value));
     }
 
     private void SetReceived(bool value)

@@ -110,7 +110,7 @@ namespace DCL.Social.Friends
                     from = fakeUserId,
                     to = userProfileBridge.GetOwn().userId,
                     friendRequestId = Guid.NewGuid().ToString("N"),
-                    messageBody = $"Test message from {fakeUserId}...",
+                    messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });
             }
@@ -137,7 +137,7 @@ namespace DCL.Social.Friends
                     from = userProfileBridge.GetOwn().userId,
                     to = fakeUserId,
                     friendRequestId = Guid.NewGuid().ToString("N"),
-                    messageBody = $"Test message from {fakeUserId}...",
+                    messageBody = Random.Range(0, 2) == 0 ? $"Test message to {fakeUserId}..." : string.Empty,
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });
             }

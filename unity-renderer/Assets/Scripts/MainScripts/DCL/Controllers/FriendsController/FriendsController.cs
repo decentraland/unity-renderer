@@ -33,7 +33,9 @@ namespace DCL.Social.Friends
         public event Action OnInitialized;
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         public event Action<int, int> OnTotalFriendRequestUpdated;
-        
+        public event Action<List<FriendRequest>> OnReceivedFriendRequestsAdded;
+        public event Action<List<FriendRequest>> OnSentFriendRequestsAdded;
+
         public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
         {
             i = new FriendsController(apiBridge);
@@ -137,17 +139,35 @@ namespace DCL.Social.Friends
             TotalSentFriendRequestCount = msg.totalSentFriendRequests;
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
 
+            List<FriendRequest> receivedFriendRequestsToAdd = new List<FriendRequest>();
             foreach (var friendRequest in msg.requestedFrom)
             {
+                receivedFriendRequestsToAdd.Add(new FriendRequest(
+                    friendRequest.friendRequestId,
+                    friendRequest.timestamp,
+                    friendRequest.from,
+                    friendRequest.to,
+                    friendRequest.messageBody));
+
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     {action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.from});
             }
+            OnReceivedFriendRequestsAdded?.Invoke(receivedFriendRequestsToAdd);
 
+            List<FriendRequest> sentFriendRequestsToAdd = new List<FriendRequest>();
             foreach (var friendRequest in msg.requestedTo)
             {
+                sentFriendRequestsToAdd.Add(new FriendRequest(
+                    friendRequest.friendRequestId,
+                    friendRequest.timestamp,
+                    friendRequest.from,
+                    friendRequest.to,
+                    friendRequest.messageBody));
+
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     {action = FriendshipAction.REQUESTED_TO, userId = friendRequest.to});
             }
+            OnSentFriendRequestsAdded?.Invoke(sentFriendRequestsToAdd);
         }
 
         private void AddFriendsWithDirectMessages(AddFriendsWithDirectMessagesPayload friendsWithDMs)

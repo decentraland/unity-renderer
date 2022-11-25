@@ -39,8 +39,7 @@ namespace DCL.Social.Friends
             var payload = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
             var messageId = payload.messageId;
             if (!pendingRequests.ContainsKey(messageId)) return;
-            var task =
-                (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
+            var task = (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
             pendingRequests.Remove(messageId);
             task.TrySetResult(payload);
         }
