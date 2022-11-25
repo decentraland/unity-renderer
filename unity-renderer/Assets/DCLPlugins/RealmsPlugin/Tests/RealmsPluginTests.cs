@@ -17,8 +17,7 @@ namespace DCLPlugins.RealmPlugin
         private IRealmModifier genericModifier;
         private RealmBlockerModifier realmBlockerModiferSubstitute;
         private RealmMinimapModifier realmMinimapModiferSubstitute;
-
-        private ServiceLocator serviceLocator;
+        private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
 
         [SetUp]
         public void SetUp()
@@ -33,7 +32,7 @@ namespace DCLPlugins.RealmPlugin
 
             SetCatalystRealmsInfo();
         }
-        
+
         [TearDown]
         public void TearDown() { realmPlugin.Dispose(); }
 
@@ -42,21 +41,22 @@ namespace DCLPlugins.RealmPlugin
         {
             // Act
             SetRealm(realmName);
-        
+
             // Assert
             genericModifier.Received(1).OnEnteredRealm(isCatalist, Arg.Any<AboutResponse >());
         }
-        
+
         [TestCaseSource(nameof(GreenBlockerCases))]
         public void GreenBlockerAddedOnRealmChange(string[] realmNames, int[] requiredLimit)
         {
             for (int i = 0; i < realmNames.Length; i++)
             {
                 SetRealm(realmNames[i]);
-                Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))
+                    Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
             }
         }
-        
+
         [TestCaseSource(nameof(GenericCases))]
         public void MinimapModifiedOnRealmChange(string realmName, bool shouldMinimapBeVisible)
         {
@@ -94,18 +94,18 @@ namespace DCLPlugins.RealmPlugin
             });
             DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
         }
-        
+
         static object[] GreenBlockerCases =
         {
             new object[] { new [] { catalystRealmName, worldRealmName, catalystRealmName }, new [] { 0, 2, 0 } },
             new object[] { new [] { worldRealmName, catalystRealmName, worldRealmName }, new [] { 2, 0, 2 } }
         };
-        
+
         static object[] GenericCases =
         {
             new object[] { catalystRealmName, true },
             new object[] { worldRealmName, false }
         };
-        
+
     }
 }
