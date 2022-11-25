@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +9,7 @@ namespace AvatarSystem
         SkinnedMeshRenderer meshRenderer { get; }
         IBaseAvatarRevealer avatarRevealer { get; set; }
 
-        void Initialize();
+        void Initialize(bool withParticles);
         SkinnedMeshRenderer GetMainRenderer();
         GameObject GetArmatureContainer();
         UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken);

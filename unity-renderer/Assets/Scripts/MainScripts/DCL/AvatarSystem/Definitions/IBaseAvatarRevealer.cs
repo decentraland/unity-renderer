@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 public interface IBaseAvatarRevealer
 {
     void InjectLodSystem(ILOD lod);
+    void AllowParticleSystems(bool allowed);
     void AddTarget(MeshRenderer newTarget);
     UniTask StartAvatarRevealAnimation(bool withTransition, CancellationToken token);
     SkinnedMeshRenderer GetMainRenderer();

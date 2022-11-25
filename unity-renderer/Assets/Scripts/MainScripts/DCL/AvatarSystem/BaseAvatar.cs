@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -33,12 +31,13 @@ namespace AvatarSystem
             return avatarRevealer.GetMainRenderer();
         }
 
-        public void Initialize() 
+        public void Initialize(bool withParticles)
         {
             if (avatarRevealer == null)
             {
-                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
+                avatarRevealer = Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
                 avatarRevealer.InjectLodSystem(lod);
+                avatarRevealer.AllowParticleSystems(withParticles);
             }
             else
             {

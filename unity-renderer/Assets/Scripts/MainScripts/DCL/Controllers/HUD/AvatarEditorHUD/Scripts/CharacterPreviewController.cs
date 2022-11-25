@@ -106,8 +106,7 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
                 eyesColor = newModel.eyeColor,
                 hairColor = newModel.hairColor,
                 skinColor = newModel.skinColor
-
-            }, ct);
+            },newModel.showSpawnParticles, ct);
         }
         catch (OperationCanceledException)
         {

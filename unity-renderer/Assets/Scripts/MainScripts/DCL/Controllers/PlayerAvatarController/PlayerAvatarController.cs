@@ -219,7 +219,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     eyesColor = profile.avatar.eyeColor,
                     skinColor = profile.avatar.skinColor,
                     hairColor = profile.avatar.hairColor,
-                }, ct);
+                }, profile.avatar.showSpawnParticles, ct);
 
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);

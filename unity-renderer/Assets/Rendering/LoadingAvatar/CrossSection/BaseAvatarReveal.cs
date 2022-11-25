@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using DCL.Helpers;
-using DCL;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using Random = UnityEngine.Random;
 
 public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 {
+    private const float DEFAULT_DISABLED_PARTICLES_PSOTION = -10000;
+
     [SerializeField] private Animation animation;
     [SerializeField] private List<GameObject> particleEffects;
 
@@ -67,6 +67,15 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
     public void InjectLodSystem(ILOD lod)
     {
         this.lod = lod;
+    }
+
+    public void AllowParticleSystems(bool allowed)
+    {
+        if (allowed)
+            return;
+
+        foreach (GameObject particleSystemsContainer in particleEffects)
+            particleSystemsContainer.transform.position = new Vector3(0, DEFAULT_DISABLED_PARTICLES_PSOTION, 0);
     }
 
     public void AddTarget(MeshRenderer newTarget)
