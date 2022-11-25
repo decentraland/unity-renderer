@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using DCl.Social.Friends;
 using Random = UnityEngine.Random;
 
 public class FriendTrackerController : IDisposable

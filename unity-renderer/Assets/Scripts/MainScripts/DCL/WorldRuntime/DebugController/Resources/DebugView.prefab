@@ -1273,6 +1273,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640786195690160194, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640786195690160194, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 205.5
       objectReference: {fileID: 0}
@@ -1801,6 +1806,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2229608770459445307, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2297211219257035525, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2051,6 +2061,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -26
       objectReference: {fileID: 0}
+    - target: {fileID: 3261188398848715265, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_ChildControlHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261188398848715265, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_ChildForceExpandHeight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3313290511942750072, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2195,6 +2215,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -126
+      objectReference: {fileID: 0}
+    - target: {fileID: 4422570109012610901, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_VerticalFit
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4548005199230724280, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
@@ -2530,6 +2555,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714049155910192880, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_ChildControlHeight
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5730760808255114886, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}

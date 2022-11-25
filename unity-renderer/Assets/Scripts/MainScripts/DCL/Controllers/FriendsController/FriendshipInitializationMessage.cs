@@ -1,7 +1,10 @@
 using System;
 
-[Serializable]
-public class FriendshipInitializationMessage
+namespace DCL.Social.Friends
 {
-    public int totalReceivedRequests;
+    [Serializable]
+    public class FriendshipInitializationMessage
+    {
+        public int totalReceivedRequests;
+    }
 }
