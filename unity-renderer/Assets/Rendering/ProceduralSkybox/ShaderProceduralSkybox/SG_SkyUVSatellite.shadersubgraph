@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "0a15af5d36194c9da6dabd2a5ec81522",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "2b1806f17f8f438c8cb611a629e757fa"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "1df8e1c6ad944d4688e845851caf170c"
@@ -826,10 +832,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "1df8e1c6ad944d4688e845851caf170c"
@@ -1625,6 +1632,24 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "2b1806f17f8f438c8cb611a629e757fa",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "9d0781860c6040e2a1e8f8aea2be3670"
+        },
+        {
+            "m_Id": "2c5fd3023bc64a1cb5d35f26adfec418"
+        },
+        {
+            "m_Id": "d0c8b409d00b478c8b395abdf4f1ae19"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "2b8978056a55438c95b0969517c533bc",
     "m_Group": {
@@ -1666,9 +1691,13 @@
         "m_GuidSerialized": "b836fe5a-dfaa-4d83-b168-57a85fbb8af8"
     },
     "m_Name": "PanningSpeed",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_2c5fd3023bc64a1cb5d35f26adfec418",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3530,9 +3559,13 @@
         "m_GuidSerialized": "2d40463a-11bd-407e-b5e9-d690df3c10db"
     },
     "m_Name": "TilingAndOffset",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_9d0781860c6040e2a1e8f8aea2be3670",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -4301,9 +4334,13 @@
         "m_GuidSerialized": "69d948ca-748a-4335-99aa-030dd7d97f14"
     },
     "m_Name": "DirectionSpace",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_d0c8b409d00b478c8b395abdf4f1ae19",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
