@@ -22,7 +22,7 @@ var ClipboardWebGL = {
     },
 
     writeText: function (text){
-        navigator.clipboard.writeText(Pointer_stringify(text))
+        navigator.clipboard.writeText(UTF8ToString(text))
     },
 
     readText: function (){
