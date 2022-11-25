@@ -29,6 +29,7 @@ namespace DCL.Chat.Channels
             MemberCount = channel.MemberCount;
             Joined = channel.Joined;
             Muted = channel.Muted;
+            Description = channel.Description;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using DCL;
 using DCL.Components;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

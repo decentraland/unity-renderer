@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 

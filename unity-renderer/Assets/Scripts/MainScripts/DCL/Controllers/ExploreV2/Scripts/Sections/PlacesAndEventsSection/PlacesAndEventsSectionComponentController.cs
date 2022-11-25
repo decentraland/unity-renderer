@@ -1,6 +1,7 @@
 using DCL;
 using ExploreV2Analytics;
 using System;
+using DCL.Social.Friends;
 
 public interface IPlacesAndEventsSectionComponentController : IDisposable
 {

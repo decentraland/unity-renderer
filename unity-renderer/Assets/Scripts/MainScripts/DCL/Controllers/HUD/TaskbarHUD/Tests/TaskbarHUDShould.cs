@@ -6,6 +6,7 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
+using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;

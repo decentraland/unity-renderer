@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

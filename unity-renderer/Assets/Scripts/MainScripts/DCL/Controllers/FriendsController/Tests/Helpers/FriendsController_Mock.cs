@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Friends.WebApi;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 
 public class FriendsController_Mock : IFriendsController
 {
