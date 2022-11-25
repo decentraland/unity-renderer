@@ -15,13 +15,7 @@ namespace DCL.Social.Passports
         event Action OnUnblockUser;
         event Action OnReportUser;
 
-        void SetName(string name);
-        void SetWallet(string wallet);
-        void SetPresence(PresenceStatus status);
-        void SetGuestUser(bool isGuest);
+        void Configure(PlayerPassportModel newModel);
         void SetIsBlocked(bool isBlocked);
-        void SetHasBlockedOwnUser(bool hasBlocked);
-        void SetFriendStatus(FriendshipStatus friendStatus);
-        void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
     }
 }

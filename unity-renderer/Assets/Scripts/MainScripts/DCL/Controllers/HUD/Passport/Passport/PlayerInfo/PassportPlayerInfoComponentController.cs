@@ -18,15 +18,15 @@ namespace DCL.Social.Passports
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
-        
+
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private StringVariable currentPlayerId;
         private string name;
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
-            IPassportPlayerInfoComponentView view, 
-            DataStore dataStore, 
+            IPassportPlayerInfoComponentView view,
+            DataStore dataStore,
             IProfanityFilter profanityFilter,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
@@ -55,17 +55,30 @@ namespace DCL.Social.Passports
         {
             name = userProfile.name;
             string filteredName = await FilterName(userProfile);
-            view.SetName(filteredName);
-            view.SetGuestUser(userProfile.isGuest);
-            if(!userProfile.isGuest)
+            PlayerPassportModel playerPassportModel;
+
+            if(userProfile.isGuest)
             {
-                view.SetWallet(userProfile.userId);
-                view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                view.SetPresence(friendsController.GetUserStatus(userProfile.userId).presence);
-                view.SetIsBlocked(ownUserProfile.IsBlocked(userProfile.userId));
-                view.SetFriendStatus(friendsController.GetUserStatus(userProfile.userId).friendshipStatus);
-                view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
+                playerPassportModel = new PlayerPassportModel()
+                {
+                    name = filteredName,
+                    isGuest = userProfile.isGuest,
+                };
             }
+            else
+            {
+                playerPassportModel = new PlayerPassportModel()
+                {
+                    name = filteredName,
+                    userId = userProfile.userId,
+                    presenceStatus = friendsController.GetUserStatus(userProfile.userId).presence,
+                    isGuest = userProfile.isGuest,
+                    isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
+                    hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
+                    friendshipStatus = friendsController.GetUserStatus(userProfile.userId).friendshipStatus
+                };
+            }
+            view.Configure(playerPassportModel);
         }
 
         private async UniTask<string> FilterName(UserProfile userProfile)

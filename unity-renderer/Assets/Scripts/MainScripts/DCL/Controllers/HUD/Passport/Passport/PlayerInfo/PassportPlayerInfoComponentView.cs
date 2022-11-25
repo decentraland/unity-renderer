@@ -9,36 +9,35 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
-    public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView
+    public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView, IComponentModelConfig<PlayerPassportModel>
     {
-        [SerializeField] internal TextMeshProUGUI name;
-        [SerializeField] internal TextMeshProUGUI nameInOptionsPanel;
-        [SerializeField] internal Button walletCopyButton;
-        [SerializeField] internal TextMeshProUGUI wallet;
-        [SerializeField] internal ButtonComponentView optionsButton;
-        [SerializeField] internal ButtonComponentView addFriendButton;
-        [SerializeField] internal ButtonComponentView alreadyFriendsButton;
-        [SerializeField] internal ButtonComponentView cancelFriendRequestButton;
-        [SerializeField] internal ButtonComponentView acceptFriendButton;
-        [SerializeField] internal ButtonComponentView blockedFriendButton;
-        [SerializeField] internal Button blockButton;
-        [SerializeField] internal Button reportButton;
-        [SerializeField] internal Button unfriendButton;
-        [SerializeField] internal Button whisperButton;
-        [SerializeField] internal GameObject whisperNonFriendsPopup;
-        [SerializeField] internal GameObject onlineStatus;
-        [SerializeField] internal GameObject offlineStatus;
-        [SerializeField] internal GameObject normalUserPanel;
-        [SerializeField] internal GameObject optionsPanel;
-        [SerializeField] internal GameObject friendsFlowContainer;
+        [SerializeField] private TextMeshProUGUI name;
+        [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
+        [SerializeField] private Button walletCopyButton;
+        [SerializeField] private TextMeshProUGUI wallet;
+        [SerializeField] private ButtonComponentView optionsButton;
+        [SerializeField] private ButtonComponentView addFriendButton;
+        [SerializeField] private ButtonComponentView alreadyFriendsButton;
+        [SerializeField] private ButtonComponentView cancelFriendRequestButton;
+        [SerializeField] private ButtonComponentView acceptFriendButton;
+        [SerializeField] private ButtonComponentView blockedFriendButton;
+        [SerializeField] private Button whisperButton;
+        [SerializeField] private GameObject whisperNonFriendsPopup;
+        [SerializeField] private GameObject onlineStatus;
+        [SerializeField] private GameObject offlineStatus;
+        [SerializeField] private GameObject normalUserPanel;
+        [SerializeField] private GameObject friendsFlowContainer;
+        [SerializeField] private UserContextMenu userContextMenu;
 
-        [SerializeField] internal GameObject alreadyFriendsVariation;
-        [SerializeField] internal GameObject unfriendVariation;
+        [SerializeField] private GameObject alreadyFriendsVariation;
+        [SerializeField] private GameObject unfriendVariation;
 
-        [SerializeField] internal GameObject alreadyBlockedVariation;
-        [SerializeField] internal GameObject unblockVariation;
+        [SerializeField] private GameObject alreadyBlockedVariation;
+        [SerializeField] private GameObject unblockVariation;
 
-        [SerializeField] internal JumpInButton jumpInButton;
+        [SerializeField] private JumpInButton jumpInButton;
+
+        [SerializeField] private PlayerPassportModel model;
 
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
@@ -59,16 +58,62 @@ namespace DCL.Social.Passports
             alreadyFriendsButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
             cancelFriendRequestButton.onClick.AddListener(()=>OnCancelFriendRequest?.Invoke());
             acceptFriendButton.onClick.AddListener(()=>OnAcceptFriendRequest?.Invoke());
-            blockButton.onClick.AddListener(()=>OnBlockUser?.Invoke());
+            userContextMenu.OnBlock += OnBlock;
             blockedFriendButton.onClick.AddListener(()=>OnUnblockUser?.Invoke());
-            reportButton.onClick.AddListener(()=>OnReportUser?.Invoke());
-            unfriendButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
+            userContextMenu.OnReport += OnReport;
             whisperButton.onClick.AddListener(WhisperActionFlow);
             optionsButton.onClick.AddListener(OpenOptions);
 
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
             blockedFriendButton.onFocused += BlockFriendFocused;
-            optionsButton.onFocused += OptionsPanelFocused;
+        }
+
+        private void OnReport(string Obj)
+        {
+            OnReportUser?.Invoke();
+        }
+
+        private void OnBlock(string Arg1, bool Arg2)
+        {
+            OnBlockUser?.Invoke();
+        }
+
+        public void Configure(PlayerPassportModel newModel)
+        {
+            if (model == newModel)
+                return;
+
+            model = newModel;
+            RefreshControl();
+        }
+
+        public override void RefreshControl()
+        {
+            if (model == null)
+                return;
+
+            userContextMenu.Hide();
+            SetName(model.name);
+            SetWallet(model.userId);
+            SetPresence(model.presenceStatus);
+            SetGuestUser(model.isGuest);
+            SetIsBlocked(model.isBlocked);
+            SetHasBlockedOwnUser(model.hasBlocked);
+            SetFriendStatus(model.friendshipStatus);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            walletCopyButton.onClick.RemoveAllListeners();
+            addFriendButton.onClick.RemoveAllListeners();
+        }
+
+        public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
+        {
+            jumpInButton.gameObject.SetActive(true);
+            jumpInButton.Initialize(friendsController, userId, socialAnalytics);
         }
 
         private void RemoveFriendsFocused(bool isFocused)
@@ -83,19 +128,13 @@ namespace DCL.Social.Passports
             unblockVariation.SetActive(isFocused);
         }
 
-        private void OptionsPanelFocused(bool isFocused)
-        {
-            if(!isFocused)
-                optionsPanel.SetActive(false);
-        }
-
-        public void SetName(string name)
+        private void SetName(string name)
         {
             this.name.text = name;
             nameInOptionsPanel.text = name;
         }
 
-        public void SetWallet(string wallet)
+        private void SetWallet(string wallet)
         {
             fullWalletAddress = wallet;
             this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
@@ -108,7 +147,7 @@ namespace DCL.Social.Passports
             blockedFriendButton.gameObject.SetActive(true);
         }
 
-        public void SetPresence(PresenceStatus status)
+        private void SetPresence(PresenceStatus status)
         {
             if(status == PresenceStatus.ONLINE)
             {
@@ -122,17 +161,17 @@ namespace DCL.Social.Passports
             }
         }
 
-        public void SetGuestUser(bool isGuest)
+        private void SetGuestUser(bool isGuest)
         {
             normalUserPanel.SetActive(!isGuest);
         }
 
-        public void SetHasBlockedOwnUser(bool hasBlocked)
+        private void SetHasBlockedOwnUser(bool hasBlocked)
         {
             friendsFlowContainer.SetActive(!hasBlocked);
         }
 
-        public void SetFriendStatus(FriendshipStatus friendStatus)
+        private void SetFriendStatus(FriendshipStatus friendStatus)
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
 
@@ -187,25 +226,7 @@ namespace DCL.Social.Passports
 
         private void OpenOptions()
         {
-            optionsPanel.SetActive(!optionsPanel.activeSelf);
-        }
-
-        public override void RefreshControl()
-        {
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            walletCopyButton.onClick.RemoveAllListeners();
-            addFriendButton.onClick.RemoveAllListeners();
-        }
-
-        public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
-        {
-            jumpInButton.gameObject.SetActive(true);
-            jumpInButton.Initialize(friendsController, userId, socialAnalytics);
+            userContextMenu.Show(model.userId);
         }
 
         private IEnumerator WaitAndClosePopup()
