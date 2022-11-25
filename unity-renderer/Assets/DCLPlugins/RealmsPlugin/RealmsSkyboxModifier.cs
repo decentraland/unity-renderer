@@ -13,12 +13,13 @@ namespace DCLPlugins.RealmsPlugin
 
         public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
         {
-            if (realmConfiguration.Configurations.Skybox != null)
-            {
-                DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
+            bool useFixedHours = realmConfiguration.Configurations.Skybox is { HasFixedHour: true };
+
+            DataStore.i.skyboxConfig.useDynamicSkybox.Set(!useFixedHours);
+
+            if (useFixedHours)
                 DataStore.i.skyboxConfig.fixedTime.Set(
-                    (float)TimeSpan.FromSeconds(realmConfiguration.Configurations.Skybox.FixedHour).TotalHours);
-            }
+                    (float)TimeSpan.FromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour).TotalHours);
         }
     }
 }
