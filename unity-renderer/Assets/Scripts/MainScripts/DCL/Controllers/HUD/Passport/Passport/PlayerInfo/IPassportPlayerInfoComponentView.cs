@@ -1,5 +1,5 @@
+using DCl.Social.Friends;
 using System;
-using UnityEngine;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
 

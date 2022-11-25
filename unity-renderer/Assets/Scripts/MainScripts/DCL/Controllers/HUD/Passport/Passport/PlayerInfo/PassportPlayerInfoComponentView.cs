@@ -1,10 +1,9 @@
+using DCl.Social.Friends;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using SocialFeaturesAnalytics;
-using UnityEngine.EventSystems;
 using DCL.Social.Friends;
 using UnityEngine.UI;
 
@@ -32,15 +31,15 @@ namespace DCL.Social.Passports
         [SerializeField] internal GameObject normalUserPanel;
         [SerializeField] internal GameObject optionsPanel;
         [SerializeField] internal GameObject friendsFlowContainer;
-        
+
         [SerializeField] internal GameObject alreadyFriendsVariation;
         [SerializeField] internal GameObject unfriendVariation;
 
         [SerializeField] internal GameObject alreadyBlockedVariation;
         [SerializeField] internal GameObject unblockVariation;
-        
+
         [SerializeField] internal JumpInButton jumpInButton;
-        
+
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
         public event Action OnCancelFriendRequest;
@@ -53,7 +52,7 @@ namespace DCL.Social.Passports
         private bool areFriends;
         private bool isBlocked = false;
 
-        private void Start() 
+        private void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
             addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
@@ -83,7 +82,7 @@ namespace DCL.Social.Passports
             alreadyBlockedVariation.SetActive(!isFocused);
             unblockVariation.SetActive(isFocused);
         }
-        
+
         private void OptionsPanelFocused(bool isFocused)
         {
             if(!isFocused)
@@ -136,7 +135,7 @@ namespace DCL.Social.Passports
         public void SetFriendStatus(FriendshipStatus friendStatus)
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
-            
+
             if(isBlocked) return;
 
             switch (friendStatus)
@@ -176,7 +175,7 @@ namespace DCL.Social.Passports
         {
             if(fullWalletAddress == null)
                 return;
-            
+
             GUIUtility.systemCopyBuffer = fullWalletAddress;
         }
 
@@ -191,7 +190,7 @@ namespace DCL.Social.Passports
             optionsPanel.SetActive(!optionsPanel.activeSelf);
         }
 
-        public override void RefreshControl() 
+        public override void RefreshControl()
         {
         }
 
