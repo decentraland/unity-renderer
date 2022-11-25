@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BillboardsController : IBillboardsController
 {
-    private readonly List<Billboard> billboards = new List<Billboard>();
+    private readonly List<IBillboard> billboards = new List<IBillboard>();
     private Coroutine updateCoroutine;
 
     private Vector3Variable CameraPosition => CommonScriptableObjects.cameraPosition;
@@ -25,16 +25,14 @@ public class BillboardsController : IBillboardsController
         updateCoroutine = CoroutineStarter.Start(UpdateCoroutine());
     }
 
-    public void BillboardAdded(IBillboard inBillboard)
+    public void BillboardAdded(IBillboard billboard)
     {
-        Billboard billboard = inBillboard as Billboard;
         billboards.Add(billboard);
-            ChangeOrientation(billboard);
+        ChangeOrientation(billboard);
     }
 
-    public void BillboardRemoved(IBillboard inBillboard)
+    public void BillboardRemoved(IBillboard billboard)
     {
-        Billboard billboard = inBillboard as Billboard;
         if (!billboards.Contains(billboard))
             return;
 
@@ -48,7 +46,7 @@ public class BillboardsController : IBillboardsController
     }
 
 
-    private void ChangeOrientation(Billboard billboard)
+    private void ChangeOrientation(IBillboard billboard)
     {
         if (billboard.EntityTransform == null)
             return;
@@ -67,7 +65,7 @@ public class BillboardsController : IBillboardsController
             lastCamPosition = CameraPosition;
             for (int i = billboards.Count - 1; i >= 0; i--)
             {
-                Billboard billboard = billboards[i];
+                IBillboard billboard = billboards[i];
                 if (billboard == null)
                 {
                     billboards.RemoveAt(i);

@@ -22,14 +22,15 @@ namespace DCL
 
         private const string COMPONENT_NAME = "billboard";
 
-        internal Transform Tr { get; private set; }
-        internal Transform EntityTransform { get; private set; }
-        internal Vector3 LastPosition { get; set; }
+        public Transform Tr { get; set; }
+        public Transform EntityTransform { get; set; }
+        public Vector3 LastPosition { get; set; }
 
 
         public new Model GetModel() => (Model)model;
 
         public override string componentName => COMPONENT_NAME;
+
 
         public override int GetClassId()
         {
@@ -46,7 +47,7 @@ namespace DCL
         }
 
 
-        internal Vector3 GetLookAtVector(Vector3 cameraPosition)
+        public Vector3 GetLookAtVector(Vector3 cameraPosition)
         {
             bool hasTextShape = scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (EntityTransform.position - cameraPosition) : (cameraPosition - EntityTransform.position);
