@@ -14,8 +14,6 @@ namespace DCl.Social.Friends
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
-        event Action<List<FriendRequest>> OnReceivedFriendRequestsAdded;
-        event Action<List<FriendRequest>> OnSentFriendRequestsAdded;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }
@@ -37,7 +35,7 @@ namespace DCl.Social.Friends
         void RemoveFriend(string friendId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
-        UniTask GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
     }

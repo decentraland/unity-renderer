@@ -69,7 +69,7 @@ namespace DCL.Social.Friends
             };
             controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-            apiBridge.GetFriendRequests(0, 0, 0, 0).Returns(info => UniTask.FromResult(
+            _ = apiBridge.GetFriendRequests(0, 0, 0, 0).Returns(UniTask.FromResult(
                 new AddFriendRequestsPayload
                 {
                     totalReceivedFriendRequests = 3,

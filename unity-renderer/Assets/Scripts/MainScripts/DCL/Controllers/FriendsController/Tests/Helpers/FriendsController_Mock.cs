@@ -14,8 +14,6 @@ public class FriendsController_Mock : IFriendsController
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     public event Action<int, int> OnTotalFriendRequestUpdated;
     public event Action<int> OnTotalFriendsUpdated;
-    public event Action<List<FriendRequest>> OnReceivedFriendRequestsAdded;
-    public event Action<List<FriendRequest>> OnSentFriendRequestsAdded;
 
     private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
@@ -57,9 +55,9 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public UniTask GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    public UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
     {
-        return UniTask.NextFrame();
+        return UniTask.FromResult(new List<FriendRequest>());
     }
 
     public void GetFriendsWithDirectMessages(int limit, int skip)
