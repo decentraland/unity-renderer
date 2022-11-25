@@ -21,6 +21,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -44,18 +48,17 @@ Material:
     - Vector1_4e44c7bc715d435d8e470214faab1aee: 0
     - Vector1_7812db41d6034b4da900de853f1f18ad: 0
     - Vector1_95b8c4abe1d54d33ace64df604588b9f: 0.19
-    - Vector1_adadae3a1e6e49ddb2d4b793c3434cb9: 0.934
+    - Vector1_adadae3a1e6e49ddb2d4b793c3434cb9: 0.908
     - Vector1_d2a460169a5a4d9bbede746691eec965: 0
     - Vector1_dd9a440b678940568cec891cea6f6ae4: 0.006
-    - Vector1_ea682ba2a9d4455f8f05f72ec559cd4e: 1.5
+    - Vector1_ea682ba2a9d4455f8f05f72ec559cd4e: 1.46
     - Vector1_fb3416e4a5cb4acebc495769bc268011: 0.612
     - Vector1_fb3416e4a5cb4acebc495769bc268011_1: 0.732
     - Vector1_fb3416e4a5cb4acebc495769bc268011_2: -0.839
     - _QueueControl: 1
     - _QueueOffset: 0
     m_Colors:
-    - Color_3697dd85f8074abab37e437191ee606b: {r: 0.03773582, g: 0.03773582, b: 0.03773582,
-        a: 0}
+    - Color_3697dd85f8074abab37e437191ee606b: {r: 0, g: 0, b: 0, a: 0}
     - Vector2_017600be3f9548a8b0b48934071023cd: {r: 0, g: 0, b: 0, a: 0}
     - Vector2_40340f3f666c47ac80f45a2a0ea839f4: {r: 0, g: 0, b: 0, a: 0}
     - Vector4_24aec0e20e3b4ae39c37355584bf0077: {r: 0, g: 0, b: 4.47, a: 0}
