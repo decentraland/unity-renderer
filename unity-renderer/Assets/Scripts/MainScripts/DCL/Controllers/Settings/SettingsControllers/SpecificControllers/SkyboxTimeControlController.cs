@@ -12,24 +12,22 @@ namespace DCL.SettingsControls
             UpdateSetting(currentGeneralSettings.skyboxTime);
         }
 
-        public override object GetStoredValue() { return currentGeneralSettings.skyboxTime; }
+        public override object GetStoredValue() =>
+            currentGeneralSettings.skyboxTime;
 
         public override void UpdateSetting(object newValue)
         {
-            float valueAsFloat = (float)newValue;
+            var valueAsFloat = (float)newValue;
 
             valueAsFloat = Mathf.Clamp(valueAsFloat, 0, 23.998f);
 
             currentGeneralSettings.skyboxTime = valueAsFloat;
             DataStore.i.skyboxConfig.fixedTime.Set(valueAsFloat);
-            int hourSection = (int)valueAsFloat;
-            float minuteSection = valueAsFloat - hourSection;
-            minuteSection = minuteSection * 60;
-            minuteSection = (int)minuteSection;
 
-            string sliderTxt = hourSection.ToString("00") + ":" + minuteSection.ToString("00");
+            var hourSection = (int)valueAsFloat;
+            var minuteSection = (int)((valueAsFloat - hourSection) * 60);
 
-            RaiseOnIndicatorLabelChange(sliderTxt);
+            RaiseOnIndicatorLabelChange($"{hourSection:00}:{minuteSection:00}");
         }
     }
 }
