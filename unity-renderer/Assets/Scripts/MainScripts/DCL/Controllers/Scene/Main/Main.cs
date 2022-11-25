@@ -5,6 +5,8 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using DCL.Social.Chat;
+using DCL.Social.Friends;
 using RPC;
 using UnityEngine;
 
@@ -40,6 +42,9 @@ namespace DCL
                 InitializeSceneDependencies();
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            // TODO: migrate chat controller singleton into a service in the service locator
+            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
+            FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -80,6 +85,7 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
+
             RPCServerBuilder.BuildDefaultServer();
         }
 
@@ -154,8 +160,8 @@ namespace DCL
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<ChatController>();
-            gameObject.AddComponent<FriendsController>();
+            gameObject.AddComponent<WebInterfaceChatBridge>();
+            gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();

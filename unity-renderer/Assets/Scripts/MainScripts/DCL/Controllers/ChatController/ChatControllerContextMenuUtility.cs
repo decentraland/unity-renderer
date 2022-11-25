@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace DCL.Chat
+namespace DCL.Social.Chat
 {
     public partial class ChatController
     {
@@ -52,8 +51,7 @@ namespace DCL.Chat
                 timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             };
 
-            AddMessageToChatWindow(JsonUtility.ToJson(msg));
-            AddMessageToChatWindow(JsonUtility.ToJson(msg2));
+            AddMessages(new[] {msg, msg2});
         }
 
         [ContextMenu("Fake Private Message")]
@@ -94,16 +92,15 @@ namespace DCL.Chat
                 messageType = ChatMessage.Type.PRIVATE,
                 timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             };
-
-            AddMessageToChatWindow(JsonUtility.ToJson(msg));
-            AddMessageToChatWindow(JsonUtility.ToJson(msg2));
+            
+            AddMessages(new[] {msg, msg2});
         }
 
         [ContextMenu("Add fake messages to nearby")]
         public async UniTask AddManyFakeMessagesToNearby()
         {
             var users = new List<UserProfileModel>();
-            
+
             for (var i = 0; i < 10; i++)
             {
                 var userId = Guid.NewGuid().ToString();
@@ -120,7 +117,7 @@ namespace DCL.Chat
             for (var i = 0; i < 100; i++)
             {
                 var user = users[Random.Range(0, users.Count)];
-                
+
                 var msg = new ChatMessage
                 {
                     body = "test message",
@@ -132,19 +129,18 @@ namespace DCL.Chat
                     messageId = Guid.NewGuid().ToString(),
                     senderName = user.name
                 };
-                
-                AddMessageToChatWindow(JsonUtility.ToJson(msg));
 
+                AddMessages(new[] {msg});
                 // for a real scenario, only one message is added by frame
                 await UniTask.NextFrame();
             }
         }
-        
+
         [ContextMenu("Add fake messages to global")]
         public async UniTask AddManyFakeMessagesToUnityChannel()
         {
             var users = new List<UserProfileModel>();
-            
+
             for (var i = 0; i < 10; i++)
             {
                 var userId = Guid.NewGuid().ToString();
@@ -161,7 +157,7 @@ namespace DCL.Chat
             for (var i = 0; i < 100; i++)
             {
                 var user = users[Random.Range(0, users.Count)];
-                
+
                 var msg = new ChatMessage
                 {
                     body = "test message",
@@ -173,9 +169,8 @@ namespace DCL.Chat
                     messageId = Guid.NewGuid().ToString(),
                     senderName = user.name
                 };
-                
-                AddMessageToChatWindow(JsonUtility.ToJson(msg));
-                
+
+                AddMessages(new[] {msg});
                 // for a real scenario, only one message is added by frame
                 await UniTask.NextFrame();
             }
