@@ -150,11 +150,6 @@ static class BuildCommand
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
-        else if (buildTarget == BuildTarget.StandaloneOSX)
-        {
-            Console.WriteLine(":: Set OSXUniversal Architecture to x64");
-            EditorUserBuildSettings.SetPlatformSettings("OSXUniversal", "Architecture", "x64");
-        }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");

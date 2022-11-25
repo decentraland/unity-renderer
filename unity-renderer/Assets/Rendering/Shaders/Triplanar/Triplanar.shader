@@ -210,7 +210,7 @@ Shader "DCL/FX/Triplanar"
         	    inputData.vertexLighting = IN.fogFactorAndVertexLight.yzw;
         	    inputData.bakedGI = SAMPLE_GI(IN.lightmapUVOrVertexSH.xy, IN.lightmapUVOrVertexSH.xyz, inputData.normalWS);
 
-        		half4 color = LightweightFragmentPBR(
+        		half4 color = UniversalFragmentPBR(
         			inputData, 
         			Albedo, 
         			Metallic, 

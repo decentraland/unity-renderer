@@ -1,10 +1,13 @@
-﻿PackedVaryings vert(Attributes input)
+﻿#include <UnityInstancing.cginc>
+
+PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
     output = BuildVaryings(input);
     PackedVaryings packedOutput = PackVaryings(output);
     return packedOutput;
 }
+
 
 half4 frag(PackedVaryings packedInput) : SV_TARGET 
 {    
