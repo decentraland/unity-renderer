@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using TMPro;
 using UnityEngine;
@@ -21,16 +22,15 @@ namespace DCL.Social.Friends
         [SerializeField] private ImageComponentView profileImage;
 
         private readonly Model model = new Model();
+        private ILazyTextureObserver lastProfilePictureObserver;
 
         public event Action<string> OnMessageBodyChanged;
         public event Action OnSend;
         public event Action OnCancel;
 
-        public static SendFriendRequestHUDComponentView Create()
-        {
-            return Instantiate(
+        public static SendFriendRequestHUDComponentView Create() =>
+            Instantiate(
                 Resources.Load<SendFriendRequestHUDComponentView>("FriendRequests/SendFriendRequestHUD"));
-        }
 
         public override void Awake()
         {
@@ -44,64 +44,84 @@ namespace DCL.Social.Friends
             retryButton.onClick.AddListener(() => OnSend?.Invoke());
         }
 
-        public override void RefreshControl()
+        public override void Dispose()
         {
-            defaultContainer.SetActive(model.state == Model.State.Default);
-            pendingToSendContainer.SetActive(model.state == Model.State.Pending);
-            failedContainer.SetActive(model.state == Model.State.Failed);
-            successContainer.SetActive(model.state == Model.State.Success);
-            profileImage.SetImage(model.profilePictureUrl);
-            nameLabel.text = model.name;
-            pendingStateLabel.text = $"Sending friend request to {model.name}";
-            successStateLabel.text = $"Friend request sent to {model.name}";
+            base.Dispose();
+            model.ProfilePictureObserver?.RemoveListener(profileImage.SetImage);
         }
 
-        public void Close() => gameObject.SetActive(false);
+        public override void RefreshControl()
+        {
+            defaultContainer.SetActive(model.State == Model.LayoutState.Default);
+            pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
+            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
+            successContainer.SetActive(model.State == Model.LayoutState.Success);
+            nameLabel.text = model.Name;
+            pendingStateLabel.text = $"Sending friend request to {model.Name}";
+            successStateLabel.text = $"Friend request sent to {model.Name}";
+
+            // the load of the profile picture gets stuck if the same listener is registered many times
+            if (lastProfilePictureObserver != model.ProfilePictureObserver)
+            {
+                lastProfilePictureObserver?.RemoveListener(profileImage.SetImage);
+                model.ProfilePictureObserver?.AddListener(profileImage.SetImage);
+                lastProfilePictureObserver = model.ProfilePictureObserver;
+            }
+        }
+
+        public void Close()
+        {
+            base.Hide(instant: true);
+            gameObject.SetActive(false);
+        }
 
         public void Show()
         {
-            base.Show(instant: true);
             gameObject.SetActive(true);
+            base.Show(instant: true);
+            model.State = Model.LayoutState.Default;
             RefreshControl();
         }
 
         public void SetName(string name)
         {
-            model.name = name;
+            model.Name = name;
             RefreshControl();
         }
 
-        public void SetProfilePicture(string imageUrl)
+        public void SetProfilePicture(ILazyTextureObserver textureObserver)
         {
-            model.profilePictureUrl = imageUrl;
+            model.ProfilePictureObserver = textureObserver;
             RefreshControl();
         }
 
         public void ShowPendingToSend()
         {
-            model.state = Model.State.Pending;
+            model.State = Model.LayoutState.Pending;
             RefreshControl();
         }
 
         public void ShowSendSuccess()
         {
-            model.state = Model.State.Success;
+            model.State = Model.LayoutState.Success;
             RefreshControl();
         }
 
         public void ShowSendFailed()
         {
-            model.state = Model.State.Failed;
+            model.State = Model.LayoutState.Failed;
             RefreshControl();
         }
 
+        public void ClearInputField() => messageBodyInput.text = "";
+
         private class Model
         {
-            public string name;
-            public State state;
-            public string profilePictureUrl;
+            public string Name;
+            public LayoutState State;
+            public ILazyTextureObserver ProfilePictureObserver;
 
-            public enum State
+            public enum LayoutState
             {
                 Default,
                 Pending,

@@ -11,7 +11,7 @@ namespace DCL.Social.Friends
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
-        
+
         private string messageBody;
         private string userId;
 
@@ -31,6 +31,8 @@ namespace DCL.Social.Friends
             view.OnMessageBodyChanged += OnMessageBodyChanged;
             view.OnSend += Send;
             view.OnCancel += Hide;
+
+            view.Close();
         }
 
         public void Dispose()
@@ -57,7 +59,9 @@ namespace DCL.Social.Friends
             var userProfile = userProfileBridge.Get(recipient);
             if (userProfile == null) return;
             view.SetName(userProfile.userName);
-            view.SetProfilePicture(userProfile.face256SnapshotURL);
+            // must send the snapshot observer, otherwise the faceUrl is invalid and the texture never loads
+            view.SetProfilePicture(userProfile.snapshotObserver);
+            view.ClearInputField();
             view.Show();
         }
 
@@ -78,16 +82,16 @@ namespace DCL.Social.Friends
                 Debug.LogException(e);
                 view.ShowSendFailed();
             }
-            
+
             view.ShowSendSuccess();
         }
-        
+
         private void Hide()
         {
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             view.Close();
         }
-        
+
         private void OnMessageBodyChanged(string body) => messageBody = body;
     }
 }

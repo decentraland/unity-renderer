@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 
 namespace DCL.Social.Friends
@@ -12,9 +13,10 @@ namespace DCL.Social.Friends
         void Show();
         void Dispose();
         void SetName(string name);
-        void SetProfilePicture(string imageUrl);
+        void SetProfilePicture(ILazyTextureObserver textureObserver);
         void ShowPendingToSend();
         void ShowSendSuccess();
         void ShowSendFailed();
+        void ClearInputField();
     }
 }
