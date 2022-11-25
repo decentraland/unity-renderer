@@ -141,7 +141,6 @@ public class WorldChatWindowController : IHUD
             chatController.OnChannelLeft += HandleChannelLeft;
             chatController.OnAskForJoinChannel += HandleAskForJoinChannel;
             dataStore.channels.channelToBeOpened.OnChange += HandleChannelOpened;
-            rendererState.OnChange -= HandleAskForJoinChannelAfterRendererState;
 
             view.ShowChannelsLoading();
             view.SetSearchAndCreateContainerActive(true);
@@ -173,7 +172,7 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelJoined -= HandleChannelJoined;
         chatController.OnAutoChannelJoined -= HandleAutoChannelJoined;
         chatController.OnJoinChannelError -= HandleJoinChannelError;
-        chatController.OnChannelLeaveError += HandleLeaveChannelError;
+        chatController.OnChannelLeaveError -= HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
         chatController.OnAskForJoinChannel -= HandleAskForJoinChannel;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
@@ -181,6 +180,7 @@ public class WorldChatWindowController : IHUD
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
         dataStore.channels.channelToBeOpened.OnChange -= HandleChannelOpened;
+        rendererState.OnChange -= HandleAskForJoinChannelAfterRendererState;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -616,7 +616,7 @@ public class WorldChatWindowController : IHUD
         }
     }
 
-    private void HandleAskForJoinChannelAfterRendererState(bool current, bool previous)
+    private void HandleAskForJoinChannelAfterRendererState(bool current, bool _)
     {
         if (!current)
             return;

@@ -74,7 +74,7 @@ public class JoinChannelComponentController : IDisposable
 
         var alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
 
-        if (alreadyJoinedChannel == null || (alreadyJoinedChannel != null && !alreadyJoinedChannel.Joined))
+        if (alreadyJoinedChannel == null || !alreadyJoinedChannel.Joined)
             chatController.JoinOrCreateChannel(channelName);
         else
             dataStore.channels.channelToBeOpened.Set(alreadyJoinedChannel.ChannelId);
