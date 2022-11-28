@@ -8,10 +8,10 @@ namespace DCL
 {
     public class RealmsInfoBridge : MonoBehaviour
     {
-        public static event Action<JumpInPayload> OnRealmConnectionSuccess;
-        public static event Action<JumpInPayload> OnRealmConnectionFailed;
+        public event Action<JumpInPayload> OnRealmConnectionSuccess;
+        public event Action<JumpInPayload> OnRealmConnectionFailed;
 
-        RealmsInfoHandler handler = new RealmsInfoHandler();
+        private readonly RealmsInfoHandler handler = new RealmsInfoHandler();
 
         public void UpdateRealmsInfo(string payload) { handler.Set(payload); }
 
@@ -26,7 +26,7 @@ namespace DCL
             var realmConnectionFailedPayload = Utils.SafeFromJson<JumpInPayload>(json);
             OnRealmConnectionFailed?.Invoke(realmConnectionFailedPayload);
         }
-        
+
         [PublicAPI]
         public void SetRealmAbout(string payload)
         {

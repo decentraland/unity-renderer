@@ -1,6 +1,5 @@
 ﻿using DCL;
 using Decentraland.Bff;
-using System;
 
 namespace DCLPlugins.RealmsPlugin
 {
@@ -9,10 +8,17 @@ namespace DCLPlugins.RealmsPlugin
     /// </summary>
     public class RealmsSkyboxModifier : IRealmsModifier
     {
-        private bool isOverriden;
+        private readonly DataStore_SkyboxConfig skyboxConfig;
+
+        private bool hasCached;
 
         private bool cachedUseDynamicSkybox;
         private float cachedFixedTime;
+
+        public RealmsSkyboxModifier(DataStore_SkyboxConfig skyboxConfig)
+        {
+            this.skyboxConfig = skyboxConfig;
+        }
 
         public void Dispose() { }
 
@@ -20,40 +26,31 @@ namespace DCLPlugins.RealmsPlugin
         {
             if (realmConfiguration.Configurations.Skybox is { HasFixedHour: true })
             {
-                if (!isOverriden)
-                {
-                    isOverriden = true;
+                if (!hasCached)
                     CacheCurrentSkyboxSettings();
-                }
 
-                OverrideFixedHours(realmConfiguration);
+                skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour);
             }
-            else if (isOverriden)
+            else if (hasCached)
                 ResetToCached();
         }
 
         private void ResetToCached()
         {
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(cachedUseDynamicSkybox);
+            if (cachedUseDynamicSkybox)
+                skyboxConfig.useDynamicSkybox.Set(cachedUseDynamicSkybox);
+            else
+                skyboxConfig.UseFixedTimeFromHours(cachedFixedTime);
 
-            if (!cachedUseDynamicSkybox)
-                DataStore.i.skyboxConfig.fixedTime.Set(cachedFixedTime);
-
-            isOverriden = false;
+            hasCached = false;
         }
 
         private void CacheCurrentSkyboxSettings()
         {
-            cachedUseDynamicSkybox = DataStore.i.skyboxConfig.useDynamicSkybox.Get();
-            cachedFixedTime = DataStore.i.skyboxConfig.fixedTime.Get();
-        }
+            cachedUseDynamicSkybox = skyboxConfig.useDynamicSkybox.Get();
+            cachedFixedTime = skyboxConfig.fixedTime.Get();
 
-        private static void OverrideFixedHours(AboutResponse realmConfiguration)
-        {
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
-
-            DataStore.i.skyboxConfig.fixedTime.Set(
-                (float)TimeSpan.FromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour).TotalHours);
+            hasCached = true;
         }
     }
 }
