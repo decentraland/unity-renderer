@@ -7,6 +7,8 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);
 
+    public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
+
     public UserProfile GetOwn() => UserProfile.GetOwnUserProfile();
     
     public void AddUserProfileToCatalog(UserProfileModel userProfileModel)

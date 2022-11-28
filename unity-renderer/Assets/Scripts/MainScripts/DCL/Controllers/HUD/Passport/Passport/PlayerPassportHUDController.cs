@@ -85,6 +85,7 @@ namespace DCL.Social.Passports
             }
             else
             {
+                userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 view.SetPassportPanelVisibility(true);
                 UpdateUserProfileInSubpanels(currentUserProfile);

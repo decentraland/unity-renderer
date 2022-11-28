@@ -54,7 +54,10 @@ public class HUDFactory : IHUDFactory
                             DataStore.i, 
                             ProfanityFilterSharedInstances.regexFilter, 
                             FriendsController.i, 
-                            new UserProfileWebInterfaceBridge()),
+                            new UserProfileWebInterfaceBridge(),
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,
