@@ -1,4 +1,4 @@
-Shader "DCL/Toon Shader"
+Shader "DLC/Master_ToonShader_Outline_R5_V1_1_RT_Tags"
 {
     Properties
     {
