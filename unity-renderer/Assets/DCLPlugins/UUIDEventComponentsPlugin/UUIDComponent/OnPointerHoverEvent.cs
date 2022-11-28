@@ -4,6 +4,9 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -40,6 +43,15 @@ namespace DCL.Components
 
         public virtual void SetHoverState(bool hoverState)
         {
+            SetHighlightStatus(entity.meshesInfo.renderers, hoverState);
+        }
+
+        private void SetHighlightStatus(IReadOnlyList<Renderer> renderers, bool active)
+        {
+            if (active)
+                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers = renderers.Select(x => (x, x.GetComponent<MeshFilter>().sharedMesh.subMeshCount)).ToList();
+            else
+                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers.Clear();
         }
 
         void SetEventColliders(IDCLEntity entity)

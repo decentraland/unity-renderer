@@ -5,6 +5,8 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 
@@ -27,7 +29,7 @@ namespace DCL.Components
             this.entity = entity;
             eventColliders.Initialize(entity);
         }
-        
+
         public void UpdateCollidersEnabledBasedOnRenderers(IDCLEntity entity)
         {
             this.entity = entity;
@@ -115,7 +117,7 @@ namespace DCL.Components
 
             entity.OnShapeUpdated -= SetEventColliders;
             entity.OnShapeUpdated += SetEventColliders;
-            
+
             DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
@@ -126,9 +128,19 @@ namespace DCL.Components
 
         public void SetHoverState(bool hoverState)
         {
+            SetHighlightStatus(entity.meshesInfo.renderers, hoverState);
             Model model = (Model) this.model;
             pointerEventHandler.SetFeedbackState(model.showFeedback, hoverState, model.button, model.hoverText);
         }
+
+        private void SetHighlightStatus(IReadOnlyList<Renderer> renderers, bool active)
+        {
+            if (active)
+                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers = renderers.Select(x => (x, x.GetComponent<MeshFilter>().sharedMesh.subMeshCount)).ToList();
+            else
+                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers.Clear();
+        }
+
 
         void SetEventColliders(IDCLEntity entity)
         {
@@ -176,14 +188,14 @@ namespace DCL.Components
                 entity.OnShapeUpdated -= SetEventColliders;
 
             DataStore.i.sceneBoundariesChecker.Remove(entity,this);
-            
+
             pointerEventHandler.Dispose();
         }
 
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
         }
-        
+
         public virtual PointerInputEventType GetEventType()
         {
             return PointerInputEventType.NONE;
