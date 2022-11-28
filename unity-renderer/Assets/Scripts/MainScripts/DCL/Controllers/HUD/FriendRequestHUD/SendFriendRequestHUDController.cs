@@ -15,7 +15,7 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
 
         private string messageBody;
-        private string userId;
+        private string recipientId;
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -59,17 +59,19 @@ namespace DCL.Social.Friends
         private void Show(string recipient)
         {
             messageBody = "";
-            userId = recipient;
+            recipientId = recipient;
             var userProfile = userProfileBridge.Get(recipient);
             if (userProfile == null) return;
             view.SetName(userProfile.userName);
+
             // must send the snapshot observer, otherwise the faceUrl is invalid and the texture never loads
             view.SetProfilePicture(userProfile.snapshotObserver);
             view.ClearInputField();
             view.Show();
         }
 
-        private void Send() => SendAsync().Forget();
+        private void Send() =>
+            SendAsync().Forget();
 
         private async UniTaskVoid SendAsync()
         {
@@ -77,10 +79,12 @@ namespace DCL.Social.Friends
 
             try
             {
-                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, userId, messageBody.Length,
-                    (PlayerActionSource) dataStore.HUDs.sendFriendRequestSource.Get());
-                await friendsController.RequestFriendship(userId, messageBody)
-                    .Timeout(TimeSpan.FromSeconds(10));
+                await friendsController.RequestFriendship(recipientId, messageBody)
+                                       .Timeout(TimeSpan.FromSeconds(10));
+
+                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, recipientId, messageBody.Length,
+                    (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
+
                 view.ShowSendSuccess();
             }
             catch (Exception e)
@@ -97,6 +101,7 @@ namespace DCL.Social.Friends
             view.Close();
         }
 
-        private void OnMessageBodyChanged(string body) => messageBody = body;
+        private void OnMessageBodyChanged(string body) =>
+            messageBody = body;
     }
 }
