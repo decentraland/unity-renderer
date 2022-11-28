@@ -10,7 +10,6 @@ namespace DCl.Social.Friends
         event Action<FriendshipInitializationMessage> OnInitialized;
         event Action<string> OnFriendNotFound;
         event Action<AddFriendsPayload> OnFriendsAdded;
-        event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         event Action<UserStatus> OnUserPresenceUpdated;
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
@@ -22,7 +21,7 @@ namespace DCl.Social.Friends
         void RemoveFriend(string userId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
-        void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
         void CancelRequest(string userId);

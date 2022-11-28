@@ -5,8 +5,9 @@ namespace DCL.Social.Friends
     [Serializable]
     public class AddFriendRequestsPayload
     {
-        public string[] requestedTo;
-        public string[] requestedFrom;
+        public string messageId;
+        public FriendRequestPayload[] requestedTo;
+        public FriendRequestPayload[] requestedFrom;
         public int totalReceivedFriendRequests;
         public int totalSentFriendRequests;
     }

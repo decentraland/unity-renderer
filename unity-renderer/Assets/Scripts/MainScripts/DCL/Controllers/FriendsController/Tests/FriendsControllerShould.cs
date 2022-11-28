@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
@@ -68,14 +69,60 @@ namespace DCL.Social.Friends
             };
             controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-            apiBridge.OnFriendRequestsAdded += Raise.Event<Action<AddFriendRequestsPayload>>(
+            _ = apiBridge.GetFriendRequests(0, 0, 0, 0).Returns(UniTask.FromResult(
                 new AddFriendRequestsPayload
                 {
                     totalReceivedFriendRequests = 3,
                     totalSentFriendRequests = 2,
-                    requestedFrom = new[] {"rcv1", "rcv2", "rcv3"},
-                    requestedTo = new[] {"snt1", "snt2"}
-                });
+                    requestedFrom = new FriendRequestPayload[]
+                    {
+                        new FriendRequestPayload
+                        {
+                            friendRequestId = "test1",
+                            from = "rcv1",
+                            to = "me",
+                            messageBody = "",
+                            timestamp = 0
+                        },
+                        new FriendRequestPayload
+                        {
+                            friendRequestId = "test2",
+                            from = "rcv2",
+                            to = "me",
+                            messageBody = "",
+                            timestamp = 0
+                        },
+                        new FriendRequestPayload
+                        {
+                            friendRequestId = "test3",
+                            from = "rcv3",
+                            to = "me",
+                            messageBody = "",
+                            timestamp = 0
+                        }
+                    },
+                    requestedTo = new FriendRequestPayload[]
+                    {
+                        new FriendRequestPayload
+                        {
+                            friendRequestId = "test1",
+                            from = "me",
+                            to = "snt1",
+                            messageBody = "",
+                            timestamp = 0
+                        },
+                        new FriendRequestPayload
+                        {
+                            friendRequestId = "test2",
+                            from = "me",
+                            to = "snt2",
+                            messageBody = "",
+                            timestamp = 0
+                        }
+                    }
+                }));
+
+            controller.GetFriendRequests(0, 0, 0, 0).Forget();
 
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt1"]);
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt2"]);

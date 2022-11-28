@@ -1,16 +1,17 @@
-using System;
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCl.Social.Friends;
+using DCL;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
 {
     private const int LOAD_FRIENDS_ON_DEMAND_COUNT = 30;
     private const int MAX_SEARCHED_FRIENDS = 100;
+    private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
     private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
@@ -21,6 +22,7 @@ public class FriendsHUDController : IHUD
     private readonly IChatController chatController;
     private readonly IMouseCatcher mouseCatcher;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private bool isQuickActionsForFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -165,7 +167,7 @@ public class FriendsHUDController : IHUD
             if (View.IsFriendListActive)
                 DisplayMoreFriends();
             else if (View.IsRequestListActive)
-                DisplayMoreFriendRequests();
+                DisplayMoreFriendRequestsAsync().Forget();
             
             OnOpened?.Invoke();
         }
@@ -194,7 +196,7 @@ public class FriendsHUDController : IHUD
             if (View.IsFriendListActive && lastSkipForFriends <= 0)
                 DisplayMoreFriends();
             else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
-                DisplayMoreFriendRequests();
+                DisplayMoreFriendRequestsAsync().Forget();
         }
         
         UpdateNotificationsCounter();
@@ -287,8 +289,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
@@ -297,8 +299,8 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
@@ -342,26 +344,6 @@ public class FriendsHUDController : IHUD
                 approved.blocked = IsUserBlocked(userId);
                 friends[userId] = approved;
                 View.Set(userId, approved);
-                userProfile.OnUpdate += HandleFriendProfileUpdated;
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                var requestReceived = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
-                requestReceived.CopyFrom(userProfile);
-                requestReceived.blocked = IsUserBlocked(userId);
-                friends[userId] = requestReceived;
-                View.Set(userId, requestReceived);
-                userProfile.OnUpdate += HandleFriendProfileUpdated;
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                var requestSent = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
-                requestSent.CopyFrom(userProfile);
-                requestSent.blocked = IsUserBlocked(userId);
-                friends[userId] = requestSent;
-                View.Set(userId, requestSent);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
         }
@@ -456,27 +438,68 @@ public class FriendsHUDController : IHUD
         ShowOrHideMoreFriendsToLoadHint();
     }
 
-    private void DisplayMoreFriendRequests()
+    public void DisplayMoreFriendRequests() => DisplayMoreFriendRequestsAsync().Forget();
+
+    private async UniTaskVoid DisplayMoreFriendRequestsAsync()
     {
         if (!friendsController.IsInitialized) return;
         if (searchingFriends) return;
         
-        friendsController.GetFriendRequests(
+        var allfriendRequests = await friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
-        
+
+        AddFriendRequests(allfriendRequests);
+
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
         
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
-    
+
+    private void AddFriendRequests(List<FriendRequest> friendRequests)
+    {
+        if (friendRequests == null)
+            return;
+
+        foreach (var friendRequest in friendRequests)
+        {
+            bool isReceivedRequest = friendRequest.To == ownUserProfile.userId;
+            string userId = isReceivedRequest ? friendRequest.From : friendRequest.To;
+            var userProfile = userProfileBridge.Get(userId);
+
+            if (userProfile == null)
+            {
+                Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {(isReceivedRequest ? FriendshipAction.REQUESTED_FROM : FriendshipAction.REQUESTED_TO)}");
+                continue;
+            }
+
+            userProfile.OnUpdate -= HandleFriendProfileUpdated;
+
+            var request = friends.ContainsKey(userId)
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, isQuickActionsForFriendRequestsEnabled)
+                : new FriendRequestEntryModel
+                {
+                    bodyMessage = friendRequest.MessageBody,
+                    isReceived = isReceivedRequest,
+                    timestamp = friendRequest.Timestamp,
+                    isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
+                };
+            request.CopyFrom(userProfile);
+            request.blocked = IsUserBlocked(userId);
+            friends[userId] = request;
+            View.Set(userId, request);
+            userProfile.OnUpdate += HandleFriendProfileUpdated;
+        }
+    }
+
+
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
         if (lastSkipForFriendRequests > 0) return;
-        DisplayMoreFriendRequests();
+        DisplayMoreFriendRequestsAsync().Forget();
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
