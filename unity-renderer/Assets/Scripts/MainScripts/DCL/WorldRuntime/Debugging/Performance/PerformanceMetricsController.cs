@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
+using Google.Protobuf.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using Newtonsoft.Json;
 using Unity.Profiling;
@@ -31,7 +32,7 @@ namespace DCL
         private int currentIndex = 0;
         private long totalAllocSample;
         private bool isTrackingProfileRecords = false;
-        private readonly Dictionary<int, long> scenesMemoryScore = new Dictionary<int, long>();
+        private readonly Dictionary<long, long> scenesMemoryScore = new Dictionary<long, long>();
 
         public PerformanceMetricsController()
         {
@@ -99,7 +100,7 @@ namespace DCL
                 IParcelScene parcelSceneValue = parcelScene.Value;
 
                 if (parcelSceneValue.isPersistent)
-                    continue; 
+                    continue;
 
                 scenesMemoryScore.Add(parcelSceneValue.sceneData.sceneNumber, parcelSceneValue.metricsCounter.currentCount.totalMemoryScore);
             }
@@ -135,38 +136,39 @@ namespace DCL
             float hiccupsTime = tracker.GetHiccupSum();
 
             float totalTime = tracker.GetTotalSeconds();
-            
-            WebInterface.PerformanceReportPayload performanceReportPayload = new WebInterface.PerformanceReportPayload
+
+            var performanceReportRequest = new PerformanceReportRequest
             {
-                samples = encodedSamples,
-                fpsIsCapped = usingFPSCap,
-                hiccupsInThousandFrames = hiccupsInThousandFrames,
-                hiccupsTime = hiccupsTime,
-                totalTime = totalTime,
-                gltfInProgress = gltfloading,
-                gltfFailed = gltffailed,
-                gltfCancelled = gltfcancelled,
-                gltfLoaded = gltfloaded,
-                abInProgress = abloading,
-                abFailed = abfailed,
-                abCancelled = abcancelled,
-                abLoaded = abloaded,
-                gltfTexturesLoaded = gltfTextures,
-                abTexturesLoaded = abTextures,
-                promiseTexturesLoaded = promiseTextures,
-                enqueuedMessages = queuedMessages,
-                processedMessages = processedMessages,
-                playerCount = playerCount,
-                loadRadius = (int)loadRadius,
-                sceneScores = scenesMemoryScore,
-                drawCalls = drawCalls,
-                memoryReserved = totalMemoryReserved,
-                memoryUsage = totalMemoryUsage,
-                totalGCAlloc = totalGCAlloc
+                Samples = encodedSamples,
+                FpsIsCapped = usingFPSCap,
+                HiccupsInThousandFrames = hiccupsInThousandFrames,
+                HiccupsTime = hiccupsTime,
+                TotalTime = totalTime,
+                GltfInProgress = gltfloading,
+                GltfFailed = gltffailed,
+                GltfCancelled = gltfcancelled,
+                GltfLoaded = gltfloaded,
+                AbInProgress = abloading,
+                AbFailed = abfailed,
+                AbCancelled = abcancelled,
+                AbLoaded = abloaded,
+                GltfTexturesLoaded = gltfTextures,
+                AbTexturesLoaded = abTextures,
+                PromiseTexturesLoaded = promiseTextures,
+                EnqueuedMessages = queuedMessages,
+                ProcessedMessages = processedMessages,
+                PlayerCount = playerCount,
+                LoadRadius = (int) loadRadius,
+                SceneScores = { scenesMemoryScore },
+                DrawCalls = (int) drawCalls!,
+                MemoryReserved = (long) totalMemoryReserved!,
+                MemoryUsage = (long) totalMemoryUsage,
+                TotalGcAlloc = (long) totalGCAlloc
             };
 
-            var result = JsonConvert.SerializeObject(performanceReportPayload);
-            WebInterface.SendPerformanceReport(result);
+            ClientAnalyticsKernelService analytics = Environment.i.serviceLocator.Get<IRPC>().analytics;
+            analytics?.PerformanceReport(performanceReportRequest);
+
             PerformanceAnalytics.ResetAll();
         }
     }

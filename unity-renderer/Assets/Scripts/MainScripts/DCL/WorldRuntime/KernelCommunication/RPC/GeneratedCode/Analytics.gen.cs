@@ -25,21 +25,21 @@ public static partial class AnalyticsReflection {
           "CjVkZWNlbnRyYWxhbmQvcmVuZGVyZXIva2VybmVsX3NlcnZpY2VzL2FuYWx5",
           "dGljcy5wcm90byLOBQoYUGVyZm9ybWFuY2VSZXBvcnRSZXF1ZXN0Eg8KB3Nh",
           "bXBsZXMYASABKAkSFQoNZnBzX2lzX2NhcHBlZBgCIAEoCBIiChpoaWNjdXBz",
-          "X2luX3Rob3VzYW5kX2ZyYW1lcxgDIAEoBxIUCgxoaWNjdXBzX3RpbWUYBCAB",
+          "X2luX3Rob3VzYW5kX2ZyYW1lcxgDIAEoDxIUCgxoaWNjdXBzX3RpbWUYBCAB",
           "KAISEgoKdG90YWxfdGltZRgFIAEoAhIYChBnbHRmX2luX3Byb2dyZXNzGAYg",
-          "ASgHEhMKC2dsdGZfZmFpbGVkGAcgASgHEhYKDmdsdGZfY2FuY2VsbGVkGAgg",
-          "ASgHEhMKC2dsdGZfbG9hZGVkGAkgASgHEhYKDmFiX2luX3Byb2dyZXNzGAog",
-          "ASgHEhEKCWFiX2ZhaWxlZBgLIAEoBxIUCgxhYl9jYW5jZWxsZWQYDCABKAcS",
-          "EQoJYWJfbG9hZGVkGA0gASgHEhwKFGdsdGZfdGV4dHVyZXNfbG9hZGVkGA4g",
-          "ASgHEhoKEmFiX3RleHR1cmVzX2xvYWRlZBgPIAEoBxIfChdwcm9taXNlX3Rl",
-          "eHR1cmVzX2xvYWRlZBgQIAEoBxIZChFlbnF1ZXVlZF9tZXNzYWdlcxgRIAEo",
-          "BxIaChJwcm9jZXNzZWRfbWVzc2FnZXMYEiABKAcSFAoMcGxheWVyX2NvdW50",
-          "GBMgASgHEhMKC2xvYWRfcmFkaXVzGBQgASgHEhIKCmRyYXdfY2FsbHMYFSAB",
-          "KAcSFwoPbWVtb3J5X3Jlc2VydmVkGBYgASgGEhQKDG1lbW9yeV91c2FnZRgX",
-          "IAEoBhIWCg50b3RhbF9nY19hbGxvYxgYIAEoBhJACgxzY2VuZV9zY29yZXMY",
+          "ASgPEhMKC2dsdGZfZmFpbGVkGAcgASgPEhYKDmdsdGZfY2FuY2VsbGVkGAgg",
+          "ASgPEhMKC2dsdGZfbG9hZGVkGAkgASgPEhYKDmFiX2luX3Byb2dyZXNzGAog",
+          "ASgPEhEKCWFiX2ZhaWxlZBgLIAEoDxIUCgxhYl9jYW5jZWxsZWQYDCABKA8S",
+          "EQoJYWJfbG9hZGVkGA0gASgPEhwKFGdsdGZfdGV4dHVyZXNfbG9hZGVkGA4g",
+          "ASgPEhoKEmFiX3RleHR1cmVzX2xvYWRlZBgPIAEoDxIfChdwcm9taXNlX3Rl",
+          "eHR1cmVzX2xvYWRlZBgQIAEoDxIZChFlbnF1ZXVlZF9tZXNzYWdlcxgRIAEo",
+          "DxIaChJwcm9jZXNzZWRfbWVzc2FnZXMYEiABKA8SFAoMcGxheWVyX2NvdW50",
+          "GBMgASgPEhMKC2xvYWRfcmFkaXVzGBQgASgPEhIKCmRyYXdfY2FsbHMYFSAB",
+          "KA8SFwoPbWVtb3J5X3Jlc2VydmVkGBYgASgQEhQKDG1lbW9yeV91c2FnZRgX",
+          "IAEoEBIWCg50b3RhbF9nY19hbGxvYxgYIAEoEBJACgxzY2VuZV9zY29yZXMY",
           "GSADKAsyKi5QZXJmb3JtYW5jZVJlcG9ydFJlcXVlc3QuU2NlbmVTY29yZXNF",
-          "bnRyeRoyChBTY2VuZVNjb3Jlc0VudHJ5EgsKA2tleRgBIAEoBhINCgV2YWx1",
-          "ZRgCIAEoBjoCOAEiGwoZUGVyZm9ybWFuY2VSZXBvcnRSZXNwb25zZSLhAQoX",
+          "bnRyeRoyChBTY2VuZVNjb3Jlc0VudHJ5EgsKA2tleRgBIAEoEBINCgV2YWx1",
+          "ZRgCIAEoEDoCOAEiGwoZUGVyZm9ybWFuY2VSZXBvcnRSZXNwb25zZSLhAQoX",
           "U3lzdGVtSW5mb1JlcG9ydFJlcXVlc3QSHAoUZ3JhcGhpY3NfZGV2aWNlX25h",
           "bWUYASABKAkSHwoXZ3JhcGhpY3NfZGV2aWNlX3ZlcnNpb24YAiABKAkSHAoU",
           "Z3JhcGhpY3NfbWVtb3J5X3NpemUYAyABKAcSFgoOcHJvY2Vzc29yX3R5cGUY",
@@ -171,10 +171,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "hiccups_in_thousand_frames" field.</summary>
   public const int HiccupsInThousandFramesFieldNumber = 3;
-  private uint hiccupsInThousandFrames_;
+  private int hiccupsInThousandFrames_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint HiccupsInThousandFrames {
+  public int HiccupsInThousandFrames {
     get { return hiccupsInThousandFrames_; }
     set {
       hiccupsInThousandFrames_ = value;
@@ -207,10 +207,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "gltf_in_progress" field.</summary>
   public const int GltfInProgressFieldNumber = 6;
-  private uint gltfInProgress_;
+  private int gltfInProgress_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint GltfInProgress {
+  public int GltfInProgress {
     get { return gltfInProgress_; }
     set {
       gltfInProgress_ = value;
@@ -219,10 +219,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "gltf_failed" field.</summary>
   public const int GltfFailedFieldNumber = 7;
-  private uint gltfFailed_;
+  private int gltfFailed_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint GltfFailed {
+  public int GltfFailed {
     get { return gltfFailed_; }
     set {
       gltfFailed_ = value;
@@ -231,10 +231,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "gltf_cancelled" field.</summary>
   public const int GltfCancelledFieldNumber = 8;
-  private uint gltfCancelled_;
+  private int gltfCancelled_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint GltfCancelled {
+  public int GltfCancelled {
     get { return gltfCancelled_; }
     set {
       gltfCancelled_ = value;
@@ -243,10 +243,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "gltf_loaded" field.</summary>
   public const int GltfLoadedFieldNumber = 9;
-  private uint gltfLoaded_;
+  private int gltfLoaded_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint GltfLoaded {
+  public int GltfLoaded {
     get { return gltfLoaded_; }
     set {
       gltfLoaded_ = value;
@@ -255,10 +255,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "ab_in_progress" field.</summary>
   public const int AbInProgressFieldNumber = 10;
-  private uint abInProgress_;
+  private int abInProgress_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint AbInProgress {
+  public int AbInProgress {
     get { return abInProgress_; }
     set {
       abInProgress_ = value;
@@ -267,10 +267,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "ab_failed" field.</summary>
   public const int AbFailedFieldNumber = 11;
-  private uint abFailed_;
+  private int abFailed_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint AbFailed {
+  public int AbFailed {
     get { return abFailed_; }
     set {
       abFailed_ = value;
@@ -279,10 +279,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "ab_cancelled" field.</summary>
   public const int AbCancelledFieldNumber = 12;
-  private uint abCancelled_;
+  private int abCancelled_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint AbCancelled {
+  public int AbCancelled {
     get { return abCancelled_; }
     set {
       abCancelled_ = value;
@@ -291,10 +291,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "ab_loaded" field.</summary>
   public const int AbLoadedFieldNumber = 13;
-  private uint abLoaded_;
+  private int abLoaded_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint AbLoaded {
+  public int AbLoaded {
     get { return abLoaded_; }
     set {
       abLoaded_ = value;
@@ -303,10 +303,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "gltf_textures_loaded" field.</summary>
   public const int GltfTexturesLoadedFieldNumber = 14;
-  private uint gltfTexturesLoaded_;
+  private int gltfTexturesLoaded_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint GltfTexturesLoaded {
+  public int GltfTexturesLoaded {
     get { return gltfTexturesLoaded_; }
     set {
       gltfTexturesLoaded_ = value;
@@ -315,10 +315,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "ab_textures_loaded" field.</summary>
   public const int AbTexturesLoadedFieldNumber = 15;
-  private uint abTexturesLoaded_;
+  private int abTexturesLoaded_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint AbTexturesLoaded {
+  public int AbTexturesLoaded {
     get { return abTexturesLoaded_; }
     set {
       abTexturesLoaded_ = value;
@@ -327,10 +327,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "promise_textures_loaded" field.</summary>
   public const int PromiseTexturesLoadedFieldNumber = 16;
-  private uint promiseTexturesLoaded_;
+  private int promiseTexturesLoaded_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint PromiseTexturesLoaded {
+  public int PromiseTexturesLoaded {
     get { return promiseTexturesLoaded_; }
     set {
       promiseTexturesLoaded_ = value;
@@ -339,10 +339,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "enqueued_messages" field.</summary>
   public const int EnqueuedMessagesFieldNumber = 17;
-  private uint enqueuedMessages_;
+  private int enqueuedMessages_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint EnqueuedMessages {
+  public int EnqueuedMessages {
     get { return enqueuedMessages_; }
     set {
       enqueuedMessages_ = value;
@@ -351,10 +351,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "processed_messages" field.</summary>
   public const int ProcessedMessagesFieldNumber = 18;
-  private uint processedMessages_;
+  private int processedMessages_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint ProcessedMessages {
+  public int ProcessedMessages {
     get { return processedMessages_; }
     set {
       processedMessages_ = value;
@@ -363,10 +363,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "player_count" field.</summary>
   public const int PlayerCountFieldNumber = 19;
-  private uint playerCount_;
+  private int playerCount_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint PlayerCount {
+  public int PlayerCount {
     get { return playerCount_; }
     set {
       playerCount_ = value;
@@ -375,10 +375,10 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "load_radius" field.</summary>
   public const int LoadRadiusFieldNumber = 20;
-  private uint loadRadius_;
+  private int loadRadius_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint LoadRadius {
+  public int LoadRadius {
     get { return loadRadius_; }
     set {
       loadRadius_ = value;
@@ -387,13 +387,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "draw_calls" field.</summary>
   public const int DrawCallsFieldNumber = 21;
-  private uint drawCalls_;
+  private int drawCalls_;
   /// <summary>
   ///int32 *
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public uint DrawCalls {
+  public int DrawCalls {
     get { return drawCalls_; }
     set {
       drawCalls_ = value;
@@ -402,13 +402,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "memory_reserved" field.</summary>
   public const int MemoryReservedFieldNumber = 22;
-  private ulong memoryReserved_;
+  private long memoryReserved_;
   /// <summary>
   ///long, in total bytes *
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ulong MemoryReserved {
+  public long MemoryReserved {
     get { return memoryReserved_; }
     set {
       memoryReserved_ = value;
@@ -417,13 +417,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "memory_usage" field.</summary>
   public const int MemoryUsageFieldNumber = 23;
-  private ulong memoryUsage_;
+  private long memoryUsage_;
   /// <summary>
   ///long, in total bytes *
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ulong MemoryUsage {
+  public long MemoryUsage {
     get { return memoryUsage_; }
     set {
       memoryUsage_ = value;
@@ -432,13 +432,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "total_gc_alloc" field.</summary>
   public const int TotalGcAllocFieldNumber = 24;
-  private ulong totalGcAlloc_;
+  private long totalGcAlloc_;
   /// <summary>
   ///long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ulong TotalGcAlloc {
+  public long TotalGcAlloc {
     get { return totalGcAlloc_; }
     set {
       totalGcAlloc_ = value;
@@ -447,12 +447,12 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
 
   /// <summary>Field number for the "scene_scores" field.</summary>
   public const int SceneScoresFieldNumber = 25;
-  private static readonly pbc::MapField<ulong, ulong>.Codec _map_sceneScores_codec
-      = new pbc::MapField<ulong, ulong>.Codec(pb::FieldCodec.ForFixed64(9, 0UL), pb::FieldCodec.ForFixed64(17, 0UL), 202);
-  private readonly pbc::MapField<ulong, ulong> sceneScores_ = new pbc::MapField<ulong, ulong>();
+  private static readonly pbc::MapField<long, long>.Codec _map_sceneScores_codec
+      = new pbc::MapField<long, long>.Codec(pb::FieldCodec.ForSFixed64(9, 0L), pb::FieldCodec.ForSFixed64(17, 0L), 202);
+  private readonly pbc::MapField<long, long> sceneScores_ = new pbc::MapField<long, long>();
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::MapField<ulong, ulong> SceneScores {
+  public pbc::MapField<long, long> SceneScores {
     get { return sceneScores_; }
   }
 
@@ -524,9 +524,9 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     if (PlayerCount != 0) hash ^= PlayerCount.GetHashCode();
     if (LoadRadius != 0) hash ^= LoadRadius.GetHashCode();
     if (DrawCalls != 0) hash ^= DrawCalls.GetHashCode();
-    if (MemoryReserved != 0UL) hash ^= MemoryReserved.GetHashCode();
-    if (MemoryUsage != 0UL) hash ^= MemoryUsage.GetHashCode();
-    if (TotalGcAlloc != 0UL) hash ^= TotalGcAlloc.GetHashCode();
+    if (MemoryReserved != 0L) hash ^= MemoryReserved.GetHashCode();
+    if (MemoryUsage != 0L) hash ^= MemoryUsage.GetHashCode();
+    if (TotalGcAlloc != 0L) hash ^= TotalGcAlloc.GetHashCode();
     hash ^= SceneScores.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -556,7 +556,7 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     }
     if (HiccupsInThousandFrames != 0) {
       output.WriteRawTag(29);
-      output.WriteFixed32(HiccupsInThousandFrames);
+      output.WriteSFixed32(HiccupsInThousandFrames);
     }
     if (HiccupsTime != 0F) {
       output.WriteRawTag(37);
@@ -568,79 +568,79 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     }
     if (GltfInProgress != 0) {
       output.WriteRawTag(53);
-      output.WriteFixed32(GltfInProgress);
+      output.WriteSFixed32(GltfInProgress);
     }
     if (GltfFailed != 0) {
       output.WriteRawTag(61);
-      output.WriteFixed32(GltfFailed);
+      output.WriteSFixed32(GltfFailed);
     }
     if (GltfCancelled != 0) {
       output.WriteRawTag(69);
-      output.WriteFixed32(GltfCancelled);
+      output.WriteSFixed32(GltfCancelled);
     }
     if (GltfLoaded != 0) {
       output.WriteRawTag(77);
-      output.WriteFixed32(GltfLoaded);
+      output.WriteSFixed32(GltfLoaded);
     }
     if (AbInProgress != 0) {
       output.WriteRawTag(85);
-      output.WriteFixed32(AbInProgress);
+      output.WriteSFixed32(AbInProgress);
     }
     if (AbFailed != 0) {
       output.WriteRawTag(93);
-      output.WriteFixed32(AbFailed);
+      output.WriteSFixed32(AbFailed);
     }
     if (AbCancelled != 0) {
       output.WriteRawTag(101);
-      output.WriteFixed32(AbCancelled);
+      output.WriteSFixed32(AbCancelled);
     }
     if (AbLoaded != 0) {
       output.WriteRawTag(109);
-      output.WriteFixed32(AbLoaded);
+      output.WriteSFixed32(AbLoaded);
     }
     if (GltfTexturesLoaded != 0) {
       output.WriteRawTag(117);
-      output.WriteFixed32(GltfTexturesLoaded);
+      output.WriteSFixed32(GltfTexturesLoaded);
     }
     if (AbTexturesLoaded != 0) {
       output.WriteRawTag(125);
-      output.WriteFixed32(AbTexturesLoaded);
+      output.WriteSFixed32(AbTexturesLoaded);
     }
     if (PromiseTexturesLoaded != 0) {
       output.WriteRawTag(133, 1);
-      output.WriteFixed32(PromiseTexturesLoaded);
+      output.WriteSFixed32(PromiseTexturesLoaded);
     }
     if (EnqueuedMessages != 0) {
       output.WriteRawTag(141, 1);
-      output.WriteFixed32(EnqueuedMessages);
+      output.WriteSFixed32(EnqueuedMessages);
     }
     if (ProcessedMessages != 0) {
       output.WriteRawTag(149, 1);
-      output.WriteFixed32(ProcessedMessages);
+      output.WriteSFixed32(ProcessedMessages);
     }
     if (PlayerCount != 0) {
       output.WriteRawTag(157, 1);
-      output.WriteFixed32(PlayerCount);
+      output.WriteSFixed32(PlayerCount);
     }
     if (LoadRadius != 0) {
       output.WriteRawTag(165, 1);
-      output.WriteFixed32(LoadRadius);
+      output.WriteSFixed32(LoadRadius);
     }
     if (DrawCalls != 0) {
       output.WriteRawTag(173, 1);
-      output.WriteFixed32(DrawCalls);
+      output.WriteSFixed32(DrawCalls);
     }
-    if (MemoryReserved != 0UL) {
+    if (MemoryReserved != 0L) {
       output.WriteRawTag(177, 1);
-      output.WriteFixed64(MemoryReserved);
+      output.WriteSFixed64(MemoryReserved);
     }
-    if (MemoryUsage != 0UL) {
+    if (MemoryUsage != 0L) {
       output.WriteRawTag(185, 1);
-      output.WriteFixed64(MemoryUsage);
+      output.WriteSFixed64(MemoryUsage);
     }
-    if (TotalGcAlloc != 0UL) {
+    if (TotalGcAlloc != 0L) {
       output.WriteRawTag(193, 1);
-      output.WriteFixed64(TotalGcAlloc);
+      output.WriteSFixed64(TotalGcAlloc);
     }
     sceneScores_.WriteTo(output, _map_sceneScores_codec);
     if (_unknownFields != null) {
@@ -663,7 +663,7 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     }
     if (HiccupsInThousandFrames != 0) {
       output.WriteRawTag(29);
-      output.WriteFixed32(HiccupsInThousandFrames);
+      output.WriteSFixed32(HiccupsInThousandFrames);
     }
     if (HiccupsTime != 0F) {
       output.WriteRawTag(37);
@@ -675,79 +675,79 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     }
     if (GltfInProgress != 0) {
       output.WriteRawTag(53);
-      output.WriteFixed32(GltfInProgress);
+      output.WriteSFixed32(GltfInProgress);
     }
     if (GltfFailed != 0) {
       output.WriteRawTag(61);
-      output.WriteFixed32(GltfFailed);
+      output.WriteSFixed32(GltfFailed);
     }
     if (GltfCancelled != 0) {
       output.WriteRawTag(69);
-      output.WriteFixed32(GltfCancelled);
+      output.WriteSFixed32(GltfCancelled);
     }
     if (GltfLoaded != 0) {
       output.WriteRawTag(77);
-      output.WriteFixed32(GltfLoaded);
+      output.WriteSFixed32(GltfLoaded);
     }
     if (AbInProgress != 0) {
       output.WriteRawTag(85);
-      output.WriteFixed32(AbInProgress);
+      output.WriteSFixed32(AbInProgress);
     }
     if (AbFailed != 0) {
       output.WriteRawTag(93);
-      output.WriteFixed32(AbFailed);
+      output.WriteSFixed32(AbFailed);
     }
     if (AbCancelled != 0) {
       output.WriteRawTag(101);
-      output.WriteFixed32(AbCancelled);
+      output.WriteSFixed32(AbCancelled);
     }
     if (AbLoaded != 0) {
       output.WriteRawTag(109);
-      output.WriteFixed32(AbLoaded);
+      output.WriteSFixed32(AbLoaded);
     }
     if (GltfTexturesLoaded != 0) {
       output.WriteRawTag(117);
-      output.WriteFixed32(GltfTexturesLoaded);
+      output.WriteSFixed32(GltfTexturesLoaded);
     }
     if (AbTexturesLoaded != 0) {
       output.WriteRawTag(125);
-      output.WriteFixed32(AbTexturesLoaded);
+      output.WriteSFixed32(AbTexturesLoaded);
     }
     if (PromiseTexturesLoaded != 0) {
       output.WriteRawTag(133, 1);
-      output.WriteFixed32(PromiseTexturesLoaded);
+      output.WriteSFixed32(PromiseTexturesLoaded);
     }
     if (EnqueuedMessages != 0) {
       output.WriteRawTag(141, 1);
-      output.WriteFixed32(EnqueuedMessages);
+      output.WriteSFixed32(EnqueuedMessages);
     }
     if (ProcessedMessages != 0) {
       output.WriteRawTag(149, 1);
-      output.WriteFixed32(ProcessedMessages);
+      output.WriteSFixed32(ProcessedMessages);
     }
     if (PlayerCount != 0) {
       output.WriteRawTag(157, 1);
-      output.WriteFixed32(PlayerCount);
+      output.WriteSFixed32(PlayerCount);
     }
     if (LoadRadius != 0) {
       output.WriteRawTag(165, 1);
-      output.WriteFixed32(LoadRadius);
+      output.WriteSFixed32(LoadRadius);
     }
     if (DrawCalls != 0) {
       output.WriteRawTag(173, 1);
-      output.WriteFixed32(DrawCalls);
+      output.WriteSFixed32(DrawCalls);
     }
-    if (MemoryReserved != 0UL) {
+    if (MemoryReserved != 0L) {
       output.WriteRawTag(177, 1);
-      output.WriteFixed64(MemoryReserved);
+      output.WriteSFixed64(MemoryReserved);
     }
-    if (MemoryUsage != 0UL) {
+    if (MemoryUsage != 0L) {
       output.WriteRawTag(185, 1);
-      output.WriteFixed64(MemoryUsage);
+      output.WriteSFixed64(MemoryUsage);
     }
-    if (TotalGcAlloc != 0UL) {
+    if (TotalGcAlloc != 0L) {
       output.WriteRawTag(193, 1);
-      output.WriteFixed64(TotalGcAlloc);
+      output.WriteSFixed64(TotalGcAlloc);
     }
     sceneScores_.WriteTo(ref output, _map_sceneScores_codec);
     if (_unknownFields != null) {
@@ -823,13 +823,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     if (DrawCalls != 0) {
       size += 2 + 4;
     }
-    if (MemoryReserved != 0UL) {
+    if (MemoryReserved != 0L) {
       size += 2 + 8;
     }
-    if (MemoryUsage != 0UL) {
+    if (MemoryUsage != 0L) {
       size += 2 + 8;
     }
-    if (TotalGcAlloc != 0UL) {
+    if (TotalGcAlloc != 0L) {
       size += 2 + 8;
     }
     size += sceneScores_.CalculateSize(_map_sceneScores_codec);
@@ -908,13 +908,13 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
     if (other.DrawCalls != 0) {
       DrawCalls = other.DrawCalls;
     }
-    if (other.MemoryReserved != 0UL) {
+    if (other.MemoryReserved != 0L) {
       MemoryReserved = other.MemoryReserved;
     }
-    if (other.MemoryUsage != 0UL) {
+    if (other.MemoryUsage != 0L) {
       MemoryUsage = other.MemoryUsage;
     }
-    if (other.TotalGcAlloc != 0UL) {
+    if (other.TotalGcAlloc != 0L) {
       TotalGcAlloc = other.TotalGcAlloc;
     }
     sceneScores_.Add(other.sceneScores_);
@@ -942,7 +942,7 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
           break;
         }
         case 29: {
-          HiccupsInThousandFrames = input.ReadFixed32();
+          HiccupsInThousandFrames = input.ReadSFixed32();
           break;
         }
         case 37: {
@@ -954,79 +954,79 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
           break;
         }
         case 53: {
-          GltfInProgress = input.ReadFixed32();
+          GltfInProgress = input.ReadSFixed32();
           break;
         }
         case 61: {
-          GltfFailed = input.ReadFixed32();
+          GltfFailed = input.ReadSFixed32();
           break;
         }
         case 69: {
-          GltfCancelled = input.ReadFixed32();
+          GltfCancelled = input.ReadSFixed32();
           break;
         }
         case 77: {
-          GltfLoaded = input.ReadFixed32();
+          GltfLoaded = input.ReadSFixed32();
           break;
         }
         case 85: {
-          AbInProgress = input.ReadFixed32();
+          AbInProgress = input.ReadSFixed32();
           break;
         }
         case 93: {
-          AbFailed = input.ReadFixed32();
+          AbFailed = input.ReadSFixed32();
           break;
         }
         case 101: {
-          AbCancelled = input.ReadFixed32();
+          AbCancelled = input.ReadSFixed32();
           break;
         }
         case 109: {
-          AbLoaded = input.ReadFixed32();
+          AbLoaded = input.ReadSFixed32();
           break;
         }
         case 117: {
-          GltfTexturesLoaded = input.ReadFixed32();
+          GltfTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 125: {
-          AbTexturesLoaded = input.ReadFixed32();
+          AbTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 133: {
-          PromiseTexturesLoaded = input.ReadFixed32();
+          PromiseTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 141: {
-          EnqueuedMessages = input.ReadFixed32();
+          EnqueuedMessages = input.ReadSFixed32();
           break;
         }
         case 149: {
-          ProcessedMessages = input.ReadFixed32();
+          ProcessedMessages = input.ReadSFixed32();
           break;
         }
         case 157: {
-          PlayerCount = input.ReadFixed32();
+          PlayerCount = input.ReadSFixed32();
           break;
         }
         case 165: {
-          LoadRadius = input.ReadFixed32();
+          LoadRadius = input.ReadSFixed32();
           break;
         }
         case 173: {
-          DrawCalls = input.ReadFixed32();
+          DrawCalls = input.ReadSFixed32();
           break;
         }
         case 177: {
-          MemoryReserved = input.ReadFixed64();
+          MemoryReserved = input.ReadSFixed64();
           break;
         }
         case 185: {
-          MemoryUsage = input.ReadFixed64();
+          MemoryUsage = input.ReadSFixed64();
           break;
         }
         case 193: {
-          TotalGcAlloc = input.ReadFixed64();
+          TotalGcAlloc = input.ReadSFixed64();
           break;
         }
         case 202: {
@@ -1057,7 +1057,7 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
           break;
         }
         case 29: {
-          HiccupsInThousandFrames = input.ReadFixed32();
+          HiccupsInThousandFrames = input.ReadSFixed32();
           break;
         }
         case 37: {
@@ -1069,79 +1069,79 @@ public sealed partial class PerformanceReportRequest : pb::IMessage<PerformanceR
           break;
         }
         case 53: {
-          GltfInProgress = input.ReadFixed32();
+          GltfInProgress = input.ReadSFixed32();
           break;
         }
         case 61: {
-          GltfFailed = input.ReadFixed32();
+          GltfFailed = input.ReadSFixed32();
           break;
         }
         case 69: {
-          GltfCancelled = input.ReadFixed32();
+          GltfCancelled = input.ReadSFixed32();
           break;
         }
         case 77: {
-          GltfLoaded = input.ReadFixed32();
+          GltfLoaded = input.ReadSFixed32();
           break;
         }
         case 85: {
-          AbInProgress = input.ReadFixed32();
+          AbInProgress = input.ReadSFixed32();
           break;
         }
         case 93: {
-          AbFailed = input.ReadFixed32();
+          AbFailed = input.ReadSFixed32();
           break;
         }
         case 101: {
-          AbCancelled = input.ReadFixed32();
+          AbCancelled = input.ReadSFixed32();
           break;
         }
         case 109: {
-          AbLoaded = input.ReadFixed32();
+          AbLoaded = input.ReadSFixed32();
           break;
         }
         case 117: {
-          GltfTexturesLoaded = input.ReadFixed32();
+          GltfTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 125: {
-          AbTexturesLoaded = input.ReadFixed32();
+          AbTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 133: {
-          PromiseTexturesLoaded = input.ReadFixed32();
+          PromiseTexturesLoaded = input.ReadSFixed32();
           break;
         }
         case 141: {
-          EnqueuedMessages = input.ReadFixed32();
+          EnqueuedMessages = input.ReadSFixed32();
           break;
         }
         case 149: {
-          ProcessedMessages = input.ReadFixed32();
+          ProcessedMessages = input.ReadSFixed32();
           break;
         }
         case 157: {
-          PlayerCount = input.ReadFixed32();
+          PlayerCount = input.ReadSFixed32();
           break;
         }
         case 165: {
-          LoadRadius = input.ReadFixed32();
+          LoadRadius = input.ReadSFixed32();
           break;
         }
         case 173: {
-          DrawCalls = input.ReadFixed32();
+          DrawCalls = input.ReadSFixed32();
           break;
         }
         case 177: {
-          MemoryReserved = input.ReadFixed64();
+          MemoryReserved = input.ReadSFixed64();
           break;
         }
         case 185: {
-          MemoryUsage = input.ReadFixed64();
+          MemoryUsage = input.ReadSFixed64();
           break;
         }
         case 193: {
-          TotalGcAlloc = input.ReadFixed64();
+          TotalGcAlloc = input.ReadSFixed64();
           break;
         }
         case 202: {
