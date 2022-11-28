@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             DataStore.i.skyboxConfig.mode.Set(
                 currentGeneralSettings.dynamicProceduralSkybox
                     ? SkyboxMode.Dynamic
-                    : SkyboxMode.HoursFixedByWorld);
+                    : SkyboxMode.HoursFixedByUser);
 
             CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.dynamicProceduralSkybox);
         }

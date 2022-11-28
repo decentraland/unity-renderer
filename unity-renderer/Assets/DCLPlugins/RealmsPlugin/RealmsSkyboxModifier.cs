@@ -1,4 +1,5 @@
 ﻿using DCL;
+using DCL.SettingsCommon;
 using Decentraland.Bff;
 
 namespace DCLPlugins.RealmsPlugin
@@ -29,6 +30,7 @@ namespace DCLPlugins.RealmsPlugin
                 if (!hasCached)
                     CacheCurrentSkyboxSettings();
 
+                CommonSettingsScriptableObjects.SkyboxControlledByRealm.Set(true);
                 skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour, SkyboxMode.HoursFixedByWorld);
             }
             else if (hasCached)
@@ -39,6 +41,8 @@ namespace DCLPlugins.RealmsPlugin
         {
             skyboxConfig.UseFixedTimeFromHours(cachedFixedTime, cachedMode);
             hasCached = false;
+
+            CommonSettingsScriptableObjects.SkyboxControlledByRealm.Set(false);
         }
 
         private void CacheCurrentSkyboxSettings()
