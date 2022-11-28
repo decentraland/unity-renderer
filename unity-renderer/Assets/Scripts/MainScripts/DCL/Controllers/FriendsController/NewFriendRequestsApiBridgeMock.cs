@@ -95,7 +95,7 @@ namespace DCL.Social.Friends
             {
                 string fakeUserId = $"fake_from_user_{i + 1}";
 
-                UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel
+                userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
                 {
                     userId = fakeUserId,
                     name = $"fake from user {i + 1}",
@@ -122,7 +122,7 @@ namespace DCL.Social.Friends
             {
                 string fakeUserId = $"fake_to_user_{i + 1}";
 
-                UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel
+                userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
                 {
                     userId = fakeUserId,
                     name = $"fake to user {i + 1}",
