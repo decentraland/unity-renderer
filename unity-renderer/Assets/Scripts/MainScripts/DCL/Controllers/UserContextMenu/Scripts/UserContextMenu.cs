@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Interface;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
@@ -149,10 +150,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        if (FriendsController.i)
-        {
-            FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
-        }
+        FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
     }
     
     public void ClickReportButton() => reportButton.onClick.Invoke();
@@ -204,11 +202,6 @@ public class UserContextMenu : MonoBehaviour
     {
         OnAddFriend?.Invoke(userId);
 
-        if (!FriendsController.i)
-        {
-            return;
-        }
-
         // NOTE: if we don't add this, the friend request has strange behaviors
         UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
         {
@@ -224,11 +217,6 @@ public class UserContextMenu : MonoBehaviour
     private void OnCancelFriendRequestButtonPressed()
     {
         OnCancelFriend?.Invoke(userId);
-
-        if (!FriendsController.i)
-        {
-            return;
-        }
 
         FriendsController.i.CancelRequest(userId);
 
@@ -312,7 +300,7 @@ public class UserContextMenu : MonoBehaviour
             string name = profile?.userName;
             userName.text = name;
         }
-        if ((configFlags & usesFriendsApiFlags) != 0 && FriendsController.i)
+        if ((configFlags & usesFriendsApiFlags) != 0)
         {
             if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
             {

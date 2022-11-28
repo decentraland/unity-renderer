@@ -864,8 +864,7 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
-    [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(int sceneNumber, byte[] bytes, int size);
-        
+
     public static System.Action<string, string> OnMessageFromEngine;
 #else
         public static Action<string, string> OnMessageFromEngine
@@ -1360,6 +1359,12 @@ namespace DCL.Interface
             public SendSaveUserDescriptionPayload(string description) { this.description = description; }
         }
 
+        [System.Serializable]
+        public class SendRequestUserProfilePayload
+        {
+            public string value;
+        }
+
         [Serializable]
         public class SendVideoProgressEvent
         {
@@ -1400,6 +1405,8 @@ namespace DCL.Interface
         }
 
         public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
+
+        public static void SendRequestUserProfile(string userId) { SendMessage("RequestUserProfile", new SendRequestUserProfilePayload() { value = userId }); }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 

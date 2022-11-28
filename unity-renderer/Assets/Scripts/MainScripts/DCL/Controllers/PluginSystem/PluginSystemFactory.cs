@@ -8,6 +8,7 @@ using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
 using DCL.Skybox;
+using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCLPlugins.UIRefresherPlugin;
 using DCLPlugins.RealmsPlugin;

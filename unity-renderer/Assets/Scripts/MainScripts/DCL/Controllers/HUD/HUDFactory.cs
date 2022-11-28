@@ -8,6 +8,8 @@ using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
+using DCL.Social.Friends;
 using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -52,7 +54,10 @@ public class HUDFactory : IHUDFactory
                             DataStore.i, 
                             ProfanityFilterSharedInstances.regexFilter, 
                             FriendsController.i, 
-                            new UserProfileWebInterfaceBridge()),
+                            new UserProfileWebInterfaceBridge(),
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,

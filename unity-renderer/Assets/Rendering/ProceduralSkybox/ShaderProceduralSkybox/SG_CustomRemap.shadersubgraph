@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "2dc12936598a4178bdba5011c4c5cd19",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "2118c8617d914df58d51de121691a692"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "cc0f504a99744c24958af2b3ce55d299"
@@ -465,10 +471,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "cc0f504a99744c24958af2b3ce55d299"
@@ -519,9 +526,13 @@
         "m_GuidSerialized": "c452cd6d-25c0-4389-9797-097642b5cad0"
     },
     "m_Name": "OUT_MinMax",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_021ed134397a4a1d85dba5e5657b397e",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -960,6 +971,24 @@
         "m_SerializableColors": []
     },
     "m_Value": 0.0
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "2118c8617d914df58d51de121691a692",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "b5c345e086944c4d85e81a44bac813af"
+        },
+        {
+            "m_Id": "5d8ee815a8b34159b25e6b02e6ac5dd5"
+        },
+        {
+            "m_Id": "021ed134397a4a1d85dba5e5657b397e"
+        }
+    ]
 }
 
 {
@@ -1608,9 +1637,13 @@
         "m_GuidSerialized": "1545402f-97bf-419e-a7e6-7c247f636544"
     },
     "m_Name": "IN_MinMax",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_5d8ee815a8b34159b25e6b02e6ac5dd5",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2196,9 +2229,13 @@
         "m_GuidSerialized": "259baf21-71cd-44e9-8b77-037b02fa8b76"
     },
     "m_Name": "IN",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_b5c345e086944c4d85e81a44bac813af",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,

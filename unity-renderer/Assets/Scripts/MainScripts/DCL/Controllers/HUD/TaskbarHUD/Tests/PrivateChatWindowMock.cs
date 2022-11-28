@@ -1,4 +1,5 @@
 using System;
+using DCl.Social.Friends;
 using NSubstitute;
 using SocialFeaturesAnalytics;
 using UnityEngine;
