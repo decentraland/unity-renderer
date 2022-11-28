@@ -85,17 +85,8 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AddPlayerAsFriend()
     {
-        UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-
-        // Add fake action to avoid waiting for kernel
-        userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
-        {
-            userId = currentPlayerId,
-            name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
-        });
-
-        friendsController.RequestFriendship(currentPlayerId, "").Forget();
-        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+        dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+        dataStore.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.Passport);
     }
 
     private void CancelInvitation()

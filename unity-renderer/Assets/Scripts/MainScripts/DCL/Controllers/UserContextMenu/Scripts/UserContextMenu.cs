@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Interface;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -153,7 +154,7 @@ public class UserContextMenu : MonoBehaviour
     {
         FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
     }
-    
+
     public void ClickReportButton() => reportButton.onClick.Invoke();
 
     private void OnPassportButtonPressed()
@@ -210,9 +211,8 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        FriendsController.i.RequestFriendship(userId, "").Forget();
-
-        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+        DataStore.i.HUDs.sendFriendRequest.Set(userId);
+        DataStore.i.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
@@ -259,7 +259,7 @@ public class UserContextMenu : MonoBehaviour
         };
         var raycastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-                
+
         if (raycastResults.All(result => result.gameObject != gameObject))
             Hide();
     }
