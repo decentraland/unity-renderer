@@ -15,6 +15,7 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private TextMeshProUGUI usernameText;
+        [SerializeField] private TextMeshProUGUI descriptionText;
 
         public void SetGuestUser(bool isGuest)
         {
@@ -27,16 +28,9 @@ namespace DCL.Social.Passports
             usernameText.text = $"{username} {GUEST_TEXT}";
         }
 
-        private void EnableAboutPanel()
+        public void SetDescription(string description)
         {
-            wearablesPanel.SetActive(false);
-            aboutPanel.SetActive(true);
-        }
-
-        private void EnableWearablesPanel()
-        {
-            aboutPanel.SetActive(false);
-            wearablesPanel.SetActive(true);
+            descriptionText.text = description;
         }
 
         public override void RefreshControl()
