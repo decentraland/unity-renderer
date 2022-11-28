@@ -12,7 +12,7 @@ namespace DCLPlugins.RealmsPlugin
 
         private bool hasCached;
 
-        private bool cachedUseDynamicSkybox;
+        private SkyboxMode cachedMode;
         private float cachedFixedTime;
 
         public RealmsSkyboxModifier(DataStore_SkyboxConfig skyboxConfig)
@@ -29,7 +29,7 @@ namespace DCLPlugins.RealmsPlugin
                 if (!hasCached)
                     CacheCurrentSkyboxSettings();
 
-                skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour);
+                skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour, SkyboxMode.HoursFixedByWorld);
             }
             else if (hasCached)
                 ResetToCached();
@@ -37,17 +37,13 @@ namespace DCLPlugins.RealmsPlugin
 
         private void ResetToCached()
         {
-            if (cachedUseDynamicSkybox)
-                skyboxConfig.useDynamicSkybox.Set(cachedUseDynamicSkybox);
-            else
-                skyboxConfig.UseFixedTimeFromHours(cachedFixedTime);
-
+            skyboxConfig.UseFixedTimeFromHours(cachedFixedTime, cachedMode);
             hasCached = false;
         }
 
         private void CacheCurrentSkyboxSettings()
         {
-            cachedUseDynamicSkybox = skyboxConfig.useDynamicSkybox.Get();
+            cachedMode = skyboxConfig.mode.Get();
             cachedFixedTime = skyboxConfig.fixedTime.Get();
 
             hasCached = true;

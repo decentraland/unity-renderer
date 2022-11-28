@@ -1,5 +1,4 @@
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
-using System;
 using UnityEngine;
 
 namespace DCL.SettingsControls
@@ -12,12 +11,7 @@ namespace DCL.SettingsControls
             base.Initialize();
             UpdateSetting(currentGeneralSettings.skyboxTime);
 
-            DataStore.i.skyboxConfig.fixedTime.OnChange += OnFixedTimeChanged;
-        }
-
-        private void OnFixedTimeChanged(float newTime, float _)
-        {
-            Debug.Log(newTime);
+            // TimeReporter
         }
 
         public override object GetStoredValue() =>

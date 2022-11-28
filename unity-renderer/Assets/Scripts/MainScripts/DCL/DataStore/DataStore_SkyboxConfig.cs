@@ -8,6 +8,13 @@ namespace DCL
         InEditor
     }
 
+    public enum SkyboxMode
+    {
+        Dynamic,
+        HoursFixedByUser,
+        HoursFixedByWorld,
+    }
+
     public class DataStore_SkyboxConfig
     {
         public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
@@ -21,18 +28,18 @@ namespace DCL
         /// <summary>
         /// Use Fixed or Dynamic skybox
         /// </summary>
-        public BaseVariable<bool> useDynamicSkybox = new BaseVariable<bool>(true);
+        public BaseVariable<SkyboxMode> mode = new BaseVariable<SkyboxMode>(SkyboxMode.Dynamic);
         public BaseVariable<float> fixedTime = new BaseVariable<float>(0);
 
         public BaseVariable<int> reflectionResolution = new BaseVariable<int>(256);
         public BaseVariable<AvatarMaterialProfile> avatarMatProfile = new BaseVariable<AvatarMaterialProfile>(AvatarMaterialProfile.InWorld);
 
-        public void UseFixedTimeFromSeconds(float timeInSeconds) =>
-            UseFixedTimeFromHours((float)TimeSpan.FromSeconds(timeInSeconds).TotalHours);
+        public void UseFixedTimeFromSeconds(float timeInSeconds, SkyboxMode newMode) =>
+            UseFixedTimeFromHours((float)TimeSpan.FromSeconds(timeInSeconds).TotalHours, newMode);
 
-        public void UseFixedTimeFromHours(float timeInHours)
+        public void UseFixedTimeFromHours(float timeInHours, SkyboxMode newMode)
         {
-            useDynamicSkybox.Set(false);
+            this.mode.Set(newMode);
             fixedTime.Set(timeInHours);
         }
 
