@@ -439,53 +439,6 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class PerformanceReportPayload
-        {
-            public string samples;
-            public bool fpsIsCapped;
-            public int hiccupsInThousandFrames;
-            public float hiccupsTime;
-            public float totalTime;
-            public int gltfInProgress;
-            public int gltfFailed;
-            public int gltfCancelled;
-            public int gltfLoaded;
-            public int abInProgress;
-            public int abFailed;
-            public int abCancelled;
-            public int abLoaded;
-            public int gltfTexturesLoaded;
-            public int abTexturesLoaded;
-            public int promiseTexturesLoaded;
-            public int enqueuedMessages;
-            public int processedMessages;
-            public int playerCount;
-            public int loadRadius;
-            public object drawCalls; //int *
-            public object memoryReserved; //long, in total bytes *
-            public object memoryUsage; //long, in total bytes *
-            public object totalGCAlloc; //long, in total bytes, its the sum of all GCAllocs per frame over 1000 frames *
-            public Dictionary<int, long> sceneScores;
-
-            //* is NULL if SendProfilerMetrics is false
-        }
-
-        [System.Serializable]
-        public class GenericAnalyticPayload
-        {
-            public string eventName;
-            public Dictionary<object, object> data;
-        }
-
-        [System.Serializable]
-        public class PerformanceHiccupPayload
-        {
-            public int hiccupsInThousandFrames;
-            public float hiccupsTime;
-            public float totalTime;
-        }
-
-        [System.Serializable]
         public class TermsOfServiceResponsePayload
         {
             public int sceneNumber;
@@ -1374,8 +1327,6 @@ namespace DCL.Interface
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
-
-        public static void SendPerformanceReport(string performanceReportPayload) { SendJson("PerformanceReport", performanceReportPayload); }
 
         public static void SendTermsOfServiceResponse(int sceneNumber, bool accepted, bool dontShowAgain)
         {

@@ -163,7 +163,7 @@ namespace DCL
                 DrawCalls = (int) drawCalls!,
                 MemoryReserved = (long) totalMemoryReserved!,
                 MemoryUsage = (long) totalMemoryUsage,
-                TotalGcAlloc = (long) totalGCAlloc
+                TotalGcAlloc = (long) totalGCAlloc,
             };
 
             ClientAnalyticsKernelService analytics = Environment.i.serviceLocator.Get<IRPC>().analytics;
