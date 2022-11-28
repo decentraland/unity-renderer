@@ -27,7 +27,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         protected PluginSystem pluginSystem;
-        
+
         protected virtual void Awake()
         {
             if (i != null)
@@ -53,7 +53,7 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
-            
+
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
@@ -116,7 +116,19 @@ namespace DCL
             // it is used by the kernel to signal "EngineReady" or something like that
             // to prevent race conditions like "SceneController is not an object",
             // aka sending events before unity is ready
-            WebInterface.SendSystemInfoReport();
+            ClientAnalyticsKernelService analytics = Environment.i.serviceLocator.Get<IRPC>().analytics;
+            analytics?.SystemInfoReport(new SystemInfoReportRequest()
+            {
+                GraphicsDeviceName = SystemInfo.graphicsDeviceName,
+                GraphicsDeviceVersion = SystemInfo.graphicsDeviceVersion,
+                GraphicsMemorySize = (uint) SystemInfo.graphicsMemorySize,
+                ProcessorType = SystemInfo.processorType,
+                ProcessorCount = (uint) SystemInfo.processorCount,
+                SystemMemorySize = (uint) SystemInfo.systemMemorySize,
+
+                // TODO: remove useBinaryTransform after ECS7 is fully in prod
+                UseBinaryTransform = true,
+            });
 
             // We trigger the Decentraland logic once everything is initialized.
             WebInterface.StartDecentraland();
@@ -126,7 +138,7 @@ namespace DCL
         {
             performanceMetricsController?.Update();
         }
-        
+
         [RuntimeInitializeOnLoadMethod]
         static void RunOnStart()
         {
@@ -136,7 +148,7 @@ namespace DCL
         {
             if (i != null)
                 i.Dispose();
-    
+
             return true;
         }
 
@@ -150,10 +162,10 @@ namespace DCL
 
             if (!EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            
+
             kernelCommunication?.Dispose();
         }
-        
+
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();

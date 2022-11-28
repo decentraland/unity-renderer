@@ -471,20 +471,6 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class SystemInfoReportPayload
-        {
-            public string graphicsDeviceName = SystemInfo.graphicsDeviceName;
-            public string graphicsDeviceVersion = SystemInfo.graphicsDeviceVersion;
-            public int graphicsMemorySize = SystemInfo.graphicsMemorySize;
-            public string processorType = SystemInfo.processorType;
-            public int processorCount = SystemInfo.processorCount;
-            public int systemMemorySize = SystemInfo.systemMemorySize;
-
-            // TODO: remove useBinaryTransform after ECS7 is fully in prod
-            public bool useBinaryTransform = true;
-        }
-
-        [System.Serializable]
         public class GenericAnalyticPayload
         {
             public string eventName;
@@ -574,27 +560,6 @@ namespace DCL.Interface
         {
             public string message;
             public int loadPercentage;
-        }
-
-        [System.Serializable]
-        public class AnalyticsPayload
-        {
-
-            public string name;
-            public Property[] properties;
-
-            [System.Serializable]
-            public class Property
-            {
-                public string key;
-                public string value;
-
-                public Property(string key, string value)
-                {
-                    this.key = key;
-                    this.value = value;
-                }
-            }
         }
 
         [System.Serializable]
@@ -791,19 +756,19 @@ namespace DCL.Interface
             public int receivedLimit;
             public int receivedSkip;
         }
-        
+
         [Serializable]
         private class LeaveChannelPayload
         {
             public string channelId;
         }
-        
+
         [Serializable]
         private class CreateChannelPayload
         {
             public string channelId;
         }
-        
+
         public struct MuteChannelPayload
         {
             public string channelId;
@@ -980,8 +945,6 @@ namespace DCL.Interface
         private static GotoEvent gotoEvent = new GotoEvent();
         private static SendChatMessageEvent sendChatMessageEvent = new SendChatMessageEvent();
         private static BaseResolution baseResEvent = new BaseResolution();
-        private static AnalyticsPayload analyticsEvent = new AnalyticsPayload();
-        private static DelightedSurveyEnabledPayload delightedSurveyEnabled = new DelightedSurveyEnabledPayload();
         private static ExternalActionSceneEventPayload sceneExternalActionEvent = new ExternalActionSceneEventPayload();
         private static MuteUserPayload muteUserEvent = new MuteUserPayload();
         private static StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
@@ -1307,8 +1270,8 @@ namespace DCL.Interface
 
         public static void SetDelightedSurveyEnabled(bool enabled)
         {
-            delightedSurveyEnabled.enabled = enabled;
-            SendMessage("SetDelightedSurveyEnabled", delightedSurveyEnabled);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().analytics;
+            analytics?.SetDelightedSurveyEnabled(new DelightedSurveyRequest() { Enabled = enabled });
         }
 
         public static void SetScenesLoadRadius(float newRadius)
@@ -1405,8 +1368,6 @@ namespace DCL.Interface
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
         public static void SendPerformanceReport(string performanceReportPayload) { SendJson("PerformanceReport", performanceReportPayload); }
-
-        public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
         public static void SendTermsOfServiceResponse(int sceneNumber, bool accepted, bool dontShowAgain)
         {
@@ -1549,7 +1510,7 @@ namespace DCL.Interface
             gotoEvent.y = y;
             SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
         }
-        
+
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
@@ -1560,7 +1521,7 @@ namespace DCL.Interface
 
             SendMessage("JumpIn", jumpInPayload);
         }
-        
+
         public static void JumpInHome(string mostPopulatedRealm)
         {
             jumpInPayload.realm.serverName = mostPopulatedRealm;
@@ -1587,11 +1548,14 @@ namespace DCL.Interface
 
         public static void ReportAnalyticsEvent(string eventName) { ReportAnalyticsEvent(eventName, null); }
 
-        public static void ReportAnalyticsEvent(string eventName, AnalyticsPayload.Property[] eventProperties)
+        public static void ReportAnalyticsEvent(string eventName, AnalyticProperty[] eventProperties)
         {
-            analyticsEvent.name = eventName;
-            analyticsEvent.properties = eventProperties;
-            SendMessage("Track", analyticsEvent);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().analytics;
+            analytics?.AnalyticsEvent(new AnalyticsEventRequest()
+            {
+                EventName = eventName,
+                Properties = { eventProperties },
+            });
         }
 
         public static void FetchBalanceOfMANA() { SendMessage("FetchBalanceOfMANA"); }
@@ -1804,7 +1768,7 @@ namespace DCL.Interface
             getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
-        
+
         public static void MarkChannelMessagesAsSeen(string channelId)
         {
             markChannelMessagesAsSeenPayload.channelId = channelId;
@@ -1932,7 +1896,7 @@ namespace DCL.Interface
         {
             SendMessage("UpdateMemoryUsage");
         }
-        
+
         public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
 
         public static void SetInputAudioDevice(string inputDeviceId)

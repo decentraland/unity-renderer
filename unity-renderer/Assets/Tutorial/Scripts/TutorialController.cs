@@ -251,7 +251,7 @@ namespace DCL.Tutorial
             yield return new WaitUntil(IsPlayerInScene);
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
-            
+
             switch (tutorialType)
             {
                 case TutorialType.Initial:
@@ -561,9 +561,9 @@ namespace DCL.Tutorial
                 yield break;
 
             float t = 0f;
-          
+
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
-            
+
             while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
@@ -629,38 +629,38 @@ namespace DCL.Tutorial
 
         private void SendStepStartedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            AnalyticProperty[] properties =
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", tutorialPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", stepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName)
+                new AnalyticProperty() { Key = "version", Value = version.ToString() },
+                new AnalyticProperty() { Key = "path", Value = tutorialPath.ToString() },
+                new AnalyticProperty() { Key = "step number", Value = stepNumber.ToString() },
+                new AnalyticProperty() { Key = "step name", Value = stepName },
             };
             WebInterface.ReportAnalyticsEvent("tutorial step started", properties);
         }
 
         private void SendStepCompletedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName, float elapsedTime)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            AnalyticProperty[] properties =
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", tutorialPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", stepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName),
-                new WebInterface.AnalyticsPayload.Property("elapsed time", elapsedTime.ToString("0.00"))
+                new AnalyticProperty() { Key = "version", Value = version.ToString() },
+                new AnalyticProperty() { Key = "path", Value = tutorialPath.ToString() },
+                new AnalyticProperty() { Key = "step number", Value = stepNumber.ToString() },
+                new AnalyticProperty() { Key = "step name", Value = stepName },
+                new AnalyticProperty() { Key = "elapsed time", Value = elapsedTime.ToString("0.00") }
             };
             WebInterface.ReportAnalyticsEvent("tutorial step completed", properties);
         }
 
         private void SendSkipTutorialSegmentStats(int version, string stepName)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            AnalyticProperty[] properties = new AnalyticProperty[]
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", currentPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", currentStepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName),
-                new WebInterface.AnalyticsPayload.Property("elapsed time", (Time.realtimeSinceStartup - elapsedTimeInCurrentStep).ToString("0.00"))
+                new AnalyticProperty() { Key = "version", Value = version.ToString() },
+                new AnalyticProperty() { Key = "path", Value = currentPath.ToString() },
+                new AnalyticProperty() { Key = "step number", Value = currentStepNumber.ToString() },
+                new AnalyticProperty() { Key = "step name", Value = stepName },
+                new AnalyticProperty() { Key = "elapsed time", Value = (Time.realtimeSinceStartup - elapsedTimeInCurrentStep).ToString("0.00") }
             };
             WebInterface.ReportAnalyticsEvent("tutorial skipped", properties);
         }

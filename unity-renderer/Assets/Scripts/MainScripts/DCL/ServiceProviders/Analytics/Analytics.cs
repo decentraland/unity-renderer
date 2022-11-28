@@ -18,7 +18,10 @@ public class Analytics : IAnalytics
         SendToSegment(eventName, data);
     }
 
-    internal void SendToSegment(string eventName, Dictionary<string, string> data) { WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new WebInterface.AnalyticsPayload.Property(x.Key, x.Value)).ToArray()); }
+    internal void SendToSegment(string eventName, Dictionary<string, string> data)
+    {
+        WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new AnalyticProperty() { Key = x.Key, Value = x.Value }).ToArray());
+    }
 
     public void Dispose() { }
 }
