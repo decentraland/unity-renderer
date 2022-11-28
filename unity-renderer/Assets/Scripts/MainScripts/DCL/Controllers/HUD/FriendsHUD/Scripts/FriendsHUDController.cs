@@ -289,7 +289,7 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_TO:
                 var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, true)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
                     : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
@@ -299,7 +299,7 @@ public class FriendsHUDController : IHUD
                 break;
             case FriendshipStatus.REQUESTED_FROM:
                 var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, true)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
                     : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
@@ -478,7 +478,7 @@ public class FriendsHUDController : IHUD
             userProfile.OnUpdate -= HandleFriendProfileUpdated;
 
             var request = friends.ContainsKey(userId)
-                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, false)
+                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, isQuickActionsForFriendRequestsEnabled)
                 : new FriendRequestEntryModel
                 {
                     bodyMessage = friendRequest.MessageBody,
