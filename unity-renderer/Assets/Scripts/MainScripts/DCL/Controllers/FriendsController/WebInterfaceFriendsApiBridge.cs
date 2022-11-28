@@ -21,7 +21,8 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
-        
+        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+
         [PublicAPI]
         public void InitializeFriends(string json) =>
             OnInitialized?.Invoke(JsonUtility.FromJson<FriendshipInitializationMessage>(json));
@@ -42,6 +43,13 @@ namespace DCL.Social.Friends
             var task = (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
             pendingRequests.Remove(messageId);
             task.TrySetResult(payload);
+        }
+
+        [PublicAPI]
+        public void AddFriendRequest(string json)
+        {
+            var payload = JsonUtility.FromJson<FriendRequestPayload>(json);
+            OnFriendRequestAdded?.Invoke(payload);
         }
 
         [PublicAPI]

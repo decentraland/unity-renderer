@@ -23,6 +23,7 @@ namespace DCL
 
         public PoolableComponentFactory componentFactory;
 
+        private NewFriendRequestsApiBridgeMock newFriendRequestsApiBridgeMock;
         private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
@@ -45,9 +46,10 @@ namespace DCL
             // TODO: migrate chat controller singleton into a service in the service locator
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
             // FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
-            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready 
-            FriendsController.CreateSharedInstance(new NewFriendRequestsApiBridgeMock(GetComponent<WebInterfaceFriendsApiBridge>(),
-                new UserProfileWebInterfaceBridge()));
+            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+            newFriendRequestsApiBridgeMock = new NewFriendRequestsApiBridgeMock(GetComponent<WebInterfaceFriendsApiBridge>(),
+                new UserProfileWebInterfaceBridge());
+            FriendsController.CreateSharedInstance(newFriendRequestsApiBridgeMock);
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -155,6 +157,9 @@ namespace DCL
                 Environment.Dispose();
             
             kernelCommunication?.Dispose();
+
+            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+            newFriendRequestsApiBridgeMock.Dispose();
         }
         
         protected virtual void InitializeSceneDependencies()
