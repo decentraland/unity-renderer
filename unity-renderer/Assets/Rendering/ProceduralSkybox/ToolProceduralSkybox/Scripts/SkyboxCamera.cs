@@ -41,8 +41,6 @@ namespace DCL.Skybox
             var mainCameraData = mainCamComponent.GetUniversalAdditionalCameraData();
             var cameraStack = mainCameraData.cameraStack;
 
-            mainCameraData.renderType = CameraRenderType.Overlay;
-
             var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
             cameraData.cameraStack.Add(mainCamComponent);
             foreach (Camera camera in cameraStack)
