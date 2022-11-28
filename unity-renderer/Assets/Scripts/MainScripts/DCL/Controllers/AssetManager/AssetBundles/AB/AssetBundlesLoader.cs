@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 
 namespace DCL
@@ -163,7 +164,7 @@ namespace DCL
                 {
                     ext = "glb";
                 }
-                
+
                 assetBundleInfo.asset.AddAssetByExtension(ext, loadedAsset);
             }
 

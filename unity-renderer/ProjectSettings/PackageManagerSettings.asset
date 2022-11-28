@@ -33,9 +33,8 @@ MonoBehaviour:
     - com.brunomikoski
     - com.demigiant
     - com.coffee.ui-particle
-    - com.madsbangh.easybuttons
-    - com.atteneder.gltfast
     - com.atteneder.draco
+    - com.madsbangh.easybuttons
     m_IsDefault: 0
     m_Capabilities: 0
     m_ConfigSource: 4
