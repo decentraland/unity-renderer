@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Social.Friends;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace DCL.Chat.Notifications
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
         public event Action<string> OnClickedNotification;
+        public event Action<string> OnClickedFriendRequest;
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
 
@@ -189,6 +191,46 @@ namespace DCL.Chat.Notifications
             CheckNotificationCountAndRelease();
         }
 
+        public void AddNewFriendRequestNotification(FriendRequest model)
+        {
+            entryPool = GetNotificationEntryPool();
+            var newNotification = entryPool.Get();
+
+            var entry = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
+            poolableQueue.Enqueue(newNotification);
+            notificationQueue.Enqueue(entry);
+
+            entry.OnClickedNotification -= ClickedOnFriendRequest;
+            entry.onFocused -= FocusedOnNotification;
+            entry.showHideAnimator.OnWillFinishHide -= SetScrollToEnd;
+
+            PopulateFriendRequestNotification(entry, model);
+
+            entry.transform.SetParent(chatEntriesContainer, false);
+            entry.RefreshControl();
+            entry.SetTimestamp(Utils.UnixTimeStampToLocalTime((ulong)model.Timestamp));
+            entry.OnClickedNotification += ClickedOnFriendRequest;
+            entry.onFocused += FocusedOnNotification;
+            entry.showHideAnimator.OnWillFinishHide += SetScrollToEnd;
+
+            chatEntriesContainer.anchoredPosition += notificationOffset;
+            if (isOverPanel)
+            {
+                notificationButton.gameObject.SetActive(true);
+                IncreaseNotificationCount();
+            }
+            else
+            {
+                ResetNotificationButton();
+                animationCancellationToken.Cancel();
+                animationCancellationToken = new CancellationTokenSource();
+                AnimateNewEntry(entry.gameObject.transform, animationCancellationToken.Token).Forget();
+            }
+
+            OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
+            CheckNotificationCountAndRelease();
+        }
+
         private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -266,6 +308,26 @@ namespace DCL.Chat.Notifications
         private void ClickedOnNotification(string targetId)
         {
             OnClickedNotification?.Invoke(targetId);
+        }
+
+        private void PopulateFriendRequestNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
+            FriendRequest model)
+        {
+            chatNotificationComponentView.SetIsPrivate(true);
+            chatNotificationComponentView.SetMaxContentCharacters(100);
+            chatNotificationComponentView.SetMessage("wants to be your friend.");
+            chatNotificationComponentView.SetMaxHeaderCharacters(100);
+            chatNotificationComponentView.SetNotificationHeader("Friend Request");
+            chatNotificationComponentView.SetMaxSenderCharacters(100);
+            chatNotificationComponentView.SetNotificationSender($"{model.From}");
+            chatNotificationComponentView.SetNotificationTargetId(model.From);
+            //if (!string.IsNullOrEmpty(model.ProfilePicture))
+            //    chatNotificationComponentView.SetImage(model.ProfilePicture);
+        }
+
+        private void ClickedOnFriendRequest(string fromUserId)
+        {
+            OnClickedFriendRequest?.Invoke(fromUserId);
         }
 
         private void FocusedOnNotification(bool isInFocus)

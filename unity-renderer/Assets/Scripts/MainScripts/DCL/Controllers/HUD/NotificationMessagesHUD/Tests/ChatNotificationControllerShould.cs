@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using DCl.Social.Friends;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,6 +14,7 @@ namespace DCL.Chat.Notifications
     {
         private ChatNotificationController controller;
         private IChatController chatController;
+        private IFriendsController friendsController;
         private IMainChatNotificationsComponentView mainNotificationsView;
         private ITopNotificationsComponentView topNotificationsView;
         private IUserProfileBridge userProfileBridge;
@@ -24,6 +26,7 @@ namespace DCL.Chat.Notifications
         public void SetUp()
         {
             chatController = Substitute.For<IChatController>();
+            friendsController = Substitute.For<IFriendsController>();
             mainNotificationsView = Substitute.For<IMainChatNotificationsComponentView>();
             topNotificationsView = Substitute.For<ITopNotificationsComponentView>();
             topPanelTransform = new GameObject("TopPanelTransform");
@@ -39,6 +42,7 @@ namespace DCL.Chat.Notifications
                 mainNotificationsView,
                 topNotificationsView,
                 chatController,
+                friendsController,
                 userProfileBridge,
                 profanityFilter);
         }

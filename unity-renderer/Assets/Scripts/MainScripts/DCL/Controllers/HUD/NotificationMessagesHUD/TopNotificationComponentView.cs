@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DCL.Social.Friends;
 using DG.Tweening;
 using UnityEngine;
 
@@ -114,6 +116,38 @@ namespace DCL.Chat.Notifications
             ShowNotificationCooldown().Forget();
         }
 
+        public void AddNewFriendRequestNotification(FriendRequest model)
+        {
+            stackedNotifications++;
+            if (isShowingNotification && stackedNotifications <= 2)
+            {
+                waitCancellationToken.Cancel();
+                waitCancellationToken = new CancellationTokenSource();
+                WaitBeforeShowingNewNotification(model, waitCancellationToken.Token).Forget();
+                return;
+            }
+
+            isShowingNotification = true;
+            animationCancellationToken.Cancel();
+            animationCancellationToken = new CancellationTokenSource();
+            chatNotificationComponentView.gameObject.SetActive(true);
+            if (stackedNotifications > 2)
+            {
+                OnResetFade?.Invoke(true);
+                PopulateMultipleNotification();
+                chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
+                AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+                return;
+            }
+
+            stackedNotifications--;
+            OnResetFade?.Invoke(true);
+            PopulateFriendRequestNotification(model);
+            chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
+            AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+            ShowNotificationCooldown().Forget();
+        }
+
         private async UniTaskVoid ShowNotificationCooldown()
         {
             await UniTask.Delay(NEW_NOTIFICATION_DELAY);
@@ -135,6 +169,14 @@ namespace DCL.Chat.Notifications
                 await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken);
 
             AddNewChatNotification(model);
+        }
+
+        private async UniTaskVoid WaitBeforeShowingNewNotification(FriendRequest model, CancellationToken cancellationToken)
+        {
+            while (isShowingNotification)
+                await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken);
+
+            AddNewFriendRequestNotification(model);
         }
 
         private async UniTaskVoid AnimateNewEntry(RectTransform notification, CancellationToken cancellationToken)
@@ -182,6 +224,21 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetNotificationTargetId(model.ChannelId);
             chatNotificationComponentView.SetNotificationHeader(channelName);
             chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+        }
+
+        private void PopulateFriendRequestNotification(FriendRequest model)
+        {
+            chatNotificationComponentView.SetIsPrivate(true);
+            chatNotificationComponentView.SetMaxContentCharacters(100);
+            chatNotificationComponentView.SetMessage("wants to be your friend.");
+            chatNotificationComponentView.SetMaxHeaderCharacters(100);
+            chatNotificationComponentView.SetNotificationHeader("Friend Request");
+            chatNotificationComponentView.SetMaxSenderCharacters(100);
+            chatNotificationComponentView.SetNotificationSender($"{model.From}");
+            chatNotificationComponentView.SetNotificationTargetId(model.From);
+            chatNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime((ulong)model.Timestamp));
+            //if (!string.IsNullOrEmpty(model.ProfilePicture))
+            //    chatNotificationComponentView.SetImage(model.ProfilePicture);
         }
 
         private void PopulateMultipleNotification()

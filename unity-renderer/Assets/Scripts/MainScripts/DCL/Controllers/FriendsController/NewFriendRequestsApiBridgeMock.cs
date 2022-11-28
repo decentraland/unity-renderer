@@ -97,7 +97,7 @@ namespace DCL.Social.Friends
             await UniTask.Delay(Random.Range(100, 1000));
 
             // FAKE RECEIVED REQUESTS
-            int amountOfReceivedRequests = Random.Range(1, 11);
+            int amountOfReceivedRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedFromList = new List<FriendRequestPayload>();
             for (int i = 0; i < amountOfReceivedRequests; i++)
             {
@@ -107,10 +107,7 @@ namespace DCL.Social.Friends
                 {
                     userId = fakeUserId,
                     name = $"fake from user {i + 1}",
-                    snapshots = new UserProfileModel.Snapshots
-                    {
-                        face256 = $"https://picsum.photos/50?{i}"
-                    }
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i}" }
                 });
 
                 requestedFromList.Add(new FriendRequestPayload
@@ -124,7 +121,7 @@ namespace DCL.Social.Friends
             }
 
             // FAKE SENT REQUESTS
-            int amountOfSentRequests = Random.Range(1, 11);
+            int amountOfSentRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedToList = new List<FriendRequestPayload>();
             for (int i = 0; i < amountOfSentRequests; i++)
             {
@@ -134,10 +131,7 @@ namespace DCL.Social.Friends
                 {
                     userId = fakeUserId,
                     name = $"fake to user {i + 1}",
-                    snapshots = new UserProfileModel.Snapshots
-                    {
-                        face256 = $"https://picsum.photos/50?{i}"
-                    }
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i + 100}" }
                 });
 
                 requestedToList.Add(new FriendRequestPayload
@@ -216,16 +210,14 @@ namespace DCL.Social.Friends
 
                 if (Input.GetKeyDown(KeyCode.R))
                 {
-                    string fakeUserId = $"fake_new_user_{DateTimeOffset.UtcNow.Ticks}";
+                    long currentTicks = DateTimeOffset.UtcNow.Ticks;
+                    string fakeUserId = $"new_user_{currentTicks.ToString().Substring(currentTicks.ToString().Length - 5, 5)}";
 
                     userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
                     {
                         userId = fakeUserId,
                         name = fakeUserId.Replace("_", " "),
-                        snapshots = new UserProfileModel.Snapshots
-                        {
-                            face256 = $"https://picsum.photos/50?{DateTimeOffset.UtcNow.Ticks}"
-                        }
+                        snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{DateTimeOffset.UtcNow.Ticks}" }
                     });
 
                     OnFriendRequestAdded?.Invoke(new FriendRequestPayload
