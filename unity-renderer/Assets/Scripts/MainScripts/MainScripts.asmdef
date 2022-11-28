@@ -1,24 +1,25 @@
 {
-  "name": "MainScripts",
-  "rootNamespace": "",
-  "references": [
-    "GUID:54b09a4a10c111e46a817873fcea53fe",
-    "GUID:f51ebe6a0ceec4240a699833d6309b23",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:cc6bfabbfe87b7949aa248893f89ce37",
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "Newtonsoft.Json.dll",
-    "Google.Protobuf.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "MainScripts",
+    "rootNamespace": "",
+    "references": [
+        "GUID:54b09a4a10c111e46a817873fcea53fe",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:9d3c55d199e9d04489eb57bf4039c17c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
