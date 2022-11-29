@@ -113,7 +113,7 @@ namespace DCL.SettingsCommon.Tests
             return new GeneralSettings
             {
                 mouseSensitivity = 0.6f,
-                scenesLoadRadius = 2,
+                scenesLoadRadius = 4,
                 avatarsLODDistance = 16,
                 maxNonLODAvatars = 1,
                 voiceChatVolume = 1,
