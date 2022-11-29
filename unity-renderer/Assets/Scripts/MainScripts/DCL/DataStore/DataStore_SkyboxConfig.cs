@@ -42,6 +42,5 @@ namespace DCL
             fixedTime.Set(timeInHours);
             this.mode.Set(newMode);
         }
-
     }
 }
