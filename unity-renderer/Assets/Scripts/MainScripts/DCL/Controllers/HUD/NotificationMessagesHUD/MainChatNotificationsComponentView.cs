@@ -16,12 +16,14 @@ namespace DCL.Chat.Notifications
     {
         [SerializeField] private RectTransform chatEntriesContainer;
         [SerializeField] private GameObject chatNotification;
+        [SerializeField] private GameObject friendRequestNotification;
         [SerializeField] private ScrollRect scrollRectangle;
         [SerializeField] private Button notificationButton;
         [SerializeField] private ShowHideAnimator panelAnimator;
         [SerializeField] private ShowHideAnimator scrollbarAnimator;
 
         private const string NOTIFICATION_POOL_NAME_PREFIX = "NotificationEntriesPool_";
+        private const string FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX = "FriendRequestNotificationEntriesPool_";
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
         public event Action<string> OnClickedNotification;
@@ -191,9 +193,9 @@ namespace DCL.Chat.Notifications
             CheckNotificationCountAndRelease();
         }
 
-        public void AddNewFriendRequestNotification(FriendRequest model)
+        public void AddNewFriendRequestNotification(FriendRequestNotificationModel model)
         {
-            entryPool = GetNotificationEntryPool();
+            entryPool = GetFriendRequestNotificationEntryPool();
             var newNotification = entryPool.Get();
 
             var entry = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
@@ -208,7 +210,6 @@ namespace DCL.Chat.Notifications
 
             entry.transform.SetParent(chatEntriesContainer, false);
             entry.RefreshControl();
-            entry.SetTimestamp(Utils.UnixTimeStampToLocalTime((ulong)model.Timestamp));
             entry.OnClickedNotification += ClickedOnFriendRequest;
             entry.onFocused += FocusedOnNotification;
             entry.showHideAnimator.OnWillFinishHide += SetScrollToEnd;
@@ -311,18 +312,19 @@ namespace DCL.Chat.Notifications
         }
 
         private void PopulateFriendRequestNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
-            FriendRequest model)
+            FriendRequestNotificationModel model)
         {
-            chatNotificationComponentView.SetIsPrivate(true);
             chatNotificationComponentView.SetMaxContentCharacters(100);
-            chatNotificationComponentView.SetMessage("wants to be your friend.");
             chatNotificationComponentView.SetMaxHeaderCharacters(100);
-            chatNotificationComponentView.SetNotificationHeader("Friend Request");
             chatNotificationComponentView.SetMaxSenderCharacters(100);
-            chatNotificationComponentView.SetNotificationSender($"{model.From}");
-            chatNotificationComponentView.SetNotificationTargetId(model.From);
-            //if (!string.IsNullOrEmpty(model.ProfilePicture))
-            //    chatNotificationComponentView.SetImage(model.ProfilePicture);
+            chatNotificationComponentView.SetIsFriendRequest(true);
+            chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
+            chatNotificationComponentView.SetNotificationHeader(model.Header);
+            chatNotificationComponentView.SetNotificationSender(model.SenderName);
+            chatNotificationComponentView.SetMessage(model.Body);
+            chatNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
+            if (!string.IsNullOrEmpty(model.ProfilePicture))
+                chatNotificationComponentView.SetImage(model.ProfilePicture);
         }
 
         private void ClickedOnFriendRequest(string fromUserId)
@@ -361,6 +363,22 @@ namespace DCL.Chat.Notifications
             entryPool = PoolManager.i.AddPool(
                 NOTIFICATION_POOL_NAME_PREFIX + name + GetInstanceID(),
                 Instantiate(chatNotification).gameObject,
+                maxPrewarmCount: MAX_NOTIFICATION_ENTRIES,
+                isPersistent: true);
+            entryPool.ForcePrewarm();
+
+            return entryPool;
+        }
+
+        private Pool GetFriendRequestNotificationEntryPool()
+        {
+            var entryPool = PoolManager.i.GetPool(FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX + name + GetInstanceID());
+            if (entryPool != null)
+                return entryPool;
+
+            entryPool = PoolManager.i.AddPool(
+                FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX + name + GetInstanceID(),
+                Instantiate(friendRequestNotification).gameObject,
                 maxPrewarmCount: MAX_NOTIFICATION_ENTRIES,
                 isPersistent: true);
             entryPool.ForcePrewarm();

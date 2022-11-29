@@ -41,6 +41,12 @@ public interface IChatNotificationMessageComponentView
     void SetIsPrivate(bool isPrivate);
 
     /// <summary>
+    /// Set the notification type, can be a friend request or not.
+    /// </summary>
+    /// <param name="isAccepted">If the notification is private or not.</param>
+    void SetIsFriendRequest(bool isAccepted);
+
+    /// <summary>
     /// Set the notification player icon if isPrivate is true.
     /// </summary>
     /// <param name="uri">Uri of the image. Null for hide the icon.</param>

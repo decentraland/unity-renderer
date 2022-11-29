@@ -170,9 +170,21 @@ namespace DCL.Chat.Notifications
                 friendRequest.To != userProfileBridge.GetOwn().userId)
                 return;
 
-            mainChatNotificationView.AddNewFriendRequestNotification(friendRequest);
+            var friendRequestProfile = userProfileBridge.Get(friendRequest.From);
+            var friendRequestName = friendRequestProfile?.userName ?? friendRequest.From;
+            var friendRequestProfilePicture = friendRequestProfile?.face256SnapshotURL;
+
+            FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                friendRequest.From,
+                friendRequestName,
+                "Friend Request",
+                $"wants to be your friend.",
+                (ulong)friendRequest.Timestamp,
+                friendRequestProfilePicture);
+
+            mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-                topNotificationView.AddNewFriendRequestNotification(friendRequest);
+                topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
         }
 
         private void ResetFadeOut(bool fadeOutAfterDelay = false)
