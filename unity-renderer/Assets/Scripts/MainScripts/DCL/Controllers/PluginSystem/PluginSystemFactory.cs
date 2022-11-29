@@ -50,12 +50,12 @@ namespace DCL
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
-            pluginSystem.Register<ECS7Plugin>(() => new ECS7Plugin());
             
             pluginSystem.RegisterWithFlag<RealmsPlugin>(() => new RealmsPlugin(), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
+            pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
