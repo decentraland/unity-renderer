@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using System;
 using System.Collections;
@@ -93,7 +94,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     [SerializeField]
     internal Button doneButton;
-    
+
     [SerializeField] internal Button[] goToMarketplaceButtons;
 
     [SerializeField] internal GameObject loadingSpinnerGameObject;
@@ -104,13 +105,13 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     [SerializeField] private GameObject collectiblesEmptyListContainer;
 
     [Header("Skins")]
-    
+
     [SerializeField] internal GameObject skinsFeatureContainer;
-    
+
     [SerializeField] internal GameObject skinsWeb3Container;
 
     [SerializeField] internal GameObject skinsMissingWeb3Container;
-    
+
     [SerializeField] internal GameObject skinsConnectWalletButtonContainer;
 
     [SerializeField] private GameObject skinsPopulatedListContainer;
@@ -118,13 +119,13 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     [SerializeField]
     internal DropdownComponentView collectionsDropdown;
-    
+
     [Header("Section Selector")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
     [SerializeField] internal TMP_Text sectionTitle;
     [SerializeField] internal GameObject avatarSection;
     [SerializeField] internal GameObject emotesSection;
-    
+
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
@@ -135,13 +136,13 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new Dictionary<string, ToggleComponentModel>();
     private bool isAvatarDirty;
     private AvatarModel avatarModelToUpdate;
-    
+
     private bool doAvatarFeedback;
     public event Action<AvatarModel> OnAvatarAppearFeedback;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
     public event Action<string> WearableSelectorClicked;
-    
+
     private void Awake()
     {
         loadingSpinnerGameObject.SetActive(false);
@@ -166,19 +167,20 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
         characterPreviewController = Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
         characterPreviewController.name = "_CharacterPreviewController";
-        characterPreviewController.camera.enabled = false;
+        characterPreviewController.SetCameraEnabled(false);
+        characterPreviewController.SetLoadingMode(CharacterPreviewController.LoadingMode.WithoutHologram);
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
 
         clickBlocker.OnClicked += ClickBlockerClicked;
-        
+
         for (int i = 0; i < wearableGridPairs.Length; i++)
         {
             wearableGridPairs[i].selector.OnItemClicked += OnWearablesSelectorsClicked;
         }
-        collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked; 
-        
+        collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked;
+
         ConfigureSectionSelector();
     }
 
@@ -205,12 +207,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             InitializeNavigationInfo(navigationInfos[i]);
         }
         InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
-        
+
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
         arePanelsInitialized = true;
     }
 
-    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current, bool isActive) 
+    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current, bool isActive)
     {
         current.Initialize();
 
@@ -309,7 +311,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         wearablesWithLoadingSpinner.Clear();
     }
 
-    public void SelectHairColor(Color hairColor) 
+    public void SelectHairColor(Color hairColor)
     {
         hairColorPickerComponent.SetColorSelector(hairColor);
         hairColorPickerComponent.UpdateSliderValues(hairColor);
@@ -320,16 +322,16 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     }
 
     public Color GetRandomColor()
-    { 
+    {
         return Color.HSVToRGB(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
     }
 
-    public void SelectSkinColor(Color skinColor) 
-    { 
+    public void SelectSkinColor(Color skinColor)
+    {
         skinColorSelector.Select(skinColor);
     }
 
-    public void SelectEyeColor(Color eyesColor) 
+    public void SelectEyeColor(Color eyesColor)
     {
         eyeColorPickerComponent.SetColorSelector(eyesColor);
         eyeColorPickerComponent.UpdateSliderValues(eyesColor);
@@ -398,7 +400,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             wearableItem,
             collectionName,
             amount,
-            hideOtherWearablesToastStrategy, 
+            hideOtherWearablesToastStrategy,
             replaceOtherWearablesToastStrategy,
             incompatibleWearableToastStrategy);
 
@@ -408,7 +410,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 wearableItem,
                 collectionName,
                 amount,
-                hideOtherWearablesToastStrategy, 
+                hideOtherWearablesToastStrategy,
                 replaceOtherWearablesToastStrategy,
                 incompatibleWearableToastStrategy);
         }
@@ -430,11 +432,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private string GetWearableCollectionName(WearableItem wearableItem)
     {
         string collectionName = string.Empty;
-        
+
         if (wearableItem.IsFromThirdPartyCollection)
         {
             loadedCollectionModels.TryGetValue(wearableItem.ThirdPartyCollectionId, out ToggleComponentModel collectionModel);
-            
+
             if (collectionModel != null)
                 collectionName = collectionModel.text;
         }
@@ -487,7 +489,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         facialHairColorPickerComponent.SetActive(false);
         eyeBrowsColorPickerComponent.SetActive(false);
     }
-    
+
     private void OnWearablesSelectorsClicked(string obj)
     {
         WearableSelectorClicked?.Invoke(obj);
@@ -511,7 +513,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void SetVisibility(bool visible)
     {
-        characterPreviewController.camera.enabled = visible;
+        characterPreviewController.SetCameraEnabled(visible);
         avatarEditorCanvas.enabled = visible;
         avatarEditorCanvasGroup.blocksRaycasts = visible;
 
@@ -521,7 +523,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         }
         else if (!visible && isOpen)
         {
-            collectionsDropdown.Close();        
+            collectionsDropdown.Close();
             noItemInCollectionWarning.Dismiss(true);
             OnSetVisibility?.Invoke(visible);
         }
@@ -577,13 +579,13 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.Dispose();
-        
+
         sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
         sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
-        
+
         clickBlocker.OnClicked -= ClickBlockerClicked;
     }
-    
+
     public void SetAsFullScreenMenuMode(Transform parentTransform)
     {
         if (parentTransform == null)
@@ -639,7 +641,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     {
         collectionsDropdown.SetLoadingActive(isBlocked);
     }
-    
+
     public void ShowSkinPopulatedList(bool show)
     {
         skinsPopulatedListContainer.SetActive(show);
@@ -654,7 +656,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void SetThirdPartyCollectionsVisibility(bool visible) =>
         collectionsDropdown.gameObject.SetActive(visible);
-        
+
     internal void ConfigureSectionSelector()
     {
         sectionTitle.text = AVATAR_SECTION_TITLE;
@@ -688,12 +690,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         });
     }
 
-    internal void SetSectionActive(int sectionIndex, bool isActive) 
-    { 
+    internal void SetSectionActive(int sectionIndex, bool isActive)
+    {
         sectionSelector.GetSection(sectionIndex).SetActive(isActive);
         sectionSelector.gameObject.SetActive(sectionSelector.GetAllSections().Count(x => x.IsActive()) > 1);
     }
-    
+
     public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
     public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
@@ -720,27 +722,28 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     {
         noItemInCollectionWarning.Dismiss(false);
     }
-    
+
     private void UpdateAvatarModelWhenNeeded()
     {
         if (isAvatarDirty)
         {
-            characterPreviewController.UpdateModel(avatarModelToUpdate,
-                () =>
-                {
-                    if (doneButton != null)
-                        doneButton.interactable = true;
+            async UniTaskVoid UpdateAvatarAsync()
+            {
+                await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate);
+                if (doneButton != null)
+                    doneButton.interactable = true;
 
-                    loadingSpinnerGameObject?.SetActive(false);
-                    
-                    if(doAvatarFeedback)
-                        OnAvatarAppearFeedback?.Invoke(avatarModelToUpdate);
+                loadingSpinnerGameObject?.SetActive(false);
 
-                    doAvatarFeedback = false;
-                    ClearWearablesLoadingSpinner();
-                    randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
-                });
+                if(doAvatarFeedback)
+                    OnAvatarAppearFeedback?.Invoke(avatarModelToUpdate);
 
+                doAvatarFeedback = false;
+                ClearWearablesLoadingSpinner();
+                randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
+            }
+
+            UpdateAvatarAsync().Forget();
             isAvatarDirty = false;
         }
     }

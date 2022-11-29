@@ -10,7 +10,7 @@ namespace DCL.Social.Passports
         private readonly IProfanityFilter profanityFilter;
         private readonly DataStore dataStore;
 
-        private IPassportNavigationComponentView view;
+        private readonly IPassportNavigationComponentView view;
         
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, DataStore dataStore)
         {
@@ -19,9 +19,9 @@ namespace DCL.Social.Passports
             this.dataStore = dataStore;
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
+        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
 
-        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
+        private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
             string filteredName = await FilterName(userProfile);
             view.SetName(filteredName);

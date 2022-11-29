@@ -83,36 +83,30 @@ namespace DCL
 
         private Avatar GetStandardAvatar()
         {
-            Visibility visibility = new Visibility();
-            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
-            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            return new Avatar(
-                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                animator,
-                visibility,
-                avatarLOD,
-                new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+            var visibility = new Visibility();
+
+            return Environment.i.serviceLocator.Get<AvatarFactory>()
+                              .CreateAvatar(
+                                   avatarContainer,
+                                   GetComponentInChildren<AvatarAnimatorLegacy>(),
+                                   new LOD(avatarContainer, visibility, avatarMovementController),
+                                   visibility
+                               );
         }
 
         private AvatarWithHologram GetAvatarWithHologram()
         {
             Visibility visibility = new Visibility();
-            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
-            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
-            return new AvatarWithHologram(
-                    baseAvatar,
-                    new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                    new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                    animator,
-                    visibility,
-                    avatarLOD,
-                    new SimpleGPUSkinning(),
-                    new GPUSkinningThrottler(),
-                    new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+
+            return Environment.i.serviceLocator.Get<AvatarFactory>()
+                              .CreateAvatarWithHologram(
+                                   avatarContainer,
+                                   avatarRevealContainer,
+                                   armatureContainer,
+                                   GetComponentInChildren<AvatarAnimatorLegacy>(),
+                                   new LOD(avatarContainer, visibility, avatarMovementController),
+                                   visibility
+                               );
         }
 
         private void Start()
@@ -133,7 +127,7 @@ namespace DCL
         {
             if(entity != null)
                 DataStore.i.sceneBoundariesChecker?.Remove(entity,this);
-            
+
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
@@ -143,7 +137,7 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
-            
+
             DisablePassport();
 
             var model = (AvatarModel) newModel;
@@ -206,7 +200,7 @@ namespace DCL
                     playerName.SetName(model.name);
                     playerName.Show(true);
                 }
-                
+
                 avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     playerName = model.name,
@@ -302,7 +296,7 @@ namespace DCL
                 if (isGlobalSceneAvatar)
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
-                    // we should investigate this 
+                    // we should investigate this
                     if (otherPlayers.ContainsKey(player.id))
                         otherPlayers.Remove(player.id);
                     otherPlayers.Add(player.id, player);
@@ -385,7 +379,7 @@ namespace DCL
                 stickersControllers.ToggleHideArea(false);
             }
         }
-        
+
         public void ApplyHidePassportModifier()
         {
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
@@ -394,7 +388,7 @@ namespace DCL
             }
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
-        
+
         public void RemoveHidePassportModifier()
         {
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
@@ -456,7 +450,7 @@ namespace DCL
 
             avatarReporterController.ReportAvatarRemoved();
         }
-        
+
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
             if (scene.isPersistent)
@@ -466,7 +460,7 @@ namespace DCL
                 avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
             else
                 avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
-            
+
             onPointerDown.gameObject.SetActive(isInsideBoundaries);
             playerNameContainer.SetActive(isInsideBoundaries);
             stickersControllers.ToggleHideArea(!isInsideBoundaries);

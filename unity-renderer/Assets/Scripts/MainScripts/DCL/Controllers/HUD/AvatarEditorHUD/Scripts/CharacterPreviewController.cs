@@ -6,12 +6,16 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
-using GPUSkinning;
 using UnityEngine;
-using Environment = DCL.Environment;
 
 public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
 {
+    public enum LoadingMode : byte
+    {
+        WithoutHologram,
+        WithHologram
+    }
+
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
 
@@ -31,22 +35,25 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         BodySnapshot
     }
 
-    private System.Collections.Generic.Dictionary<CameraFocus, Transform> cameraFocusLookUp;
+    private Dictionary<CameraFocus, Transform> cameraFocusLookUp;
 
-    public new Camera camera;
+    [SerializeField] private new Camera camera;
+    [SerializeField] private Transform defaultEditingTemplate;
+    [SerializeField] private Transform faceEditingTemplate;
 
-    public Transform defaultEditingTemplate;
-    public Transform faceEditingTemplate;
-
-    public Transform faceSnapshotTemplate;
-    public Transform bodySnapshotTemplate;
+    [SerializeField] private Transform faceSnapshotTemplate;
+    [SerializeField] private Transform bodySnapshotTemplate;
 
     [SerializeField] private GameObject avatarContainer;
     [SerializeField] private Transform avatarRevealContainer;
+
+    private Service<IAvatarFactory> avatarFactory;
+
     private IAvatar avatar;
-    private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
-    private CancellationTokenSource loadingCts = new CancellationTokenSource();
-    
+    private readonly AvatarModel currentAvatarModel = new () { wearables = new List<string>() };
+    private CancellationTokenSource loadingCts = new ();
+
+    private IAnimator animator;
 
     private void Awake()
     {
@@ -57,31 +64,37 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
-        IAnimator animator = avatarContainer.gameObject.GetComponentInChildren<IAnimator>();
-        avatar = new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            animator,
-            new Visibility(),
-            new NoLODs(),
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes)
-        ) ;
+
+        this.animator = GetComponentInChildren<IAnimator>();
     }
 
-    public void UpdateModel(AvatarModel newModel,Action onDone)
+    public void SetCameraEnabled(bool isEnabled)
+    {
+        camera.enabled = isEnabled;
+    }
+
+    public void SetLoadingMode(LoadingMode loadingMode)
+    {
+        avatar?.Dispose();
+
+        avatar = loadingMode switch
+                 {
+                     LoadingMode.WithHologram => CreateAvatarWithHologram(),
+                     LoadingMode.WithoutHologram => CreateAvatar(),
+                     _ => avatar
+                 };
+    }
+
+    public async UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default)
     {
         if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
-        {
-            onDone?.Invoke();
             return;
-        }
 
         loadingCts?.Cancel();
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
-        UpdateModelRoutine(newModel, onDone, loadingCts.Token);
+
+        await UpdateModelAsync(newModel, loadingCts.Token);
     }
 
     private void OnDestroy()
@@ -92,33 +105,31 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         avatar?.Dispose();
     }
 
-    private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
+    private IAvatar CreateAvatar() =>
+        avatarFactory.Ref.CreateAvatar(avatarContainer, this.animator, NoLODs.i, new Visibility());
+
+    private IAvatar CreateAvatarWithHologram() =>
+        avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, avatarRevealContainer, avatarContainer, this.animator, NoLODs.i, new Visibility());
+
+    private async UniTask UpdateModelAsync(AvatarModel newModel, CancellationToken ct)
     {
         currentAvatarModel.CopyFrom(newModel);
+
         try
         {
             ct.ThrowIfCancellationRequested();
             List<string> wearables = new List<string>(newModel.wearables);
             wearables.Add(newModel.bodyShape);
+
             await avatar.Load(wearables, newModel.emotes.Select(x => x.urn).ToList(), new AvatarSettings
             {
                 bodyshapeId = newModel.bodyShape,
                 eyesColor = newModel.eyeColor,
                 hairColor = newModel.hairColor,
                 skinColor = newModel.skinColor
-
             }, ct);
         }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-        catch (Exception e)
-        {
-            Debug.LogException(e);
-            return;
-        }
-        onDone?.Invoke();
+        catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
     }
 
     public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
@@ -173,19 +184,16 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
 
     private Coroutine cameraTransitionCoroutine;
 
-    public void SetFocus(CameraFocus focus, bool useTransition = true) { SetFocus(cameraFocusLookUp[focus], useTransition); }
+    public void SetFocus(CameraFocus focus, bool useTransition = true)
+    {
+        SetFocus(cameraFocusLookUp[focus], useTransition);
+    }
 
     private void SetFocus(Transform transform, bool useTransition = true)
     {
-        if (cameraTransitionCoroutine != null)
-        {
-            StopCoroutine(cameraTransitionCoroutine);
-        }
+        if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
 
-        if (useTransition)
-        {
-            cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
-        }
+        if (useTransition) { cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME)); }
         else
         {
             var cameraTransform = camera.transform;
@@ -200,6 +208,7 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         float currentTime = 0;
 
         float inverseTime = 1 / time;
+
         while (currentTime < time)
         {
             currentTime = Mathf.Clamp(currentTime + Time.deltaTime, 0, time);
@@ -211,9 +220,18 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         cameraTransitionCoroutine = null;
     }
 
-    public void Rotate(float rotationVelocity) { avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+    public void Rotate(float rotationVelocity)
+    {
+        avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
+    }
 
-    public AvatarModel GetCurrentModel() { return currentAvatarModel; }
+    public AvatarModel GetCurrentModel()
+    {
+        return currentAvatarModel;
+    }
 
-    public void PlayEmote(string emoteId, long timestamp) { avatar.PlayEmote(emoteId, timestamp); }
+    public void PlayEmote(string emoteId, long timestamp)
+    {
+        avatar.PlayEmote(emoteId, timestamp);
+    }
 }
