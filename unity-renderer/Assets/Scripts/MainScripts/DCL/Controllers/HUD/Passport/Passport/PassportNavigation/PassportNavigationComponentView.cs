@@ -1,8 +1,4 @@
-using NSubstitute.ReturnsExtensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 namespace DCL.Social.Passports

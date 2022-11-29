@@ -4,7 +4,6 @@ namespace DCL.Social.Passports
     {
         void SetGuestUser(bool isGuest);
         void SetName(string username);
-
         void SetDescription(string description);
     }
 }
