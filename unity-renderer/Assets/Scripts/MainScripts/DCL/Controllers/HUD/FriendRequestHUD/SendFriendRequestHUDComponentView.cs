@@ -8,18 +8,18 @@ namespace DCL.Social.Friends
 {
     public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
     {
-        [SerializeField] private GameObject defaultContainer;
-        [SerializeField] private GameObject pendingToSendContainer;
-        [SerializeField] private GameObject failedContainer;
-        [SerializeField] private GameObject successContainer;
-        [SerializeField] private TMP_Text nameLabel;
-        [SerializeField] private TMP_Text pendingStateLabel;
-        [SerializeField] private TMP_Text successStateLabel;
-        [SerializeField] private Button[] cancelButtons;
-        [SerializeField] private Button sendButton;
-        [SerializeField] private Button retryButton;
-        [SerializeField] private TMP_InputField messageBodyInput;
-        [SerializeField] private ImageComponentView profileImage;
+        [SerializeField] internal GameObject defaultContainer;
+        [SerializeField] internal GameObject pendingToSendContainer;
+        [SerializeField] internal GameObject failedContainer;
+        [SerializeField] internal GameObject successContainer;
+        [SerializeField] internal TMP_Text nameLabel;
+        [SerializeField] internal TMP_Text pendingStateLabel;
+        [SerializeField] internal TMP_Text successStateLabel;
+        [SerializeField] internal Button[] cancelButtons;
+        [SerializeField] internal Button sendButton;
+        [SerializeField] internal Button retryButton;
+        [SerializeField] internal TMP_InputField messageBodyInput;
+        [SerializeField] internal ImageComponentView profileImage;
 
         private readonly Model model = new Model();
         private ILazyTextureObserver lastProfilePictureObserver;
