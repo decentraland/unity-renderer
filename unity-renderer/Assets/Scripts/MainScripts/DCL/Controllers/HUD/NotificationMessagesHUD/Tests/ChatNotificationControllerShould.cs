@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Interface;
+using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -126,6 +127,31 @@ namespace DCL.Chat.Notifications
                 m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
             mainNotificationsView.Received(1).AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
                 m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+        }
+
+        [Test]
+        public void AddFriendRequestNotificationToTheView()
+        {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots { face256 = "face256" }
+            });
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+
+            friendsController.OnAddFriendRequest += Raise.Event<Action<FriendRequest>>(new FriendRequest(
+                "test",
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                "sender",
+                "ownUserId",
+                "hey"));
+
+            topNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(m =>
+                m.SenderId == "sender" && m.SenderName == "imsender" && m.Header == "Friend Request" && m.Body == "wants to be your friend." && m.ProfilePicture == "face256"));
+            mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(m =>
+                m.SenderId == "sender" && m.SenderName == "imsender" && m.Header == "Friend Request" && m.Body == "wants to be your friend." && m.ProfilePicture == "face256"));
         }
 
         [Test]
