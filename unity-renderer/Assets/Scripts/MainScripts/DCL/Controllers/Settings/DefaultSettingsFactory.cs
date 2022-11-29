@@ -15,7 +15,7 @@ namespace DCL.SettingsCommon
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
             mouseSensitivity = 0.6f,
-            scenesLoadRadius = 2,
+            scenesLoadRadius = 4,
             avatarsLODDistance = 16,
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,
