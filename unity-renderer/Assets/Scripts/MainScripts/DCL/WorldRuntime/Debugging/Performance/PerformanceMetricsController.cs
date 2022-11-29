@@ -166,7 +166,7 @@ namespace DCL
                 TotalGcAlloc = (long) totalGCAlloc,
             };
 
-            ClientAnalyticsKernelService analytics = Environment.i.serviceLocator.Get<IRPC>().analytics;
+            ClientAnalyticsKernelService analytics = Environment.i.serviceLocator.Get<IRPC>().Analytics();
             analytics?.PerformanceReport(performanceReportRequest);
 
             PerformanceAnalytics.ResetAll();

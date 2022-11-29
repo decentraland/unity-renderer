@@ -10,10 +10,15 @@ namespace DCL
     {
         private ClientEmotesKernelService emotes;
 
+        private ClientAnalyticsKernelService analytics;
+
         private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
 
         public ClientEmotesKernelService Emotes() =>
             emotes;
+
+        public ClientAnalyticsKernelService Analytics() =>
+            analytics;
 
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
@@ -21,6 +26,7 @@ namespace DCL
         private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
         {
             emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+            analytics = new ClientAnalyticsKernelService(await port.LoadModule(AnalyticsKernelServiceCodeGen.ServiceName));
             modulesLoaded.TrySetResult();
         }
 

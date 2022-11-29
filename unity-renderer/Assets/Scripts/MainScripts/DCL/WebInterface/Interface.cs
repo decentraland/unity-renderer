@@ -1223,7 +1223,7 @@ namespace DCL.Interface
 
         public static void SetDelightedSurveyEnabled(bool enabled)
         {
-            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().analytics;
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
             analytics?.SetDelightedSurveyEnabled(new DelightedSurveyRequest() { Enabled = enabled });
         }
 
@@ -1509,7 +1509,7 @@ namespace DCL.Interface
 
         public static void ReportAnalyticsEvent(string eventName, AnalyticProperty[] eventProperties)
         {
-            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().analytics;
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
             analytics?.AnalyticsEvent(new AnalyticsEventRequest()
             {
                 EventName = eventName,
