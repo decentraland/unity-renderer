@@ -55,7 +55,8 @@ public class WorldChatWindowControllerShould
             mouseCatcher,
             socialAnalytics,
             channelsFeatureFlagService,
-            browserBridge);
+            browserBridge,
+            CommonScriptableObjects.rendererState);
         view = Substitute.For<IWorldChatWindowView>();
     }
 

@@ -77,7 +77,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -124,7 +125,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
