@@ -2,9 +2,9 @@ using DCL;
 using Decentraland.Bff;
 using JetBrains.Annotations;
 
-namespace DCLPlugins.RealmPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public class RealmBlockerModifier : IRealmModifier
+    public class RealmsBlockerModifier : IRealmsModifier
     {
 
         private const int WORLD_BLOCKER_LIMIT = 2;

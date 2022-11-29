@@ -1,9 +1,9 @@
 using System;
 using Decentraland.Bff;
 
-namespace DCLPlugins.RealmPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public interface IRealmModifier : IDisposable
+    public interface IRealmsModifier : IDisposable
     {
         void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
     }

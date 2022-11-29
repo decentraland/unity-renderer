@@ -7,34 +7,34 @@ using NUnit.Framework;
 using UnityEngine;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmPlugin
+namespace DCLPlugins.RealmsPlugin
 {
     public class RealmsPluginTests
     {
-        private RealmPlugin realmPlugin;
+        private RealmsPlugin realmsPlugin;
         private const string catalystRealmName = "CatalystRealmName";
         private const string worldRealmName = "WorldRealmName";
-        private IRealmModifier genericModifier;
-        private RealmBlockerModifier realmBlockerModiferSubstitute;
-        private RealmMinimapModifier realmMinimapModiferSubstitute;
+        private IRealmsModifier genericModifier;
+        private RealmsBlockerModifier realmsBlockerModiferSubstitute;
+        private RealmsMinimapModifier realmsMinimapModiferSubstitute;
         private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
 
         [SetUp]
         public void SetUp()
         {
-            realmPlugin = new RealmPlugin();
-            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>();
+            realmsPlugin = new RealmsPlugin(DataStore.i);
+            realmsBlockerModiferSubstitute = Substitute.For<RealmsBlockerModifier>();
 
-            realmMinimapModiferSubstitute = Substitute.For<RealmMinimapModifier>();
-            genericModifier = Substitute.For<IRealmModifier>();
-            List<IRealmModifier> substituteModifiers = new List<IRealmModifier>() { realmBlockerModiferSubstitute, genericModifier, realmMinimapModiferSubstitute };
-            realmPlugin.realmsModifiers = substituteModifiers;
+            realmsMinimapModiferSubstitute = Substitute.For<RealmsMinimapModifier>();
+            genericModifier = Substitute.For<IRealmsModifier>();
+            List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier, realmsMinimapModiferSubstitute };
+            realmsPlugin.realmsModifiers = substituteModifiers;
 
             SetCatalystRealmsInfo();
         }
 
         [TearDown]
-        public void TearDown() { realmPlugin.Dispose(); }
+        public void TearDown() { realmsPlugin.Dispose(); }
 
         [TestCaseSource(nameof(GenericCases))]
         public void ModifierCalledOnRealmChange(string realmName, bool isCatalist)

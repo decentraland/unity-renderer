@@ -5,9 +5,9 @@ using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmPlugin
+namespace DCLPlugins.RealmsPlugin
 {
-    public class RealmPlugin : IPlugin
+    public class RealmsPlugin : IPlugin
     {
         private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
         private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
@@ -15,12 +15,12 @@ namespace DCLPlugins.RealmPlugin
         private AboutResponse currentConfiguration;
         private List<RealmModel> currentCatalystRealmList;
 
-        internal List<IRealmModifier> realmsModifiers;
+        internal List<IRealmsModifier> realmsModifiers;
 
-        public RealmPlugin()
+        public RealmsPlugin(DataStore dataStore)
         {
-            realmsModifiers = new List<IRealmModifier>() { new RealmBlockerModifier(), new RealmMinimapModifier() };
-            
+            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier(), new RealmsMinimapModifier() };
+
             realmAboutConfiguration.OnChange += RealmChanged;
             realmsList.OnSet += RealmListSet;
         }
@@ -45,7 +45,7 @@ namespace DCLPlugins.RealmPlugin
         {
             if (currentConfiguration == null || currentCatalystRealmList == null)
                 return;
-            
+
             bool isCatalyst = currentCatalystRealmList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
             realmsModifiers.ForEach(e => e.OnEnteredRealm(isCatalyst, currentConfiguration));
         }
@@ -53,7 +53,7 @@ namespace DCLPlugins.RealmPlugin
         public void Dispose()
         {
             realmsModifiers.ForEach(e => e.Dispose());
-            
+
             realmAboutConfiguration.OnChange -= RealmChanged;
         }
     }
