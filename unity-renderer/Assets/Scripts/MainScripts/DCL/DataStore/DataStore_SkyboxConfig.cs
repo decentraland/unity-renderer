@@ -39,8 +39,8 @@ namespace DCL
 
         public void UseFixedTimeFromHours(float timeInHours, SkyboxMode newMode)
         {
-            this.mode.Set(newMode);
             fixedTime.Set(timeInHours);
+            this.mode.Set(newMode);
         }
 
     }

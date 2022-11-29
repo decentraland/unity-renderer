@@ -9,6 +9,16 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
     {
         public event Action<string> OnIndicatorLabelChange;
 
-        protected void RaiseOnIndicatorLabelChange(string newIndicatorLabel) { OnIndicatorLabelChange?.Invoke(newIndicatorLabel); }
+        public event Action<float> SliderValueChanged;
+
+        protected void RaiseOnIndicatorLabelChange(string newIndicatorLabel)
+        {
+            OnIndicatorLabelChange?.Invoke(newIndicatorLabel);
+        }
+
+        protected void RaiseSliderValueChanged(float newValue)
+        {
+            SliderValueChanged?.Invoke(newValue);
+        }
     }
 }
