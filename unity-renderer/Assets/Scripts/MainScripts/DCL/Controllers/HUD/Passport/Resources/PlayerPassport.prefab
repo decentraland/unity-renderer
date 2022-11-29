@@ -5711,6 +5711,7 @@ MonoBehaviour:
   subSectionSelector: {fileID: 4333301583097914845}
   guestPanel: {fileID: 1030108478125068318}
   normalPanel: {fileID: 2405951137523405178}
+  introContainer: {fileID: 7830015748498216320}
   usernameText: {fileID: 5559678103980510561}
   descriptionText: {fileID: 1102672570389372144}
 --- !u!1 &7590974253276029638

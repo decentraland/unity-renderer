@@ -14,6 +14,7 @@ namespace DCL.Social.Passports
         [SerializeField] private SectionSelectorComponentView subSectionSelector;
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
+        [SerializeField] private GameObject introContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
 
@@ -44,6 +45,7 @@ namespace DCL.Social.Passports
 
         public void SetDescription(string description)
         {
+            introContainer.SetActive(!string.IsNullOrEmpty(description));
             descriptionText.text = description;
         }
 

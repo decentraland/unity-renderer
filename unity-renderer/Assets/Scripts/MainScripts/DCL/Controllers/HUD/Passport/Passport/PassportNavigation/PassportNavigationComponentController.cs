@@ -23,9 +23,9 @@ namespace DCL.Social.Passports
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
-            string filteredName = await FilterContent(userProfile.name);
-            view.SetName(filteredName);
+            string filteredName = await FilterContent(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
+            view.SetName(filteredName);
             if (!userProfile.isGuest)
             {
                 string filteredDescription = await FilterContent(userProfile.description);
