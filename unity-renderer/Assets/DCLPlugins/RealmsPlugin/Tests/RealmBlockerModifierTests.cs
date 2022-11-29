@@ -6,20 +6,23 @@ using System.Collections.Generic;
 
 namespace DCLPlugins.RealmPlugin
 {
-    public class RealmPluginTests
+    public class RealmBlockerModifierTests
     {
         private RealmPlugin realmPlugin;
         private const string CATALYST_REALM_NAME = "CatalystRealmName";
         private const string WORLD_REALM_NAME = "WorldRealmName";
-        private IRealmModifier genericModifier;
+        private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
+        private RealmBlockerModifier realmBlockerModiferSubstitute;
 
         [SetUp]
         public void SetUp()
         {
             realmPlugin = new RealmPlugin(DataStore.i);
-            genericModifier = Substitute.For<IRealmModifier>();
+            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i);
+
             var substituteModifiers = new List<IRealmModifier>
-                { genericModifier };
+                { realmBlockerModiferSubstitute, };
+
             realmPlugin.realmsModifiers = substituteModifiers;
         }
 
@@ -27,14 +30,18 @@ namespace DCLPlugins.RealmPlugin
         public void TearDown() =>
             realmPlugin.Dispose();
 
-        [TestCaseSource(nameof(isWorldCases))]
-        public void ModifierCalledOnRealmChange(bool isWorld)
+        [TestCaseSource(nameof(GreenBlockerCases))]
+        public void GreenBlockerAddedOnRealmChange(bool[] isWorld, int[] requiredLimit)
         {
-            // Act
-            SetRealm(isWorld);
+            for (var i = 0; i < isWorld.Length; i++)
+            {
+                // Act
+                SetRealm(isWorld[i]);
 
-            // Assert
-            genericModifier.Received(1).OnEnteredRealm(isWorld, Arg.Any<AboutResponse.Types.AboutConfiguration>());
+                // Assert
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))
+                    Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
+            }
         }
 
         private void SetRealm(bool isWorld)
@@ -55,6 +62,10 @@ namespace DCLPlugins.RealmPlugin
             });
         }
 
-        private static bool[] isWorldCases = { false, true };
+        private static object[] GreenBlockerCases =
+        {
+            new object[] { new[] { false, true, false }, new[] { 0, 2, 0 } },
+            new object[] { new[] { true, false, true }, new[] { 2, 0, 2 } },
+        };
     }
 }

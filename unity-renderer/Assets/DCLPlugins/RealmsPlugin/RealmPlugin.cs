@@ -8,10 +8,8 @@ namespace DCLPlugins.RealmPlugin
 {
     public class RealmPlugin : IPlugin
     {
-        private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
-        private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
+        private BaseVariable<AboutResponse.Types.AboutConfiguration> realmAboutConfigurationConfiguration => DataStore.i.realm.playerRealmAboutConfiguration;
 
-        private AboutResponse currentConfiguration;
         private List<RealmModel> currentCatalystRealmList;
 
         internal List<IRealmModifier> realmsModifiers;
@@ -19,42 +17,23 @@ namespace DCLPlugins.RealmPlugin
         public RealmPlugin(DataStore dataStore)
         {
             realmsModifiers = new List<IRealmModifier>
-                { new RealmBlockerModifier(dataStore), new RealmMinimapModifier(dataStore) };
+                { new RealmBlockerModifier(dataStore.worldBlockers), new RealmMinimapModifier(dataStore.HUDs) };
 
-            realmAboutConfiguration.OnChange += RealmChanged;
-            realmsList.OnSet += RealmListSet;
+            realmAboutConfigurationConfiguration.OnChange += RealmChanged;
         }
 
-        private void RealmListSet(IEnumerable<RealmModel> _)
+        private void RealmChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration _)
         {
-            if (realmsList.Count() > 0)
-            {
-                currentCatalystRealmList = realmsList.Get().ToList();
-                SetRealmModifiers();
-                realmsList.OnSet -= RealmListSet;
-            }
-        }
-
-        private void RealmChanged(AboutResponse current, AboutResponse _)
-        {
-            currentConfiguration = current;
-            SetRealmModifiers();
-        }
-
-        private void SetRealmModifiers()
-        {
-            if (currentConfiguration == null || currentCatalystRealmList == null)
-                return;
-
-            bool isCatalyst = currentCatalystRealmList.FirstOrDefault(r => r.serverName == currentConfiguration.Configurations.RealmName) != null;
-            realmsModifiers.ForEach(e => e.OnEnteredRealm(isCatalyst, currentConfiguration));
+            bool isWorld = current.ScenesUrn.Any()
+                           && string.IsNullOrEmpty(current.CityLoaderContentServer);
+            realmsModifiers.ForEach(e => e.OnEnteredRealm(isWorld, current));
         }
 
         public void Dispose()
         {
             realmsModifiers.ForEach(e => e.Dispose());
 
-            realmAboutConfiguration.OnChange -= RealmChanged;
+            realmAboutConfigurationConfiguration.OnChange -= RealmChanged;
         }
     }
 }

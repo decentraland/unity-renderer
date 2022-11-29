@@ -10,15 +10,15 @@ namespace DCLPlugins.RealmPlugin
         private readonly BaseVariable<bool> worldBlockersEnabled;
         private readonly BaseVariable<int> worldBlockersLimit;
 
-        public RealmBlockerModifier(DataStore dataStore)
+        public RealmBlockerModifier(DataStore_WorldBlockers dataStoreWorldBlockers)
         {
-            worldBlockersEnabled = dataStore.worldBlockers.worldBlockerEnabled;
-            worldBlockersLimit = dataStore.worldBlockers.worldBlockerLimit;
+            worldBlockersEnabled = dataStoreWorldBlockers.worldBlockerEnabled;
+            worldBlockersLimit = dataStoreWorldBlockers.worldBlockerLimit;
         }
 
-        public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
+        public void OnEnteredRealm(bool isWorld, AboutResponse.Types.AboutConfiguration realmConfiguration)
         {
-            bool shouldGreenBlockersBeActive = isCatalyst || ShouldGreenBlockersBeActive(realmConfiguration.Configurations.CityLoaderContentServer);
+            bool shouldGreenBlockersBeActive = !isWorld || ShouldGreenBlockersBeActive(realmConfiguration.CityLoaderContentServer);
 
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))
                 worldBlockersLimit.Set(shouldGreenBlockersBeActive ? 0 : WORLD_BLOCKER_LIMIT);

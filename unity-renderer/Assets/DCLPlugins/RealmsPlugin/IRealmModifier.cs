@@ -5,6 +5,6 @@ namespace DCLPlugins.RealmPlugin
 {
     public interface IRealmModifier : IDisposable
     {
-        void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration);
+        void OnEnteredRealm(bool isWorld, AboutResponse.Types.AboutConfiguration realmConfiguration);
     }
 }

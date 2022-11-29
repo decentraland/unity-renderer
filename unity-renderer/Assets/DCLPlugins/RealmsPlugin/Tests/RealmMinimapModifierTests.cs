@@ -6,20 +6,21 @@ using System.Collections.Generic;
 
 namespace DCLPlugins.RealmPlugin
 {
-    public class RealmPluginTests
+    public class RealmMinimapModifierTests
     {
         private RealmPlugin realmPlugin;
         private const string CATALYST_REALM_NAME = "CatalystRealmName";
         private const string WORLD_REALM_NAME = "WorldRealmName";
         private IRealmModifier genericModifier;
+        private RealmMinimapModifier realmMinimapModiferSubstitute;
 
         [SetUp]
         public void SetUp()
         {
             realmPlugin = new RealmPlugin(DataStore.i);
-            genericModifier = Substitute.For<IRealmModifier>();
+            realmMinimapModiferSubstitute = Substitute.For<RealmMinimapModifier>(DataStore.i);
             var substituteModifiers = new List<IRealmModifier>
-                { genericModifier };
+                { realmMinimapModiferSubstitute };
             realmPlugin.realmsModifiers = substituteModifiers;
         }
 
@@ -28,13 +29,14 @@ namespace DCLPlugins.RealmPlugin
             realmPlugin.Dispose();
 
         [TestCaseSource(nameof(isWorldCases))]
-        public void ModifierCalledOnRealmChange(bool isWorld)
+        public void MinimapModifiedOnRealmChange(bool isWorld)
         {
             // Act
             SetRealm(isWorld);
 
             // Assert
-            genericModifier.Received(1).OnEnteredRealm(isWorld, Arg.Any<AboutResponse.Types.AboutConfiguration>());
+            Assert.AreEqual(DataStore.i.HUDs.minimapVisible.Get(), !isWorld);
+            Assert.AreEqual(DataStore.i.HUDs.jumpHomeButtonVisible.Get(), isWorld);
         }
 
         private void SetRealm(bool isWorld)

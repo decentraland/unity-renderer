@@ -8,16 +8,16 @@ namespace DCLPlugins.RealmPlugin
         private readonly BaseVariable<bool> minimapVisible;
         private readonly BaseVariable<bool> jumpHomeButtonVisible;
 
-        public RealmMinimapModifier(DataStore dataStore)
+        public RealmMinimapModifier(DataStore_HUDs dataStoreHUDs)
         {
-            minimapVisible = dataStore.HUDs.minimapVisible;
-            jumpHomeButtonVisible = dataStore.HUDs.jumpHomeButtonVisible;
+            minimapVisible = dataStoreHUDs.minimapVisible;
+            jumpHomeButtonVisible = dataStoreHUDs.jumpHomeButtonVisible;
         }
 
-        public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
+        public void OnEnteredRealm(bool isWorld, AboutResponse.Types.AboutConfiguration realmConfiguration)
         {
-            minimapVisible.Set(realmConfiguration.Configurations.Minimap.Enabled);
-            jumpHomeButtonVisible.Set(!isCatalyst);
+            minimapVisible.Set(realmConfiguration.Minimap.Enabled);
+            jumpHomeButtonVisible.Set(isWorld);
         }
 
         public void Dispose() { }
