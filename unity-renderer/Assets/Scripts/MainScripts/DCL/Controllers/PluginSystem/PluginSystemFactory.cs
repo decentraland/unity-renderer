@@ -10,8 +10,8 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCLPlugins.RealmPlugin;
 using DCLPlugins.UIRefresherPlugin;
-using DCLPlugins.RealmsPlugin;
 
 namespace DCL
 {
@@ -51,7 +51,7 @@ namespace DCL
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
 
-            pluginSystem.RegisterWithFlag<RealmsPlugin>(() => new RealmsPlugin(DataStore.i), "realms_modifier_plugin");
+            pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");
@@ -59,6 +59,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
+
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,
                 NotificationScriptableObjects.pendingFriendRequests,

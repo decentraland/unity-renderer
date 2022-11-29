@@ -1,40 +1,44 @@
-using System.Collections.Generic;
 using DCL;
-using DCL.Controllers;
 using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
-using UnityEngine;
+using System.Collections.Generic;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
-    public class RealmsPluginTests
+    public class RealmPluginTests
     {
-        private RealmsPlugin realmsPlugin;
-        private const string catalystRealmName = "CatalystRealmName";
-        private const string worldRealmName = "WorldRealmName";
-        private IRealmsModifier genericModifier;
-        private RealmsBlockerModifier realmsBlockerModiferSubstitute;
-        private RealmsMinimapModifier realmsMinimapModiferSubstitute;
+        private RealmPlugin realmPlugin;
+        private const string CATALYST_REALM_NAME = "CatalystRealmName";
+        private const string WORLD_REALM_NAME = "WorldRealmName";
         private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
+        private IRealmModifier genericModifier;
+        private RealmBlockerModifier realmBlockerModiferSubstitute;
+        private RealmMinimapModifier realmMinimapModiferSubstitute;
 
         [SetUp]
         public void SetUp()
         {
-            realmsPlugin = new RealmsPlugin(DataStore.i);
-            realmsBlockerModiferSubstitute = Substitute.For<RealmsBlockerModifier>();
+            realmPlugin = new RealmPlugin(DataStore.i);
+            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i);
 
-            realmsMinimapModiferSubstitute = Substitute.For<RealmsMinimapModifier>();
-            genericModifier = Substitute.For<IRealmsModifier>();
-            List<IRealmsModifier> substituteModifiers = new List<IRealmsModifier>() { realmsBlockerModiferSubstitute, genericModifier, realmsMinimapModiferSubstitute };
-            realmsPlugin.realmsModifiers = substituteModifiers;
+            realmMinimapModiferSubstitute = Substitute.For<RealmMinimapModifier>(DataStore.i);
+            genericModifier = Substitute.For<IRealmModifier>();
+
+            var substituteModifiers = new List<IRealmModifier>
+                { realmBlockerModiferSubstitute, genericModifier, realmMinimapModiferSubstitute };
+
+            realmPlugin.realmsModifiers = substituteModifiers;
 
             SetCatalystRealmsInfo();
         }
 
         [TearDown]
-        public void TearDown() { realmsPlugin.Dispose(); }
+        public void TearDown()
+        {
+            realmPlugin.Dispose();
+        }
 
         [TestCaseSource(nameof(GenericCases))]
         public void ModifierCalledOnRealmChange(string realmName, bool isCatalist)
@@ -43,15 +47,16 @@ namespace DCLPlugins.RealmsPlugin
             SetRealm(realmName);
 
             // Assert
-            genericModifier.Received(1).OnEnteredRealm(isCatalist, Arg.Any<AboutResponse >());
+            genericModifier.Received(1).OnEnteredRealm(isCatalist, Arg.Any<AboutResponse>());
         }
 
         [TestCaseSource(nameof(GreenBlockerCases))]
         public void GreenBlockerAddedOnRealmChange(string[] realmNames, int[] requiredLimit)
         {
-            for (int i = 0; i < realmNames.Length; i++)
+            for (var i = 0; i < realmNames.Length; i++)
             {
                 SetRealm(realmNames[i]);
+
                 if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))
                     Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
             }
@@ -71,41 +76,42 @@ namespace DCLPlugins.RealmsPlugin
             {
                 Bff = new AboutResponse.Types.BffInfo(),
                 Comms = new AboutResponse.Types.CommsInfo(),
-                Configurations = new AboutResponse.Types.AboutConfiguration()
+                Configurations = new AboutResponse.Types.AboutConfiguration
                 {
                     RealmName = realmName,
                     Minimap = new AboutResponse.Types.MinimapConfiguration
                     {
-                        Enabled = realmName.Equals(catalystRealmName)
-                    }
-                }
+                        Enabled = realmName.Equals(CATALYST_REALM_NAME),
+                    },
+                },
             });
         }
 
         private void SetCatalystRealmsInfo()
         {
-            List<RealmModel> testRealmList = new List<RealmModel>();
-            int testUsersCount = 100;
+            var testRealmList = new List<RealmModel>();
+            var testUsersCount = 100;
+
             testRealmList.Add(new RealmModel
             {
-                serverName = catalystRealmName,
+                serverName = CATALYST_REALM_NAME,
                 layer = null,
-                usersCount = testUsersCount
+                usersCount = testUsersCount,
             });
+
             DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
         }
 
-        static object[] GreenBlockerCases =
+        private static object[] GreenBlockerCases =
         {
-            new object[] { new [] { catalystRealmName, worldRealmName, catalystRealmName }, new [] { 0, 2, 0 } },
-            new object[] { new [] { worldRealmName, catalystRealmName, worldRealmName }, new [] { 2, 0, 2 } }
+            new object[] { new[] { CATALYST_REALM_NAME, WORLD_REALM_NAME, CATALYST_REALM_NAME }, new[] { 0, 2, 0 } },
+            new object[] { new[] { WORLD_REALM_NAME, CATALYST_REALM_NAME, WORLD_REALM_NAME }, new[] { 2, 0, 2 } },
         };
 
-        static object[] GenericCases =
+        private static object[] GenericCases =
         {
-            new object[] { catalystRealmName, true },
-            new object[] { worldRealmName, false }
+            new object[] { CATALYST_REALM_NAME, true },
+            new object[] { WORLD_REALM_NAME, false },
         };
-
     }
 }

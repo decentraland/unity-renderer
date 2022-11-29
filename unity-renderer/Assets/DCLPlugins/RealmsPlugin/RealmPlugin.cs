@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using Decentraland.Bff;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
-    public class RealmsPlugin : IPlugin
+    public class RealmPlugin : IPlugin
     {
         private BaseCollection<RealmModel> realmsList => DataStore.i.realm.realmsInfo;
         private BaseVariable<AboutResponse> realmAboutConfiguration => DataStore.i.realm.playerRealmAbout;
@@ -15,11 +14,12 @@ namespace DCLPlugins.RealmsPlugin
         private AboutResponse currentConfiguration;
         private List<RealmModel> currentCatalystRealmList;
 
-        internal List<IRealmsModifier> realmsModifiers;
+        internal List<IRealmModifier> realmsModifiers;
 
-        public RealmsPlugin(DataStore dataStore)
+        public RealmPlugin(DataStore dataStore)
         {
-            realmsModifiers = new List<IRealmsModifier>() { new RealmsBlockerModifier(), new RealmsMinimapModifier() };
+            realmsModifiers = new List<IRealmModifier>
+                { new RealmBlockerModifier(dataStore), new RealmMinimapModifier(dataStore) };
 
             realmAboutConfiguration.OnChange += RealmChanged;
             realmsList.OnSet += RealmListSet;
@@ -27,7 +27,7 @@ namespace DCLPlugins.RealmsPlugin
 
         private void RealmListSet(IEnumerable<RealmModel> _)
         {
-            if (!realmsList.Count().Equals(0))
+            if (realmsList.Count() > 0)
             {
                 currentCatalystRealmList = realmsList.Get().ToList();
                 SetRealmModifiers();

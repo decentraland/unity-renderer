@@ -171,15 +171,11 @@ namespace DCL.Controllers
 
             // Remove extra blockers
             foreach (var coords in blockersToRemove)
-            {
                 blockerInstanceHandler.HideBlocker(coords, false);
-            }
 
             // Add missing blockers
             foreach (var coords in blockersToAdd)
-            {
                 blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
-            }
         }
 
         private HashSet<Vector2Int> LookForLimits(HashSet<Vector2Int> dontAddABlockerHere, Dictionary<Vector2Int, IPoolableObject> blockers, int currentLimitIterationEvaluation)
