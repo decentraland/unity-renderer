@@ -1,14 +1,10 @@
-using Cysharp.Threading.Tasks;
-using DCL.Chat;
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
-using RPC;
 using UnityEngine;
 
 namespace DCL
@@ -86,8 +82,6 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
-
-            RPCServerBuilder.BuildDefaultServer();
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
@@ -117,28 +111,10 @@ namespace DCL
             // it is used by the kernel to signal "EngineReady" or something like that
             // to prevent race conditions like "SceneController is not an object",
             // aka sending events before unity is ready
-            var rpc = Environment.i.serviceLocator.Get<IRPC>();
-            rpc.EnsureRpc().GetAwaiter().OnCompleted(async () =>
-            {
-                await UniTask.SwitchToMainThread();
+            WebInterface.SendSystemInfoReport();
 
-                ClientAnalyticsKernelService analytics = rpc.analytics;
-                analytics?.SystemInfoReport(new SystemInfoReportRequest()
-                {
-                    GraphicsDeviceName = SystemInfo.graphicsDeviceName,
-                    GraphicsDeviceVersion = SystemInfo.graphicsDeviceVersion,
-                    GraphicsMemorySize = (uint) SystemInfo.graphicsMemorySize,
-                    ProcessorType = SystemInfo.processorType,
-                    ProcessorCount = (uint) SystemInfo.processorCount,
-                    SystemMemorySize = (uint) SystemInfo.systemMemorySize,
-
-                    // TODO: remove useBinaryTransform after ECS7 is fully in prod
-                    UseBinaryTransform = true,
-                });
-
-                // We trigger the Decentraland logic once everything is initialized.
-                WebInterface.StartDecentraland();
-            });
+            // We trigger the Decentraland logic once everything is initialized.
+            WebInterface.StartDecentraland();
         }
 
         protected virtual void Update()

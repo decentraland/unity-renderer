@@ -1,23 +1,41 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
+using RPC;
 using rpc_csharp;
+using System;
+using System.Runtime.Remoting.Channels;
 
 namespace DCL
 {
     public class RPC : IRPC
     {
-        private ClientAnalyticsKernelService analytics1;
-        ClientEmotesKernelService IRPC.emotes { get; set; }
-        ClientAnalyticsKernelService IRPC.analytics { get; set; }
+        private ClientEmotesKernelService emotes;
 
-        public static async UniTask LoadModules(RpcClientPort port, IRPC rpc)
+        private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
+
+        public ClientEmotesKernelService Emotes() =>
+            emotes;
+
+        public UniTask EnsureRpc() =>
+            modulesLoaded.Task;
+
+        private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
         {
-            rpc.emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
-            rpc.analytics = new ClientAnalyticsKernelService(await port.LoadModule(AnalyticsKernelServiceCodeGen.ServiceName));
+            emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+            modulesLoaded.TrySetResult();
         }
 
         public void Initialize()
         {
+            var context = DataStore.i.rpc.context;
+
+            context.transport.OnLoadModules += port =>
+            {
+                LoadRpcModulesAsync(port).Forget();
+            };
+
+            context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+
+            RPCServerBuilder.BuildDefaultServer(new RPCContext());
         }
 
         public void Dispose()
