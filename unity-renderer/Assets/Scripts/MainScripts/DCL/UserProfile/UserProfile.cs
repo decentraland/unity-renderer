@@ -109,13 +109,13 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().Emotes();
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
             Timestamp = timestamp
         });
-        
+
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }

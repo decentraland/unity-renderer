@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
-using DCL;
 using Google.Protobuf;
 using rpc_csharp;
 using rpc_csharp.protocol;
 using rpc_csharp.transport;
-using UnityEngine;
-using Environment = DCL.Environment;
 
 namespace RPC.Services
 {
@@ -53,7 +49,8 @@ namespace RPC.Services
         {
             client = new RpcClient(this);
             port = await client.CreatePort("renderer-protocol");
-            DCL.RPC.LoadModules(port, Environment.i.serviceLocator.Get<IRPC>());
+
+            context.transport.OnLoadModules?.Invoke(port);
         }
 
         private async UniTaskVoid HandleMessages(IUniTaskAsyncEnumerable<Payload> streamRequest, CancellationToken token)
@@ -62,16 +59,16 @@ namespace RPC.Services
             {
                 if (token.IsCancellationRequested)
                     break;
-                    
+
                 OnMessageEvent?.Invoke(request.Payload_.ToByteArray());
             }
         }
-        
+
         public IUniTaskAsyncEnumerable<Payload> OpenTransportStream(IUniTaskAsyncEnumerable<Payload> streamRequest, RPCContext context)
         {
             // Client builder...
             BuildClient(context).Forget();
-            
+
             OnConnectEvent?.Invoke();
             return UniTaskAsyncEnumerable.Create<Payload>(async (writer, token) =>
             {
