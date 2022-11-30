@@ -198,7 +198,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
     {
         scriptablePass = new OutlinerRenderPass(renderers)
         {
-            renderPassEvent = RenderPassEvent.AfterRenderingTransparents,
+            renderPassEvent = RenderPassEvent.BeforeRendering,
         };
 
         outlineTexture.Init("_OutlineTexture");
