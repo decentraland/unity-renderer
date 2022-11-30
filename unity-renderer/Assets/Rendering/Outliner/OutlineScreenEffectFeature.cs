@@ -76,7 +76,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
     {
         outlinePass = new OutlinePass(settings)
         {
-            renderPassEvent = RenderPassEvent.AfterRenderingTransparents,
+            renderPassEvent = RenderPassEvent.AfterRendering,
         };
 
         outlineTexture.Init("_OutlineTexture");
