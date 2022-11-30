@@ -10,9 +10,10 @@ using Environment = DCL.Environment;
 
 public class ProfileHUDView : MonoBehaviour
 {
+    private const string REGEX_IS_URL = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+    private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
-    private const float COPY_TOAST_VISIBLE_TIME = 3;
 
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
     [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
@@ -103,13 +104,17 @@ public class ProfileHUDView : MonoBehaviour
         {
             SetDescriptionCharLiitEnabled(true);
             UpdateDescriptionCharLimit(descriptionInputText.text);
+            UpdateLinksInformation(descriptionInputText.text);
         });
         descriptionInputText.onValueChanged.AddListener(x =>
         {
             UpdateDescriptionCharLimit(x);
+        });
+        descriptionInputText.onDeselect.AddListener(x =>
+        {
+            SetDescriptionCharLiitEnabled(false);
             UpdateLinksInformation(x);
         });
-        descriptionInputText.onDeselect.AddListener(x => SetDescriptionCharLiitEnabled(false));
 
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
@@ -330,12 +335,12 @@ public class ProfileHUDView : MonoBehaviour
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (Uri.IsWellFormedUriString(words[i], UriKind.Absolute))
+            if (words[i].Contains("www."))
             {
                 string[] elements = words[i].Split('.');
                 if (elements.Length >= 1)
                 {
-                    words[i] = $"<link=\"{words[i]}\">visible text</link>";
+                    words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
                     changesFound = true;
                 }
             }
