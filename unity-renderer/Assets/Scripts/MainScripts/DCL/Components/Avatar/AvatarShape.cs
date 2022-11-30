@@ -133,7 +133,7 @@ namespace DCL
         {
             if(entity != null)
                 DataStore.i.sceneBoundariesChecker?.Remove(entity,this);
-            
+
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
@@ -143,7 +143,7 @@ namespace DCL
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
-            
+
             DisablePassport();
 
             var model = (AvatarModel) newModel;
@@ -206,7 +206,7 @@ namespace DCL
                     playerName.SetName(model.name);
                     playerName.Show(true);
                 }
-                
+
                 avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
                     playerName = model.name,
@@ -302,7 +302,7 @@ namespace DCL
                 if (isGlobalSceneAvatar)
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
-                    // we should investigate this 
+                    // we should investigate this
                     if (otherPlayers.ContainsKey(player.id))
                         otherPlayers.Remove(player.id);
                     otherPlayers.Add(player.id, player);
@@ -385,7 +385,7 @@ namespace DCL
                 stickersControllers.ToggleHideArea(false);
             }
         }
-        
+
         public void ApplyHidePassportModifier()
         {
             if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
@@ -394,7 +394,7 @@ namespace DCL
             }
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
-        
+
         public void RemoveHidePassportModifier()
         {
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
@@ -456,7 +456,7 @@ namespace DCL
 
             avatarReporterController.ReportAvatarRemoved();
         }
-        
+
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
             if (scene.isPersistent)
@@ -466,7 +466,7 @@ namespace DCL
                 avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
             else
                 avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS);
-            
+
             onPointerDown.gameObject.SetActive(isInsideBoundaries);
             playerNameContainer.SetActive(isInsideBoundaries);
             stickersControllers.ToggleHideArea(!isInsideBoundaries);

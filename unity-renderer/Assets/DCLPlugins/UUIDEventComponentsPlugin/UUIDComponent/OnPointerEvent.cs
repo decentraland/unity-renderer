@@ -138,7 +138,7 @@ namespace DCL.Components
             if (active)
                 Resources.Load<OutlineRenderers>("OutlineRenderers").renderers = renderers.Select(x => (x, x.GetComponent<MeshFilter>().sharedMesh.subMeshCount)).ToList();
             else
-                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers.Clear();
+                Resources.Load<OutlineRenderers>("OutlineRenderers").renderers?.Clear();
         }
 
 

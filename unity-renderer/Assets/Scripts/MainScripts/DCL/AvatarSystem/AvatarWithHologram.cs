@@ -43,7 +43,7 @@ namespace AvatarSystem
         }
 
         /// <summary>
-        /// Starts the loading process for the Avatar. 
+        /// Starts the loading process for the Avatar.
         /// </summary>
         /// <param name="wearablesIds"></param>
         /// <param name="settings"></param>

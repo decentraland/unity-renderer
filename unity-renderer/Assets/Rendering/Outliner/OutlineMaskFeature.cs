@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -8,17 +9,36 @@ public class OutlineMaskFeature : ScriptableRendererFeature
     {
         private const int DEPTH_BUFFER_BITS = 32;
         private const string PROFILER_TAG = "Outliner Mask Pass";
+        private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
+        private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
+        private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
+        private static readonly int AVATAR_MAP1 = Shader.PropertyToID("_AvatarMap1");
+        private static readonly int AVATAR_MAP2 = Shader.PropertyToID("_AvatarMap2");
+        private static readonly int AVATAR_MAP3 = Shader.PropertyToID("_AvatarMap3");
+        private static readonly int AVATAR_MAP4 = Shader.PropertyToID("_AvatarMap4");
+        private static readonly int AVATAR_MAP5 = Shader.PropertyToID("_AvatarMap5");
+        private static readonly int AVATAR_MAP6 = Shader.PropertyToID("_AvatarMap6");
+        private static readonly int AVATAR_MAP7 = Shader.PropertyToID("_AvatarMap7");
+        private static readonly int AVATAR_MAP8 = Shader.PropertyToID("_AvatarMap8");
+        private static readonly int AVATAR_MAP9 = Shader.PropertyToID("_AvatarMap9");
+        private static readonly int AVATAR_MAP10 = Shader.PropertyToID("_AvatarMap10");
+        private static readonly int AVATAR_MAP11 = Shader.PropertyToID("_AvatarMap11");
+        private static readonly int AVATAR_MAP12 = Shader.PropertyToID("_AvatarMap12");
 
-        private readonly OutlineRenderers renderers;
+        private readonly OutlineRenderers outlineRenderers;
         private readonly Material material;
+        private readonly Material gpuSkinningMaterial;
 
         private RenderTargetHandle outlineTextureHandle;
         private RenderTextureDescriptor descriptor;
 
-        public OutlinerRenderPass(OutlineRenderers renderers)
+        private readonly List<Material> toDispose = new List<Material>();
+
+        public OutlinerRenderPass(OutlineRenderers outlineRenderers)
         {
             material = CoreUtils.CreateEngineMaterial("Hidden/DCL/OutlineMaskPass");
-            this.renderers = renderers;
+            gpuSkinningMaterial = CoreUtils.CreateEngineMaterial("Hidden/DCL/OutlineGPUSkinningMaskPass");
+            this.outlineRenderers = outlineRenderers;
         }
 
         public void Setup(RenderTextureDescriptor descriptor, RenderTargetHandle outlineTextureHandle)
@@ -46,18 +66,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                if (renderers?.renderers != null)
-                {
-                    foreach ((Renderer renderer, int meshCount) in renderers.renderers)
-                    {
-                        //Ignore disabled renderers
-                        if (!renderer.gameObject.activeSelf)
-                            continue;
-
-                        // We have to manually render all the submeshes of the selected objects.
-                        for (var i = 0; i < meshCount; i++) { cmd.DrawRenderer(renderer, material, i); }
-                    }
-                }
+                DrawRenderers(outlineRenderers?.renderers, cmd);
+                DrawAvatars(outlineRenderers?.avatars, cmd);
 
                 cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
             }
@@ -66,14 +76,122 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             CommandBufferPool.Release(cmd);
         }
 
+        private void DrawRenderers(List<(Renderer renderer, int meshCount)> renderers, CommandBuffer cmd)
+        {
+            if (renderers == null)
+                return;
+
+            foreach ((Renderer renderer, int meshCount) in renderers)
+            {
+                Debug.Log($"Drawing {GetHierarchyPath(renderer.transform)}");
+
+                //Ignore disabled renderers
+                if (!renderer.gameObject.activeSelf)
+                    continue;
+
+                // We have to manually render all the submeshes of the selected objects.
+                for (var i = 0; i < meshCount; i++) { cmd.DrawRenderer(renderer, material, i); }
+            }
+        }
+
+        private static string GetHierarchyPath(Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+
+            return $"{GetHierarchyPath(transform.parent)}/{transform.name}";
+        }
+
+        private void DrawAvatars(List<(Renderer renderer, int meshCount)> renderers, CommandBuffer cmd)
+        {
+            if (renderers == null)
+                return;
+
+            foreach ((Renderer renderer, int meshCount) in renderers)
+            {
+                //Ignore disabled renderers
+                if (!renderer.gameObject.activeSelf)
+                    continue;
+
+                for (var i = 0; i < meshCount; i++)
+                {
+                    Material materialToUse = null;
+
+                    //We need a material to copy the GPUSkinning values, we enter GPU Skinning flow if we find it.
+                    if (renderer.material != null)
+                    {
+                        //We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
+                        materialToUse = new Material(gpuSkinningMaterial);
+                        toDispose.Add(materialToUse);
+                        CopyAvatarProperties(renderer.materials[i], materialToUse);
+                    }
+                    else //Fallback to the normal outliner
+                    {
+                        materialToUse = material;
+                    }
+
+                    // We have to manually render all the submeshes of the selected objects.
+                    cmd.DrawRenderer(renderer, materialToUse, i);
+                }
+            }
+        }
+
+        private void CopyAvatarProperties(Material source, Material target)
+        {
+            target.SetMatrixArray(BIND_POSES, source.GetMatrixArray(BIND_POSES));
+            target.SetMatrix(RENDERER_WORLD_INVERSE, source.GetMatrix(RENDERER_WORLD_INVERSE));
+            target.SetMatrixArray(BONE_MATRICES, source.GetMatrixArray(BONE_MATRICES));
+
+            if (source.HasTexture(AVATAR_MAP1))
+                target.SetTexture(AVATAR_MAP1, source.GetTexture(AVATAR_MAP1));
+
+            if (source.HasTexture(AVATAR_MAP2))
+                target.SetTexture(AVATAR_MAP2, source.GetTexture(AVATAR_MAP2));
+
+            if (source.HasTexture(AVATAR_MAP3))
+                target.SetTexture(AVATAR_MAP3, source.GetTexture(AVATAR_MAP3));
+
+            if (source.HasTexture(AVATAR_MAP4))
+                target.SetTexture(AVATAR_MAP4, source.GetTexture(AVATAR_MAP4));
+
+            if (source.HasTexture(AVATAR_MAP5))
+                target.SetTexture(AVATAR_MAP5, source.GetTexture(AVATAR_MAP5));
+
+            if (source.HasTexture(AVATAR_MAP6))
+                target.SetTexture(AVATAR_MAP6, source.GetTexture(AVATAR_MAP6));
+
+            if (source.HasTexture(AVATAR_MAP7))
+                target.SetTexture(AVATAR_MAP7, source.GetTexture(AVATAR_MAP7));
+
+            if (source.HasTexture(AVATAR_MAP8))
+                target.SetTexture(AVATAR_MAP8, source.GetTexture(AVATAR_MAP8));
+
+            if (source.HasTexture(AVATAR_MAP9))
+                target.SetTexture(AVATAR_MAP9, source.GetTexture(AVATAR_MAP9));
+
+            if (source.HasTexture(AVATAR_MAP10))
+                target.SetTexture(AVATAR_MAP10, source.GetTexture(AVATAR_MAP10));
+
+            if (source.HasTexture(AVATAR_MAP11))
+                target.SetTexture(AVATAR_MAP11, source.GetTexture(AVATAR_MAP11));
+
+            if (source.HasTexture(AVATAR_MAP12))
+                target.SetTexture(AVATAR_MAP12, source.GetTexture(AVATAR_MAP12));
+        }
+
         public override void FrameCleanup(CommandBuffer cmd)
         {
             cmd.ReleaseTemporaryRT(outlineTextureHandle.id);
+
+            for (var index = 0; index < toDispose.Count; index++) { Object.Destroy(toDispose[index]); }
+
+            toDispose.Clear();
         }
     }
 
     public OutlineRenderers renderers;
     private OutlinerRenderPass scriptablePass;
+
     private RenderTargetHandle outlineTexture;
 
     public override void Create()

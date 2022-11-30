@@ -47,7 +47,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
                 cmd.GetTemporaryRT(finalOutput.id, opaqueDescriptor, FilterMode.Point);
                 Blit(cmd, source, finalOutput.Identifier());
                 cmd.SetGlobalTexture("_Source", finalOutput.Identifier());
-                Blit(cmd, outlineTexture.Identifier(), source, material, 0);
+                Blit(cmd, outlineTexture.Identifier(), source, material);
             }
 
             context.ExecuteCommandBuffer(cmd);
