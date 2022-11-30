@@ -138,6 +138,9 @@ namespace AvatarSystem
 
         public Transform[] GetBones() => loader.GetBones();
 
+        public Renderer GetMainRenderer() =>
+            gpuSkinning.renderer;
+
         public void Dispose()
         {
             status = IAvatar.Status.Idle;

@@ -266,8 +266,24 @@ namespace DCL
             currentLazyObserver.AddListener(avatar.SetImpostorTexture);
         }
 
-        private void PlayerPointerExit() { playerName?.SetForceShow(false); }
-        private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
+        private void PlayerPointerExit()
+        {
+            Resources.Load<OutlineRenderers>("OutlineRenderers").avatars?.Clear();
+            playerName?.SetForceShow(false);
+        }
+
+        private void PlayerPointerEnter()
+        {
+            if (avatar.status == IAvatar.Status.Loaded)
+            {
+                var renderer = avatar.GetMainRenderer();
+
+                if (renderer != null)
+                    Resources.Load<OutlineRenderers>("OutlineRenderers").avatars = new List<(Renderer, int)>() { (renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount) };
+            }
+
+            playerName?.SetForceShow(true);
+        }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
