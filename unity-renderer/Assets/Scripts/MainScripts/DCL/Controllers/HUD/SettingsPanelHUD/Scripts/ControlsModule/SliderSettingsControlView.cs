@@ -72,10 +72,8 @@ namespace DCL.SettingsPanelHUD.Controls
         /// Overrides the text of the label associated to the slider.
         /// </summary>
         /// <param name="text">New label text.</param>
-        public void OverrideIndicatorLabel(string text)
-        {
+        public void OverrideIndicatorLabel(string text) =>
             indicatorLabel.text = text;
-        }
 
         public override void RefreshControl()
         {
