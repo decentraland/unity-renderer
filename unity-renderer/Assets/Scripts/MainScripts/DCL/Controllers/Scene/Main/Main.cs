@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
@@ -109,8 +110,9 @@ namespace DCL
         {
             var rpc = Environment.i.serviceLocator.Get<IRPC>();
 
-            rpc.EnsureRpc().GetAwaiter().OnCompleted(() =>
+            rpc.EnsureRpc().GetAwaiter().OnCompleted(async () =>
             {
+                await UniTask.SwitchToMainThread();
                 // this event should be the last one to be executed after initialization
                 // it is used by the kernel to signal "EngineReady" or something like that
                 // to prevent race conditions like "SceneController is not an object",
