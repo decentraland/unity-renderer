@@ -182,7 +182,8 @@ namespace DCL.Chat.Notifications
                 "Friend Request",
                 $"wants to be your friend.",
                 (ulong)friendRequest.Timestamp,
-                friendRequestProfilePicture);
+                friendRequestProfilePicture,
+                false);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)

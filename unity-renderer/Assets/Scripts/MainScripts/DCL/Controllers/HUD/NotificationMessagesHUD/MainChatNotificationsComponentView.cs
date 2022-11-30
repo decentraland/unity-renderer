@@ -1,11 +1,9 @@
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using DCL.Interface;
-using DCL.Social.Friends;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,8 +31,7 @@ namespace DCL.Chat.Notifications
 
         internal readonly Queue<PoolableObject> poolableQueue = new Queue<PoolableObject>();
 
-        internal readonly Queue<ChatNotificationMessageComponentView> notificationQueue =
-            new Queue<ChatNotificationMessageComponentView>();
+        internal readonly Queue<BaseComponentView> notificationQueue = new Queue<BaseComponentView>();
 
         private readonly Vector2 notificationOffset = new Vector2(0, -56);
 
@@ -99,7 +96,7 @@ namespace DCL.Chat.Notifications
 
         public void ShowNotifications()
         {
-            foreach (ChatNotificationMessageComponentView notification in notificationQueue)
+            foreach (BaseComponentView notification in notificationQueue)
             {
                 notification.Show();
             }
@@ -107,7 +104,7 @@ namespace DCL.Chat.Notifications
 
         public void HideNotifications()
         {
-            foreach (ChatNotificationMessageComponentView notification in notificationQueue)
+            foreach (BaseComponentView notification in notificationQueue)
             {
                 notification.Hide();
             }
@@ -198,7 +195,7 @@ namespace DCL.Chat.Notifications
             entryPool = GetFriendRequestNotificationEntryPool();
             var newNotification = entryPool.Get();
 
-            var entry = newNotification.gameObject.GetComponent<ChatNotificationMessageComponentView>();
+            var entry = newNotification.gameObject.GetComponent<FriendRequestNotificationComponentView>();
             poolableQueue.Enqueue(newNotification);
             notificationQueue.Enqueue(entry);
 
@@ -311,20 +308,16 @@ namespace DCL.Chat.Notifications
             OnClickedNotification?.Invoke(targetId);
         }
 
-        private void PopulateFriendRequestNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
+        private void PopulateFriendRequestNotification(FriendRequestNotificationComponentView friendRequestNotificationComponentView,
             FriendRequestNotificationModel model)
         {
-            chatNotificationComponentView.SetMaxContentCharacters(100);
-            chatNotificationComponentView.SetMaxHeaderCharacters(100);
-            chatNotificationComponentView.SetMaxSenderCharacters(100);
-            chatNotificationComponentView.SetIsFriendRequest(true);
-            chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
-            chatNotificationComponentView.SetNotificationHeader(model.Header);
-            chatNotificationComponentView.SetNotificationSender(model.SenderName);
-            chatNotificationComponentView.SetMessage(model.Body);
-            chatNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
+            friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
+            friendRequestNotificationComponentView.SetHeader(model.Header);
+            friendRequestNotificationComponentView.SetMessage(model.Message);
+            friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
             if (!string.IsNullOrEmpty(model.ProfilePicture))
-                chatNotificationComponentView.SetImage(model.ProfilePicture);
+                friendRequestNotificationComponentView.SetImage(model.ProfilePicture);
+            friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
         private void ClickedOnFriendRequest(string fromUserId)
@@ -349,7 +342,7 @@ namespace DCL.Chat.Notifications
         {
             if (poolableQueue.Count >= MAX_NOTIFICATION_ENTRIES)
             {
-                ChatNotificationMessageComponentView notificationToDequeue = notificationQueue.Dequeue();
+                BaseComponentView notificationToDequeue = notificationQueue.Dequeue();
                 notificationToDequeue.onFocused -= FocusedOnNotification;
                 entryPool.Release(poolableQueue.Dequeue());
             }

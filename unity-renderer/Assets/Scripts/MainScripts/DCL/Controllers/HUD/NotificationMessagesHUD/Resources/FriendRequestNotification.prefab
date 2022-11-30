@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 7216125437349585596}
   - component: {fileID: 5853229331382970907}
   - component: {fileID: 6098839366715364652}
-  - component: {fileID: 868075836129341070}
+  - component: {fileID: 1959347155760253919}
   - component: {fileID: 9116822159224781207}
   - component: {fileID: 519245020998136351}
   - component: {fileID: 7174492760681790442}
@@ -108,7 +108,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &868075836129341070
+--- !u!114 &1959347155760253919
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,7 +117,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1573650228084134528}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59ca7b41e62b34acb94e03ef57780a16, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e868a8ba0bb077479b379071d3e99c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
@@ -127,42 +127,19 @@ MonoBehaviour:
   notificationSender: {fileID: 2703048977424939686}
   notificationTimestamp: {fileID: 6666412472917145009}
   image: {fileID: 1067147339303476878}
-  imageBackground: {fileID: 2461765611140662433}
-  multiNotificationBackground: {fileID: 0}
-  firstSeparator: {fileID: 706080708185033620}
-  secondSeparator: {fileID: 3869596369706961873}
-  isPrivate: 1
   backgroundTransform: {fileID: 6921774907020436340}
   messageContainerTransform: {fileID: 8120957955048438572}
-  header: {fileID: 0}
-  content: {fileID: 0}
-  model:
-    maxHeaderCharacters: 100
-    maxContentCharacters: 100
-    maxSenderCharacters: 100
-    message: wants to be your friend.
-    time: 12:33
-    messageHeader: Friend Request
-    messageSender: Alice
-    isPrivate: 1
-    isFriendRequest: 1
-    imageUri: 
-    notificationTargetId: 
-  privateColor: {r: 0.10980392, g: 0.93333334, b: 0.4862745, a: 1}
-  publicColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
-  standardColor: {r: 0, g: 0, b: 0, a: 0}
-  channelColors:
-  - {r: 0.98039216, g: 0.31764707, b: 0.31764707, a: 1}
-  - {r: 1, g: 0.6392157, b: 0.4392157, a: 1}
-  - {r: 1, g: 0.47843137, b: 0, a: 1}
-  - {r: 1, g: 0.81960785, b: 0.36078432, a: 1}
-  - {r: 0.8, g: 1, b: 0.38039216, a: 1}
-  - {r: 0.42745098, g: 0.9647059, b: 1, a: 1}
-  - {r: 0.36078432, g: 0.654902, b: 1, a: 1}
-  - {r: 0.6862745, g: 0.49019608, b: 1, a: 1}
-  friendRequestColor: {r: 1, g: 1, b: 1, a: 1}
+  receivedRequestMark: {fileID: 0}
+  acceptedRequestMark: {fileID: 0}
   shouldAnimateFocus: 1
-  notificationTargetId: 
+  model:
+    UserName: Alice
+    UserId: xxx
+    Message: wants to be your friend.
+    Time: 12:42
+    Header: Friend Request
+    ImageUri: 
+    IsAccepted: 0
 --- !u!114 &9116822159224781207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,7 +736,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 12:33
+  m_text: 12:42
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,
