@@ -67,5 +67,6 @@ namespace DCL
         public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
         public DataStore_Rpc rpc => i.Get<DataStore_Rpc>();
         public DataStore_Channels channels => i.Get<DataStore_Channels>();
+        public DataStore_WorldBlockers worldBlockers => i.Get<DataStore_WorldBlockers>();
     }
 }
