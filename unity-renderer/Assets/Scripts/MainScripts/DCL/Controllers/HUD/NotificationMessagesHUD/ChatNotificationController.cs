@@ -166,8 +166,10 @@ namespace DCL.Chat.Notifications
 
         private void HandleFriendRequestAdded(FriendRequest friendRequest)
         {
-            if (friendRequest.From == userProfileBridge.GetOwn().userId ||
-                friendRequest.To != userProfileBridge.GetOwn().userId)
+            var ownUserProfile = userProfileBridge.GetOwn();
+
+            if (friendRequest.From == ownUserProfile.userId ||
+                friendRequest.To != ownUserProfile.userId)
                 return;
 
             var friendRequestProfile = userProfileBridge.Get(friendRequest.From);
