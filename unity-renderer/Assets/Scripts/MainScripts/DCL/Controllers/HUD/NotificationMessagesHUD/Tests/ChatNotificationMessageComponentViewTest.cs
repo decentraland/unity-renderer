@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using UnityEngine;
 
 public class ChatNotificationMessageComponentViewTest
 {
@@ -167,30 +166,5 @@ public class ChatNotificationMessageComponentViewTest
         Assert.AreEqual(isPrivate, chatNotificationComponent.model.isPrivate, "The private status does not match in the model");
         Assert.AreEqual(isPrivate, chatNotificationComponent.isPrivate, "The private status does not match");
         Assert.AreEqual(isPrivate, chatNotificationComponent.image.gameObject.activeInHierarchy, "The icon active status does not reflect the isPrivate status");
-    }
-
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetFriendRequestCorrectly(bool isFriendRequest)
-    {
-        // Arrange
-        chatNotificationComponent.model.isPrivate = false;
-
-        //Act
-        chatNotificationComponent.SetIsFriendRequest(isFriendRequest);
-
-        //Assert
-        Assert.AreEqual(isFriendRequest, chatNotificationComponent.model.isFriendRequest);
-        if (isFriendRequest)
-        {
-            Assert.IsTrue(chatNotificationComponent.imageBackground.gameObject.activeSelf);
-            Assert.IsFalse(chatNotificationComponent.firstSeparator.activeSelf);
-            Assert.IsFalse(chatNotificationComponent.secondSeparator.activeSelf);
-        }
-        else
-        {
-            SetPrivateCorrectly(false);
-        }
     }
 }

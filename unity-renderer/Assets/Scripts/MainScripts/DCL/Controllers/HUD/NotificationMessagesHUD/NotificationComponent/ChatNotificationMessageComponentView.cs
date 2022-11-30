@@ -32,7 +32,6 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
     [SerializeField] private Color publicColor;
     [SerializeField] private Color standardColor;
     [SerializeField] private Color[] channelColors;
-    [SerializeField] private Color friendRequestColor;
 
     public event Action<string> OnClickedNotification;
     public bool shouldAnimateFocus = true;
@@ -95,7 +94,6 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
         SetMessage(model.message);
         SetTimestamp(model.time);
         SetIsPrivate(model.isPrivate);
-        SetIsFriendRequest(model.isFriendRequest);
         SetNotificationHeader(model.messageHeader);
         SetImage(model.imageUri);
     }
@@ -121,11 +119,7 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
 
     public void SetNotificationHeader(string header)
     {
-        if (model.isFriendRequest)
-        {
-            notificationHeader.color = friendRequestColor;
-        }
-        else if (!isPrivate)
+        if (!isPrivate)
         {
             if(header == NEAR_BY_CHANNEL)
                 notificationHeader.color = publicColor;
@@ -188,22 +182,6 @@ public class ChatNotificationMessageComponentView : BaseComponentView, IChatNoti
             notificationHeader.color = privateColor;
         else
             notificationHeader.color = publicColor;
-        ForceUIRefresh();
-    }
-
-    public void SetIsFriendRequest(bool isFriendRequest)
-    {
-        model.isFriendRequest = isFriendRequest;
-        if (isFriendRequest)
-        {
-            imageBackground.SetActive(true);
-            firstSeparator.SetActive(false);
-            secondSeparator.SetActive(false);
-            notificationHeader.color = friendRequestColor;
-        }
-        else
-            SetIsPrivate(model.isPrivate);
-
         ForceUIRefresh();
     }
 
