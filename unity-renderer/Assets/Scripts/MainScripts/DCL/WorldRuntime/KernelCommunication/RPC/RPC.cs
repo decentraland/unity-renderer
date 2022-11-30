@@ -39,7 +39,7 @@ namespace DCL
 
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
 
-            RPCServerBuilder.BuildDefaultServer(new RPCContext());
+            RPCServerBuilder.BuildDefaultServer(context);
         }
 
         public void Dispose()

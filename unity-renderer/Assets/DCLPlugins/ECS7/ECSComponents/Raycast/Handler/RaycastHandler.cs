@@ -92,7 +92,7 @@ namespace DCLPlugins.ECSComponents.Raycast
                     hit.Length = hits[i].distance;
                     hit.Origin = model.Origin.Clone();
 
-                    var worldPosition = PositionUtils.UnityToWorldPosition(hits[i].point - worldGridPosition);
+                    var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(hits[i].point, scene);
                     hit.Position = new Vector3();
                     hit.Position.X = worldPosition.x;
                     hit.Position.Y = worldPosition.y;
