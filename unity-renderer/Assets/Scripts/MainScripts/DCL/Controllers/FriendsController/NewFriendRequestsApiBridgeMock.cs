@@ -202,6 +202,12 @@ namespace DCL.Social.Friends
             apiBridge.AcceptFriendship(userId);
         }
 
+        public void Dispose()
+        {
+            addFriendRequestByUserInputCancellationToken.Cancel();
+            addFriendRequestByUserInputCancellationToken.Dispose();
+        }
+
         private async UniTaskVoid AddFriendRequestByUserInputAsync(CancellationToken ct = default)
         {
             while (!ct.IsCancellationRequested)
@@ -230,12 +236,6 @@ namespace DCL.Social.Friends
                     });
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            addFriendRequestByUserInputCancellationToken.Cancel();
-            addFriendRequestByUserInputCancellationToken.Dispose();
         }
     }
 }
