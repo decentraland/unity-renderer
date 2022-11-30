@@ -118,7 +118,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                     Material materialToUse = null;
 
                     //We need a material to copy the GPUSkinning values, we enter GPU Skinning flow if we find it.
-                    if (renderer.material != null)
+                    if (renderer.materials[i] != null)
                     {
                         //We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
                         materialToUse = new Material(gpuSkinningMaterial);
