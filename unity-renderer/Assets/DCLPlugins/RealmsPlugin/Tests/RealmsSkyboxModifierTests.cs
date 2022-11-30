@@ -1,9 +1,10 @@
 ﻿using DCL;
+using DCLPlugins.RealmsPlugin;
 using NUnit.Framework;
 using System;
 using static Decentraland.Bff.AboutResponse.Types;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
     public class RealmsSkyboxModifierTests
     {
