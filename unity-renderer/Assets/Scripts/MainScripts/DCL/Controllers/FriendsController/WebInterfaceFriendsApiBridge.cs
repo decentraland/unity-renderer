@@ -21,13 +21,14 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
-        
+
         [PublicAPI]
         public void InitializeFriends(string json) =>
             OnInitialized?.Invoke(JsonUtility.FromJson<FriendshipInitializationMessage>(json));
 
         [PublicAPI]
-        public void FriendNotFound(string name) => OnFriendNotFound?.Invoke(name);
+        public void FriendNotFound(string name) =>
+            OnFriendNotFound?.Invoke(name);
 
         [PublicAPI]
         public void AddFriends(string json) =>
@@ -70,8 +71,9 @@ namespace DCL.Social.Friends
             var payload = JsonUtility.FromJson<RequestFriendshipConfirmationPayload>(json);
             var messageId = payload.messageId;
             if (!pendingRequests.ContainsKey(messageId)) return;
-            var task =
-                (UniTaskCompletionSource<RequestFriendshipConfirmationPayload>) pendingRequests[messageId];
+
+            var task = (UniTaskCompletionSource<RequestFriendshipConfirmationPayload>)pendingRequests[messageId];
+
             pendingRequests.Remove(messageId);
             task.TrySetResult(payload);
         }
@@ -82,12 +84,39 @@ namespace DCL.Social.Friends
             var payload = JsonUtility.FromJson<RequestFriendshipErrorPayload>(json);
             var messageId = payload.messageId;
             if (!pendingRequests.ContainsKey(messageId)) return;
-            var task =
-                (UniTaskCompletionSource<RequestFriendshipConfirmationPayload>) pendingRequests[messageId];
+
+            var task = (UniTaskCompletionSource<RequestFriendshipConfirmationPayload>)pendingRequests[messageId];
+
             pendingRequests.Remove(messageId);
-            task.TrySetException(new FriendshipException((FriendRequestErrorCodes) payload.errorCode));
+            task.TrySetException(new FriendshipException((FriendRequestErrorCodes)payload.errorCode));
         }
-        
+
+        [PublicAPI]
+        public void CancelFriendshipConfirmation(string json)
+        {
+            var payload = JsonUtility.FromJson<CancelFriendshipConfirmationPayload>(json);
+            string messageId = payload.messageId;
+            if (!pendingRequests.ContainsKey(messageId)) return;
+
+            var task = (UniTaskCompletionSource<CancelFriendshipConfirmationPayload>)pendingRequests[messageId];
+
+            pendingRequests.Remove(messageId);
+            task.TrySetResult(payload);
+        }
+
+        [PublicAPI]
+        public void CancelFriendshipError(string json)
+        {
+            var payload = JsonUtility.FromJson<CancelFriendshipErrorPayload>(json);
+            var messageId = payload.messageId;
+            if (!pendingRequests.ContainsKey(messageId)) return;
+
+            var task = (UniTaskCompletionSource<CancelFriendshipConfirmationPayload>)pendingRequests[messageId];
+
+            pendingRequests.Remove(messageId);
+            task.TrySetException(new FriendshipException((FriendRequestErrorCodes)payload.errorCode));
+        }
+
         public void RejectFriendship(string userId)
         {
             WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
@@ -115,6 +144,7 @@ namespace DCL.Social.Friends
         public UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             var task = new UniTaskCompletionSource<AddFriendRequestsPayload>();
+
             // TODO: optimize unique id length for performance reasons
             var messageId = Guid.NewGuid().ToString("N");
             pendingRequests[messageId] = task;
@@ -127,6 +157,7 @@ namespace DCL.Social.Friends
                 receivedLimit = receivedLimit,
                 receivedSkip = receivedSkip
             });
+
             return task.Task;
         }
 
@@ -136,26 +167,36 @@ namespace DCL.Social.Friends
         public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
         {
             var task = new UniTaskCompletionSource<RequestFriendshipConfirmationPayload>();
+
             // TODO: optimize unique id length for performance reasons
             var messageId = Guid.NewGuid().ToString("N");
             pendingRequests[messageId] = task;
-            
+
             WebInterface.SendMessage("RequestFriendship", new RequestFriendshipPayload
             {
                 messageId = messageId,
                 messageBody = messageBody,
                 userId = userId
             });
+
             return task.Task;
         }
 
-        public void CancelRequest(string userId)
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string userId)
         {
+            var task = new UniTaskCompletionSource<CancelFriendshipConfirmationPayload>();
+
+            // TODO: optimize unique id length for performance reasons
+            var messageId = Guid.NewGuid().ToString("N");
+            pendingRequests[messageId] = task;
+
             WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
             {
                 userId = userId,
                 action = WebInterface.FriendshipAction.CANCELLED
             });
+
+            return task.Task;
         }
 
         public void AcceptFriendship(string userId)

@@ -190,9 +190,21 @@ namespace DCL.Social.Friends
             return response;
         }
 
-        public void CancelRequest(string userId)
+        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string userId)
         {
-            apiBridge.CancelRequest(userId);
+            await UniTask.Delay(Random.Range(100, 16000));
+
+            // if (Random.Range(0, 2) == 0)
+            //     throw new FriendshipException(FriendRequestErrorCodes.Unknown);
+
+            var response = new CancelFriendshipConfirmationPayload
+            {
+                messageId = Guid.NewGuid().ToString("N"),
+                // TODO: it may bring inconsistencies.. it would be better to retrieve the FQ with the user id and then set the FQ id
+                friendRequestId = Guid.NewGuid().ToString("N")
+            };
+
+            return response;
         }
 
         public void AcceptFriendship(string userId)

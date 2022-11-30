@@ -28,7 +28,7 @@ namespace DCl.Social.Friends
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
         UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody);
-        void CancelRequest(string friendUserId);
+        UniTask<string> CancelRequest(string friendUserId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);
         bool IsFriend(string userId);

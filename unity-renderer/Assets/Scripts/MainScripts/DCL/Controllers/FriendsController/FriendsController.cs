@@ -148,10 +148,13 @@ namespace DCL.Social.Friends
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
 
-        public void CancelRequest(string friendUserId) =>
-            apiBridge.CancelRequest(friendUserId);
+        public async UniTask<string> CancelRequest(string friendUserId)
+        {
+            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequest(friendUserId);
+            return payload.friendRequestId;
+        }
 
-        public void AcceptFriendship(string friendUserId) => 
+        public void AcceptFriendship(string friendUserId) =>
             apiBridge.AcceptFriendship(friendUserId);
 
         private void FriendNotFound(string name) => OnFriendNotFound?.Invoke(name);
