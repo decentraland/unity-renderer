@@ -51,7 +51,7 @@ public class ProfileHUDController : IHUD
 
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
-        view.ActivateDescriptionEditionMode(false);
+        view.SetDescriptionCharLiitEnabled(false);
 
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
         view.buttonSignUp.onClick.AddListener(WebInterface.RedirectToSignUp);
@@ -61,7 +61,7 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
-        view.descriptionEditionInput.onSubmit.AddListener(UpdateProfileDescription);
+        view.descriptionInputText.onSubmit.AddListener(UpdateProfileDescription);
         view.OnOpen += () =>
         {
             WebInterface.RequestOwnProfileUpdate();
@@ -97,7 +97,7 @@ public class ProfileHUDController : IHUD
 
     protected virtual GameObject GetViewPrefab()
     {
-        return Resources.Load<GameObject>("ProfileHUD");
+        return Resources.Load<GameObject>("ProfileHUD_V2");
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
@@ -150,7 +150,7 @@ public class ProfileHUDController : IHUD
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
 
-        view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
+        view.descriptionInputText.onSubmit.RemoveListener(UpdateProfileDescription);
         DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
 
         DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
@@ -225,16 +225,16 @@ public class ProfileHUDController : IHUD
 
     private void UpdateProfileDescription(string description)
     {
-        if (view.descriptionEditionInput.wasCanceled
+        if (view.descriptionInputText.wasCanceled
             || !ownUserProfile.hasConnectedWeb3
-            || description.Length > view.descriptionEditionInput.characterLimit)
+            || description.Length > view.descriptionInputText.characterLimit)
         {
-            view.ActivateDescriptionEditionMode(false);
+            view.SetDescriptionCharLiitEnabled(false);
             return;
         }
 
         view.SetDescription(description);
-        view.ActivateDescriptionEditionMode(false);
+        view.SetDescriptionCharLiitEnabled(false);
         userProfileBridge.SaveDescription(description);
     }
 
