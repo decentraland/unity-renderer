@@ -13,6 +13,7 @@ namespace DCL.Social.Passports
         private readonly DataStore dataStore;
 
         private IPassportNavigationComponentView view;
+        private HashSet<string> cachedAvatarEquippedWearables = new HashSet<string>();
 
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, DataStore dataStore)
         {
@@ -36,8 +37,6 @@ namespace DCL.Social.Passports
                 await LoadAndDisplayEquippedWearables(userProfile);
             }
         }
-
-        private List<string> cachedAvatarEquippedWearables = new List<string>();
         private async UniTask LoadAndDisplayEquippedWearables(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
@@ -47,7 +46,7 @@ namespace DCL.Social.Passports
                 if (!cachedAvatarEquippedWearables.Contains(t))
                 {
                     view.InitializeView();
-                    cachedAvatarEquippedWearables = userProfile.avatar.wearables;
+                    cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems);
                     return;
