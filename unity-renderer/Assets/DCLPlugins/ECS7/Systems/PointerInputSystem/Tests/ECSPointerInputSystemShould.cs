@@ -26,7 +26,8 @@ namespace Tests
         private IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent;
         private IECSInteractionHoverCanvas interactionHoverCanvas;
         private ECSComponentsManager componentsManager;
-
+        private InternalECSComponents internalComponents;
+        
         private Collider colliderEntity1;
         private Collider colliderEntity2;
 
@@ -39,7 +40,7 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
@@ -564,6 +565,66 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipInput(0, InputAction.IaAny);
             interactionHoverCanvas.Received(1).SetTooltipInput(1, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
+        }
+        
+        [Test]
+        [TestCase(0,0)]
+        [TestCase(66,66)]
+        public void ReturnResultHitPositionInSceneSpace(int sceneBaseCoordX, int sceneBaseCoordY)
+        {
+            // 1. Set scene, entity and its collider
+            Vector2Int sceneBaseCoords = new Vector2Int(sceneBaseCoordX, sceneBaseCoordY);
+            var newTestScene = testUtils.CreateScene(2222, sceneBaseCoords, new List<Vector2Int>(){sceneBaseCoords});
+            var testEntity = newTestScene.CreateEntity(12345);
+            Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
+            internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
+                new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
+            
+            // 2. position collider entity inside scene space
+            ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
+                Substitute.For<BaseVariable<UnityEngine.Vector3>>());
+
+            var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
+            var transformModel = new ECSTransform() { position = entityLocalPosition };
+            transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
+            
+            dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
+            dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
+            dataStoreEcs7.lastPointerInputEvent.hasValue = true;
+            dataStoreEcs7.lastPointerRayHit.didHit = true;
+            dataStoreEcs7.lastPointerRayHit.hasValue = true;
+            dataStoreEcs7.lastPointerRayHit.hit.collider = testEntityCollider;
+            
+            // 3. update pointer ray hit values with object unity position
+            var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, newTestScene);
+            dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
+            dataStoreEcs7.lastPointerRayHit.ray.origin = entityGlobalPosition + UnityEngine.Vector3.back * 3;
+
+            // 4. Update to enqueue new events
+            systemUpdate();
+
+            var result = inputEventResultsComponent.GetFor(newTestScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var enqueuedEvent = result.model.events.Dequeue();
+
+            Assert.AreEqual(testEntity.entityId, enqueuedEvent.hit.EntityId);
+            Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
+            
+            // 5. Check enqueued event has correct position and origin
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z
+            }, enqueuedEvent.hit.Position);
+            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            {
+                X = entityLocalPosition.x,
+                Y = entityLocalPosition.y,
+                Z = entityLocalPosition.z - 3
+            }, enqueuedEvent.hit.Origin);
+            
+            // 6. Clean up
+            Object.DestroyImmediate(testEntityCollider.gameObject);
         }
     }
 }

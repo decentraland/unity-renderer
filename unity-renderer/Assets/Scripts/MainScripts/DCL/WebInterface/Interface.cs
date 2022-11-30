@@ -1350,6 +1350,12 @@ namespace DCL.Interface
             public SendSaveUserDescriptionPayload(string description) { this.description = description; }
         }
 
+        [System.Serializable]
+        public class SendRequestUserProfilePayload
+        {
+            public string value;
+        }
+
         [Serializable]
         public class SendVideoProgressEvent
         {
@@ -1390,6 +1396,8 @@ namespace DCL.Interface
         }
 
         public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
+
+        public static void SendRequestUserProfile(string userId) { SendMessage("RequestUserProfile", new SendRequestUserProfilePayload() { value = userId }); }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
