@@ -667,5 +667,16 @@ namespace DCL.Controllers
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);
         }
+
+        public void SetInitMessagesDone()
+        {
+            sceneLifecycleHandler.SetInitMessagesDone();
+        }
+
+        public bool IsInitMessageDone()
+        {
+            return sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
+                   || sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS;
+        }
     }
 }

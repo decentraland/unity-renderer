@@ -15,6 +15,7 @@ namespace RPC
         {
             RPCContext context = DataStore.i.rpc.context;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+            context.crdt.WorldState = Environment.i.world.state;
             BuildDefaultServer(context);
         }
 

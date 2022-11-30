@@ -1,9 +1,8 @@
-using System;
-using System.IO;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Controllers;
 using DCL.CRDT;
+using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
 using NSubstitute;
@@ -12,7 +11,12 @@ using RPC;
 using rpc_csharp;
 using rpc_csharp.transport;
 using RPC.Services;
+using System;
+using System.Collections;
+using System.IO;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.TestTools;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
@@ -151,6 +155,77 @@ namespace Tests
             {
                 Debug.LogError(e);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator SetSceneAsInitDoneOnFirstCrdt()
+        {
+            yield return UniTask.RunOnThreadPool(async () =>
+                                 {
+                                     ClientCRDTService clientCrdtService = await CreateClientCrdtService(testClientTransport);
+
+                                     var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
+                                     messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
+                                     messagingControllersManager.ContainsController(Arg.Any<int>()).Returns(true);
+
+                                     int sceneNumber = 666;
+                                     IParcelScene scene = Substitute.For<IParcelScene>();
+                                     bool isInitDone = false;
+
+                                     scene.sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
+                                     {
+                                         sceneNumber = sceneNumber,
+                                         sdk7 = true
+                                     });
+
+                                     scene.IsInitMessageDone().Returns(_ => isInitDone);
+
+                                     IWorldState worldState = Substitute.For<IWorldState>();
+
+                                     worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>())
+                                               .Returns(x =>
+                                                {
+                                                    x[1] = scene;
+                                                    return true;
+                                                });
+
+                                     CRDTMessage crdtMessage = new CRDTMessage()
+                                     {
+                                         key1 = 7693,
+                                         timestamp = 799,
+                                         data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                                     };
+
+                                     context.crdt.MessagingControllersManager = messagingControllersManager;
+                                     context.crdt.WorldState = worldState;
+
+                                     // Simulate client sending `crdtMessage` CRDT
+                                     try
+                                     {
+                                         await clientCrdtService.SendCrdt(new CRDTManyMessages()
+                                         {
+                                             SceneNumber = sceneNumber,
+                                             Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                                         });
+
+                                         scene.Received(1).SetInitMessagesDone();
+                                         scene.ClearReceivedCalls();
+                                         isInitDone = true;
+
+                                         await clientCrdtService.SendCrdt(new CRDTManyMessages()
+                                         {
+                                             SceneNumber = sceneNumber,
+                                             Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                                         });
+
+                                         scene.DidNotReceive().SetInitMessagesDone();
+                                     }
+                                     catch (Exception e)
+                                     {
+                                         Debug.LogError(e);
+                                     }
+                                 })
+                                .ToCoroutine();
         }
 
         static byte[] CreateCRDTMessage(CRDTMessage message)
