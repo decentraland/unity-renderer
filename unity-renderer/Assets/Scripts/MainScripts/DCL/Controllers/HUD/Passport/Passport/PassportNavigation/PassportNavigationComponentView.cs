@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -15,8 +17,12 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private GameObject introContainer;
+        [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
+        [SerializeField] private GameObject wearableUIReferenceObject;
+
+        private List<NFTIconComponentView> equippedWearables = new List<NFTIconComponentView>();
 
         public override void Start()
         {
@@ -30,6 +36,11 @@ namespace DCL.Social.Passports
             {
                 wearablesPanel.SetActive(isActive);
             });
+        }
+
+        public void InitializeView()
+        {
+            CleanEquippedWearables();
         }
 
         public void SetGuestUser(bool isGuest)
@@ -49,8 +60,37 @@ namespace DCL.Social.Passports
             descriptionText.text = description;
         }
 
+        public void SetEquippedWearables(WearableItem[] wearables)
+        {
+            foreach (var wearable in wearables)
+            {
+                NFTIconComponentView nftIconComponentView = Instantiate(wearableUIReferenceObject, equippedWearablesContainer).GetComponent<NFTIconComponentView>();
+                equippedWearables.Add(nftIconComponentView);
+                NFTIconComponentModel nftModel = new NFTIconComponentModel()
+                {
+                    type = wearable.data.category,
+                    marketplaceURI = "",
+                    name = wearable.GetName(),
+                    rarity = wearable.rarity,
+                    imageURI = wearable.ComposeThumbnailUrl()
+                };
+                nftIconComponentView.Configure(nftModel);
+            }
+        }
+
+        private void CleanEquippedWearables()
+        {
+            for (int i = equippedWearables.Count - 1; i >= 0; i--)
+            {
+                Destroy(equippedWearables[i].gameObject);
+            }
+
+            equippedWearables = new List<NFTIconComponentView>();
+        }
+
         public override void RefreshControl()
         {
+
         }
 
     }

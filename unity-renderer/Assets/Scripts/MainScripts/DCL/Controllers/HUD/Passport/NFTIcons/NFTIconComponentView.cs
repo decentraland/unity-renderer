@@ -16,7 +16,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
     [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
-    
+
     [SerializeField] internal NFTIconComponentModel model;
 
     public Button.ButtonClickedEvent onMarketplaceButtonClick => marketplaceButton?.onClick;
@@ -64,18 +64,17 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
         nftImage.SetImage(imageURI);
     }
-    
+
     public void SetType(string type)
     {
         model.type = type;
-    
+
         typeImage.SetImage(nftTypesIcons.GetTypeImage(type));
     }
 
     public void SetRarity(string rarity)
     {
         model.rarity = rarity;
-
         backgroundImage.color = nftTypesIcons.GetColor(rarity);
     }
 

@@ -1,3 +1,4 @@
+using AvatarSystem;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
@@ -43,17 +44,17 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PLAYER_INFO_CARD:
                 if(DataStore.i.HUDs.enableNewPassport.Get())
                 {
-                    //TODO: this is temporary, once the old passport flow is removed 
+                    //TODO: this is temporary, once the old passport flow is removed
                     //this can be moved to the passport plugin
                     PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
                     hudElement = new PlayerPassportHUDController(
                         view,
                         new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"), 
-                            view.PlayerInfoView, 
-                            DataStore.i, 
-                            ProfanityFilterSharedInstances.regexFilter, 
-                            FriendsController.i, 
+                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                            view.PlayerInfoView,
+                            DataStore.i,
+                            ProfanityFilterSharedInstances.regexFilter,
+                            FriendsController.i,
                             new UserProfileWebInterfaceBridge(),
                             new SocialAnalytics(
                                 Environment.i.platform.serviceProviders.analytics,
@@ -62,6 +63,7 @@ public class HUDFactory : IHUDFactory
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,
                             ProfanityFilterSharedInstances.regexFilter,
+                            new WearableItemResolver(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),

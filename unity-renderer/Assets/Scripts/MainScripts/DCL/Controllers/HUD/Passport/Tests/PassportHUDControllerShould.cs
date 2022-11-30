@@ -1,3 +1,4 @@
+using AvatarSystem;
 using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,6 +17,7 @@ namespace DCL.Social.Passports
         private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
+        private IWearableItemResolver wearableItemResolver;
         private DataStore dataStore;
         private IProfanityFilter profanityFilter;
         private IFriendsController friendsController;
@@ -24,19 +26,20 @@ namespace DCL.Social.Passports
         public void SetUp()
         {
             view = Substitute.For<IPlayerPassportHUDView>();
-            
+
             currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
+            wearableItemResolver = Substitute.For<IWearableItemResolver>();
             dataStore = Substitute.For<DataStore>();
             profanityFilter = Substitute.For<IProfanityFilter>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
-                                currentPlayerInfoCardId, 
-                                Substitute.For<IPassportPlayerInfoComponentView>(), 
-                                dataStore, 
-                                profanityFilter, 
-                                friendsController, 
+                                currentPlayerInfoCardId,
+                                Substitute.For<IPassportPlayerInfoComponentView>(),
+                                dataStore,
+                                profanityFilter,
+                                friendsController,
                                 userProfileBridge,
                                 socialAnalytics);
 
@@ -44,6 +47,7 @@ namespace DCL.Social.Passports
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
+                                wearableItemResolver,
                                 dataStore);
 
             controller = new PlayerPassportHUDController(
@@ -57,7 +61,7 @@ namespace DCL.Social.Passports
             );
         }
 
-        [TearDown]    
+        [TearDown]
         public void TearDown()
         {
             controller.Dispose();

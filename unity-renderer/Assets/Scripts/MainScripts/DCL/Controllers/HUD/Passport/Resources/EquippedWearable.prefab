@@ -130,7 +130,34 @@ PrefabInstance:
     - target: {fileID: 4667307376366643423, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
       propertyPath: m_Name
-      value: NFTIcon
+      value: EquippedWearable
+      objectReference: {fileID: 0}
+    - target: {fileID: 6065166794883795787, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: nftNameMarketPlace
+      value: 
+      objectReference: {fileID: 5531195187339124403}
+    - target: {fileID: 8427683350302303334, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 8427683350302303334, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 23
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}
+--- !u!114 &5531195187339124403 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9178166693439637275, guid: 79e73d05107c94490a167f9282ea3552,
+    type: 3}
+  m_PrefabInstance: {fileID: 3719310619279120808}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

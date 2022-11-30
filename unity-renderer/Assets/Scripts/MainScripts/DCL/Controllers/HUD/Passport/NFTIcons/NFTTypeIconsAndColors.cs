@@ -9,10 +9,10 @@ public class NFTTypeIconsAndColors : ScriptableObject
 
     public Sprite GetTypeImage(string nftType)
     {
-        for(int i=0; i< nftIcons.Length; i++)
+        foreach (var t in nftIcons)
         {
-            if(nftIcons[i].key == nftType)
-                return nftIcons[i].value;
+            if(t.key == nftType)
+                return t.value;
         }
 
         return null;
@@ -20,10 +20,10 @@ public class NFTTypeIconsAndColors : ScriptableObject
 
     public Color GetColor(string rarity)
     {
-        for(int i=0; i< nftColors.Length; i++)
+        foreach (var t in nftColors)
         {
-            if(nftColors[i].key == rarity)
-                return nftColors[i].value;
+            if(t.key == rarity)
+                return t.value;
         }
 
         return Color.white;
