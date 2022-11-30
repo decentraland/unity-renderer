@@ -1,0 +1,17 @@
+<linker>
+    <assembly fullname="System.Core">
+        <type fullname="System.Linq.Expressions.Interpreter.LightLambda" preserve="all" />
+    </assembly>
+
+    <assembly fullname="NLog">
+        <type fullname="NLog.*" preserve="all" />
+    </assembly>
+
+    <assembly fullname="AltTester">
+        <type fullname="Altom.*" preserve="all" />
+    </assembly>
+
+    <assembly fullname="AltDriver">
+        <type fullname="Altom.*" preserve="all" />
+    </assembly>
+</linker>
