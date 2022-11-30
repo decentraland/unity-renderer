@@ -9,16 +9,15 @@ namespace DCLPlugins.RealmPlugin
     public class RealmBlockerModifierTests
     {
         private RealmPlugin realmPlugin;
-        private const string CATALYST_REALM_NAME = "CatalystRealmName";
-        private const string WORLD_REALM_NAME = "WorldRealmName";
         private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
+
         private RealmBlockerModifier realmBlockerModiferSubstitute;
 
         [SetUp]
         public void SetUp()
         {
             realmPlugin = new RealmPlugin(DataStore.i);
-            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i);
+            realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i.worldBlockers);
 
             var substituteModifiers = new List<IRealmModifier>
                 { realmBlockerModiferSubstitute, };
@@ -36,30 +35,12 @@ namespace DCLPlugins.RealmPlugin
             for (var i = 0; i < isWorld.Length; i++)
             {
                 // Act
-                SetRealm(isWorld[i]);
+                RealmPluginTestsUtils.SetRealm(isWorld[i]);
 
                 // Assert
                 if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_GREEN_BLOCKERS_WORLDS_FF))
                     Assert.AreEqual(DataStore.i.worldBlockers.worldBlockerLimit.Get(), requiredLimit[i]);
             }
-        }
-
-        private void SetRealm(bool isWorld)
-        {
-            List<string> sceneUrn = new List<string>();
-
-            if (isWorld)
-                sceneUrn.Add("sceneUrn");
-
-            DataStore.i.realm.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration()
-            {
-                RealmName = isWorld ? WORLD_REALM_NAME : CATALYST_REALM_NAME,
-                Minimap = new AboutResponse.Types.MinimapConfiguration()
-                {
-                    Enabled = !isWorld
-                },
-                ScenesUrn = { sceneUrn },
-            });
         }
 
         private static object[] GreenBlockerCases =

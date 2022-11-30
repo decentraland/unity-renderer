@@ -9,8 +9,6 @@ namespace DCLPlugins.RealmPlugin
     public class RealmPluginTests
     {
         private RealmPlugin realmPlugin;
-        private const string CATALYST_REALM_NAME = "CatalystRealmName";
-        private const string WORLD_REALM_NAME = "WorldRealmName";
         private IRealmModifier genericModifier;
 
         [SetUp]
@@ -31,28 +29,10 @@ namespace DCLPlugins.RealmPlugin
         public void ModifierCalledOnRealmChange(bool isWorld)
         {
             // Act
-            SetRealm(isWorld);
+            RealmPluginTestsUtils.SetRealm(isWorld);
 
             // Assert
             genericModifier.Received(1).OnEnteredRealm(isWorld, Arg.Any<AboutResponse.Types.AboutConfiguration>());
-        }
-
-        private void SetRealm(bool isWorld)
-        {
-            List<string> sceneUrn = new List<string>();
-
-            if (isWorld)
-                sceneUrn.Add("sceneUrn");
-
-            DataStore.i.realm.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration()
-            {
-                RealmName = isWorld ? WORLD_REALM_NAME : CATALYST_REALM_NAME,
-                Minimap = new AboutResponse.Types.MinimapConfiguration()
-                {
-                    Enabled = !isWorld
-                },
-                ScenesUrn = { sceneUrn },
-            });
         }
 
         private static bool[] isWorldCases = { false, true };
