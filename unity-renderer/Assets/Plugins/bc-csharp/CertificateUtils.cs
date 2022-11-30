@@ -120,12 +120,14 @@ public class CertificateUtils
             throw new PemException("malformed sequence in RSA private key");
         }
 
-        var rsa = RsaPrivateKeyStructure.GetInstance(seq); //new RsaPrivateKeyStructure(seq);
+        var rsaPrivateKeyStructure = RsaPrivateKeyStructure.GetInstance(seq); //new RsaPrivateKeyStructure(seq);
         var rsaparams = new RsaPrivateCrtKeyParameters(
-            rsa.Modulus, rsa.PublicExponent, rsa.PrivateExponent, rsa.Prime1, rsa.Prime2, rsa.Exponent1, rsa.Exponent2, rsa.Coefficient);
+            rsaPrivateKeyStructure.Modulus, rsaPrivateKeyStructure.PublicExponent, rsaPrivateKeyStructure.PrivateExponent, rsaPrivateKeyStructure.Prime1, rsaPrivateKeyStructure.Prime2, rsaPrivateKeyStructure.Exponent1, rsaPrivateKeyStructure.Exponent2, rsaPrivateKeyStructure.Coefficient);
 
-        x509.PrivateKey = DotNetUtilities.ToRSA(rsaparams);
-        return x509;
+        var parms = DotNetUtilities.ToRSAParameters(rsaparams);
+        var rsa = RSA.Create();
+        rsa.ImportParameters(parms);
+        return x509.CopyWithPrivateKey(rsa);
 
     }
 }

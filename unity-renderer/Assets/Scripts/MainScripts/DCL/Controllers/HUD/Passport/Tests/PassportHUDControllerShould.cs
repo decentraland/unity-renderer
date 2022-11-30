@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
-using DCL.Social.Passports;
-using DCL;
 using SocialFeaturesAnalytics;
+using UnityEngine;
 
 namespace DCL.Social.Passports
 {
@@ -40,7 +37,8 @@ namespace DCL.Social.Passports
                                 dataStore, 
                                 profanityFilter, 
                                 friendsController, 
-                                userProfileBridge);
+                                userProfileBridge,
+                                socialAnalytics);
 
             playerPreviewController = new PassportPlayerPreviewComponentController(Substitute.For<IPassportPlayerPreviewComponentView>());
             passportNavigationController = new PassportNavigationComponentController(

@@ -4,8 +4,9 @@ using DCL;
 using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
-using DCL.Friends.WebApi;
 using DCL.Interface;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -54,7 +55,8 @@ public class WorldChatWindowControllerShould
             mouseCatcher,
             socialAnalytics,
             channelsFeatureFlagService,
-            browserBridge);
+            browserBridge,
+            CommonScriptableObjects.rendererState);
         view = Substitute.For<IWorldChatWindowView>();
     }
 

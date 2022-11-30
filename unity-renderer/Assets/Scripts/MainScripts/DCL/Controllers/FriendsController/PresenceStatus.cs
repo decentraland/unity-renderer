@@ -1,7 +1,10 @@
-﻿public enum PresenceStatus
+﻿namespace DCL.Social.Friends
 {
-    NONE,
-    OFFLINE,
-    ONLINE,
-    UNAVAILABLE,
+    public enum PresenceStatus
+    {
+        NONE,
+        OFFLINE,
+        ONLINE,
+        UNAVAILABLE,
+    }
 }

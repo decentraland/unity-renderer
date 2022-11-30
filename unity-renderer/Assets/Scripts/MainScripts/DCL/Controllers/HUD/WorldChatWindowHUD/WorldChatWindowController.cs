@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
 using DCL.Chat.Channels;
-using DCL.Friends.WebApi;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System;
@@ -10,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DCL.Browser;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 using DCL.Chat.HUD;
@@ -29,6 +30,7 @@ public class WorldChatWindowController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
     private readonly IBrowserBridge browserBridge;
+    private readonly RendererState rendererState;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
@@ -44,6 +46,7 @@ public class WorldChatWindowController : IHUD
     private UserProfile ownUserProfile;
     private bool isRequestingDMs;
     private bool areUnseenMessajesRequestedByFirstTime;
+    private string channelToJoinAtTheBeginning;
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
@@ -68,7 +71,8 @@ public class WorldChatWindowController : IHUD
         IMouseCatcher mouseCatcher,
         ISocialAnalytics socialAnalytics,
         IChannelsFeatureFlagService channelsFeatureFlagService,
-        IBrowserBridge browserBridge)
+        IBrowserBridge browserBridge,
+        RendererState rendererState)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -78,6 +82,7 @@ public class WorldChatWindowController : IHUD
         this.socialAnalytics = socialAnalytics;
         this.channelsFeatureFlagService = channelsFeatureFlagService;
         this.browserBridge = browserBridge;
+        this.rendererState = rendererState;
     }
 
     public void Initialize(IWorldChatWindowView view)
@@ -134,6 +139,7 @@ public class WorldChatWindowController : IHUD
             chatController.OnJoinChannelError += HandleJoinChannelError;
             chatController.OnChannelLeaveError += HandleLeaveChannelError;
             chatController.OnChannelLeft += HandleChannelLeft;
+            chatController.OnAskForJoinChannel += HandleAskForJoinChannel;
             dataStore.channels.channelToBeOpened.OnChange += HandleChannelOpened;
 
             view.ShowChannelsLoading();
@@ -166,13 +172,15 @@ public class WorldChatWindowController : IHUD
         chatController.OnChannelJoined -= HandleChannelJoined;
         chatController.OnAutoChannelJoined -= HandleAutoChannelJoined;
         chatController.OnJoinChannelError -= HandleJoinChannelError;
-        chatController.OnChannelLeaveError += HandleLeaveChannelError;
+        chatController.OnChannelLeaveError -= HandleLeaveChannelError;
         chatController.OnChannelLeft -= HandleChannelLeft;
+        chatController.OnAskForJoinChannel -= HandleAskForJoinChannel;
         friendsController.OnAddFriendsWithDirectMessages -= HandleFriendsWithDirectMessagesAdded;
         friendsController.OnUpdateUserStatus -= HandleUserStatusChanged;
         friendsController.OnUpdateFriendship -= HandleFriendshipUpdated;
         friendsController.OnInitialized -= HandleFriendsControllerInitialization;
         dataStore.channels.channelToBeOpened.OnChange -= HandleChannelOpened;
+        rendererState.OnChange -= HandleAskForJoinChannelAfterRendererState;
 
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
@@ -590,6 +598,31 @@ public class WorldChatWindowController : IHUD
             return;
 
         OpenPublicChat(channelId);
+    }
+
+    private void HandleAskForJoinChannel(string channelName)
+    {
+        chatController.OnAskForJoinChannel -= HandleAskForJoinChannel;
+
+        if (!channelsFeatureFlagService.IsAllowedToCreateChannels())
+            return;
+
+        if (rendererState.Get())
+            dataStore.channels.currentJoinChannelModal.Set(channelName, true);
+        else
+        {
+            channelToJoinAtTheBeginning = channelName;
+            rendererState.OnChange += HandleAskForJoinChannelAfterRendererState;
+        }
+    }
+
+    private void HandleAskForJoinChannelAfterRendererState(bool current, bool _)
+    {
+        if (!current)
+            return;
+
+        rendererState.OnChange -= HandleAskForJoinChannelAfterRendererState;
+        dataStore.channels.currentJoinChannelModal.Set(channelToJoinAtTheBeginning, true);
     }
 
     private void RequestUnreadMessages() => chatController.GetUnseenMessagesByUser();

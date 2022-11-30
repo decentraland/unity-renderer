@@ -1,4 +1,5 @@
 using System;
+using DCL.Social.Friends;
 using UnityEngine;
 
 [Serializable]
@@ -25,7 +26,6 @@ public class UserStatus
     public string userId;
     public FriendshipStatus friendshipStatus;
     public PresenceStatus presence;
-    [NonSerialized] public DateTime friendshipStartedTime;
 
     public override bool Equals(object obj)
     {
@@ -37,7 +37,6 @@ public class UserStatus
         if (position != other.position) return false;
         if (userId != other.userId) return false;
         if (friendshipStatus != other.friendshipStatus) return false;
-        if (friendshipStartedTime != other.friendshipStartedTime) return false;
         return true;
     }
 }
