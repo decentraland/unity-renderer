@@ -2,6 +2,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace DCL.Social.Passports
 {
@@ -25,7 +26,6 @@ namespace DCL.Social.Passports
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
-            view.InitializeView();
             string filteredName = await FilterContent(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
@@ -37,11 +37,22 @@ namespace DCL.Social.Passports
             }
         }
 
+        private List<string> cachedAvatarEquippedWearables = new List<string>();
         private async UniTask LoadAndDisplayEquippedWearables(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
-            WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
-            view.SetEquippedWearables(wearableItems);
+
+            foreach (var t in userProfile.avatar.wearables)
+            {
+                if (!cachedAvatarEquippedWearables.Contains(t))
+                {
+                    view.InitializeView();
+                    cachedAvatarEquippedWearables = userProfile.avatar.wearables;
+                    WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
+                    view.SetEquippedWearables(wearableItems);
+                    return;
+                }
+            }
         }
 
         private async UniTask<string> FilterContent(string filterContent)

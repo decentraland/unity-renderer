@@ -15,6 +15,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     [SerializeField] internal ImageComponentView nftImage;
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal Image rarityBackgroundImage;
     [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
 
     [SerializeField] internal NFTIconComponentModel model;
@@ -76,6 +77,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         model.rarity = rarity;
         backgroundImage.color = nftTypesIcons.GetColor(rarity);
+        rarityBackgroundImage.color = nftTypesIcons.GetColor(rarity);
     }
 
     public override void OnFocus()
