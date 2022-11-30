@@ -84,6 +84,7 @@ namespace DCL
             AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, containerTransform, onSuccess, onFail);
 
             float distanceFromPlayer = GetDistanceFromPlayer(containerTransform);
+
             if (distanceFromPlayer <= MAX_SQR_DISTANCE_FOR_QUICK_LOADING)
                 highPriorityLoadQueue.Enqueue(assetBundleToLoad);
             else
@@ -136,10 +137,7 @@ namespace DCL
 
             AssetBundleRequest abRequest = assetBundleInfo.asset.LoadAllAssetsAsync();
 
-            while (!abRequest.isDone)
-            {
-                yield return null;
-            }
+            while (!abRequest.isDone) { yield return null; }
 
             loadedAssetsByName = abRequest.allAssets.ToList();
 
@@ -147,23 +145,14 @@ namespace DCL
             {
                 string ext = "any";
 
-                if (loadedAsset is Texture)
-                {
-                    ext = "png";
-                }
+                if (loadedAsset is Texture) { ext = "png"; }
                 else if (loadedAsset is Material material)
                 {
                     ShaderUtils.UpgradeMaterial_2020_To_2021(material);
                     ext = "mat";
                 }
-                else if (loadedAsset is Animation || loadedAsset is AnimationClip)
-                {
-                    ext = "nim";
-                }
-                else if (loadedAsset is GameObject)
-                {
-                    ext = "glb";
-                }
+                else if (loadedAsset is Animation || loadedAsset is AnimationClip) { ext = "nim"; }
+                else if (loadedAsset is GameObject) { ext = "glb"; }
 
                 assetBundleInfo.asset.AddAssetByExtension(ext, loadedAsset);
             }
@@ -177,6 +166,7 @@ namespace DCL
             if (limitTimeBudget)
             {
                 currentLoadBudgetTime += Time.realtimeSinceStartup - startTime;
+
                 if (currentLoadBudgetTime > MAX_LOAD_BUDGET_TIME)
                 {
                     currentLoadBudgetTime = 0f;
@@ -189,10 +179,7 @@ namespace DCL
 
         private IEnumerator WaitForSkippedFrames(int skippedFramesBetweenLoadings)
         {
-            for (int i = 0; i < skippedFramesBetweenLoadings; i++)
-            {
-                yield return null;
-            }
+            for (int i = 0; i < skippedFramesBetweenLoadings; i++) { yield return null; }
         }
 
         private void CheckForReprioritizeAwaitingAssets()
@@ -208,6 +195,9 @@ namespace DCL
             }
         }
 
-        private float GetDistanceFromPlayer(Transform containerTransform) { return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f; }
+        private float GetDistanceFromPlayer(Transform containerTransform)
+        {
+            return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f;
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace DCL
     public interface IPooledObjectInstantiator
     {
         bool IsValid(GameObject original);
+
         GameObject Instantiate(GameObject gameObject);
     }
 
@@ -41,7 +42,7 @@ namespace DCL
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
         private readonly int maxPrewarmCount;
-        
+
         private bool isInitialized;
 
         public float lastGetTime { get; private set; }
@@ -51,7 +52,6 @@ namespace DCL
         public int unusedObjectsCount => unusedObjects.Count;
 
         public int usedObjectsCount => usedObjects.Count;
-
 
         public Pool(string name, int maxPrewarmCount)
         {
@@ -71,10 +71,7 @@ namespace DCL
 
             int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
 
-            for (int i = 0; i < objectsToInstantiate; i++)
-            {
-                Instantiate();
-            }
+            for (int i = 0; i < objectsToInstantiate; i++) { Instantiate(); }
         }
 
         /// <summary>
@@ -83,20 +80,17 @@ namespace DCL
         /// <returns></returns>
         public PoolableObject Get()
         {
-            // These extra instantiations during initialization are to populate pools that will be used a lot later  
+            // These extra instantiations during initialization are to populate pools that will be used a lot later
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-                
+
                 for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();
 
                 Instantiate();
             }
-            else if (unusedObjects.Count == 0)
-            {
-                Instantiate();
-            }
+            else if (unusedObjects.Count == 0) { Instantiate(); }
 
             PoolableObject poolable = Extract();
 
@@ -125,7 +119,7 @@ namespace DCL
 
             if (unusedObjects.Count >= prewarmCount)
                 return;
-            
+
             for (int i = 0; i < prewarmCount; i++)
             {
                 Instantiate();
@@ -199,10 +193,7 @@ namespace DCL
 
         public void ReleaseAll()
         {
-            while (usedObjects.Count > 0)
-            {
-                usedObjects.First.Value.Release();
-            }
+            while (usedObjects.Count > 0) { usedObjects.First.Value.Release(); }
         }
 
         /// <summary>
@@ -307,15 +298,9 @@ namespace DCL
 
             if (PoolManager.USE_POOL_CONTAINERS)
             {
-                if (container != null)
-                {
-                    go.transform.SetParent(container.transform);
-                }
+                if (container != null) { go.transform.SetParent(container.transform); }
             }
-            else
-            {
-                go.transform.SetParent(null);
-            }
+            else { go.transform.SetParent(null); }
         }
 
 #if UNITY_EDITOR
@@ -339,6 +324,9 @@ namespace DCL
             return false;
         }
 
-        public bool IsValid() { return original != null; }
+        public bool IsValid()
+        {
+            return original != null;
+        }
     }
 };

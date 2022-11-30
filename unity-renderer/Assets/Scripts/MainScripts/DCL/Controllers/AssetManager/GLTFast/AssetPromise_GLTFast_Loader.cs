@@ -17,15 +17,17 @@ namespace DCL
     /// </summary>
     public class AssetPromise_GLTFast_Loader : AssetPromise_WithUrl<Asset_GLTFast_Loader>
     {
+        private const string SHADER_DCL_LIT = "DCL/Universal Render Pipeline/Lit";
+        private const string GLTFAST_THROTTLER_NAME = "GLTFastThrottler";
         private readonly ContentProvider contentProvider;
         private readonly string assetDirectoryPath;
-        private readonly GLTFastDownloadProvider gltFastDownloadProvider;
+        private readonly GltFastDownloadProvider gltFastDownloadProvider;
         private readonly CancellationTokenSource cancellationSource;
 
         private readonly IMaterialGenerator gltFastMaterialGenerator;
         private readonly ConsoleLogger consoleLogger;
 
-        private static IDeferAgent deferAgent;
+        private static IDeferAgent staticDeferAgent;
 
         public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null)
             : base(contentUrl, hash)
@@ -33,16 +35,15 @@ namespace DCL
             this.contentProvider = contentProvider;
             assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
 
-            // TODO: Inject this, somehow
-            if (deferAgent == null)
+            if (staticDeferAgent == null)
             {
-                var agentObject = new GameObject("GLTFastDeferAgent");
-                deferAgent = agentObject.AddComponent<GLTFastDeferAgent>();
+                var agentObject = new GameObject(GLTFAST_THROTTLER_NAME);
+                staticDeferAgent = agentObject.AddComponent<GltFastDeferAgent>();
             }
 
-            gltFastDownloadProvider = new GLTFastDownloadProvider(requestController, FileToUrl);
+            gltFastDownloadProvider = new GltFastDownloadProvider(requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
-            gltFastMaterialGenerator = new DecentralandMaterialGenerator("DCL/Universal Render Pipeline/Lit");
+            gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
         }
 
@@ -73,9 +74,9 @@ namespace DCL
             cancellationSource.Cancel();
         }
 
-        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
+        protected override void OnLoad(Action onSuccess, Action<Exception> onFail)
         {
-            ImportGLTF(OnSuccess, OnFail, cancellationSource.Token);
+            ImportGltfAsync(onSuccess, onFail, cancellationSource.Token);
         }
 
         internal override void Unload()
@@ -84,23 +85,22 @@ namespace DCL
             gltFastDownloadProvider.Dispose();
         }
 
-        private async UniTaskVoid ImportGLTF(Action OnSuccess, Action<Exception> OnFail, CancellationToken cancellationSourceToken)
+        private async UniTaskVoid ImportGltfAsync(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationSourceToken)
         {
             try
             {
                 string url = contentProvider.baseUrl + hash;
 
-                var gltfImport = new GltfImport(gltFastDownloadProvider, deferAgent, gltFastMaterialGenerator, consoleLogger);
+                var gltfImport = new GltfImport(gltFastDownloadProvider, staticDeferAgent, gltFastMaterialGenerator, consoleLogger);
 
-                var gltfastSettings = new ImportSettings
+                var gltFastSettings = new ImportSettings
                 {
                     generateMipMaps = false,
                     anisotropicFilterLevel = 3,
                     nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
                 };
 
-                // TODO: Implement a cancellation token for the GLTFImport when its supported https://github.com/atteneder/glTFast/issues/177
-                var success = await gltfImport.Load(url, gltfastSettings);
+                bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken);
 
                 if (cancellationSourceToken.IsCancellationRequested)
                 {
@@ -108,20 +108,22 @@ namespace DCL
                     cancellationSourceToken.ThrowIfCancellationRequested();
                 }
 
-                if (!success) { OnFail?.Invoke(new Exception($"[GLTFast] Failed to load asset {url}")); }
+                if (!success)
+                    onFail?.Invoke(new Exception($"[GLTFast] Failed to load asset {url}"));
                 else
                 {
                     asset.Setup(gltfImport);
-                    OnSuccess.Invoke();
+                    onSuccess.Invoke();
                 }
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                OnFail?.Invoke(e);
+                onFail?.Invoke(e);
             }
         }
 
-        private bool FileToUrl(string fileName, out string hash) => contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out hash);
+        private bool FileToUrl(string fileName, out string fileHash) =>
+            contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out fileHash);
     }
 }

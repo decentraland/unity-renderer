@@ -66,22 +66,13 @@ namespace DCL
                 loadCoroutine = null;
             }
 
-            if (asyncOp != null)
-            {
-                asyncOp.Dispose();
-            }
+            if (asyncOp != null) { asyncOp.Dispose(); }
 
-            for (int i = 0; i < dependencyPromises.Count; i++)
-            {
-                dependencyPromises[i].Unload();
-            }
+            for (int i = 0; i < dependencyPromises.Count; i++) { dependencyPromises[i].Unload(); }
 
             dependencyPromises.Clear();
 
-            if (asset != null)
-            {
-                asset.CancelShow();
-            }
+            if (asset != null) { asset.CancelShow(); }
 
             UnregisterConcurrentRequest();
         }
@@ -94,6 +85,8 @@ namespace DCL
         {
             string localUrl = Application.dataPath + "/../AssetBundles/" + hash;
 
+            // Local Asset Bundles support, if you have the asset bundles in that folder, we are going to load them from there. This is a debug feature
+#if UNITY_EDITOR
             if (File.Exists(localUrl))
             {
                 Debug.Log($"File exists! {localUrl}");
@@ -101,6 +94,7 @@ namespace DCL
             }
             else
             {
+#endif
                 string finalUrl = baseUrl + hash;
 
                 if (failedRequestUrls.Contains(finalUrl))
@@ -145,15 +139,14 @@ namespace DCL
 
                 if (!LoadAssetBundle(OnFail, finalUrl))
                     yield break;
+#if UNITY_EDITOR
             }
+#endif
 
             // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
             TextAsset metadata = asset.GetMetadata();
 
-            if (metadata != null)
-            {
-                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
-            }
+            if (metadata != null) { AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash); }
             else
             {
                 if (!AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
@@ -179,19 +172,20 @@ namespace DCL
 
             UnregisterConcurrentRequest();
 
-            foreach (var promise in dependencyPromises)
-            {
-                yield return promise;
-            }
-            
+            foreach (var promise in dependencyPromises) { yield return promise; }
+
             assetBundlesLoader.MarkAssetBundleForLoad(asset, containerTransform, OnSuccess, OnFail);
         }
+
+#if UNITY_EDITOR
         private void LoadLocalAssetBundle(string localUrl)
         {
             var assetBundle = AssetBundle.LoadFromFile(localUrl);
             asset.SetAssetBundle(assetBundle);
             asset.LoadMetrics();
         }
+#endif
+
         private bool LoadAssetBundle(Action<Exception> OnFail, string finalUrl)
         {
             var assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
@@ -225,10 +219,7 @@ namespace DCL
             {
                 result += "Dependencies:\n\n";
 
-                foreach (var p in dependencyPromises)
-                {
-                    result += p.ToString() + "\n\n";
-                }
+                foreach (var p in dependencyPromises) { result += p.ToString() + "\n\n"; }
             }
 
             result += "Concurrent requests = " + concurrentRequests;
@@ -245,10 +236,7 @@ namespace DCL
 
         IEnumerator WaitForConcurrentRequestsSlot()
         {
-            while (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
-            {
-                yield return null;
-            }
+            while (concurrentRequests >= MAX_CONCURRENT_REQUESTS) { yield return null; }
         }
 
         void RegisterConcurrentRequest()

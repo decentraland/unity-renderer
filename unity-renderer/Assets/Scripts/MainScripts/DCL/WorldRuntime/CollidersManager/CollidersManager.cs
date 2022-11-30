@@ -8,8 +8,8 @@ namespace DCL
 {
     public class CollidersManager : Singleton<CollidersManager>
     {
-        private Dictionary<Collider, ColliderInfo> colliderInfo = new Dictionary<Collider, ColliderInfo>();
-        private Dictionary<IDCLEntity, List<Collider>> collidersByEntity = new Dictionary<IDCLEntity, List<Collider>>();
+        private Dictionary<Collider, ColliderInfo> colliderInfo = new ();
+        private Dictionary<IDCLEntity, List<Collider>> collidersByEntity = new ();
         private static CollidersManager instance = null;
 
         public static void Release()
@@ -72,15 +72,13 @@ namespace DCL
             entity.OnCleanupEvent -= OnEntityCleanUpEvent;
             entity.OnCleanupEvent += OnEntityCleanUpEvent;
         }
+
         private static string GetMeshName(Collider collider)
         {
             string originalName = collider.transform.name.ToLower();
 
             // Old GLTF
-            if (originalName.Contains("primitive"))
-            {
-                return collider.transform.parent != null ? collider.transform.parent.name : ""; 
-            }
+            if (originalName.Contains("primitive")) { return collider.transform.parent != null ? collider.transform.parent.name : ""; }
 
             return collider.transform.name;
         }
@@ -103,7 +101,7 @@ namespace DCL
         {
             dispatcher.OnCleanupEvent -= OnEntityCleanUpEvent;
 
-            RemoveAllEntityColliders((IDCLEntity) dispatcher);
+            RemoveAllEntityColliders((IDCLEntity)dispatcher);
         }
 
         public bool GetColliderInfo(Collider collider, out ColliderInfo info)
@@ -113,15 +111,15 @@ namespace DCL
                 info = colliderInfo[collider];
                 return true;
             }
-            else
-            {
-                info = new ColliderInfo();
-            }
+            else { info = new ColliderInfo(); }
 
             return false;
         }
 
-        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true) { ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity); }
+        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true)
+        {
+            ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
+        }
 
         public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, IDCLEntity entity = null, int colliderLayer = -1)
         {
@@ -166,7 +164,7 @@ namespace DCL
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
 
                     if (collider is MeshCollider)
-                        ((MeshCollider) collider).sharedMesh = meshFilters[i].sharedMesh;
+                        ((MeshCollider)collider).sharedMesh = meshFilters[i].sharedMesh;
 
                     if (entity != null)
                         AddOrUpdateEntityCollider(entity, collider);
@@ -182,6 +180,7 @@ namespace DCL
                 }
             }
         }
+
         private static bool IsCollider(Transform transform)
         {
             bool transformName = transform.name.ToLower().Contains("_collider");

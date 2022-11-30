@@ -12,15 +12,10 @@ namespace DCL.Components
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
         internal MeshCollider[] colliders;
-        Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
+        private readonly Dictionary<Collider, string> colliderNames = new ();
 
-        public string GetMeshName(Collider collider)
-        {
-            if (colliderNames.ContainsKey(collider))
-                return colliderNames[collider];
-
-            return null;
-        }
+        public string GetMeshName(Collider collider) =>
+            colliderNames.ContainsKey(collider) ? colliderNames[collider] : null;
 
         private IDCLEntity ownerEntity;
 
@@ -57,6 +52,7 @@ namespace DCL.Components
             {
                 if (rendererList[i] == null)
                     continue;
+
                 colliders[i] = CreateCollider(rendererList[i]);
             }
         }
@@ -65,24 +61,25 @@ namespace DCL.Components
         {
             if (colliders == null || colliders.Length == 0)
                 return;
-            
+
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
-            
+
             if (rendererList == null || rendererList.Length == 0)
             {
                 DestroyColliders();
                 return;
             }
-            
+
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (rendererList[i] == null)
                     continue;
+
                 colliders[i].enabled = rendererList[i].enabled;
             }
         }
 
-        void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
+        private void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
         {
             for (int i = 0; i < colliders.Length; i++)
             {
@@ -91,7 +88,7 @@ namespace DCL.Components
             }
         }
 
-        MeshCollider CreateCollider(Renderer renderer)
+        private MeshCollider CreateCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 
@@ -115,19 +112,16 @@ namespace DCL.Components
 
             return meshCollider;
         }
+
         private static Mesh TryGetSharedMesh(Renderer renderer)
         {
             MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
 
-            if (meshFilter == null)
-            {
-                SkinnedMeshRenderer skinnedMeshRenderer = renderer.GetComponent<SkinnedMeshRenderer>();
+            if (meshFilter != null) return meshFilter.sharedMesh;
 
-                if (skinnedMeshRenderer != null)
-                {
-                    return skinnedMeshRenderer.sharedMesh;
-                }
-            }
+            SkinnedMeshRenderer skinnedMeshRenderer = renderer.GetComponent<SkinnedMeshRenderer>();
+
+            if (skinnedMeshRenderer != null) { return skinnedMeshRenderer.sharedMesh; }
 
             return meshFilter.sharedMesh;
         }
@@ -143,6 +137,7 @@ namespace DCL.Components
             for (int i = 0; i < rendererList.Length; i++)
             {
                 bool foundChildCollider = false;
+
                 for (int j = 0; j < colliders.Length; j++)
                 {
                     if (colliders[j].transform.parent == rendererList[i].transform)
@@ -164,7 +159,7 @@ namespace DCL.Components
             DestroyColliders();
         }
 
-        void DestroyColliders()
+        private void DestroyColliders()
         {
             if (colliders == null)
                 return;

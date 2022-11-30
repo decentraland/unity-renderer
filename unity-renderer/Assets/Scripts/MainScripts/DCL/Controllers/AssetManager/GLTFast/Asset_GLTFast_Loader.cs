@@ -1,27 +1,28 @@
-﻿using GLTFast;
+﻿using Cysharp.Threading.Tasks;
+using GLTFast;
 using UnityEngine;
 
 namespace DCL
 {
     public class Asset_GLTFast_Loader : Asset
     {
-        public GltfImport gltfImport;
+        public GltfImport GltfImport { get; private set; }
+
         public void Setup(GltfImport importer)
         {
-            gltfImport = importer;
-        }
-        
-        public override void Cleanup()
-        {
-            gltfImport?.Dispose();
-            gltfImport = null;
+            GltfImport = importer;
         }
 
-        public void Instantiate(Transform containerTransform)
+        public override void Cleanup()
         {
-            if (gltfImport.sceneCount > 1)
-            {
-                for (int i = 0; i < gltfImport.sceneCount; i++)
+            GltfImport?.Dispose();
+            GltfImport = null;
+        }
+
+        public async UniTask InstantiateAsync(Transform containerTransform)
+        {
+            if (GltfImport.sceneCount > 1)
+                for (int i = 0; i < GltfImport.sceneCount; i++)
                 {
                     var targetTransform = containerTransform;
                     if (i != 0)
@@ -31,14 +32,11 @@ namespace DCL
                         goTransform.SetParent(containerTransform.parent, false);
                         targetTransform = goTransform;
                     }
-                    
-                    gltfImport.InstantiateScene(targetTransform, i);
+
+                    await GltfImport.InstantiateSceneAsync(targetTransform, i);
                 }
-            }
             else
-            {
-                gltfImport.InstantiateScene(containerTransform);
-            }
+                await GltfImport.InstantiateSceneAsync(containerTransform);
         }
     }
 }

@@ -141,14 +141,7 @@ namespace AvatarSystem
                 string name = "";
 
                 // Note (Kinerius) Since GLTFast builds the GLTF differently, we use the renderer name instead
-                if (rendereable.isGLTFast)
-                {
-                    name = renderer.name.ToLower();
-                }
-                else
-                {
-                    name = renderer.transform.parent.name.ToLower();
-                }
+                name = rendereable.isGLTFast ? renderer.name.ToLower() : renderer.transform.parent.name.ToLower();
 
                 if (name.Contains("head"))
                     head = renderer;
@@ -164,7 +157,7 @@ namespace AvatarSystem
                     eyebrows = renderer;
                 else if (name.Contains("mouth"))
                     mouth = renderer;
-                else 
+                else
                     Debug.LogWarning($"{name} is not a body part?", r);
             }
 

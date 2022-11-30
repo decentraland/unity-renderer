@@ -20,10 +20,7 @@ namespace DCL
             };
         }
 
-        public Renderer[] ExtractRenderers()
-        {
-            return container.GetComponentsInChildren<Renderer>();
-        }
+        public Renderer[] ExtractRenderers() => container.GetComponentsInChildren<Renderer>();
 
         public override void Cleanup()
         {
@@ -43,6 +40,7 @@ namespace DCL
             container.SetActive(true);
             success?.Invoke();
         }
+
         public Rendereable ToRendereable()
         {
             Renderer[] renderers = container.gameObject.GetComponentsInChildren<Renderer>();
@@ -52,40 +50,29 @@ namespace DCL
 
             foreach (Renderer renderer in renderers)
             {
-                // extract meshes
-                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+                switch (renderer)
                 {
-                    meshes.Add(skinnedMeshRenderer.sharedMesh);
-                } else if (renderer is MeshRenderer)
-                {
-                    meshes.Add(renderer.GetComponent<MeshFilter>().sharedMesh);
+                    case SkinnedMeshRenderer skinnedMeshRenderer:
+                        meshes.Add(skinnedMeshRenderer.sharedMesh);
+                        break;
+                    case MeshRenderer:
+                        meshes.Add(renderer.GetComponent<MeshFilter>().sharedMesh);
+                        break;
                 }
-                
-                // extract materials
-                foreach (Material material in renderer.sharedMaterials)
-                {
-                    materials.Add(material);
-                }
+
+                foreach (Material material in renderer.sharedMaterials) { materials.Add(material); }
             }
 
-            // Warning! (Kinerius) We are getting the original textures and animations, this may cause bugs!
-            for (int i = 0; i < ownerPromise.asset.gltfImport.textureCount; i++)
-            {
-                textures.Add(ownerPromise.asset.gltfImport.GetTexture(i));
-            }
-            
+            for (int i = 0; i < ownerPromise.asset.GltfImport.textureCount; i++)
+                textures.Add(ownerPromise.asset.GltfImport.GetTexture(i));
+
             HashSet<AnimationClip> animations = new HashSet<AnimationClip>();
 
-            var animationClips = ownerPromise.asset.gltfImport.GetAnimationClips();
+            var animationClips = ownerPromise.asset.GltfImport.GetAnimationClips();
 
             if (animationClips != null)
-            {
                 foreach (AnimationClip clip in animationClips)
-                {
                     animations.Add(clip);
-                }
-            }
-            // End of Warning!
 
             return new Rendereable
             {

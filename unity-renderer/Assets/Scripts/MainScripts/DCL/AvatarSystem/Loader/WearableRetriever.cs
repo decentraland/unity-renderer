@@ -74,10 +74,8 @@ namespace AvatarSystem
                 throw;
             }
         }
-        private bool CheckGLTFastFeature()
-        {
-            return DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
-        }
+        private bool CheckGLTFastFeature() =>
+            DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
         public void Dispose() { loaderAssetHelper?.Unload(); }
     }

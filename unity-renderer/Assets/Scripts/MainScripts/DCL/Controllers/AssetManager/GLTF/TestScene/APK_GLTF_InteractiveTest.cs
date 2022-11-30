@@ -8,10 +8,11 @@ using UnityEngine;
 /// </summary>
 public class APK_GLTF_InteractiveTest : MonoBehaviour
 {
-    AssetPromiseKeeper_GLTF keeper;
+    private AssetPromiseKeeper_GLTF apkGltf;
+    private AssetPromiseKeeper_GLTFast_Instance apkGltFast;
     private WebRequestController webRequestController;
-    List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
-    List<AssetPromise_GLTFast_Instance> promiseList2 = new List<AssetPromise_GLTFast_Instance>();
+    private readonly List<AssetPromise_GLTF> gltfPromises = new ();
+    private readonly List<AssetPromise_GLTFast_Instance> gltFastPromises = new ();
 
     private int counter = 0;
     private bool automatedMode = false;
@@ -19,32 +20,29 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     private float lastTime = 0;
     private float timeToAct = 0;
 
-    private string[] urls = new string[]
-    {
-        //"/GLB/TrunkSeparatedTextures/Trunk.glb",
-        //"/GLB/Lantern/Lantern.glb",
-        /*"/GLB/DamagedHelmet/DamagedHelmet.glb",
+    private readonly string[] urls = {
+        "/GLB/TrunkSeparatedTextures/Trunk.glb",
+        "/GLB/Lantern/Lantern.glb",
+        "/GLB/DamagedHelmet/DamagedHelmet.glb",
         "/GLB/Trevor/Trevor.glb",
         "/GLB/vertex-anim.glb",
         "/GLB/draco-compressor.glb",
-        "/GLB/cube_vertexcolor.glb",*/
-        /*
+        "/GLB/cube_vertexcolor.glb",
         "/GLB/avatar-sitting/male/ch1_crowdV5.glb",
-        "/GLB/avatar-sitting/female/ch2_crowdV5.glb",*/
-        "/GLB/wings.glb"
+        "/GLB/avatar-sitting/female/ch2_crowdV5.glb",
+        "/GLB/wings.glb",
     };
-    private AssetPromiseKeeper_GLTFast_GameObject keeper2;
 
-    void Start()
+    private void Start()
     {
         CommonScriptableObjects.rendererState.Set(true);
         webRequestController = WebRequestController.Create();
-        keeper = new AssetPromiseKeeper_GLTF();
-        keeper2 = new AssetPromiseKeeper_GLTFast_GameObject();
-        keeper.throttlingCounter.enabled = false;
+        apkGltf = new AssetPromiseKeeper_GLTF();
+        apkGltFast = new AssetPromiseKeeper_GLTFast_Instance();
+        apkGltf.throttlingCounter.enabled = false;
     }
 
-    void Generate(string url)
+    private void Generate(string url)
     {
         AssetPromise_GLTF promise = new AssetPromise_GLTF(url, webRequestController);
 
@@ -53,11 +51,11 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         pos.z = Random.Range(-10, 10);
         promise.settings.initialLocalPosition = pos;
 
-        keeper.Keep(promise);
-        promiseList.Add(promise);
+        apkGltf.Keep(promise);
+        gltfPromises.Add(promise);
     }
 
-    void GenerateGLTFast(string url)
+    private void GenerateGltFast(string url)
     {
         Debug.Log(url);
         AssetPromise_GLTFast_Instance promise2 = new AssetPromise_GLTFast_Instance(url, url, webRequestController);
@@ -65,77 +63,64 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         pos.x = Random.Range(-10, 10);
         pos.z = Random.Range(-10, 10);
         promise2.OverrideInitialPosition(pos);
-        keeper2.Keep(promise2);
-        promiseList2.Add(promise2);
+        apkGltFast.Keep(promise2);
+        gltFastPromises.Add(promise2);
     }
 
-
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyUp(KeyCode.A))
-        {
-            CreateWithGLTFast();
-        }
+            CreateWithGltFast();
+
         if (Input.GetKeyUp(KeyCode.Z))
-        {
-            CreateWithOldGLTFImporter();
-        }
+            CreateWithOldGltfImporter();
         else if (Input.GetKeyUp(KeyCode.X))
-        {
             Destroy();
-        }
         else if (Input.GetKeyUp(KeyCode.C))
-        {
             automatedMode = !automatedMode;
-        }
 
-        if (automatedMode && (Time.time - lastTime) > timeToAct)
-        {
-            if (create)
-            {
-                CreateWithOldGLTFImporter();
-            }
-            else
-            {
-                Destroy();
-            }
+        if (!automatedMode || !((Time.time - lastTime) > timeToAct)) return;
 
-            create = !create;
-            lastTime = Time.time;
-            timeToAct = Random.Range(0.05f, 0.15f);
-        }
+        if (create)
+            CreateWithOldGltfImporter();
+        else
+            Destroy();
+
+        create = !create;
+        lastTime = Time.time;
+        timeToAct = Random.Range(0.05f, 0.15f);
     }
     private void Destroy()
     {
-        if (promiseList.Count > 0)
+        if (gltfPromises.Count > 0)
         {
-            var promiseToRemove = promiseList[Random.Range(0, promiseList.Count)];
-            keeper.Forget(promiseToRemove);
-            promiseList.Remove(promiseToRemove);
+            var promiseToRemove = gltfPromises[Random.Range(0, gltfPromises.Count)];
+            apkGltf.Forget(promiseToRemove);
+            gltfPromises.Remove(promiseToRemove);
             PoolManager.i.Cleanup(true);
         }
-        if (promiseList2.Count > 0)
+        if (gltFastPromises.Count > 0)
         {
-            var promiseToRemove = promiseList2[Random.Range(0, promiseList2.Count)];
-            keeper2.Forget(promiseToRemove);
-            promiseList2.Remove(promiseToRemove);
+            var promiseToRemove = gltFastPromises[Random.Range(0, gltFastPromises.Count)];
+            apkGltFast.Forget(promiseToRemove);
+            gltFastPromises.Remove(promiseToRemove);
             PoolManager.i.Cleanup(true);
         }
-        
+
     }
-    private void CreateWithOldGLTFImporter()
+    private void CreateWithOldGltfImporter()
     {
         counter++;
         counter %= urls.Length;
         string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
         Generate(finalUrl);
     }
-    
-    private void CreateWithGLTFast()
+
+    private void CreateWithGltFast()
     {
         counter++;
         counter %= urls.Length;
         string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
-        GenerateGLTFast(finalUrl);
+        GenerateGltFast(finalUrl);
     }
 }

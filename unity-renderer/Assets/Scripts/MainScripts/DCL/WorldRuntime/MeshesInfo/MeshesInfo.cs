@@ -24,7 +24,11 @@ namespace DCL.Models
 
         public GameObject meshRootGameObject
         {
-            get { return meshRootGameObjectValue; }
+            get
+            {
+                return meshRootGameObjectValue;
+            }
+
             set
             {
                 meshRootGameObjectValue = value;
@@ -49,10 +53,7 @@ namespace DCL.Models
         {
             get
             {
-                if (meshRootGameObject == null)
-                { 
-                    RecalculateBounds();   
-                }
+                if (meshRootGameObject == null) { RecalculateBounds(); }
                 else
                 {
                     if (meshRootGameObject.transform.position != lastBoundsCalculationPosition)
@@ -63,14 +64,18 @@ namespace DCL.Models
 
                     if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale ||
                         meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
-                        RecalculateBounds();   
+                        RecalculateBounds();
                 }
 
                 return mergedBoundsValue;
             }
-            set { mergedBoundsValue = value; }
+
+            set
+            {
+                mergedBoundsValue = value;
+            }
         }
-        
+
         public void UpdateRenderersCollection(Renderer[] renderers, MeshFilter[] meshFilters, Animation animation = null)
         {
             if (meshRootGameObjectValue != null)
@@ -89,12 +94,13 @@ namespace DCL.Models
         {
             if (meshRootGameObjectValue == null)
                 return;
-            
+
             renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
             meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
             animation = meshRootGameObjectValue.GetComponentInChildren<Animation>();
-            
+
             TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
+
             if (tmpros.Length > 0)
             {
                 renderers = renderers.Union(tmpros.Select(x => x.renderer)).ToArray();
@@ -107,7 +113,7 @@ namespace DCL.Models
         }
 
         public void RecalculateBounds()
-        {   
+        {
             if ((renderers == null || renderers.Length == 0) && colliders.Count == 0)
             {
                 mergedBoundsValue = new Bounds();
@@ -143,6 +149,7 @@ namespace DCL.Models
                     $"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
             }
         }
+
         public void OverrideRenderers(Renderer[] renderers)
         {
             this.renderers = renderers.Where(r => r != null).ToArray();
