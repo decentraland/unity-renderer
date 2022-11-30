@@ -1,3 +1,4 @@
+using Castle.Core.Internal;
 using DCL;
 using ExploreV2Analytics;
 using System;
@@ -10,7 +11,6 @@ using Environment = DCL.Environment;
 
 public class ProfileHUDView : MonoBehaviour
 {
-    private const string REGEX_IS_URL = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
     private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
@@ -69,8 +69,12 @@ public class ProfileHUDView : MonoBehaviour
     [SerializeField] internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
-    [SerializeField] internal TMP_InputField descriptionInputText;
     [SerializeField] internal GameObject charLimitDescriptionContainer;
+    [SerializeField] internal GameObject descriptionStartEditingGo;
+    [SerializeField] internal GameObject descriptionIsEditingGo;
+    [SerializeField] internal Button descriptionStartEditingButton;
+    [SerializeField] internal Button descriptionIsEditingButton;
+    [SerializeField] internal TMP_InputField descriptionInputText;
     [SerializeField] internal TextMeshProUGUI textCharLimitDescription;
 
     [SerializeField] internal GameObject descriptionContainer;
@@ -82,6 +86,7 @@ public class ProfileHUDView : MonoBehaviour
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
     private Regex nameRegex = null;
+    private string description;
 
     internal event Action OnOpen;
     internal event Action OnClose;
@@ -100,21 +105,25 @@ public class ProfileHUDView : MonoBehaviour
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
 
+        descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
+        descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
         descriptionInputText.onSelect.AddListener(x =>
         {
-            SetDescriptionCharLiitEnabled(true);
-            UpdateDescriptionCharLimit(descriptionInputText.text);
-            UpdateLinksInformation(descriptionInputText.text);
+            descriptionInputText.text = description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
         });
-        descriptionInputText.onValueChanged.AddListener(x =>
+        descriptionInputText.onValueChanged.AddListener(description =>
         {
-            UpdateDescriptionCharLimit(x);
+            UpdateDescriptionCharLimit(description);
         });
-        descriptionInputText.onDeselect.AddListener(x =>
+        descriptionInputText.onDeselect.AddListener(description =>
         {
-            SetDescriptionCharLiitEnabled(false);
-            UpdateLinksInformation(x);
+            this.description = description;
+            SetDescriptionIsEditing(false);
+            UpdateLinksInformation(description);
         });
+        SetDescriptionIsEditing(false);
 
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
@@ -160,7 +169,11 @@ public class ProfileHUDView : MonoBehaviour
 
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
 
-    public void SetDescription(string description) => descriptionInputText.text = description;
+    public void SetDescription(string description)
+    {
+        this.description = description;
+        descriptionInputText.text = description;
+    }
 
     internal void ToggleMenu()
     {
@@ -325,13 +338,20 @@ public class ProfileHUDView : MonoBehaviour
 
     internal void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
 
+    private void SetDescriptionIsEditing(bool isEditing)
+    {
+        SetDescriptionCharLiitEnabled(isEditing);
+        descriptionStartEditingGo.SetActive(!isEditing);
+        descriptionIsEditingGo.SetActive(isEditing);
+    }
+
     private void UpdateDescriptionCharLimit(string description) =>
         textCharLimitDescription.text = $"{description.Length}/{descriptionInputText.characterLimit}";
 
     private void UpdateLinksInformation(string description)
     {
         string[] words = description.Split(' ');
-        bool changesFound = false;
+        bool linksFound = false;
 
         for (int i = 0; i < words.Length; i++)
         {
@@ -341,13 +361,36 @@ public class ProfileHUDView : MonoBehaviour
                 if (elements.Length >= 1)
                 {
                     words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
-                    changesFound = true;
+                    linksFound = true;
                 }
             }
         }
 
-        if (changesFound)
+        if (linksFound)
+        {
+            bool foundLinksAtTheEnd = false;
+            for (int i = words.Length - 1; i >= 0; i--)
+            {
+                if (words[i].IsNullOrEmpty())
+                    continue;
+
+                if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
+                    break;
+
+                if (words[i].Contains("<link=\""))
+                {
+                    foundLinksAtTheEnd = true;
+                    continue;
+                }
+
+                if (foundLinksAtTheEnd && i > 0)
+                {
+                    words[i] += "\n\n";
+                    break;
+                }
+            }
             descriptionInputText.text = string.Join(" ", words);
+        }
     }
 
     private IEnumerator SelectComponentOnNextFrame(Selectable selectable)
