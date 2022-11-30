@@ -82,6 +82,8 @@ namespace DCL.Tutorial
             this.settingsDataStore = settingsDataStore;
             this.exploreV2DataStore = exploreV2DataStore;
 
+            i = this;
+
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
         }
@@ -100,7 +102,8 @@ namespace DCL.Tutorial
         {
             this.configuration = configuration;
 
-            i = this;
+            commonDataStore.isWorld.OnChange += OnWorldChanged;
+
             ShowTeacher3DModel(false);
 
             if (settingsDataStore.isInitialized.Get())
@@ -116,14 +119,18 @@ namespace DCL.Tutorial
                 }));
         }
 
+        private void OnWorldChanged(bool isWorld, bool _)
+        {
+            // if (!isWorld)
+        }
+
         public void Dispose()
         {
             SetTutorialDisabled();
 
             settingsDataStore.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
 
-            if (hudController != null &&
-                hudController.settingsPanelHud != null)
+            if (hudController is { settingsPanelHud: { } })
                 hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
 
             NotificationsController.disableWelcomeNotification = false;
@@ -567,11 +574,9 @@ namespace DCL.Tutorial
             }
         }
 
-        private void IsSettingsHUDInitialized_OnChange(bool current, bool previous)
+        private void IsSettingsHUDInitialized_OnChange(bool isInitialized, bool _)
         {
-            if (current &&
-                hudController != null &&
-                hudController.settingsPanelHud != null)
+            if (isInitialized && hudController is { settingsPanelHud: { } })
             {
                 hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
                 hudController.settingsPanelHud.OnRestartTutorial += OnRestartTutorial;

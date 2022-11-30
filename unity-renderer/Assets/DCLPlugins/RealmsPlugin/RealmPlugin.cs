@@ -1,9 +1,8 @@
 using DCL;
-using DCLPlugins.RealmsPlugin;
-using Decentraland.Bff;
 using System.Collections.Generic;
 using System.Linq;
 using Variables.RealmsInfo;
+using static Decentraland.Bff.AboutResponse.Types;
 
 namespace DCLPlugins.RealmPlugin
 {
@@ -12,7 +11,7 @@ namespace DCLPlugins.RealmPlugin
     /// </summary>
     public class RealmPlugin : IPlugin
     {
-        private BaseVariable<AboutResponse.Types.AboutConfiguration> realmAboutConfiguration => DataStore.i.realm.playerRealmAboutConfiguration;
+        private BaseVariable<AboutConfiguration> realmAboutConfiguration => DataStore.i.realm.playerRealmAboutConfiguration;
         private List<RealmModel> currentCatalystRealmList;
 
         internal List<IRealmModifier> realmsModifiers;
@@ -29,18 +28,19 @@ namespace DCLPlugins.RealmPlugin
             realmAboutConfiguration.OnChange += RealmChanged;
         }
 
-        private void RealmChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration _)
-        {
-            bool isWorld = current.ScenesUrn.Any()
-                           && string.IsNullOrEmpty(current.CityLoaderContentServer);
-
-            realmsModifiers.ForEach(rm => rm.OnEnteredRealm(isWorld, current));
-        }
-
         public void Dispose()
         {
             realmsModifiers.ForEach(rm => rm.Dispose());
             realmAboutConfiguration.OnChange -= RealmChanged;
+        }
+
+        private void RealmChanged(AboutConfiguration current, AboutConfiguration _)
+        {
+            bool isWorld = current.ScenesUrn.Any() && string.IsNullOrEmpty(current.CityLoaderContentServer);
+
+            DataStore.i.common.isWorld.Set(isWorld);
+
+            realmsModifiers.ForEach(rm => rm.OnEnteredRealm(isWorld, current));
         }
     }
 }
