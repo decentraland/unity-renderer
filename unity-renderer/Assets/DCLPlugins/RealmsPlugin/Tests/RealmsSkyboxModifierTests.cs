@@ -1,7 +1,7 @@
 ﻿using DCL;
-using Decentraland.Bff;
 using NUnit.Framework;
 using System;
+using static Decentraland.Bff.AboutResponse.Types;
 
 namespace DCLPlugins.RealmsPlugin
 {
@@ -71,29 +71,10 @@ namespace DCLPlugins.RealmsPlugin
             Assert.That(skyboxConfig.fixedTime.Get(), Is.EqualTo(FIXED_HOUR));
         }
 
-        private static AboutResponse AboutResponseWithFixedHours(float fixedHour) =>
-            new AboutResponse
-            {
-                Bff = new AboutResponse.Types.BffInfo(),
-                Comms = new AboutResponse.Types.CommsInfo(),
-                Configurations = new AboutResponse.Types.AboutConfiguration
-                {
-                    Skybox = new AboutResponse.Types.SkyboxConfiguration
-                    {
-                        FixedHour = fixedHour,
-                    },
-                },
-            };
+        private static AboutConfiguration AboutResponseWithFixedHours(float fixedHour) =>
+            new () { Skybox = new SkyboxConfiguration { FixedHour = fixedHour } };
 
-        private static AboutResponse AboutResponse() =>
-            new AboutResponse
-            {
-                Bff = new AboutResponse.Types.BffInfo(),
-                Comms = new AboutResponse.Types.CommsInfo(),
-                Configurations = new AboutResponse.Types.AboutConfiguration
-                {
-                    Skybox = new AboutResponse.Types.SkyboxConfiguration(),
-                },
-            };
+        private static AboutConfiguration AboutResponse() =>
+            new () { Skybox = new SkyboxConfiguration() };
     }
 }

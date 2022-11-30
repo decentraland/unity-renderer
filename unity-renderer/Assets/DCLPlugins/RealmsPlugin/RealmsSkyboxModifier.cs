@@ -1,13 +1,14 @@
 ﻿using DCL;
 using DCL.SettingsCommon;
-using Decentraland.Bff;
+using DCLPlugins.RealmPlugin;
+using static Decentraland.Bff.AboutResponse.Types;
 
 namespace DCLPlugins.RealmsPlugin
 {
     /// <summary>
     /// Align skybox with the realm skybox settings. It allows the world creator to force specific skybox state.
     /// </summary>
-    public class RealmsSkyboxModifier : IRealmsModifier
+    public class RealmsSkyboxModifier : IRealmModifier
     {
         private readonly DataStore_SkyboxConfig skyboxConfig;
 
@@ -23,15 +24,15 @@ namespace DCLPlugins.RealmsPlugin
 
         public void Dispose() { }
 
-        public void OnEnteredRealm(bool isCatalyst, AboutResponse realmConfiguration)
+        public void OnEnteredRealm(bool _, AboutConfiguration realmConfiguration)
         {
-            if (realmConfiguration.Configurations.Skybox is { HasFixedHour: true })
+            if (realmConfiguration.Skybox is { HasFixedHour: true })
             {
                 if (!hasCached)
                     CacheCurrentSkyboxSettings();
 
                 CommonSettingsScriptableObjects.SkyboxControlledByRealm.Set(true);
-                skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Configurations.Skybox!.FixedHour, SkyboxMode.HoursFixedByWorld);
+                skyboxConfig.UseFixedTimeFromSeconds(realmConfiguration.Skybox!.FixedHour, SkyboxMode.HoursFixedByWorld);
             }
             else if (hasCached)
                 ResetToCached();
