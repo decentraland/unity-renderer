@@ -425,6 +425,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: e917afbf829204e53b97fce8b275dafd, type: 3}
   - {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
+  - {fileID: 21300000, guid: 95180acf19d8343baabfcdd0c10079d1, type: 3}
   - {fileID: 21300000, guid: 64036ccffced12d48a00a842b7c6f3e8, type: 3}
   - {fileID: 21300000, guid: 780ed9eff07384ade9aaa318dbbe63b7, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -791,6 +792,7 @@ SpriteAtlas:
   - Container24
   - MinusIcon
   - CheckmarkRed
+  - ArrowOutline
   - RealmsIcon
   - OutlineGreyButton
   m_RenderDataMap: {}
