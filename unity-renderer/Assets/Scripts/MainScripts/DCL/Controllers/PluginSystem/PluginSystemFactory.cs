@@ -51,7 +51,8 @@ namespace DCL
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.Register<SendFriendRequestHUDPlugin>(() => new SendFriendRequestHUDPlugin());
-            
+            pluginSystem.Register<CancelFriendRequestHUDPlugin>(() => new CancelFriendRequestHUDPlugin());
+
             pluginSystem.RegisterWithFlag<RealmsPlugin>(() => new RealmsPlugin(), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(), "tutorial");
@@ -65,7 +66,7 @@ namespace DCL
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
-            
+
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
             pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin());

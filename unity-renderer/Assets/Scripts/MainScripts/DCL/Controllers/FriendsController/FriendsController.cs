@@ -11,6 +11,7 @@ namespace DCL.Social.Friends
         public static FriendsController i { get; private set; }
 
         private readonly IFriendsApiBridge apiBridge;
+        private readonly Dictionary<string, FriendRequest> friendRequests = new ();
 
         public event Action<int> OnTotalFriendsUpdated;
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
@@ -81,11 +82,16 @@ namespace DCL.Social.Friends
         {
             var payload = await apiBridge.RequestFriendship(friendUserId, messageBody);
             var friendRequestPayload = payload.friendRequest;
-            return new FriendRequest(friendRequestPayload.friendRequestId,
+
+            var friendRequest = new FriendRequest(friendRequestPayload.friendRequestId,
                 friendRequestPayload.timestamp,
                 friendRequestPayload.from,
                 friendRequestPayload.to,
                 friendRequestPayload.messageBody);
+
+            friendRequests[friendRequest.FriendRequestId] = friendRequest;
+
+            return friendRequest;
         }
 
         public Dictionary<string, UserStatus> GetAllocatedFriends()
@@ -115,12 +121,16 @@ namespace DCL.Social.Friends
             List<FriendRequest> receivedFriendRequestsToAdd = new List<FriendRequest>();
             foreach (var friendRequest in payload.requestedFrom)
             {
-                receivedFriendRequestsToAdd.Add(new FriendRequest(
+                var request = new FriendRequest(
                     friendRequest.friendRequestId,
                     friendRequest.timestamp,
-                    friendRequest.from,
+                    friendRequest.@from,
                     friendRequest.to,
-                    friendRequest.messageBody));
+                    friendRequest.messageBody);
+
+                friendRequests[request.FriendRequestId] = request;
+
+                receivedFriendRequestsToAdd.Add(request);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.from });
@@ -128,12 +138,16 @@ namespace DCL.Social.Friends
 
             foreach (var friendRequest in payload.requestedTo)
             {
-                receivedFriendRequestsToAdd.Add(new FriendRequest(
+                var request = new FriendRequest(
                     friendRequest.friendRequestId,
                     friendRequest.timestamp,
-                    friendRequest.from,
+                    friendRequest.@from,
                     friendRequest.to,
-                    friendRequest.messageBody));
+                    friendRequest.messageBody);
+
+                friendRequests[request.FriendRequestId] = request;
+
+                receivedFriendRequestsToAdd.Add(request);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.to });
@@ -148,10 +162,21 @@ namespace DCL.Social.Friends
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
             apiBridge.GetFriendsWithDirectMessages(userNameOrId, limit, 0);
 
-        public async UniTask<string> CancelRequest(string friendUserId)
+        public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
+            friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
+
+        public async UniTask<FriendRequest> CancelRequest(string friendUserId)
         {
             CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequest(friendUserId);
-            return payload.friendRequestId;
+
+            string friendRequestId = payload.friendRequestId;
+
+            if (!friendRequests.ContainsKey(friendRequestId))
+                return new FriendRequest(friendRequestId, 0, "", friendUserId, "");
+
+            FriendRequest friendRequest = friendRequests[friendRequestId];
+            friendRequests.Remove(friendRequestId);
+            return friendRequest;
         }
 
         public void AcceptFriendship(string friendUserId) =>

@@ -68,6 +68,9 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
+    public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
+        null;
+
     public UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
@@ -86,12 +89,12 @@ public class FriendsController_Mock : IFriendsController
         return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
     }
 
-    public async UniTask<string> CancelRequest(string friendUserId)
+    public async UniTask<FriendRequest> CancelRequest(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.CANCELLED);
-        return friendUserId;
+        return new FriendRequest(friendUserId, 0, "", "", "");
     }
 
     public void AcceptFriendship(string friendUserId)
@@ -99,23 +102,6 @@ public class FriendsController_Mock : IFriendsController
         if (!friends.ContainsKey(friendUserId)) return;
         friends[friendUserId].friendshipStatus = FriendshipStatus.FRIEND;
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.APPROVED);
-    }
-
-    public void RaiseUpdateFriendship(string id, FriendshipAction action)
-    {
-        if (action == FriendshipAction.NONE)
-        {
-            if (friends.ContainsKey(id))
-                friends.Remove(id);
-        }
-
-        if (action == FriendshipAction.APPROVED)
-        {
-            if (!friends.ContainsKey(id))
-                friends.Add(id, new UserStatus());
-        }
-
-        OnUpdateFriendship?.Invoke(id, action);
     }
 
     public void RaiseUpdateUserStatus(string id, UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
