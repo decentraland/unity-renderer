@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial
 {
@@ -26,13 +27,13 @@ namespace DCL.Tutorial
             None = 0,
             OldTutorialValue = 99, // NOTE: old tutorial set tutorialStep to 99 when finished
             EmailRequested = 128, // NOTE: old email prompt set tutorialStep to 128 when finished
-            NewTutorialFinished = 256
+            NewTutorialFinished = 256,
         }
 
         public enum TutorialType
         {
             Initial,
-            BuilderInWorld
+            BuilderInWorld,
         }
 
         internal enum TutorialPath
@@ -41,47 +42,53 @@ namespace DCL.Tutorial
             FromDeepLink,
             FromResetTutorial,
             FromBuilderInWorld,
-            FromUserThatAlreadyDidTheTutorial
+            FromUserThatAlreadyDidTheTutorial,
         }
-
-        public static TutorialController i { get; private set; }
-
-        public HUDController hudController { get => HUDController.i; }
-
-        public int currentStepIndex { get; internal set; }
-        public event Action OnTutorialEnabled;
-        public event Action OnTutorialDisabled;
 
         private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
 
-        internal TutorialSettings configuration;
-        internal TutorialView tutorialView;
+        private readonly DataStore_Common commonDataStore;
+        private readonly DataStore_Settings settingsDataStore;
+        private readonly DataStore_ExploreV2 exploreV2DataStore;
 
-        internal bool openedFromDeepLink = false;
-        internal bool playerIsInGenesisPlaza = false;
-        internal TutorialStep runningStep = null;
-        internal bool tutorialReset = false;
-        internal float elapsedTimeInCurrentStep = 0f;
+        internal readonly TutorialView tutorialView;
+
+        internal TutorialSettings configuration;
+        internal bool openedFromDeepLink;
+        internal bool playerIsInGenesisPlaza;
+        internal TutorialStep runningStep;
+        internal bool tutorialReset;
+        private float elapsedTimeInCurrentStep;
         internal TutorialPath currentPath;
-        internal int currentStepNumber;
+        private int currentStepNumber;
         internal TutorialType tutorialType = TutorialType.Initial;
-        internal int nextStepsToSkip = 0;
+        private int nextStepsToSkip;
 
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
         private Coroutine eagleEyeRotationCoroutine;
 
+        public static TutorialController i { get; private set; }
+        public HUDController hudController => HUDController.i;
+        public int currentStepIndex { get; internal set; }
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public TutorialController ()
+        public event Action OnTutorialEnabled;
+        public event Action OnTutorialDisabled;
+
+        public TutorialController(DataStore_Common commonDataStore, DataStore_Settings settingsDataStore, DataStore_ExploreV2 exploreV2DataStore)
         {
+            this.commonDataStore = commonDataStore;
+            this.settingsDataStore = settingsDataStore;
+            this.exploreV2DataStore = exploreV2DataStore;
+
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
         }
 
-        internal TutorialView CreateTutorialView()
+        private TutorialView CreateTutorialView()
         {
-            GameObject tutorialGO = GameObject.Instantiate(Resources.Load<GameObject>("TutorialView"));
+            GameObject tutorialGO = Object.Instantiate(Resources.Load<GameObject>("TutorialView"));
             tutorialGO.name = "TutorialController";
             TutorialView tutorialView = tutorialGO.GetComponent<TutorialView>();
             tutorialView.ConfigureView(this);
@@ -96,37 +103,33 @@ namespace DCL.Tutorial
             i = this;
             ShowTeacher3DModel(false);
 
-            if (DataStore.i.settings.isInitialized.Get())
+            if (settingsDataStore.isInitialized.Get())
                 IsSettingsHUDInitialized_OnChange(true, false);
             else
-                DataStore.i.settings.isInitialized.OnChange += IsSettingsHUDInitialized_OnChange;
+                settingsDataStore.isInitialized.OnChange += IsSettingsHUDInitialized_OnChange;
 
             if (configuration.debugRunTutorial)
-            {
                 SetTutorialEnabled(JsonUtility.ToJson(new TutorialInitializationMessage
                 {
                     fromDeepLink = configuration.debugOpenedFromDeepLink.ToString(),
-                    enableNewTutorialCamera = false.ToString()
+                    enableNewTutorialCamera = false.ToString(),
                 }));
-            }
         }
 
         public void Dispose()
         {
             SetTutorialDisabled();
 
-            DataStore.i.settings.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
+            settingsDataStore.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
 
             if (hudController != null &&
                 hudController.settingsPanelHud != null)
-            {
                 hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
-            }
 
             NotificationsController.disableWelcomeNotification = false;
 
             if (tutorialView != null)
-                GameObject.Destroy(tutorialView.gameObject);
+                Object.Destroy(tutorialView.gameObject);
         }
 
         public void SetTutorialEnabled(string json)
@@ -146,14 +149,17 @@ namespace DCL.Tutorial
             SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, TutorialType.Initial, true);
         }
 
-        public void SetBuilderInWorldTutorialEnabled() { SetupTutorial(false.ToString(), false.ToString(), TutorialType.BuilderInWorld); }
+        public void SetBuilderInWorldTutorialEnabled()
+        {
+            SetupTutorial(false.ToString(), false.ToString(), TutorialType.BuilderInWorld);
+        }
 
         /// <summary>
         /// Enables the tutorial controller and waits for the RenderingState is enabled to start to execute the corresponding tutorial steps.
         /// </summary>
         internal void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, TutorialType tutorialType, bool userAlreadyDidTheTutorial = false)
         {
-            if (DataStore.i.common.isTutorialRunning.Get())
+            if (commonDataStore.isWorld.Get() || commonDataStore.isTutorialRunning.Get())
                 return;
 
             if (Convert.ToBoolean(enableNewTutorialCamera))
@@ -163,7 +169,7 @@ namespace DCL.Tutorial
                 configuration.eagleCamRotationActived = false;
             }
 
-            DataStore.i.common.isTutorialRunning.Set(true);
+            commonDataStore.isTutorialRunning.Set(true);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -200,7 +206,7 @@ namespace DCL.Tutorial
 
             if (runningStep != null)
             {
-                UnityEngine.Object.Destroy(runningStep.gameObject);
+                Object.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
@@ -211,15 +217,13 @@ namespace DCL.Tutorial
             }
 
             tutorialReset = false;
-            DataStore.i.common.isTutorialRunning.Set(false);
+            commonDataStore.isTutorialRunning.Set(false);
             tutorialView.tutorialMusicHandler.StopTutorialMusic();
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
             if (Environment.i != null && Environment.i.world != null)
-            {
                 WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneNumber(), "tutorial", "end");
-            }
 
             NotificationsController.disableWelcomeNotification = false;
 
@@ -238,46 +242,40 @@ namespace DCL.Tutorial
         /// <param name="stepIndex">First step to be executed.</param>
         public IEnumerator StartTutorialFromStep(int stepIndex)
         {
-            if (!DataStore.i.common.isTutorialRunning.Get())
+            if (!commonDataStore.isTutorialRunning.Get())
                 yield break;
 
             if (runningStep != null)
             {
                 runningStep.OnStepFinished();
-                GameObject.Destroy(runningStep.gameObject);
+                Object.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
             yield return new WaitUntil(IsPlayerInScene);
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
-            
+
             switch (tutorialType)
             {
                 case TutorialType.Initial:
-                    if(playerIsInGenesisPlaza) tutorialView.tutorialMusicHandler.TryPlayingMusic();
+                {
+                    if (playerIsInGenesisPlaza) tutorialView.tutorialMusicHandler.TryPlayingMusic();
+
                     if (userAlreadyDidTheTutorial)
-                    {
                         yield return ExecuteSteps(TutorialPath.FromUserThatAlreadyDidTheTutorial, stepIndex);
-                    }
                     else if (tutorialReset)
-                    {
                         yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
-                    }
                     else if (playerIsInGenesisPlaza)
-                    {
                         yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-                    }
                     else if (openedFromDeepLink)
-                    {
                         yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
-                    }
                     else
-                    {
                         SetTutorialDisabled();
-                        yield break;
-                    }
+
                     break;
+                }
+
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
                     break;
@@ -346,11 +344,9 @@ namespace DCL.Tutorial
         public void SkipTutorial(bool ignoreStatsSending = false)
         {
             if (!ignoreStatsSending && !configuration.debugRunTutorial && configuration.sendStats)
-            {
                 SendSkipTutorialSegmentStats(
                     configuration.tutorialVersion,
                     runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
-            }
 
             int skipIndex = configuration.stepsOnGenesisPlaza.Count +
                             configuration.stepsFromDeepLink.Count +
@@ -369,29 +365,23 @@ namespace DCL.Tutorial
         /// <param name="stepIndex">Step to jump.</param>
         public void GoToSpecificStep(string stepName)
         {
-            int stepIndex = 0;
+            var stepIndex = 0;
+
             switch (tutorialType)
             {
                 case TutorialType.Initial:
                     if (userAlreadyDidTheTutorial)
-                    {
                         stepIndex = configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName);
-                    }
                     else if (playerIsInGenesisPlaza || tutorialReset)
                     {
                         if (tutorialReset)
-                        {
                             stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
-                        }
                         else
-                        {
                             stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
-                        }
                     }
                     else if (openedFromDeepLink)
-                    {
                         stepIndex = configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName);
-                    }
+
                     break;
                 case TutorialType.BuilderInWorld:
                     stepIndex = configuration.stepsFromBuilderInWorld.FindIndex(x => x.name == stepName);
@@ -410,7 +400,10 @@ namespace DCL.Tutorial
         /// Set the number of steps that will be skipped in the next iteration.
         /// </summary>
         /// <param name="skippedSteps">Number of steps to skip.</param>
-        public void SetNextSkippedSteps(int skippedSteps) { nextStepsToSkip = skippedSteps; }
+        public void SetNextSkippedSteps(int skippedSteps)
+        {
+            nextStepsToSkip = skippedSteps;
+        }
 
         /// <summary>
         /// Activate/deactivate the eagle eye camera.
@@ -430,9 +423,7 @@ namespace DCL.Tutorial
                     eagleEyeRotationCoroutine = CoroutineStarter.Start(EagleEyeCameraRotation(configuration.eagleCamRotationSpeed));
             }
             else if (eagleEyeRotationCoroutine != null)
-            {
                 CoroutineStarter.Stop(eagleEyeRotationCoroutine);
-            }
         }
 
         internal void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
@@ -453,7 +444,7 @@ namespace DCL.Tutorial
 
         private IEnumerator ExecuteSteps(TutorialPath tutorialPath, int startingStepIndex)
         {
-            List<TutorialStep> steps = new List<TutorialStep>();
+            var steps = new List<TutorialStep>();
 
             switch (tutorialPath)
             {
@@ -477,6 +468,7 @@ namespace DCL.Tutorial
             currentPath = tutorialPath;
 
             elapsedTimeInCurrentStep = 0f;
+
             for (int i = startingStepIndex; i < steps.Count; i++)
             {
                 if (nextStepsToSkip > 0)
@@ -485,15 +477,15 @@ namespace DCL.Tutorial
                     continue;
                 }
 
-                var stepPrefab = steps[i];
+                TutorialStep stepPrefab = steps[i];
 
                 // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
                 if (stepPrefab is TutorialStep_Tooltip_ExploreButton &&
-                    !DataStore.i.exploreV2.isInitialized.Get())
+                    !exploreV2DataStore.isInitialized.Get())
                     continue;
 
                 if (stepPrefab.letInstantiation)
-                    runningStep = GameObject.Instantiate(stepPrefab, tutorialView.transform).GetComponent<TutorialStep>();
+                    runningStep = Object.Instantiate(stepPrefab, tutorialView.transform).GetComponent<TutorialStep>();
                 else
                     runningStep = steps[i];
 
@@ -504,16 +496,15 @@ namespace DCL.Tutorial
                 currentStepNumber = i + 1;
 
                 if (!configuration.debugRunTutorial && configuration.sendStats)
-                {
                     SendStepStartedSegmentStats(
                         configuration.tutorialVersion,
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
-                }
 
                 runningStep.OnStepStart();
                 yield return runningStep.OnStepExecute();
+
                 if (i < steps.Count - 1)
                     PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.StepCompleted);
                 else
@@ -526,16 +517,14 @@ namespace DCL.Tutorial
                 if (!configuration.debugRunTutorial &&
                     configuration.sendStats &&
                     tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
-                {
                     SendStepCompletedSegmentStats(
                         configuration.tutorialVersion,
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""),
                         elapsedTimeInCurrentStep);
-                }
 
-                GameObject.Destroy(runningStep.gameObject);
+                Object.Destroy(runningStep.gameObject);
 
                 if (i < steps.Count - 1 && configuration.timeBetweenSteps > 0)
                     yield return new WaitForSeconds(configuration.timeBetweenSteps);
@@ -544,33 +533,36 @@ namespace DCL.Tutorial
             if (!configuration.debugRunTutorial &&
                 tutorialPath != TutorialPath.FromBuilderInWorld &&
                 tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
-            {
                 SetUserTutorialStepAsCompleted(TutorialFinishStep.NewTutorialFinished);
-            }
 
             runningStep = null;
 
             SetTutorialDisabled();
         }
 
-        private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
+        private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)
+        {
+            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int)finishStepType);
+        }
 
         internal IEnumerator MoveTeacher(Vector3 toPosition)
         {
             if (configuration.teacherRawImage == null)
                 yield break;
 
-            float t = 0f;
-          
+            var t = 0f;
+
             Vector3 fromPosition = configuration.teacherRawImage.rectTransform.position;
-            
+
             while (Vector3.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
                 t += configuration.teacherMovementSpeed * Time.deltaTime;
+
                 if (t <= 1.0f)
                     configuration.teacherRawImage.rectTransform.position = Vector3.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
                     configuration.teacherRawImage.rectTransform.position = toPosition;
+
                 yield return null;
             }
         }
@@ -586,18 +578,19 @@ namespace DCL.Tutorial
             }
         }
 
-        internal void OnRestartTutorial()
+        private void OnRestartTutorial()
         {
             SetTutorialDisabled();
             tutorialReset = true;
+
             SetTutorialEnabled(JsonUtility.ToJson(new TutorialInitializationMessage
             {
                 fromDeepLink = false.ToString(),
-                enableNewTutorialCamera = false.ToString()
+                enableNewTutorialCamera = false.ToString(),
             }));
         }
 
-        internal bool IsPlayerInScene()
+        private static bool IsPlayerInScene()
         {
             IWorldState worldState = Environment.i.world.state;
 
@@ -607,7 +600,7 @@ namespace DCL.Tutorial
             return true;
         }
 
-        internal static bool IsPlayerInsideGenesisPlaza()
+        private static bool IsPlayerInsideGenesisPlaza()
         {
             if (Environment.i.world == null)
                 return false;
@@ -617,9 +610,9 @@ namespace DCL.Tutorial
             if (worldState == null || worldState.GetCurrentSceneNumber() == null)
                 return false;
 
-            Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
+            var genesisPlazaBaseCoords = new Vector2Int(-9, -9);
 
-            var currentScene = worldState.GetScene(worldState.GetCurrentSceneNumber());
+            IParcelScene currentScene = worldState.GetScene(worldState.GetCurrentSceneNumber());
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;
@@ -627,41 +620,44 @@ namespace DCL.Tutorial
             return false;
         }
 
-        private void SendStepStartedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName)
+        private static void SendStepStartedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            WebInterface.AnalyticsPayload.Property[] properties =
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", tutorialPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", stepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName)
+                new ("version", version.ToString()),
+                new ("path", tutorialPath.ToString()),
+                new ("step number", stepNumber.ToString()),
+                new ("step name", stepName),
             };
+
             WebInterface.ReportAnalyticsEvent("tutorial step started", properties);
         }
 
-        private void SendStepCompletedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName, float elapsedTime)
+        private static void SendStepCompletedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName, float elapsedTime)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            WebInterface.AnalyticsPayload.Property[] properties =
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", tutorialPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", stepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName),
-                new WebInterface.AnalyticsPayload.Property("elapsed time", elapsedTime.ToString("0.00"))
+                new ("version", version.ToString()),
+                new ("path", tutorialPath.ToString()),
+                new ("step number", stepNumber.ToString()),
+                new ("step name", stepName),
+                new ("elapsed time", elapsedTime.ToString("0.00")),
             };
+
             WebInterface.ReportAnalyticsEvent("tutorial step completed", properties);
         }
 
         private void SendSkipTutorialSegmentStats(int version, string stepName)
         {
-            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            WebInterface.AnalyticsPayload.Property[] properties =
             {
-                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
-                new WebInterface.AnalyticsPayload.Property("path", currentPath.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step number", currentStepNumber.ToString()),
-                new WebInterface.AnalyticsPayload.Property("step name", stepName),
-                new WebInterface.AnalyticsPayload.Property("elapsed time", (Time.realtimeSinceStartup - elapsedTimeInCurrentStep).ToString("0.00"))
+                new ("version", version.ToString()),
+                new ("path", currentPath.ToString()),
+                new ("step number", currentStepNumber.ToString()),
+                new ("step name", stepName),
+                new ("elapsed time", (Time.realtimeSinceStartup - elapsedTimeInCurrentStep).ToString("0.00")),
             };
+
             WebInterface.ReportAnalyticsEvent("tutorial skipped", properties);
         }
 

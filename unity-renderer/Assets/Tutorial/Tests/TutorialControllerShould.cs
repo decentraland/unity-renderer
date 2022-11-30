@@ -33,7 +33,7 @@ namespace DCL.Tutorial_Tests
             genesisPlazaSimulator.isPersistent = false;
             IWorldState worldState = Environment.i.world.state;
             worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>()).Returns(param => param[1] = genesisPlazaSimulator);
-            
+
             CreateAndConfigureTutorial();
         }
 
@@ -126,7 +126,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
         }
-        
+
         [UnityTest]
         public IEnumerator MusicPlayingWhenStartingFromGenesisPlaza()
         {
@@ -143,7 +143,7 @@ namespace DCL.Tutorial_Tests
             // Assert
             Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
         }
-        
+
         [UnityTest]
         public IEnumerator MusicNotPlayingWhenStartingFromDeepLink()
         {
@@ -580,7 +580,7 @@ namespace DCL.Tutorial_Tests
 
         private void CreateAndConfigureTutorial()
         {
-            tutorialController = new TutorialController();
+            tutorialController = new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2);
             tutorialView = tutorialController.tutorialView;
 
             // NOTE(Brian): Avoid AudioListener warning
