@@ -347,7 +347,7 @@ namespace DCl.Social.Friends
         {
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-        
+
             view.ClearReceivedCalls();
 
             ownProfile.UpdateData(new UserProfileModel
@@ -357,7 +357,7 @@ namespace DCl.Social.Friends
             });
 
             view.Received(1).UpdateBlockStatus(OTHER_USER_ID, true);
-        
+
             view.ClearReceivedCalls();
 
             ownProfile.UpdateData(new UserProfileModel
@@ -379,7 +379,7 @@ namespace DCl.Social.Friends
             });
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-        
+
             view.ClearReceivedCalls();
 
             otherUserProfile.UpdateData(new UserProfileModel
@@ -396,22 +396,22 @@ namespace DCl.Social.Friends
         {
             view.IsFriendListActive.Returns(true);
             friendsController.IsInitialized.Returns(true);
-        
+
             controller.SetVisibility(true);
-        
+
             friendsController.Received(1).GetFriends(30, 0);
         }
-    
+
         [Test]
         public void GetFriendsWhenSwitchesTabs()
         {
             friendsController.IsInitialized.Returns(true);
 
             view.OnFriendListDisplayed += Raise.Event<Action>();
-        
+
             friendsController.Received(1).GetFriends(30, 0);
         }
-    
+
         [Test]
         public void GetFriendRequestsWhenBecomesVisible()
         {
@@ -421,10 +421,10 @@ namespace DCl.Social.Friends
             friendsController.IsInitialized.Returns(true);
 
             controller.SetVisibility(true);
-        
+
             friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
         }
-    
+
         [Test]
         public void GetFriendRequestsWhenSwitchesTabs()
         {
@@ -432,7 +432,7 @@ namespace DCl.Social.Friends
             view.FriendRequestCount.Returns(0);
 
             view.OnRequestListDisplayed += Raise.Event<Action>();
-        
+
             friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
         }
 
@@ -443,12 +443,12 @@ namespace DCl.Social.Friends
             view.IsFriendListActive.Returns(true);
             friendsController.IsInitialized.Returns(true);
             view.ClearReceivedCalls();
-        
+
             controller.SetVisibility(true);
-        
+
             view.Received(1).HideMoreFriendsToLoadHint();
         }
-    
+
         [Test]
         public void ShowMoreFriendsToLoadWhenMissingFriends()
         {
@@ -456,12 +456,12 @@ namespace DCl.Social.Friends
             view.IsFriendListActive.Returns(true);
             friendsController.IsInitialized.Returns(true);
             view.ClearReceivedCalls();
-        
+
             controller.SetVisibility(true);
-        
+
             view.Received(1).ShowMoreFriendsToLoadHint(4);
         }
-    
+
         [Test]
         public void HideMoreFriendRequestsToLoadWhenReachedTotalFriends()
         {
@@ -469,12 +469,12 @@ namespace DCl.Social.Friends
             view.IsRequestListActive.Returns(true);
             friendsController.IsInitialized.Returns(true);
             view.ClearReceivedCalls();
-        
+
             controller.SetVisibility(true);
 
             view.Received(1).HideMoreRequestsToLoadHint();
         }
-    
+
         [Test]
         public void ShowMoreFriendRequestsToLoadWhenMissingRequests()
         {
@@ -482,9 +482,9 @@ namespace DCl.Social.Friends
             view.IsRequestListActive.Returns(true);
             view.ClearReceivedCalls();
             friendsController.IsInitialized.Returns(true);
-        
+
             controller.SetVisibility(true);
-        
+
             view.Received(1).ShowMoreRequestsToLoadHint(9);
         }
 
@@ -493,28 +493,28 @@ namespace DCl.Social.Friends
         {
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriends += Raise.Event<Action>();
-        
+
             friendsController.GetFriends(30, 0);
         }
-    
+
         [Test]
         public void GetMoreFriendsWhenViewRequests()
         {
             view.IsFriendListActive.Returns(true);
             friendsController.IsInitialized.Returns(true);
             controller.SetVisibility(true);
-        
+
             view.OnRequireMoreFriends += Raise.Event<Action>();
-        
+
             friendsController.Received(1).GetFriends(30, 30);
         }
-    
+
         [Test]
         public void GetMoreFriendRequests()
         {
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
-        
+
             friendsController.GetFriendRequests(30, 0, 30, 0);
         }
 
@@ -538,9 +538,9 @@ namespace DCl.Social.Friends
             });
             friendsController.OnUpdateFriendship +=
                 Raise.Event<Action<string, FriendshipAction>>(OTHER_USER_ID, FriendshipAction.APPROVED);
-        
+
             view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
-        
+
             friendsController.Received(1).GetFriends(searchText, 100);
             view.Received(1).EnableSearchMode();
         }
@@ -549,7 +549,7 @@ namespace DCl.Social.Friends
         public void ClearFriendFilterWhenSearchForAnEmptyString()
         {
             view.OnSearchFriendsRequested += Raise.Event<Action<string>>("");
-        
+
             view.Received(1).DisableSearchMode();
         }
 
@@ -562,10 +562,10 @@ namespace DCl.Social.Friends
             controller.SetVisibility(true);
             controller.SetVisibility(false);
             controller.SetVisibility(true);
-        
+
             friendsController.Received(2).GetFriends(30, 0);
         }
-    
+
         [Test]
         public void LoadFriendsRequestsWhenBecomesVisible()
         {
@@ -575,8 +575,22 @@ namespace DCl.Social.Friends
             controller.SetVisibility(true);
             controller.SetVisibility(false);
             controller.SetVisibility(true);
-     
+
             friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
+        }
+
+        [Test]
+        public void OpenCancelFriendRequestDetails()
+        {
+            const string FRIEND_REQUEST_ID = "friendRequestId";
+
+            friendsController.GetAllocatedFriendRequestByUser(OTHER_USER_ID)
+                             .Returns(new FriendRequest(FRIEND_REQUEST_ID,
+                                  100, OWN_USER_ID, OTHER_USER_ID, "hey"));
+
+            view.OnFriendRequestOpened += Raise.Event<Action<string>>(OTHER_USER_ID);
+
+            Assert.AreEqual(FRIEND_REQUEST_ID, dataStore.HUDs.openSentFriendRequestDetail.Get());
         }
     }
 }
