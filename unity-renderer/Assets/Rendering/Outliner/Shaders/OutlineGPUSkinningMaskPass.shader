@@ -29,6 +29,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Name "Outliner"
 
             HLSLPROGRAM
+            #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
