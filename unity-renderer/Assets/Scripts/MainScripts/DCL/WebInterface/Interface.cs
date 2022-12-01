@@ -1654,7 +1654,7 @@ namespace DCL.Interface
                 videoTextureId = videoClipId,
                 status = videoStatus,
                 currentOffset = currentOffset,
-                videoLength = length
+                videoLength = float.IsInfinity(length) ? float.MaxValue : length
             };
 
             SendMessage("VideoProgressEvent", progressEvent);
