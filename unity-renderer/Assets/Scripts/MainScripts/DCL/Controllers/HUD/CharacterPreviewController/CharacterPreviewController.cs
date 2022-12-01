@@ -69,7 +69,6 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
 
     public void SetEnabled(bool isEnabled)
     {
-        Debug.Log("CharacterPreviewController.SetEnabled: " + isEnabled);
         gameObject.SetActive(isEnabled);
         camera.enabled = isEnabled;
     }
