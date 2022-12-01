@@ -1,4 +1,3 @@
-using Castle.Core.Internal;
 using DCL;
 using ExploreV2Analytics;
 using System;
@@ -11,18 +10,33 @@ using Environment = DCL.Environment;
 
 public class ProfileHUDView : MonoBehaviour
 {
-    private const float COPY_TOAST_VISIBLE_TIME = 3;
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
+    private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
-    [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
-    [SerializeField] private RectTransform mainRootLayout;
-    [SerializeField] internal GameObject loadingSpinner;
-    [SerializeField] internal ShowHideAnimator copyToast;
-    [SerializeField] internal GameObject copyTooltip;
-    [SerializeField] internal InputAction_Trigger closeAction;
-    [SerializeField] internal Canvas mainCanvas;
+    [SerializeField]
+    internal ShowHideAnimator mainShowHideAnimator;
+
+    [SerializeField]
+    internal ShowHideAnimator menuShowHideAnimator;
+
+    [SerializeField]
+    private RectTransform mainRootLayout;
+
+    [SerializeField]
+    internal GameObject loadingSpinner;
+
+    [SerializeField]
+    internal ShowHideAnimator copyToast;
+
+    [SerializeField]
+    internal GameObject copyTooltip;
+
+    [SerializeField]
+    internal InputAction_Trigger closeAction;
+
+    [SerializeField]
+    internal Canvas mainCanvas;
 
     [Header("Hide GOs on claimed name")]
     [SerializeField]
@@ -43,41 +57,78 @@ public class ProfileHUDView : MonoBehaviour
     protected internal Button buttonToggleMenu;
 
     [Header("Texts")]
-    [SerializeField] internal TextMeshProUGUI textName;
-    [SerializeField] internal TextMeshProUGUI textPostfix;
-    [SerializeField] internal TextMeshProUGUI textAddress;
+    [SerializeField]
+    internal TextMeshProUGUI textName;
+
+    [SerializeField]
+    internal TextMeshProUGUI textPostfix;
+
+    [SerializeField]
+    internal TextMeshProUGUI textAddress;
 
     [Header("Buttons")]
-    [SerializeField] protected internal Button buttonClaimName;
-    [SerializeField] protected internal Button buttonCopyAddress;
-    [SerializeField] protected internal Button buttonLogOut;
-    [SerializeField] protected internal Button buttonSignUp;
-    [SerializeField] protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
-    [SerializeField] protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
-    [SerializeField] protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
-    [SerializeField] protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
+    [SerializeField]
+    protected internal Button buttonClaimName;
+
+    [SerializeField]
+    protected internal Button buttonCopyAddress;
+
+    [SerializeField]
+    protected internal Button buttonLogOut;
+
+    [SerializeField]
+    protected internal Button buttonSignUp;
+
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
+
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
-    [SerializeField] protected internal Button_OnPointerDown buttonEditName;
-    [SerializeField] protected internal Button_OnPointerDown buttonEditNamePrefix;
-    [SerializeField] internal TMP_InputField inputName;
-    [SerializeField] internal TextMeshProUGUI textCharLimit;
-    [SerializeField] internal ManaCounterView manaCounterView;
-    [SerializeField] internal ManaCounterView polygonManaCounterView;
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonEditName;
+
+    [SerializeField]
+    protected internal Button_OnPointerDown buttonEditNamePrefix;
+
+    [SerializeField]
+    internal TMP_InputField inputName;
+
+    [SerializeField]
+    internal TextMeshProUGUI textCharLimit;
+
+    [SerializeField]
+    internal ManaCounterView manaCounterView;
+
+    [SerializeField]
+    internal ManaCounterView polygonManaCounterView;
 
     [Header("Tutorial Config")]
-    [SerializeField] internal RectTransform tutorialTooltipReference;
+    [SerializeField]
+    internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
-    [SerializeField] internal GameObject charLimitDescriptionContainer;
-    [SerializeField] internal GameObject descriptionStartEditingGo;
-    [SerializeField] internal GameObject descriptionIsEditingGo;
-    [SerializeField] internal Button descriptionStartEditingButton;
-    [SerializeField] internal Button descriptionIsEditingButton;
-    [SerializeField] internal TMP_InputField descriptionInputText;
-    [SerializeField] internal TextMeshProUGUI textCharLimitDescription;
+    [SerializeField]
+    internal TMP_InputField descriptionPreviewInput;
 
-    [SerializeField] internal GameObject descriptionContainer;
+    [SerializeField]
+    internal TMP_InputField descriptionEditionInput;
+
+    [SerializeField]
+    internal GameObject charLimitDescriptionContainer;
+
+    [SerializeField]
+    internal TextMeshProUGUI textCharLimitDescription;
+
+    [SerializeField]
+    internal GameObject descriptionContainer;
 
     public RectTransform expandedMenu => mainRootLayout;
 
@@ -86,13 +137,11 @@ public class ProfileHUDView : MonoBehaviour
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
     private Regex nameRegex = null;
-    private string description;
 
     internal event Action OnOpen;
     internal event Action OnClose;
     internal bool isStartMenuInitialized = false;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
-
 
     private void Awake()
     {
@@ -104,27 +153,13 @@ public class ProfileHUDView : MonoBehaviour
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
-
-        descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
-        descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
-        descriptionInputText.onSelect.AddListener(x =>
+        descriptionPreviewInput.onSelect.AddListener(x =>
         {
-            descriptionInputText.text = description;
-            SetDescriptionIsEditing(true);
-            UpdateDescriptionCharLimit(description);
+            ActivateDescriptionEditionMode(true);
+            UpdateDescriptionCharLimit(descriptionPreviewInput.text);
         });
-        descriptionInputText.onValueChanged.AddListener(description =>
-        {
-            UpdateDescriptionCharLimit(description);
-        });
-        descriptionInputText.onDeselect.AddListener(description =>
-        {
-            this.description = description;
-            SetDescriptionIsEditing(false);
-            UpdateLinksInformation(description);
-        });
-        SetDescriptionIsEditing(false);
-
+        descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionEditionInput.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
@@ -144,6 +179,7 @@ public class ProfileHUDView : MonoBehaviour
         SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
         HandleProfileAddress(userProfile);
         HandleProfileSnapshot(userProfile);
+        SetDescription(userProfile.description);
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         ForceLayoutToRefreshSize();
     }
@@ -167,13 +203,7 @@ public class ProfileHUDView : MonoBehaviour
         }
     }
 
-    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
-
-    public void SetDescription(string description)
-    {
-        this.description = description;
-        descriptionInputText.text = description;
-    }
+    public void SetStartMenuButtonActive(bool isActive) { isStartMenuInitialized = isActive; }
 
     internal void ToggleMenu()
     {
@@ -276,7 +306,9 @@ public class ProfileHUDView : MonoBehaviour
     private void CopyAddress()
     {
         if (!profile)
+        {
             return;
+        }
 
         Environment.i.platform.clipboard.WriteText(profile.userId);
 
@@ -334,62 +366,16 @@ public class ProfileHUDView : MonoBehaviour
         return nameRegex.IsMatch(name);
     }
 
-    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
-
-    internal void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
-
-    private void SetDescriptionIsEditing(bool isEditing)
+    internal void ActivateDescriptionEditionMode(bool active)
     {
-        SetDescriptionCharLiitEnabled(isEditing);
-        descriptionStartEditingGo.SetActive(!isEditing);
-        descriptionIsEditingGo.SetActive(isEditing);
-    }
+        charLimitDescriptionContainer.SetActive(active);
+        descriptionEditionInput.gameObject.SetActive(active);
+        descriptionPreviewInput.gameObject.SetActive(!active);
 
-    private void UpdateDescriptionCharLimit(string description) =>
-        textCharLimitDescription.text = $"{description.Length}/{descriptionInputText.characterLimit}";
-
-    private void UpdateLinksInformation(string description)
-    {
-        string[] words = description.Split(' ');
-        bool linksFound = false;
-
-        for (int i = 0; i < words.Length; i++)
+        if (active)
         {
-            if (words[i].Contains("www."))
-            {
-                string[] elements = words[i].Split('.');
-                if (elements.Length >= 1)
-                {
-                    words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
-                    linksFound = true;
-                }
-            }
-        }
-
-        if (linksFound)
-        {
-            bool foundLinksAtTheEnd = false;
-            for (int i = words.Length - 1; i >= 0; i--)
-            {
-                if (words[i].IsNullOrEmpty())
-                    continue;
-
-                if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
-                    break;
-
-                if (words[i].Contains("<link=\""))
-                {
-                    foundLinksAtTheEnd = true;
-                    continue;
-                }
-
-                if (foundLinksAtTheEnd && i > 0)
-                {
-                    words[i] += "\n\n";
-                    break;
-                }
-            }
-            descriptionInputText.text = string.Join(" ", words);
+            descriptionEditionInput.text = descriptionPreviewInput.text;
+            StartCoroutine(SelectComponentOnNextFrame(descriptionEditionInput));
         }
     }
 
@@ -398,6 +384,16 @@ public class ProfileHUDView : MonoBehaviour
         yield return null;
         selectable.Select();
     }
+
+    internal void SetDescription(string description)
+    {
+        descriptionPreviewInput.text = description;
+        descriptionEditionInput.text = description;
+    }
+
+    private void UpdateDescriptionCharLimit(string newValue) { textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}"; }
+
+    private void SetDescriptionEnabled(bool enabled) { descriptionContainer.SetActive(enabled); }
 
     public void SetCardAsFullScreenMenuMode(bool isActive)
     {
