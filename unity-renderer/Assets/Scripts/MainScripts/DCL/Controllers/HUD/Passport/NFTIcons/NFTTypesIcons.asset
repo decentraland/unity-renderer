@@ -41,6 +41,12 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 0bfef183260d34c50b8d971b1400499e, type: 3}
   - key: mask
     value: {fileID: 21300000, guid: 90e673ad913664a27b245b61ccdf31bf, type: 3}
+  - key: eyewear
+    value: {fileID: 21300000, guid: 18cc300911ff74c3c922eb3a9b346f3c, type: 3}
+  - key: top_head
+    value: {fileID: 21300000, guid: 17e4c961a88d74262a222ea008152618, type: 3}
+  - key: earring
+    value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
   nftColors:
   - key: rare
     value: {r: 0, g: 1, b: 0.018231153, a: 1}

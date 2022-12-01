@@ -22,7 +22,12 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private GameObject wearableUIReferenceObject;
 
-        private List<NFTIconComponentView> equippedWearables = new List<NFTIconComponentView>();
+        private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
+        private const int MAX_NFT_ICON_ENTRIES = 20;
+        private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.7f, 0.7f, 0.7f);
+
+        private List<PoolableObject> poolableQueue = new List<PoolableObject>();
+        private Pool entryPool;
 
         public override void Start()
         {
@@ -41,6 +46,7 @@ namespace DCL.Social.Passports
         public void InitializeView()
         {
             CleanEquippedWearables();
+            entryPool = GetNftIconEntryPool();
         }
 
         public void SetGuestUser(bool isGuest)
@@ -64,8 +70,12 @@ namespace DCL.Social.Passports
         {
             foreach (var wearable in wearables)
             {
-                NFTIconComponentView nftIconComponentView = Instantiate(wearableUIReferenceObject, equippedWearablesContainer).GetComponent<NFTIconComponentView>();
-                equippedWearables.Add(nftIconComponentView);
+                PoolableObject poolableObject = entryPool.Get();
+                poolableQueue.Add(poolableObject);
+                poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
+                poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
+                NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
+
                 NFTIconComponentModel nftModel = new NFTIconComponentModel()
                 {
                     type = wearable.data.category,
@@ -80,17 +90,31 @@ namespace DCL.Social.Passports
 
         private void CleanEquippedWearables()
         {
-            for (int i = equippedWearables.Count - 1; i >= 0; i--)
+            foreach (var poolObject in poolableQueue)
             {
-                Destroy(equippedWearables[i].gameObject);
+                entryPool.Release(poolObject);
             }
 
-            equippedWearables = new List<NFTIconComponentView>();
+            poolableQueue = new List<PoolableObject>();
+        }
+
+        private Pool GetNftIconEntryPool()
+        {
+            var pool = PoolManager.i.GetPool(NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID());
+            if (pool != null) return pool;
+
+            pool = PoolManager.i.AddPool(
+                NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID(),
+                Instantiate(wearableUIReferenceObject).gameObject,
+                maxPrewarmCount: MAX_NFT_ICON_ENTRIES,
+                isPersistent: true);
+            pool.ForcePrewarm();
+
+            return pool;
         }
 
         public override void RefreshControl()
         {
-
         }
 
     }

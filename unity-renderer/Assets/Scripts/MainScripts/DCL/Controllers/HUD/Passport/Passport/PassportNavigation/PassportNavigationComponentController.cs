@@ -40,7 +40,6 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndDisplayEquippedWearables(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
-
             foreach (var t in userProfile.avatar.wearables)
             {
                 if (!cachedAvatarEquippedWearables.Contains(t))
