@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+using System;
 
 namespace DCL.Social.Passports
 {
     public interface IPassportNavigationComponentView
     {
+        event Action<string> OnClickBuyNft;
         void InitializeView();
         void SetGuestUser(bool isGuest);
         void SetName(string username);

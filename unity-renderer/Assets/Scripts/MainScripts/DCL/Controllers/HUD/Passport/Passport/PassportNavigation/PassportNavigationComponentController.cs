@@ -1,6 +1,8 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEngine;
 
@@ -14,6 +16,7 @@ namespace DCL.Social.Passports
 
         private IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new HashSet<string>();
+        public event Action<string> OnClickBuyNft;
 
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, DataStore dataStore)
         {
@@ -21,6 +24,7 @@ namespace DCL.Social.Passports
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
             this.dataStore = dataStore;
+            view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);

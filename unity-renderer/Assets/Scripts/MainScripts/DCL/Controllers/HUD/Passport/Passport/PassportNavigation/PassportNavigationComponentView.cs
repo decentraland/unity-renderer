@@ -22,6 +22,8 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private GameObject wearableUIReferenceObject;
 
+        public event Action<string> OnClickBuyNft;
+
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const int MAX_NFT_ICON_ENTRIES = 20;
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.7f, 0.7f, 0.7f);
@@ -75,7 +77,8 @@ namespace DCL.Social.Passports
                 poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
                 poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
                 NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
-
+                nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
+                nftIconComponentView.onMarketplaceButtonClick.AddListener(() => CLickOnBuyWearable(wearable.id));
                 NFTIconComponentModel nftModel = new NFTIconComponentModel()
                 {
                     type = wearable.data.category,
@@ -86,6 +89,11 @@ namespace DCL.Social.Passports
                 };
                 nftIconComponentView.Configure(nftModel);
             }
+        }
+
+        private void CLickOnBuyWearable(string wearableId)
+        {
+            OnClickBuyNft?.Invoke(wearableId);
         }
 
         private void CleanEquippedWearables()
