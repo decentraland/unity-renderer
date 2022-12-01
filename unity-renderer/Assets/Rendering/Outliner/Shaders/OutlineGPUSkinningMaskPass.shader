@@ -1,7 +1,7 @@
 Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 {
-    Properties
-    {
+//    Properties
+//    {
 //        [NoScaleOffset]_AvatarMap1("AvatarMap1", 2D) = "white" {}
 //        [NoScaleOffset]_AvatarMap2("AvatarMap2", 2D) = "white" {}
 //        [NoScaleOffset]_AvatarMap3("AvatarMap3", 2D) = "white" {}
@@ -14,7 +14,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 //        [NoScaleOffset]_AvatarMap10("AvatarMap10", 2D) = "white" {}
 //        [NoScaleOffset]_AvatarMap11("AvatarMap11", 2D) = "white" {}
 //        [NoScaleOffset]_AvatarMap12("AvatarMap12", 2D) = "white" {}
-    }
+//    }
     SubShader
     {
         Tags
@@ -86,15 +86,15 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             // TEXTURE2D(_AvatarMap12);
             // SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
+            //#include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             //#include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
             {
                 float3 positionOS : POSITION;
-                float4 tangentOS : TANGENT;
+                //float4 tangentOS : TANGENT;
                 // float4 uv0 : TEXCOORD0;
-                float4 uv1 : TEXCOORD1;
+                // float4 uv1 : TEXCOORD1;
                 // float4 uv2 : TEXCOORD2;
             };
 
@@ -109,9 +109,9 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                float3 gpuSkinnedPositionOS;
-                ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
-                input.positionOS = gpuSkinnedPositionOS;
+                //float3 gpuSkinnedPositionOS;
+                //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
+                //input.positionOS = gpuSkinnedPositionOS;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 // output.uv0 = input.uv0; 
                 // output.uv1 = input.uv1;
@@ -119,7 +119,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 return output;
             }
             
-            half4 frag(Varyings input) : SV_Target
+            half4 frag() : SV_Target
             {
                 return half4(1, 1, 1, 1);
                 // float4 out_AlbedoColor;

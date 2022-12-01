@@ -32,7 +32,6 @@ Shader "Hidden/DCL/OutlineMaskPass"
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                input.positionOS *= 4;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 return output;
             }
