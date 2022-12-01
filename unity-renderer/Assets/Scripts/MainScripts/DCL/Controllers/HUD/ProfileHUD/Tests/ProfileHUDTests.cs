@@ -160,16 +160,17 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     {
         const string aboutMe = "i make pancakes";
         controller.view.SetDescription(aboutMe);
-        Assert.IsTrue(controller.view.descriptionInputText.text == aboutMe);
+        Assert.IsTrue(controller.view.descriptionPreviewInput.text == aboutMe);
+        Assert.IsTrue(controller.view.descriptionEditionInput.text == aboutMe);
     }
 
     [Test]
     public void UpdateProfileDescriptionIntoGatewayWhenSubmitInputField()
     {
         const string aboutMe = "i make pancakes";
-        controller.view.SetDescriptionCharLiitEnabled(true);
-        controller.view.descriptionInputText.text = aboutMe;
-        controller.view.descriptionInputText.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
         userProfileBridge.Received(1).SaveDescription(aboutMe);
     }
 
@@ -177,10 +178,10 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     public void DoNotUpdateProfileDescriptionWhenIsTooLong()
     {
         const string aboutMe = "i make pancakes";
-        controller.view.SetDescriptionCharLiitEnabled(true);
-        controller.view.descriptionInputText.characterLimit = 5;
-        controller.view.descriptionInputText.text = aboutMe;
-        controller.view.descriptionInputText.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.characterLimit = 5;
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
         userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
 
@@ -197,9 +198,9 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         profile.UpdateData(profileModel);
 
         const string aboutMe = "i make pancakes";
-        controller.view.SetDescriptionCharLiitEnabled(true);
-        controller.view.descriptionInputText.text = aboutMe;
-        controller.view.descriptionInputText.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
 
         userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
