@@ -1,13 +1,10 @@
-using DCL.Chat;
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
-using RPC;
 using UnityEngine;
 
 namespace DCL
@@ -28,7 +25,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         protected PluginSystem pluginSystem;
-        
+
         protected virtual void Awake()
         {
             if (i != null)
@@ -58,7 +55,7 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
-            
+
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
@@ -90,8 +87,6 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
-
-            RPCServerBuilder.BuildDefaultServer();
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
@@ -131,7 +126,7 @@ namespace DCL
         {
             performanceMetricsController?.Update();
         }
-        
+
         [RuntimeInitializeOnLoadMethod]
         static void RunOnStart()
         {
@@ -141,7 +136,7 @@ namespace DCL
         {
             if (i != null)
                 i.Dispose();
-    
+
             return true;
         }
 
@@ -155,13 +150,13 @@ namespace DCL
 
             if (!EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            
+
             kernelCommunication?.Dispose();
 
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
             newFriendRequestsApiBridgeMock.Dispose();
         }
-        
+
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();

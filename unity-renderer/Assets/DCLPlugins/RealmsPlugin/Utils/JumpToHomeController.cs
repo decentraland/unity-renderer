@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Interface;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Variables.RealmsInfo;
 
-namespace DCLPlugins.RealmsPlugin
+namespace DCLPlugins.RealmPlugin
 {
     /// <summary>
     /// Controller for the Jump to Home logic.
@@ -14,7 +13,6 @@ namespace DCLPlugins.RealmsPlugin
     /// </summary>
     public class JumpToHomeController : MonoBehaviour
     {
-
         [SerializeField] private Button jumpButton;
         [SerializeField] private ShowHideAnimator showHideAnimator;
         [SerializeField] private RectTransform positionWithMiniMap;
@@ -41,27 +39,30 @@ namespace DCLPlugins.RealmsPlugin
                 showHideAnimator.Show();
             }
             else
-            {
                 showHideAnimator.Hide();
-            }
         }
+
         private void GoHome()
         {
             jumpButton.interactable = false;
+
             WebInterface.SendChatMessage(new ChatMessage
             {
                 messageType = ChatMessage.Type.NONE,
                 recipient = string.Empty,
-                body = $"/goto home"
+                body = "/goto home",
             });
         }
 
         private string GetMostPopulatedRealm()
         {
-            List<RealmModel> currentRealms = realms.Get().ToList();
+            var currentRealms = realms.Get().ToList();
             return currentRealms.OrderByDescending(e => e.usersCount).FirstOrDefault()?.serverName;
         }
 
-        private void OnDestroy() { jumpButton.onClick.RemoveListener(GoHome); }
+        private void OnDestroy()
+        {
+            jumpButton.onClick.RemoveListener(GoHome);
+        }
     }
 }

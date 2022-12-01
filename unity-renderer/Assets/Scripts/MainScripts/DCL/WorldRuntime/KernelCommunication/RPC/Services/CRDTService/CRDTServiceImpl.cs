@@ -28,6 +28,11 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
+            // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
+            // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
+            await UniTask.WaitUntil(() => context.crdt.MessagingControllersManager.ContainsController(messages.SceneNumber),
+                cancellationToken: ct);
+
             await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
                 cancellationToken: ct);
 

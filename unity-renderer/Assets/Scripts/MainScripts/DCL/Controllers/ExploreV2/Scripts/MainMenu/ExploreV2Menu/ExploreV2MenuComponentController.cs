@@ -134,7 +134,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
     }
-    
+
     public void Dispose()
     {
         DataStore.i.realm.realmName.OnChange -= UpdateRealmInfo;
@@ -292,12 +292,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
         exploreV2Analytics.SendStartMenuSectionVisibility(section, toVisible);
     }
-    
+
     private void UpdateRealmInfo(string current, string previous)
     {
         if (string.IsNullOrEmpty(current))
             return;
-        
+
         UpdateRealmInfo(current);
     }
 
@@ -305,7 +305,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         if (string.IsNullOrEmpty(realmName))
             return;
-        
+
         // Get the name of the current realm
         view.currentRealmViewer.SetRealm(realmName);
         view.currentRealmSelectorModal.SetCurrentRealm(realmName);
@@ -323,12 +323,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
     {
         List<RealmModel> realmList = currentRealmList?.ToList();
-        
+
         if (!NeedToRefreshRealms(realmList))
             return;
 
         currentAvailableRealms.Clear();
-        
+
         if (realmList != null)
         {
             string serverName = ServerNameForCurrentRealm();
@@ -350,8 +350,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         if (DataStore.i.realm.playerRealm.Get() != null)
             return DataStore.i.realm.playerRealm.Get().serverName;
-        if(DataStore.i.realm.playerRealmAbout.Get() != null)
-            return DataStore.i.realm.playerRealmAbout.Get().Configurations.RealmName;
+        if(DataStore.i.realm.playerRealmAboutConfiguration.Get() != null)
+            return DataStore.i.realm.playerRealmAboutConfiguration.Get().RealmName;
         return "";
     }
 
