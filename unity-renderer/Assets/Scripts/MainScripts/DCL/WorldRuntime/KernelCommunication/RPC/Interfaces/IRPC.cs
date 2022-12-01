@@ -9,6 +9,5 @@ namespace DCL
         public ClientEmotesKernelService Emotes();
 
         public ClientAnalyticsKernelService Analytics();
-
     }
 }
