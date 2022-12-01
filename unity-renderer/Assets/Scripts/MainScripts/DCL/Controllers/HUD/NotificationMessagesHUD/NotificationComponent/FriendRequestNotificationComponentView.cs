@@ -4,7 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FriendRequestNotificationComponentView : BaseComponentView, IComponentModelConfig<FriendRequestNotificationComponentModel>
+public class FriendRequestNotificationComponentView :
+    BaseComponentView,
+    IComponentModelConfig<FriendRequestNotificationComponentModel>,
+    IShowableNotificationView
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;

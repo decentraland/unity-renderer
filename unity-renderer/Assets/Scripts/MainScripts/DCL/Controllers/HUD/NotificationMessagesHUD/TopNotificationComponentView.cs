@@ -30,7 +30,7 @@ namespace DCL.Chat.Notifications
         private CancellationTokenSource waitCancellationToken = new CancellationTokenSource();
         private RectTransform notificationRect;
         private RectTransform friendRequestRect;
-        private bool lastNotificationWasFriendRequest;
+        private IShowableNotificationView showableNotification;
 
         public bool isShowingNotification;
 
@@ -76,7 +76,7 @@ namespace DCL.Chat.Notifications
             animationCancellationToken = new CancellationTokenSource();
             friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(true);
-            lastNotificationWasFriendRequest = false;
+            showableNotification = chatNotificationComponentView;
             if (stackedNotifications > 2)
             {
                 OnResetFade?.Invoke(true);
@@ -110,7 +110,7 @@ namespace DCL.Chat.Notifications
             animationCancellationToken = new CancellationTokenSource();
             friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(true);
-            lastNotificationWasFriendRequest = false;
+            showableNotification = chatNotificationComponentView;
             if (stackedNotifications > 2)
             {
                 OnResetFade?.Invoke(true);
@@ -135,7 +135,7 @@ namespace DCL.Chat.Notifications
             animationCancellationToken = new CancellationTokenSource();
             chatNotificationComponentView.gameObject.SetActive(false);
             friendRequestNotificationComponentView.gameObject.SetActive(true);
-            lastNotificationWasFriendRequest = true;
+            showableNotification = friendRequestNotificationComponentView;
 
             OnResetFade?.Invoke(true);
             PopulateFriendRequestNotification(model);
@@ -265,10 +265,10 @@ namespace DCL.Chat.Notifications
 
         public void ShowNotification()
         {
-            if (lastNotificationWasFriendRequest)
-                friendRequestNotificationComponentView.Show();
-            else
-                chatNotificationComponentView.Show();
+            if (showableNotification == null)
+                return;
+
+            showableNotification.Show();
         }
 
         public void HideNotification()

@@ -5,7 +5,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatNotificationMessageComponentView : BaseComponentView, IChatNotificationMessageComponentView, IComponentModelConfig<ChatNotificationMessageComponentModel>
+public class ChatNotificationMessageComponentView :
+    BaseComponentView,
+    IChatNotificationMessageComponentView,
+    IComponentModelConfig<ChatNotificationMessageComponentModel>,
+    IShowableNotificationView
 {
     private const string NEAR_BY_CHANNEL = "~nearby";
 
