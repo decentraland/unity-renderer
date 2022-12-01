@@ -29,8 +29,8 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Name "Outliner"
 
             HLSLPROGRAM
-            #pragma target 2.0
-            #pragma only_renderers gles gles3 glcore d3d11
+            #pragma exclude_renderers gles gles3 glcore
+            #pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
 
@@ -130,7 +130,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 return half4(1, 1, 1, 1);
             }
             ENDHLSL
-
         }
     }
 }
