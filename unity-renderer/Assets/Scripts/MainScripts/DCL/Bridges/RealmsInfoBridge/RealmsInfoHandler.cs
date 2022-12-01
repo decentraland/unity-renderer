@@ -25,14 +25,16 @@ namespace DCL
             Set(model);
         }
 
-        public void Set(RealmsInfoModel newModel)
+        internal void Set(RealmsInfoModel newModel)
         {
             model = newModel;
+
             if (!string.IsNullOrEmpty(model.current?.serverName))
             {
                 DataStore.i.realm.playerRealm.Set(model.current.Clone());
                 realmName.Set(DataStore.i.realm.playerRealm.Get().serverName);
             }
+
             DataStore.i.realm.realmsInfo.Set(newModel.realms != null ? newModel.realms.ToList() : new List<RealmModel>());
         }
 

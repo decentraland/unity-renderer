@@ -5,20 +5,11 @@ using rpc_csharp;
 using rpc_csharp.transport;
 using RPC.Services;
 using RPC.Transports;
-using Environment = DCL.Environment;
 
 namespace RPC
 {
     public static class RPCServerBuilder
     {
-        public static void BuildDefaultServer()
-        {
-            RPCContext context = DataStore.i.rpc.context;
-            context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
-            context.crdt.WorldState = Environment.i.world.state;
-            BuildDefaultServer(context);
-        }
-
         public static RpcServer<RPCContext> BuildDefaultServer(RPCContext context)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
