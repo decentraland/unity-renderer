@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
@@ -7,6 +6,7 @@ using DCL.Models;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -61,10 +61,55 @@ namespace Tests
         [Test]
         public void ClearUICorrectly()
         {
-            uiDocument.rootVisualElement.Add(new VisualElement());
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            var model = new InternalUiContainer();
 
-            ECSScenesUiSystem.ClearCurrentSceneUI(uiDocument);
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+            uiDocument.rootVisualElement.Add(model.rootElement);
+
+            ECSScenesUiSystem.ClearCurrentSceneUI(uiDocument, scene, uiContainerComponent);
             Assert.AreEqual(0, uiDocument.rootVisualElement.childCount);
+        }
+
+        [Test]
+        public void RemovePreviouslyLoadedUICorrectly()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneNumber().Returns(666);
+
+            // create system
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                new BaseList<IParcelScene> { scene },
+                worldState,
+                new BaseVariable<bool>(true));
+
+            // create root ui for scene
+            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
+
+            // do system update
+            system.Update();
+
+            // ui was applied?
+            Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
+
+            // move to other scene
+            worldState.GetCurrentSceneNumber().Returns(-1);
+
+            // do system update
+            system.Update();
+
+            // ui is not being rendered
+            Assert.AreEqual(0, uiDocument.rootVisualElement.childCount);
+
+            // remove ui for scene
+            uiContainerComponent.RemoveFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            // do system update
+            system.Update();
         }
 
         [Test]
