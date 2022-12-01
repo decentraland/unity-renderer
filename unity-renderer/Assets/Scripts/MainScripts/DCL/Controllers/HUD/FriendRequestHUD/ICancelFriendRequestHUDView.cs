@@ -9,8 +9,9 @@ namespace DCL.Social.Friends
         event Action OnClose;
         event Action OnOpenProfile;
 
-        void SetName(string userName);
-        void SetProfilePicture(ILazyTextureObserver textureObserver);
+        void SetRecipientName(string userName);
+        void SetRecipientProfilePicture(ILazyTextureObserver textureObserver);
+        void SetSenderProfilePicture(ILazyTextureObserver textureObserver);
         void Show();
         void Close();
         void Dispose();

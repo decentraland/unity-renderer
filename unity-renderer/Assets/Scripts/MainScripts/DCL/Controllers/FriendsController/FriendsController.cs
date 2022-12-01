@@ -17,8 +17,7 @@ namespace DCL.Social.Friends
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
 
-        public int ReceivedRequestCount =>
-            friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
+        public int ReceivedRequestCount => friends.Values.Count(status => status.friendshipStatus == FriendshipStatus.REQUESTED_FROM);
 
         public int TotalFriendCount { get; private set; }
         public int TotalFriendRequestCount => TotalReceivedFriendRequestCount + TotalSentFriendRequestCount;
@@ -99,16 +98,20 @@ namespace DCL.Social.Friends
             return new Dictionary<string, UserStatus>(friends);
         }
 
-        public void RejectFriendship(string friendUserId) => apiBridge.RejectFriendship(friendUserId);
+        public void RejectFriendship(string friendUserId) =>
+            apiBridge.RejectFriendship(friendUserId);
 
         public bool IsFriend(string userId) =>
             friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
 
-        public void RemoveFriend(string friendId) => apiBridge.RemoveFriend(friendId);
+        public void RemoveFriend(string friendId) =>
+            apiBridge.RemoveFriend(friendId);
 
-        public void GetFriends(int limit, int skip) => apiBridge.GetFriends(limit, skip);
+        public void GetFriends(int limit, int skip) =>
+            apiBridge.GetFriends(limit, skip);
 
-        public void GetFriends(string usernameOrId, int limit) => apiBridge.GetFriends(usernameOrId, limit);
+        public void GetFriends(string usernameOrId, int limit) =>
+            apiBridge.GetFriends(usernameOrId, limit);
 
         public async UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
@@ -119,38 +122,25 @@ namespace DCL.Social.Friends
             OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
 
             List<FriendRequest> receivedFriendRequestsToAdd = new List<FriendRequest>();
+
             foreach (var friendRequest in payload.requestedFrom)
             {
-                var request = new FriendRequest(
-                    friendRequest.friendRequestId,
-                    friendRequest.timestamp,
-                    friendRequest.@from,
-                    friendRequest.to,
-                    friendRequest.messageBody);
-
+                var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
-
                 receivedFriendRequestsToAdd.Add(request);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.from });
+                    { action = FriendshipAction.REQUESTED_FROM, userId = friendRequest.from });
             }
 
             foreach (var friendRequest in payload.requestedTo)
             {
-                var request = new FriendRequest(
-                    friendRequest.friendRequestId,
-                    friendRequest.timestamp,
-                    friendRequest.@from,
-                    friendRequest.to,
-                    friendRequest.messageBody);
-
+                var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
-
                 receivedFriendRequestsToAdd.Add(request);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.to });
+                    { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.to });
             }
 
             return receivedFriendRequestsToAdd;
@@ -168,16 +158,27 @@ namespace DCL.Social.Friends
         public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
             friendRequests.Values.FirstOrDefault(request => request.From == userId || request.To == userId);
 
-        public async UniTask<FriendRequest> CancelRequest(string friendUserId)
+        public async UniTask<FriendRequest> CancelRequestByUserId(string friendUserId)
         {
-            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequest(friendUserId);
+            FriendRequest request = GetAllocatedFriendRequestByUser(friendUserId);
 
-            string friendRequestId = payload.friendRequestId;
+            if (request != null)
+            {
+                await apiBridge.CancelRequest(request.FriendRequestId);
+                friendRequests.Remove(request.FriendRequestId);
+                return request;
+            }
 
-            if (!friendRequests.ContainsKey(friendRequestId))
-                return new FriendRequest(friendRequestId, 0, "", friendUserId, "");
+            await apiBridge.CancelRequestByUserId(friendUserId);
 
-            FriendRequest friendRequest = friendRequests[friendRequestId];
+            return new FriendRequest("", 0, "", friendUserId, "");
+        }
+
+        public async UniTask<FriendRequest> CancelRequest(string friendRequestId)
+        {
+            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequest(friendRequestId);
+            var friendRequest = ToFriendRequest(payload.friendRequest);
+            friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);
             return friendRequest;
         }
@@ -185,7 +186,8 @@ namespace DCL.Social.Friends
         public void AcceptFriendship(string friendUserId) =>
             apiBridge.AcceptFriendship(friendUserId);
 
-        private void FriendNotFound(string name) => OnFriendNotFound?.Invoke(name);
+        private void FriendNotFound(string name) =>
+            OnFriendNotFound?.Invoke(name);
 
         private void AddFriends(AddFriendsPayload msg)
         {
@@ -204,6 +206,7 @@ namespace DCL.Social.Friends
         private void UpdateUserPresence(UserStatus newUserStatus)
         {
             if (!friends.ContainsKey(newUserStatus.userId)) return;
+
             // Kernel doesn't send the friendship status on this call, we have to keep it or it gets defaulted
             newUserStatus.friendshipStatus = friends[newUserStatus.userId].friendshipStatus;
             UpdateUserStatus(newUserStatus);
@@ -248,7 +251,7 @@ namespace DCL.Social.Friends
                 return;
 
             if (!friends.ContainsKey(userId))
-                friends.Add(userId, new UserStatus {userId = userId});
+                friends.Add(userId, new UserStatus { userId = userId });
 
             if (ItsAnOutdatedUpdate(userId, friendshipStatus))
                 return;
@@ -295,8 +298,16 @@ namespace DCL.Social.Friends
             foreach (var friendId in friendIds)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    {action = FriendshipAction.APPROVED, userId = friendId});
+                    { action = FriendshipAction.APPROVED, userId = friendId });
             }
         }
+
+        private FriendRequest ToFriendRequest(FriendRequestPayload friendRequest) =>
+            new FriendRequest(
+                friendRequest.friendRequestId,
+                friendRequest.timestamp,
+                friendRequest.@from,
+                friendRequest.to,
+                friendRequest.messageBody);
     }
 }

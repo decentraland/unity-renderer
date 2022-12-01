@@ -17,10 +17,13 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal ImageComponentView profileImage;
+        [SerializeField] internal ImageComponentView senderProfileImage;
         [SerializeField] internal TMP_Text dateLabel;
+        [SerializeField] internal GameObject bodyMessageContainer;
 
         private readonly Model model = new Model();
-        private ILazyTextureObserver lastProfilePictureObserver;
+        private ILazyTextureObserver lastRecipientProfilePictureObserver;
+        private ILazyTextureObserver lastSenderProfilePictureObserver;
 
         public event Action OnCancel;
         public event Action OnClose;
@@ -45,12 +48,12 @@ namespace DCL.Social.Friends
         public override void Dispose()
         {
             base.Dispose();
-            model.ProfilePictureObserver?.RemoveListener(profileImage.SetImage);
+            model.RecipientProfilePictureObserver?.RemoveListener(profileImage.SetImage);
         }
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State == Model.LayoutState.Default);
+            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
             failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
 
@@ -59,13 +62,22 @@ namespace DCL.Social.Friends
 
             nameLabel.text = model.Name;
             messageBodyInput.text = model.BodyMessage;
+            bodyMessageContainer.SetActive(!string.IsNullOrEmpty(model.BodyMessage));
 
             // the load of the profile picture gets stuck if the same listener is registered many times
-            if (lastProfilePictureObserver != model.ProfilePictureObserver)
+            if (lastRecipientProfilePictureObserver != model.RecipientProfilePictureObserver)
             {
-                lastProfilePictureObserver?.RemoveListener(profileImage.SetImage);
-                model.ProfilePictureObserver?.AddListener(profileImage.SetImage);
-                lastProfilePictureObserver = model.ProfilePictureObserver;
+                lastRecipientProfilePictureObserver?.RemoveListener(profileImage.SetImage);
+                model.RecipientProfilePictureObserver?.AddListener(profileImage.SetImage);
+                lastRecipientProfilePictureObserver = model.RecipientProfilePictureObserver;
+            }
+
+            // the load of the profile picture gets stuck if the same listener is registered many times
+            if (lastSenderProfilePictureObserver != model.SenderProfilePictureObserver)
+            {
+                lastSenderProfilePictureObserver?.RemoveListener(profileImage.SetImage);
+                model.SenderProfilePictureObserver?.AddListener(senderProfileImage.SetImage);
+                lastSenderProfilePictureObserver = model.SenderProfilePictureObserver;
             }
         }
 
@@ -73,6 +85,12 @@ namespace DCL.Social.Friends
         {
             base.Hide(instant: true);
             gameObject.SetActive(false);
+        }
+
+        public void SetSenderProfilePicture(ILazyTextureObserver textureObserver)
+        {
+            model.SenderProfilePictureObserver = textureObserver;
+            RefreshControl();
         }
 
         public void Show()
@@ -83,15 +101,15 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void SetName(string name)
+        public void SetRecipientName(string name)
         {
             model.Name = name;
             RefreshControl();
         }
 
-        public void SetProfilePicture(ILazyTextureObserver textureObserver)
+        public void SetRecipientProfilePicture(ILazyTextureObserver textureObserver)
         {
-            model.ProfilePictureObserver = textureObserver;
+            model.RecipientProfilePictureObserver = textureObserver;
             RefreshControl();
         }
 
@@ -122,7 +140,8 @@ namespace DCL.Social.Friends
         {
             public string Name;
             public LayoutState State;
-            public ILazyTextureObserver ProfilePictureObserver;
+            public ILazyTextureObserver RecipientProfilePictureObserver;
+            public ILazyTextureObserver SenderProfilePictureObserver;
             public string BodyMessage;
 
             public enum LayoutState

@@ -24,7 +24,8 @@ namespace DCl.Social.Friends
         UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
-        UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string userId);
+        UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId);
+        UniTask CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
     }
 }

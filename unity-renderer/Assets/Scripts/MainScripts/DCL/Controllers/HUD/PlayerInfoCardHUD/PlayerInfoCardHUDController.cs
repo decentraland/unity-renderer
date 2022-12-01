@@ -91,7 +91,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void CancelInvitation()
     {
-        friendsController.CancelRequest(currentPlayerId);
+        friendsController.CancelRequestByUserId(currentPlayerId);
         socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 

@@ -404,7 +404,7 @@ public class FriendsHUDController : IHUD
 
     private void HandleRequestCancelled(FriendRequestEntryModel entry)
     {
-        friendsController.CancelRequest(entry.userId);
+        friendsController.CancelRequestByUserId(entry.userId);
 
         if (ownUserProfile != null)
             socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId,
@@ -551,7 +551,7 @@ public class FriendsHUDController : IHUD
             return;
         }
 
-        if (friendRequest.To == userId)
+        if (friendRequest.IsSentTo(userId))
             dataStore.HUDs.openSentFriendRequestDetail.Set(friendRequest.FriendRequestId);
         else
         {

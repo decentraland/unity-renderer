@@ -70,15 +70,18 @@ namespace DCL.Social.Friends
             view.SetBodyMessage(friendRequest.MessageBody);
             view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
 
-            var userProfile = userProfileBridge.Get(friendRequest.To);
+            var recipientProfile = userProfileBridge.Get(friendRequest.To);
 
-            if (userProfile != null)
+            if (recipientProfile != null)
             {
-                view.SetName(userProfile.userName);
-                view.SetProfilePicture(userProfile.snapshotObserver);
+                view.SetRecipientName(recipientProfile.userName);
+                view.SetRecipientProfilePicture(recipientProfile.snapshotObserver);
             }
             else
                 Debug.LogError($"Cannot display user profile {friendRequest.To}, is not allocated");
+
+            var ownProfile = userProfileBridge.GetOwn();
+            view.SetSenderProfilePicture(ownProfile.snapshotObserver);
 
             view.Show();
         }
