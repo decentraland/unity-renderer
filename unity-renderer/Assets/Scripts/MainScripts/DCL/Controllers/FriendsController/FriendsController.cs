@@ -33,6 +33,7 @@ namespace DCL.Social.Friends
         public event Action OnInitialized;
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         public event Action<int, int> OnTotalFriendRequestUpdated;
+        public event Action<FriendRequest> OnAddFriendRequest;
 
         public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
         {
@@ -50,6 +51,7 @@ namespace DCL.Social.Friends
             apiBridge.OnFriendshipStatusUpdated += UpdateFriendshipStatus;
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
+            apiBridge.OnFriendRequestAdded += AddFriendRequest;
         }
 
         private void Initialize(FriendshipInitializationMessage msg)
@@ -309,5 +311,15 @@ namespace DCL.Social.Friends
                 friendRequest.@from,
                 friendRequest.to,
                 friendRequest.messageBody);
+
+        private void AddFriendRequest(FriendRequestPayload friendRequest)
+        {
+            OnAddFriendRequest?.Invoke(new FriendRequest(
+                friendRequest.friendRequestId,
+                friendRequest.timestamp,
+                friendRequest.from,
+                friendRequest.to,
+                friendRequest.messageBody));
+        }
     }
 }

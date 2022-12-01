@@ -198,48 +198,11 @@ namespace DCl.Social.Friends
                                               && f.userId == userId));
         }
 
-        [TestCase("test-id-2", 23, 23, PresenceStatus.OFFLINE, FriendshipStatus.REQUESTED_TO, "rl", "svn")]
-        [TestCase("test-id-3", 12, 263, PresenceStatus.ONLINE, FriendshipStatus.REQUESTED_FROM, "rl", "svn")]
-        public void UpdateFriendRequestUserStatus(string userId, float positionX, float positionY, PresenceStatus presence,
-            FriendshipStatus friendshipStatus,
-            string realmLayer, string serverName)
-        {
-            var position = new Vector2(positionX, positionY);
-            var status = new UserStatus
-            {
-                position = position,
-                presence = presence,
-                friendshipStatus = friendshipStatus,
-                realm = new UserStatus.Realm {layer = realmLayer, serverName = serverName},
-                userId = userId
-            };
-
-            friendsController.OnUpdateUserStatus +=
-                Raise.Event<Action<string, UserStatus>>(userId, status);
-
-            view.Received(1).Set(userId,
-                Arg.Is<FriendRequestEntryModel>(f => f.blocked == false
-                                                     && f.coords.Equals(position)
-                                                     && f.realm ==
-                                                     $"{serverName.ToUpperFirst()} {realmLayer.ToUpperFirst()}"
-                                                     && f.status == presence
-                                                     && f.userId == userId));
-        }
-
         [Test]
         public void UpdateUserStatusWhenRequestSent()
         {
-            var status = new UserStatus
-            {
-                position = Vector2.zero,
-                presence = PresenceStatus.ONLINE,
-                friendshipStatus = FriendshipStatus.REQUESTED_TO,
-                realm = null,
-                userId = OTHER_USER_ID
-            };
-
-            friendsController.OnUpdateUserStatus +=
-                Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
+            friendsController.OnAddFriendRequest +=
+                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
@@ -248,17 +211,8 @@ namespace DCl.Social.Friends
         [Test]
         public void UpdateUserStatusWhenRequestReceived()
         {
-            var status = new UserStatus
-            {
-                position = Vector2.zero,
-                presence = PresenceStatus.ONLINE,
-                friendshipStatus = FriendshipStatus.REQUESTED_FROM,
-                realm = null,
-                userId = OTHER_USER_ID
-            };
-
-            friendsController.OnUpdateUserStatus +=
-                Raise.Event<Action<string, UserStatus>>(OTHER_USER_ID, status);
+            friendsController.OnAddFriendRequest +=
+                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));

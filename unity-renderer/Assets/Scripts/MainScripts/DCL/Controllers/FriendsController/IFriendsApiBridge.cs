@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL.Social.Friends;
+using System;
 
 namespace DCl.Social.Friends
 {
@@ -15,6 +14,7 @@ namespace DCl.Social.Friends
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
+        event Action<FriendRequestPayload> OnFriendRequestAdded;
 
         // TODO: refactor into async promises/tasks
         void RejectFriendship(string userId);

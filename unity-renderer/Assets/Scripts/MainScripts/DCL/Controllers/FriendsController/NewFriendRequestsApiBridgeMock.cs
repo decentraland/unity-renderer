@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace DCL.Social.Friends
@@ -10,6 +12,7 @@ namespace DCL.Social.Friends
     {
         private readonly WebInterfaceFriendsApiBridge apiBridge;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly CancellationTokenSource addFriendRequestByUserInputCancellationToken = new CancellationTokenSource();
         private readonly Dictionary<string, FriendRequestPayload> friendRequests = new ();
 
         public event Action<FriendshipInitializationMessage> OnInitialized
@@ -56,6 +59,8 @@ namespace DCL.Social.Friends
             remove => apiBridge.OnTotalFriendCountUpdated -= value;
         }
 
+        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+
         public NewFriendRequestsApiBridgeMock(WebInterfaceFriendsApiBridge apiBridge,
             IUserProfileBridge userProfileBridge)
         {
@@ -63,6 +68,9 @@ namespace DCL.Social.Friends
             this.userProfileBridge = userProfileBridge;
 
             apiBridge.OnFriendshipStatusUpdated += message => OnFriendshipStatusUpdated?.Invoke(message);
+            apiBridge.OnFriendRequestAdded += message => OnFriendRequestAdded?.Invoke(message);
+
+            AddFriendRequestByUserInputAsync(addFriendRequestByUserInputCancellationToken.Token).Forget();
         }
 
         public void RejectFriendship(string userId)
@@ -90,7 +98,7 @@ namespace DCL.Social.Friends
             await UniTask.Delay(Random.Range(100, 1000));
 
             // FAKE RECEIVED REQUESTS
-            int amountOfReceivedRequests = Random.Range(1, 11);
+            int amountOfReceivedRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedFromList = new List<FriendRequestPayload>();
 
             for (var i = 0; i < amountOfReceivedRequests; i++)
@@ -101,10 +109,7 @@ namespace DCL.Social.Friends
                 {
                     userId = fakeUserId,
                     name = $"fake from user {i + 1}",
-                    snapshots = new UserProfileModel.Snapshots
-                    {
-                        face256 = $"https://picsum.photos/50?{i}"
-                    }
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i}" }
                 });
 
                 var friendRequestId = Guid.NewGuid().ToString("N");
@@ -124,7 +129,7 @@ namespace DCL.Social.Friends
             }
 
             // FAKE SENT REQUESTS
-            int amountOfSentRequests = Random.Range(1, 11);
+            int amountOfSentRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedToList = new List<FriendRequestPayload>();
 
             for (var i = 0; i < amountOfSentRequests; i++)
@@ -135,10 +140,7 @@ namespace DCL.Social.Friends
                 {
                     userId = fakeUserId,
                     name = $"fake to user {i + 1}",
-                    snapshots = new UserProfileModel.Snapshots
-                    {
-                        face256 = $"https://picsum.photos/50?{i}"
-                    }
+                    snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i + 100}" }
                 });
 
                 var friendRequestId = Guid.NewGuid().ToString("N");
@@ -239,6 +241,42 @@ namespace DCL.Social.Friends
         public void AcceptFriendship(string userId)
         {
             apiBridge.AcceptFriendship(userId);
+        }
+
+        public void Dispose()
+        {
+            addFriendRequestByUserInputCancellationToken.Cancel();
+            addFriendRequestByUserInputCancellationToken.Dispose();
+        }
+
+        private async UniTaskVoid AddFriendRequestByUserInputAsync(CancellationToken ct = default)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await UniTask.NextFrame(ct);
+
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    long currentTicks = DateTimeOffset.UtcNow.Ticks;
+                    string fakeUserId = $"new_user_{currentTicks.ToString().Substring(currentTicks.ToString().Length - 5, 5)}";
+
+                    userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
+                    {
+                        userId = fakeUserId,
+                        name = fakeUserId.Replace("_", " "),
+                        snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{DateTimeOffset.UtcNow.Ticks}" }
+                    });
+
+                    OnFriendRequestAdded?.Invoke(new FriendRequestPayload
+                    {
+                        friendRequestId = Guid.NewGuid().ToString("N"),
+                        from = fakeUserId,
+                        to = userProfileBridge.GetOwn().userId,
+                        messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
+                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    });
+                }
+            }
         }
     }
 }

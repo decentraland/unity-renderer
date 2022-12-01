@@ -14,6 +14,7 @@ namespace DCl.Social.Friends
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
+        event Action<FriendRequest> OnAddFriendRequest;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }

@@ -83,6 +83,7 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
             friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
             friendsController.OnFriendNotFound += OnFriendNotFound;
+            friendsController.OnAddFriendRequest += AddFriendRequest;
 
             if (friendsController.IsInitialized)
             {
@@ -289,26 +290,6 @@ public class FriendsHUDController : IHUD
                 friends.Remove(userId);
                 onlineFriends.Remove(userId);
                 break;
-            case FriendshipStatus.REQUESTED_TO:
-                var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
-                sentRequest.CopyFrom(status);
-                sentRequest.blocked = IsUserBlocked(userId);
-                friends[userId] = sentRequest;
-                onlineFriends.Remove(userId);
-                View.Set(userId, sentRequest);
-                break;
-            case FriendshipStatus.REQUESTED_FROM:
-                var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
-                receivedRequest.CopyFrom(status);
-                receivedRequest.blocked = IsUserBlocked(userId);
-                friends[userId] = receivedRequest;
-                onlineFriends.Remove(userId);
-                View.Set(userId, receivedRequest);
-                break;
         }
 
         UpdateNotificationsCounter();
@@ -466,36 +447,39 @@ public class FriendsHUDController : IHUD
             return;
 
         foreach (var friendRequest in friendRequests)
-        {
-            bool isReceivedRequest = friendRequest.To == ownUserProfile.userId;
-            string userId = isReceivedRequest ? friendRequest.From : friendRequest.To;
-            var userProfile = userProfileBridge.Get(userId);
-
-            if (userProfile == null)
-            {
-                Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {(isReceivedRequest ? FriendshipAction.REQUESTED_FROM : FriendshipAction.REQUESTED_TO)}");
-                continue;
-            }
-
-            userProfile.OnUpdate -= HandleFriendProfileUpdated;
-
-            var request = friends.ContainsKey(userId)
-                ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, isQuickActionsForFriendRequestsEnabled)
-                : new FriendRequestEntryModel
-                {
-                    bodyMessage = friendRequest.MessageBody,
-                    isReceived = isReceivedRequest,
-                    timestamp = friendRequest.Timestamp,
-                    isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
-                };
-            request.CopyFrom(userProfile);
-            request.blocked = IsUserBlocked(userId);
-            friends[userId] = request;
-            View.Set(userId, request);
-            userProfile.OnUpdate += HandleFriendProfileUpdated;
-        }
+            AddFriendRequest(friendRequest);
     }
 
+    private void AddFriendRequest(FriendRequest friendRequest)
+    {
+        bool isReceivedRequest = friendRequest.To == ownUserProfile.userId;
+        string userId = isReceivedRequest ? friendRequest.From : friendRequest.To;
+        var userProfile = userProfileBridge.Get(userId);
+
+        if (userProfile == null)
+        {
+            Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {(isReceivedRequest ? FriendshipAction.REQUESTED_FROM : FriendshipAction.REQUESTED_TO)}");
+            return;
+        }
+
+        userProfile.OnUpdate -= HandleFriendProfileUpdated;
+
+        var request = friends.ContainsKey(userId)
+            ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, isQuickActionsForFriendRequestsEnabled)
+            : new FriendRequestEntryModel
+            {
+                bodyMessage = friendRequest.MessageBody,
+                isReceived = isReceivedRequest,
+                timestamp = friendRequest.Timestamp,
+                isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
+            };
+        request.CopyFrom(userProfile);
+        request.blocked = IsUserBlocked(userId);
+        friends[userId] = request;
+        onlineFriends.Remove(userId);
+        View.Set(userId, request);
+        userProfile.OnUpdate += HandleFriendProfileUpdated;
+    }
 
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
