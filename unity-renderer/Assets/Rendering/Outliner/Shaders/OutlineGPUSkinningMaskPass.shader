@@ -209,7 +209,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
+            //#include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
@@ -235,8 +235,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 Varyings output;
                 float3 gpuSkinnedPositionOS;
                 float3 gpuSkinnedNormalOS;
-                ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,
-                                 input.tangentOS, input.uv1);
+                //ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,input.tangentOS, input.uv1);
                 //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
