@@ -97,7 +97,7 @@ public class ProfileHUDController : IHUD
 
     protected virtual GameObject GetViewPrefab()
     {
-        return Resources.Load<GameObject>("ProfileHUD_V2");
+        return Resources.Load<GameObject>("ProfileHUD");
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
