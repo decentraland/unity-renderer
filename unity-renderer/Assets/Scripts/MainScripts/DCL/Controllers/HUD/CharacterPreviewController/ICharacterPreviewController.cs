@@ -16,4 +16,6 @@ public interface ICharacterPreviewController : IDisposable
     void TakeSnapshots(CharacterPreviewController.OnSnapshotsReady onSuccess, Action onFailed);
 
     void Rotate(float rotationVelocity);
+
+    void ResetRotation();
 }

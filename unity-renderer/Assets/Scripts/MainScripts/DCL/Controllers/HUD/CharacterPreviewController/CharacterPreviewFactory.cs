@@ -8,13 +8,12 @@ public class CharacterPreviewFactory : ICharacterPreviewFactory
     private static readonly Vector3 COORDS_TO_START = new (0, 50, 0);
     private static readonly Vector3 VECTOR_BETWEEN_INSTANCES = new (3, 0, 3);
 
-    private Pool pool;
-
     private int controllersCount = 0;
 
     private CharacterPreviewController prefab;
 
-    public ICharacterPreviewController Create(CharacterPreviewMode loadingMode, RenderTexture renderTexture, bool isVisible)
+    public ICharacterPreviewController Create(CharacterPreviewMode loadingMode, RenderTexture renderTexture, bool isVisible,
+        CharacterPreviewController.CameraFocus cameraFocus = CharacterPreviewController.CameraFocus.DefaultEditing)
     {
         var instance = Object.Instantiate(prefab);
         instance.transform.position = COORDS_TO_START + (VECTOR_BETWEEN_INSTANCES * controllersCount);
@@ -23,16 +22,14 @@ public class CharacterPreviewFactory : ICharacterPreviewFactory
 
         characterPreviewController.Initialize(loadingMode, renderTexture);
         characterPreviewController.SetEnabled(isVisible);
+        characterPreviewController.SetFocus(cameraFocus, false);
 
         controllersCount++;
 
         return characterPreviewController;
     }
 
-    void IDisposable.Dispose()
-    {
-        pool.Cleanup();
-    }
+    void IDisposable.Dispose() { }
 
     void IService.Initialize()
     {

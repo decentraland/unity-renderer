@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerPreviewComponentController : IDisposable
     {
+        private const string TUTORIAL_ENABLED_KEY = "PassportPreviewRotationHintEnabled";
+
         private readonly Service<ICharacterPreviewFactory> characterPreviewFactory;
 
         private readonly ICharacterPreviewController previewController;
@@ -19,7 +22,10 @@ namespace DCL.Social.Passports
             view.PreviewCameraRotation.OnHorizontalRotation += RotateCharacterPreview;
             cancellationTokenSource = new CancellationTokenSource();
 
-            previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithHologram, (RenderTexture)view.CharacterPreviewImage.texture, true);
+            previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithHologram,
+                (RenderTexture)view.CharacterPreviewImage.texture, true, CharacterPreviewController.CameraFocus.Preview);
+
+            view.SetModel(new (TutorialEnabled));
         }
 
         public void SetPassportPanelVisibility(bool visible)
@@ -27,9 +33,23 @@ namespace DCL.Social.Passports
             previewController.SetEnabled(visible);
         }
 
+        private bool TutorialEnabled => PlayerPrefsUtils.GetBool(TUTORIAL_ENABLED_KEY, true);
+
         private void RotateCharacterPreview(float angularVelocity)
         {
             previewController.Rotate(angularVelocity);
+            SetRotationTutorialCompleted();
+        }
+
+        private void SetRotationTutorialCompleted()
+        {
+            if (!TutorialEnabled)
+                return;
+
+            PlayerPrefsUtils.SetBool(TUTORIAL_ENABLED_KEY, false);
+            PlayerPrefsUtils.Save();
+
+            view.SetModel(new (false));
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -37,6 +57,8 @@ namespace DCL.Social.Passports
             previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
                              .SuppressCancellationThrow()
                              .Forget();
+
+            previewController.ResetRotation();
         }
 
         public void Dispose()

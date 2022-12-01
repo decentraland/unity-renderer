@@ -26,7 +26,8 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         DefaultEditing,
         FaceEditing,
         FaceSnapshot,
-        BodySnapshot
+        BodySnapshot,
+        Preview
     }
 
     private Dictionary<CameraFocus, Transform> cameraFocusLookUp;
@@ -37,6 +38,7 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
 
     [SerializeField] private Transform faceSnapshotTemplate;
     [SerializeField] private Transform bodySnapshotTemplate;
+    [SerializeField] private Transform previewTemplate;
 
     [SerializeField] private GameObject avatarContainer;
     [SerializeField] private Transform avatarRevealContainer;
@@ -48,6 +50,7 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
     private CancellationTokenSource loadingCts = new ();
 
     private IAnimator animator;
+    private Quaternion avatarContainerDefaultRotation;
 
     private void Awake()
     {
@@ -57,9 +60,11 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
             { CameraFocus.FaceEditing, faceEditingTemplate },
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
+            { CameraFocus.Preview, previewTemplate }
         };
 
         this.animator = GetComponentInChildren<IAnimator>();
+        avatarContainerDefaultRotation = avatarContainer.transform.rotation;
     }
 
     public void SetEnabled(bool isEnabled)
@@ -195,7 +200,10 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
     {
         if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
 
-        if (useTransition) { cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME)); }
+        if (useTransition && gameObject.activeInHierarchy)
+        {
+            cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
+        }
         else
         {
             var cameraTransform = camera.transform;
@@ -225,6 +233,11 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
     public void Rotate(float rotationVelocity)
     {
         avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
+    }
+
+    public void ResetRotation()
+    {
+        avatarContainer.transform.rotation = avatarContainerDefaultRotation;
     }
 
     public void PlayEmote(string emoteId, long timestamp)
