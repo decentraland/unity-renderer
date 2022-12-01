@@ -30,13 +30,12 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Name "Outliner"
 
             HLSLPROGRAM
-            #pragma only_renderers gles gles3 glcore d3d11
-            #pragma target 2.0
+            // #pragma only_renderers gles gles3 glcore d3d11
+            // #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
 
             float4x4 _WorldInverse;
             float4x4 _Matrices[100];
