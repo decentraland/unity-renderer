@@ -1,4 +1,7 @@
-﻿public interface IShowableNotificationView
+namespace DCL.Chat.Notifications
 {
-    void Show(bool Instant = false);
+    public interface IShowableNotificationView
+    {
+        void Show(bool Instant = false);
+    }
 }

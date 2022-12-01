@@ -1,3 +1,4 @@
+using DCL.Chat.Notifications;
 using NUnit.Framework;
 
 public class FriendRequestNotificationComponentViewTest

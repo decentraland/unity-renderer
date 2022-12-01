@@ -1,6 +1,6 @@
 using System;
 
-namespace DCL.Interface
+namespace DCL.Social.Friends
 {
     [Serializable]
     public class RequestFriendshipPayload
