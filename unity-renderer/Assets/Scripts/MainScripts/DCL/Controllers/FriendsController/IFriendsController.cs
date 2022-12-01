@@ -36,6 +36,7 @@ namespace DCl.Social.Friends
         void RemoveFriend(string friendId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
+        void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);

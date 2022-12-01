@@ -16,6 +16,7 @@ namespace DCL.Social.Friends
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
         public event Action<AddFriendsPayload> OnFriendsAdded;
+        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         public event Action<UserStatus> OnUserPresenceUpdated;
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
@@ -33,6 +34,11 @@ namespace DCL.Social.Friends
         [PublicAPI]
         public void AddFriends(string json) =>
             OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
+
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        [PublicAPI]
+        public void AddFriendRequests(string json) =>
+            OnFriendRequestsAdded?.Invoke(JsonUtility.FromJson<AddFriendRequestsPayload>(json));
 
         [PublicAPI]
         public void AddFriendRequestsV2(string json)
@@ -119,6 +125,18 @@ namespace DCL.Social.Friends
 
         public void GetFriends(string usernameOrId, int limit) =>
             WebInterface.GetFriends(usernameOrId, limit);
+
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        {
+            SendMessage("GetFriendRequests", new GetFriendRequestsPayload
+            {
+                receivedSkip = receivedSkip,
+                receivedLimit = receivedLimit,
+                sentSkip = sentSkip,
+                sentLimit = sentLimit
+            });
+        }
 
         public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {

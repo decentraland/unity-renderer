@@ -51,6 +51,7 @@ namespace DCL.Social.Friends
             apiBridge.OnFriendshipStatusUpdated += UpdateFriendshipStatus;
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
+            apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
             apiBridge.OnFriendRequestAdded += AddFriendRequest;
         }
 
@@ -105,6 +106,10 @@ namespace DCL.Social.Friends
         public void GetFriends(int limit, int skip) => apiBridge.GetFriends(limit, skip);
 
         public void GetFriends(string usernameOrId, int limit) => apiBridge.GetFriends(usernameOrId, limit);
+
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+            apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
         public async UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
@@ -267,6 +272,26 @@ namespace DCL.Social.Friends
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     {action = FriendshipAction.APPROVED, userId = friendId});
+            }
+        }
+
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        private void AddFriendRequests(AddFriendRequestsPayload msg)
+        {
+            TotalReceivedFriendRequestCount = msg.totalReceivedFriendRequests;
+            TotalSentFriendRequestCount = msg.totalSentFriendRequests;
+            OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+
+            foreach (var userId in msg.requestedFrom)
+            {
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_FROM, userId = userId });
+            }
+
+            foreach (var userId in msg.requestedTo)
+            {
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_TO, userId = userId });
             }
         }
 

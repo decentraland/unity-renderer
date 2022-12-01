@@ -288,6 +288,26 @@ public class FriendsHUDController : IHUD
                 friends.Remove(userId);
                 onlineFriends.Remove(userId);
                 break;
+            case FriendshipStatus.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                var sentRequest = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                sentRequest.CopyFrom(status);
+                sentRequest.blocked = IsUserBlocked(userId);
+                friends[userId] = sentRequest;
+                onlineFriends.Remove(userId);
+                View.Set(userId, sentRequest);
+                break;
+            case FriendshipStatus.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                var receivedRequest = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                receivedRequest.CopyFrom(status);
+                receivedRequest.blocked = IsUserBlocked(userId);
+                friends[userId] = receivedRequest;
+                onlineFriends.Remove(userId);
+                View.Set(userId, receivedRequest);
+                break;
         }
         
         UpdateNotificationsCounter();
@@ -327,9 +347,9 @@ public class FriendsHUDController : IHUD
                 View.Set(userId, approved);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
-            case FriendshipAction.REQUESTED_FROM:
+            case FriendshipAction.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
                 var requestReceived = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], "", true, 0, isQuickActionsForFriendRequestsEnabled)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
                     : new FriendRequestEntryModel { isReceived = true };
                 requestReceived.CopyFrom(userProfile);
                 requestReceived.blocked = IsUserBlocked(userId);
@@ -337,9 +357,9 @@ public class FriendsHUDController : IHUD
                 View.Set(userId, requestReceived);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
-            case FriendshipAction.REQUESTED_TO:
+            case FriendshipAction.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
                 var requestSent = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], "", false, 0, isQuickActionsForFriendRequestsEnabled)
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
                     : new FriendRequestEntryModel { isReceived = false };
                 requestSent.CopyFrom(userProfile);
                 requestSent.blocked = IsUserBlocked(userId);

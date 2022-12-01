@@ -59,6 +59,7 @@ namespace DCL.Social.Friends
         }
 
         public event Action<FriendRequestPayload> OnFriendRequestAdded;
+        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
 
         public NewFriendRequestsApiBridgeMock(WebInterfaceFriendsApiBridge apiBridge,
             IUserProfileBridge userProfileBridge)
@@ -91,6 +92,9 @@ namespace DCL.Social.Friends
         {
             apiBridge.GetFriends(usernameOrId, limit);
         }
+
+        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+            apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
         public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
