@@ -10,12 +10,6 @@ using UnityEngine;
 
 public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
 {
-    public enum LoadingMode : byte
-    {
-        WithoutHologram,
-        WithHologram
-    }
-
     private const int SNAPSHOT_BODY_WIDTH_RES = 256;
     private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
 
@@ -68,21 +62,24 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         this.animator = GetComponentInChildren<IAnimator>();
     }
 
-    public void SetCameraEnabled(bool isEnabled)
+    public void SetEnabled(bool isEnabled)
     {
+        Debug.Log("CharacterPreviewController.SetEnabled: " + isEnabled);
+        gameObject.SetActive(isEnabled);
         camera.enabled = isEnabled;
     }
 
-    public void SetLoadingMode(LoadingMode loadingMode)
+    public void Initialize(CharacterPreviewMode loadingMode, RenderTexture targetTexture)
     {
         avatar?.Dispose();
-
         avatar = loadingMode switch
                  {
-                     LoadingMode.WithHologram => CreateAvatarWithHologram(),
-                     LoadingMode.WithoutHologram => CreateAvatar(),
-                     _ => avatar
+                     CharacterPreviewMode.WithHologram => CreateAvatarWithHologram(),
+                     CharacterPreviewMode.WithoutHologram => CreateAvatar(),
+                     _ => avatar,
                  };
+
+        camera.targetTexture = targetTexture;
     }
 
     public async UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default)
@@ -94,7 +91,12 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
 
-        await UpdateModelAsync(newModel, loadingCts.Token);
+        cancellationToken = cancellationToken == default
+            ? loadingCts.Token
+            : CancellationTokenSource.CreateLinkedTokenSource(loadingCts.Token, cancellationToken).Token;
+
+
+        await UpdateModelAsync(newModel, cancellationToken);
     }
 
     private void OnDestroy()
@@ -225,13 +227,13 @@ public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewContro
         avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
     }
 
-    public AvatarModel GetCurrentModel()
-    {
-        return currentAvatarModel;
-    }
-
     public void PlayEmote(string emoteId, long timestamp)
     {
         avatar.PlayEmote(emoteId, timestamp);
+    }
+
+    public void Dispose()
+    {
+        Destroy(gameObject);
     }
 }

@@ -5,7 +5,7 @@ using DCL.Social.Friends;
 
 namespace DCL.Social.Passports
 {
-    public interface IPassportPlayerInfoComponentView
+    public interface IPassportPlayerInfoComponentView : IBaseComponentView<PlayerPassportModel>
     {
         event Action OnAddFriend;
         event Action OnRemoveFriend;
@@ -15,7 +15,6 @@ namespace DCL.Social.Passports
         event Action OnUnblockUser;
         event Action OnReportUser;
 
-        void Configure(PlayerPassportModel newModel);
         void SetIsBlocked(bool isBlocked);
     }
 }

@@ -41,7 +41,7 @@ namespace DCL
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
         private readonly int maxPrewarmCount;
-        
+
         private bool isInitialized;
 
         public float lastGetTime { get; private set; }
@@ -82,11 +82,11 @@ namespace DCL
         /// <returns></returns>
         public PoolableObject Get()
         {
-            // These extra instantiations during initialization are to populate pools that will be used a lot later  
+            // These extra instantiations during initialization are to populate pools that will be used a lot later
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-                
+
                 for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();
 
@@ -123,7 +123,7 @@ namespace DCL
 
             if (unusedObjects.Count >= prewarmCount)
                 return;
-            
+
             for (int i = 0; i < prewarmCount; i++)
             {
                 Instantiate();
@@ -263,10 +263,9 @@ namespace DCL
             unusedObjects.Clear();
             usedObjects.Clear();
 
-            Object.Destroy(this.original);
+            Utils.SafeDestroy(this.original);
 
-            if (PoolManager.USE_POOL_CONTAINERS)
-                Object.Destroy(this.container);
+            Utils.SafeDestroy(this.container);;
 
             OnCleanup?.Invoke(this);
         }

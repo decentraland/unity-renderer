@@ -85,7 +85,7 @@ namespace DCL
         {
             var visibility = new Visibility();
 
-            return Environment.i.serviceLocator.Get<AvatarFactory>()
+            return Environment.i.serviceLocator.Get<IAvatarFactory>()
                               .CreateAvatar(
                                    avatarContainer,
                                    GetComponentInChildren<AvatarAnimatorLegacy>(),
@@ -98,7 +98,7 @@ namespace DCL
         {
             Visibility visibility = new Visibility();
 
-            return Environment.i.serviceLocator.Get<AvatarFactory>()
+            return Environment.i.serviceLocator.Get<IAvatarFactory>()
                               .CreateAvatarWithHologram(
                                    avatarContainer,
                                    avatarRevealContainer,

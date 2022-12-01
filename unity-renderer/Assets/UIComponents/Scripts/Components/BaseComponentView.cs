@@ -22,31 +22,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     bool isFocused { get; }
 
     /// <summary>
-    /// It is called at the beginning of the UI component lifecycle.
-    /// </summary>
-    void Awake();
-
-    /// <summary>
-    /// It is called each time the component is enabled.
-    /// </summary>
-    void OnEnable();
-
-    /// <summary>
-    /// It is called each time the component is disabled.
-    /// </summary>
-    void OnDisable();
-
-    /// <summary>
-    /// It is called just after the UI component has been initialized.
-    /// </summary>
-    void Start();
-
-    /// <summary>
-    /// It is called once per frame.
-    /// </summary>
-    void Update();
-
-    /// <summary>
     /// Updates the UI component with the current model configuration.
     /// </summary>
     void RefreshControl();
@@ -72,11 +47,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// It is called when the focus is lost from the component.
     /// </summary>
     void OnLoseFocus();
-
-    /// <summary>
-    /// It is called just after the screen size has changed.
-    /// </summary>
-    void OnScreenSizeChanged();
 }
 
 public interface IComponentModelConfig<T> where T : BaseComponentModel
@@ -183,5 +153,25 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     {
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;
+    }
+}
+
+public interface IBaseComponentView<in TModel> : IBaseComponentView
+{
+    void SetModel(TModel newModel);
+}
+
+public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel> where TModel : IEquatable<TModel>
+{
+    [field: SerializeField]
+    protected TModel model { get; private set; }
+
+    public void SetModel(TModel newModel)
+    {
+        if (!Equals(model, newModel))
+        {
+            model = newModel;
+            RefreshControl();
+        }
     }
 }

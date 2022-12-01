@@ -87,6 +87,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     internal PreviewCameraRotation characterPreviewRotation;
 
     [SerializeField]
+    internal RawImage characterPreviewImage;
+
+    [SerializeField]
     internal Button randomizeButton;
 
     [SerializeField]
@@ -129,7 +132,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
 
-    public CharacterPreviewController characterPreviewController { get; private set; }
+    private Service<ICharacterPreviewFactory> characterPreviewFactory;
+
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
@@ -138,6 +142,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private AvatarModel avatarModelToUpdate;
 
     private bool doAvatarFeedback;
+
+    public ICharacterPreviewController CharacterPreview { get; private set; }
+
     public event Action<AvatarModel> OnAvatarAppearFeedback;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
@@ -165,10 +172,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         foreach (var button in goToMarketplaceButtons)
             button.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
-        characterPreviewController = Instantiate(Resources.Load<CharacterPreviewController>("CharacterPreview"));
-        characterPreviewController.name = "_CharacterPreviewController";
-        characterPreviewController.SetCameraEnabled(false);
-        characterPreviewController.SetLoadingMode(CharacterPreviewController.LoadingMode.WithoutHologram);
+        CharacterPreview = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithoutHologram, (RenderTexture) characterPreviewImage.texture, false);
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.OnOptionSelectionChanged += controller.ToggleThirdPartyCollection;
@@ -208,8 +212,13 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         }
         InitializeNavigationInfo(collectiblesNavigationInfo, !isGuest);
 
-        characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
+        characterPreviewRotation.OnHorizontalRotation += OnCharacterPreviewRotation;
         arePanelsInitialized = true;
+    }
+
+    private void OnCharacterPreviewRotation(float angularVelocity)
+    {
+        CharacterPreview.Rotate(angularVelocity);
     }
 
     private void InitializeNavigationInfo(AvatarEditorNavigationInfo current, bool isActive)
@@ -222,7 +231,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         current.toggle.onValueChanged.AddListener((on) =>
         {
             current.canvas.gameObject.SetActive(@on);
-            characterPreviewController.SetFocus(current.focus);
+            CharacterPreview.SetFocus(current.focus);
         });
     }
 
@@ -500,7 +509,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         // We need to stop the current preview animation in order to take a correct snapshot
         ResetPreviewEmote();
         yield return new WaitForSeconds(TIME_TO_RESET_PREVIEW_ANIMATION);
-        characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
+        CharacterPreview.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
     private void OnSnapshotsReady(Texture2D face256, Texture2D body)
@@ -513,7 +522,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void SetVisibility(bool visible)
     {
-        characterPreviewController.SetCameraEnabled(visible);
+        CharacterPreview.SetEnabled(visible);
         avatarEditorCanvas.enabled = visible;
         avatarEditorCanvasGroup.blocksRaycasts = visible;
 
@@ -571,11 +580,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         if (this != null)
             Destroy(gameObject);
 
-        if (characterPreviewController != null)
-        {
-            Destroy(characterPreviewController.gameObject);
-            characterPreviewController = null;
-        }
+        CharacterPreview.Dispose();
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
         collectionsDropdown.Dispose();
@@ -685,7 +690,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 ResetPreviewEmote();
             }
 
-            characterPreviewController.SetFocus(CharacterPreviewController.CameraFocus.DefaultEditing);
+            CharacterPreview.SetFocus(global::CharacterPreviewController.CameraFocus.DefaultEditing);
             emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(true, notifyEvent: false);
         });
     }
@@ -696,7 +701,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         sectionSelector.gameObject.SetActive(sectionSelector.GetAllSections().Count(x => x.IsActive()) > 1);
     }
 
-    public void PlayPreviewEmote(string emoteId) { characterPreviewController.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
+    public void PlayPreviewEmote(string emoteId) { CharacterPreview.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
     public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
 
@@ -729,7 +734,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         {
             async UniTaskVoid UpdateAvatarAsync()
             {
-                await characterPreviewController.TryUpdateModelAsync(avatarModelToUpdate);
+                await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate);
                 if (doneButton != null)
                     doneButton.interactable = true;
 
