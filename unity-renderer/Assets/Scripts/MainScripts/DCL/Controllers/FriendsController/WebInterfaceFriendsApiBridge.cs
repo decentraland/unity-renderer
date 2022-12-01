@@ -129,7 +129,7 @@ namespace DCL.Social.Friends
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
-            SendMessage("GetFriendRequests", new GetFriendRequestsPayload
+            WebInterface.SendMessage("GetFriendRequests", new GetFriendRequestsPayload
             {
                 receivedSkip = receivedSkip,
                 receivedLimit = receivedLimit,
