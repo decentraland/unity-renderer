@@ -13,6 +13,7 @@ public class ChatNotificationMessageComponentModel : BaseComponentModel
     public string messageHeader;
     public string messageSender;
     public bool isPrivate;
+    public bool isFriendRequest;
     public string imageUri;
     public string notificationTargetId;
 }
