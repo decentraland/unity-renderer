@@ -22,7 +22,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             "RenderType" = "Opaque"
             "RenderPipeline" = "UniversalPipeline"
             "LightMode" = "Outliner"
-            "ShaderModel"="2.0"
         }
 
         Pass
@@ -30,8 +29,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Name "Outliner"
 
             HLSLPROGRAM
-            // #pragma only_renderers gles gles3 glcore d3d11
-            // #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
@@ -88,7 +85,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
+            //#include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
@@ -107,28 +104,42 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 float4 uv1: TEXCOORD1;
                 float4 uv2: TEXCOORD2;
             };
+            //
+            // Varyings vert(Attributes input)
+            // {
+            //     Varyings output;
+            //     float3 gpuSkinnedPositionOS;
+            //     //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
+            //     input.positionOS *= 4;
+            //     output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
+            //     output.uv0 = input.uv0; 
+            //     output.uv1 = input.uv1;
+            //     output.uv2 = input.uv2;
+            //     return output;
+            // }
+            //
+            // half4 frag(Varyings input) : SV_Target
+            // {
+            //     float4 out_AlbedoColor;
+            //     SampleTexture_float(float4(1, 1, 1, 1), input.uv2.r, input.uv0, out_AlbedoColor);
+            //     const float alphaThreshold = input.uv2.b;
+            //     clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
+            //     return half4(1, 1, 1, 1);
+            // }
 
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                float3 gpuSkinnedPositionOS;
-                //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS *= 4;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.uv0 = input.uv0; 
-                output.uv1 = input.uv1;
-                output.uv2 = input.uv2;
                 return output;
             }
 
-            half4 frag(Varyings input) : SV_Target
+            half4 frag() : SV_Target
             {
-                float4 out_AlbedoColor;
-                SampleTexture_float(float4(1, 1, 1, 1), input.uv2.r, input.uv0, out_AlbedoColor);
-                const float alphaThreshold = input.uv2.b;
-                clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
                 return half4(1, 1, 1, 1);
             }
+            
             ENDHLSL
         }
     }
