@@ -20,14 +20,16 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
     {
         Tags
         {
-            "RenderType" = "Opaque"
             "RenderPipeline" = "UniversalPipeline"
-            "LightMode" = "Outliner"
         }
 
         Pass
         {
             Name "Outliner"
+            Tags
+            {
+                "LightMode" = "Outliner"
+            }
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -36,7 +38,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
 
             float4x4 _WorldInverse;
             float4x4 _Matrices[100];
@@ -138,14 +139,16 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
     {
         Tags
         {
-            "RenderType" = "Opaque"
             "RenderPipeline" = "UniversalPipeline"
-            "LightMode" = "Outliner"
         }
 
         Pass
         {
             Name "Outliner"
+            Tags
+            {
+                "LightMode" = "Outliner"
+            }
 
             HLSLPROGRAM
             #pragma only_renderers gles gles3 glcore d3d11
@@ -154,7 +157,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
 
             float4x4 _WorldInverse;
             float4x4 _Matrices[100];
@@ -213,6 +215,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             struct Attributes
             {
                 float3 positionOS : POSITION;
+                float3 normalOS : NORMAL;
                 float4 tangentOS : TANGENT;
                 float4 uv0 : TEXCOORD0;
                 float4 uv1 : TEXCOORD1;
@@ -231,9 +234,11 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             {
                 Varyings output;
                 float3 gpuSkinnedPositionOS;
-                ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
+                float3 gpuSkinnedNormalOS;
+                ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,
+                                 input.tangentOS, input.uv1);
+                //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
-                input.positionOS *= 4;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
