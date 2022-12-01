@@ -106,9 +106,9 @@ namespace DCL.Social.Friends
 
         public void GetFriends(string usernameOrId, int limit) => apiBridge.GetFriends(usernameOrId, limit);
 
-        public async UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
-            var payload = await apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
+            var payload = await apiBridge.GetFriendRequestsV2(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
             TotalReceivedFriendRequestCount = payload.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = payload.totalSentFriendRequests;
@@ -144,7 +144,7 @@ namespace DCL.Social.Friends
             return receivedFriendRequestsToAdd;
         }
 
-        public void GetFriendsWithDirectMessages(int limit, int skip) =>
+    public void GetFriendsWithDirectMessages(int limit, int skip) =>
             apiBridge.GetFriendsWithDirectMessages("", limit, skip);
 
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>

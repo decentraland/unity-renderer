@@ -56,7 +56,7 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    public UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
     {
         return UniTask.FromResult(new List<FriendRequest>());
     }

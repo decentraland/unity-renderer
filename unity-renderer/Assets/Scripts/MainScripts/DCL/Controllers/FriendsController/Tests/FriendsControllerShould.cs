@@ -69,8 +69,8 @@ namespace DCL.Social.Friends
             };
             controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-            _ = apiBridge.GetFriendRequests(0, 0, 0, 0).Returns(UniTask.FromResult(
-                new AddFriendRequestsPayload
+            _ = apiBridge.GetFriendRequestsV2(0, 0, 0, 0).Returns(UniTask.FromResult(
+                new AddFriendRequestsV2Payload
                 {
                     totalReceivedFriendRequests = 3,
                     totalSentFriendRequests = 2,
@@ -122,7 +122,7 @@ namespace DCL.Social.Friends
                     }
                 }));
 
-            controller.GetFriendRequests(0, 0, 0, 0).Forget();
+            controller.GetFriendRequestsAsync(0, 0, 0, 0).Forget();
 
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt1"]);
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt2"]);

@@ -146,7 +146,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -162,7 +162,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -266,7 +266,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -376,7 +376,7 @@ namespace DCl.Social.Friends
 
             controller.SetVisibility(true);
         
-            friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
         }
     
         [Test]
@@ -387,7 +387,7 @@ namespace DCl.Social.Friends
 
             view.OnRequestListDisplayed += Raise.Event<Action>();
         
-            friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]
@@ -469,7 +469,7 @@ namespace DCl.Social.Friends
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
         
-            friendsController.GetFriendRequests(30, 0, 30, 0);
+            friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]
@@ -530,7 +530,7 @@ namespace DCl.Social.Friends
             controller.SetVisibility(false);
             controller.SetVisibility(true);
      
-            friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(2).GetFriendRequestsAsync(30, 0, 30, 0);
         }
     }
 }

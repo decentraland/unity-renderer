@@ -3,7 +3,7 @@ using System;
 namespace DCL.Social.Friends
 {
     [Serializable]
-    public class AddFriendRequestsPayload
+    public class AddFriendRequestsV2Payload
     {
         public string messageId;
         public FriendRequestPayload[] requestedTo;

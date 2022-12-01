@@ -35,12 +35,12 @@ namespace DCL.Social.Friends
             OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
 
         [PublicAPI]
-        public void AddFriendRequests(string json)
+        public void AddFriendRequestsV2(string json)
         {
-            var payload = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
+            var payload = JsonUtility.FromJson<AddFriendRequestsV2Payload>(json);
             var messageId = payload.messageId;
             if (!pendingRequests.ContainsKey(messageId)) return;
-            var task = (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
+            var task = (UniTaskCompletionSource<AddFriendRequestsV2Payload>)pendingRequests[messageId];
             pendingRequests.Remove(messageId);
             task.TrySetResult(payload);
         }
@@ -120,14 +120,14 @@ namespace DCL.Social.Friends
         public void GetFriends(string usernameOrId, int limit) =>
             WebInterface.GetFriends(usernameOrId, limit);
 
-        public UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
-            var task = new UniTaskCompletionSource<AddFriendRequestsPayload>();
+            var task = new UniTaskCompletionSource<AddFriendRequestsV2Payload>();
             // TODO: optimize unique id length for performance reasons
             var messageId = Guid.NewGuid().ToString("N");
             pendingRequests[messageId] = task;
 
-            WebInterface.SendMessage("GetFriendRequests", new GetFriendRequestsPayload
+            WebInterface.SendMessage("GetFriendRequestsV2", new GetFriendRequestsV2Payload
             {
                 messageId = messageId,
                 sentLimit = sentLimit,

@@ -22,7 +22,7 @@ namespace DCl.Social.Friends
         void RemoveFriend(string userId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
-        UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
         void CancelRequest(string userId);

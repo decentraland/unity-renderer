@@ -327,6 +327,26 @@ public class FriendsHUDController : IHUD
                 View.Set(userId, approved);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
+            case FriendshipAction.REQUESTED_FROM:
+                var requestReceived = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], "", true, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { isReceived = true };
+                requestReceived.CopyFrom(userProfile);
+                requestReceived.blocked = IsUserBlocked(userId);
+                friends[userId] = requestReceived;
+                View.Set(userId, requestReceived);
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
+                break;
+            case FriendshipAction.REQUESTED_TO:
+                var requestSent = friends.ContainsKey(userId)
+                    ? new FriendRequestEntryModel(friends[userId], "", false, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { isReceived = false };
+                requestSent.CopyFrom(userProfile);
+                requestSent.blocked = IsUserBlocked(userId);
+                friends[userId] = requestSent;
+                View.Set(userId, requestSent);
+                userProfile.OnUpdate += HandleFriendProfileUpdated;
+                break;
         }
 
         UpdateNotificationsCounter();
@@ -426,7 +446,7 @@ public class FriendsHUDController : IHUD
         if (!friendsController.IsInitialized) return;
         if (searchingFriends) return;
         
-        var allfriendRequests = await friendsController.GetFriendRequests(
+        var allfriendRequests = await friendsController.GetFriendRequestsAsync(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
 

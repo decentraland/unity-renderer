@@ -92,7 +92,7 @@ namespace DCL.Social.Friends
             apiBridge.GetFriends(usernameOrId, limit);
         }
 
-        public async UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             await UniTask.Delay(Random.Range(100, 1000));
 
@@ -144,7 +144,7 @@ namespace DCL.Social.Friends
                 });
             }
 
-            var response = new AddFriendRequestsPayload
+            var response = new AddFriendRequestsV2Payload
             {
                 messageId = Guid.NewGuid().ToString("N"),
                 requestedFrom = requestedFromList.ToArray(),
