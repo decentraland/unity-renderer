@@ -1,4 +1,5 @@
 using DCL;
+using DCLPlugins.RealmsPlugin;
 using Decentraland.Bff;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,11 @@ namespace DCLPlugins.RealmPlugin
         public RealmPlugin(DataStore dataStore)
         {
             realmsModifiers = new List<IRealmModifier>
-                { new RealmBlockerModifier(dataStore.worldBlockers), new RealmMinimapModifier(dataStore.HUDs) };
+            {
+                new RealmBlockerModifier(dataStore.worldBlockers),
+                new RealmMinimapModifier(dataStore.HUDs),
+                new RealmsSkyboxModifier(dataStore.skyboxConfig),
+            };
 
             realmAboutConfiguration.OnChange += RealmChanged;
         }
@@ -29,12 +34,12 @@ namespace DCLPlugins.RealmPlugin
             bool isWorld = current.ScenesUrn.Any()
                            && string.IsNullOrEmpty(current.CityLoaderContentServer);
 
-            realmsModifiers.ForEach(e => e.OnEnteredRealm(isWorld, current));
+            realmsModifiers.ForEach(rm => rm.OnEnteredRealm(isWorld, current));
         }
 
         public void Dispose()
         {
-            realmsModifiers.ForEach(e => e.Dispose());
+            realmsModifiers.ForEach(rm => rm.Dispose());
             realmAboutConfiguration.OnChange -= RealmChanged;
         }
     }
