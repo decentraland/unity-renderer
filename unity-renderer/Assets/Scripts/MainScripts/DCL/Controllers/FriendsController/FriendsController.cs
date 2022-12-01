@@ -165,6 +165,9 @@ namespace DCL.Social.Friends
         public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
             friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
 
+        public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
+            friendRequests.Values.FirstOrDefault(request => request.From == userId || request.To == userId);
+
         public async UniTask<FriendRequest> CancelRequest(string friendUserId)
         {
             CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequest(friendUserId);

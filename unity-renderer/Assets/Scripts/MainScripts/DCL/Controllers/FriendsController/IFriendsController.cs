@@ -39,5 +39,6 @@ namespace DCl.Social.Friends
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
         FriendRequest GetAllocatedFriendRequest(string friendRequestId);
+        FriendRequest GetAllocatedFriendRequestByUser(string userId);
     }
 }

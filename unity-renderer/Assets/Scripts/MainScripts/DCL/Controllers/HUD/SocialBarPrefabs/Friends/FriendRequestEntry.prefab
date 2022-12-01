@@ -234,6 +234,7 @@ MonoBehaviour:
   acceptButton: {fileID: 7520696525824000864}
   rejectButton: {fileID: 1959314275735423776}
   cancelButton: {fileID: 5533843950335295143}
+  openButton: {fileID: 2959463299087718891}
 --- !u!114 &3903292622551466611
 MonoBehaviour:
   m_ObjectHideFlags: 0

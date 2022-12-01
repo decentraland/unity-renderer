@@ -32,7 +32,7 @@ namespace DCL.Social.Friends
             this.socialAnalytics = socialAnalytics;
             this.openPassportVariable = openPassportVariable;
 
-            dataStore.HUDs.cancelFriendRequest.OnChange += ShowOrHide;
+            dataStore.HUDs.openSentFriendRequestDetail.OnChange += ShowOrHide;
             view.OnCancel += Cancel;
             view.OnClose += Hide;
             view.OnOpenProfile += OpenProfile;
@@ -41,7 +41,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            dataStore.HUDs.cancelFriendRequest.OnChange -= ShowOrHide;
+            dataStore.HUDs.openSentFriendRequestDetail.OnChange -= ShowOrHide;
             view.OnCancel -= Cancel;
             view.OnClose -= Hide;
             view.OnOpenProfile += OpenProfile;

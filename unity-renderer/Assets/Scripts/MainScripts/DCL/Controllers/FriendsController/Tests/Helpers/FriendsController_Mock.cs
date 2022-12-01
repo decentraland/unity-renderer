@@ -71,6 +71,9 @@ public class FriendsController_Mock : IFriendsController
     public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
         null;
 
+    public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
+        null;
+
     public UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;
