@@ -110,22 +110,24 @@ namespace DCL
         {
             var rpc = Environment.i.serviceLocator.Get<IRPC>();
 
-            rpc.EnsureRpc().GetAwaiter().OnCompleted(async () =>
+            async void InitializeDecentraland()
             {
                 await UniTask.SwitchToMainThread();
+
                 // this event should be the last one to be executed after initialization
                 // it is used by the kernel to signal "EngineReady" or something like that
                 // to prevent race conditions like "SceneController is not an object",
                 // aka sending events before unity is ready
                 ClientAnalyticsKernelService analytics = rpc.Analytics();
-                analytics?.SystemInfoReport(new SystemInfoReportRequest()
+
+                await analytics.SystemInfoReport(new SystemInfoReportRequest()
                 {
                     GraphicsDeviceName = SystemInfo.graphicsDeviceName,
                     GraphicsDeviceVersion = SystemInfo.graphicsDeviceVersion,
-                    GraphicsMemorySize = (uint) SystemInfo.graphicsMemorySize,
+                    GraphicsMemorySize = (uint)SystemInfo.graphicsMemorySize,
                     ProcessorType = SystemInfo.processorType,
-                    ProcessorCount = (uint) SystemInfo.processorCount,
-                    SystemMemorySize = (uint) SystemInfo.systemMemorySize,
+                    ProcessorCount = (uint)SystemInfo.processorCount,
+                    SystemMemorySize = (uint)SystemInfo.systemMemorySize,
 
                     // TODO: remove useBinaryTransform after ECS7 is fully in prod
                     UseBinaryTransform = true,
@@ -133,7 +135,9 @@ namespace DCL
 
                 // We trigger the Decentraland logic once everything is initialized.
                 WebInterface.StartDecentraland();
-            });
+            }
+
+            rpc.EnsureRpc().GetAwaiter().OnCompleted(InitializeDecentraland);
         }
 
         protected virtual void Update()
