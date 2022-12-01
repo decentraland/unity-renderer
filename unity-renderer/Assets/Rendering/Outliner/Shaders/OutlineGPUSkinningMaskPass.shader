@@ -30,6 +30,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 
             HLSLPROGRAM
             #pragma target 2.0
+            #pragma only_renderers gles gles3 glcore d3d11
             #pragma vertex vert
             #pragma fragment frag
 
