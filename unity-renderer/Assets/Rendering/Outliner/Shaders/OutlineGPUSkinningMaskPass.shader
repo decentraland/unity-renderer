@@ -15,7 +15,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
         [NoScaleOffset]_AvatarMap11("AvatarMap11", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap12("AvatarMap12", 2D) = "white" {}
     }
-    
+
     SubShader
     {
         Tags
@@ -41,53 +41,53 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             float4x4 _WorldInverse;
             float4x4 _Matrices[100];
             float4x4 _BindPoses[100];
-             float4 _AvatarMap1_TexelSize;
-             TEXTURE2D(_AvatarMap1);
-             SAMPLER(sampler_AvatarMap1);
-            
-             float4 _AvatarMap2_TexelSize;
-             TEXTURE2D(_AvatarMap2);
-             SAMPLER(sampler_AvatarMap2);
-            
-             float4 _AvatarMap3_TexelSize;
-             TEXTURE2D(_AvatarMap3);
-             SAMPLER(sampler_AvatarMap3);
-            
-             float4 _AvatarMap4_TexelSize;
-             TEXTURE2D(_AvatarMap4);
-             SAMPLER(sampler_AvatarMap4);
-            
-             float4 _AvatarMap5_TexelSize;
-             TEXTURE2D(_AvatarMap5);
-             SAMPLER(sampler_AvatarMap5);
-            
-             float4 _AvatarMap6_TexelSize;
-             TEXTURE2D(_AvatarMap6);
-             SAMPLER(sampler_AvatarMap6);
-            
-             float4 _AvatarMap7_TexelSize;
-             TEXTURE2D(_AvatarMap7);
-             SAMPLER(sampler_AvatarMap7);
-            
-             float4 _AvatarMap8_TexelSize;
-             TEXTURE2D(_AvatarMap8);
-             SAMPLER(sampler_AvatarMap8);
-            
-             float4 _AvatarMap9_TexelSize;
-             TEXTURE2D(_AvatarMap9);
-             SAMPLER(sampler_AvatarMap9);
-            
-             float4 _AvatarMap10_TexelSize;
-             TEXTURE2D(_AvatarMap10);
-             SAMPLER(sampler_AvatarMap10);
-            
-             float4 _AvatarMap11_TexelSize;
-             TEXTURE2D(_AvatarMap11);
-             SAMPLER(sampler_AvatarMap11);
-            
-             float4 _AvatarMap12_TexelSize;
-             TEXTURE2D(_AvatarMap12);
-             SAMPLER(sampler_AvatarMap12);
+            float4 _AvatarMap1_TexelSize;
+            TEXTURE2D(_AvatarMap1);
+            SAMPLER(sampler_AvatarMap1);
+
+            float4 _AvatarMap2_TexelSize;
+            TEXTURE2D(_AvatarMap2);
+            SAMPLER(sampler_AvatarMap2);
+
+            float4 _AvatarMap3_TexelSize;
+            TEXTURE2D(_AvatarMap3);
+            SAMPLER(sampler_AvatarMap3);
+
+            float4 _AvatarMap4_TexelSize;
+            TEXTURE2D(_AvatarMap4);
+            SAMPLER(sampler_AvatarMap4);
+
+            float4 _AvatarMap5_TexelSize;
+            TEXTURE2D(_AvatarMap5);
+            SAMPLER(sampler_AvatarMap5);
+
+            float4 _AvatarMap6_TexelSize;
+            TEXTURE2D(_AvatarMap6);
+            SAMPLER(sampler_AvatarMap6);
+
+            float4 _AvatarMap7_TexelSize;
+            TEXTURE2D(_AvatarMap7);
+            SAMPLER(sampler_AvatarMap7);
+
+            float4 _AvatarMap8_TexelSize;
+            TEXTURE2D(_AvatarMap8);
+            SAMPLER(sampler_AvatarMap8);
+
+            float4 _AvatarMap9_TexelSize;
+            TEXTURE2D(_AvatarMap9);
+            SAMPLER(sampler_AvatarMap9);
+
+            float4 _AvatarMap10_TexelSize;
+            TEXTURE2D(_AvatarMap10);
+            SAMPLER(sampler_AvatarMap10);
+
+            float4 _AvatarMap11_TexelSize;
+            TEXTURE2D(_AvatarMap11);
+            SAMPLER(sampler_AvatarMap11);
+
+            float4 _AvatarMap12_TexelSize;
+            TEXTURE2D(_AvatarMap12);
+            SAMPLER(sampler_AvatarMap12);
 
             #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
@@ -116,12 +116,12 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.uv0 = input.uv0; 
+                output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
                 output.uv2 = input.uv2;
                 return output;
             }
-            
+
             half4 frag(Varyings input) : SV_Target
             {
                 float4 out_AlbedoColor;
@@ -130,12 +130,10 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
                 return half4(1, 1, 1, 1);
             }
-
-            
             ENDHLSL
         }
     }
-    
+
     SubShader
     {
         Tags
@@ -161,53 +159,53 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             float4x4 _WorldInverse;
             float4x4 _Matrices[100];
             float4x4 _BindPoses[100];
-             float4 _AvatarMap1_TexelSize;
-             TEXTURE2D(_AvatarMap1);
-             SAMPLER(sampler_AvatarMap1);
-            
-             float4 _AvatarMap2_TexelSize;
-             TEXTURE2D(_AvatarMap2);
-             SAMPLER(sampler_AvatarMap2);
-            
-             float4 _AvatarMap3_TexelSize;
-             TEXTURE2D(_AvatarMap3);
-             SAMPLER(sampler_AvatarMap3);
-            
-             float4 _AvatarMap4_TexelSize;
-             TEXTURE2D(_AvatarMap4);
-             SAMPLER(sampler_AvatarMap4);
-            
-             float4 _AvatarMap5_TexelSize;
-             TEXTURE2D(_AvatarMap5);
-             SAMPLER(sampler_AvatarMap5);
-            
-             float4 _AvatarMap6_TexelSize;
-             TEXTURE2D(_AvatarMap6);
-             SAMPLER(sampler_AvatarMap6);
-            
-             float4 _AvatarMap7_TexelSize;
-             TEXTURE2D(_AvatarMap7);
-             SAMPLER(sampler_AvatarMap7);
-            
-             float4 _AvatarMap8_TexelSize;
-             TEXTURE2D(_AvatarMap8);
-             SAMPLER(sampler_AvatarMap8);
-            
-             float4 _AvatarMap9_TexelSize;
-             TEXTURE2D(_AvatarMap9);
-             SAMPLER(sampler_AvatarMap9);
-            
-             float4 _AvatarMap10_TexelSize;
-             TEXTURE2D(_AvatarMap10);
-             SAMPLER(sampler_AvatarMap10);
-            
-             float4 _AvatarMap11_TexelSize;
-             TEXTURE2D(_AvatarMap11);
-             SAMPLER(sampler_AvatarMap11);
-            
-             float4 _AvatarMap12_TexelSize;
-             TEXTURE2D(_AvatarMap12);
-             SAMPLER(sampler_AvatarMap12);
+            float4 _AvatarMap1_TexelSize;
+            TEXTURE2D(_AvatarMap1);
+            SAMPLER(sampler_AvatarMap1);
+
+            float4 _AvatarMap2_TexelSize;
+            TEXTURE2D(_AvatarMap2);
+            SAMPLER(sampler_AvatarMap2);
+
+            float4 _AvatarMap3_TexelSize;
+            TEXTURE2D(_AvatarMap3);
+            SAMPLER(sampler_AvatarMap3);
+
+            float4 _AvatarMap4_TexelSize;
+            TEXTURE2D(_AvatarMap4);
+            SAMPLER(sampler_AvatarMap4);
+
+            float4 _AvatarMap5_TexelSize;
+            TEXTURE2D(_AvatarMap5);
+            SAMPLER(sampler_AvatarMap5);
+
+            float4 _AvatarMap6_TexelSize;
+            TEXTURE2D(_AvatarMap6);
+            SAMPLER(sampler_AvatarMap6);
+
+            float4 _AvatarMap7_TexelSize;
+            TEXTURE2D(_AvatarMap7);
+            SAMPLER(sampler_AvatarMap7);
+
+            float4 _AvatarMap8_TexelSize;
+            TEXTURE2D(_AvatarMap8);
+            SAMPLER(sampler_AvatarMap8);
+
+            float4 _AvatarMap9_TexelSize;
+            TEXTURE2D(_AvatarMap9);
+            SAMPLER(sampler_AvatarMap9);
+
+            float4 _AvatarMap10_TexelSize;
+            TEXTURE2D(_AvatarMap10);
+            SAMPLER(sampler_AvatarMap10);
+
+            float4 _AvatarMap11_TexelSize;
+            TEXTURE2D(_AvatarMap11);
+            SAMPLER(sampler_AvatarMap11);
+
+            float4 _AvatarMap12_TexelSize;
+            TEXTURE2D(_AvatarMap12);
+            SAMPLER(sampler_AvatarMap12);
 
             #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
@@ -237,12 +235,12 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 input.positionOS = gpuSkinnedPositionOS;
                 input.positionOS *= 4;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.uv0 = input.uv0; 
+                output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
                 output.uv2 = input.uv2;
                 return output;
             }
-            
+
             half4 frag(Varyings input) : SV_Target
             {
                 float4 out_AlbedoColor;
@@ -251,10 +249,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
                 return half4(1, 1, 1, 1);
             }
-
-            
             ENDHLSL
         }
     }
 }
-
