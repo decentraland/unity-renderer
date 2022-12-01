@@ -68,7 +68,12 @@ namespace RPC.Services
 
         public UniTask<EmotesResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)
         {
-            UserProfile.GetOwnUserProfile().SetAvatarExpression(request.Id, UserProfile.EmoteSource.Command);
+            DataStore.i.myInventedDataStoreWithAGoodName.avatarExpression new AvatarExpression()
+            {
+                Id = request.Id,
+                Command = UserProfile.EmoteSource.Command,
+                Timestamp = UTC.Now
+            }
             return default;
         }
     }
