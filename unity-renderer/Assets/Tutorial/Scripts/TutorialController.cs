@@ -175,7 +175,8 @@ namespace DCL.Tutorial
 
             NotificationsController.disableWelcomeNotification = true;
 
-            WebInterface.SetDelightedSurveyEnabled(false);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+            analytics?.SetDelightedSurveyEnabled(new DelightedSurveyRequest() { Enabled = false });
 
             if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
@@ -214,7 +215,9 @@ namespace DCL.Tutorial
             DataStore.i.common.isTutorialRunning.Set(false);
             tutorialView.tutorialMusicHandler.StopTutorialMusic();
             ShowTeacher3DModel(false);
-            WebInterface.SetDelightedSurveyEnabled(true);
+
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+            analytics?.SetDelightedSurveyEnabled(new DelightedSurveyRequest() { Enabled = true });
 
             if (Environment.i != null && Environment.i.world != null)
             {

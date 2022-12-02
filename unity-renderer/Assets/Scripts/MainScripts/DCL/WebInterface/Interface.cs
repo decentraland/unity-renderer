@@ -516,12 +516,6 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class DelightedSurveyEnabledPayload
-        {
-            public bool enabled;
-        }
-
-        [System.Serializable]
         public class ExternalActionSceneEventPayload
         {
             public string type;
@@ -1219,12 +1213,6 @@ namespace DCL.Interface
             onSendScreenshot.encodedTexture = encodedTexture;
             onSendScreenshot.id = id;
             SendMessage("SendScreenshot", onSendScreenshot);
-        }
-
-        public static void SetDelightedSurveyEnabled(bool enabled)
-        {
-            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
-            analytics?.SetDelightedSurveyEnabled(new DelightedSurveyRequest() { Enabled = enabled });
         }
 
         public static void SetScenesLoadRadius(float newRadius)
