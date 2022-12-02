@@ -2,6 +2,7 @@
 using DCL.Interface;
 using RPC;
 using rpc_csharp;
+using UnityEngine.Device;
 
 namespace DCL
 {
