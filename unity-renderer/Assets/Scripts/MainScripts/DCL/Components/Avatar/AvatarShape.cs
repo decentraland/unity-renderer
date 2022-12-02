@@ -81,7 +81,7 @@ namespace DCL
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
-        private Avatar GetStandardAvatar()
+        private IAvatar GetStandardAvatar()
         {
             var visibility = new Visibility();
 
@@ -94,7 +94,7 @@ namespace DCL
                                );
         }
 
-        private AvatarWithHologram GetAvatarWithHologram()
+        private IAvatar GetAvatarWithHologram()
         {
             Visibility visibility = new Visibility();
 

@@ -6,13 +6,13 @@ namespace AvatarSystem
 {
     public interface IAvatarFactory : IService
     {
-        Avatar CreateAvatar(
+        IAvatar CreateAvatar(
             GameObject avatarContainer,
             IAnimator animator,
             ILOD lod,
             IVisibility visibility);
 
-        AvatarWithHologram CreateAvatarWithHologram(
+        IAvatar CreateAvatarWithHologram(
             GameObject avatarContainer,
             Transform avatarRevealContainer,
             GameObject armatureContainer,

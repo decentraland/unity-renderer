@@ -13,8 +13,8 @@ namespace AvatarSystem
             this.serviceLocator = serviceLocator;
         }
 
-        public Avatar CreateAvatar(GameObject avatarContainer, IAnimator animator, ILOD lod, IVisibility visibility) =>
-            new (
+        public IAvatar CreateAvatar(GameObject avatarContainer, IAnimator animator, ILOD lod, IVisibility visibility) =>
+            new Avatar(
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
                 animator,
@@ -25,7 +25,7 @@ namespace AvatarSystem
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes)
             );
 
-        public AvatarWithHologram CreateAvatarWithHologram(
+        public IAvatar CreateAvatarWithHologram(
             GameObject avatarContainer,
             Transform avatarRevealContainer,
             GameObject armatureContainer,
@@ -33,7 +33,7 @@ namespace AvatarSystem
             ILOD lod,
             IVisibility visibility
         ) =>
-            new (
+            new AvatarWithHologram(
                 new BaseAvatar(avatarRevealContainer, armatureContainer, lod),
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),

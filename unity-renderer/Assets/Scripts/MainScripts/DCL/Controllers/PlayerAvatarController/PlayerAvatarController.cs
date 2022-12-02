@@ -74,11 +74,11 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }
 
-    private AvatarSystem.Avatar GetStandardAvatar() =>
+    private IAvatar GetStandardAvatar() =>
         Environment.i.serviceLocator.Get<IAvatarFactory>()
                    .CreateAvatar(avatarContainer, GetComponentInChildren<AvatarAnimatorLegacy>(), NoLODs.i, new Visibility());
 
-    private AvatarWithHologram GetAvatarWithHologram()
+    private IAvatar GetAvatarWithHologram()
     {
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         AvatarSystem.NoLODs noLod = new NoLODs();
