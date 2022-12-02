@@ -31,7 +31,7 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(111);
-                
+
             renderersInternalComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
             ECSComponentData<InternalRenderers> internalCompData = null;
             renderersInternalComponent.GetFor(scene, entity).Returns((info) => internalCompData);
@@ -134,8 +134,7 @@ namespace Tests
         {
             var fonts = new Dictionary<Font, string>()
             {
-                { Font.FSansSerif, "Inter-Regular SDF" },
-                { Font.FLiberationSans, "LiberationSans SDF" },
+                { Font.FSansSerif, "Inter-Regular SDF" }
             };
 
             foreach (var fontsMapPair in fonts)
