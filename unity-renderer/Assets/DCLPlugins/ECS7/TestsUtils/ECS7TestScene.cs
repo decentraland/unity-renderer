@@ -17,12 +17,20 @@ public class ECS7TestScene : IParcelScene
     public Dictionary<long, IDCLEntity> entities { get; internal set; }
     public ECS7TestEntity CreateEntity(long id) => _entityCreator(id);
     public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true) => _entityRemover(id);
+
     public Transform GetSceneTransform() => _go.transform;
     public ContentProvider contentProvider { get; } = new ContentProvider();
     public bool isPersistent { set; get; } = false;
     public bool isPortableExperience { get; set; } = false;
 
-// INTERNAL CONFIG FOR MOCKING    
+    public void MarkInitMessagesDone()
+    {
+    }
+
+    public bool IsInitMessageDone() =>
+        true;
+
+// INTERNAL CONFIG FOR MOCKING
     internal GameObject _go;
     internal Func<long, ECS7TestEntity> _entityCreator;
     internal Action<long> _entityRemover;
