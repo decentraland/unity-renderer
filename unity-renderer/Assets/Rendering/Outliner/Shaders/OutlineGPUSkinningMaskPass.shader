@@ -33,7 +33,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
-            //#pragma target 4.5
+            #pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
 
@@ -90,7 +90,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
+            //#include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
