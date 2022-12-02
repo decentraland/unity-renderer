@@ -60,7 +60,7 @@ namespace DCL.Helpers
         public static readonly string Transparent = "Transparent";
         public static readonly string TransparentCutout = "TransparentCutout";
         public static readonly string Opaque = "Opaque";
-        
+
         //Avatar specific properties
         public static readonly int EyesTexture = Shader.PropertyToID("_EyesTexture");
         public static readonly int EyeTint = Shader.PropertyToID("_EyeTint");
@@ -77,6 +77,8 @@ namespace DCL.Helpers
             int originalRenderQueue = material.renderQueue;
             material.shader = Shader.Find("DCL/Universal Render Pipeline/Lit");
             material.renderQueue = originalRenderQueue;
+            float cutoff = material.GetFloat(Cutoff);
+
             if (material.HasTexture( BumpMap) && material.GetTexture(BumpMap) != null)
                 material.EnableKeyword(NormalMapKeyword);
             if (material.HasTexture(MetallicGlossMap) && material.GetTexture(MetallicGlossMap) != null)
@@ -93,7 +95,7 @@ namespace DCL.Helpers
                 return;
             }
 
-            if (originalRenderQueue > 2600)
+            if (originalRenderQueue > 2600 || cutoff > 0)
             {
                 material.SetOverrideTag(RenderType, TransparentCutout);
                 material.SetInt(SrcBlend, (int)BlendMode.One);
