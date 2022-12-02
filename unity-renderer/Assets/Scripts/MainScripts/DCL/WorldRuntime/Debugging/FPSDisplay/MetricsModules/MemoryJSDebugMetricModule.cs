@@ -13,12 +13,13 @@ public class MemoryJSDebugMetricModule : IDebugMetricModule
 
     private BaseVariable<float> jsUsedHeapSize => DataStore.i.debugConfig.jsUsedHeapSize;
     private BaseVariable<float> jsTotalHeapSize => DataStore.i.debugConfig.jsTotalHeapSize;
-
+    private BaseVariable<float> jsHeapSizeLimit => DataStore.i.debugConfig.jsHeapSizeLimit;
+    
     public void SetUpModule(Dictionary<DebugValueEnum, Func<string>> updateValueDictionary)
     {
         updateValueDictionary.Add(DebugValueEnum.Memory_Used_JS_Heap_Size, () =>  GetMemoryMetric(jsUsedHeapSize.Get() / BYTES_TO_MEGABYTES));
         updateValueDictionary.Add(DebugValueEnum.Memory_Total_JS_Heap_Size, () => GetMemoryMetric(jsTotalHeapSize.Get() / BYTES_TO_MEGABYTES));
-        updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => $"2048 Mb");
+        updateValueDictionary.Add(DebugValueEnum.Memory_Limit_JS_Heap_Size, () => GetMemoryMetric(jsHeapSizeLimit.Get() / BYTES_TO_MEGABYTES));
     }
 
     public void UpdateModule() { WebInterface.UpdateMemoryUsage(); }

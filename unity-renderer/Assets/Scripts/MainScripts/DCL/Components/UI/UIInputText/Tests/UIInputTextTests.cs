@@ -103,7 +103,7 @@ namespace Tests
             onClickEvent.uuid = textInput.model.onClick;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
             sceneEvent.payload = onClickEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -182,7 +182,7 @@ namespace Tests
 
             // NOTE: test ReportOnTextInputChangedTextEvent
             var submitEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>>();
-            submitEvent.sceneId = scene.sceneData.id;
+            submitEvent.sceneNumber = scene.sceneData.sceneNumber;
             submitEvent.payload = new WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>()
             {
                 payload = new WebInterface.OnTextInputChangeTextEventPayload()
@@ -212,7 +212,7 @@ namespace Tests
 
             // NOTE: test ReportOnTextSubmitEvent
             var submitEvent2 = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>>();
-            submitEvent2.sceneId = scene.sceneData.id;
+            submitEvent2.sceneNumber = scene.sceneData.sceneNumber;
             submitEvent2.payload = new WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>()
             {
                 payload = new WebInterface.OnTextSubmitEventPayload()

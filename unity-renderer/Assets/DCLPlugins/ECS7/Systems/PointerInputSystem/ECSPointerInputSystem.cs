@@ -31,7 +31,7 @@ namespace ECSSystems.PointerInputSystem
         {
             public IDCLEntity entity;
             public IParcelScene scene;
-            public string sceneId;
+            public int sceneNumber;
             public bool hasValue;
         }
 
@@ -100,7 +100,7 @@ namespace ECSSystems.PointerInputSystem
                     state.lastHoverFeedback.hasValue = true;
                     state.lastHoverFeedback.entity = colliderData.entity;
                     state.lastHoverFeedback.scene = colliderData.scene;
-                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                    state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                 }
             }
             // show hover tooltip for pointer up
@@ -112,7 +112,7 @@ namespace ECSSystems.PointerInputSystem
                     state.lastHoverFeedback.hasValue = true;
                     state.lastHoverFeedback.entity = colliderData.entity;
                     state.lastHoverFeedback.scene = colliderData.scene;
-                    state.lastHoverFeedback.sceneId = colliderData.scene.sceneData.id;
+                    state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
                 }
             }
             // hide hover tooltip
@@ -122,156 +122,157 @@ namespace ECSSystems.PointerInputSystem
                 state.lastHoverFeedback.hasValue = false;
             }
 
-            InputHitType inputHitType = InputHitType.None;
-
             if (isRaycastHitValidEntity)
             {
-                inputHitType = isPointerDown ? InputHitType.PointerDown
+                InputHitType inputHitType = isPointerDown ? InputHitType.PointerDown
                     : isPointerUp ? InputHitType.PointerUp
                     : isHoveringInput ? InputHitType.PointerHover
                     : InputHitType.None;
-            }
+                
+                // process entity hit with input
+                switch (inputHitType)
+                {
+                    case InputHitType.PointerDown:
+                        state.lastInputDown.entity = colliderData.entity;
+                        state.lastInputDown.scene = colliderData.scene;
+                        state.lastInputDown.sceneNumber = colliderData.scene.sceneData.sceneNumber;
+                        state.lastInputDown.hasValue = true;
 
-            // process entity hit with input
-            switch (inputHitType)
-            {
-                case InputHitType.PointerDown:
-                    state.lastInputDown.entity = colliderData.entity;
-                    state.lastInputDown.scene = colliderData.scene;
-                    state.lastInputDown.sceneId = colliderData.scene.sceneData.id;
-                    state.lastInputDown.hasValue = true;
+                        AddInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            colliderData.scene,
+                            colliderData.entity.entityId,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetDown
+                        );
+                        break;
 
-                    state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
-                    {
-                        analog = 1,
-                        button = (InputAction)currentPointerInput.buttonId,
-                        hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                            raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
-                        type = PointerEventType.PetDown
-                    });
-                    break;
+                    case InputHitType.PointerUp:
+                        bool validInputDownExist = state.lastInputDown.hasValue;
+                        EntityInput lastInputDownData = state.lastInputDown;
 
-                case InputHitType.PointerUp:
-                    bool validInputDownExist = state.lastInputDown.hasValue;
-                    EntityInput lastInputDownData = state.lastInputDown;
-
-                    // did it hit same entity as pointer down hit?
-                    if (validInputDownExist && colliderData.entity.entityId == lastInputDownData.entity.entityId
-                                            && colliderData.scene.sceneData.id == lastInputDownData.sceneId)
-                    {
-                        state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
+                        // did it hit same entity as pointer down hit?
+                        if (validInputDownExist && colliderData.entity.entityId == lastInputDownData.entity.entityId
+                                                && colliderData.scene.sceneData.sceneNumber == lastInputDownData.sceneNumber)
                         {
-                            analog = 1,
-                            button = (InputAction)currentPointerInput.buttonId,
-                            hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
-                            type = PointerEventType.PetUp
-                        });
-                    }
-                    // did it hit different entity as pointer down hit?
-                    else if (validInputDownExist)
-                    {
-                        bool isEntityFromSameScene = colliderData.scene.sceneData.id == lastInputDownData.sceneId;
-                        bool isValidScene = isEntityFromSameScene || state.worldState.ContainsScene(lastInputDownData.sceneId);
-
-                        if (isValidScene)
-                        {
-                            state.inputResultComponent.AddEvent(lastInputDownData.scene, new InternalInputEventResults.EventData()
-                            {
-                                analog = 1,
-                                button = (InputAction)currentPointerInput.buttonId,
-                                hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
-                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
-                                type = PointerEventType.PetUp
-                            });
+                            AddInputResultEvent(
+                                state,
+                                currentPointerInput,
+                                colliderData.scene,
+                                colliderData.entity.entityId,
+                                raycastRay,
+                                raycastHit,
+                                PointerEventType.PetUp
+                            );
                         }
-                    }
-                    state.lastInputDown.hasValue = false;
-                    break;
-
-                case InputHitType.PointerHover:
-                    bool isPreviouslyHoveredEntity = state.lastInputHover.hasValue;
-                    bool isHoveringNewEntity = !isPreviouslyHoveredEntity
-                                               || state.lastInputHover.entity.entityId != colliderData.entity.entityId
-                                               || state.lastInputHover.sceneId != colliderData.scene.sceneData.id;
-
-                    // was other entity previously hovered?
-                    if (isPreviouslyHoveredEntity && isHoveringNewEntity)
-                    {
-                        bool isValidScene = colliderData.scene.sceneData.id == state.lastInputHover.sceneId
-                                            || state.worldState.ContainsScene(state.lastInputHover.sceneId);
-
-                        if (isValidScene)
+                        else if (validInputDownExist) // did it hit different entity as pointer down hit?
                         {
-                            state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
+                            bool isEntityFromSameScene = colliderData.scene.sceneData.sceneNumber == lastInputDownData.sceneNumber;
+                            bool isValidScene = isEntityFromSameScene || state.worldState.ContainsScene(lastInputDownData.sceneNumber);
+
+                            if (isValidScene)
                             {
-                                analog = 1,
-                                button = (InputAction)currentPointerInput.buttonId,
-                                hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
-                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
-                                type = PointerEventType.PetHoverLeave
-                            });
+                                AddInputResultEvent(
+                                    state,
+                                    currentPointerInput,
+                                    lastInputDownData.scene,
+                                    -1,
+                                    raycastRay,
+                                    raycastHit,
+                                    PointerEventType.PetUp
+                                );
+                            }
                         }
-                    }
+                        state.lastInputDown.hasValue = false;
+                        break;
 
-                    // hover enter
-                    if (isHoveringNewEntity)
-                    {
-                        state.lastInputHover.entity = colliderData.entity;
-                        state.lastInputHover.scene = colliderData.scene;
-                        state.lastInputHover.sceneId = colliderData.scene.sceneData.id;
-                        state.lastInputHover.hasValue = true;
+                    case InputHitType.PointerHover:
+                        bool isPreviouslyHoveredEntity = state.lastInputHover.hasValue;
+                        bool isHoveringNewEntity = !isPreviouslyHoveredEntity
+                                                   || state.lastInputHover.entity.entityId != colliderData.entity.entityId
+                                                   || state.lastInputHover.sceneNumber != colliderData.scene.sceneData.sceneNumber;
 
-                        state.inputResultComponent.AddEvent(colliderData.scene, new InternalInputEventResults.EventData()
+                        // was other entity previously hovered?
+                        if (isPreviouslyHoveredEntity && isHoveringNewEntity)
                         {
-                            analog = 1,
-                            button = (InputAction)currentPointerInput.buttonId,
-                            hit = ProtoConvertUtils.ToPBRaycasHit(colliderData.entity.entityId, null,
-                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
-                            type = PointerEventType.PetHoverEnter
-                        });
-                    }
-                    break;
-            }
+                            bool isValidScene = colliderData.scene.sceneData.sceneNumber == state.lastInputHover.sceneNumber
+                                                || state.worldState.ContainsScene(state.lastInputHover.sceneNumber);
 
-            // no entity hit
-            if (!isRaycastHitValidEntity)
+                            if (isValidScene)
+                            {
+                                AddInputResultEvent(
+                                    state,
+                                    currentPointerInput,
+                                    state.lastInputHover.scene,
+                                    state.lastInputHover.entity.entityId,
+                                    raycastRay,
+                                    raycastHit,
+                                    PointerEventType.PetHoverLeave
+                                );
+                            }
+                        }
+
+                        // hover enter
+                        if (isHoveringNewEntity)
+                        {
+                            state.lastInputHover.entity = colliderData.entity;
+                            state.lastInputHover.scene = colliderData.scene;
+                            state.lastInputHover.sceneNumber = colliderData.scene.sceneData.sceneNumber;
+                            state.lastInputHover.hasValue = true;
+
+                            AddInputResultEvent(
+                                state,
+                                currentPointerInput,
+                                colliderData.scene,
+                                colliderData.entity.entityId,
+                                raycastRay,
+                                raycastHit,
+                                PointerEventType.PetHoverEnter
+                            );
+                        }
+                        break;
+                }
+            }
+            else // no entity hit
             {
                 if (isPointerUp)
                 {
                     if (state.lastInputDown.hasValue)
                     {
                         // input up without hit but with valid input down
-                        bool isValidScene = state.worldState.ContainsScene(state.lastInputDown.sceneId);
+                        bool isValidScene = state.worldState.ContainsScene(state.lastInputDown.sceneNumber);
                         if (isValidScene)
                         {
-                            state.inputResultComponent.AddEvent(state.lastInputDown.scene, new InternalInputEventResults.EventData()
-                            {
-                                analog = 1,
-                                button = (InputAction)currentPointerInput.buttonId,
-                                hit = ProtoConvertUtils.ToPBRaycasHit(-1, null,
-                                    raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal, false),
-                                type = PointerEventType.PetUp
-                            });
+                            AddInputResultEvent(
+                                state,
+                                currentPointerInput,
+                                state.lastInputDown.scene,
+                                -1,
+                                raycastRay,
+                                raycastHit,
+                                PointerEventType.PetUp
+                            );
                         }
                     }
-
                     state.lastInputDown.hasValue = false;
                 }
+                
                 if (isHoveringExit)
                 {
-                    bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneId);
-
+                    bool isValidScene = state.worldState.ContainsScene(state.lastInputHover.sceneNumber);
                     if (isValidScene)
                     {
-                        state.inputResultComponent.AddEvent(state.lastInputHover.scene, new InternalInputEventResults.EventData()
-                        {
-                            analog = 1,
-                            button = (InputAction)currentPointerInput.buttonId,
-                            hit = ProtoConvertUtils.ToPBRaycasHit(state.lastInputHover.entity.entityId, null,
-                                raycastRay, raycastHit.distance, raycastHit.point, raycastHit.normal),
-                            type = PointerEventType.PetHoverLeave
-                        });
+                        AddInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            state.lastInputHover.scene,
+                            state.lastInputHover.entity.entityId,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetHoverLeave
+                        );
                     }
                     state.lastInputHover.hasValue = false;
                 }
@@ -280,6 +281,22 @@ namespace ECSSystems.PointerInputSystem
             state.dataStoreEcs7.lastPointerInputEvent.hasValue = false;
             state.dataStoreEcs7.lastPointerRayHit.hasValue = false;
             state.isLastInputPointerDown = isPointerDown || (!isPointerUp && state.isLastInputPointerDown);
+        }
+
+        private static void AddInputResultEvent(State state, DataStore_ECS7.PointerEvent pointerEvent, IParcelScene scene,
+            long entityId, Ray ray, DataStore_ECS7.RaycastEvent.Hit raycastHit, PointerEventType pointerEventType)
+        {
+            raycastHit.point = WorldStateUtils.ConvertUnityToScenePosition(raycastHit.point, scene);
+            ray.origin = WorldStateUtils.ConvertUnityToScenePosition(ray.origin, scene);
+                        
+            state.inputResultComponent.AddEvent(scene, new InternalInputEventResults.EventData()
+            {
+                analog = 1,
+                button = (InputAction)pointerEvent.buttonId,
+                hit = ProtoConvertUtils.ToPBRaycasHit(entityId, null,
+                    ray, raycastHit.distance, raycastHit.point, raycastHit.normal, entityId != -1),
+                type = pointerEventType
+            });
         }
 
         private static IECSReadOnlyComponentData<InternalColliders> GetEntityWithCollider(

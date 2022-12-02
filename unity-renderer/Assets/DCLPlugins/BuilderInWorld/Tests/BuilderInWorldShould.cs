@@ -30,6 +30,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CreateContextCorrectly()
     {
         //Assert
@@ -38,6 +39,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void InitializePartsCorrectly()
     {
         //Arrange
@@ -48,6 +50,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void DisposePartsCorrectly()
     {
         //Act
@@ -58,6 +61,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CallUpdateCorrectly()
     {
         //Act
@@ -68,6 +72,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CallLateUpdateCorrectly()
     {
         //Act
@@ -78,6 +83,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CallOnGUICorrectly()
     {
         //Act

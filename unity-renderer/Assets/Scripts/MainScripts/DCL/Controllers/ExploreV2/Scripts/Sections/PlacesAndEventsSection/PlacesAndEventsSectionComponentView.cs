@@ -45,6 +45,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
     
     private Canvas canvas;
+    private int currentSelectedIndex = -1;
 
     public override void Awake()
     {
@@ -65,8 +66,14 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public void GoToSubsection(int subSectionIndex) =>
         subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
 
-    public void SetActive(bool isActive) => 
+    public void SetActive(bool isActive)
+    {
         canvas.enabled = isActive;
+
+        highlightsSubSection.SetActive(isActive && currentSelectedIndex == HIGHLIGHTS_SUB_SECTION_INDEX);
+        placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
+        eventsSubSection.SetActive(isActive && currentSelectedIndex == EVENTS_SUB_SECTION_INDEX);
+    }
 
     public override void RefreshControl()
     {
@@ -87,9 +94,21 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.AddListener(highlightsSubSection.SetActive);
-        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener(placesSubSection.SetActive);
-        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.AddListener(eventsSubSection.SetActive);
+        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
+        {
+            highlightsSubSection.SetActive(isActive);
+            currentSelectedIndex = HIGHLIGHTS_SUB_SECTION_INDEX;
+        });
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
+        {
+            placesSubSection.SetActive(isActive);
+            currentSelectedIndex = PLACES_SUB_SECTION_INDEX;
+        });
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
+        {
+            eventsSubSection.SetActive(isActive);
+            currentSelectedIndex = EVENTS_SUB_SECTION_INDEX;
+        });
 
         placesSubSection.SetActive(false);
         eventsSubSection.SetActive(false);

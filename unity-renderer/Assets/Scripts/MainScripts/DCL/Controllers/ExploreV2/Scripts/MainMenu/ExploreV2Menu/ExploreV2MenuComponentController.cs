@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using Decentraland.Bff;
 using ExploreV2Analytics;
 using UnityEngine;
 using Variables.RealmsInfo;
@@ -82,8 +83,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view = CreateView();
         SetVisibility(false);
 
-        DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
-        UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
+        DataStore.i.realm.realmName.OnChange += UpdateRealmInfo;
+        UpdateRealmInfo( DataStore.i.realm.realmName.Get());
 
         DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
         UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
@@ -136,7 +137,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Dispose()
     {
-        DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
+        DataStore.i.realm.realmName.OnChange -= UpdateRealmInfo;
         DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
 
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
@@ -292,18 +293,26 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         exploreV2Analytics.SendStartMenuSectionVisibility(section, toVisible);
     }
 
-    internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
+    private void UpdateRealmInfo(string current, string previous)
     {
-        if (currentRealm == null)
+        if (string.IsNullOrEmpty(current))
+            return;
+
+        UpdateRealmInfo(current);
+    }
+
+    internal void UpdateRealmInfo(string realmName)
+    {
+        if (string.IsNullOrEmpty(realmName))
             return;
 
         // Get the name of the current realm
-        view.currentRealmViewer.SetRealm(currentRealm.serverName);
-        view.currentRealmSelectorModal.SetCurrentRealm(currentRealm.serverName);
+        view.currentRealmViewer.SetRealm(realmName);
+        view.currentRealmSelectorModal.SetCurrentRealm(realmName);
 
         // Calculate number of users in the current realm
         List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
-        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealm.serverName);
+        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == realmName);
         int realmUsers = 0;
         if (currentRealmModel != null)
             realmUsers = currentRealmModel.usersCount;
@@ -313,28 +322,37 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
     {
-        if (!NeedToRefreshRealms(currentRealmList))
+        List<RealmModel> realmList = currentRealmList?.ToList();
+
+        if (!NeedToRefreshRealms(realmList))
             return;
 
         currentAvailableRealms.Clear();
-        CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
 
-        if (currentRealmList != null)
+        if (realmList != null)
         {
-            foreach (RealmModel realmModel in currentRealmList)
+            string serverName = ServerNameForCurrentRealm();
+            foreach (RealmModel realmModel in realmList)
             {
-                RealmRowComponentModel realmToAdd = new RealmRowComponentModel
+                currentAvailableRealms.Add(new RealmRowComponentModel
                 {
                     name = realmModel.serverName,
                     players = realmModel.usersCount,
-                    isConnected = realmModel.serverName == currentRealm?.serverName
-                };
-
-                currentAvailableRealms.Add(realmToAdd);
+                    isConnected = realmModel.serverName == serverName
+                });
             }
         }
 
         view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
+    }
+
+    private string ServerNameForCurrentRealm()
+    {
+        if (DataStore.i.realm.playerRealm.Get() != null)
+            return DataStore.i.realm.playerRealm.Get().serverName;
+        if(DataStore.i.realm.playerRealmAboutConfiguration.Get() != null)
+            return DataStore.i.realm.playerRealmAboutConfiguration.Get().RealmName;
+        return "";
     }
 
     internal bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)

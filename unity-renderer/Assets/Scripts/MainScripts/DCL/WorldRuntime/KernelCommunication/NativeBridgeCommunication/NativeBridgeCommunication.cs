@@ -6,7 +6,6 @@ using DCL.Models;
 public class NativeBridgeCommunication : IKernelCommunication
 {
     private static string currentEntityId;
-    private static string currentSceneId;
     private static int currentSceneNumber;
     private static string currentTag;
 
@@ -35,6 +34,7 @@ public class NativeBridgeCommunication : IKernelCommunication
         SetCallback_SceneReady(SceneReady);
 
         SetCallback_SetEntityId(SetEntityId);
+        // @deprecated use SetSceneNumber
         SetCallback_SetSceneId(SetSceneId);
         SetCallback_SetSceneNumber(SetSceneNumber);
         SetCallback_SetTag(SetTag);
@@ -153,7 +153,7 @@ public class NativeBridgeCommunication : IKernelCommunication
                 id = queryId,
                 raycastType = raycastType,
                 ray = ray,
-                sceneId = currentSceneId
+                sceneNumber = currentSceneNumber
             }
         };
 
@@ -253,8 +253,9 @@ public class NativeBridgeCommunication : IKernelCommunication
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SetEntityId(string id) { currentEntityId = id; }
 
-    [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetSceneId(string id) { currentSceneId = id; }
+    // @deprecated use SetSceneNumber
+    [MonoPInvokeCallback(typeof(JS_Delegate_VI))]
+    internal static void SetSceneId(string _) { }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VI))]
     internal static void SetSceneNumber(int sceneNumber) { currentSceneNumber = sceneNumber; }
@@ -314,7 +315,6 @@ public class NativeBridgeCommunication : IKernelCommunication
             message = new QueuedSceneMessage_Scene();
         }
 
-        message.sceneId = currentSceneId;
         message.sceneNumber = currentSceneNumber;
         message.tag = currentTag;
         message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
@@ -334,6 +334,7 @@ public class NativeBridgeCommunication : IKernelCommunication
     [DllImport("__Internal")]
     private static extern void SetCallback_SetEntityId(JS_Delegate_VS callback);
 
+    // @deprecated use SetSceneNumber
     [DllImport("__Internal")]
     private static extern void SetCallback_SetSceneId(JS_Delegate_VS callback);
 

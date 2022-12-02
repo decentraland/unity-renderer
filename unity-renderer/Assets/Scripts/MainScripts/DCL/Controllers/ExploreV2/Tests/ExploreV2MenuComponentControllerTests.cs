@@ -390,7 +390,7 @@ public class ExploreV2MenuComponentControllerTests
         DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
 
         // Act
-        exploreV2MenuController.UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
+        exploreV2MenuController.UpdateRealmInfo(testRealmName);
 
         // Assert
         exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);

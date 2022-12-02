@@ -33,6 +33,7 @@ namespace DCL.Tests
         }
         
         [Test]
+        [Explicit("BIW is deprecated")]
         public void TakeScreenshot()
         {
             //Assert
@@ -43,6 +44,7 @@ namespace DCL.Tests
         }
         
         [Test]
+        [Explicit("BIW is deprecated")]
         public void TakeScreenshotWithParameters()
         {
             //Assert

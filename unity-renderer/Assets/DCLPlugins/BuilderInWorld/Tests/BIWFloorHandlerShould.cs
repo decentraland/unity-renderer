@@ -50,6 +50,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void CreateFloor()
     {
         //Arrange
@@ -89,6 +90,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Explicit("BIW is deprecated")]
     public void ChangeFloor()
     {
         //Arrange

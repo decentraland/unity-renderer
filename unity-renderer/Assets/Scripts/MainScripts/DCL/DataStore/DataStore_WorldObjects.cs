@@ -21,6 +21,6 @@ namespace DCL
             public readonly BaseVariable<long> meshDataSize = new BaseVariable<long>();
         }
 
-        public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();
+        public readonly BaseDictionary<int, SceneData> sceneData = new BaseDictionary<int, SceneData>();
     }
 }

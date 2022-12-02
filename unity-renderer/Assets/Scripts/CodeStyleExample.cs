@@ -1,9 +1,10 @@
-﻿// NOTE: following separation lines are used only for clarity and do not take part of our commenting code style!
+﻿// NOTE: following separation lines (//----- some group) are used only for clarity and do not take part of our commenting code style!
 
 //----------------------------------------------------------------------------------------------------  Usings group
+using EasyButtons;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace DCL.Friends.WebApi
+namespace DCl.Social.Friends
 {
     [Serializable]
     public class FriendWithDirectMessages

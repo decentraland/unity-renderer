@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Chat;
 using DCL.Chat.Channels;
+using DCL.Social.Chat;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 

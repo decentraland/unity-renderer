@@ -462,7 +462,6 @@ public class WorldChatWindowComponentViewShould
         view.ShowConnectWallet();
         
         Assert.IsTrue(view.connectWalletContainer.activeSelf);
-        Assert.IsFalse(view.walletConnectedContainer.activeSelf);
         Assert.IsFalse(view.searchBarContainer.activeSelf);
     }
 
@@ -472,7 +471,6 @@ public class WorldChatWindowComponentViewShould
         view.HideConnectWallet();
         
         Assert.IsFalse(view.connectWalletContainer.activeSelf);
-        Assert.IsTrue(view.walletConnectedContainer.activeSelf);
         Assert.IsTrue(view.searchBarContainer.activeSelf);
     }
 

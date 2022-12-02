@@ -1,5 +1,6 @@
 using SocialFeaturesAnalytics;
 using System;
+using DCl.Social.Friends;
 using UnityEngine;
 
 public interface IPrivateChatComponentView

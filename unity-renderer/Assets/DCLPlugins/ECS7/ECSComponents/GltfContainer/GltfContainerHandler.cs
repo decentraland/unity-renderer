@@ -71,7 +71,7 @@ namespace DCL.ECSComponents
             gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(scene, entity, rendereable);
             gltfLoader.OnFailEvent += exception => OnLoadFail(scene, exception);
 
-            dataStoreEcs7.AddPendingResource(scene.sceneData.id, prevLoadedGltf);
+            dataStoreEcs7.AddPendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             gltfLoader.Load(model.Src);
         }
 
@@ -99,7 +99,7 @@ namespace DCL.ECSComponents
             }
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
-            dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
+            dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
         private void OnLoadFail(IParcelScene scene, Exception exception)
@@ -112,7 +112,7 @@ namespace DCL.ECSComponents
                 MaterialTransitionController material = transitionController[i];
                 Object.Destroy(material);
             }
-            dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
+            dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
         private void CleanUp(IParcelScene scene, IDCLEntity entity)
@@ -139,7 +139,7 @@ namespace DCL.ECSComponents
 
             if (!string.IsNullOrEmpty(prevLoadedGltf))
             {
-                dataStoreEcs7.RemovePendingResource(scene.sceneData.id, prevLoadedGltf);
+                dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             }
             // TODO: modify Animator component to remove `RemoveShapeReady` usage
             dataStoreEcs7.RemoveShapeReady(entity.entityId);

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7800649201733607761}
   - component: {fileID: 3589397491589073865}
   - component: {fileID: 7027690908109731583}
-  - component: {fileID: -6844462693027094784}
+  - component: {fileID: -3423186704916257156}
   m_Layer: 24
   m_Name: AvatarFootstep
   m_TagString: Untagged
@@ -4881,7 +4881,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &-6844462693027094784
+--- !u!114 &-3423186704916257156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4890,7 +4890,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5986454237008173496}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dafcf2c65303d24a994d54b7b771578, type: 3}
+  m_Script: {fileID: 11500000, guid: d2c6e6d9dd525194088a39360cd09247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   particles: {fileID: 7027690908109731583}

@@ -6,6 +6,7 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
+using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -76,7 +77,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -123,7 +125,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -144,7 +147,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         controller.AddFriendsWindow(friendsHudController);
 
         var channelSearchController = new SearchChannelsWindowController(this.chatController, Substitute.For<IMouseCatcher>(), new DataStore(),
-            Substitute.For<ISocialAnalytics>(), Substitute.For<IUserProfileBridge>(), Substitute.For<IChannelsFeatureFlagService>());
+            Substitute.For<ISocialAnalytics>(), Substitute.For<IChannelsFeatureFlagService>());
         channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
         controller.AddChannelSearch(channelSearchController);
 

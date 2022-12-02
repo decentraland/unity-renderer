@@ -11,8 +11,8 @@ using Object = UnityEngine.Object;
 
 public class ECS7TestUtilsScenesAndEntities : IDisposable
 {
-    private Dictionary<string, ECS7TestScene> scenes = new Dictionary<string, ECS7TestScene>();
-    private Dictionary<string, GameObject> scenesGO = new Dictionary<string, GameObject>();
+    private Dictionary<int, ECS7TestScene> scenes = new Dictionary<int, ECS7TestScene>();
+    private Dictionary<int, GameObject> scenesGO = new Dictionary<int, GameObject>();
     private ECSComponentsManager componentsManager;
 
     public ECS7TestUtilsScenesAndEntities() : this(null) { }
@@ -31,37 +31,37 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         }
     }
 
-    public ECS7TestScene GetScene(string sceneId)
+    public ECS7TestScene GetScene(int sceneNumber)
     {
-        scenes.TryGetValue(sceneId, out ECS7TestScene scene);
+        scenes.TryGetValue(sceneNumber, out ECS7TestScene scene);
         return scene;
     }
 
-    public ECS7TestScene CreateScene(string sceneId)
+    public ECS7TestScene CreateScene(int sceneNumber)
     {
-        return CreateScene(sceneId, Vector2Int.zero, new[] { Vector2Int.zero });
+        return CreateScene(sceneNumber, Vector2Int.zero, new[] { Vector2Int.zero });
     }
 
-    public ECS7TestScene CreateScene(string sceneId, Vector2Int baseParcel, IList<Vector2Int> parcels)
+    public ECS7TestScene CreateScene(int sceneNumber, Vector2Int baseParcel, IList<Vector2Int> parcels)
     {
-        ECS7TestScene scene = Internal_CreateSene(sceneId, baseParcel, parcels);
-        scenes.Add(sceneId, scene);
-        scenesGO.Add(sceneId, scene.GetSceneTransform().gameObject);
+        ECS7TestScene scene = Internal_CreateSene(sceneNumber, baseParcel, parcels);
+        scenes.Add(sceneNumber, scene);
+        scenesGO.Add(sceneNumber, scene.GetSceneTransform().gameObject);
         return scene;
     }
 
-    private ECS7TestScene Internal_CreateSene(string sceneId, Vector2Int baseParcel, IList<Vector2Int> parcels)
+    private ECS7TestScene Internal_CreateSene(int sceneNumber, Vector2Int baseParcel, IList<Vector2Int> parcels)
     {
         ECS7TestScene scene = new ECS7TestScene();
 
-        GameObject go = new GameObject($"SCENE_{sceneId}");
+        GameObject go = new GameObject($"SCENE_NUMBER_{sceneNumber}");
         go.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(baseParcel.x, baseParcel.y));
 
         // properties
         scene.entities = new Dictionary<long, IDCLEntity>();
         scene.sceneData = new LoadParcelScenesMessage.UnityParcelScene()
         {
-            id = sceneId,
+            sceneNumber = sceneNumber,
             basePosition = baseParcel,
             parcels = parcels.ToArray()
         };
@@ -107,7 +107,7 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
 
     private void Internal_DeleteScene(IParcelScene scene)
     {
-        if (scenesGO.TryGetValue(scene.sceneData.id, out GameObject go))
+        if (scenesGO.TryGetValue(scene.sceneData.sceneNumber, out GameObject go))
         {
             Object.DestroyImmediate(go);
         }
@@ -115,8 +115,8 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         {
             Internal_DeleteEntity(entity);
         }
-        scenesGO.Remove(scene.sceneData.id);
-        scenes.Remove(scene.sceneData.id);
+        scenesGO.Remove(scene.sceneData.sceneNumber);
+        scenes.Remove(scene.sceneData.sceneNumber);
     }
 
     private void Internal_DeleteEntity(IDCLEntity entity)

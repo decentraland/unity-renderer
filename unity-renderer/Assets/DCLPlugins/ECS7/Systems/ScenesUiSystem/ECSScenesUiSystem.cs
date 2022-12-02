@@ -1,84 +1,92 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
 {
     public class ECSScenesUiSystem : IDisposable
     {
-        private class State
-        {
-            public UIDocument uiDocument;
-            public IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
-            public IWorldState worldState;
-            public BaseList<IParcelScene> loadedScenes;
-            public string lastSceneId;
-            public bool isPendingSceneUI;
-            public IParcelScene currentScene;
-        }
+        private readonly UIDocument uiDocument;
+        private readonly IInternalECSComponent<InternalUiContainer> internalUiContainerComponent;
+        private readonly IWorldState worldState;
+        private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly BaseVariable<bool> loadingHudVisibleVariable;
 
-        private readonly State state;
+        private int lastSceneNumber;
+        private bool isPendingSceneUI;
+        private IParcelScene currentScene;
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
-            IWorldState worldState)
+            IWorldState worldState,
+            BaseVariable<bool> loadingHudVisibleVariable)
         {
-            state = new State()
-            {
-                uiDocument = uiDocument,
-                internalUiContainerComponent = internalUiContainerComponent,
-                worldState = worldState,
-                loadedScenes = loadedScenes,
-                lastSceneId = null,
-                isPendingSceneUI = true,
-                currentScene = null
-            };
+            this.uiDocument = uiDocument;
+            this.internalUiContainerComponent = internalUiContainerComponent;
+            this.worldState = worldState;
+            this.loadedScenes = loadedScenes;
+            this.loadingHudVisibleVariable = loadingHudVisibleVariable;
 
-            state.loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
+            lastSceneNumber = -1;
+            isPendingSceneUI = true;
+            currentScene = null;
+
+            loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
+            loadingHudVisibleVariable.OnChange += LoadingHudVisibleOnOnChange;
+
+            LoadingHudVisibleOnOnChange(loadingHudVisibleVariable.Get(), false);
         }
 
         public void Dispose()
         {
-            state.loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
+            loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
+            loadingHudVisibleVariable.OnChange -= LoadingHudVisibleOnOnChange;
         }
 
         public void Update()
         {
-            string currentSceneId = state.worldState.GetCurrentSceneId();
-            bool sceneChanged = state.lastSceneId != currentSceneId;
-            state.lastSceneId = currentSceneId;
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
+            bool sceneChanged = lastSceneNumber != currentSceneNumber;
+            lastSceneNumber = currentSceneNumber;
 
-            ApplyParenting(state.uiDocument, state.internalUiContainerComponent);
+            HashSet<IParcelScene> scenesUiToSort = ApplyParenting(uiDocument, internalUiContainerComponent, currentSceneNumber);
+
+            // If parenting detects that the order for ui elements has changed, it should sort the ui tree
+            if (scenesUiToSort.Count > 0)
+            {
+                SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
+            }
 
             // clear UI if scene changed
-            if (sceneChanged && !state.isPendingSceneUI)
+            if (sceneChanged && !isPendingSceneUI)
             {
-                ClearCurrentSceneUI(state.uiDocument);
-                state.isPendingSceneUI = !string.IsNullOrEmpty(currentSceneId);
+                ClearCurrentSceneUI(uiDocument, currentScene, internalUiContainerComponent);
+                isPendingSceneUI = currentSceneNumber > 0;
             }
-            if (sceneChanged && state.currentScene != null && currentSceneId != state.currentScene.sceneData.id)
+
+            if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
             {
-                state.currentScene = null;
+                currentScene = null;
             }
 
             // UI not set for current scene yet
-            if (state.isPendingSceneUI)
+            if (isPendingSceneUI)
             {
                 // we get current scene reference
-                state.currentScene ??= GetCurrentScene(currentSceneId, state.loadedScenes);
+                currentScene ??= GetCurrentScene(currentSceneNumber, loadedScenes);
 
                 // we apply current scene UI
-                if (state.currentScene != null)
+                if (currentScene != null)
                 {
-                    if (ApplySceneUI(state.internalUiContainerComponent, state.uiDocument, state.currentScene))
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene))
                     {
-                        state.isPendingSceneUI = false;
+                        isPendingSceneUI = false;
                     }
                 }
             }
@@ -86,31 +94,49 @@ namespace ECSSystems.ScenesUiSystem
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
         {
-            if (scene.sceneData.id == state.lastSceneId)
+            if (scene.sceneData.sceneNumber == lastSceneNumber)
             {
-                state.lastSceneId = null;
+                lastSceneNumber = -1;
             }
         }
 
-        internal static void ApplyParenting(UIDocument uiDocument, IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
+        private void LoadingHudVisibleOnOnChange(bool current, bool previous)
         {
+            SetDocumentActive(uiDocument, !current);
+        }
+
+        internal static HashSet<IParcelScene> ApplyParenting(UIDocument uiDocument,
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
+        {
+            HashSet<IParcelScene> scenesToSort = new HashSet<IParcelScene>();
+
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
+
             for (int i = 0; i < allContainers.Count; i++)
             {
                 var uiContainerData = allContainers[i].value;
+
+                // check if ui should be sort (only current and global scenes)
+                if (uiContainerData.model.shouldSort
+                    && (uiContainerData.scene.isPersistent || uiContainerData.scene.sceneData.sceneNumber == currentSceneNumber))
+                {
+                    scenesToSort.Add(uiContainerData.scene);
+                }
 
                 // add global scenes ui but
                 // skip non-global scenes ui containers on root entity since no parenting is needed
                 if (uiContainerData.entity.entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
                 {
                     var model = uiContainerData.model;
+
                     if (uiContainerData.scene.isPersistent && model.parentElement == null)
                     {
                         uiDocument.rootVisualElement.Add(model.rootElement);
                         model.parentElement = uiDocument.rootVisualElement;
                         internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, model);
                     }
+
                     continue;
                 }
 
@@ -134,25 +160,40 @@ namespace ECSSystems.ScenesUiSystem
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
+
+            return scenesToSort;
         }
 
-        internal static void ClearCurrentSceneUI(UIDocument uiDocument)
+        internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
-            if (uiDocument.rootVisualElement.childCount > 0)
+            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+                internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            if (currentSceneContainer == null)
+                return;
+
+            InternalUiContainer model = currentSceneContainer.model;
+            model.parentElement = null;
+
+            if (uiDocument.rootVisualElement.Contains(model.rootElement))
             {
-                uiDocument.rootVisualElement.RemoveAt(0);
+                uiDocument.rootVisualElement.Remove(model.rootElement);
             }
+
+            internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
 
-        internal static IParcelScene GetCurrentScene(string sceneId, IList<IParcelScene> loadedScenes)
+        internal static IParcelScene GetCurrentScene(int sceneNumber, IList<IParcelScene> loadedScenes)
         {
-            if (string.IsNullOrEmpty(sceneId))
+            if (sceneNumber <= 0)
                 return null;
 
             IParcelScene currentScene = null;
+
             for (int i = 0; i < loadedScenes.Count; i++)
             {
-                if (loadedScenes[i].sceneData.id == sceneId)
+                if (loadedScenes[i].sceneData.sceneNumber == sceneNumber)
                 {
                     currentScene = loadedScenes[i];
                     break;
@@ -176,6 +217,7 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }
+
             return false;
         }
 
@@ -190,7 +232,83 @@ namespace ECSSystems.ScenesUiSystem
             {
                 parentDataModel = new InternalUiContainer();
             }
+
             return parentDataModel;
+        }
+
+        internal static void SortSceneUiTree(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+            ICollection<IParcelScene> scenesToSort)
+        {
+            Dictionary<VisualElement, Dictionary<long, RightOfData>> sortSceneTree = new Dictionary<VisualElement, Dictionary<long, RightOfData>>();
+
+            // Setup UI sorting
+            var allContainers = internalUiContainerComponent.GetForAll();
+
+            for (int i = 0; i < allContainers.Count; i++)
+            {
+                var uiContainerData = allContainers[i].value;
+
+                if (!scenesToSort.Contains(uiContainerData.scene))
+                    continue;
+
+                InternalUiContainer model = uiContainerData.model;
+
+                // If not parented yet, we skip it
+                if (model.parentElement == null)
+                    continue;
+
+                // Ignore root scene UI container
+                if (uiContainerData.entity.entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                    continue;
+
+                if (!sortSceneTree.TryGetValue(model.parentElement, out var sceneTreeDictionary))
+                {
+                    sceneTreeDictionary = new Dictionary<long, RightOfData>();
+                    sortSceneTree[model.parentElement] = sceneTreeDictionary;
+                }
+
+                sceneTreeDictionary[model.rigthOf] = new RightOfData(model.rootElement,
+                    uiContainerData.entity.entityId);
+
+                model.shouldSort = false;
+                internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity.entityId, model);
+            }
+
+            // Apply UI sorting
+            foreach (var pairs in sortSceneTree)
+            {
+                VisualElement parentElement = pairs.Key;
+                Dictionary<long, RightOfData> sceneSort = pairs.Value;
+
+                int index = 0;
+                long nextElementId = 0;
+
+                while (sceneSort.TryGetValue(nextElementId, out RightOfData rightOfData))
+                {
+                    sceneSort.Remove(nextElementId);
+                    parentElement.Remove(rightOfData.element);
+                    parentElement.Insert(index, rightOfData.element);
+                    nextElementId = rightOfData.id;
+                    index++;
+                }
+            }
+        }
+
+        private static void SetDocumentActive(UIDocument uiDocument, bool active)
+        {
+            uiDocument.rootVisualElement.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private readonly struct RightOfData
+        {
+            public readonly long id;
+            public readonly VisualElement element;
+
+            public RightOfData(VisualElement element, long id)
+            {
+                this.id = id;
+                this.element = element;
+            }
         }
     }
 }

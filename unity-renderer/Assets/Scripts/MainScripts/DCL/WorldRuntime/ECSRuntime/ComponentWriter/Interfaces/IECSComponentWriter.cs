@@ -24,10 +24,10 @@ namespace DCL.ECSRuntime
         void AddOrReplaceComponentSerializer<T>(int componentId, Func<T, byte[]> serializer);
         void RemoveComponentSerializer(int componentId);
         void PutComponent<T>(IParcelScene scene, IDCLEntity entity, int componentId, T model, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
-        void PutComponent<T>(string sceneId, long entityId, int componentId, T model, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
-        void PutComponent<T>(string sceneId, long entityId, int componentId, T model, long minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
+        void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
+        void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, long minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
         void RemoveComponent(IParcelScene scene, IDCLEntity entity, int componentId, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
-        void RemoveComponent(string sceneId, long entityId, int componentId, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
-        void RemoveComponent(string sceneId, long entityId, int componentId, long minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
+        void RemoveComponent(int sceneNumber, long entityId, int componentId, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
+        void RemoveComponent(int sceneNumber, long entityId, int componentId, long minTimeStamp, ECSComponentWriteType writeType = ECSComponentWriteType.DEFAULT);
     }
 }

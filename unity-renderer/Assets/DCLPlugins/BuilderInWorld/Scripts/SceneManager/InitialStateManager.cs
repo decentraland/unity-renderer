@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
 using Cysharp.Threading.Tasks;
-using DCL.Builder.Manifest;
 using DCL.Configuration;
 using DCL.Helpers;
 using Newtonsoft.Json;
@@ -149,7 +144,7 @@ namespace DCL.Builder
                 StatelessManifest statelessManifest = JsonConvert.DeserializeObject<StatelessManifest>(statelesString);
                 manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(size, landCoords);
                 manifest.scene = ManifestTranslator.StatelessToWebBuilderScene(statelessManifest, size);
-                manifest.project.scene_id = manifest.scene.id;
+                manifest.project.scene_number = manifest.scene.sceneNumber;
             }
             catch { }
 

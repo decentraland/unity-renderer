@@ -52,6 +52,7 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 0
+      enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
@@ -89,6 +90,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 87c2ea01f3aa94b648d225daa8b22214, type: 3}
   - {fileID: 21300000, guid: 44dd7b11a83bf4605916ad96f6ce3881, type: 3}
   - {fileID: 21300000, guid: 3354932168610498ebc347e78ae840d7, type: 3}
+  - {fileID: 21300000, guid: bab56821543b14cd099d751c74e5c0f0, type: 3}
   - {fileID: 21300000, guid: 38dc6a210cae34a439bd286f6c382165, type: 3}
   - {fileID: 21300000, guid: e8a30441514b5499ea02a9e5a4617028, type: 3}
   - {fileID: 21300000, guid: 5fc25d41256974b138a7c25b1c0b30de, type: 3}
@@ -263,6 +265,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6dca2ab88567048dea54964cd8fee779, type: 3}
   - {fileID: 21300000, guid: dd9591c87b7254d418d968179d9de74a, type: 3}
   - {fileID: 21300000, guid: cd958ac803911481ea50edce80f46f1c, type: 3}
+  - {fileID: 21300000, guid: 8152dcc881fb74a57b73473687603bcc, type: 3}
   - {fileID: 21300000, guid: 194fcbd882d15453b90e80d668ab4bad, type: 3}
   - {fileID: 21300000, guid: 874182f8d364145bd9836b8e817019eb, type: 3}
   - {fileID: 21300000, guid: 9ed344f88537e43a6b35556d00b77b39, type: 3}
@@ -357,11 +360,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 6017049c5a0dc43f6a4a68f1b4e28664, type: 3}
+  - {fileID: 21300000, guid: 9fb5589c5caac46e5882f2be6709b03d, type: 3}
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: 21fb0bbc6fe494c8789ea7221ac96c59, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
   - {fileID: 21300000, guid: a6f0d6dcdab344ad88af35e7ed9071b5, type: 3}
   - {fileID: 21300000, guid: cfa089dc4012b4f59964c220fbf31fba, type: 3}
+  - {fileID: 21300000, guid: 3576a9dcb9ec94ac1b908b89c3571e75, type: 3}
   - {fileID: 21300000, guid: 6d5f6edc2bfb441e1969ee1e10c3c572, type: 3}
   - {fileID: 21300000, guid: 2f88b1fc7390f42f881f72ccfcde00db, type: 3}
   - {fileID: 21300000, guid: 654b9c0dd7f12442687bd4d4b034ece7, type: 3}
@@ -420,6 +425,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: e917afbf829204e53b97fce8b275dafd, type: 3}
   - {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
+  - {fileID: 21300000, guid: 95180acf19d8343baabfcdd0c10079d1, type: 3}
   - {fileID: 21300000, guid: 64036ccffced12d48a00a842b7c6f3e8, type: 3}
   - {fileID: 21300000, guid: 780ed9eff07384ade9aaa318dbbe63b7, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -451,6 +457,7 @@ SpriteAtlas:
   - Rarity
   - MenuButton
   - DownloadIconOutline
+  - GuestImg
   - ContainerShadowRadiusFour
   - NFTStarContainer
   - SpeakerOn
@@ -625,6 +632,7 @@ SpriteAtlas:
   - RejectButton
   - Container24Shadow10
   - ContainerRadius10
+  - BackgroundGuest
   - TutorialIcon
   - BackButton
   - ContainerShadow
@@ -719,11 +727,13 @@ SpriteAtlas:
   - CrowdIcon
   - OutlineGradient
   - EndVoiceChat
+  - RhombusShapedGradient
   - HelpIcon
   - SettingsOff
   - VoiceChatPlayer
   - HideNameIcon
   - ChatOff
+  - LinearGradientNFTs
   - ArrowGradient
   - ContainerOutline100
   - MarketplaceOn
@@ -782,6 +792,7 @@ SpriteAtlas:
   - Container24
   - MinusIcon
   - CheckmarkRed
+  - ArrowOutline
   - RealmsIcon
   - OutlineGreyButton
   m_RenderDataMap: {}

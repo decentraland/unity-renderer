@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using DCL.Social.Friends;
 using UnityEngine;
 
 public class FriendEntryModel

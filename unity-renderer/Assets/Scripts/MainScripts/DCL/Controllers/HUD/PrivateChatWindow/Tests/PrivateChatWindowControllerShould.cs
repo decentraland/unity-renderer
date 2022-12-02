@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Interface;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -32,7 +34,7 @@ public class PrivateChatWindowControllerShould
         internalChatView = Substitute.For<IChatHUDComponentView>();
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         view.ChatHUD.Returns(internalChatView);
-        
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         friendsController = Substitute.For<IFriendsController>();
 
@@ -63,7 +65,7 @@ public class PrivateChatWindowControllerShould
     public void ClearAllMessagesWhenInitialize()
     {
         WhenControllerInitializes(FRIEND_ID);
-        
+
         internalChatView.Received(1).ClearAllEntries();
     }
 
@@ -76,9 +78,9 @@ public class PrivateChatWindowControllerShould
         var msg2 = new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "message2");
         var msg3 = new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "message3");
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg1);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg2);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage>>(msg3);
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg2});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg3});
 
         internalChatView.Received(3).AddEntry(Arg.Is<ChatEntryModel>(model =>
             model.messageType == ChatMessage.Type.PRIVATE
@@ -153,7 +155,7 @@ public class PrivateChatWindowControllerShould
         controller.SetVisibility(false);
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        
+
         chatController.ReceivedWithAnyArgs(1).GetPrivateMessages(default, default, default);
     }
 
@@ -164,17 +166,17 @@ public class PrivateChatWindowControllerShould
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
         view.IsActive.Returns(info => isViewActive);
-        
+
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        
+
         internalChatView.Received(1).FocusInputField();
         view.Received().Setup(Arg.Is<UserProfile>(u => u.userId == FRIEND_ID), true, false);
         view.Received(1).Show();
         Assert.IsTrue(isViewActive);
         chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
     }
-    
+
     [Test]
     public void Hide()
     {
@@ -182,11 +184,11 @@ public class PrivateChatWindowControllerShould
         view.When(v => v.Show()).Do(info => isViewActive = true);
         view.When(v => v.Hide()).Do(info => isViewActive = false);
         view.IsActive.Returns(info => isViewActive);
-        
+
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
         controller.SetVisibility(false);
-        
+
         internalChatView.Received(1).UnfocusInputField();
         view.Received(1).Hide();
         Assert.IsFalse(isViewActive);
@@ -200,7 +202,7 @@ public class PrivateChatWindowControllerShould
         view.IsActive.Returns(true);
 
         mouseCatcher.OnMouseLock += Raise.Event<Action>();
-        
+
         view.Received(1).Hide();
         internalChatView.Received(1).UnfocusInputField();
     }
@@ -210,7 +212,7 @@ public class PrivateChatWindowControllerShould
     {
         WhenControllerInitializes(FRIEND_ID);
         controller.SetVisibility(true);
-        
+
         view.Received(1).Show();
     }
 
@@ -242,6 +244,30 @@ public class PrivateChatWindowControllerShould
             null);
     }
 
+    [Test]
+    public void MarkAsSeenOnlyOnceWhenManyMessagesReceived()
+    {
+        WhenControllerInitializes(FRIEND_ID);
+        chatController.ClearReceivedCalls();
+        view.IsActive.Returns(true);
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+        {
+            new ChatMessage(
+                "msg1", ChatMessage.Type.PRIVATE, FRIEND_ID, "hey", 100)
+            {
+                recipient = OWN_USER_ID
+            },
+            new ChatMessage(
+                "msg2", ChatMessage.Type.PRIVATE, FRIEND_ID, "hey", 101)
+            {
+                recipient = OWN_USER_ID
+            }
+        });
+
+        chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
+    }
+
     private void WhenControllerInitializes(string friendId)
     {
         controller.Initialize(view);
@@ -259,7 +285,7 @@ public class PrivateChatWindowControllerShould
 
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(ownProfileModel);
-        
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         userProfileBridge.Get(ownProfileModel.userId).Returns(ownUserProfile);

@@ -62,6 +62,7 @@ public class JoinChannelComponentController : IDisposable
             socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
 
         joinChannelView.Hide();
+        channelsDataStore.currentJoinChannelModal.Set(null);
     }
 
     private void OnConfirmJoin(string channelName)
@@ -73,10 +74,10 @@ public class JoinChannelComponentController : IDisposable
 
         var alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
 
-        if (alreadyJoinedChannel == null)
+        if (alreadyJoinedChannel == null || !alreadyJoinedChannel.Joined)
             chatController.JoinOrCreateChannel(channelName);
         else
-            dataStore.channels.channelToBeOpenedFromLink.Set(alreadyJoinedChannel.ChannelId);
+            dataStore.channels.channelToBeOpened.Set(alreadyJoinedChannel.ChannelId);
 
         if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
             socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());

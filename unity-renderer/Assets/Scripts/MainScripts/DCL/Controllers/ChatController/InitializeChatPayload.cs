@@ -6,5 +6,6 @@ namespace DCL.Chat.WebApi
     public class InitializeChatPayload
     {
         public int totalUnseenMessages;
+        public string channelToJoin;
     }
 }
