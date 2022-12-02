@@ -46,6 +46,9 @@ namespace DCL.Chat.Notifications
                 friendsController,
                 userProfileBridge,
                 profanityFilter);
+
+            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
         }
 
         [TearDown]
