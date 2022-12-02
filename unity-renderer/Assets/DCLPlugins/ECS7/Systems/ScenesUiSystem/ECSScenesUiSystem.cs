@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
@@ -58,21 +58,16 @@ namespace ECSSystems.ScenesUiSystem
             HashSet<IParcelScene> scenesUiToSort = ApplyParenting(uiDocument, internalUiContainerComponent, currentSceneNumber);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
-            if (scenesUiToSort.Count > 0)
-            {
-                SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
-            }
+            if (scenesUiToSort.Count > 0) { SortSceneUiTree(internalUiContainerComponent, scenesUiToSort); }
 
             // clear UI if scene changed
             if (sceneChanged && !isPendingSceneUI)
             {
-                ClearCurrentSceneUI(uiDocument);
+                ClearCurrentSceneUI(uiDocument, currentScene, internalUiContainerComponent);
                 isPendingSceneUI = currentSceneNumber > 0;
             }
-            if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
-            {
-                currentScene = null;
-            }
+
+            if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber) { currentScene = null; }
 
             // UI not set for current scene yet
             if (isPendingSceneUI)
@@ -83,20 +78,14 @@ namespace ECSSystems.ScenesUiSystem
                 // we apply current scene UI
                 if (currentScene != null)
                 {
-                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene))
-                    {
-                        isPendingSceneUI = false;
-                    }
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene)) { isPendingSceneUI = false; }
                 }
             }
         }
 
         private void LoadedScenesOnOnRemoved(IParcelScene scene)
         {
-            if (scene.sceneData.sceneNumber == lastSceneNumber)
-            {
-                lastSceneNumber = -1;
-            }
+            if (scene.sceneData.sceneNumber == lastSceneNumber) { lastSceneNumber = -1; }
         }
 
         private void LoadingHudVisibleOnOnChange(bool current, bool previous)
@@ -111,28 +100,28 @@ namespace ECSSystems.ScenesUiSystem
 
             // check for orphan ui containers
             var allContainers = internalUiContainerComponent.GetForAll();
+
             for (int i = 0; i < allContainers.Count; i++)
             {
                 var uiContainerData = allContainers[i].value;
 
                 // check if ui should be sort (only current and global scenes)
                 if (uiContainerData.model.shouldSort
-                    && (uiContainerData.scene.isPersistent || uiContainerData.scene.sceneData.sceneNumber == currentSceneNumber))
-                {
-                    scenesToSort.Add(uiContainerData.scene);
-                }
+                    && (uiContainerData.scene.isPersistent || uiContainerData.scene.sceneData.sceneNumber == currentSceneNumber)) { scenesToSort.Add(uiContainerData.scene); }
 
                 // add global scenes ui but
                 // skip non-global scenes ui containers on root entity since no parenting is needed
                 if (uiContainerData.entity.entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
                 {
                     var model = uiContainerData.model;
+
                     if (uiContainerData.scene.isPersistent && model.parentElement == null)
                     {
                         uiDocument.rootVisualElement.Add(model.rootElement);
                         model.parentElement = uiDocument.rootVisualElement;
                         internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, model);
                     }
+
                     continue;
                 }
 
@@ -156,15 +145,25 @@ namespace ECSSystems.ScenesUiSystem
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
+
             return scenesToSort;
         }
 
-        internal static void ClearCurrentSceneUI(UIDocument uiDocument)
+        internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
-            if (uiDocument.rootVisualElement.childCount > 0)
-            {
-                uiDocument.rootVisualElement.RemoveAt(0);
-            }
+            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+                internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            if (currentSceneContainer == null)
+                return;
+
+            InternalUiContainer model = currentSceneContainer.model;
+            model.parentElement = null;
+
+            if (uiDocument.rootVisualElement.Contains(model.rootElement)) { uiDocument.rootVisualElement.Remove(model.rootElement); }
+
+            internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
 
         internal static IParcelScene GetCurrentScene(int sceneNumber, IList<IParcelScene> loadedScenes)
@@ -173,6 +172,7 @@ namespace ECSSystems.ScenesUiSystem
                 return null;
 
             IParcelScene currentScene = null;
+
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 if (loadedScenes[i].sceneData.sceneNumber == sceneNumber)
@@ -199,6 +199,7 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }
+
             return false;
         }
 
@@ -209,10 +210,8 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent.GetFor(scene, parentId)?.model;
 
             // create root entity ui container if needed
-            if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
-            {
-                parentDataModel = new InternalUiContainer();
-            }
+            if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY) { parentDataModel = new InternalUiContainer(); }
+
             return parentDataModel;
         }
 
@@ -223,6 +222,7 @@ namespace ECSSystems.ScenesUiSystem
 
             // Setup UI sorting
             var allContainers = internalUiContainerComponent.GetForAll();
+
             for (int i = 0; i < allContainers.Count; i++)
             {
                 var uiContainerData = allContainers[i].value;
