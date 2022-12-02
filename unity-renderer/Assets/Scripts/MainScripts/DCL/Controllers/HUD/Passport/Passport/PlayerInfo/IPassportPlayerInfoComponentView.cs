@@ -2,6 +2,7 @@ using DCl.Social.Friends;
 using System;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using UIComponents.Scripts.Components;
 
 namespace DCL.Social.Passports
 {

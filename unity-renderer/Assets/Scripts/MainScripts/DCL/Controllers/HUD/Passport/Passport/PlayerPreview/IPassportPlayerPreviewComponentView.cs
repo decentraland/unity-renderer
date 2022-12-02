@@ -1,3 +1,5 @@
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports

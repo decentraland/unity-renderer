@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -690,7 +691,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 ResetPreviewEmote();
             }
 
-            CharacterPreview.SetFocus(global::CharacterPreviewController.CameraFocus.DefaultEditing);
+            CharacterPreview.SetFocus(global::MainScripts.DCL.Controllers.HUD.CharacterPreview.CharacterPreviewController.CameraFocus.DefaultEditing);
             emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(true, notifyEvent: false);
         });
     }

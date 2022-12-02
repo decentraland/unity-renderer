@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports

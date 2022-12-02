@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 
 public interface IAvatarEditorHUDView : IDisposable

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AvatarEditorHUD_Tests;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NSubstitute.Core.Arguments;
 using NSubstitute.ReceivedExtensions;

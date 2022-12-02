@@ -5,6 +5,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Rendering;
 using DCL.Services;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using UnityEngine;
 
 namespace DCL

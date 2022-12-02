@@ -4,6 +4,24 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+namespace UIComponents.Scripts.Components
+{
+    public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel> where TModel : IEquatable<TModel>
+    {
+        [field: SerializeField]
+        protected TModel model { get; private set; }
+
+        public void SetModel(TModel newModel)
+        {
+            if (!Equals(model, newModel))
+            {
+                model = newModel;
+                RefreshControl();
+            }
+        }
+    }
+}
+
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
@@ -153,25 +171,5 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     {
         T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
         return buttonComponentView;
-    }
-}
-
-public interface IBaseComponentView<in TModel> : IBaseComponentView
-{
-    void SetModel(TModel newModel);
-}
-
-public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel> where TModel : IEquatable<TModel>
-{
-    [field: SerializeField]
-    protected TModel model { get; private set; }
-
-    public void SetModel(TModel newModel)
-    {
-        if (!Equals(model, newModel))
-        {
-            model = newModel;
-            RefreshControl();
-        }
     }
 }
