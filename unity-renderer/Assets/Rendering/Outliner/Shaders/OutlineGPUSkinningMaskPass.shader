@@ -115,7 +115,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 float3 gpuSkinnedPositionOS = float3(0,0,0);
                 ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
-                input.positionOS *= 2;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
