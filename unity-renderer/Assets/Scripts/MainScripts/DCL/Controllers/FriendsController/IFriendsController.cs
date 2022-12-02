@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL.Social.Friends;
+using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
 namespace DCl.Social.Friends
 {
@@ -14,7 +15,7 @@ namespace DCl.Social.Friends
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
-        event Action<FriendRequest> OnAddFriendRequest;
+        event Action<SocialFriendRequest> OnAddFriendRequest;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }
@@ -28,7 +29,7 @@ namespace DCl.Social.Friends
         UserStatus GetUserStatus(string userId);
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
-        UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody);
+        UniTask<SocialFriendRequest> RequestFriendship(string friendUserId, string messageBody);
         void CancelRequest(string friendUserId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);
@@ -37,7 +38,7 @@ namespace DCl.Social.Friends
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
     }

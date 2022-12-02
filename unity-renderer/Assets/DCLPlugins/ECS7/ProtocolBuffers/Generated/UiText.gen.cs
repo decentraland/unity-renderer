@@ -159,7 +159,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.Font Font {
-      get { if ((_hasBits0 & 2) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.FLiberationSans; } }
+      get { if ((_hasBits0 & 2) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.FSansSerif; } }
       set {
         _hasBits0 |= 2;
         font_ = value;

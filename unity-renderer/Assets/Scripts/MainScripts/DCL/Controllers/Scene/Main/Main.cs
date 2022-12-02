@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Social.Chat;
+using DCl.Social.Friends;
 using DCL.Social.Friends;
 using UnityEngine;
 
@@ -46,7 +47,9 @@ namespace DCL
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
             WebInterfaceFriendsApiBridge newFriendRequestsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
             newFriendRequestsApiBridgeMock = new NewFriendRequestsApiBridgeMock(newFriendRequestsApiBridge, new UserProfileWebInterfaceBridge());
-            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(newFriendRequestsApiBridge, newFriendRequestsApiBridgeMock, DataStore.i));
+            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
+                new RPCFriendsApiBridge(Environment.i.serviceLocator.Get<IRPC>(), newFriendRequestsApiBridge),
+                newFriendRequestsApiBridgeMock, DataStore.i));
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
