@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1757001767702771801
+--- !u!114 &-3430728822294135607
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,8 +112,6 @@ Material:
     - _OuterHardnessFog: 1
     - _OuterRadiusFog: 1.717
     - _PusleOpacity: 0
-    - _QueueControl: 0
-    - _QueueOffset: 0
     - _RoadFade: 5000
     - _RoadScale: 5
     - _RoadsBalancer: 0
