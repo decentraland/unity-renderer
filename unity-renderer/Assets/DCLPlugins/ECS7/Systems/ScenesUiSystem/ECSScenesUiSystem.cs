@@ -67,7 +67,10 @@ namespace ECSSystems.ScenesUiSystem
                 isPendingSceneUI = currentSceneNumber > 0;
             }
 
-            if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber) { currentScene = null; }
+            if (sceneChanged && currentScene != null && currentSceneNumber != currentScene.sceneData.sceneNumber)
+            {
+                currentScene = null;
+            }
 
             // UI not set for current scene yet
             if (isPendingSceneUI)
@@ -161,7 +164,10 @@ namespace ECSSystems.ScenesUiSystem
             InternalUiContainer model = currentSceneContainer.model;
             model.parentElement = null;
 
-            if (uiDocument.rootVisualElement.Contains(model.rootElement)) { uiDocument.rootVisualElement.Remove(model.rootElement); }
+            if (uiDocument.rootVisualElement.Contains(model.rootElement))
+            {
+                uiDocument.rootVisualElement.Remove(model.rootElement);
+            }
 
             internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
         }
@@ -210,7 +216,10 @@ namespace ECSSystems.ScenesUiSystem
                 internalUiContainerComponent.GetFor(scene, parentId)?.model;
 
             // create root entity ui container if needed
-            if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY) { parentDataModel = new InternalUiContainer(); }
+            if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
+            {
+                parentDataModel = new InternalUiContainer();
+            }
 
             return parentDataModel;
         }
