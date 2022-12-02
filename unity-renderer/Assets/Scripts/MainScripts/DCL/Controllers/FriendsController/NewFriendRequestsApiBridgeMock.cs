@@ -59,7 +59,12 @@ namespace DCL.Social.Friends
         }
 
         public event Action<FriendRequestPayload> OnFriendRequestAdded;
-        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
+
+        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded
+        {
+            add => apiBridge.OnFriendRequestsAdded += value;
+            remove => apiBridge.OnFriendRequestsAdded -= value;
+        }
 
         public NewFriendRequestsApiBridgeMock(WebInterfaceFriendsApiBridge apiBridge,
             IUserProfileBridge userProfileBridge)
