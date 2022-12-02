@@ -441,8 +441,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -2230,8 +2230,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -5629,8 +5629,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -9001,8 +9001,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -10790,8 +10790,9 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -14186,8 +14187,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
@@ -17561,8 +17562,8 @@ Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
         SAMPLER(samplerTexture2D_316d75c1a25e442aad8d48608036b295);
         
         // Graph Includes
-        #include "Assets/Rendering/InfiniteFloor/MapV5.hlsl"
-        #include "Assets/Rendering/InfiniteFloor/InfiniteFloorMerger.hlsl"
+        #include "../MapV5.hlsl"
+        #include "../InfiniteFloorMerger.hlsl"
         
         // -- Property used by ScenePickingPass
         #ifdef SCENEPICKINGPASS
