@@ -28,6 +28,7 @@ public class AvatarEditorHUDAnimationControllerTests
     {
         editorHUDView = Substitute.For<IAvatarEditorHUDView>();
         characterPreviewController = Substitute.For<ICharacterPreviewController>();
+        editorHUDView.CharacterPreview.Returns(characterPreviewController);
         catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView);

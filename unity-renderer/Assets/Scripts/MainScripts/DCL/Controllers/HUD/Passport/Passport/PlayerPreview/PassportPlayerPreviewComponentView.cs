@@ -1,4 +1,5 @@
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,5 +20,7 @@ namespace DCL.Social.Passports
         {
             tutorialContainer.SetActive(model.TutorialEnabled);
         }
+
+        RenderTexture IPassportPlayerPreviewComponentView.CharacterPreviewTexture => (RenderTexture) CharacterPreviewImage.texture;
     }
 }

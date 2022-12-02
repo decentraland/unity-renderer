@@ -1,4 +1,5 @@
 using DCl.Social.Friends;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -23,8 +24,10 @@ namespace DCL.Social.Passports
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
+
             view = Substitute.For<IPlayerPassportHUDView>();
-            
+
             currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
@@ -32,15 +35,18 @@ namespace DCL.Social.Passports
             profanityFilter = Substitute.For<IProfanityFilter>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
-                                currentPlayerInfoCardId, 
-                                Substitute.For<IPassportPlayerInfoComponentView>(), 
-                                dataStore, 
-                                profanityFilter, 
-                                friendsController, 
+                                currentPlayerInfoCardId,
+                                Substitute.For<IPassportPlayerInfoComponentView>(),
+                                dataStore,
+                                profanityFilter,
+                                friendsController,
                                 userProfileBridge,
                                 socialAnalytics);
 
-            playerPreviewController = new PassportPlayerPreviewComponentController(Substitute.For<IPassportPlayerPreviewComponentView>());
+            var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
+            playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
+
+            playerPreviewController = new PassportPlayerPreviewComponentController(playerPreviewView);
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
@@ -57,7 +63,7 @@ namespace DCL.Social.Passports
             );
         }
 
-        [TearDown]    
+        [TearDown]
         public void TearDown()
         {
             controller.Dispose();

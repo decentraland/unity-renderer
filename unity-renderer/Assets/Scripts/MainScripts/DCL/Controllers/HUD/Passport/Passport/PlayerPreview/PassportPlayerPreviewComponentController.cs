@@ -24,7 +24,7 @@ namespace DCL.Social.Passports
             cancellationTokenSource = new CancellationTokenSource();
 
             previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithHologram,
-                (RenderTexture)view.CharacterPreviewImage.texture, true, CharacterPreviewController.CameraFocus.Preview);
+                view.CharacterPreviewTexture, true, CharacterPreviewController.CameraFocus.Preview);
 
             view.SetModel(new (TutorialEnabled));
         }
