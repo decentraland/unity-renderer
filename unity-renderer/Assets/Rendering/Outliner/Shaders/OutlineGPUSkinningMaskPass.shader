@@ -33,7 +33,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
-            #pragma target 4.5
+            //#pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
 
@@ -114,7 +114,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             {
                 Varyings output;
                 float3 gpuSkinnedPositionOS;
-                ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
+                //ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
                 output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 output.uv0 = input.uv0;
