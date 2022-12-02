@@ -30,18 +30,11 @@ namespace DCL.Tutorial
             NewTutorialFinished = 256,
         }
 
-        public enum TutorialType
-        {
-            Initial,
-            BuilderInWorld,
-        }
-
         internal enum TutorialPath
         {
             FromGenesisPlaza,
             FromDeepLink,
             FromResetTutorial,
-            FromBuilderInWorld,
             FromUserThatAlreadyDidTheTutorial,
         }
 
@@ -70,7 +63,6 @@ namespace DCL.Tutorial
         private float elapsedTimeInCurrentStep;
         internal TutorialPath currentPath;
         private int currentStepNumber;
-        internal TutorialType tutorialType = TutorialType.Initial;
         private int nextStepsToSkip;
 
         private Coroutine executeStepsCoroutine;
@@ -139,7 +131,7 @@ namespace DCL.Tutorial
         public void SetTutorialEnabled(string json)
         {
             TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
-            SetupTutorial(msg.fromDeepLink, msg.enableNewTutorialCamera, TutorialType.Initial);
+            SetupTutorial(msg.fromDeepLink, msg.enableNewTutorialCamera);
         }
 
         public void SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(string json)
@@ -150,16 +142,13 @@ namespace DCL.Tutorial
             if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_START_MENU_SHOWED) == 1)
                 return;
 
-            SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, TutorialType.Initial, true);
+            SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, true);
         }
-
-        public void SetBuilderInWorldTutorialEnabled() =>
-            SetupTutorial(false.ToString(), false.ToString(), TutorialType.BuilderInWorld);
 
         /// <summary>
         /// Enables the tutorial controller and waits for the RenderingState is enabled to start to execute the corresponding tutorial steps.
         /// </summary>
-        internal void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, TutorialType type, bool userAlreadyDidTheTutorial = false)
+        internal void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, bool userAlreadyDidTheTutorial = false)
         {
             if (commonDataStore.isWorld.Get() || commonDataStore.isTutorialRunning.Get())
                 return;
@@ -176,7 +165,6 @@ namespace DCL.Tutorial
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
-            tutorialType = type;
 
             hudController?.settingsPanelHud?.SetTutorialButtonEnabled(false);
             hudController?.profileHud?.HideProfileMenu();
@@ -258,15 +246,10 @@ namespace DCL.Tutorial
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
 
-            if (tutorialType == TutorialType.Initial)
-            {
-                if (playerIsInGenesisPlaza)
-                    tutorialView.tutorialMusicHandler.TryPlayingMusic();
+            if (playerIsInGenesisPlaza)
+                tutorialView.tutorialMusicHandler.TryPlayingMusic();
 
-                yield return ExecuteRespectiveTutorialStep(stepIndex);
-            }
-            else if (tutorialType == TutorialType.BuilderInWorld)
-                yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
+            yield return ExecuteRespectiveTutorialStep(stepIndex);
         }
 
         private IEnumerator ExecuteRespectiveTutorialStep(int stepIndex)
@@ -350,7 +333,6 @@ namespace DCL.Tutorial
             int skipIndex = configuration.stepsOnGenesisPlaza.Count +
                             configuration.stepsFromDeepLink.Count +
                             configuration.stepsFromReset.Count +
-                            configuration.stepsFromBuilderInWorld.Count +
                             configuration.stepsFromUserThatAlreadyDidTheTutorial.Count;
 
             CoroutineStarter.Start(StartTutorialFromStep(skipIndex));
@@ -364,15 +346,18 @@ namespace DCL.Tutorial
         /// <param name="stepName">Step to jump.</param>
         public void GoToSpecificStep(string stepName)
         {
-            int stepIndex = tutorialType switch
-                            {
-                                TutorialType.Initial when userAlreadyDidTheTutorial => configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName),
-                                TutorialType.Initial when tutorialReset => configuration.stepsFromReset.FindIndex(x => x.name == stepName),
-                                TutorialType.Initial when playerIsInGenesisPlaza => configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName),
-                                TutorialType.Initial when openedFromDeepLink => configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName),
-                                TutorialType.BuilderInWorld => configuration.stepsFromBuilderInWorld.FindIndex(x => x.name == stepName),
-                                _ => 0,
-                            };
+            int stepIndex;
+
+            if (userAlreadyDidTheTutorial)
+                stepIndex = configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName);
+            else if (tutorialReset)
+                stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
+            else if (playerIsInGenesisPlaza)
+                stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
+            else if (openedFromDeepLink)
+                stepIndex = configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName);
+            else
+                stepIndex = 0;
 
             nextStepsToSkip = 0;
 
@@ -417,10 +402,7 @@ namespace DCL.Tutorial
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
-            if (configuration.debugRunTutorial)
-                currentStepIndex = configuration.debugStartingStepIndex >= 0 ? configuration.debugStartingStepIndex : 0;
-            else
-                currentStepIndex = 0;
+            currentStepIndex = configuration.debugRunTutorial ?  configuration.debugStartingStepIndex : 0;
 
             PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.Reset);
             executeStepsCoroutine = CoroutineStarter.Start(StartTutorialFromStep(currentStepIndex));
@@ -433,7 +415,6 @@ namespace DCL.Tutorial
                                            TutorialPath.FromGenesisPlaza => configuration.stepsOnGenesisPlaza,
                                            TutorialPath.FromDeepLink => configuration.stepsFromDeepLink,
                                            TutorialPath.FromResetTutorial => configuration.stepsFromReset,
-                                           TutorialPath.FromBuilderInWorld => configuration.stepsFromBuilderInWorld,
                                            TutorialPath.FromUserThatAlreadyDidTheTutorial => configuration.stepsFromUserThatAlreadyDidTheTutorial,
                                            _ => new List<TutorialStep>(),
                                        };
@@ -444,7 +425,7 @@ namespace DCL.Tutorial
 
             yield return IterateSteps(tutorialPath, startingStepIndex, steps);
 
-            if (!configuration.debugRunTutorial && tutorialPath != TutorialPath.FromBuilderInWorld && tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
+            if (!configuration.debugRunTutorial && tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
                 SetUserTutorialStepAsCompleted(TutorialFinishStep.NewTutorialFinished);
 
             runningStep = null;

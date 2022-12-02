@@ -49,7 +49,6 @@ namespace DCL.Tutorial_Tests
             // Arrange
             bool fromDeepLink = false;
             bool enableNewTutorialCamera = true;
-            TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
 
             DataStore.i.common.isTutorialRunning.Set(false);
@@ -59,7 +58,6 @@ namespace DCL.Tutorial_Tests
             CommonScriptableObjects.allUIHidden.Set(true);
             CommonScriptableObjects.tutorialActive.Set(false);
             tutorialController.openedFromDeepLink = true;
-            tutorialController.tutorialType = TutorialType.BuilderInWorld;
             NotificationsController.disableWelcomeNotification = false;
             CommonScriptableObjects.rendererState.Set(false);
 
@@ -67,7 +65,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.OnTutorialEnabled += () => onTutorialEnabledInvoked = true;
 
             // Act
-            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), userAlreadyDidTheTutorial);
 
             // Assert
             Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
@@ -76,7 +74,6 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(Convert.ToBoolean(fromDeepLink), tutorialController.openedFromDeepLink);
-            Assert.AreEqual(tutorialType, tutorialController.tutorialType);
             Assert.IsTrue(NotificationsController.disableWelcomeNotification);
             Assert.IsTrue(onTutorialEnabledInvoked);
         }
@@ -133,11 +130,10 @@ namespace DCL.Tutorial_Tests
             // Arrange
             bool fromDeepLink = false;
             bool enableNewTutorialCamera = true;
-            TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
 
             // Act
-            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), userAlreadyDidTheTutorial);
             yield return null;
 
             // Assert
@@ -150,12 +146,11 @@ namespace DCL.Tutorial_Tests
             // Arrange
             bool fromDeepLink = true;
             bool enableNewTutorialCamera = true;
-            TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
             if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
 
             // Act
-            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), userAlreadyDidTheTutorial);
             yield return null;
 
 
@@ -248,35 +243,6 @@ namespace DCL.Tutorial_Tests
         public IEnumerator SkipTutorialStepsFromUserThatAlreadyDidTheTutorialCorrectly()
         {
             ConfigureTutorialForUserThatAlreadyDidTheTutorial();
-
-            tutorialController.SkipTutorial();
-            yield return null;
-
-            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
-            Assert.IsNull(tutorialController.runningStep);
-            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTutorialStepsFromBuilderInWorldCorrectly()
-        {
-            // Arrange
-            ConfigureTutorialForBuilderInWorld();
-
-            // Act
-            yield return tutorialController.StartTutorialFromStep(0);
-
-            // Assert
-            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
-            Assert.IsNull(tutorialController.runningStep);
-            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
-            Assert.AreEqual(TutorialPath.FromBuilderInWorld, tutorialController.currentPath);
-        }
-
-        [UnityTest]
-        public IEnumerator SkipTutorialStepsFromBuilderInWorldCorrectly()
-        {
-            ConfigureTutorialForBuilderInWorld();
 
             tutorialController.SkipTutorial();
             yield return null;
@@ -632,7 +598,6 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsOnGenesisPlaza;
 
-            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             if(!genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
@@ -654,7 +619,6 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromDeepLink;
 
-            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = false;
             if(genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Remove(genesisPlazaLocation);
@@ -677,7 +641,6 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromReset;
 
-            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
@@ -699,26 +662,7 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial;
 
-            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = true;
-            DataStore.i.common.isTutorialRunning.Set(true);
-            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
-            CommonScriptableObjects.tutorialActive.Set(true);
-        }
-
-        private void ConfigureTutorialForBuilderInWorld()
-        {
-            ClearCurrentSteps();
-
-            for (int i = 0; i < 5; i++)
-            {
-                tutorialController.configuration.stepsFromBuilderInWorld.Add(CreateNewFakeStep());
-            }
-
-            currentStepIndex = 0;
-            currentSteps = tutorialController.configuration.stepsFromBuilderInWorld;
-
-            tutorialController.tutorialType = TutorialType.BuilderInWorld;
             DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -774,7 +718,6 @@ namespace DCL.Tutorial_Tests
             tutorialController.configuration.teacherRawImage = null;
             tutorialController.configuration.teacher = null;
             tutorialController.configuration.stepsOnGenesisPlaza.Add(stepToTest);
-            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             if(!genesisPlazaSimulator.parcels.Contains(genesisPlazaLocation)) genesisPlazaSimulator.parcels.Add(genesisPlazaLocation);
