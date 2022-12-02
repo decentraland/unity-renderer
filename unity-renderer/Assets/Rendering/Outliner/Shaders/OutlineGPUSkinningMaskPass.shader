@@ -1,138 +1,5 @@
 Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 {
-    SubShader
-    {
-        Tags
-        {
-            "RenderPipeline" = "UniversalPipeline"
-        }
-
-        Pass
-        {
-            Name "Outliner"
-            Tags
-            {
-                "LightMode" = "Outliner"
-            }
-
-            HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
-            #pragma target 4.5
-            #pragma vertex vert
-            #pragma fragment frag
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            float4x4 _WorldInverse;
-            float4x4 _Matrices[100];
-            float4x4 _BindPoses[100];
-
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
-
-            struct Attributes
-            {
-                float3 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-                float4 tangentOS : TANGENT;
-                float4 uv1 : TEXCOORD1;
-            };
-
-            struct Varyings
-            {
-                float4 positionHCS : SV_POSITION;
-            };
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                float3 gpuSkinnedPositionOS;
-                float3 gpuSkinnedNormalOS;
-                ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,input.tangentOS, input.uv1);
-                input.positionOS = gpuSkinnedPositionOS;
-                input.normalOS = gpuSkinnedNormalOS;
-
-                input.positionOS /= 2;
-                output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
-                return output;
-            }
-
-            half4 frag() : SV_Target
-            {
-                return half4(1, 1, 1, 1);
-            }
-            ENDHLSL
-        }
-    }
-
-    SubShader
-    {
-        Tags
-        {
-            "RenderPipeline" = "UniversalPipeline"
-        }
-
-        Pass
-        {
-            Name "Outliner"
-            Tags
-            {
-                "LightMode" = "Outliner"
-            }
-
-            HLSLPROGRAM
-            #pragma only_renderers gles gles3 glcore d3d11
-            #pragma target 2.0
-            #pragma vertex vert
-            #pragma fragment frag
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            float4x4 _WorldInverse;
-            float4x4 _Matrices[100];
-            float4x4 _BindPoses[100];
-
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GpuSkinning.hlsl"
-
-            struct Attributes
-            {
-                float3 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-                float4 tangentOS : TANGENT;
-                float4 uv1 : TEXCOORD1;
-            };
-
-            struct Varyings
-            {
-                float4 positionHCS : SV_POSITION;
-            };
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                float3 gpuSkinnedPositionOS;
-                float3 gpuSkinnedNormalOS;
-                ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,input.tangentOS, input.uv1);
-                input.positionOS = gpuSkinnedPositionOS;
-                input.normalOS = gpuSkinnedNormalOS;
-
-                input.positionOS *= 2;
-                output.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
-                return output;
-            }
-
-            half4 frag() : SV_Target
-            {
-                return half4(1, 1, 1, 1);
-            }
-            ENDHLSL
-        }
-    }
-}
-
-
-/*
-Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
-{
     Properties
     {
         [NoScaleOffset]_AvatarMap1("AvatarMap1", 2D) = "white" {}
@@ -165,8 +32,6 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             }
 
             HLSLPROGRAM
-            // #pragma only_renderers gles gles3 glcore d3d11
-            // #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
@@ -247,9 +112,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                float3 gpuSkinnedPositionOS;
-                float3 gpuSkinnedNormalOS;
-                ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS,input.tangentOS, input.uv1);
+                float3 gpuSkinnedPositionOS = float3(0,0,0);
                 ApplyGPUSkinning(input.positionOS, gpuSkinnedPositionOS, input.tangentOS, input.uv1);
                 input.positionOS = gpuSkinnedPositionOS;
                 input.positionOS *= 2;
@@ -272,4 +135,3 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
         }
     }
 }
-*/
