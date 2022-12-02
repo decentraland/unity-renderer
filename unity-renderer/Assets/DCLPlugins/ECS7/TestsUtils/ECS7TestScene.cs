@@ -23,7 +23,7 @@ public class ECS7TestScene : IParcelScene
     public bool isPersistent { set; get; } = false;
     public bool isPortableExperience { get; set; } = false;
 
-    public void SetInitMessagesDone()
+    public void MarkInitMessagesDone()
     {
     }
 

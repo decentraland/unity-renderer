@@ -668,7 +668,7 @@ namespace DCL.Controllers
             OnLoadingStateUpdated?.Invoke(loadingProgress);
         }
 
-        public void SetInitMessagesDone()
+        public void MarkInitMessagesDone()
         {
             sceneLifecycleHandler.SetInitMessagesDone();
         }

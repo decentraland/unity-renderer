@@ -222,7 +222,7 @@ namespace Tests
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
 
-                    scene.Received(1).SetInitMessagesDone();
+                    scene.Received(1).MarkInitMessagesDone();
                     scene.ClearReceivedCalls();
                     isInitDone = true;
 
@@ -232,7 +232,7 @@ namespace Tests
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
 
-                    scene.DidNotReceive().SetInitMessagesDone();
+                    scene.DidNotReceive().MarkInitMessagesDone();
                 }
                 catch (Exception e)
                 {

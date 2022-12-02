@@ -58,7 +58,7 @@ namespace RPC.Services
                     // kernel won't be sending that message for those scenes
                     if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
                     {
-                        scene.SetInitMessagesDone();
+                        scene.MarkInitMessagesDone();
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace RPC.Services
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
-                
+
                 reusableCrdtMessage.SceneId = request.SceneId;
                 reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
