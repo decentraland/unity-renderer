@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using UnityEditor.Build.Reporting;
+using Altom.AltTesterEditor;
+using Altom.AltTester;
 
 static class BuildCommand
 {
@@ -150,6 +153,11 @@ static class BuildCommand
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
+
+        AltBuilder.AddAltTesterInScriptingDefineSymbolsGroup(BuildPipeline.GetBuildTargetGroup(buildTarget));
+        var instrumentationSettings = new AltInstrumentationSettings();
+        var scenePath = SceneManager.GetSceneByName("InitialScene").path;
+        AltBuilder.InsertAltTesterInScene(scenePath, instrumentationSettings);
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
