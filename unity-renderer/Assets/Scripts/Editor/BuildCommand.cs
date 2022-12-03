@@ -152,11 +152,12 @@ static class BuildCommand
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
-        }
 
-        AltBuilder.AddAltTesterInScriptingDefineSymbolsGroup(BuildPipeline.GetBuildTargetGroup(buildTarget));
-        var instrumentationSettings = new AltInstrumentationSettings();
-        AltBuilder.InsertAltTesterInScene("Assets/Scenes/InitialScene.unity", instrumentationSettings);
+            AltBuilder.AddAltTesterInScriptingDefineSymbolsGroup(BuildTargetGroup.WebGL);
+            AltBuilder.AddScriptingDefineSymbol("UNITY_WEBGL", BuildTargetGroup.WebGL);
+            var instrumentationSettings = new AltInstrumentationSettings();
+            AltBuilder.InsertAltTesterInScene("Assets/Scenes/InitialScene.unity", instrumentationSettings);
+        }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
