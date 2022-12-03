@@ -156,8 +156,7 @@ static class BuildCommand
 
         AltBuilder.AddAltTesterInScriptingDefineSymbolsGroup(BuildPipeline.GetBuildTargetGroup(buildTarget));
         var instrumentationSettings = new AltInstrumentationSettings();
-        var scenePath = SceneManager.GetSceneByName("InitialScene").path;
-        AltBuilder.InsertAltTesterInScene(scenePath, instrumentationSettings);
+        AltBuilder.InsertAltTesterInScene("Assets/Scenes/InitialScene.unity", instrumentationSettings);
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
