@@ -20,6 +20,7 @@ namespace DCL.Social.Passports
         private IWearableItemResolver wearableItemResolver;
         private DataStore dataStore;
         private IProfanityFilter profanityFilter;
+        private IPassportApiBridge passportApiBridge;
         private IFriendsController friendsController;
 
         [SetUp]
@@ -33,6 +34,7 @@ namespace DCL.Social.Passports
             wearableItemResolver = Substitute.For<IWearableItemResolver>();
             dataStore = Substitute.For<DataStore>();
             profanityFilter = Substitute.For<IProfanityFilter>();
+            passportApiBridge = Substitute.For<IPassportApiBridge>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
                                 currentPlayerInfoCardId,
@@ -57,6 +59,7 @@ namespace DCL.Social.Passports
                 passportNavigationController,
                 currentPlayerInfoCardId,
                 userProfileBridge,
+                passportApiBridge,
                 socialAnalytics
             );
         }

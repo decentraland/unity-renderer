@@ -35,14 +35,8 @@ namespace DCL.Social.Passports
         {
             subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
             subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
-            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.AddListener((isActive) =>
-            {
-                aboutPanel.SetActive(isActive);
-            });
-            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.AddListener((isActive) =>
-            {
-                wearablesPanel.SetActive(isActive);
-            });
+            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.AddListener((isActive) => aboutPanel.SetActive(isActive));
+            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.AddListener((isActive) => wearablesPanel.SetActive(isActive));
         }
 
         public void InitializeView()

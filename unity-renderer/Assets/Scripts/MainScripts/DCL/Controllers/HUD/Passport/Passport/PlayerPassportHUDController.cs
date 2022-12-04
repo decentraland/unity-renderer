@@ -1,13 +1,9 @@
-using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL;
-using DCL.Helpers;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
-using System;
+using System.Threading.Tasks;
 
 namespace DCL.Social.Passports
 {
@@ -16,6 +12,7 @@ namespace DCL.Social.Passports
         internal readonly IPlayerPassportHUDView view;
         internal readonly StringVariable currentPlayerId;
         internal readonly IUserProfileBridge userProfileBridge;
+        private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
 
         internal UserProfile currentUserProfile;
@@ -38,6 +35,7 @@ namespace DCL.Social.Passports
             PassportNavigationComponentController passportNavigationController,
             StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
+            IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics)
         {
             this.view = view;
@@ -46,6 +44,7 @@ namespace DCL.Social.Passports
             this.passportNavigationController = passportNavigationController;
             this.currentPlayerId = currentPlayerId;
             this.userProfileBridge = userProfileBridge;
+            this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
 
             view.Initialize();
@@ -96,7 +95,7 @@ namespace DCL.Social.Passports
             }
             else
             {
-                QueryNftCollections(currentUserProfile.userId);
+                QueryNftCollectionsAsync(currentUserProfile.userId);
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 view.SetPassportPanelVisibility(true);
@@ -104,18 +103,13 @@ namespace DCL.Social.Passports
             }
         }
 
-        private void QueryNftCollections(string userId)
+        private async Task QueryNftCollectionsAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))
                 return;
 
-            Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.ETHEREUM)
-                       .Then((nfts) => ownedNftCollectionsL1 = nfts)
-                       .Catch((error) => Debug.LogError(error));
-
-            Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.MATIC)
-                       .Then((nfts) => ownedNftCollectionsL2 = nfts)
-                       .Catch((error) => Debug.LogError(error));
+            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsEthereum(userId);
+            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsMatic(userId);
         }
 
         private void ClickedBuyNft(string wearableId)

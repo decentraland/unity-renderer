@@ -11,6 +11,7 @@ using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
+using DCl.Social.Passports;
 using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -67,6 +68,7 @@ public class HUDFactory : IHUDFactory
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
+                        new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
                             new UserProfileWebInterfaceBridge()));
