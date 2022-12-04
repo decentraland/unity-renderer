@@ -99,8 +99,11 @@ namespace DCL.Components
             meshCollider.sharedMesh = TryGetSharedMesh(renderer);
             meshCollider.enabled = renderer.enabled;
 
-            if (renderer.transform.parent != null)
+            // Old GLTF Importer support, new one does not create Primitive sub-objects
+            if (renderer.name == "Primitive" && renderer.transform.parent != null)
                 colliderNames.Add(meshCollider, renderer.transform.parent.name);
+            else
+                colliderNames.Add(meshCollider, renderer.transform.name);
 
             CollidersManager.i.AddOrUpdateEntityCollider(ownerEntity, meshCollider);
 

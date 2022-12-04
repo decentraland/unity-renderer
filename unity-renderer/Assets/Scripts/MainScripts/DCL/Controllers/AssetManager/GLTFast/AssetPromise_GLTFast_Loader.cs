@@ -100,7 +100,7 @@ namespace DCL
                     nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
                 };
 
-                bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken);
+                bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken).AsUniTask().AttachExternalCancellation(cancellationSourceToken);
 
                 if (cancellationSourceToken.IsCancellationRequested)
                 {
@@ -118,6 +118,9 @@ namespace DCL
             }
             catch (Exception e)
             {
+                if (e is OperationCanceledException)
+                    return;
+
                 Debug.LogException(e);
                 onFail?.Invoke(e);
             }

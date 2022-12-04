@@ -2,6 +2,8 @@
 using DCL;
 using GLTFast;
 using GLTFast.Loading;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.GLTFast.Wrappers
 {
@@ -15,6 +17,7 @@ namespace DCL.GLTFast.Wrappers
 
         private readonly WebRequestAsyncOperation asyncOp;
         private byte[] cachedData;
+        private bool isDisposed;
 
         public GltfDownloaderWrapper(WebRequestAsyncOperation asyncOp)
         {
@@ -23,7 +26,21 @@ namespace DCL.GLTFast.Wrappers
 
         public bool success => asyncOp.isSucceded;
         public string error => asyncOp.webRequest.error;
-        public byte[] data => cachedData ??= asyncOp.webRequest.downloadHandler.data;
+
+        public byte[] data
+        {
+            get
+            {
+                if (isDisposed) return null;
+                if (cachedData != null) return cachedData;
+
+                UnityWebRequest asyncOpWebRequest = asyncOp.webRequest;
+                if (asyncOpWebRequest != null) return asyncOpWebRequest.downloadHandler.data;
+                Debug.LogWarning("The web request was disposed?" + asyncOp.isDisposed);
+                return null;
+            }
+        }
+
         public string text => asyncOp.webRequest.downloadHandler.text;
         public bool? isBinary => IsGltfBinary(data);
 
@@ -38,6 +55,7 @@ namespace DCL.GLTFast.Wrappers
 
         public void Dispose()
         {
+            isDisposed = true;
             cachedData = null;
             asyncOp.Dispose();
         }
