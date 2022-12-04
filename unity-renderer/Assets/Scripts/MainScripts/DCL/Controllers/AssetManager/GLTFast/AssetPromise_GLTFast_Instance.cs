@@ -100,6 +100,8 @@ namespace DCL
             asset.ownerPromise = subPromise;
             AssetPromiseKeeper_GLTFast.i.Keep(subPromise);
 
+            asset.container.SetActive(false);
+
             yield return subPromise;
 
             if (success)
@@ -111,6 +113,10 @@ namespace DCL
                     yield return RemoveCollidersFromRenderers(asset.container.transform);
                 }
             }
+
+            SetupAssetSettings();
+
+            asset.container.SetActive(true);
 
             loadingCoroutine = null;
 
@@ -124,6 +130,17 @@ namespace DCL
                 PerformanceAnalytics.GLTFTracker.TrackFailed();
                 loadingException ??= new Exception($"GLTFast sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}");
                 OnFail?.Invoke(loadingException);
+            }
+        }
+
+        private void SetupAssetSettings()
+        {
+            if (settings.visibleFlags is AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE)
+            {
+                var renderers = asset.container.GetComponentsInChildren<Renderer>(true);
+
+                foreach (Renderer renderer in renderers)
+                    renderer.enabled = false;
             }
         }
 
