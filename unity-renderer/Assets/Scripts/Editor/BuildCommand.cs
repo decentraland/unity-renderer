@@ -148,11 +148,11 @@ static class BuildCommand
         var buildPath = GetBuildPath();
         var buildName = GetBuildName();
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
-
+        Console.WriteLine("::  Build target: " + buildTarget.ToString());
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
-
+            Console.WriteLine(":: Building for WebGL");
             AltBuilder.AddAltTesterInScriptingDefineSymbolsGroup(BuildTargetGroup.WebGL);
             AltBuilder.AddScriptingDefineSymbol("UNITY_WEBGL", BuildTargetGroup.WebGL);
             var instrumentationSettings = new AltInstrumentationSettings();
