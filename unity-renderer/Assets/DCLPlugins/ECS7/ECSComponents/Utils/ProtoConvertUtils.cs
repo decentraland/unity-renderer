@@ -101,12 +101,9 @@ namespace DCL.ECSComponents
         {
             // TODO: add support for the rest of the fonts and discuss old font deprecation
             const string SANS_SERIF = "SansSerif";
-            const string LIBERATION_SANS = "builtin:LiberationSans SDF";
 
             switch (font)
             {
-                case Font.FLiberationSans:
-                    return LIBERATION_SANS;
                 case Font.FSansSerif:
                     return SANS_SERIF;
                 default:
