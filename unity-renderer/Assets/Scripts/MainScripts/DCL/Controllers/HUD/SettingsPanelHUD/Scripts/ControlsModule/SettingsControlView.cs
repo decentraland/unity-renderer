@@ -1,7 +1,9 @@
-using DCL.SettingsPanelHUD.Common;
-using System.Collections.Generic;
 using DCL.SettingsCommon;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+using DCL.SettingsPanelHUD.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,24 +11,6 @@ using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
 namespace DCL.SettingsPanelHUD.Controls
 {
-    /// <summary>
-    /// Base interface to implement a view for a CONTROL.
-    /// </summary>
-    public interface ISettingsControlView
-    {
-        /// <summary>
-        /// All the needed base logic to initializes the CONTROL view.
-        /// </summary>
-        /// <param name="controlConfig">Model that will contain the configuration of the CONTROL.</param>
-        /// <param name="settingsControlController">Controller associated to the CONTROL view.</param>
-        void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController);
-
-        /// <summary>
-        /// This logic should update the CONTROL view with the stored value.
-        /// </summary>
-        void RefreshControl();
-    }
-
     /// <summary>
     /// MonoBehaviour that represents the base of a CONTROL view.
     /// </summary>
@@ -43,7 +27,7 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private List<CanvasGroup> controlBackgroundCanvasGroups;
         [SerializeField] private float controlBackgroundDeactivationAlpha = 0.5f;
 
-        protected SettingsControlController settingsControlController;
+        private SettingsControlController settingsControlController;
 
         private SettingsControlModel controlConfig;
         private Color originalTitleColor;
@@ -87,14 +71,10 @@ namespace DCL.SettingsPanelHUD.Controls
             if (controlConfig != null)
             {
                 foreach (BooleanVariable flag in controlConfig.flagsThatDisableMe)
-                {
                     flag.OnChange -= OnAnyDisableFlagChange;
-                }
 
                 foreach (BooleanVariable flag in controlConfig.flagsThatDeactivateMe)
-                {
                     flag.OnChange -= OnAnyDeactivationFlagChange;
-                }
             }
 
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
@@ -114,74 +94,50 @@ namespace DCL.SettingsPanelHUD.Controls
             settingsControlController.ApplySettings();
         }
 
-        private void OnAnyDisableFlagChange(bool current, bool previous)
-        {
-            bool canApplychange = true;
-            if (!current)
-            {
-                // Check if all the disable flags are false before enable the control
-                foreach (var flag in controlConfig.flagsThatDisableMe)
-                {
-                    if (flag.Get() == true)
-                    {
-                        canApplychange = false;
-                        break;
-                    }
-                }
-            }
+        private void OnAnyDisableFlagChange(bool disable, bool _) =>
+            ApplyWhenAllFlagsAreFalse(disable, controlConfig.flagsThatDisableMe, SetEnabled);
 
-            if (canApplychange)
-                SetEnabled(!current);
+        private void OnAnyDeactivationFlagChange(bool deactivate, bool _) =>
+            ApplyWhenAllFlagsAreFalse(deactivate, controlConfig.flagsThatDeactivateMe, SetControlActive);
+
+        private static void ApplyWhenAllFlagsAreFalse(bool flagOn, List<BooleanVariable> flags, Action<bool> actionToApply)
+        {
+            bool canApplyChange = flagOn
+                                  || !flags.Any(flag => flag.Get()); // Check if all the flags are false before enable the control
+
+            if (canApplyChange)
+                actionToApply(!flagOn);
         }
 
-        private void OnAnyDeactivationFlagChange(bool current, bool previous)
-        {
-            bool canApplychange = true;
-            if (!current)
-            {
-                // Check if all the deactivation flags are false before enable the control
-                foreach (var flag in controlConfig.flagsThatDeactivateMe)
-                {
-                    if (flag.Get() == true)
-                    {
-                        canApplychange = false;
-                        break;
-                    }
-                }
-            }
+        private void OnGeneralSettingsChanged(GeneralSettings _) =>
+            RefreshControl();
 
-            if (canApplychange)
-                SetControlActive(!current);
+        private void OnQualitySettingsChanged(QualitySettings _) =>
+            RefreshControl();
+
+        private void OnResetSettingsControl() =>
+            RefreshControl();
+
+        private void SetEnabled(bool isEnabled)
+        {
+            title.color = isEnabled ? originalTitleColor : titleDeactivationColor;
+
+            foreach (TextMeshProUGUI text in valueLabels)
+                text.color = isEnabled ? originalLabelColor : valueLabelDeactivationColor;
+
+            foreach (Image image in handleImages)
+                image.color = isEnabled ? originalHandlerColor : handlerDeactivationColor;
+
+            foreach (CanvasGroup group in controlBackgroundCanvasGroups)
+                group.alpha = isEnabled ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
+
+            canvasGroup.interactable = isEnabled;
+            canvasGroup.blocksRaycasts = isEnabled;
         }
 
-        private void OnGeneralSettingsChanged(GeneralSettings obj) { RefreshControl(); }
-
-        private void OnQualitySettingsChanged(QualitySettings obj) { RefreshControl(); }
-
-        private void OnResetSettingsControl() { RefreshControl(); }
-
-        private void SetEnabled(bool enabled)
+        private void SetControlActive(bool isActive)
         {
-            title.color = enabled ? originalTitleColor : titleDeactivationColor;
-            foreach (var text in valueLabels)
-            {
-                text.color = enabled ? originalLabelColor : valueLabelDeactivationColor;
-            }
-            foreach (var image in handleImages)
-            {
-                image.color = enabled ? originalHandlerColor : handlerDeactivationColor;
-            }
-            foreach (var canvasGroup in controlBackgroundCanvasGroups)
-            {
-                canvasGroup.alpha = enabled ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
-            }
-            canvasGroup.interactable = enabled;
-            canvasGroup.blocksRaycasts = enabled;
-        }
-
-        private void SetControlActive(bool actived)
-        {
-            gameObject.SetActive(actived);
+            gameObject.SetActive(isActive);
             CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
         }
     }
