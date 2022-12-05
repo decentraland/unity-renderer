@@ -28,4 +28,6 @@ namespace DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces
         WebInterface.ACTION_BUTTON GetActionButton();
         bool ShouldShowHoverFeedback();
     }
+
+    public interface IAvatarOnPointerDown : IPointerInputEvent { }
 }

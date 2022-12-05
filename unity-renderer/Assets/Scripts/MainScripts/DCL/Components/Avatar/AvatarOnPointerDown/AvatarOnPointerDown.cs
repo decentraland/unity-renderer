@@ -9,7 +9,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class AvatarOnPointerDown : MonoBehaviour, IPointerInputEvent, IPoolLifecycleHandler,
+    public class AvatarOnPointerDown : MonoBehaviour, IAvatarOnPointerDown, IPoolLifecycleHandler,
         IAvatarOnPointerDownCollider
     {
         public new Collider collider;
@@ -80,6 +80,8 @@ namespace DCL.Components
 
         public bool IsAtHoverDistance(float distance)
         {
+            if (!Utils.IsCursorLocked)
+                return true;
             return distance <= model.distance;
         }
 
