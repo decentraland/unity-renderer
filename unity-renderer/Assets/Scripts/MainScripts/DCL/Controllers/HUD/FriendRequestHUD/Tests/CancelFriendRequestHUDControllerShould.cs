@@ -5,7 +5,6 @@ using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
-using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -121,7 +120,7 @@ namespace DCL.Social.Friends
 
         private void WhenRequestedToShow()
         {
-            dataStore.HUDs.openSentFriendRequestDetail.Set(FRIEND_REQ_ID);
+            dataStore.HUDs.openSentFriendRequestDetail.Set(FRIEND_REQ_ID, true);
         }
     }
 }

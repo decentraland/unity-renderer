@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -15,6 +16,7 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable openPassportVariable;
 
+        private CancellationTokenSource cancellationToken = new ();
         private string friendRequestId;
 
         public CancelFriendRequestHUDController(
@@ -86,10 +88,14 @@ namespace DCL.Social.Friends
             view.Show();
         }
 
-        private void Cancel() =>
-            CancelAsync().Forget();
+        private void Cancel()
+        {
+            cancellationToken?.Cancel();
+            cancellationToken = new CancellationTokenSource();
+            CancelAsync(cancellationToken.Token).Forget();
+        }
 
-        private async UniTaskVoid CancelAsync()
+        private async UniTask CancelAsync(CancellationToken cancellationToken = default)
         {
             view.ShowPendingToCancel();
 
@@ -97,16 +103,18 @@ namespace DCL.Social.Friends
             {
                 await friendsController.CancelRequest(friendRequestId)
                                        .Timeout(TimeSpan.FromSeconds(10));
+                if (cancellationToken.IsCancellationRequested) return;
 
                 // TODO: send analytics
 
                 view.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                if (cancellationToken.IsCancellationRequested) return;
                 // TODO: track error to analytics
-                Debug.LogException(e);
                 view.ShowCancelFailed();
+                throw;
             }
         }
 
