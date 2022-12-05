@@ -96,11 +96,13 @@ static class BuildCommand
 
     static BuildOptions GetBuildOptions()
     {
-        string buildOptions = GetArgument("customBuildOptions");
+        // string buildOptions = GetArgument("customBuildOptions");
 
-        return buildOptions == "AcceptExternalModificationsToPlayer"
-            ? BuildOptions.AcceptExternalModificationsToPlayer
-            : BuildOptions.None;
+        // return buildOptions == "AcceptExternalModificationsToPlayer"
+        //     ? BuildOptions.AcceptExternalModificationsToPlayer
+        //     : BuildOptions.None;
+        
+        return BuildOptions.Development;
     }
 
     // https://stackoverflow.com/questions/1082532/how-to-tryparse-for-enum-value
@@ -149,6 +151,7 @@ static class BuildCommand
         var buildName = GetBuildName();
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
         Console.WriteLine("::  Build target: " + buildTarget.ToString());
+
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
