@@ -196,39 +196,39 @@ public class AvatarEditorHUDController : IHUD
         loadingWearables = true;
         CatalogController.RequestAddressWearables(userProfile.userId)
                          .Then((ownedWearables) =>
-                          {
-                              ownedWearablesAlreadyLoaded = true;
-                              //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly
-                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
-                              LoadUserProfile(userProfile, true);
-                              if (userProfile != null && userProfile.avatar != null)
-                              {
-                                  emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
-                              }
-                              loadingWearables = false;
-                          })
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             if (userProfile != null && userProfile.avatar != null)
+                             {
+                                 emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
+                             }
+                             loadingWearables = false;
+                         })
                          .Catch((error) =>
-                          {
-                              ownedWearablesRemainingRequests--;
-                              if (ownedWearablesRemainingRequests > 0)
-                              {
-                                  Debug.LogWarning("Retrying owned wereables loading...");
-                                  LoadOwnedWereables(userProfile);
-                              }
-                              else
-                              {
-                                  NotificationsController.i.ShowNotification(new Model
-                                  {
-                                      message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                                      type = Type.GENERIC,
-                                      timer = 10f,
-                                      destroyOnFinish = true
-                                  });
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
 
-                                  Debug.LogError(error);
-                                  loadingWearables = false;
-                              }
-                          });
+                                 Debug.LogError(error);
+                                 loadingWearables = false;
+                             }
+                         });
     }
 
     private void LoadOwnedEmotes()
@@ -732,7 +732,7 @@ public class AvatarEditorHUDController : IHUD
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
     {
         var wearablesToReplace = new List<WearableItem>();
-        var categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+        var categoriesToReplace = new HashSet<string>(model.bodyShape != null ? (wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]) : new string[0]);
 
         int wearableCount = model.wearables.Count;
         for (int i = 0; i < wearableCount; i++)
@@ -747,7 +747,7 @@ public class AvatarEditorHUDController : IHUD
             else
             {
                 //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
-                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+                HashSet<string> replacesList = new HashSet<string>(model.bodyShape != null ? (wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]) : new string[0]);
                 if (replacesList.Contains(wearableItem.data.category))
                 {
                     wearablesToReplace.Add(wearable);
@@ -1041,7 +1041,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
     {
-        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
+        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN || model.bodyShape == null)
             return false;
         else
             return !wearable.SupportsBodyShape(model.bodyShape.id);
