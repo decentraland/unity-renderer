@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DrawDistanceControlConfiguration
   m_EditorClassIdentifier: 
   title: DRAW DISTANCE
-  controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
+  controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: 713fe5a7a1a1c0b4698a6f61eae6c756, type: 2}
   flagsThatDisableMe: []
