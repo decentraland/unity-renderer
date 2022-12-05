@@ -1,11 +1,9 @@
-using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL;
-using DCL.Helpers;
+using DCL.Interface;
 using SocialFeaturesAnalytics;
+using System.Threading.Tasks;
 
 namespace DCL.Social.Passports
 {
@@ -14,15 +12,21 @@ namespace DCL.Social.Passports
         internal readonly IPlayerPassportHUDView view;
         internal readonly StringVariable currentPlayerId;
         internal readonly IUserProfileBridge userProfileBridge;
+        private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
 
         internal UserProfile currentUserProfile;
 
+        private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
+        private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
         private readonly InputAction_Trigger closeWindowTrigger;
-        
+
         private PassportPlayerInfoComponentController playerInfoController;
         private PassportPlayerPreviewComponentController playerPreviewController;
         private PassportNavigationComponentController passportNavigationController;
+
+        private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
+        private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -31,6 +35,7 @@ namespace DCL.Social.Passports
             PassportNavigationComponentController passportNavigationController,
             StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
+            IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics)
         {
             this.view = view;
@@ -39,6 +44,7 @@ namespace DCL.Social.Passports
             this.passportNavigationController = passportNavigationController;
             this.currentPlayerId = currentPlayerId;
             this.userProfileBridge = userProfileBridge;
+            this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
 
             view.Initialize();
@@ -47,6 +53,8 @@ namespace DCL.Social.Passports
             closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
+
+            passportNavigationController.OnClickBuyNft += ClickedBuyNft;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
             OnCurrentPlayerIdChanged(currentPlayerId, null);
@@ -75,6 +83,8 @@ namespace DCL.Social.Passports
             if (currentUserProfile != null)
                 currentUserProfile.OnUpdate -= UpdateUserProfile;
 
+            ownedNftCollectionsL1 = new List<Nft>();
+            ownedNftCollectionsL2 = new List<Nft>();
             currentUserProfile = string.IsNullOrEmpty(current)
                 ? null
                 : userProfileBridge.Get(current);
@@ -85,11 +95,33 @@ namespace DCL.Social.Passports
             }
             else
             {
+                QueryNftCollectionsAsync(currentUserProfile.userId);
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 view.SetPassportPanelVisibility(true);
                 UpdateUserProfileInSubpanels(currentUserProfile);
             }
+        }
+
+        private async Task QueryNftCollectionsAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return;
+
+            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsEthereum(userId);
+            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsMatic(userId);
+        }
+
+        private void ClickedBuyNft(string wearableId)
+        {
+            var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == wearableId);
+            if (ownedCollectible == null)
+                ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == wearableId);
+
+            if (ownedCollectible != null)
+                WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
+            else
+                WebInterface.OpenURL(URL_COLLECTIBLE_GENERIC);
         }
 
         private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanels(userProfile);

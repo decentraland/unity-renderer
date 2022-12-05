@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.CRDT;
+using System;
+using System.Collections.Generic;
 
 namespace RPC.Context
 {
@@ -9,6 +9,7 @@ namespace RPC.Context
     {
         public readonly Dictionary<int, CRDTProtocol> scenesOutgoingCrdts = new Dictionary<int, CRDTProtocol>(24);
         public IMessagingControllersManager MessagingControllersManager;
+        public IWorldState WorldState;
         public Action<int, CRDTMessage> CrdtMessageReceived;
     }
 }
