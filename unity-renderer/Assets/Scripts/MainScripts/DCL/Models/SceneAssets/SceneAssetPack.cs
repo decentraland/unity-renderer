@@ -17,5 +17,5 @@ public class SceneAssetPack
     public string eth_address;
     public List<SceneObject> assets;
 
-    public string ComposeThumbnailUrl() { return BIWUrlUtils.GetUrlAssetPackContent() + thumbnail; }
+    // public string ComposeThumbnailUrl() { return BIWUrlUtils.GetUrlAssetPackContent() + thumbnail; } FD::
 }

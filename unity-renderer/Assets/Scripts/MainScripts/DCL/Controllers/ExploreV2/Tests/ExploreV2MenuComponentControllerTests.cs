@@ -229,7 +229,6 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseBuilderVisibleChangedCorrectly(bool isVisible)
     {
         // Arrange
-        exploreV2MenuController.isBuilderInitialized.Set(true);
         exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
 
         // Act
