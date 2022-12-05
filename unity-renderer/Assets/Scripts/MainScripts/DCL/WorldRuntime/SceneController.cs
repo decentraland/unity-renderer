@@ -305,8 +305,10 @@ namespace DCL
 
                     case MessagingTypes.INIT_DONE:
                         {
-                            scene.MarkInitMessagesDone();
-
+                        if (!scene.IsInitMessageDone())
+                        {
+                            scene.sceneLifecycleHandler.SetInitMessagesDone();
+                        }
                             break;
                         }
 
