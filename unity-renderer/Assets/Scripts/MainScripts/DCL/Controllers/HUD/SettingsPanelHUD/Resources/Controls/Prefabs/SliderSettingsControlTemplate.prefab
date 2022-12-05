@@ -741,7 +741,7 @@ PrefabInstance:
     - target: {fileID: 7951948174597467371, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
       propertyPath: m_Name
-      value: SliderSettingsControlTemplateVariant
+      value: SliderSettingsControlTemplate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e, type: 3}

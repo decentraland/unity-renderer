@@ -40,8 +40,10 @@ namespace DCL.SettingsPanelHUD.Controls
             this.controlConfig = controlConfig;
             this.settingsControlController = settingsControlController;
             this.settingsControlController.Initialize();
-            title.text = controlConfig.title;
+
             betaIndicator.SetActive(controlConfig.isBeta);
+
+            title.text = controlConfig.title;
             originalTitleColor = title.color;
             originalLabelColor = valueLabels.Count > 0 ? valueLabels[0].color : Color.white;
             originalHandlerColor = handleImages.Count > 0 ? handleImages[0].color : Color.white;
@@ -50,13 +52,13 @@ namespace DCL.SettingsPanelHUD.Controls
             foreach (BooleanVariable flag in controlConfig.flagsThatDisableMe)
             {
                 flag.OnChange += OnAnyDisableFlagChange;
-                OnAnyDisableFlagChange(flag.Get(), false);
+                OnAnyDisableFlagChange(flag.Get());
             }
 
             foreach (BooleanVariable flag in controlConfig.flagsThatDeactivateMe)
             {
                 flag.OnChange += OnAnyDeactivationFlagChange;
-                OnAnyDeactivationFlagChange(flag.Get(), false);
+                OnAnyDeactivationFlagChange(flag.Get());
             }
 
             RefreshControl();
@@ -94,10 +96,10 @@ namespace DCL.SettingsPanelHUD.Controls
             settingsControlController.ApplySettings();
         }
 
-        private void OnAnyDisableFlagChange(bool disable, bool _) =>
+        private void OnAnyDisableFlagChange(bool disable, bool _ = false) =>
             ApplyWhenAllFlagsAreFalse(disable, controlConfig.flagsThatDisableMe, SetEnabled);
 
-        private void OnAnyDeactivationFlagChange(bool deactivate, bool _) =>
+        private void OnAnyDeactivationFlagChange(bool deactivate, bool _ = false) =>
             ApplyWhenAllFlagsAreFalse(deactivate, controlConfig.flagsThatDeactivateMe, SetControlActive);
 
         private static void ApplyWhenAllFlagsAreFalse(bool flagOn, List<BooleanVariable> flags, Action<bool> actionToApply)

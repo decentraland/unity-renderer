@@ -1331,6 +1331,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 946022103321159557, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
+      propertyPath: m_fontSize
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 946022103321159557, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
       propertyPath: m_characterSpacing
       value: -2
       objectReference: {fileID: 0}
