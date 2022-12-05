@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -104,14 +105,16 @@ namespace DCL.Social.Friends
             friendsController.Received(1).CancelRequest(FRIEND_REQ_ID);
         }
 
-        [Test]
-        public void ShowFailWhenTimeout()
+        [UnityTest]
+        public IEnumerator ShowFailWhenTimeout()
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
             friendsController.CancelRequest(FRIEND_REQ_ID)
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
+
+            yield return null;
 
             view.Received(1).ShowPendingToCancel();
             view.Received(1).ShowCancelFailed();
