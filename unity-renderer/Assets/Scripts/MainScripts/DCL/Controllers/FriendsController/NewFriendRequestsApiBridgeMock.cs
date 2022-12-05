@@ -155,7 +155,6 @@ namespace DCL.Social.Friends
 
             var response = new AddFriendRequestsV2Payload
             {
-                messageId = Guid.NewGuid().ToString("N"),
                 requestedFrom = requestedFromList.ToArray(),
                 requestedTo = requestedToList.ToArray(),
                 totalReceivedFriendRequests = amountOfReceivedRequests,

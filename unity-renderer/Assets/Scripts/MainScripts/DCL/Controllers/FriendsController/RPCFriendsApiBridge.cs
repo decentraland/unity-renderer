@@ -83,22 +83,21 @@ namespace DCl.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int SentLimit, int SentSkip, int ReceivedLimit, int ReceivedSkip)
         {
             GetFriendRequestsReply response = await rpc.FriendRequests()
-                                                                  .GetFriendRequests(new GetFriendRequestsPayload
-                                                                   {
-                                                                       ReceivedLimit = receivedLimit,
-                                                                       ReceivedSkip = receivedSkip,
-                                                                       SentLimit = sentLimit,
-                                                                       SentSkip = sentSkip
-                                                                   });
+                .GetFriendRequests(new GetFriendRequestsPayload
+                {
+                    SentLimit = SentLimit,
+                    SentSkip = SentSkip,
+                    ReceivedLimit = ReceivedLimit,
+                    ReceivedSkip = ReceivedSkip
+                });
 
             return new AddFriendRequestsV2Payload
             {
-                messageId = "",
-                requestedFrom = response.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
                 requestedTo = response.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
+                requestedFrom = response.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
                 totalReceivedFriendRequests = response.TotalReceivedFriendRequests,
                 totalSentFriendRequests = response.TotalSentFriendRequests,
             };

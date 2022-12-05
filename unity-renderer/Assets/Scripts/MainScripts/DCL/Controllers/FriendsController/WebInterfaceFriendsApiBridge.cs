@@ -41,17 +41,6 @@ namespace DCL.Social.Friends
             OnFriendRequestsAdded?.Invoke(JsonUtility.FromJson<AddFriendRequestsPayload>(json));
 
         [PublicAPI]
-        public void AddFriendRequestsV2(string json)
-        {
-            var payload = JsonUtility.FromJson<AddFriendRequestsV2Payload>(json);
-            var messageId = payload.messageId;
-            if (!pendingRequests.ContainsKey(messageId)) return;
-            var task = (UniTaskCompletionSource<AddFriendRequestsV2Payload>)pendingRequests[messageId];
-            pendingRequests.Remove(messageId);
-            task.TrySetResult(payload);
-        }
-
-        [PublicAPI]
         public void AddFriendRequest(string json)
         {
             var payload = JsonUtility.FromJson<FriendRequestPayload>(json);
@@ -140,20 +129,8 @@ namespace DCL.Social.Friends
 
         public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
-            var task = new UniTaskCompletionSource<AddFriendRequestsV2Payload>();
-            // TODO: optimize unique id length for performance reasons
-            var messageId = Guid.NewGuid().ToString("N");
-            pendingRequests[messageId] = task;
-
-            WebInterface.SendMessage("GetFriendRequestsV2", new GetFriendRequestsV2Payload
-            {
-                messageId = messageId,
-                sentLimit = sentLimit,
-                sentSkip = sentSkip,
-                receivedLimit = receivedLimit,
-                receivedSkip = receivedSkip
-            });
-            return task.Task;
+            // Already implemented in RPCFriendsApiBridge...
+            return UniTask.FromResult(new AddFriendRequestsV2Payload());
         }
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
