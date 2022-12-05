@@ -20,10 +20,13 @@ namespace DCL.Social.Friends
         [SerializeField] internal ImageComponentView senderProfileImage;
         [SerializeField] internal TMP_Text dateLabel;
         [SerializeField] internal GameObject bodyMessageContainer;
+        [SerializeField] internal ShowHideAnimator confirmationToast;
+        [SerializeField] internal Button rejectOperationButton;
 
         private readonly Model model = new Model();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
         private ILazyTextureObserver lastSenderProfilePictureObserver;
+        private bool cancelConfirmed;
 
         public event Action OnCancel;
         public event Action OnClose;
@@ -40,7 +43,25 @@ namespace DCL.Social.Friends
             foreach (var button in closeButtons)
                 button.onClick.AddListener(() => OnClose?.Invoke());
 
-            cancelButton.onClick.AddListener(() => OnCancel?.Invoke());
+            cancelButton.onClick.AddListener(() =>
+            {
+                if (cancelConfirmed)
+                {
+                    OnCancel?.Invoke();
+                    cancelConfirmed = false;
+                }
+                else
+                {
+                    cancelConfirmed = true;
+                    ShowConfirmationToast();
+                }
+            });
+
+            rejectOperationButton.onClick.AddListener(() =>
+            {
+                cancelConfirmed = false;
+                HideConfirmationToast();
+            });
             retryButton.onClick.AddListener(() => OnCancel?.Invoke());
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
         }
@@ -95,8 +116,10 @@ namespace DCL.Social.Friends
 
         public void Show()
         {
+            cancelConfirmed = false;
             gameObject.SetActive(true);
             base.Show(instant: true);
+            HideConfirmationToast();
             model.State = Model.LayoutState.Default;
             RefreshControl();
         }
@@ -116,12 +139,14 @@ namespace DCL.Social.Friends
         public void ShowPendingToCancel()
         {
             model.State = Model.LayoutState.Pending;
+            HideConfirmationToast();
             RefreshControl();
         }
 
         public void ShowCancelFailed()
         {
             model.State = Model.LayoutState.Failed;
+            HideConfirmationToast();
             RefreshControl();
         }
 
@@ -134,6 +159,19 @@ namespace DCL.Social.Friends
         public void SetTimestamp(DateTime date)
         {
             dateLabel.text = date.Date.ToString("M");
+        }
+
+        private void ShowConfirmationToast()
+        {
+            rejectOperationButton.gameObject.SetActive(true);
+            confirmationToast.Show();
+        }
+
+
+        private void HideConfirmationToast()
+        {
+            rejectOperationButton.gameObject.SetActive(false);
+            confirmationToast.Hide();
         }
 
         private class Model
