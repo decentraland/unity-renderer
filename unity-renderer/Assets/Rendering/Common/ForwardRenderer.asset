@@ -80,9 +80,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    deltaX: 0.002
-    deltaY: 0.002
-    color: {r: 0.03003788, g: 0, b: 1, a: 1}
+    deltaX: 0.001
+    deltaY: 0.001
+    color: {r: 1, g: 0.89133024, b: 0, a: 1}
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
