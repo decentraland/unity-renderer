@@ -105,16 +105,14 @@ namespace DCL.Social.Friends
             friendsController.Received(1).CancelRequest(FRIEND_REQ_ID);
         }
 
-        [UnityTest]
-        public IEnumerator ShowFailWhenTimeout()
+        [Test]
+        public void ShowFailWhenTimeout()
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
             friendsController.CancelRequest(FRIEND_REQ_ID)
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
-
-            yield return null;
 
             view.Received(1).ShowPendingToCancel();
             view.Received(1).ShowCancelFailed();
