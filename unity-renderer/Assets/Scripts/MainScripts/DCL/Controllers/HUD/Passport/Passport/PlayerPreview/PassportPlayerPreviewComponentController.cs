@@ -32,6 +32,8 @@ namespace DCL.Social.Passports
         public void SetPassportPanelVisibility(bool visible)
         {
             previewController.SetEnabled(visible);
+            if (visible)
+                previewController.ResetRotation();
         }
 
         private bool TutorialEnabled => PlayerPrefsUtils.GetBool(TUTORIAL_ENABLED_KEY, true);
@@ -58,8 +60,6 @@ namespace DCL.Social.Passports
             previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
                              .SuppressCancellationThrow()
                              .Forget();
-
-            previewController.ResetRotation();
         }
 
         public void Dispose()
