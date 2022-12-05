@@ -12,4 +12,5 @@ public class CarouselComponentModel : BaseComponentModel
     public bool showManualControls = true;
     public bool automaticTransition = true;
     public bool pauseOnFocus = true;
+    public int maxItems = 10;
 }

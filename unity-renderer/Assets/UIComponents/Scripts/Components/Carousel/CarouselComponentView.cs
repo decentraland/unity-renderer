@@ -55,13 +55,13 @@ public interface ICarouselComponentView
     /// <param name="prefab">Prefab to create items</param>
     /// <param name="amountOfItems">Amounts of items to be created</param>
     void SetItems(BaseComponentView prefab, int amountOfItems);
-    
+
     /// <summary>
     /// Adds a new item in the carousel.
     /// </summary>
     /// <param name="item">An UI component.</param>
     void AddItem(BaseComponentView item);
-    
+
     /// <summary>
     /// Adds a new item in the carousel and update carousel dot selector.
     /// </summary>
@@ -230,8 +230,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
         background.color = newColor;
     }
-    
-    public void SetManualControlsActive() => 
+
+    public void SetManualControlsActive() =>
         SetManualControlsActive(model.showManualControls);
 
     public void SetManualControlsActive(bool isActived)
@@ -246,10 +246,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         nextButton.gameObject.SetActive(isActived && currentNumberOfItems > 1);
         dotsSelector.gameObject.SetActive(isActived && currentNumberOfItems > 1);
     }
-    
+
     public void SetItems(BaseComponentView prefab, int amountOfItems)
     {
         DestroyInstantiatedItems();
+
+        if (amountOfItems > model.maxItems)
+            amountOfItems = model.maxItems;
 
         for (int i = 0; i < amountOfItems; i++)
         {
@@ -280,10 +283,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         SetManualControlsActive(model.showManualControls);
         GenerateDotsSelector();
     }
-    
-    public void AddItem(BaseComponentView item) => 
+
+    public void AddItem(BaseComponentView item) =>
         CreateItem(item, $"Item{instantiatedItems.Count}");
-    
+
     public void RemoveItem(BaseComponentView item)
     {
         BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);
@@ -449,13 +452,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void DestroyInstantiatedItems()
     {
         List<BaseComponentView> itemsToDestroy = ExtractItems();
-        
+
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
             if (itemToDestroy != null)
                 DestroyImmediate(itemToDestroy.gameObject);
         }
-        
+
         itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
