@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class UIPageSelector : MonoBehaviour
 {
     public event Action<int> OnValueChanged;
-    
+
     [SerializeField] private Button previousButton;
     [SerializeField] private Button nextButton;
     [SerializeField] private UIPageButton pageButtonPrefab;
     [SerializeField] private RectTransform pageButtonsParent;
     [SerializeField] private RectTransform rectTransform;
-    private List<UIPageButton> buttons = new List<UIPageButton>();
+    private List<UIPageButton> buttons = new ();
     private int maxPages;
     private int currentPage;
 
@@ -20,7 +20,7 @@ public class UIPageSelector : MonoBehaviour
     {
         previousButton.onClick.AddListener(OnPreviousButtonDown);
         nextButton.onClick.AddListener(OnNextButtonDown);
-        
+
         gameObject.SetActive(false);
 
     }
@@ -57,7 +57,7 @@ public class UIPageSelector : MonoBehaviour
         }
 
         this.maxPages = maxPages;
-        
+
         currentPage = Mathf.Clamp(currentPage, 0, maxPages-1);
 
         if (maxPages <= 1)
@@ -66,12 +66,12 @@ public class UIPageSelector : MonoBehaviour
             OnValueChanged?.Invoke(0);
             return;
         }
-        
+
         gameObject.SetActive(true);
 
         EnsureButtons();
         UpdateButtonsStatus();
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }

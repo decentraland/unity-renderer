@@ -30,7 +30,7 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
-    
+
     public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
@@ -65,7 +65,7 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
-    //This temporary until the emotes are in the content server 
+    //This temporary until the emotes are in the content server
     public void EmbedWearables(IEnumerable<WearableItem> wearables)
     {
         foreach (WearableItem wearableItem in wearables)
@@ -230,6 +230,45 @@ public class CatalogController : MonoBehaviour
 
         return promiseResult;
     }
+
+    public static Promise<WearableItem[]> RequestAddressWearables(string userId)
+    {
+        List<string> inventoryTest = new List<string>();
+        string severalParcelsJson = (Resources.Load("TestJSON/LongWearableListTest") as TextAsset).text;
+        List<Dictionary<string,object>> items = JsonConvert.DeserializeObject<List<Dictionary<string,object>>>(severalParcelsJson);
+
+        foreach (Dictionary<string, object> dictionary in items)
+        {
+            inventoryTest.Add(dictionary["urn"].ToString());
+        }
+
+        Promise<WearableItem[]> promiseResult;
+
+        if (!awaitingWearablesByContextPromises.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
+        {
+            promiseResult = new Promise<WearableItem[]>();
+
+            awaitingWearablesByContextPromises.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", promiseResult);
+
+            if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{OWNED_WEARABLES_CONTEXT}{userId}"))
+                pendingWearablesByContextRequestedTimes.Add($"{OWNED_WEARABLES_CONTEXT}{userId}", Time.realtimeSinceStartup);
+
+            WebInterface.RequestWearables(
+                ownedByUser: null,
+                wearableIds: inventoryTest.ToArray(),
+                collectionIds: null,
+                context: $"{OWNED_WEARABLES_CONTEXT}{userId}"
+            );
+        }
+        else
+        {
+            awaitingWearablesByContextPromises.TryGetValue($"{OWNED_WEARABLES_CONTEXT}{userId}", out promiseResult);
+        }
+
+        return promiseResult;
+    }
+
+
 
     public static Promise<WearableItem[]> RequestBaseWearables()
     {
@@ -419,4 +458,5 @@ public class CatalogController : MonoBehaviour
         foreach (var wearableId in wearableIds)
             wearableCatalog.Remove(wearableId);
     }
+
 }
