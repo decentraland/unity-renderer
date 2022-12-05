@@ -1,3 +1,4 @@
+using AvatarSystem;
 using DCl.Social.Friends;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
@@ -17,8 +18,10 @@ namespace DCL.Social.Passports
         private StringVariable currentPlayerInfoCardId;
         private IUserProfileBridge userProfileBridge;
         private ISocialAnalytics socialAnalytics;
+        private IWearableItemResolver wearableItemResolver;
         private DataStore dataStore;
         private IProfanityFilter profanityFilter;
+        private IPassportApiBridge passportApiBridge;
         private IFriendsController friendsController;
 
         [SetUp]
@@ -31,8 +34,10 @@ namespace DCL.Social.Passports
             currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             socialAnalytics = Substitute.For<ISocialAnalytics>();
+            wearableItemResolver = Substitute.For<IWearableItemResolver>();
             dataStore = Substitute.For<DataStore>();
             profanityFilter = Substitute.For<IProfanityFilter>();
+            passportApiBridge = Substitute.For<IPassportApiBridge>();
             friendsController = Substitute.For<IFriendsController>();
             playerInfoController = new PassportPlayerInfoComponentController(
                                 currentPlayerInfoCardId,
@@ -50,6 +55,7 @@ namespace DCL.Social.Passports
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
+                                wearableItemResolver,
                                 dataStore);
 
             controller = new PlayerPassportHUDController(
@@ -59,6 +65,7 @@ namespace DCL.Social.Passports
                 passportNavigationController,
                 currentPlayerInfoCardId,
                 userProfileBridge,
+                passportApiBridge,
                 socialAnalytics
             );
         }

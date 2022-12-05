@@ -82,11 +82,11 @@ namespace DCL.Social.Passports
             if (model == null)
                 return;
 
-            userContextMenu.Hide();
+            SetGuestUser(model.isGuest);
             SetName(model.name);
+            userContextMenu.Hide();
             SetWallet(model.userId);
             SetPresence(model.presenceStatus);
-            SetGuestUser(model.isGuest);
             SetIsBlocked(model.isBlocked);
             SetHasBlockedOwnUser(model.hasBlocked);
             SetFriendStatus(model.friendshipStatus);

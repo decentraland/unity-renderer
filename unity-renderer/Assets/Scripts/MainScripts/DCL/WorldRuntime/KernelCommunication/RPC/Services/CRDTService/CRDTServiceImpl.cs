@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Controllers;
 using DCL.CRDT;
 using Google.Protobuf;
 using KernelCommunication;
@@ -50,6 +51,16 @@ namespace RPC.Services
                         context.crdt.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
                     }
                 }
+
+                if (context.crdt.WorldState.TryGetScene(messages.SceneNumber, out IParcelScene scene))
+                {
+                    // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                    // kernel won't be sending that message for those scenes
+                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                    {
+                        scene.MarkInitMessagesDone();
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -74,7 +85,7 @@ namespace RPC.Services
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
-                
+
                 reusableCrdtMessage.SceneId = request.SceneId;
                 reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());
