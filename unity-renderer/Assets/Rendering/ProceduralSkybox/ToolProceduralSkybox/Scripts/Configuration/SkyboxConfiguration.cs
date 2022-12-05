@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using DCL.Shaders;
 using UnityEngine;
-using DCL.Helpers;
 
 namespace DCL.Skybox
 {
