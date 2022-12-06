@@ -1,10 +1,10 @@
+using Cysharp.Threading.Tasks;
+using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using DCL.Social.Friends;
 using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
-namespace DCl.Social.Friends
+namespace DCL.Social.Friends
 {
     public interface IFriendsController
     {
