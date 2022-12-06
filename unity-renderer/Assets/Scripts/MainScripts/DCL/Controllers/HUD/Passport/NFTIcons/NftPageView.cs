@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public class NftPageView : MonoBehaviour
+public class NftPageView : BaseComponentView
 {
 
     [SerializeField] private NFTIconComponentView[] nftElements;
@@ -13,4 +14,7 @@ public class NftPageView : MonoBehaviour
         }
     }
 
+    public override void RefreshControl()
+    {
+    }
 }

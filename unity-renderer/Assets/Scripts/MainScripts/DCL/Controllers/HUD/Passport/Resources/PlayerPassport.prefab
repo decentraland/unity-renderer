@@ -5715,7 +5715,11 @@ MonoBehaviour:
   equippedWearablesContainer: {fileID: 1481389069059600723}
   usernameText: {fileID: 5559678103980510561}
   descriptionText: {fileID: 1102672570389372144}
+  nftWearablesCarousel: {fileID: 569902230679226799}
+  nftWearablesCarouselContent: {fileID: 5275484714432748256}
   wearableUIReferenceObject: {fileID: 8311461393679036791, guid: cf6cebfb881e04e0eb7b6da2d7b2ebcd,
+    type: 3}
+  nftPageUIReferenceObject: {fileID: 1579844706231847910, guid: f0edbb12cb6a44afa9242f488d03d147,
     type: 3}
 --- !u!1 &7590974253276029638
 GameObject:
@@ -7629,6 +7633,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f51437f8e9c544a6496c026fb9650fd8, type: 3}
+--- !u!114 &569902230679226799 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 559267743169334, guid: f51437f8e9c544a6496c026fb9650fd8,
+    type: 3}
+  m_PrefabInstance: {fileID: 570074417715802777}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4df6174eae7c4840b1729c3829bfa00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &5275484714432748256 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5683268729060239481, guid: f51437f8e9c544a6496c026fb9650fd8,
+    type: 3}
+  m_PrefabInstance: {fileID: 570074417715802777}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8989551205521347020 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8874345921017815893, guid: f51437f8e9c544a6496c026fb9650fd8,

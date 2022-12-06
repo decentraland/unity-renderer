@@ -415,9 +415,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (newItem == null)
             return;
 
-        newItem.transform.SetParent(itemsContainer);
-        newItem.transform.localPosition = Vector3.zero;
-        newItem.transform.localScale = Vector3.one;
+        Transform transform1;
+        (transform1 = newItem.transform).SetParent(itemsContainer);
+        transform1.localPosition = Vector3.zero;
+        transform1.localScale = Vector3.one;
         newItem.name = name;
 
         instantiatedItems.Add(newItem);
