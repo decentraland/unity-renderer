@@ -259,10 +259,9 @@ namespace DCL
             unusedObjects.Clear();
             usedObjects.Clear();
 
-            Object.Destroy(this.original);
+            Utils.SafeDestroy(this.original);
 
-            if (PoolManager.USE_POOL_CONTAINERS)
-                Object.Destroy(this.container);
+            Utils.SafeDestroy(this.container);;
 
             OnCleanup?.Invoke(this);
         }

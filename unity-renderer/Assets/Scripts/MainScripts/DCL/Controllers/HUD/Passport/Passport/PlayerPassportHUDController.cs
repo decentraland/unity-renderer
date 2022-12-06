@@ -4,6 +4,7 @@ using UnityEngine;
 using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Threading.Tasks;
+using System;
 
 namespace DCL.Social.Passports
 {
@@ -60,6 +61,10 @@ namespace DCL.Social.Passports
             OnCurrentPlayerIdChanged(currentPlayerId, null);
         }
 
+        /// <summary>
+        /// Called from <see cref="HUDBridge"/>
+        /// so it just should control the root object visibility
+        /// </summary>
         public void SetVisibility(bool visible)
         {
             view.SetVisibility(visible);
@@ -74,6 +79,9 @@ namespace DCL.Social.Passports
         {
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
+
+            playerPreviewController.Dispose();
+
             if (view != null)
                 view.Dispose();
         }
@@ -91,16 +99,22 @@ namespace DCL.Social.Passports
 
             if (currentUserProfile == null)
             {
-                view.SetPassportPanelVisibility(false);
+                SetPassportPanelVisibility(false);
             }
             else
             {
+                SetPassportPanelVisibility(true);
                 QueryNftCollectionsAsync(currentUserProfile.userId);
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
-                view.SetPassportPanelVisibility(true);
                 UpdateUserProfileInSubpanels(currentUserProfile);
             }
+        }
+
+        private void SetPassportPanelVisibility(bool visible)
+        {
+            view.SetPassportPanelVisibility(visible);
+            playerPreviewController.SetPassportPanelVisibility(visible);
         }
 
         private async Task QueryNftCollectionsAsync(string userId)
@@ -130,6 +144,7 @@ namespace DCL.Social.Passports
         {
             playerInfoController.UpdateWithUserProfile(userProfile);
             passportNavigationController.UpdateWithUserProfile(userProfile);
+            playerPreviewController.UpdateWithUserProfile(userProfile);
         }
 
         private void RemoveCurrentPlayer()

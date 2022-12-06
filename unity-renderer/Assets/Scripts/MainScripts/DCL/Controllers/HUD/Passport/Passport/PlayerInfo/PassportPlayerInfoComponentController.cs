@@ -59,7 +59,7 @@ namespace DCL.Social.Passports
 
             if(userProfile.isGuest)
             {
-                playerPassportModel = new PlayerPassportModel()
+                playerPassportModel = new PlayerPassportModel
                 {
                     name = filteredName,
                     isGuest = userProfile.isGuest,
@@ -67,7 +67,7 @@ namespace DCL.Social.Passports
             }
             else
             {
-                playerPassportModel = new PlayerPassportModel()
+                playerPassportModel = new PlayerPassportModel
                 {
                     name = filteredName,
                     userId = userProfile.userId,
@@ -78,7 +78,7 @@ namespace DCL.Social.Passports
                     friendshipStatus = friendsController.GetUserStatus(userProfile.userId).friendshipStatus
                 };
             }
-            view.Configure(playerPassportModel);
+            view.SetModel(playerPassportModel);
         }
 
         private async UniTask<string> FilterName(UserProfile userProfile)

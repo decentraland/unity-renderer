@@ -14,8 +14,8 @@ namespace DCL.Social.Passports
         private readonly IWearableItemResolver wearableItemResolver;
         private readonly DataStore dataStore;
 
-        private IPassportNavigationComponentView view;
-        private HashSet<string> cachedAvatarEquippedWearables = new HashSet<string>();
+        private readonly IPassportNavigationComponentView view;
+        private HashSet<string> cachedAvatarEquippedWearables = new ();
         public event Action<string> OnClickBuyNft;
 
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, DataStore dataStore)
@@ -27,9 +27,9 @@ namespace DCL.Social.Passports
             view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
+        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
 
-        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
+        private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
             string filteredName = await FilterContent(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
