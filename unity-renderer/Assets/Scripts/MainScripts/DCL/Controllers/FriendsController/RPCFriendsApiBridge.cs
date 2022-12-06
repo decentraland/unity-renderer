@@ -127,7 +127,7 @@ namespace DCl.Social.Friends
         public void AcceptFriendship(string userId) =>
             fallbackApiBridge.AcceptFriendship(userId);
 
-        private static FriendRequestPayload ToFriendRequestPayload(FriendRequest request) =>
+        private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>
             new FriendRequestPayload
             {
                 from = request.From,

@@ -23,58 +23,59 @@ public static partial class FriendRequestKernelReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "CkFkZWNlbnRyYWxhbmQvcmVuZGVyZXIva2VybmVsX3NlcnZpY2VzL2ZyaWVu",
-          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90byJtCg1GcmllbmRSZXF1ZXN0EhkKEWZy",
-          "aWVuZF9yZXF1ZXN0X2lkGAEgASgJEhEKCXRpbWVzdGFtcBgCIAEoBBIMCgRm",
-          "cm9tGAMgASgJEgoKAnRvGAQgASgJEhQKDG1lc3NhZ2VfYm9keRgFIAEoCSJw",
-          "ChhHZXRGcmllbmRSZXF1ZXN0c1BheWxvYWQSEgoKc2VudF9saW1pdBgBIAEo",
-          "BRIRCglzZW50X3NraXAYAiABKAUSFgoOcmVjZWl2ZWRfbGltaXQYAyABKAUS",
-          "FQoNcmVjZWl2ZWRfc2tpcBgEIAEoBSK0AQoYR2V0RnJpZW5kUmVxdWVzdHNS",
-          "ZXBseU9rEiQKDHJlcXVlc3RlZF90bxgBIAMoCzIOLkZyaWVuZFJlcXVlc3QS",
-          "JgoOcmVxdWVzdGVkX2Zyb20YAiADKAsyDi5GcmllbmRSZXF1ZXN0EiYKHnRv",
-          "dGFsX3JlY2VpdmVkX2ZyaWVuZF9yZXF1ZXN0cxgDIAEoBRIiChp0b3RhbF9z",
-          "ZW50X2ZyaWVuZF9yZXF1ZXN0cxgEIAEoBSJ2ChZHZXRGcmllbmRSZXF1ZXN0",
-          "c1JlcGx5EioKBXJlcGx5GAEgASgLMhkuR2V0RnJpZW5kUmVxdWVzdHNSZXBs",
-          "eU9rSAASJQoFZXJyb3IYAiABKA4yFC5GcmllbmRzaGlwRXJyb3JDb2RlSABC",
-          "CQoHbWVzc2FnZSJBChhTZW5kRnJpZW5kUmVxdWVzdFBheWxvYWQSDwoHdXNl",
-          "cl9pZBgBIAEoCRIUCgxtZXNzYWdlX2JvZHkYAiABKAkiQgoYU2VuZEZyaWVu",
-          "ZFJlcXVlc3RSZXBseU9rEiYKDmZyaWVuZF9yZXF1ZXN0GAEgASgLMg4uRnJp",
-          "ZW5kUmVxdWVzdCJ2ChZTZW5kRnJpZW5kUmVxdWVzdFJlcGx5EioKBXJlcGx5",
-          "GAEgASgLMhkuU2VuZEZyaWVuZFJlcXVlc3RSZXBseU9rSAASJQoFZXJyb3IY",
-          "AiABKA4yFC5GcmllbmRzaGlwRXJyb3JDb2RlSABCCQoHbWVzc2FnZSI3ChpD",
-          "YW5jZWxGcmllbmRSZXF1ZXN0UGF5bG9hZBIZChFmcmllbmRfcmVxdWVzdF9p",
-          "ZBgBIAEoCSJEChpDYW5jZWxGcmllbmRSZXF1ZXN0UmVwbHlPaxImCg5mcmll",
-          "bmRfcmVxdWVzdBgBIAEoCzIOLkZyaWVuZFJlcXVlc3QiegoYQ2FuY2VsRnJp",
-          "ZW5kUmVxdWVzdFJlcGx5EiwKBXJlcGx5GAEgASgLMhsuQ2FuY2VsRnJpZW5k",
-          "UmVxdWVzdFJlcGx5T2tIABIlCgVlcnJvchgCIAEoDjIULkZyaWVuZHNoaXBF",
-          "cnJvckNvZGVIAEIJCgdtZXNzYWdlIjcKGkFjY2VwdEZyaWVuZFJlcXVlc3RQ",
-          "YXlsb2FkEhkKEWZyaWVuZF9yZXF1ZXN0X2lkGAEgASgJIjcKGkFjY2VwdEZy",
-          "aWVuZFJlcXVlc3RSZXBseU9rEhkKEWZyaWVuZF9yZXF1ZXN0X2lkGAEgASgJ",
-          "InoKGEFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseRIsCgVyZXBseRgBIAEoCzIb",
-          "LkFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseU9rSAASJQoFZXJyb3IYAiABKA4y",
-          "FC5GcmllbmRzaGlwRXJyb3JDb2RlSABCCQoHbWVzc2FnZSI3ChpSZWplY3RG",
+          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90byKHAQoRRnJpZW5kUmVxdWVzdEluZm8S",
+          "GQoRZnJpZW5kX3JlcXVlc3RfaWQYASABKAkSEQoJdGltZXN0YW1wGAIgASgE",
+          "EgwKBGZyb20YAyABKAkSCgoCdG8YBCABKAkSGQoMbWVzc2FnZV9ib2R5GAUg",
+          "ASgJSACIAQFCDwoNX21lc3NhZ2VfYm9keSJwChhHZXRGcmllbmRSZXF1ZXN0",
+          "c1BheWxvYWQSEgoKc2VudF9saW1pdBgBIAEoBRIRCglzZW50X3NraXAYAiAB",
+          "KAUSFgoOcmVjZWl2ZWRfbGltaXQYAyABKAUSFQoNcmVjZWl2ZWRfc2tpcBgE",
+          "IAEoBSK8AQoYR2V0RnJpZW5kUmVxdWVzdHNSZXBseU9rEigKDHJlcXVlc3Rl",
+          "ZF90bxgBIAMoCzISLkZyaWVuZFJlcXVlc3RJbmZvEioKDnJlcXVlc3RlZF9m",
+          "cm9tGAIgAygLMhIuRnJpZW5kUmVxdWVzdEluZm8SJgoedG90YWxfcmVjZWl2",
+          "ZWRfZnJpZW5kX3JlcXVlc3RzGAMgASgFEiIKGnRvdGFsX3NlbnRfZnJpZW5k",
+          "X3JlcXVlc3RzGAQgASgFInYKFkdldEZyaWVuZFJlcXVlc3RzUmVwbHkSKgoF",
+          "cmVwbHkYASABKAsyGS5HZXRGcmllbmRSZXF1ZXN0c1JlcGx5T2tIABIlCgVl",
+          "cnJvchgCIAEoDjIULkZyaWVuZHNoaXBFcnJvckNvZGVIAEIJCgdtZXNzYWdl",
+          "IkEKGFNlbmRGcmllbmRSZXF1ZXN0UGF5bG9hZBIPCgd1c2VyX2lkGAEgASgJ",
+          "EhQKDG1lc3NhZ2VfYm9keRgCIAEoCSJGChhTZW5kRnJpZW5kUmVxdWVzdFJl",
+          "cGx5T2sSKgoOZnJpZW5kX3JlcXVlc3QYASABKAsyEi5GcmllbmRSZXF1ZXN0",
+          "SW5mbyJ2ChZTZW5kRnJpZW5kUmVxdWVzdFJlcGx5EioKBXJlcGx5GAEgASgL",
+          "MhkuU2VuZEZyaWVuZFJlcXVlc3RSZXBseU9rSAASJQoFZXJyb3IYAiABKA4y",
+          "FC5GcmllbmRzaGlwRXJyb3JDb2RlSABCCQoHbWVzc2FnZSI3ChpDYW5jZWxG",
           "cmllbmRSZXF1ZXN0UGF5bG9hZBIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEo",
-          "CSI3ChpSZWplY3RGcmllbmRSZXF1ZXN0UmVwbHlPaxIZChFmcmllbmRfcmVx",
-          "dWVzdF9pZBgBIAEoCSJ6ChhSZWplY3RGcmllbmRSZXF1ZXN0UmVwbHkSLAoF",
-          "cmVwbHkYASABKAsyGy5SZWplY3RGcmllbmRSZXF1ZXN0UmVwbHlPa0gAEiUK",
-          "BWVycm9yGAIgASgOMhQuRnJpZW5kc2hpcEVycm9yQ29kZUgAQgkKB21lc3Nh",
-          "Z2UqsAEKE0ZyaWVuZHNoaXBFcnJvckNvZGUSHgoaRkVDX1RPT19NQU5ZX1JF",
-          "UVVFU1RTX1NFTlQQABIeChpGRUNfTk9UX0VOT1VHSF9USU1FX1BBU1NFRBAB",
-          "EhQKEEZFQ19CTE9DS0VEX1VTRVIQAhIZChVGRUNfTk9OX0VYSVNUSU5HX1VT",
-          "RVIQAxIXChNGRUNfSU5WQUxJRF9SRVFVRVNUEAQSDwoLRkVDX1VOS05PV04Q",
-          "BTKlAwoaRnJpZW5kUmVxdWVzdEtlcm5lbFNlcnZpY2USSQoRR2V0RnJpZW5k",
-          "UmVxdWVzdHMSGS5HZXRGcmllbmRSZXF1ZXN0c1BheWxvYWQaFy5HZXRGcmll",
-          "bmRSZXF1ZXN0c1JlcGx5IgASSQoRU2VuZEZyaWVuZFJlcXVlc3QSGS5TZW5k",
-          "RnJpZW5kUmVxdWVzdFBheWxvYWQaFy5TZW5kRnJpZW5kUmVxdWVzdFJlcGx5",
-          "IgASTwoTQ2FuY2VsRnJpZW5kUmVxdWVzdBIbLkNhbmNlbEZyaWVuZFJlcXVl",
-          "c3RQYXlsb2FkGhkuQ2FuY2VsRnJpZW5kUmVxdWVzdFJlcGx5IgASTwoTQWNj",
-          "ZXB0RnJpZW5kUmVxdWVzdBIbLkFjY2VwdEZyaWVuZFJlcXVlc3RQYXlsb2Fk",
-          "GhkuQWNjZXB0RnJpZW5kUmVxdWVzdFJlcGx5IgASTwoTUmVqZWN0RnJpZW5k",
-          "UmVxdWVzdBIbLlJlamVjdEZyaWVuZFJlcXVlc3RQYXlsb2FkGhkuUmVqZWN0",
-          "RnJpZW5kUmVxdWVzdFJlcGx5IgBiBnByb3RvMw=="));
+          "CSJIChpDYW5jZWxGcmllbmRSZXF1ZXN0UmVwbHlPaxIqCg5mcmllbmRfcmVx",
+          "dWVzdBgBIAEoCzISLkZyaWVuZFJlcXVlc3RJbmZvInoKGENhbmNlbEZyaWVu",
+          "ZFJlcXVlc3RSZXBseRIsCgVyZXBseRgBIAEoCzIbLkNhbmNlbEZyaWVuZFJl",
+          "cXVlc3RSZXBseU9rSAASJQoFZXJyb3IYAiABKA4yFC5GcmllbmRzaGlwRXJy",
+          "b3JDb2RlSABCCQoHbWVzc2FnZSI3ChpBY2NlcHRGcmllbmRSZXF1ZXN0UGF5",
+          "bG9hZBIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEoCSI3ChpBY2NlcHRGcmll",
+          "bmRSZXF1ZXN0UmVwbHlPaxIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEoCSJ6",
+          "ChhBY2NlcHRGcmllbmRSZXF1ZXN0UmVwbHkSLAoFcmVwbHkYASABKAsyGy5B",
+          "Y2NlcHRGcmllbmRSZXF1ZXN0UmVwbHlPa0gAEiUKBWVycm9yGAIgASgOMhQu",
+          "RnJpZW5kc2hpcEVycm9yQ29kZUgAQgkKB21lc3NhZ2UiNwoaUmVqZWN0RnJp",
+          "ZW5kUmVxdWVzdFBheWxvYWQSGQoRZnJpZW5kX3JlcXVlc3RfaWQYASABKAki",
+          "NwoaUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5T2sSGQoRZnJpZW5kX3JlcXVl",
+          "c3RfaWQYASABKAkiegoYUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5EiwKBXJl",
+          "cGx5GAEgASgLMhsuUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5T2tIABIlCgVl",
+          "cnJvchgCIAEoDjIULkZyaWVuZHNoaXBFcnJvckNvZGVIAEIJCgdtZXNzYWdl",
+          "KrABChNGcmllbmRzaGlwRXJyb3JDb2RlEh4KGkZFQ19UT09fTUFOWV9SRVFV",
+          "RVNUU19TRU5UEAASHgoaRkVDX05PVF9FTk9VR0hfVElNRV9QQVNTRUQQARIU",
+          "ChBGRUNfQkxPQ0tFRF9VU0VSEAISGQoVRkVDX05PTl9FWElTVElOR19VU0VS",
+          "EAMSFwoTRkVDX0lOVkFMSURfUkVRVUVTVBAEEg8KC0ZFQ19VTktOT1dOEAUy",
+          "pQMKGkZyaWVuZFJlcXVlc3RLZXJuZWxTZXJ2aWNlEkkKEUdldEZyaWVuZFJl",
+          "cXVlc3RzEhkuR2V0RnJpZW5kUmVxdWVzdHNQYXlsb2FkGhcuR2V0RnJpZW5k",
+          "UmVxdWVzdHNSZXBseSIAEkkKEVNlbmRGcmllbmRSZXF1ZXN0EhkuU2VuZEZy",
+          "aWVuZFJlcXVlc3RQYXlsb2FkGhcuU2VuZEZyaWVuZFJlcXVlc3RSZXBseSIA",
+          "Ek8KE0NhbmNlbEZyaWVuZFJlcXVlc3QSGy5DYW5jZWxGcmllbmRSZXF1ZXN0",
+          "UGF5bG9hZBoZLkNhbmNlbEZyaWVuZFJlcXVlc3RSZXBseSIAEk8KE0FjY2Vw",
+          "dEZyaWVuZFJlcXVlc3QSGy5BY2NlcHRGcmllbmRSZXF1ZXN0UGF5bG9hZBoZ",
+          "LkFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseSIAEk8KE1JlamVjdEZyaWVuZFJl",
+          "cXVlc3QSGy5SZWplY3RGcmllbmRSZXF1ZXN0UGF5bG9hZBoZLlJlamVjdEZy",
+          "aWVuZFJlcXVlc3RSZXBseSIAYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(new[] {typeof(global::FriendshipErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::FriendRequest), global::FriendRequest.Parser, new[]{ "FriendRequestId", "Timestamp", "From", "To", "MessageBody" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::FriendRequestInfo), global::FriendRequestInfo.Parser, new[]{ "FriendRequestId", "Timestamp", "From", "To", "MessageBody" }, new[]{ "MessageBody" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsPayload), global::GetFriendRequestsPayload.Parser, new[]{ "SentLimit", "SentSkip", "ReceivedLimit", "ReceivedSkip" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReplyOk), global::GetFriendRequestsReplyOk.Parser, new[]{ "RequestedTo", "RequestedFrom", "TotalReceivedFriendRequests", "TotalSentFriendRequests" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReply), global::GetFriendRequestsReply.Parser, new[]{ "Reply", "Error" }, new[]{ "Message" }, null, null, null),
@@ -111,16 +112,16 @@ public enum FriendshipErrorCode {
 #endregion
 
 #region Messages
-public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
+public sealed partial class FriendRequestInfo : pb::IMessage<FriendRequestInfo>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<FriendRequest> _parser = new pb::MessageParser<FriendRequest>(() => new FriendRequest());
+  private static readonly pb::MessageParser<FriendRequestInfo> _parser = new pb::MessageParser<FriendRequestInfo>(() => new FriendRequestInfo());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<FriendRequest> Parser { get { return _parser; } }
+  public static pb::MessageParser<FriendRequestInfo> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -136,7 +137,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public FriendRequest() {
+  public FriendRequestInfo() {
     OnConstruction();
   }
 
@@ -144,7 +145,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public FriendRequest(FriendRequest other) : this() {
+  public FriendRequestInfo(FriendRequestInfo other) : this() {
     friendRequestId_ = other.friendRequestId_;
     timestamp_ = other.timestamp_;
     from_ = other.from_;
@@ -155,8 +156,8 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public FriendRequest Clone() {
-    return new FriendRequest(this);
+  public FriendRequestInfo Clone() {
+    return new FriendRequestInfo(this);
   }
 
   /// <summary>Field number for the "friend_request_id" field.</summary>
@@ -209,25 +210,37 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 
   /// <summary>Field number for the "message_body" field.</summary>
   public const int MessageBodyFieldNumber = 5;
-  private string messageBody_ = "";
+  private string messageBody_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public string MessageBody {
-    get { return messageBody_; }
+    get { return messageBody_ ?? ""; }
     set {
       messageBody_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
+  }
+  /// <summary>Gets whether the "message_body" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasMessageBody {
+    get { return messageBody_ != null; }
+  }
+  /// <summary>Clears the value of the "message_body" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearMessageBody() {
+    messageBody_ = null;
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as FriendRequest);
+    return Equals(other as FriendRequestInfo);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(FriendRequest other) {
+  public bool Equals(FriendRequestInfo other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -250,7 +263,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
     if (Timestamp != 0UL) hash ^= Timestamp.GetHashCode();
     if (From.Length != 0) hash ^= From.GetHashCode();
     if (To.Length != 0) hash ^= To.GetHashCode();
-    if (MessageBody.Length != 0) hash ^= MessageBody.GetHashCode();
+    if (HasMessageBody) hash ^= MessageBody.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -285,7 +298,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
       output.WriteRawTag(34);
       output.WriteString(To);
     }
-    if (MessageBody.Length != 0) {
+    if (HasMessageBody) {
       output.WriteRawTag(42);
       output.WriteString(MessageBody);
     }
@@ -315,7 +328,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
       output.WriteRawTag(34);
       output.WriteString(To);
     }
-    if (MessageBody.Length != 0) {
+    if (HasMessageBody) {
       output.WriteRawTag(42);
       output.WriteString(MessageBody);
     }
@@ -341,7 +354,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
     if (To.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(To);
     }
-    if (MessageBody.Length != 0) {
+    if (HasMessageBody) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(MessageBody);
     }
     if (_unknownFields != null) {
@@ -352,7 +365,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(FriendRequest other) {
+  public void MergeFrom(FriendRequestInfo other) {
     if (other == null) {
       return;
     }
@@ -368,7 +381,7 @@ public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
     if (other.To.Length != 0) {
       To = other.To;
     }
-    if (other.MessageBody.Length != 0) {
+    if (other.HasMessageBody) {
       MessageBody = other.MessageBody;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -812,29 +825,29 @@ public sealed partial class GetFriendRequestsReplyOk : pb::IMessage<GetFriendReq
 
   /// <summary>Field number for the "requested_to" field.</summary>
   public const int RequestedToFieldNumber = 1;
-  private static readonly pb::FieldCodec<global::FriendRequest> _repeated_requestedTo_codec
-      = pb::FieldCodec.ForMessage(10, global::FriendRequest.Parser);
-  private readonly pbc::RepeatedField<global::FriendRequest> requestedTo_ = new pbc::RepeatedField<global::FriendRequest>();
+  private static readonly pb::FieldCodec<global::FriendRequestInfo> _repeated_requestedTo_codec
+      = pb::FieldCodec.ForMessage(10, global::FriendRequestInfo.Parser);
+  private readonly pbc::RepeatedField<global::FriendRequestInfo> requestedTo_ = new pbc::RepeatedField<global::FriendRequestInfo>();
   /// <summary>
   /// Friend request info on the requests you've sent to users
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::RepeatedField<global::FriendRequest> RequestedTo {
+  public pbc::RepeatedField<global::FriendRequestInfo> RequestedTo {
     get { return requestedTo_; }
   }
 
   /// <summary>Field number for the "requested_from" field.</summary>
   public const int RequestedFromFieldNumber = 2;
-  private static readonly pb::FieldCodec<global::FriendRequest> _repeated_requestedFrom_codec
-      = pb::FieldCodec.ForMessage(18, global::FriendRequest.Parser);
-  private readonly pbc::RepeatedField<global::FriendRequest> requestedFrom_ = new pbc::RepeatedField<global::FriendRequest>();
+  private static readonly pb::FieldCodec<global::FriendRequestInfo> _repeated_requestedFrom_codec
+      = pb::FieldCodec.ForMessage(18, global::FriendRequestInfo.Parser);
+  private readonly pbc::RepeatedField<global::FriendRequestInfo> requestedFrom_ = new pbc::RepeatedField<global::FriendRequestInfo>();
   /// <summary>
   /// Friend request info on the requests you've received from users
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::RepeatedField<global::FriendRequest> RequestedFrom {
+  public pbc::RepeatedField<global::FriendRequestInfo> RequestedFrom {
     get { return requestedFrom_; }
   }
 
@@ -1602,13 +1615,13 @@ public sealed partial class SendFriendRequestReplyOk : pb::IMessage<SendFriendRe
 
   /// <summary>Field number for the "friend_request" field.</summary>
   public const int FriendRequestFieldNumber = 1;
-  private global::FriendRequest friendRequest_;
+  private global::FriendRequestInfo friendRequest_;
   /// <summary>
   /// Friend request info on the request you've sent to a user
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::FriendRequest FriendRequest {
+  public global::FriendRequestInfo FriendRequest {
     get { return friendRequest_; }
     set {
       friendRequest_ = value;
@@ -1702,7 +1715,7 @@ public sealed partial class SendFriendRequestReplyOk : pb::IMessage<SendFriendRe
     }
     if (other.friendRequest_ != null) {
       if (friendRequest_ == null) {
-        FriendRequest = new global::FriendRequest();
+        FriendRequest = new global::FriendRequestInfo();
       }
       FriendRequest.MergeFrom(other.FriendRequest);
     }
@@ -1723,7 +1736,7 @@ public sealed partial class SendFriendRequestReplyOk : pb::IMessage<SendFriendRe
           break;
         case 10: {
           if (friendRequest_ == null) {
-            FriendRequest = new global::FriendRequest();
+            FriendRequest = new global::FriendRequestInfo();
           }
           input.ReadMessage(FriendRequest);
           break;
@@ -1745,7 +1758,7 @@ public sealed partial class SendFriendRequestReplyOk : pb::IMessage<SendFriendRe
           break;
         case 10: {
           if (friendRequest_ == null) {
-            FriendRequest = new global::FriendRequest();
+            FriendRequest = new global::FriendRequestInfo();
           }
           input.ReadMessage(FriendRequest);
           break;
@@ -2269,13 +2282,13 @@ public sealed partial class CancelFriendRequestReplyOk : pb::IMessage<CancelFrie
 
   /// <summary>Field number for the "friend_request" field.</summary>
   public const int FriendRequestFieldNumber = 1;
-  private global::FriendRequest friendRequest_;
+  private global::FriendRequestInfo friendRequest_;
   /// <summary>
   /// Friend request info on the request you've canceled
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::FriendRequest FriendRequest {
+  public global::FriendRequestInfo FriendRequest {
     get { return friendRequest_; }
     set {
       friendRequest_ = value;
@@ -2369,7 +2382,7 @@ public sealed partial class CancelFriendRequestReplyOk : pb::IMessage<CancelFrie
     }
     if (other.friendRequest_ != null) {
       if (friendRequest_ == null) {
-        FriendRequest = new global::FriendRequest();
+        FriendRequest = new global::FriendRequestInfo();
       }
       FriendRequest.MergeFrom(other.FriendRequest);
     }
@@ -2390,7 +2403,7 @@ public sealed partial class CancelFriendRequestReplyOk : pb::IMessage<CancelFrie
           break;
         case 10: {
           if (friendRequest_ == null) {
-            FriendRequest = new global::FriendRequest();
+            FriendRequest = new global::FriendRequestInfo();
           }
           input.ReadMessage(FriendRequest);
           break;
@@ -2412,7 +2425,7 @@ public sealed partial class CancelFriendRequestReplyOk : pb::IMessage<CancelFrie
           break;
         case 10: {
           if (friendRequest_ == null) {
-            FriendRequest = new global::FriendRequest();
+            FriendRequest = new global::FriendRequestInfo();
           }
           input.ReadMessage(FriendRequest);
           break;
