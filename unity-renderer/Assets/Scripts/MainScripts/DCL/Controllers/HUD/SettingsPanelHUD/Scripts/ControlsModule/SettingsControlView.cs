@@ -162,17 +162,19 @@ namespace DCL.SettingsPanelHUD.Controls
 
         private void SetOverriden(bool @override)
         {
-            foreach (TextMeshProUGUI text in valueLabels)
-                text.color = @override ? originalLabelColor : valueLabelDeactivationColor;
+            infoButton.SetActive(@override);
+            //
+            // foreach (TextMeshProUGUI text in valueLabels)
+            //     text.color = @override ? valueLabelDeactivationColor : originalLabelColor;
+            //
+            // foreach (Image image in handleImages)
+            //     image.color = @override ? handlerDeactivationColor : originalHandlerColor;
+            //
+            // foreach (CanvasGroup group in controlBackgroundCanvasGroups)
+            //     group.alpha = @override ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
 
-            foreach (Image image in handleImages)
-                image.color = @override ? originalHandlerColor : handlerDeactivationColor;
-
-            foreach (CanvasGroup group in controlBackgroundCanvasGroups)
-                group.alpha = @override ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
-
-            controlCanvasGroup.interactable = !@override;
-            controlCanvasGroup.blocksRaycasts = @override;
+            // controlCanvasGroup.interactable = !@override;
+            // controlCanvasGroup.blocksRaycasts = @override;
         }
 
         private void SetActive(bool activate)
