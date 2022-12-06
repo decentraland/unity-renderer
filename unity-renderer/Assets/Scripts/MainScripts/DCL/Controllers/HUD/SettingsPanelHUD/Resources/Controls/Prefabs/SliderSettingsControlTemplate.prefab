@@ -751,6 +751,12 @@ CanvasGroup:
     type: 3}
   m_PrefabInstance: {fileID: 4633741101838584502}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &3110326881263332800 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 7738383911578494838, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4633741101838584502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3320459422463288925 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7951948174597467371, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
@@ -769,10 +775,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f6432f3a544fb4c897777a7872dda4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 1670244689411681690}
+  controlCanvasGroup: {fileID: 3110326881263332800}
   title: {fileID: 5579582722039835955}
   titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 3658005421889846894}
-  canvasGroup: {fileID: 1670244689411681690}
+  infoButton: {fileID: 5772549793672682718}
   valueLabels:
   - {fileID: 5063649180604884040}
   valueLabelDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
@@ -802,6 +810,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5772549793672682718 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1176122886669866600, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4633741101838584502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6121926830692327792 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1493839374699080646, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,

@@ -6,7 +6,7 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUD
     /// <summary>
     /// Adjust x position to be at the end of the text (with offset)
     /// </summary>
-    public class InfoButtonPositionAdjuster : MonoBehaviour
+    public class PositionAdjusterByEndOfText : MonoBehaviour
     {
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private float offset = 25f;

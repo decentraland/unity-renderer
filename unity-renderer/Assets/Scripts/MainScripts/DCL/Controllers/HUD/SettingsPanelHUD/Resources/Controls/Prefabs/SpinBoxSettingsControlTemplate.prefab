@@ -781,21 +781,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1965243388947460752, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1965243388947460752, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1965243388947460752, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1965243388947460752, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
-        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 103.6
       objectReference: {fileID: 0}
@@ -934,6 +919,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2747618356799222513}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3923741239173063833 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1176122886669866600, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2747618356799222513}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5222907750520888858 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7951948174597467371, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
@@ -952,10 +943,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ae1a5994b10c74d9be2279365836c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 8161151582268216797}
+  controlCanvasGroup: {fileID: 5568071453777581447}
   title: {fileID: 3098883645285078388}
   titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 6101253936429729321}
-  canvasGroup: {fileID: 8161151582268216797}
+  infoButton: {fileID: 3923741239173063833}
   valueLabels:
   - {fileID: 4295868929499238043}
   valueLabelDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
@@ -968,6 +961,12 @@ MonoBehaviour:
   - {fileID: 2799315893441309505}
   controlBackgroundDeactivationAlpha: 0.5
   spinBox: {fileID: 4761906557664243922}
+--- !u!225 &5568071453777581447 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 7738383911578494838, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2747618356799222513}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6101253936429729321 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8254397142236738776, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,

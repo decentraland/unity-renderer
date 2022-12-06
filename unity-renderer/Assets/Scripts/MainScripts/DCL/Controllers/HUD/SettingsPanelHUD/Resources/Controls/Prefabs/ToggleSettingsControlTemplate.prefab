@@ -1015,6 +1015,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2149967432221614502}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &974002880863303630 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1176122886669866600, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2149967432221614502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1222381958464161315 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 946022103321159557, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
@@ -1057,10 +1063,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134f74001ea027489dab817674b0402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 5383362536014907018}
+  controlCanvasGroup: {fileID: 8553027113073084112}
   title: {fileID: 1222381958464161315}
   titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 8024206767787300222}
-  canvasGroup: {fileID: 5383362536014907018}
+  infoButton: {fileID: 974002880863303630}
   valueLabels:
   - {fileID: 4606451965372511616}
   - {fileID: 1297788905329533916}
@@ -1074,3 +1082,9 @@ MonoBehaviour:
   - {fileID: 8152899809905436497}
   controlBackgroundDeactivationAlpha: 0.5
   toggle: {fileID: 4037569235477626184}
+--- !u!225 &8553027113073084112 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 7738383911578494838, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2149967432221614502}
+  m_PrefabAsset: {fileID: 0}
