@@ -224,24 +224,25 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuView.Received().SetSectionActive(ExploreSection.Builder, isVisible);
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseBuilderVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isBuilderInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
+    // FD:: commented
+    // [TestCase(true)]
+    // [TestCase(false)]
+    // public void RaiseBuilderVisibleChangedCorrectly(bool isVisible)
+    // {
+    //     // Arrange
+    //     exploreV2MenuController.isBuilderInitialized.Set(true);
+    //     exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
 
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Builder, isVisible);
+    //     // Act
+    //     exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Builder, isVisible);
 
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Builder);
+    //     // Assert
+    //     if (isVisible)
+    //         exploreV2MenuView.Received().GoToSection(ExploreSection.Builder);
 
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Builder, isVisible);
-    }
+    //     Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
+    //     exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Builder, isVisible);
+    // }
 
     [TestCase(true)]
     [TestCase(false)]

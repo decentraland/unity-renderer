@@ -164,7 +164,8 @@ namespace DCL
             gameObject.AddComponent<ScreenSizeWatcher>();
             gameObject.AddComponent<SceneControllerBridge>();
 
-            MainSceneFactory.CreateBuilderInWorldBridge(gameObject);
+            // FD:: commented
+            // MainSceneFactory.CreateBuilderInWorldBridge(gameObject);
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
             MainSceneFactory.CreatePlayerSystems();

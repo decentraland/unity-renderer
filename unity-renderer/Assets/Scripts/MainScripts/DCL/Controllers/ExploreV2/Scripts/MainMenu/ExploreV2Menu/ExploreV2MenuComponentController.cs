@@ -51,7 +51,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
-    internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
+    // internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized; //FD:: commented
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
@@ -71,7 +71,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized,  placesAndEventsVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized,  avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized,  navmapVisible) },
-            { ExploreSection.Builder, (isBuilderInitialized,  builderVisible) },
+            // { ExploreSection.Builder, (isBuilderInitialized,  builderVisible) }, // FD:: commented
             { ExploreSection.Quest, (isQuestInitialized,  questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized,  settingsVisible) },
         };
@@ -388,8 +388,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if (DataStore.i.builderInWorld.areShortcutsBlocked.Get() || !isOpen.Get() )
-            return;
+        // FD:: commented
+        // if (DataStore.i.builderInWorld.areShortcutsBlocked.Get() || !isOpen.Get() )
+        //     return;
 
         SetVisibility(false);
         exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
