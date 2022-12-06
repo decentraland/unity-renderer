@@ -9,6 +9,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public event Action<FriendRequestEntryModel> OnCancelConfirmation;
     public event Action<FriendRequestEntryModel> OnRejectConfirmation;
     public event Action<string> OnFriendRequestSent;
+    public event Action<string> OnFriendRequestOpened;
     public event Action<FriendEntryModel> OnWhisper;
     public event Action<string> OnDeleteConfirmation;
     public event Action OnClose;
@@ -66,7 +67,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public void Show() => gameObject.SetActive(true);
 
     public void Hide() => gameObject.SetActive(false);
-    
+
     public void Set(string userId, FriendEntryModel model)
     {
     }
@@ -108,7 +109,7 @@ public class FriendsHUDWindowMock : MonoBehaviour, IFriendsHUDComponentView
     public bool ContainsFriend(string userId) => false;
 
     public bool ContainsFriendRequest(string userId) => false;
-    
+
     public void EnableSearchMode()
     {
     }

@@ -219,7 +219,7 @@ public class UserContextMenu : MonoBehaviour
     {
         OnCancelFriend?.Invoke(userId);
 
-        FriendsController.i.CancelRequest(userId);
+        FriendsController.i.CancelRequestByUserId(userId);
 
         GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }

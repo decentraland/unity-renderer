@@ -62,6 +62,7 @@ public class FriendsHUDController : IHUD
         view.OnCancelConfirmation += HandleRequestCancelled;
         view.OnRejectConfirmation += HandleRequestRejected;
         view.OnFriendRequestSent += HandleRequestSent;
+        view.OnFriendRequestOpened += OpenFriendRequestDetails;
         view.OnWhisper += HandleOpenWhisperChat;
         view.OnClose += HandleViewClosed;
         view.OnRequireMoreFriends += DisplayMoreFriends;
@@ -126,6 +127,7 @@ public class FriendsHUDController : IHUD
             View.OnCancelConfirmation -= HandleRequestCancelled;
             View.OnRejectConfirmation -= HandleRequestRejected;
             View.OnFriendRequestSent -= HandleRequestSent;
+            View.OnFriendRequestOpened -= OpenFriendRequestDetails;
             View.OnWhisper -= HandleOpenWhisperChat;
             View.OnDeleteConfirmation -= HandleUnfriend;
             View.OnClose -= HandleViewClosed;
@@ -169,7 +171,7 @@ public class FriendsHUDController : IHUD
                 DisplayMoreFriends();
             else if (View.IsRequestListActive)
                 DisplayMoreFriendRequestsAsync().Forget();
-            
+
             OnOpened?.Invoke();
         }
         else
@@ -199,7 +201,7 @@ public class FriendsHUDController : IHUD
             else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                 DisplayMoreFriendRequestsAsync().Forget();
         }
-        
+
         UpdateNotificationsCounter();
     }
 
@@ -289,7 +291,7 @@ public class FriendsHUDController : IHUD
                 onlineFriends.Remove(userId);
                 break;
         }
-        
+
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
@@ -362,7 +364,7 @@ public class FriendsHUDController : IHUD
     {
         if (View.IsActive())
             dataStore.friendNotifications.seenFriends.Set(View.FriendCount);
-        
+
         dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.ReceivedRequestCount);
     }
 
@@ -383,7 +385,7 @@ public class FriendsHUDController : IHUD
 
     private void HandleRequestCancelled(FriendRequestEntryModel entry)
     {
-        friendsController.CancelRequest(entry.userId);
+        friendsController.CancelRequestByUserId(entry.userId);
 
         if (ownUserProfile != null)
             socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId,
@@ -398,7 +400,7 @@ public class FriendsHUDController : IHUD
             socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId,
                 PlayerActionSource.FriendsHUD);
     }
-    
+
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
@@ -409,13 +411,13 @@ public class FriendsHUDController : IHUD
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
-        
+
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
 
         // We are not handling properly the case when the friends are not fetched correctly from server.
         // 'lastSkipForFriends' will have an invalid value.
         lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
-        
+
         ShowOrHideMoreFriendsToLoadHint();
     }
 
@@ -425,7 +427,7 @@ public class FriendsHUDController : IHUD
     {
         if (!friendsController.IsInitialized) return;
         if (searchingFriends) return;
-        
+
         var allfriendRequests = await friendsController.GetFriendRequests(
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
             LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
@@ -435,7 +437,7 @@ public class FriendsHUDController : IHUD
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
-        
+
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
 
@@ -521,5 +523,23 @@ public class FriendsHUDController : IHUD
         View.EnableSearchMode();
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
+    }
+
+    private void OpenFriendRequestDetails(string userId)
+    {
+        FriendRequest friendRequest = friendsController.GetAllocatedFriendRequestByUser(userId);
+
+        if (friendRequest == null)
+        {
+            Debug.LogError($"Could not find an allocated friend request for user: {userId}");
+            return;
+        }
+
+        if (friendRequest.IsSentTo(userId))
+            dataStore.HUDs.openSentFriendRequestDetail.Set(friendRequest.FriendRequestId, true);
+        else
+        {
+            // TODO: open details for received friend requests
+        }
     }
 }

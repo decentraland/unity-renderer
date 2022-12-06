@@ -107,7 +107,7 @@ namespace DCL.Social.Passports
 
         private void CancelFriendRequest()
         {
-            friendsController.CancelRequest(currentPlayerId);
+            friendsController.CancelRequestByUserId(currentPlayerId);
             //socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
         }
 

@@ -41,6 +41,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendRequestsTab.OnFriendRequestSent -= value;
     }
 
+    public event Action<string> OnFriendRequestOpened
+    {
+        add => friendRequestsTab.OnFriendRequestOpened += value;
+        remove => friendRequestsTab.OnFriendRequestOpened -= value;
+    }
+
     public event Action<FriendEntryModel> OnWhisper
     {
         add => friendsTab.OnWhisper += value;
@@ -52,7 +58,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         add => friendsTab.OnDeleteConfirmation += value;
         remove => friendsTab.OnDeleteConfirmation -= value;
     }
-    
+
     public event Action OnRequireMoreFriends
     {
         add => friendsTab.OnRequireMoreEntries += value;
@@ -91,7 +97,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             .GetComponent<FriendsHUDComponentView>();
         return view;
     }
-    
+
     public void Initialize(IChatController chatController,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
@@ -151,19 +157,19 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
         AudioScriptableObjects.dialogClose.Play(true);
     }
-    
+
     public void Set(string userId, FriendEntryModel model)
     {
         friendRequestsTab.Remove(userId);
         friendsTab.Enqueue(userId, model);
     }
-    
+
     public void Remove(string userId)
     {
         friendRequestsTab.Remove(userId);
         friendsTab.Remove(userId);
     }
-    
+
     public void Set(string userId, FriendRequestEntryModel model)
     {
         friendRequestsTab.Enqueue(userId, model);
@@ -203,7 +209,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
     public void EnableSearchMode() => friendsTab.EnableSearchMode();
 
     public void DisableSearchMode() => friendsTab.DisableSearchMode();
-    
+
     public void UpdateBlockStatus(string userId, bool blocked)
     {
         UpdateBlockStatus(blocked, friendsTab.Get(userId));
@@ -250,7 +256,7 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         else
             throw new IndexOutOfRangeException();
     }
-    
+
     private void UpdateBlockStatus(bool blocked, FriendEntryBase friendEntry)
     {
         if (friendEntry == null) return;

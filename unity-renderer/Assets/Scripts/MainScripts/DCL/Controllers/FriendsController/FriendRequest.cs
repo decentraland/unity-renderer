@@ -7,7 +7,7 @@ namespace DCL.Social.Friends
         public string From { get; }
         public string To { get; }
         public string MessageBody { get; }
-        
+
         public FriendRequest(string friendRequestId, long timestamp, string @from, string to, string messageBody)
         {
             FriendRequestId = friendRequestId;
@@ -16,5 +16,8 @@ namespace DCL.Social.Friends
             To = to;
             MessageBody = messageBody;
         }
+
+        public bool IsSentTo(string userId) =>
+            To == userId;
     }
 }

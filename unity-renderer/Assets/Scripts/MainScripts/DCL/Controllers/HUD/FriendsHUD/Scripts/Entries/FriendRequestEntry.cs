@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,12 +12,14 @@ public class FriendRequestEntry : FriendEntryBase
     [SerializeField] internal Button acceptButton;
     [SerializeField] internal Button rejectButton;
     [SerializeField] internal Button cancelButton;
+    [SerializeField] internal Button openButton;
 
     public bool isReceived { get; private set; }
 
-    public event System.Action<FriendRequestEntry> OnAccepted;
-    public event System.Action<FriendRequestEntry> OnRejected;
-    public event System.Action<FriendRequestEntry> OnCancelled;
+    public event Action<FriendRequestEntry> OnAccepted;
+    public event Action<FriendRequestEntry> OnRejected;
+    public event Action<FriendRequestEntry> OnCancelled;
+    public event Action<FriendRequestEntry> OnOpened;
 
     public override void Awake()
     {
@@ -28,6 +31,7 @@ public class FriendRequestEntry : FriendEntryBase
         acceptButton.onClick.AddListener(() => OnAccepted?.Invoke(this));
         rejectButton.onClick.AddListener(() => OnRejected?.Invoke(this));
         cancelButton.onClick.AddListener(() => OnCancelled?.Invoke(this));
+        openButton.onClick.AddListener(() => OnOpened?.Invoke(this));
     }
 
     public void Populate(FriendRequestEntryModel model)
