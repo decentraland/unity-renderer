@@ -46,34 +46,35 @@ namespace DCL.SettingsPanelHUD.Controls
         private Color originalHandlerColor;
         private float originalControlBackgroundAlpha;
 
-        public virtual void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        public virtual void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
-            this.controlConfig = controlConfig;
-            this.settingsControlController = settingsControlController;
+            this.controlConfig = model;
+            this.settingsControlController = controller;
             this.settingsControlController.Initialize();
 
-            betaIndicator.SetActive(controlConfig.isBeta);
+            betaIndicator.SetActive(model.isBeta);
 
-            title.text = controlConfig.title;
+            title.text = model.title;
             originalTitleColor = title.color;
             originalLabelColor = valueLabels.Count > 0 ? valueLabels[0].color : Color.white;
             originalHandlerColor = handleImages.Count > 0 ? handleImages[0].color : Color.white;
             originalControlBackgroundAlpha = controlBackgroundCanvasGroups.Count > 0 ? controlBackgroundCanvasGroups[0].alpha : 1f;
 
-            foreach (BooleanVariable flag in controlConfig.flagsThatDisableMe)
+            foreach (BooleanVariable flag in model.flagsThatDisableMe)
             {
                 flag.OnChange += OnAnyDisableFlagChange;
                 OnAnyDisableFlagChange(flag.Get());
             }
 
-            foreach (BooleanVariable flag in controlConfig.flagsThatDeactivateMe)
+            foreach (BooleanVariable flag in model.flagsThatDeactivateMe)
             {
                 flag.OnChange += OnAnyDeactivationFlagChange;
                 OnAnyDeactivationFlagChange(flag.Get());
             }
 
             infoButton.SetActive(false);
-            foreach (BooleanVariable flag in controlConfig.flagsThatOverrideMe)
+
+            foreach (BooleanVariable flag in model.flagsThatOverrideMe)
                 flag.OnChange += OnAnyOverrideFlagChange;
 
             RefreshControl();
@@ -120,11 +121,11 @@ namespace DCL.SettingsPanelHUD.Controls
         private void OnQualitySettingsChanged(QualitySettings _) =>
             RefreshControl();
 
-        private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
-            SetDisabled(AnyFlagIsEnabled(disableFlag, controlConfig.flagsThatDisableMe));
-
         private void OnAnyDeactivationFlagChange(bool deactivateFlag, bool _ = false) =>
-            SetDeactive(AnyFlagIsEnabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
+            SwitchVisibility(isVisible: !AnyFlagIsEnabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
+
+        private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
+            SwitchInteractibility(isInteractable: !AnyFlagIsEnabled(disableFlag, controlConfig.flagsThatDisableMe));
 
         private void OnAnyOverrideFlagChange(bool overrideFlag, bool _ = false) =>
             SetOverriden(AnyFlagIsEnabled(overrideFlag, controlConfig.flagsThatOverrideMe));
@@ -132,44 +133,37 @@ namespace DCL.SettingsPanelHUD.Controls
         private static bool AnyFlagIsEnabled(bool flagEnabled, List<BooleanVariable> flags) =>
             flagEnabled || flags.Any(flag => flag.Get());
 
-        private void SetDisabled(bool disableFlagEnabled)
+        private void SwitchVisibility(bool isVisible)
         {
-            title.color = disableFlagEnabled ? titleDeactivationColor : originalTitleColor;
+            gameObject.SetActive(isVisible);
+            CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
+        }
 
-            foreach (TextMeshProUGUI text in valueLabels)
-                text.color = disableFlagEnabled ? valueLabelDeactivationColor : originalLabelColor;
-
-            foreach (Image image in handleImages)
-                image.color = disableFlagEnabled ? handlerDeactivationColor : originalHandlerColor;
-
-            foreach (CanvasGroup group in controlBackgroundCanvasGroups)
-                group.alpha = disableFlagEnabled ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
-
-            canvasGroup.interactable = disableFlagEnabled ? false : true;
-            canvasGroup.blocksRaycasts = disableFlagEnabled ? false : true;
+        private void SwitchInteractibility(bool isInteractable)
+        {
+            title.color = isInteractable ? originalTitleColor : titleDeactivationColor;
+            SwitchUIControlInteractibility(isInteractable, canvasGroup);
         }
 
         private void SetOverriden(bool overrideFlagEnabled)
         {
             infoButton.SetActive(overrideFlagEnabled);
-
-            foreach (TextMeshProUGUI text in valueLabels)
-                text.color = overrideFlagEnabled ? valueLabelDeactivationColor : originalLabelColor;
-
-            foreach (Image image in handleImages)
-                image.color = overrideFlagEnabled ? handlerDeactivationColor : originalHandlerColor;
-
-            foreach (CanvasGroup group in controlBackgroundCanvasGroups)
-                group.alpha = overrideFlagEnabled ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
-
-            controlCanvasGroup.interactable = overrideFlagEnabled ? false : true;
-            controlCanvasGroup.blocksRaycasts = overrideFlagEnabled ? false : true;
+            SwitchUIControlInteractibility(isInteractable: !overrideFlagEnabled, controlCanvasGroup);
         }
 
-        private void SetDeactive(bool deactivateFlagEnabled)
+        private void SwitchUIControlInteractibility(bool isInteractable, CanvasGroup group)
         {
-            gameObject.SetActive(deactivateFlagEnabled ? false : true);
-            CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
+            foreach (TextMeshProUGUI text in valueLabels)
+                text.color = isInteractable ? originalLabelColor : valueLabelDeactivationColor;
+
+            foreach (Image image in handleImages)
+                image.color = isInteractable ? originalHandlerColor : handlerDeactivationColor;
+
+            foreach (CanvasGroup bkgCanvasGroup in controlBackgroundCanvasGroups)
+                bkgCanvasGroup.alpha = isInteractable ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
+
+            group.interactable = isInteractable;
+            group.blocksRaycasts = isInteractable;
         }
     }
 }

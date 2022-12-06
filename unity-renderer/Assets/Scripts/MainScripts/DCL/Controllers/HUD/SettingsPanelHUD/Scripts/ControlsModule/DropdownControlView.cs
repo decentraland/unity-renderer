@@ -18,16 +18,16 @@ namespace DCL.SettingsPanelHUD.Controls
             pointerClick = dropdown.GetComponent<PointerClickEventInterceptor>();
         }
 
-        public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        public override void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
             // we use spinbox control model and control controller for compatibility
-            SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
+            SetLabels(((SpinBoxControlModel)model).spinBoxLabels);
 
-            spinBoxController = (SpinBoxSettingsControlController)settingsControlController;
+            spinBoxController = (SpinBoxSettingsControlController)controller;
             spinBoxController.OnSetLabels += SetLabels;
             spinBoxController.OnCurrentLabelChange += SetOption;
 
-            base.Initialize(controlConfig, spinBoxController);
+            base.Initialize(model, spinBoxController);
             spinBoxController.UpdateSetting(dropdown.value);
 
             dropdown.onValueChanged.AddListener(spinBoxValue =>
