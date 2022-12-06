@@ -732,7 +732,7 @@ public class AvatarEditorHUDController : IHUD
     private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
     {
         var wearablesToReplace = new List<WearableItem>();
-        var categoriesToReplace = new HashSet<string>(model.bodyShape != null ? (wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]) : new string[0]);
+        var categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
 
         int wearableCount = model.wearables.Count;
         for (int i = 0; i < wearableCount; i++)
@@ -747,7 +747,7 @@ public class AvatarEditorHUDController : IHUD
             else
             {
                 //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
-                HashSet<string> replacesList = new HashSet<string>(model.bodyShape != null ? (wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]) : new string[0]);
+                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
                 if (replacesList.Contains(wearableItem.data.category))
                 {
                     wearablesToReplace.Add(wearable);
@@ -1041,7 +1041,7 @@ public class AvatarEditorHUDController : IHUD
 
     private bool ShouldShowIncompatibleWearableToast(WearableItem wearable)
     {
-        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN || model.bodyShape == null)
+        if(wearable.data.category == WearableLiterals.Categories.BODY_SHAPE || wearable.data.category == WearableLiterals.Categories.SKIN)
             return false;
         else
             return !wearable.SupportsBodyShape(model.bodyShape.id);
