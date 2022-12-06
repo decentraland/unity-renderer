@@ -102,7 +102,7 @@ namespace DCL.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             await UniTask.Delay(Random.Range(100, 1000));
 
@@ -187,7 +187,7 @@ namespace DCL.Social.Friends
         public void RequestFriendship(string friendUserId) =>
             apiBridge.RequestFriendship(friendUserId);
 
-        public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
+        public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody)
         {
             await UniTask.Delay(Random.Range(100, 16000));
 
@@ -224,7 +224,7 @@ namespace DCL.Social.Friends
             return response;
         }
 
-        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId)
+        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
         {
             await UniTask.Delay(Random.Range(100, 16000));
 

@@ -242,7 +242,7 @@ public class FriendsHUDController : IHUD
         }
         else
         {
-            friendsController.RequestFriendship(userNameOrId, "").Forget();
+            friendsController.RequestFriendshipAsync(userNameOrId, "").Forget();
 
             if (ownUserProfile != null)
                 socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0,

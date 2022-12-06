@@ -79,8 +79,8 @@ namespace DCL.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridgeInUse.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
-            apiBridgeInUse.GetFriendRequestsV2(sentLimit, sentSkip, receivedLimit, receivedSkip);
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+            apiBridgeInUse.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             apiBridgeInUse.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
@@ -88,11 +88,11 @@ namespace DCL.Social.Friends
         public void RequestFriendship(string friendUserId) =>
             apiBridgeInUse.RequestFriendship(friendUserId);
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody) =>
-            apiBridgeInUse.RequestFriendship(userId, messageBody);
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody) =>
+            apiBridgeInUse.RequestFriendshipAsync(userId, messageBody);
 
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string userId) =>
-            apiBridgeInUse.CancelRequest(userId);
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId) =>
+            apiBridgeInUse.CancelRequestAsync(userId);
 
         public UniTask CancelRequestByUserIdAsync(string userId) =>
             apiBridgeInUse.CancelRequestByUserIdAsync(userId);

@@ -83,7 +83,7 @@ namespace DCl.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             GetFriendRequestsReply response = await rpc.FriendRequests()
                 .GetFriendRequests(new GetFriendRequestsPayload
@@ -109,11 +109,11 @@ namespace DCl.Social.Friends
         public void RequestFriendship(string friendUserId) =>
             fallbackApiBridge.RequestFriendship(friendUserId);
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody) =>
-            fallbackApiBridge.RequestFriendship(userId, messageBody);
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody) =>
+            fallbackApiBridge.RequestFriendshipAsync(userId, messageBody);
 
-        UniTask<CancelFriendshipConfirmationPayload> IFriendsApiBridge.CancelRequest(string friendRequestId) =>
-            fallbackApiBridge.CancelRequest(friendRequestId);
+        UniTask<CancelFriendshipConfirmationPayload> IFriendsApiBridge.CancelRequestAsync(string friendRequestId) =>
+            fallbackApiBridge.CancelRequestAsync(friendRequestId);
 
         public UniTask CancelRequestByUserIdAsync(string userId) =>
             fallbackApiBridge.CancelRequestByUserIdAsync(userId);
@@ -122,7 +122,7 @@ namespace DCl.Social.Friends
             fallbackApiBridge.CancelRequestByUserId(userId);
 
         public void CancelRequest(string userId) =>
-            fallbackApiBridge.CancelRequest(userId);
+            fallbackApiBridge.CancelRequestAsync(userId);
 
         public void AcceptFriendship(string userId) =>
             fallbackApiBridge.AcceptFriendship(userId);

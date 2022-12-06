@@ -172,7 +172,7 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
@@ -187,7 +187,7 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody)
         {
             var task = new UniTaskCompletionSource<RequestFriendshipConfirmationPayload>();
 
@@ -205,7 +205,7 @@ namespace DCL.Social.Friends
             return task.Task;
         }
 
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId)
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
         {
             var task = new UniTaskCompletionSource<CancelFriendshipConfirmationPayload>();
 

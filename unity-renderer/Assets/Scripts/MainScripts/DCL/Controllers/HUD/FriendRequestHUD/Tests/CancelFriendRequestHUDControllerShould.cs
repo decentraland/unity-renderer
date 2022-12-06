@@ -93,7 +93,7 @@ namespace DCL.Social.Friends
         [Test]
         public void CancelFriendship()
         {
-            friendsController.CancelRequest(FRIEND_REQ_ID)
+            friendsController.CancelRequestAsync(FRIEND_REQ_ID)
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah")));
             WhenRequestedToShow();
@@ -101,21 +101,21 @@ namespace DCL.Social.Friends
 
             view.Received(1).ShowPendingToCancel();
             view.Received(1).Close();
-            friendsController.Received(1).CancelRequest(FRIEND_REQ_ID);
+            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
         }
 
         [Test]
         public void ShowFailWhenTimeout()
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
-            friendsController.CancelRequest(FRIEND_REQ_ID)
+            friendsController.CancelRequestAsync(FRIEND_REQ_ID)
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 
             view.Received(1).ShowPendingToCancel();
             view.Received(1).ShowCancelFailed();
-            friendsController.Received(1).CancelRequest(FRIEND_REQ_ID);
+            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
         }
 
         private void WhenRequestedToShow()

@@ -22,13 +22,14 @@ namespace DCl.Social.Friends
         void RemoveFriend(string userId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
+        [Obsolete("Old API. Use GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
         [Obsolete("Old API. Use RequestFriendship(string userId, string messageBody) instead")]
         void RequestFriendship(string friendUserId);
-        UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
-        UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId);
+        UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody);
+        UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId);
         UniTask CancelRequestByUserIdAsync(string userId);
         [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
         void CancelRequestByUserId(string userId);

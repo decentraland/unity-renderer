@@ -29,20 +29,20 @@ namespace DCL.Social.Friends
         UserStatus GetUserStatus(string userId);
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
-        UniTask<SocialFriendRequest> RequestFriendship(string friendUserId, string messageBody);
+        UniTask<SocialFriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody);
         [Obsolete("Old API. Use RequestFriendship(string friendUserId, string messageBody) instead")]
         void RequestFriendship(string friendUserId);
-        // TODO (NEW FRIEND REQUESTS): rename to CancelRequestByUserIdAsync when FF is removed
         UniTask<SocialFriendRequest> CancelRequestByUserIdAsync(string friendUserId);
         [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
         void CancelRequestByUserId(string friendUserId);
-        UniTask<SocialFriendRequest> CancelRequest(string friendRequestId);
+        UniTask<SocialFriendRequest> CancelRequestAsync(string friendRequestId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
+        [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);

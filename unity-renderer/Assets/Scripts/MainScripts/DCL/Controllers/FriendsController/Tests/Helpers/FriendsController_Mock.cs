@@ -89,7 +89,7 @@ public class FriendsController_Mock : IFriendsController
         return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
-    public UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody)
+    public UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody)
     {
         if (!friends.ContainsKey(friendUserId))
             friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
@@ -113,7 +113,7 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public UniTask<FriendRequest> CancelRequest(string friendRequestId) =>
+    public UniTask<FriendRequest> CancelRequestAsync(string friendRequestId) =>
         UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
 
     public void AcceptFriendship(string friendUserId)

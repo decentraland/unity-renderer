@@ -100,7 +100,7 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.CancelRequest(friendRequestId)
+                await friendsController.CancelRequestAsync(friendRequestId)
                                        .Timeout(TimeSpan.FromSeconds(10));
                 if (cancellationToken.IsCancellationRequested) return;
 
