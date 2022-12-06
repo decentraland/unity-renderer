@@ -9,6 +9,7 @@ public interface IFriendsHUDComponentView
     event Action<FriendRequestEntryModel> OnCancelConfirmation;
     event Action<FriendRequestEntryModel> OnRejectConfirmation;
     event Action<string> OnFriendRequestSent;
+    event Action<string> OnFriendRequestOpened;
     event Action<FriendEntryModel> OnWhisper;
     event Action<string> OnDeleteConfirmation;
     event Action OnClose;

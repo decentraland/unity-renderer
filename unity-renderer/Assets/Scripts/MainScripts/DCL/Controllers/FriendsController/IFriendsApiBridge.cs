@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL.Social.Friends;
+using System;
 
 namespace DCl.Social.Friends
 {
@@ -27,7 +26,8 @@ namespace DCl.Social.Friends
         UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
-        void CancelRequest(string userId);
+        UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId);
+        UniTask CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
     }
 }

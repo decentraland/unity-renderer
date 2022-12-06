@@ -13,6 +13,7 @@ namespace DCL.Social.Friends
         private readonly WebInterfaceFriendsApiBridge apiBridge;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly CancellationTokenSource addFriendRequestByUserInputCancellationToken = new CancellationTokenSource();
+        private readonly Dictionary<string, FriendRequestPayload> friendRequests = new ();
 
         public event Action<FriendshipInitializationMessage> OnInitialized
         {
@@ -108,9 +109,10 @@ namespace DCL.Social.Friends
             // FAKE RECEIVED REQUESTS
             int amountOfReceivedRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedFromList = new List<FriendRequestPayload>();
-            for (int i = 0; i < amountOfReceivedRequests; i++)
+
+            for (var i = 0; i < amountOfReceivedRequests; i++)
             {
-                string fakeUserId = $"fake_from_user_{i + 1}";
+                var fakeUserId = $"fake_from_user_{i + 1}";
 
                 userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
                 {
@@ -119,22 +121,29 @@ namespace DCL.Social.Friends
                     snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i}" }
                 });
 
-                requestedFromList.Add(new FriendRequestPayload
+                var friendRequestId = Guid.NewGuid().ToString("N");
+
+                var friendRequest = new FriendRequestPayload
                 {
                     from = fakeUserId,
                     to = userProfileBridge.GetOwn().userId,
-                    friendRequestId = Guid.NewGuid().ToString("N"),
+                    friendRequestId = friendRequestId,
                     messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
                     timestamp = DateTimeOffset.UtcNow.AddDays(-i).ToUnixTimeMilliseconds()
-                });
+                };
+
+                friendRequests[friendRequestId] = friendRequest;
+
+                requestedFromList.Add(friendRequest);
             }
 
             // FAKE SENT REQUESTS
             int amountOfSentRequests = Random.Range(1, 5);
             List<FriendRequestPayload> requestedToList = new List<FriendRequestPayload>();
-            for (int i = 0; i < amountOfSentRequests; i++)
+
+            for (var i = 0; i < amountOfSentRequests; i++)
             {
-                string fakeUserId = $"fake_to_user_{i + 1}";
+                var fakeUserId = $"fake_to_user_{i + 1}";
 
                 userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
                 {
@@ -143,14 +152,20 @@ namespace DCL.Social.Friends
                     snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{i + 100}" }
                 });
 
-                requestedToList.Add(new FriendRequestPayload
+                var friendRequestId = Guid.NewGuid().ToString("N");
+
+                var friendRequest = new FriendRequestPayload
                 {
                     from = userProfileBridge.GetOwn().userId,
                     to = fakeUserId,
-                    friendRequestId = Guid.NewGuid().ToString("N"),
+                    friendRequestId = friendRequestId,
                     messageBody = Random.Range(0, 2) == 0 ? $"Test message to {fakeUserId}..." : string.Empty,
                     timestamp = DateTimeOffset.UtcNow.AddDays(-i).ToUnixTimeMilliseconds()
-                });
+                };
+
+                friendRequests[friendRequestId] = friendRequest;
+
+                requestedToList.Add(friendRequest);
             }
 
             var response = new AddFriendRequestsV2Payload
@@ -178,16 +193,22 @@ namespace DCL.Social.Friends
             // if (Random.Range(0, 2) == 0)
             //     throw new FriendshipException(FriendRequestErrorCodes.Unknown);
 
+            var friendRequestId = Guid.NewGuid().ToString("N");
+
+            var friendRequest = new FriendRequestPayload
+            {
+                from = userProfileBridge.GetOwn().userId,
+                friendRequestId = friendRequestId,
+                messageBody = messageBody,
+                timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                to = userId
+            };
+
+            friendRequests[friendRequestId] = friendRequest;
+
             var response = new RequestFriendshipConfirmationPayload
             {
-                friendRequest = new FriendRequestPayload
-                {
-                    from = userProfileBridge.GetOwn().userId,
-                    friendRequestId = Guid.NewGuid().ToString("N"),
-                    messageBody = messageBody,
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    to = userId
-                },
+                friendRequest = friendRequest,
                 messageId = Guid.NewGuid().ToString("N")
             };
 
@@ -200,10 +221,30 @@ namespace DCL.Social.Friends
             return response;
         }
 
-        public void CancelRequest(string userId)
+        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId)
         {
-            apiBridge.CancelRequest(userId);
+            await UniTask.Delay(Random.Range(100, 16000));
+
+            // if (Random.Range(0, 2) == 0)
+            //     throw new FriendshipException(FriendRequestErrorCodes.Unknown);
+
+            var response = new CancelFriendshipConfirmationPayload
+            {
+                messageId = Guid.NewGuid().ToString("N"),
+                friendRequest = friendRequests[friendRequestId],
+            };
+
+            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            {
+                action = FriendshipAction.CANCELLED,
+                userId = friendRequests[friendRequestId].to
+            });
+
+            return response;
         }
+
+        public UniTask CancelRequestByUserId(string userId) =>
+            apiBridge.CancelRequestByUserId(userId);
 
         public void AcceptFriendship(string userId)
         {

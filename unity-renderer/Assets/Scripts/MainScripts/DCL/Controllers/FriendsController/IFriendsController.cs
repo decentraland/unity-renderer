@@ -30,7 +30,8 @@ namespace DCl.Social.Friends
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
         UniTask<SocialFriendRequest> RequestFriendship(string friendUserId, string messageBody);
-        void CancelRequest(string friendUserId);
+        UniTask<SocialFriendRequest> CancelRequestByUserId(string friendUserId);
+        UniTask<SocialFriendRequest> CancelRequest(string friendRequestId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);
         bool IsFriend(string userId);
@@ -41,5 +42,7 @@ namespace DCl.Social.Friends
         UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
+        SocialFriendRequest GetAllocatedFriendRequest(string friendRequestId);
+        SocialFriendRequest GetAllocatedFriendRequestByUser(string userId);
     }
 }
