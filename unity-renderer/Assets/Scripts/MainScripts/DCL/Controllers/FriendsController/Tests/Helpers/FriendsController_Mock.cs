@@ -101,12 +101,16 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public async UniTask<FriendRequest> CancelRequestByUserId(string friendUserId)
+    public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.CANCELLED);
         return new FriendRequest(friendUserId, 0, "", "", "");
+    }
+
+    public void CancelRequestByUserId(string friendUserId)
+    {
     }
 
     public UniTask<FriendRequest> CancelRequest(string friendRequestId) =>

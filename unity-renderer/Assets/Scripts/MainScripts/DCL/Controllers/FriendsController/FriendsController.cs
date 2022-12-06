@@ -170,7 +170,7 @@ namespace DCL.Social.Friends
         public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
             friendRequests.Values.FirstOrDefault(request => request.From == userId || request.To == userId);
 
-        public async UniTask<FriendRequest> CancelRequestByUserId(string friendUserId)
+        public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
         {
             FriendRequest request = GetAllocatedFriendRequestByUser(friendUserId);
 
@@ -181,10 +181,13 @@ namespace DCL.Social.Friends
                 return request;
             }
 
-            await apiBridge.CancelRequestByUserId(friendUserId);
+            await apiBridge.CancelRequestByUserIdAsync(friendUserId);
 
             return new FriendRequest("", 0, "", friendUserId, "");
         }
+
+        public void CancelRequestByUserId(string friendUserId) =>
+            apiBridge.CancelRequestByUserId(friendUserId);
 
         public async UniTask<FriendRequest> CancelRequest(string friendRequestId)
         {

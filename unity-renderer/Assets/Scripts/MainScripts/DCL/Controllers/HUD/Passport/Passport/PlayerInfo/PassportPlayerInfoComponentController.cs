@@ -13,10 +13,11 @@ namespace DCL.Social.Passports
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly StringVariable currentPlayerId;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-        private StringVariable currentPlayerId;
         private string name;
+        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
@@ -90,7 +91,7 @@ namespace DCL.Social.Passports
 
         private void AddPlayerAsFriend()
         {
-            if (dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests"))
+            if (isNewFriendRequestsEnabled)
                 dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
             else
             {
@@ -106,8 +107,12 @@ namespace DCL.Social.Passports
 
         private void CancelFriendRequest()
         {
-            friendsController.CancelRequestByUserId(currentPlayerId);
-            //socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            if (isNewFriendRequestsEnabled)
+                friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+            else
+                friendsController.CancelRequestByUserId(currentPlayerId);
+
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
         private void AcceptFriendRequest()

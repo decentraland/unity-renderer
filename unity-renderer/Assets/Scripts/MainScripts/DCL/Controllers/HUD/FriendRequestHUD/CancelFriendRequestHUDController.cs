@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;

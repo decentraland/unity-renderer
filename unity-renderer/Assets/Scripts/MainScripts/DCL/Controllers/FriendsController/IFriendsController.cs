@@ -32,7 +32,10 @@ namespace DCL.Social.Friends
         UniTask<SocialFriendRequest> RequestFriendship(string friendUserId, string messageBody);
         [Obsolete("Old API. Use RequestFriendship(string friendUserId, string messageBody) instead")]
         void RequestFriendship(string friendUserId);
-        UniTask<SocialFriendRequest> CancelRequestByUserId(string friendUserId);
+        // TODO (NEW FRIEND REQUESTS): rename to CancelRequestByUserIdAsync when FF is removed
+        UniTask<SocialFriendRequest> CancelRequestByUserIdAsync(string friendUserId);
+        [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
+        void CancelRequestByUserId(string friendUserId);
         UniTask<SocialFriendRequest> CancelRequest(string friendRequestId);
         void AcceptFriendship(string friendUserId);
         void RejectFriendship(string friendUserId);

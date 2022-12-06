@@ -84,6 +84,7 @@ public class UserContextMenu : MonoBehaviour
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
+    private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     internal ISocialAnalytics socialAnalytics;
 
     /// <summary>
@@ -211,7 +212,7 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests"))
+        if (isNewFriendRequestsEnabled)
         {
             DataStore.i.HUDs.sendFriendRequest.Set(userId);
             DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
@@ -227,7 +228,10 @@ public class UserContextMenu : MonoBehaviour
     {
         OnCancelFriend?.Invoke(userId);
 
-        FriendsController.i.CancelRequestByUserId(userId);
+        if (isNewFriendRequestsEnabled)
+            FriendsController.i.CancelRequestByUserIdAsync(userId).Forget();
+        else
+            FriendsController.i.CancelRequestByUserId(userId);
 
         GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }

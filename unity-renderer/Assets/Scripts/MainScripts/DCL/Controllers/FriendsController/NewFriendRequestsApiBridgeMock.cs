@@ -246,7 +246,10 @@ namespace DCL.Social.Friends
             return response;
         }
 
-        public UniTask CancelRequestByUserId(string userId) =>
+        public UniTask CancelRequestByUserIdAsync(string userId) =>
+            apiBridge.CancelRequestByUserIdAsync(userId);
+
+        public void CancelRequestByUserId(string userId) =>
             apiBridge.CancelRequestByUserId(userId);
 
         public void AcceptFriendship(string userId)

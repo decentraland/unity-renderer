@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using DCL;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -435,7 +434,10 @@ public class FriendsHUDController : IHUD
 
     private void HandleRequestCancelled(FriendRequestEntryModel entry)
     {
-        friendsController.CancelRequestByUserId(entry.userId);
+        if (isNewFriendRequestsEnabled)
+            friendsController.CancelRequestByUserIdAsync(entry.userId).Forget();
+        else
+            friendsController.CancelRequestByUserId(entry.userId);
 
         if (ownUserProfile != null)
             socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId,
@@ -587,6 +589,8 @@ public class FriendsHUDController : IHUD
 
     private void OpenFriendRequestDetails(string userId)
     {
+        if (!isNewFriendRequestsEnabled) return;
+
         FriendRequest friendRequest = friendsController.GetAllocatedFriendRequestByUser(userId);
 
         if (friendRequest == null)

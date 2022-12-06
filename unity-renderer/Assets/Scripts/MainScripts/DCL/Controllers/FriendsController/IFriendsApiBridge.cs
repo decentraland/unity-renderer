@@ -29,7 +29,9 @@ namespace DCl.Social.Friends
         void RequestFriendship(string friendUserId);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
         UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId);
-        UniTask CancelRequestByUserId(string userId);
+        UniTask CancelRequestByUserIdAsync(string userId);
+        [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
+        void CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
     }
 }

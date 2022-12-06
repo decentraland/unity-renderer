@@ -94,7 +94,10 @@ namespace DCL.Social.Friends
         public UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string userId) =>
             apiBridgeInUse.CancelRequest(userId);
 
-        public UniTask CancelRequestByUserId(string userId) =>
+        public UniTask CancelRequestByUserIdAsync(string userId) =>
+            apiBridgeInUse.CancelRequestByUserIdAsync(userId);
+
+        public void CancelRequestByUserId(string userId) =>
             apiBridgeInUse.CancelRequestByUserId(userId);
 
         public void AcceptFriendship(string userId) =>

@@ -223,7 +223,7 @@ namespace DCL.Social.Friends
             return task.Task;
         }
 
-        public UniTask CancelRequestByUserId(string userId)
+        public UniTask CancelRequestByUserIdAsync(string userId)
         {
             var task = updatedFriendshipPendingRequests.ContainsKey(userId)
                 ? updatedFriendshipPendingRequests[userId]
@@ -238,6 +238,15 @@ namespace DCL.Social.Friends
             });
 
             return task.Task;
+        }
+
+        public void CancelRequestByUserId(string userId)
+        {
+            WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
+            {
+                userId = userId,
+                action = WebInterface.FriendshipAction.CANCELLED
+            });
         }
 
         public void AcceptFriendship(string userId)
