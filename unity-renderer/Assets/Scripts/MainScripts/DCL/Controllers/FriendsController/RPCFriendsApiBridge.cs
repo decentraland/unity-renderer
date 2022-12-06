@@ -106,6 +106,9 @@ namespace DCl.Social.Friends
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             fallbackApiBridge.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
 
+        public void RequestFriendship(string friendUserId) =>
+            fallbackApiBridge.RequestFriendship(friendUserId);
+
         public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody) =>
             fallbackApiBridge.RequestFriendship(userId, messageBody);
 

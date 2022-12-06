@@ -90,9 +90,13 @@ namespace DCL.Social.Passports
 
         private void AddPlayerAsFriend()
         {
-            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
-            // UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-            //socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+            if (dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests"))
+                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            else
+            {
+                friendsController.RequestFriendship(currentPlayerId);
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+            }
         }
 
         private void RemoveFriend()

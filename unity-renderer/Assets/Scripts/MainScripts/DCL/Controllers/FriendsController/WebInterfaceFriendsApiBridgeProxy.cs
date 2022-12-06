@@ -85,6 +85,9 @@ namespace DCL.Social.Friends
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             apiBridgeInUse.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
 
+        public void RequestFriendship(string friendUserId) =>
+            apiBridgeInUse.RequestFriendship(friendUserId);
+
         public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody) =>
             apiBridgeInUse.RequestFriendship(userId, messageBody);
 

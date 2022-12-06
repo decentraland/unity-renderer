@@ -30,6 +30,8 @@ namespace DCL.Social.Friends
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
         UniTask<SocialFriendRequest> RequestFriendship(string friendUserId, string messageBody);
+        [Obsolete("Old API. Use RequestFriendship(string friendUserId, string messageBody) instead")]
+        void RequestFriendship(string friendUserId);
         UniTask<SocialFriendRequest> CancelRequestByUserId(string friendUserId);
         UniTask<SocialFriendRequest> CancelRequest(string friendRequestId);
         void AcceptFriendship(string friendUserId);

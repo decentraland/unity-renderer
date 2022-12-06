@@ -184,6 +184,9 @@ namespace DCL.Social.Friends
             apiBridge.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
         }
 
+        public void RequestFriendship(string friendUserId) =>
+            apiBridge.RequestFriendship(friendUserId);
+
         public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
         {
             await UniTask.Delay(Random.Range(100, 16000));

@@ -25,6 +25,8 @@ namespace DCl.Social.Friends
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip);
+        [Obsolete("Old API. Use RequestFriendship(string userId, string messageBody) instead")]
+        void RequestFriendship(string friendUserId);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody);
         UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId);
         UniTask CancelRequestByUserId(string userId);

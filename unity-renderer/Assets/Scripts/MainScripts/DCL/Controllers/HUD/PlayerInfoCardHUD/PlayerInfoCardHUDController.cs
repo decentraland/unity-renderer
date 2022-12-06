@@ -85,8 +85,16 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AddPlayerAsFriend()
     {
-        dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
-        dataStore.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.Passport);
+        if (dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests"))
+        {
+            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            dataStore.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.Passport);
+        }
+        else
+        {
+            friendsController.RequestFriendship(currentPlayerId);
+            socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+        }
     }
 
     private void CancelInvitation()

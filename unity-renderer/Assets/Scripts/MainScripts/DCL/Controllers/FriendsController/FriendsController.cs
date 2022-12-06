@@ -96,6 +96,11 @@ namespace DCL.Social.Friends
             return friendRequest;
         }
 
+        public void RequestFriendship(string friendUserId)
+        {
+            apiBridge.RequestFriendship(friendUserId);
+        }
+
         public Dictionary<string, UserStatus> GetAllocatedFriends()
         {
             return new Dictionary<string, UserStatus>(friends);
@@ -153,7 +158,7 @@ namespace DCL.Social.Friends
             return receivedFriendRequestsToAdd;
         }
 
-    public void GetFriendsWithDirectMessages(int limit, int skip) =>
+        public void GetFriendsWithDirectMessages(int limit, int skip) =>
             apiBridge.GetFriendsWithDirectMessages("", limit, skip);
 
         public void GetFriendsWithDirectMessages(string userNameOrId, int limit) =>
@@ -327,13 +332,13 @@ namespace DCL.Social.Friends
             foreach (var userId in msg.requestedFrom)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REQUESTED_FROM, userId = userId });
+                    { action = FriendshipAction.REQUESTED_FROM, userId = userId });
             }
 
             foreach (var userId in msg.requestedTo)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REQUESTED_TO, userId = userId });
+                    { action = FriendshipAction.REQUESTED_TO, userId = userId });
             }
         }
 

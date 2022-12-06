@@ -172,14 +172,20 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
-        {
-            // Already implemented in RPCFriendsApiBridge...
-            return UniTask.FromResult(new AddFriendRequestsV2Payload());
-        }
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             WebInterface.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
+
+        public void RequestFriendship(string friendUserId)
+        {
+            WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
+            {
+                action = WebInterface.FriendshipAction.REQUESTED_TO,
+                userId = friendUserId,
+            });
+        }
 
         public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
         {

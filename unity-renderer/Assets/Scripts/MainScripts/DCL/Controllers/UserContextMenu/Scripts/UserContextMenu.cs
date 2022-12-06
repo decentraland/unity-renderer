@@ -211,8 +211,16 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        DataStore.i.HUDs.sendFriendRequest.Set(userId);
-        DataStore.i.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.ProfileContextMenu);
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests"))
+        {
+            DataStore.i.HUDs.sendFriendRequest.Set(userId);
+            DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
+        }
+        else
+        {
+            FriendsController.i.RequestFriendship(userId);
+            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+        }
     }
 
     private void OnCancelFriendRequestButtonPressed()
