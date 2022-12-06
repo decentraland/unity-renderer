@@ -96,10 +96,10 @@ namespace DCl.Social.Friends
 
             return new AddFriendRequestsV2Payload
             {
-                requestedTo = response.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
-                requestedFrom = response.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
-                totalReceivedFriendRequests = response.TotalReceivedFriendRequests,
-                totalSentFriendRequests = response.TotalSentFriendRequests,
+                requestedTo = response.Reply.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
+                requestedFrom = response.Reply.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
+                totalReceivedFriendRequests = response.Reply.TotalReceivedFriendRequests,
+                totalSentFriendRequests = response.Reply.TotalSentFriendRequests,
             };
         }
 

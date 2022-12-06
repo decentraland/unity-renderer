@@ -23,25 +23,29 @@ public static partial class FriendRequestKernelReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "CkFkZWNlbnRyYWxhbmQvcmVuZGVyZXIva2VybmVsX3NlcnZpY2VzL2ZyaWVu",
-          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90byJtCg1GcmllbmRSZXF1ZXN0EhkKEWZy",
-          "aWVuZF9yZXF1ZXN0X2lkGAEgASgJEhEKCXRpbWVzdGFtcBgCIAEoBBIMCgRm",
-          "cm9tGAMgASgJEgoKAnRvGAQgASgJEhQKDG1lc3NhZ2VfYm9keRgFIAEoCSJw",
-          "ChhHZXRGcmllbmRSZXF1ZXN0c1BheWxvYWQSEgoKc2VudF9saW1pdBgBIAEo",
-          "BRIRCglzZW50X3NraXAYAiABKAUSFgoOcmVjZWl2ZWRfbGltaXQYAyABKAUS",
-          "FQoNcmVjZWl2ZWRfc2tpcBgEIAEoBSKyAQoWR2V0RnJpZW5kUmVxdWVzdHNS",
-          "ZXBseRIkCgxyZXF1ZXN0ZWRfdG8YASADKAsyDi5GcmllbmRSZXF1ZXN0EiYK",
-          "DnJlcXVlc3RlZF9mcm9tGAIgAygLMg4uRnJpZW5kUmVxdWVzdBImCh50b3Rh",
-          "bF9yZWNlaXZlZF9mcmllbmRfcmVxdWVzdHMYAyABKAUSIgoadG90YWxfc2Vu",
-          "dF9mcmllbmRfcmVxdWVzdHMYBCABKAUyZwoaRnJpZW5kUmVxdWVzdEtlcm5l",
-          "bFNlcnZpY2USSQoRR2V0RnJpZW5kUmVxdWVzdHMSGS5HZXRGcmllbmRSZXF1",
-          "ZXN0c1BheWxvYWQaFy5HZXRGcmllbmRSZXF1ZXN0c1JlcGx5IgBiBnByb3Rv",
-          "Mw=="));
+          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90bxoqZGVjZW50cmFsYW5kL3JlbmRlcmVy",
+          "L2NvbW1vbi9mcmllbmRzLnByb3RvIm0KDUZyaWVuZFJlcXVlc3QSGQoRZnJp",
+          "ZW5kX3JlcXVlc3RfaWQYASABKAkSEQoJdGltZXN0YW1wGAIgASgEEgwKBGZy",
+          "b20YAyABKAkSCgoCdG8YBCABKAkSFAoMbWVzc2FnZV9ib2R5GAUgASgJInAK",
+          "GEdldEZyaWVuZFJlcXVlc3RzUGF5bG9hZBISCgpzZW50X2xpbWl0GAEgASgF",
+          "EhEKCXNlbnRfc2tpcBgCIAEoBRIWCg5yZWNlaXZlZF9saW1pdBgDIAEoBRIV",
+          "Cg1yZWNlaXZlZF9za2lwGAQgASgFIrQBChhHZXRGcmllbmRSZXF1ZXN0c1Jl",
+          "cGx5T2sSJAoMcmVxdWVzdGVkX3RvGAEgAygLMg4uRnJpZW5kUmVxdWVzdBIm",
+          "Cg5yZXF1ZXN0ZWRfZnJvbRgCIAMoCzIOLkZyaWVuZFJlcXVlc3QSJgoedG90",
+          "YWxfcmVjZWl2ZWRfZnJpZW5kX3JlcXVlc3RzGAMgASgFEiIKGnRvdGFsX3Nl",
+          "bnRfZnJpZW5kX3JlcXVlc3RzGAQgASgFInYKFkdldEZyaWVuZFJlcXVlc3Rz",
+          "UmVwbHkSKgoFcmVwbHkYASABKAsyGS5HZXRGcmllbmRSZXF1ZXN0c1JlcGx5",
+          "T2tIABIlCgVlcnJvchgCIAEoDjIULkZyaWVuZHNoaXBFcnJvckNvZGVIAEIJ",
+          "CgdtZXNzYWdlMmcKGkZyaWVuZFJlcXVlc3RLZXJuZWxTZXJ2aWNlEkkKEUdl",
+          "dEZyaWVuZFJlcXVlc3RzEhkuR2V0RnJpZW5kUmVxdWVzdHNQYXlsb2FkGhcu",
+          "R2V0RnJpZW5kUmVxdWVzdHNSZXBseSIAYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-        new pbr::FileDescriptor[] { },
+        new pbr::FileDescriptor[] { global::FriendsReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::FriendRequest), global::FriendRequest.Parser, new[]{ "FriendRequestId", "Timestamp", "From", "To", "MessageBody" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsPayload), global::GetFriendRequestsPayload.Parser, new[]{ "SentLimit", "SentSkip", "ReceivedLimit", "ReceivedSkip" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReply), global::GetFriendRequestsReply.Parser, new[]{ "RequestedTo", "RequestedFrom", "TotalReceivedFriendRequests", "TotalSentFriendRequests" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReplyOk), global::GetFriendRequestsReplyOk.Parser, new[]{ "RequestedTo", "RequestedFrom", "TotalReceivedFriendRequests", "TotalSentFriendRequests" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReply), global::GetFriendRequestsReply.Parser, new[]{ "Reply", "Error" }, new[]{ "Message" }, null, null, null)
         }));
   }
   #endregion
@@ -697,16 +701,16 @@ public sealed partial class GetFriendRequestsPayload : pb::IMessage<GetFriendReq
 
 }
 
-public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendRequestsReply>
+public sealed partial class GetFriendRequestsReplyOk : pb::IMessage<GetFriendRequestsReplyOk>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<GetFriendRequestsReply> _parser = new pb::MessageParser<GetFriendRequestsReply>(() => new GetFriendRequestsReply());
+  private static readonly pb::MessageParser<GetFriendRequestsReplyOk> _parser = new pb::MessageParser<GetFriendRequestsReplyOk>(() => new GetFriendRequestsReplyOk());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<GetFriendRequestsReply> Parser { get { return _parser; } }
+  public static pb::MessageParser<GetFriendRequestsReplyOk> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -722,7 +726,7 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public GetFriendRequestsReply() {
+  public GetFriendRequestsReplyOk() {
     OnConstruction();
   }
 
@@ -730,7 +734,7 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public GetFriendRequestsReply(GetFriendRequestsReply other) : this() {
+  public GetFriendRequestsReplyOk(GetFriendRequestsReplyOk other) : this() {
     requestedTo_ = other.requestedTo_.Clone();
     requestedFrom_ = other.requestedFrom_.Clone();
     totalReceivedFriendRequests_ = other.totalReceivedFriendRequests_;
@@ -740,8 +744,8 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public GetFriendRequestsReply Clone() {
-    return new GetFriendRequestsReply(this);
+  public GetFriendRequestsReplyOk Clone() {
+    return new GetFriendRequestsReplyOk(this);
   }
 
   /// <summary>Field number for the "requested_to" field.</summary>
@@ -799,12 +803,12 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as GetFriendRequestsReply);
+    return Equals(other as GetFriendRequestsReplyOk);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(GetFriendRequestsReply other) {
+  public bool Equals(GetFriendRequestsReplyOk other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -900,7 +904,7 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(GetFriendRequestsReply other) {
+  public void MergeFrom(GetFriendRequestsReplyOk other) {
     if (other == null) {
       return;
     }
@@ -972,6 +976,280 @@ public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendReque
         }
         case 32: {
           TotalSentFriendRequests = input.ReadInt32();
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+public sealed partial class GetFriendRequestsReply : pb::IMessage<GetFriendRequestsReply>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<GetFriendRequestsReply> _parser = new pb::MessageParser<GetFriendRequestsReply>(() => new GetFriendRequestsReply());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<GetFriendRequestsReply> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::FriendRequestKernelReflection.Descriptor.MessageTypes[3]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GetFriendRequestsReply() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GetFriendRequestsReply(GetFriendRequestsReply other) : this() {
+    switch (other.MessageCase) {
+      case MessageOneofCase.Reply:
+        Reply = other.Reply.Clone();
+        break;
+      case MessageOneofCase.Error:
+        Error = other.Error;
+        break;
+    }
+
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GetFriendRequestsReply Clone() {
+    return new GetFriendRequestsReply(this);
+  }
+
+  /// <summary>Field number for the "reply" field.</summary>
+  public const int ReplyFieldNumber = 1;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::GetFriendRequestsReplyOk Reply {
+    get { return messageCase_ == MessageOneofCase.Reply ? (global::GetFriendRequestsReplyOk) message_ : null; }
+    set {
+      message_ = value;
+      messageCase_ = value == null ? MessageOneofCase.None : MessageOneofCase.Reply;
+    }
+  }
+
+  /// <summary>Field number for the "error" field.</summary>
+  public const int ErrorFieldNumber = 2;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::FriendshipErrorCode Error {
+    get { return messageCase_ == MessageOneofCase.Error ? (global::FriendshipErrorCode) message_ : global::FriendshipErrorCode.FecTooManyRequestsSent; }
+    set {
+      message_ = value;
+      messageCase_ = MessageOneofCase.Error;
+    }
+  }
+
+  private object message_;
+  /// <summary>Enum of possible cases for the "message" oneof.</summary>
+  public enum MessageOneofCase {
+    None = 0,
+    Reply = 1,
+    Error = 2,
+  }
+  private MessageOneofCase messageCase_ = MessageOneofCase.None;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MessageOneofCase MessageCase {
+    get { return messageCase_; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearMessage() {
+    messageCase_ = MessageOneofCase.None;
+    message_ = null;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as GetFriendRequestsReply);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(GetFriendRequestsReply other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (!object.Equals(Reply, other.Reply)) return false;
+    if (Error != other.Error) return false;
+    if (MessageCase != other.MessageCase) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (messageCase_ == MessageOneofCase.Reply) hash ^= Reply.GetHashCode();
+    if (messageCase_ == MessageOneofCase.Error) hash ^= Error.GetHashCode();
+    hash ^= (int) messageCase_;
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (messageCase_ == MessageOneofCase.Reply) {
+      output.WriteRawTag(10);
+      output.WriteMessage(Reply);
+    }
+    if (messageCase_ == MessageOneofCase.Error) {
+      output.WriteRawTag(16);
+      output.WriteEnum((int) Error);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (messageCase_ == MessageOneofCase.Reply) {
+      output.WriteRawTag(10);
+      output.WriteMessage(Reply);
+    }
+    if (messageCase_ == MessageOneofCase.Error) {
+      output.WriteRawTag(16);
+      output.WriteEnum((int) Error);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (messageCase_ == MessageOneofCase.Reply) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Reply);
+    }
+    if (messageCase_ == MessageOneofCase.Error) {
+      size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Error);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(GetFriendRequestsReply other) {
+    if (other == null) {
+      return;
+    }
+    switch (other.MessageCase) {
+      case MessageOneofCase.Reply:
+        if (Reply == null) {
+          Reply = new global::GetFriendRequestsReplyOk();
+        }
+        Reply.MergeFrom(other.Reply);
+        break;
+      case MessageOneofCase.Error:
+        Error = other.Error;
+        break;
+    }
+
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          global::GetFriendRequestsReplyOk subBuilder = new global::GetFriendRequestsReplyOk();
+          if (messageCase_ == MessageOneofCase.Reply) {
+            subBuilder.MergeFrom(Reply);
+          }
+          input.ReadMessage(subBuilder);
+          Reply = subBuilder;
+          break;
+        }
+        case 16: {
+          message_ = input.ReadEnum();
+          messageCase_ = MessageOneofCase.Error;
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          global::GetFriendRequestsReplyOk subBuilder = new global::GetFriendRequestsReplyOk();
+          if (messageCase_ == MessageOneofCase.Reply) {
+            subBuilder.MergeFrom(Reply);
+          }
+          input.ReadMessage(subBuilder);
+          Reply = subBuilder;
+          break;
+        }
+        case 16: {
+          message_ = input.ReadEnum();
+          messageCase_ = MessageOneofCase.Error;
           break;
         }
       }
