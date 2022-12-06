@@ -1,7 +1,6 @@
 using DCL.SettingsCommon;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsPanelHUD.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -73,11 +72,9 @@ namespace DCL.SettingsPanelHUD.Controls
                 OnAnyDeactivationFlagChange(flag.Get());
             }
 
+            infoButton.SetActive(false);
             foreach (BooleanVariable flag in controlConfig.flagsThatOverrideMe)
-            {
                 flag.OnChange += OnAnyOverrideFlagChange;
-                OnAnyOverrideFlagChange(flag.Get());
-            }
 
             RefreshControl();
 
@@ -117,69 +114,61 @@ namespace DCL.SettingsPanelHUD.Controls
             settingsControlController.ApplySettings();
         }
 
-        private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
-            SetEnabled(enable: TrueWhenAllFlagsAreOff(disableFlag, controlConfig.flagsThatDisableMe));
-
-        private void OnAnyDeactivationFlagChange(bool deactivateFlag, bool _ = false) =>
-            SetActive(activate: TrueWhenAllFlagsAreOff(deactivateFlag, controlConfig.flagsThatDeactivateMe));
-
-        private void OnAnyOverrideFlagChange(bool overrideFlag, bool _ = false) =>
-            SetOverriden(@override: TrueWhenAllFlagsAreOff(overrideFlag, controlConfig.flagsThatOverrideMe));
-
-        private static bool TrueWhenAllFlagsAreOff(bool flagEnabled, List<BooleanVariable> flags)
-        {
-            if (flagEnabled)
-                return false; // disable if flag was changed to be On
-
-            if (flags.Any(flag => flag.Get())) // or any other flag is still On
-                return false;
-
-            return true; // true otherwise (when all flags are off)
-        }
-
         private void OnGeneralSettingsChanged(GeneralSettings _) =>
             RefreshControl();
 
         private void OnQualitySettingsChanged(QualitySettings _) =>
             RefreshControl();
 
-        private void SetEnabled(bool enable)
+        private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
+            SetDisabled(AnyFlagIsEnabled(disableFlag, controlConfig.flagsThatDisableMe));
+
+        private void OnAnyDeactivationFlagChange(bool deactivateFlag, bool _ = false) =>
+            SetDeactive(AnyFlagIsEnabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
+
+        private void OnAnyOverrideFlagChange(bool overrideFlag, bool _ = false) =>
+            SetOverriden(AnyFlagIsEnabled(overrideFlag, controlConfig.flagsThatOverrideMe));
+
+        private static bool AnyFlagIsEnabled(bool flagEnabled, List<BooleanVariable> flags) =>
+            flagEnabled || flags.Any(flag => flag.Get());
+
+        private void SetDisabled(bool disableFlagEnabled)
         {
-            title.color = enable ? originalTitleColor : titleDeactivationColor;
+            title.color = disableFlagEnabled ? titleDeactivationColor : originalTitleColor;
 
             foreach (TextMeshProUGUI text in valueLabels)
-                text.color = enable ? originalLabelColor : valueLabelDeactivationColor;
+                text.color = disableFlagEnabled ? valueLabelDeactivationColor : originalLabelColor;
 
             foreach (Image image in handleImages)
-                image.color = enable ? originalHandlerColor : handlerDeactivationColor;
+                image.color = disableFlagEnabled ? handlerDeactivationColor : originalHandlerColor;
 
             foreach (CanvasGroup group in controlBackgroundCanvasGroups)
-                group.alpha = enable ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
+                group.alpha = disableFlagEnabled ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
 
-            canvasGroup.interactable = enable;
-            canvasGroup.blocksRaycasts = enable;
+            canvasGroup.interactable = disableFlagEnabled ? false : true;
+            canvasGroup.blocksRaycasts = disableFlagEnabled ? false : true;
         }
 
-        private void SetOverriden(bool @override)
+        private void SetOverriden(bool overrideFlagEnabled)
         {
-            infoButton.SetActive(@override);
-            //
-            // foreach (TextMeshProUGUI text in valueLabels)
-            //     text.color = @override ? valueLabelDeactivationColor : originalLabelColor;
-            //
-            // foreach (Image image in handleImages)
-            //     image.color = @override ? handlerDeactivationColor : originalHandlerColor;
-            //
-            // foreach (CanvasGroup group in controlBackgroundCanvasGroups)
-            //     group.alpha = @override ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
+            infoButton.SetActive(overrideFlagEnabled);
 
-            // controlCanvasGroup.interactable = !@override;
-            // controlCanvasGroup.blocksRaycasts = @override;
+            foreach (TextMeshProUGUI text in valueLabels)
+                text.color = overrideFlagEnabled ? valueLabelDeactivationColor : originalLabelColor;
+
+            foreach (Image image in handleImages)
+                image.color = overrideFlagEnabled ? handlerDeactivationColor : originalHandlerColor;
+
+            foreach (CanvasGroup group in controlBackgroundCanvasGroups)
+                group.alpha = overrideFlagEnabled ? controlBackgroundDeactivationAlpha : originalControlBackgroundAlpha;
+
+            controlCanvasGroup.interactable = overrideFlagEnabled ? false : true;
+            controlCanvasGroup.blocksRaycasts = overrideFlagEnabled ? false : true;
         }
 
-        private void SetActive(bool activate)
+        private void SetDeactive(bool deactivateFlagEnabled)
         {
-            gameObject.SetActive(activate);
+            gameObject.SetActive(deactivateFlagEnabled ? false : true);
             CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
         }
     }
