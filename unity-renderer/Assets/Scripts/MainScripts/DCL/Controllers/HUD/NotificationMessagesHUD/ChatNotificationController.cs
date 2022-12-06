@@ -97,9 +97,6 @@ namespace DCL.Chat.Notifications
 
         private void HandleMessageAdded(ChatMessage[] messages)
         {
-            if (!isNewFriendRequestsEnabled)
-                return;
-
             foreach (var message in messages)
             {
                 if (message.messageType != ChatMessage.Type.PRIVATE &&
@@ -171,6 +168,9 @@ namespace DCL.Chat.Notifications
 
         private void HandleFriendRequestAdded(FriendRequest friendRequest)
         {
+            if (!isNewFriendRequestsEnabled)
+                return;
+
             var ownUserProfile = userProfileBridge.GetOwn();
 
             if (friendRequest.From == ownUserProfile.userId ||
