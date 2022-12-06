@@ -104,7 +104,7 @@ namespace DCL
         private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose)
         {
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
-            Assert.IsTrue(bonesContainer.sharedMesh != null, "bonesContainer should never be null!");
+            Assert.IsTrue(bonesContainer.sharedMesh != null, "the shared mesh of this bones container is null, check if the AvatarBase prefab's mesh is not missing, the hologram avatar might have been re-imported");
             Assert.IsTrue(bonesContainer.sharedMesh.bindposes != null, "bonesContainer bindPoses should never be null!");
             Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");

@@ -1,0 +1,651 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: shadervariants-runtime-gltfast
+  m_Shaders:
+  - first: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA
+          _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+      - keywords: UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_ALPHACLIP _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_ALPHACLIP _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON UNITY_UI_ALPHACLIP _DEPTH_NO_MSAA
+          _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 15106, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 15104, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 15105, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 200, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 9000, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9001, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9002, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9003, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9004, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9007, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9101, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9103, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 10760, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+  - first: {fileID: 4800000, guid: d6dae50ee9e1bfa4db75f19f99355220, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 65df88701913c224d95fc554db28381a, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: e7857e9d0c934dc4f83f270f8447b006, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: _BLOOM_LQ _TONEMAP_ACES
+        passType: 0
+      - keywords: FOG_LINEAR _BLOOM_LQ _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT _TONEMAP_ACES
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _BLOOM_LQ _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT _TONEMAP_ACES
+        passType: 0
+  - first: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: FOG_LINEAR _SCREEN_SPACE_OCCLUSION _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+          _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: _RECONSTRUCT_NORMAL_LOW _SOURCE_DEPTH_NORMALS
+        passType: 0
+  - first: {fileID: 4800000, guid: 5f1864addb451f54bae8c86d230f736e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: 537b3c029e4916749868ad462dca58c5, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED
+        passType: 8
+  - first: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: INSTANCING_ON
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: 4800000, guid: d540ea39c5edb8e44b3119aa7ed2d662, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 66051c67177673d4296ceb8a14bf2eba, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _RECEIVE_SHADOWS_OFF
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 861f58cc229a5f449b2494095122257f, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON
+        passType: 0
+      - keywords: FOG_LINEAR _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR _ALPHAPREMULTIPLY_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON _ALPHAPREMULTIPLY_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: INSTANCING_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: INSTANCING_ON _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+        passType: 13
+  - first: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: _GPU_SKINNING
+        passType: 8
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 8
+      - keywords: 
+        passType: 11
+      - keywords: 
+        passType: 13
+      - keywords: _SSAO_OFF
+        passType: 13
+      - keywords: _GPU_SKINNING
+        passType: 13
+      - keywords: _GPU_SKINNING _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 13
+      - keywords: _GPU_SKINNING _SHADOWS_SOFT _SSAO_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _GPU_SKINNING _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT _SSAO_OFF
+        passType: 13
+  - first: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+      - keywords: UNDERLAY_ON
+        passType: 0
+      - keywords: FOG_LINEAR UNDERLAY_ON _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNDERLAY_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNDERLAY_ON UNITY_HDR_ON _DEPTH_NO_MSAA
+          _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH UNITY_HDR_ON UNITY_UI_CLIP_RECT _DEPTH_NO_MSAA
+          _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: c8f1036d047721a43a74331d59080020, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 39aceaab833d6664ca7d7e7b5da5e5de, type: 3}
+    second:
+      variants:
+      - keywords: ENUM_58624D20ED1143A198AD8AB61FD7DDDE_LINEAR _FILLDIRECTION_LEFT
+          _MODE_LINEAR
+        passType: 8
+  - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+        passType: 8
+      - keywords: FOG_LINEAR _ALPHATEST_ON _DEPTH_NO_MSAA _EMISSION _NORMALMAP
+        passType: 8
+      - keywords: FOG_LINEAR UNITY_HDR_ON _ALPHATEST_ON _DEPTH_NO_MSAA _EMISSION
+          _NORMALMAP
+        passType: 8
+      - keywords: _ALPHATEST_ON _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _EMISSION _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _NORMALMAP
+        passType: 13
+      - keywords: _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _EMISSION _MAIN_LIGHT_SHADOWS
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: _ADDITIONAL_LIGHTS_VERTEX _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR INSTANCING_ON _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHABLEND_ON _DEPTH_NO_MSAA _EMISSION _MAIN_LIGHT_SHADOWS
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _ALPHABLEND_ON _DEPTH_NO_MSAA _EMISSION
+          _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: _ALPHATEST_ON _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _DEPTH_NO_MSAA _EMISSION _MAIN_LIGHT_SHADOWS
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _ALPHATEST_ON _DEPTH_NO_MSAA _EMISSION
+          _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: _ADDITIONAL_LIGHTS_VERTEX _ALPHATEST_ON _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP
+          _NORMALMAP _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _NORMALMAP
+          _PARALLAXMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _NORMALMAP
+          _PARALLAXMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP _PARALLAXMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+          _NORMALMAP _PARALLAXMAP
+        passType: 13
+  - first: {fileID: 4800000, guid: acd491c64cf95fb43828192802060ca0, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR
+        passType: 13
+  - first: {fileID: 4800000, guid: fe393ace9b354375a9cb14cdbbc28be4, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR LIGHTPROBE_SH _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: FOG_LINEAR LIGHTPROBE_SH OUTLINE_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 0
+  - first: {fileID: 4800000, guid: 2f81a455fb6a38d40a93be19cf7f2d8e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+      - keywords: _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: bf4000fbd9b31784cab1d27368431336,
+      type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _SCREEN_SPACE_OCCLUSION
+        passType: 0
+      - keywords: FOG_LINEAR UNITY_HDR_ON _DEPTH_NO_MSAA _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 0
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: 223792947f6cb461c93ef4d8df7b859c, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: b2339366be04e4cf197c6cf4bd5a84dc, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 4340a3cf1cde6416d957808a6ac79eed, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: b325a765e406c458f88111b5ba9b2ce1, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 5415cfa8493204ba5ae288a245ca7616, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: f853aafa0bc764a138f572608a37a73c, type: 3}
+    second:
+      variants:
+      - keywords: DIRECTIONAL
+        passType: 4
+      - keywords: POINT
+        passType: 5
+      - keywords: SHADOWS_DEPTH
+        passType: 8
+      - keywords: 
+        passType: 10
+      - keywords: 
+        passType: 11
+  - first: {fileID: 4800000, guid: 99fa998bbbed3408aafa652b466d261d, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 1
+      - keywords: 
+        passType: 2
+      - keywords: DIRECTIONAL
+        passType: 4
+      - keywords: POINT
+        passType: 5
+      - keywords: SHADOWS_DEPTH
+        passType: 8
+      - keywords: 
+        passType: 10
+      - keywords: 
+        passType: 11
+  - first: {fileID: 4800000, guid: 8b605e834d6d2408a9e781775006555e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 4eb7e251dc88045e9b33e3f643084108, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: -6465566751694194690, guid: 90c26dfde11bf4ff69ef936c6e6b1ed1,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: EMISSION
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _ADDITIONAL_LIGHTS_VERTEX _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: EMISSION
+        passType: 13
+      - keywords: EMISSION FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: ba6d401c74b2c4f96af7edf0fe32241e,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: EMISSION
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: EMISSION
+        passType: 13
+      - keywords: EMISSION FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: f06cd296b834444abb6dbc0acccf9414,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _ADDITIONAL_LIGHTS_VERTEX _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: c9ba521fe23b44d6db1017a2d9d47a17,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: EMISSION
+        passType: 8
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+          _SHADOWS_SOFT
+        passType: 13
+      - keywords: EMISSION FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION _SHADOWS_SOFT
+        passType: 13
