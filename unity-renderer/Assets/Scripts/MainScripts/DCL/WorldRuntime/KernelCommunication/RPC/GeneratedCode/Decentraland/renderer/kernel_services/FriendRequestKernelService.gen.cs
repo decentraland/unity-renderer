@@ -14,6 +14,14 @@ public interface IFriendRequestKernelService<Context>
 
   UniTask<GetFriendRequestsReply> GetFriendRequests(GetFriendRequestsPayload request, Context context, CancellationToken ct);
 
+  UniTask<SendFriendRequestReply> SendFriendRequest(SendFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<AcceptFriendRequestReply> AcceptFriendRequest(AcceptFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<RejectFriendRequestReply> RejectFriendRequest(RejectFriendRequestPayload request, Context context, CancellationToken ct);
+
 }
 
 public static class FriendRequestKernelServiceCodeGen
@@ -25,6 +33,10 @@ public static class FriendRequestKernelServiceCodeGen
     var result = new ServerModuleDefinition<Context>();
       
     result.definition.Add("GetFriendRequests", async (payload, context, ct) => { var res = await service.GetFriendRequests(GetFriendRequestsPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("SendFriendRequest", async (payload, context, ct) => { var res = await service.SendFriendRequest(SendFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("CancelFriendRequest", async (payload, context, ct) => { var res = await service.CancelFriendRequest(CancelFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("AcceptFriendRequest", async (payload, context, ct) => { var res = await service.AcceptFriendRequest(AcceptFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("RejectFriendRequest", async (payload, context, ct) => { var res = await service.RejectFriendRequest(RejectFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }
