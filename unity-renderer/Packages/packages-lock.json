@@ -54,9 +54,9 @@
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.decentraland.gltfast": "https://github.com/decentraland/glTFast.git"
+        "com.atteneder.gltfast": "5.0.0-exp.1"
       },
-      "hash": "e9b72220a5c30d736ff3993366b2c598364d976e"
+      "hash": "6a549b969fd6d87577b6a8c18a1d776d28194ed2"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
