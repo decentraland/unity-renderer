@@ -862,6 +862,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1493839374699080646, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1493839374699080646, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1493839374699080646, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1493839374699080646, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3731816843781449031, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
       propertyPath: m_Pivot.x
@@ -900,7 +920,7 @@ PrefabInstance:
     - target: {fileID: 3731816843781449031, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 221.3221
       objectReference: {fileID: 0}
     - target: {fileID: 3731816843781449031, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
@@ -945,7 +965,7 @@ PrefabInstance:
     - target: {fileID: 3731816843781449031, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -39.33893
       objectReference: {fileID: 0}
     - target: {fileID: 3731816843781449031, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
@@ -967,10 +987,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3781809617804807125, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3781809617804807125, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3781809617804807125, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7951948174597467371, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
         type: 3}
       propertyPath: m_Name
-      value: ToggleSettingsControlTemplateVariant
+      value: ToggleSettingsControlTemplate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e, type: 3}
