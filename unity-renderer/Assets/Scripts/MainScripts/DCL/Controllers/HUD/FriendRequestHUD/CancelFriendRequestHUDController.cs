@@ -120,7 +120,7 @@ namespace DCL.Social.Friends
 
         private void Hide()
         {
-            dataStore.HUDs.sendFriendRequest.Set(null, false);
+            dataStore.HUDs.openSentFriendRequestDetail.Set(null, false);
             view.Close();
         }
 
