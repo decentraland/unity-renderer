@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

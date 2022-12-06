@@ -21,6 +21,8 @@ namespace DCLPlugins.RealmPlugin
             worldBlockersLimit = dataStoreWorldBlockers.worldBlockerLimit;
         }
 
+        public void Dispose() { }
+
         public void OnEnteredRealm(bool isWorld, AboutConfiguration realmConfiguration)
         {
             bool shouldGreenBlockersBeActive = !isWorld || HasContentServers(realmConfiguration.CityLoaderContentServer);
@@ -33,8 +35,5 @@ namespace DCLPlugins.RealmPlugin
             else
                 worldBlockersEnabled.Set(shouldGreenBlockersBeActive);
         }
-
-        public void Dispose() { }
-
     }
 }
