@@ -11,9 +11,9 @@ namespace DCL.SettingsPanelHUD.Controls
         /// <summary>
         /// All the needed base logic to initializes the CONTROL view.
         /// </summary>
-        /// <param name="controlConfig">Model that will contain the configuration of the CONTROL.</param>
-        /// <param name="settingsControlController">Controller associated to the CONTROL view.</param>
-        void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController);
+        /// <param name="model">Model that will contain the configuration of the CONTROL.</param>
+        /// <param name="controller">Controller associated to the CONTROL view.</param>
+        void Initialize(SettingsControlModel model, SettingsControlController controller);
 
         /// <summary>
         /// This logic should update the CONTROL view with the stored value.

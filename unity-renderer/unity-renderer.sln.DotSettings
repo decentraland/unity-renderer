@@ -156,3 +156,5 @@
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/RecentlyUsedProfile/@EntryValue">Built-in: Reformat &amp; Apply Syntax Style</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">Reformat Code DCL</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=onboarding/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">Reformat Code DCL</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Interactibility/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
