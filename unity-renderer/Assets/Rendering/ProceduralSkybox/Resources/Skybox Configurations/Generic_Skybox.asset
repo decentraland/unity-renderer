@@ -499,7 +499,7 @@ MonoBehaviour:
     timeSpan_End: 5
     fadingInTime: 5
     fadingOutTime: 5
-    tintPercentage: 0
+    tintPercentage: 100
     renderDistance: []
     texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
     cubemap: {fileID: 0}
