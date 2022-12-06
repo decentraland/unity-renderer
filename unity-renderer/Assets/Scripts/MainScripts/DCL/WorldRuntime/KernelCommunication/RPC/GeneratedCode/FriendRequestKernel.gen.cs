@@ -23,25 +23,28 @@ public static partial class FriendRequestKernelReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "CkFkZWNlbnRyYWxhbmQvcmVuZGVyZXIva2VybmVsX3NlcnZpY2VzL2ZyaWVu",
-          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90bxoqZGVjZW50cmFsYW5kL3JlbmRlcmVy",
-          "L2NvbW1vbi9mcmllbmRzLnByb3RvIm0KDUZyaWVuZFJlcXVlc3QSGQoRZnJp",
-          "ZW5kX3JlcXVlc3RfaWQYASABKAkSEQoJdGltZXN0YW1wGAIgASgEEgwKBGZy",
-          "b20YAyABKAkSCgoCdG8YBCABKAkSFAoMbWVzc2FnZV9ib2R5GAUgASgJInAK",
-          "GEdldEZyaWVuZFJlcXVlc3RzUGF5bG9hZBISCgpzZW50X2xpbWl0GAEgASgF",
-          "EhEKCXNlbnRfc2tpcBgCIAEoBRIWCg5yZWNlaXZlZF9saW1pdBgDIAEoBRIV",
-          "Cg1yZWNlaXZlZF9za2lwGAQgASgFIrQBChhHZXRGcmllbmRSZXF1ZXN0c1Jl",
-          "cGx5T2sSJAoMcmVxdWVzdGVkX3RvGAEgAygLMg4uRnJpZW5kUmVxdWVzdBIm",
-          "Cg5yZXF1ZXN0ZWRfZnJvbRgCIAMoCzIOLkZyaWVuZFJlcXVlc3QSJgoedG90",
-          "YWxfcmVjZWl2ZWRfZnJpZW5kX3JlcXVlc3RzGAMgASgFEiIKGnRvdGFsX3Nl",
-          "bnRfZnJpZW5kX3JlcXVlc3RzGAQgASgFInYKFkdldEZyaWVuZFJlcXVlc3Rz",
-          "UmVwbHkSKgoFcmVwbHkYASABKAsyGS5HZXRGcmllbmRSZXF1ZXN0c1JlcGx5",
-          "T2tIABIlCgVlcnJvchgCIAEoDjIULkZyaWVuZHNoaXBFcnJvckNvZGVIAEIJ",
-          "CgdtZXNzYWdlMmcKGkZyaWVuZFJlcXVlc3RLZXJuZWxTZXJ2aWNlEkkKEUdl",
+          "ZF9yZXF1ZXN0X2tlcm5lbC5wcm90byJtCg1GcmllbmRSZXF1ZXN0EhkKEWZy",
+          "aWVuZF9yZXF1ZXN0X2lkGAEgASgJEhEKCXRpbWVzdGFtcBgCIAEoBBIMCgRm",
+          "cm9tGAMgASgJEgoKAnRvGAQgASgJEhQKDG1lc3NhZ2VfYm9keRgFIAEoCSJw",
+          "ChhHZXRGcmllbmRSZXF1ZXN0c1BheWxvYWQSEgoKc2VudF9saW1pdBgBIAEo",
+          "BRIRCglzZW50X3NraXAYAiABKAUSFgoOcmVjZWl2ZWRfbGltaXQYAyABKAUS",
+          "FQoNcmVjZWl2ZWRfc2tpcBgEIAEoBSK0AQoYR2V0RnJpZW5kUmVxdWVzdHNS",
+          "ZXBseU9rEiQKDHJlcXVlc3RlZF90bxgBIAMoCzIOLkZyaWVuZFJlcXVlc3QS",
+          "JgoOcmVxdWVzdGVkX2Zyb20YAiADKAsyDi5GcmllbmRSZXF1ZXN0EiYKHnRv",
+          "dGFsX3JlY2VpdmVkX2ZyaWVuZF9yZXF1ZXN0cxgDIAEoBRIiChp0b3RhbF9z",
+          "ZW50X2ZyaWVuZF9yZXF1ZXN0cxgEIAEoBSJ2ChZHZXRGcmllbmRSZXF1ZXN0",
+          "c1JlcGx5EioKBXJlcGx5GAEgASgLMhkuR2V0RnJpZW5kUmVxdWVzdHNSZXBs",
+          "eU9rSAASJQoFZXJyb3IYAiABKA4yFC5GcmllbmRzaGlwRXJyb3JDb2RlSABC",
+          "CQoHbWVzc2FnZSqwAQoTRnJpZW5kc2hpcEVycm9yQ29kZRIeChpGRUNfVE9P",
+          "X01BTllfUkVRVUVTVFNfU0VOVBAAEh4KGkZFQ19OT1RfRU5PVUdIX1RJTUVf",
+          "UEFTU0VEEAESFAoQRkVDX0JMT0NLRURfVVNFUhACEhkKFUZFQ19OT05fRVhJ",
+          "U1RJTkdfVVNFUhADEhcKE0ZFQ19JTlZBTElEX1JFUVVFU1QQBBIPCgtGRUNf",
+          "VU5LTk9XThAFMmcKGkZyaWVuZFJlcXVlc3RLZXJuZWxTZXJ2aWNlEkkKEUdl",
           "dEZyaWVuZFJlcXVlc3RzEhkuR2V0RnJpZW5kUmVxdWVzdHNQYXlsb2FkGhcu",
           "R2V0RnJpZW5kUmVxdWVzdHNSZXBseSIAYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-        new pbr::FileDescriptor[] { global::FriendsReflection.Descriptor, },
-        new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+        new pbr::FileDescriptor[] { },
+        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::FriendshipErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::FriendRequest), global::FriendRequest.Parser, new[]{ "FriendRequestId", "Timestamp", "From", "To", "MessageBody" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsPayload), global::GetFriendRequestsPayload.Parser, new[]{ "SentLimit", "SentSkip", "ReceivedLimit", "ReceivedSkip" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GetFriendRequestsReplyOk), global::GetFriendRequestsReplyOk.Parser, new[]{ "RequestedTo", "RequestedFrom", "TotalReceivedFriendRequests", "TotalSentFriendRequests" }, null, null, null, null),
@@ -51,6 +54,21 @@ public static partial class FriendRequestKernelReflection {
   #endregion
 
 }
+#region Enums
+public enum FriendshipErrorCode {
+  /// <summary>
+  /// Any uncategorized friend request related error
+  /// </summary>
+  [pbr::OriginalName("FEC_TOO_MANY_REQUESTS_SENT")] FecTooManyRequestsSent = 0,
+  [pbr::OriginalName("FEC_NOT_ENOUGH_TIME_PASSED")] FecNotEnoughTimePassed = 1,
+  [pbr::OriginalName("FEC_BLOCKED_USER")] FecBlockedUser = 2,
+  [pbr::OriginalName("FEC_NON_EXISTING_USER")] FecNonExistingUser = 3,
+  [pbr::OriginalName("FEC_INVALID_REQUEST")] FecInvalidRequest = 4,
+  [pbr::OriginalName("FEC_UNKNOWN")] FecUnknown = 5,
+}
+
+#endregion
+
 #region Messages
 public sealed partial class FriendRequest : pb::IMessage<FriendRequest>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
