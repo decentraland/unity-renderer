@@ -1,6 +1,7 @@
 using ReorderableList;
 using System.Collections.Generic;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 using UnityEngine;
 
 namespace DCL.SettingsPanelHUD.Controls
@@ -38,6 +39,10 @@ namespace DCL.SettingsPanelHUD.Controls
 
         [Tooltip("List of boolean flags that being true will deactivate the game object of the control.")]
         public List<BooleanVariable> flagsThatDeactivateMe;
+
+        [Tooltip("List of boolean flags that are used to indicate that this Control was overriden.")]
+        public List<BooleanVariable> flagsThatOverrideMe;
+
         public bool isBeta;
     }
 }
