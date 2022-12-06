@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -242,17 +243,5 @@ namespace AvatarSystem
             if (impostorRenderer != null)
                 Object.Destroy(impostorRenderer.gameObject);
         }
-    }
-
-    public class NoLODs : ILOD
-    {
-        public int lodIndex { get; }
-
-        public void Bind(Renderer combinedAvatar) { }
-        public void SetLodIndex(int lodIndex, bool inmediate = false) { }
-        public void SetImpostorTexture(Texture2D texture) { }
-        public void SetImpostorTint(Color color) { }
-
-        public void Dispose() { }
     }
 }

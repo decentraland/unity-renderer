@@ -38,6 +38,7 @@ namespace DCL
 
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             context.crdt.WorldState = Environment.i.world.state;
+            context.crdt.SceneController = Environment.i.world.sceneController;
 
             RPCServerBuilder.BuildDefaultServer(context);
         }

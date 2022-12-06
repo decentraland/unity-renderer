@@ -212,6 +212,7 @@ namespace Tests
 
                 context.crdt.MessagingControllersManager = messagingControllersManager;
                 context.crdt.WorldState = worldState;
+                context.crdt.SceneController = Substitute.For<ISceneController>();
 
                 // Simulate client sending `crdtMessage` CRDT
                 try
@@ -222,8 +223,12 @@ namespace Tests
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
 
-                    scene.Received(1).MarkInitMessagesDone();
-                    scene.ClearReceivedCalls();
+                    context.crdt.SceneController.Received(1).EnqueueSceneMessage(Arg.Is<QueuedSceneMessage_Scene>(q =>
+                        q.method == MessagingTypes.INIT_DONE
+                        && q.sceneNumber == sceneNumber
+                        && q.tag == "scene"
+                        && q.type == QueuedSceneMessage.Type.SCENE_MESSAGE));
+                    context.crdt.SceneController.ClearReceivedCalls();
                     isInitDone = true;
 
                     await clientCrdtService.SendCrdt(new CRDTManyMessages()
@@ -232,7 +237,7 @@ namespace Tests
                         Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
 
-                    scene.DidNotReceive().MarkInitMessagesDone();
+                    context.crdt.SceneController.DidNotReceive().EnqueueSceneMessage(Arg.Any<QueuedSceneMessage_Scene>());
                 }
                 catch (Exception e)
                 {
