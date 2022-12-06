@@ -53,6 +53,7 @@ namespace DCL.SettingsPanelHUD.Controls
             this.settingsControlController.Initialize();
 
             betaIndicator.SetActive(model.isBeta);
+            infoButton.SetActive(false);
 
             title.text = model.title;
             originalTitleColor = title.color;
@@ -60,24 +61,20 @@ namespace DCL.SettingsPanelHUD.Controls
             originalHandlerColor = handleImages.Count > 0 ? handleImages[0].color : Color.white;
             originalControlBackgroundAlpha = controlBackgroundCanvasGroups.Count > 0 ? controlBackgroundCanvasGroups[0].alpha : 1f;
 
+            SwitchInteractibility(isInteractable: model.flagsThatDisableMe.All(flag => flag.Get() == false));
+            SwitchVisibility(isVisible: model.flagsThatDeactivateMe.All(flag => flag.Get() == false));
+            SetOverriden(@override: model.flagsThatOverrideMe.Any(flag => flag.Get()));
+
+            RefreshControl();
+
             foreach (BooleanVariable flag in model.flagsThatDisableMe)
-            {
                 flag.OnChange += OnAnyDisableFlagChange;
-                OnAnyDisableFlagChange(flag.Get());
-            }
 
             foreach (BooleanVariable flag in model.flagsThatDeactivateMe)
-            {
                 flag.OnChange += OnAnyDeactivationFlagChange;
-                OnAnyDeactivationFlagChange(flag.Get());
-            }
-
-            infoButton.SetActive(false);
 
             foreach (BooleanVariable flag in model.flagsThatOverrideMe)
                 flag.OnChange += OnAnyOverrideFlagChange;
-
-            RefreshControl();
 
             Settings.i.generalSettings.OnChanged += OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
@@ -122,13 +119,16 @@ namespace DCL.SettingsPanelHUD.Controls
             RefreshControl();
 
         private void OnAnyDeactivationFlagChange(bool deactivateFlag, bool _ = false) =>
-            SwitchVisibility(isVisible: !AnyFlagIsEnabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
+            SwitchVisibility(isVisible: AllFlagsAreDisabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
 
         private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
-            SwitchInteractibility(isInteractable: !AnyFlagIsEnabled(disableFlag, controlConfig.flagsThatDisableMe));
+            SwitchInteractibility(isInteractable: AllFlagsAreDisabled(disableFlag, controlConfig.flagsThatDisableMe));
 
         private void OnAnyOverrideFlagChange(bool overrideFlag, bool _ = false) =>
-            SetOverriden(AnyFlagIsEnabled(overrideFlag, controlConfig.flagsThatOverrideMe));
+            SetOverriden(@override: AnyFlagIsEnabled(overrideFlag, controlConfig.flagsThatOverrideMe));
+
+        private static bool AllFlagsAreDisabled(bool flagEnabled, List<BooleanVariable> flags) =>
+            !flagEnabled && flags.All(flag => flag.Get() == false);
 
         private static bool AnyFlagIsEnabled(bool flagEnabled, List<BooleanVariable> flags) =>
             flagEnabled || flags.Any(flag => flag.Get());
@@ -145,10 +145,10 @@ namespace DCL.SettingsPanelHUD.Controls
             SwitchUIControlInteractibility(isInteractable, canvasGroup);
         }
 
-        private void SetOverriden(bool overrideFlagEnabled)
+        private void SetOverriden(bool @override)
         {
-            infoButton.SetActive(overrideFlagEnabled);
-            SwitchUIControlInteractibility(isInteractable: !overrideFlagEnabled, controlCanvasGroup);
+            infoButton.SetActive(@override);
+            SwitchUIControlInteractibility(isInteractable: !@override, controlCanvasGroup);
         }
 
         private void SwitchUIControlInteractibility(bool isInteractable, CanvasGroup group)
