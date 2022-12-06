@@ -83,15 +83,15 @@ namespace DCl.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int SentLimit, int SentSkip, int ReceivedLimit, int ReceivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsV2(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             GetFriendRequestsReply response = await rpc.FriendRequests()
                 .GetFriendRequests(new GetFriendRequestsPayload
                 {
-                    SentLimit = SentLimit,
-                    SentSkip = SentSkip,
-                    ReceivedLimit = ReceivedLimit,
-                    ReceivedSkip = ReceivedSkip
+                    SentLimit = sentLimit,
+                    SentSkip = sentSkip,
+                    ReceivedLimit = receivedLimit,
+                    ReceivedSkip = receivedSkip
                 });
 
             return new AddFriendRequestsV2Payload
@@ -108,6 +108,12 @@ namespace DCl.Social.Friends
 
         public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody) =>
             fallbackApiBridge.RequestFriendship(userId, messageBody);
+
+        UniTask<CancelFriendshipConfirmationPayload> IFriendsApiBridge.CancelRequest(string friendRequestId) =>
+            fallbackApiBridge.CancelRequest(friendRequestId);
+
+        public UniTask CancelRequestByUserId(string userId) =>
+            fallbackApiBridge.CancelRequestByUserId(userId);
 
         public void CancelRequest(string userId) =>
             fallbackApiBridge.CancelRequest(userId);
