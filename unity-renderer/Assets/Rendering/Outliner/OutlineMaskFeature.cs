@@ -66,8 +66,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                DrawRenderers(outlineRenderers?.renderers, cmd);
-                DrawAvatars(outlineRenderers?.avatars, cmd);
+                DrawRenderers(outlineRenderers?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
+                DrawAvatars(outlineRenderers?.avatars, renderingData.cameraData.camera.cullingMask, cmd);
 
                 cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
             }
@@ -76,17 +76,15 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             CommandBufferPool.Release(cmd);
         }
 
-        private void DrawRenderers(List<(Renderer renderer, int meshCount)> renderers, CommandBuffer cmd)
+        private void DrawRenderers(List<(Renderer renderer, int meshCount)> renderers, int cameraCulling, CommandBuffer cmd)
         {
             if (renderers == null)
                 return;
 
             foreach ((Renderer renderer, int meshCount) in renderers)
             {
-                Debug.Log($"Drawing {GetHierarchyPath(renderer.transform)}");
-
                 //Ignore disabled renderers
-                if (!renderer.gameObject.activeSelf)
+                if (!renderer.gameObject.activeSelf || (cameraCulling & (1 << renderer.gameObject.layer)) == 0)
                     continue;
 
                 // We have to manually render all the submeshes of the selected objects.
@@ -102,7 +100,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             return $"{GetHierarchyPath(transform.parent)}/{transform.name}";
         }
 
-        private void DrawAvatars(List<(Renderer renderer, int meshCount)> renderers, CommandBuffer cmd)
+        private void DrawAvatars(List<(Renderer renderer, int meshCount)> renderers, int cameraCulling, CommandBuffer cmd)
         {
             if (renderers == null)
                 return;
@@ -110,7 +108,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             foreach ((Renderer renderer, int meshCount) in renderers)
             {
                 //Ignore disabled renderers
-                if (!renderer.gameObject.activeSelf)
+                if (!renderer.gameObject.activeSelf || (cameraCulling & (1 << renderer.gameObject.layer)) == 0)
                     continue;
 
                 for (var i = 0; i < meshCount; i++)
