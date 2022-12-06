@@ -80,7 +80,7 @@ namespace DCL.Components
 
         public bool IsAtHoverDistance(float distance)
         {
-            if (!Utils.IsCursorLocked)
+            if (!Utils.IsCursorLocked || Utils.LockedThisFrame())
                 return true;
             return distance <= model.distance;
         }

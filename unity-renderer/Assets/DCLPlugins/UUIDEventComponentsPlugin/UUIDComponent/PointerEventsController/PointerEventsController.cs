@@ -223,6 +223,8 @@ namespace DCL
 
         private IList<IPointerInputEvent> GetPointerInputEvents(GameObject hitGameObject)
         {
+            if (!Utils.IsCursorLocked || Utils.LockedThisFrame())
+                return hitGameObject.GetComponentsInChildren<IAvatarOnPointerDown>();
             return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
@@ -338,10 +340,7 @@ namespace DCL
             //TODO(Brian): We should remove this when we get a proper initialization layer
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
-                if (Utils.LockedThisFrame())
-                    return;
-
-                if (!Utils.IsCursorLocked || !renderingEnabled)
+                if (!renderingEnabled)
                     return;
             }
 
@@ -385,7 +384,7 @@ namespace DCL
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
-            Ray ray = GetRayFromCamera();
+            Ray ray = !Utils.IsCursorLocked || Utils.LockedThisFrame() ? GetRayFromMouse() : GetRayFromCamera();
 
             // Raycast for global pointer events
             worldState.TryGetScene(currentSceneNumber, out var loadedScene);
@@ -447,7 +446,7 @@ namespace DCL
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
-            Ray ray = GetRayFromCamera();
+            Ray ray = !Utils.IsCursorLocked || Utils.LockedThisFrame() ? GetRayFromMouse() : GetRayFromCamera();
             worldState.TryGetScene(currentSceneNumber, out var loadedScene);
 
             // Raycast for pointer event components

@@ -66,7 +66,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                DrawRenderers(outlineRenderers?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
+                //DrawRenderers(outlineRenderers?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
                 DrawAvatars(outlineRenderers?.avatars, renderingData.cameraData.camera.cullingMask, cmd);
 
                 cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
