@@ -1,5 +1,5 @@
 ﻿using AvatarSystem;
-using DCL.Helpers;
+using DCL.Shaders;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -73,7 +73,10 @@ namespace Test.AvatarSystem
         {
             lod.EnsureImpostor();
             var renderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
-
+            
+            // Default lit material has _SSAO_OFF as an invalid keyword
+            renderer.sharedMaterial = Resources.Load<Material>("Avatar Material");
+            
             LOD.UpdateSSAO(renderer, lodIndex);
 
             for (var i = 0; i < renderer.sharedMaterials.Length; i++)

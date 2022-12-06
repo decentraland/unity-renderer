@@ -2,6 +2,8 @@ using System;
 using DCL;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

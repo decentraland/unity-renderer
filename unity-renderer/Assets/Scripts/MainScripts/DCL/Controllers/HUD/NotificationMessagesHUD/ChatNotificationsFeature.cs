@@ -1,4 +1,5 @@
 using DCL.Chat.Channels;
+using DCL.Social.Chat;
 
 namespace DCL.Chat.Notifications
 {

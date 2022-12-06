@@ -39,6 +39,15 @@ void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(char* a, char* b, char* c) {\
 	cb_ ## NAME_PARAM(a, b, c);\
 }\
 
+#define EXTERNAL_CALLBACK_VI(NAME_PARAM)\
+callback_vi cb_ ## NAME_PARAM;\
+void SetCallback_ ## NAME_PARAM(callback_vi NAME_PARAM) {\
+cb_ ## NAME_PARAM = NAME_PARAM;\
+}\
+void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(int32_t a) {\
+	cb_ ## NAME_PARAM(a);\
+}\
+
 #define EXTERNAL_CALLBACK_VIS(NAME_PARAM)\
 callback_vis cb_ ## NAME_PARAM;\
 void SetCallback_ ## NAME_PARAM(callback_vis NAME_PARAM) {\
@@ -72,7 +81,7 @@ EXTERNAL_CALLBACK_V(RemoveEntity)
 EXTERNAL_CALLBACK_V(SceneReady)
 EXTERNAL_CALLBACK_VS(SetEntityId)
 EXTERNAL_CALLBACK_VS(SetSceneId)
-EXTERNAL_CALLBACK_VS(SetSceneNumber)
+EXTERNAL_CALLBACK_VI(SetSceneNumber)
 EXTERNAL_CALLBACK_VS(SetTag)
 EXTERNAL_CALLBACK_VS(SetEntityParent)
 EXTERNAL_CALLBACK_VIS(EntityComponentCreateOrUpdate)

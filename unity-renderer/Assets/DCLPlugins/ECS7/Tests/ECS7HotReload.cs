@@ -62,7 +62,8 @@ namespace Tests
                     ECSComponentsManager componentsManager = LoadEcs7Dependencies();
 
                     context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
-                    
+                    context.crdt.WorldState = Substitute.For<IWorldState>();
+
                     ClientCRDTService clientCrdtService = await CreateClientCrdtService(clientTransport);
                     await LoadScene(SCENE_NUMBER).ToCoroutine();
 
@@ -192,7 +193,7 @@ namespace Tests
                 }
             }
         }
-        
+
         static async UniTask<ClientCRDTService> CreateClientCrdtService(ITransport transport)
         {
             RpcClient client = new RpcClient(transport);

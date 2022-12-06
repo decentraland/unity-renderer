@@ -1,11 +1,10 @@
-using DCL.Chat;
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
-using RPC;
+using DCL.Social.Chat;
+using DCL.Social.Friends;
 using UnityEngine;
 
 namespace DCL
@@ -25,7 +24,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         protected PluginSystem pluginSystem;
-        
+
         protected virtual void Awake()
         {
             if (i != null)
@@ -40,6 +39,9 @@ namespace DCL
                 InitializeSceneDependencies();
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            // TODO: migrate chat controller singleton into a service in the service locator
+            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
+            FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -48,7 +50,7 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
-            
+
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
 #endif
@@ -80,7 +82,6 @@ namespace DCL
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
             }
 #endif
-            RPCServerBuilder.BuildDefaultServer();
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
@@ -120,7 +121,7 @@ namespace DCL
         {
             performanceMetricsController?.Update();
         }
-        
+
         [RuntimeInitializeOnLoadMethod]
         static void RunOnStart()
         {
@@ -130,7 +131,7 @@ namespace DCL
         {
             if (i != null)
                 i.Dispose();
-    
+
             return true;
         }
 
@@ -144,18 +145,18 @@ namespace DCL
 
             if (!EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            
+
             kernelCommunication?.Dispose();
         }
-        
+
         protected virtual void InitializeSceneDependencies()
         {
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<ChatController>();
-            gameObject.AddComponent<FriendsController>();
+            gameObject.AddComponent<WebInterfaceChatBridge>();
+            gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();

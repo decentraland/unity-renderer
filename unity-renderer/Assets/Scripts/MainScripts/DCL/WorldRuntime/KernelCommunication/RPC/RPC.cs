@@ -1,22 +1,42 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
+using RPC;
 using rpc_csharp;
 
 namespace DCL
 {
     public class RPC : IRPC
     {
-        ClientEmotesKernelService IRPC.emotes { get; set; }
+        private ClientEmotesKernelService emotes;
 
-        public static async UniTask LoadModules(RpcClientPort port, IRPC rpc)
+        private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
+
+        public ClientEmotesKernelService Emotes() =>
+            emotes;
+
+        public UniTask EnsureRpc() =>
+            modulesLoaded.Task;
+
+        private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
         {
-            rpc.emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+            emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+            modulesLoaded.TrySetResult();
         }
 
         public void Initialize()
         {
+            var context = DataStore.i.rpc.context;
+
+            context.transport.OnLoadModules += port =>
+            {
+                LoadRpcModulesAsync(port).Forget();
+            };
+
+            context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+            context.crdt.WorldState = Environment.i.world.state;
+
+            RPCServerBuilder.BuildDefaultServer(context);
         }
-        
+
         public void Dispose()
         {
         }

@@ -1,3 +1,4 @@
+using AvatarSystem;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
@@ -8,6 +9,9 @@ using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
+using DCL.Social.Friends;
+using DCl.Social.Passports;
 using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
@@ -41,25 +45,30 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PLAYER_INFO_CARD:
                 if(DataStore.i.HUDs.enableNewPassport.Get())
                 {
-                    //TODO: this is temporary, once the old passport flow is removed 
+                    //TODO: this is temporary, once the old passport flow is removed
                     //this can be moved to the passport plugin
                     PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
                     hudElement = new PlayerPassportHUDController(
                         view,
                         new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"), 
-                            view.PlayerInfoView, 
-                            DataStore.i, 
-                            ProfanityFilterSharedInstances.regexFilter, 
-                            FriendsController.i, 
-                            new UserProfileWebInterfaceBridge()),
+                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                            view.PlayerInfoView,
+                            DataStore.i,
+                            ProfanityFilterSharedInstances.regexFilter,
+                            FriendsController.i,
+                            new UserProfileWebInterfaceBridge(),
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,
                             ProfanityFilterSharedInstances.regexFilter,
+                            new WearableItemResolver(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
+                        new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
                             new UserProfileWebInterfaceBridge()));
@@ -106,7 +115,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
-                    new WebInterfaceBrowserBridge());
+                    new WebInterfaceBrowserBridge(),
+                    CommonScriptableObjects.rendererState);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(

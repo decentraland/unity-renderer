@@ -791,19 +791,19 @@ namespace DCL.Interface
             public int receivedLimit;
             public int receivedSkip;
         }
-        
+
         [Serializable]
         private class LeaveChannelPayload
         {
             public string channelId;
         }
-        
+
         [Serializable]
         private class CreateChannelPayload
         {
             public string channelId;
         }
-        
+
         public struct MuteChannelPayload
         {
             public string channelId;
@@ -864,8 +864,7 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
-    [DllImport("__Internal")] public static extern void BinaryMessageFromEngine(int sceneNumber, byte[] bytes, int size);
-        
+
     public static System.Action<string, string> OnMessageFromEngine;
 #else
         public static Action<string, string> OnMessageFromEngine
@@ -1360,6 +1359,12 @@ namespace DCL.Interface
             public SendSaveUserDescriptionPayload(string description) { this.description = description; }
         }
 
+        [System.Serializable]
+        public class SendRequestUserProfilePayload
+        {
+            public string value;
+        }
+
         [Serializable]
         public class SendVideoProgressEvent
         {
@@ -1400,6 +1405,8 @@ namespace DCL.Interface
         }
 
         public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
+
+        public static void SendRequestUserProfile(string userId) { SendMessage("RequestUserProfile", new SendRequestUserProfilePayload() { value = userId }); }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
@@ -1550,7 +1557,7 @@ namespace DCL.Interface
             gotoEvent.y = y;
             SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
         }
-        
+
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
@@ -1561,7 +1568,7 @@ namespace DCL.Interface
 
             SendMessage("JumpIn", jumpInPayload);
         }
-        
+
         public static void JumpInHome(string mostPopulatedRealm)
         {
             jumpInPayload.realm.serverName = mostPopulatedRealm;
@@ -1732,7 +1739,7 @@ namespace DCL.Interface
                 videoTextureId = videoClipId,
                 status = videoStatus,
                 currentOffset = currentOffset,
-                videoLength = length
+                videoLength = float.IsInfinity(length) ? float.MaxValue : length
             };
 
             SendMessage("VideoProgressEvent", progressEvent);
@@ -1805,7 +1812,7 @@ namespace DCL.Interface
             getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
-        
+
         public static void MarkChannelMessagesAsSeen(string channelId)
         {
             markChannelMessagesAsSeenPayload.channelId = channelId;
@@ -1933,7 +1940,7 @@ namespace DCL.Interface
         {
             SendMessage("UpdateMemoryUsage");
         }
-        
+
         public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
 
         public static void SetInputAudioDevice(string inputDeviceId)
