@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using DCL.Helpers;
-using DCL.Shaders;
 using UnityEngine;
 
 namespace DCL.Controllers

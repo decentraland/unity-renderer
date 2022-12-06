@@ -6,7 +6,6 @@ namespace DCL.Components
 {
     public class LoadWrapper_GLTF : LoadWrapper
     {
-        private const string FEATURE_GLTFAST = "gltfast";
         static readonly bool VERBOSE = false;
 
         RendereableAssetLoadHelper loadHelper;
@@ -29,12 +28,11 @@ namespace DCL.Components
             alreadyLoaded = false;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 
-            bool CheckIfGltFastIsEnabled() => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles, CheckIfGltFastIsEnabled);
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,CheckIfGltFastIsEnabled);
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
@@ -88,7 +86,7 @@ namespace DCL.Components
         {
             if (loadHelper == null)
                 return;
-
+            
             if ( loadHelper.loadedAsset != null )
             {
                 DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.sceneNumber, loadHelper.loadedAsset);

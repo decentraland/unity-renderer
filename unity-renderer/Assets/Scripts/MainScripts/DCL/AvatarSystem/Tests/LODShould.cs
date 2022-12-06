@@ -1,5 +1,5 @@
 ﻿using AvatarSystem;
-using DCL.Shaders;
+using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;

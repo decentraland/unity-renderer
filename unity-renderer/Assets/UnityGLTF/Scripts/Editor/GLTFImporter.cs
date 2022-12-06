@@ -20,9 +20,7 @@ using Object = UnityEngine.Object;
 
 namespace UnityGLTF
 {
-
-    // Disabled because we are using gltfast now
-    //[ScriptedImporter(1, new[] { "glb", "gltf" })]
+    [ScriptedImporter(1, new[] { "glb", "gltf" })]
     public class GLTFImporter : ScriptedImporter
     {
         [SerializeField] private bool _removeEmptyRootObjects = true;

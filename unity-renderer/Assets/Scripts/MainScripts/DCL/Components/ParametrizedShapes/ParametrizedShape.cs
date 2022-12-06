@@ -91,7 +91,7 @@ namespace DCL.Components
             MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshRootGameObject.AddComponent<MeshRenderer>();
 
-            entity.meshesInfo.OverrideRenderers( new Renderer[] { meshRenderer });
+            entity.meshesInfo.renderers = new Renderer[] { meshRenderer };
             entity.meshesInfo.currentShape = this;
 
             meshFilter.sharedMesh = currentMesh;

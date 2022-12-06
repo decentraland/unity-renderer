@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -5,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
-using DCL.Shaders;
 
 namespace DCL.Components
 {

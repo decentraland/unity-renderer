@@ -8,8 +8,8 @@ namespace DCL
 {
     public class CollidersManager : Singleton<CollidersManager>
     {
-        private Dictionary<Collider, ColliderInfo> colliderInfo = new ();
-        private Dictionary<IDCLEntity, List<Collider>> collidersByEntity = new ();
+        private Dictionary<Collider, ColliderInfo> colliderInfo = new Dictionary<Collider, ColliderInfo>();
+        private Dictionary<IDCLEntity, List<Collider>> collidersByEntity = new Dictionary<IDCLEntity, List<Collider>>();
         private static CollidersManager instance = null;
 
         public static void Release()
@@ -64,23 +64,13 @@ namespace DCL
 
             ColliderInfo info = new ColliderInfo();
             info.entity = entity;
-            info.meshName = GetMeshName(collider);
+            info.meshName = collider.transform.parent != null ? collider.transform.parent.name : "";
             info.scene = entity.scene;
             AddOrUpdateColliderInfo(collider, info);
 
             // Note (Zak): avoid adding the event multiple times
             entity.OnCleanupEvent -= OnEntityCleanUpEvent;
             entity.OnCleanupEvent += OnEntityCleanUpEvent;
-        }
-
-        private static string GetMeshName(Collider collider)
-        {
-            string originalName = collider.transform.name.ToLower();
-
-            // Old GLTF
-            if (originalName.Contains("primitive")) { return collider.transform.parent != null ? collider.transform.parent.name : ""; }
-
-            return collider.transform.name;
         }
 
         void RemoveAllEntityColliders(IDCLEntity entity)
@@ -101,7 +91,7 @@ namespace DCL
         {
             dispatcher.OnCleanupEvent -= OnEntityCleanUpEvent;
 
-            RemoveAllEntityColliders((IDCLEntity)dispatcher);
+            RemoveAllEntityColliders((IDCLEntity) dispatcher);
         }
 
         public bool GetColliderInfo(Collider collider, out ColliderInfo info)
@@ -111,15 +101,15 @@ namespace DCL
                 info = colliderInfo[collider];
                 return true;
             }
-            else { info = new ColliderInfo(); }
+            else
+            {
+                info = new ColliderInfo();
+            }
 
             return false;
         }
 
-        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true)
-        {
-            ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
-        }
+        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true) { ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity); }
 
         public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, IDCLEntity entity = null, int colliderLayer = -1)
         {
@@ -141,14 +131,12 @@ namespace DCL
                 if (meshFilters[i].gameObject.layer == onClickLayer)
                     continue;
 
-                // NOTE(Kinerius): By design every collider shouldn't have a renderer, so if we detect it, we remove it,
-                // but this step should not be done on this domain, we should be able to remove this check safely in the future
                 if (filterByColliderName)
                 {
-                    if (!IsCollider(meshFilters[i].transform))
+                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
                         continue;
 
-                    // NOTE(Kinerius): This is dangerous and might cause some null references since some objects like MeshesInfo contains references to this
+                    // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
                     Object.Destroy(meshFilters[i].GetComponent<Renderer>());
                 }
 
@@ -164,7 +152,7 @@ namespace DCL
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
 
                     if (collider is MeshCollider)
-                        ((MeshCollider)collider).sharedMesh = meshFilters[i].sharedMesh;
+                        ((MeshCollider) collider).sharedMesh = meshFilters[i].sharedMesh;
 
                     if (entity != null)
                         AddOrUpdateEntityCollider(entity, collider);
@@ -179,14 +167,6 @@ namespace DCL
                         entity.meshesInfo.colliders.Add(collider);
                 }
             }
-        }
-
-        private static bool IsCollider(Transform transform)
-        {
-            bool transformName = transform.name.ToLower().Contains("_collider");
-            bool parentName = transform.parent.name.ToLower().Contains("_collider");
-
-            return parentName || transformName;
         }
     }
 }

@@ -43,6 +43,7 @@ namespace AvatarSystem
         /// Starts the loading process for the Avatar. 
         /// </summary>
         /// <param name="wearablesIds"></param>
+        /// <param name="emotesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)

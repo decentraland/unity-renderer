@@ -33,7 +33,6 @@ MonoBehaviour:
     - com.brunomikoski
     - com.demigiant
     - com.coffee.ui-particle
-    - com.atteneder.draco
     - com.madsbangh.easybuttons
     m_IsDefault: 0
     m_Capabilities: 0

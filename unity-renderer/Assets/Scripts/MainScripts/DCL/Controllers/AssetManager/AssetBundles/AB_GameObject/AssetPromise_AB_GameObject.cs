@@ -180,6 +180,7 @@ namespace DCL
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
+                assetBundleModelGO.transform.ResetLocalTRS();
 
                 yield return null;
 

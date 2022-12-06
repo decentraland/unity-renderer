@@ -1,5 +1,4 @@
 ﻿using DCL.Helpers;
-using DCL.Shaders;
 using UnityEngine;
 using UnityEngine.Rendering;
 

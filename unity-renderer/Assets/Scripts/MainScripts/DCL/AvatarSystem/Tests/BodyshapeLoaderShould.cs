@@ -6,7 +6,6 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using DCL.Shaders;
 using NSubstitute;
 using NSubstitute.Core.Arguments;
 using NSubstitute.Extensions;

@@ -6,7 +6,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
-using DCL.Shaders;
 using Object = UnityEngine.Object;
 
 namespace AvatarSystem

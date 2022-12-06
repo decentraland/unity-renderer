@@ -14,7 +14,6 @@ public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
     private MaterialPropertyBlock props;
 
     private IBIWGizmos gizmo = null;
-    private int baseColor = Shader.PropertyToID("_BaseColor");
 
     public void SetGizmo(IBIWGizmos parentGizmo) { gizmo = parentGizmo; }
 
@@ -27,7 +26,7 @@ public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
             return;
 
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(baseColor, highLightColor);
+        props.SetColor(ShaderUtils.BaseColor, highLightColor);
         objectRenderer.SetPropertyBlock(props);
     }
 
@@ -37,7 +36,7 @@ public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
             return;
 
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(baseColor, defaultColor);
+        props.SetColor(ShaderUtils.BaseColor, defaultColor);
         objectRenderer.SetPropertyBlock(props);
     }
 
@@ -45,7 +44,7 @@ public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
     {
         props = new MaterialPropertyBlock();
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(baseColor, defaultColor);
+        props.SetColor(ShaderUtils.BaseColor, defaultColor);
         objectRenderer.SetPropertyBlock(props);
     }
 }

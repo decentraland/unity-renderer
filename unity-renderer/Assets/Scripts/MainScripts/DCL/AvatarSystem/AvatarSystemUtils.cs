@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
-using DCL.Shaders;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -138,27 +137,22 @@ namespace AvatarSystem
                 if (!(r is SkinnedMeshRenderer renderer))
                     continue;
 
-                string name = "";
+                string parentName = renderer.transform.parent.name.ToLower();
 
-                // Note (Kinerius) Since GLTFast builds the GLTF differently, we use the renderer name instead
-                name = rendereable.isGLTFast ? renderer.name.ToLower() : renderer.transform.parent.name.ToLower();
-
-                if (name.Contains("head"))
+                if (parentName.Contains("head"))
                     head = renderer;
-                else if (name.Contains("ubody"))
+                else if (parentName.Contains("ubody"))
                     upperBody = renderer;
-                else if (name.Contains("lbody"))
+                else if (parentName.Contains("lbody"))
                     lowerBody = renderer;
-                else if (name.Contains("feet"))
+                else if (parentName.Contains("feet"))
                     feet = renderer;
-                else if (name.Contains("eyes"))
+                else if (parentName.Contains("eyes"))
                     eyes = renderer;
-                else if (name.Contains("eyebrows"))
+                else if (parentName.Contains("eyebrows"))
                     eyebrows = renderer;
-                else if (name.Contains("mouth"))
+                else if (parentName.Contains("mouth"))
                     mouth = renderer;
-                else
-                    Debug.LogWarning($"{name} is not a body part?", r);
             }
 
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
