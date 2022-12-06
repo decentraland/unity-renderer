@@ -19,8 +19,7 @@ MonoBehaviour:
   flagsThatDisableMe:
   - {fileID: 11400000, guid: c84c4299b3ff3884a8d875603332941b, type: 2}
   flagsThatDeactivateMe: []
-  flagsThatOverrideMe:
-  - {fileID: 11400000, guid: 6ff90422ad8bb824eb3afdbf79c1d2a0, type: 2}
+  flagsThatOverrideMe: []
   isBeta: 0
   sliderMinValue: 0
   sliderMaxValue: 24
