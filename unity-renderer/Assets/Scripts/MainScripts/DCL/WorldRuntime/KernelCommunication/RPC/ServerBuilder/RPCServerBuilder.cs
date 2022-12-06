@@ -26,6 +26,7 @@ namespace RPC
                    .RegisterService(CRDTServiceImpl.RegisterService)
                    .RegisterService(TransportServiceImpl.RegisterService)
                    .RegisterService(EmotesRendererServiceImpl.RegisterService)
+                   .RegisterService(SceneControllerServiceImpl.RegisterService)
                    .Build();
         }
 

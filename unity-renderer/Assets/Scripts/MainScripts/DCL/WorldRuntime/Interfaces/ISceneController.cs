@@ -17,6 +17,8 @@ namespace DCL
         void ActivateBuilderInWorldEditScene();
         void DeactivateBuilderInWorldEditScene();
         void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene);
+
+        void LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad);
         void UnloadScene(int sceneNumber);
         void LoadParcelScenes(string JSONScenePayload);
         void UpdateParcelScenes(string JSONScenePayload);
