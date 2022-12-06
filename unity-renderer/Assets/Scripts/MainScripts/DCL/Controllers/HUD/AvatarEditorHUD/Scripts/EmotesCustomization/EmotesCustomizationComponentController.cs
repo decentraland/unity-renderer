@@ -164,12 +164,12 @@ namespace DCL.EmotesCustomization
 
             if (!emote.ShowInBackpack())
                 return;
-            
+
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(emote);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
 
-            if (newEmote != null)
-                newEmote.SetAsLoading(true);
+            /*if (newEmote != null)
+                newEmote.SetAsLoading(true);*/
 
             if (!emotesInLoadingState.ContainsKey(emoteId))
                 emotesInLoadingState.Add(emoteId, newEmote);
