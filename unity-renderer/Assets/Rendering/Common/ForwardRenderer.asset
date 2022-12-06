@@ -59,7 +59,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -7551554940414059620}
   - {fileID: 4650022159256899313}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce335884328840
+  - {fileID: 7319655907194859546}
+  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288401a70703244a49465
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -108,3 +109,22 @@ MonoBehaviour:
     blurPasses: 3
     downsample: 6
     targetName: _blurTexture
+--- !u!114 &7319655907194859546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52e2e32e102e44abeb72209e7ce030c3, type: 3}
+  m_Name: NewBlurRTRF
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    blurMaterial: {fileID: 2100000, guid: a00afda211f274f6ca6cce958e4e13a5, type: 2}
+    blurPasses: 4
+    downSample: 3
+    renderPassEvent: 400
+    blurType: 1
