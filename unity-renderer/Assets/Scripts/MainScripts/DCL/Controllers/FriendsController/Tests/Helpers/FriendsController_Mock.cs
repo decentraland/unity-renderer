@@ -56,7 +56,11 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
-    public UniTask<List<FriendRequest>> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    {
+    }
+
+    public UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
     {
         return UniTask.FromResult(new List<FriendRequest>());
     }
@@ -85,7 +89,7 @@ public class FriendsController_Mock : IFriendsController
         return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
-    public UniTask<FriendRequest> RequestFriendship(string friendUserId, string messageBody)
+    public UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody)
     {
         if (!friends.ContainsKey(friendUserId))
             friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
@@ -93,7 +97,11 @@ public class FriendsController_Mock : IFriendsController
         return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
     }
 
-    public async UniTask<FriendRequest> CancelRequestByUserId(string friendUserId)
+    public void RequestFriendship(string friendUserId)
+    {
+    }
+
+    public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
@@ -101,7 +109,11 @@ public class FriendsController_Mock : IFriendsController
         return new FriendRequest(friendUserId, 0, "", "", "");
     }
 
-    public UniTask<FriendRequest> CancelRequest(string friendRequestId) =>
+    public void CancelRequestByUserId(string friendUserId)
+    {
+    }
+
+    public UniTask<FriendRequest> CancelRequestAsync(string friendRequestId) =>
         UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
 
     public void AcceptFriendship(string friendUserId)

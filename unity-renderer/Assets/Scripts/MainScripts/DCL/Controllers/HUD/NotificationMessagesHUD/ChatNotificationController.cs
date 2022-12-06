@@ -14,6 +14,7 @@ namespace DCL.Chat.Notifications
     public class ChatNotificationController : IHUD
     {
         private const int FADEOUT_DELAY = 8000;
+        private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
 
         private readonly DataStore dataStore;
         private readonly IChatController chatController;
@@ -31,6 +32,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
+        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
 
         public ChatNotificationController(DataStore dataStore,
             IMainChatNotificationsComponentView mainChatNotificationView,
@@ -166,6 +168,9 @@ namespace DCL.Chat.Notifications
 
         private void HandleFriendRequestAdded(FriendRequest friendRequest)
         {
+            if (!isNewFriendRequestsEnabled)
+                return;
+
             var ownUserProfile = userProfileBridge.GetOwn();
 
             if (friendRequest.From == ownUserProfile.userId ||

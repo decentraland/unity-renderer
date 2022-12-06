@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -101,7 +100,7 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.CancelRequest(friendRequestId)
+                await friendsController.CancelRequestAsync(friendRequestId)
                                        .Timeout(TimeSpan.FromSeconds(10));
                 if (cancellationToken.IsCancellationRequested) return;
 
@@ -120,7 +119,7 @@ namespace DCL.Social.Friends
 
         private void Hide()
         {
-            dataStore.HUDs.sendFriendRequest.Set(null, false);
+            dataStore.HUDs.openSentFriendRequestDetail.Set(null, false);
             view.Close();
         }
 

@@ -97,7 +97,7 @@ namespace DCL.Social.Friends
         {
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
-            friendsController.RequestFriendship(RECIPIENT_ID, Arg.Any<string>())
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
                              .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, bodyMessage)));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>(bodyMessage);
@@ -107,7 +107,7 @@ namespace DCL.Social.Friends
                            .SendFriendRequestSent(OWN_ID, RECIPIENT_ID, bodyMessage.Length,
                                 PlayerActionSource.Passport);
 
-            friendsController.Received(1).RequestFriendship(RECIPIENT_ID, bodyMessage);
+            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, bodyMessage);
             view.Received(1).ShowSendSuccess();
         }
 
@@ -117,7 +117,7 @@ namespace DCL.Social.Friends
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
-            friendsController.RequestFriendship(RECIPIENT_ID, Arg.Any<string>())
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>("hey");
@@ -125,7 +125,7 @@ namespace DCL.Social.Friends
 
             socialAnalytics.DidNotReceiveWithAnyArgs().SendFriendRequestSent(default, default, default, default);
             view.DidNotReceiveWithAnyArgs().ShowSendSuccess();
-            friendsController.Received(1).RequestFriendship(RECIPIENT_ID, "hey");
+            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey");
             view.Received(1).ShowSendFailed();
         }
     }

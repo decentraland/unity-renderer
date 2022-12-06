@@ -53,6 +53,9 @@ namespace DCl.Social.Friends
             view = Substitute.For<IFriendsHUDComponentView>();
             view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
             controller.Initialize(view);
+
+            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
         }
 
         [TearDown]
@@ -91,7 +94,7 @@ namespace DCl.Social.Friends
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
-            friendsController.Received(1).RequestFriendship(OTHER_USER_NAME, "");
+            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_NAME, "");
             socialAnalytics.Received(1)
                 .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_NAME, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
@@ -104,7 +107,7 @@ namespace DCl.Social.Friends
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
-            friendsController.Received(1).RequestFriendship(OTHER_USER_ID, "");
+            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_ID, "");
             socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
         }
@@ -146,7 +149,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -162,7 +165,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -266,7 +269,7 @@ namespace DCl.Social.Friends
 
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
-                .GetFriendRequests(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -376,7 +379,7 @@ namespace DCl.Social.Friends
 
             controller.SetVisibility(true);
 
-            friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]
@@ -387,7 +390,7 @@ namespace DCl.Social.Friends
 
             view.OnRequestListDisplayed += Raise.Event<Action>();
 
-            friendsController.Received(1).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]
@@ -469,7 +472,7 @@ namespace DCl.Social.Friends
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
-            friendsController.GetFriendRequests(30, 0, 30, 0);
+            friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]
@@ -530,7 +533,7 @@ namespace DCl.Social.Friends
             controller.SetVisibility(false);
             controller.SetVisibility(true);
 
-            friendsController.Received(2).GetFriendRequests(30, 0, 30, 0);
+            friendsController.Received(2).GetFriendRequestsAsync(30, 0, 30, 0);
         }
 
         [Test]

@@ -48,14 +48,18 @@ namespace DCL.Chat.Notifications
 
         public override void Show(bool Instant = false)
         {
-            showHideAnimator.animSpeedFactor = 0.7f;
+            if (showHideAnimator != null)
+                showHideAnimator.animSpeedFactor = 0.7f;
+
             base.Show(Instant);
             ForceUIRefresh();
         }
 
         public override void Hide(bool Instant = false)
         {
-            showHideAnimator.animSpeedFactor = 0.05f;
+            if (showHideAnimator != null)
+                showHideAnimator.animSpeedFactor = 0.05f;
+
             base.Hide(Instant);
         }
 

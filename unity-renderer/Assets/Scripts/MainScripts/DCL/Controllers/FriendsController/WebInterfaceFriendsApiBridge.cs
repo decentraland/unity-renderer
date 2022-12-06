@@ -16,6 +16,7 @@ namespace DCL.Social.Friends
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
         public event Action<AddFriendsPayload> OnFriendsAdded;
+        public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         public event Action<UserStatus> OnUserPresenceUpdated;
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
@@ -35,16 +36,10 @@ namespace DCL.Social.Friends
         public void AddFriends(string json) =>
             OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
 
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         [PublicAPI]
-        public void AddFriendRequests(string json)
-        {
-            var payload = JsonUtility.FromJson<AddFriendRequestsPayload>(json);
-            var messageId = payload.messageId;
-            if (!pendingRequests.ContainsKey(messageId)) return;
-            var task = (UniTaskCompletionSource<AddFriendRequestsPayload>)pendingRequests[messageId];
-            pendingRequests.Remove(messageId);
-            task.TrySetResult(payload);
-        }
+        public void AddFriendRequests(string json) =>
+            OnFriendRequestsAdded?.Invoke(JsonUtility.FromJson<AddFriendRequestsPayload>(json));
 
         [PublicAPI]
         public void AddFriendRequest(string json)
@@ -165,30 +160,34 @@ namespace DCL.Social.Friends
         public void GetFriends(string usernameOrId, int limit) =>
             WebInterface.GetFriends(usernameOrId, limit);
 
-        public UniTask<AddFriendRequestsPayload> GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
-            var task = new UniTaskCompletionSource<AddFriendRequestsPayload>();
-
-            // TODO: optimize unique id length for performance reasons
-            var messageId = Guid.NewGuid().ToString("N");
-            pendingRequests[messageId] = task;
-
             WebInterface.SendMessage("GetFriendRequests", new GetFriendRequestsPayload
             {
-                messageId = messageId,
-                sentLimit = sentLimit,
-                sentSkip = sentSkip,
+                receivedSkip = receivedSkip,
                 receivedLimit = receivedLimit,
-                receivedSkip = receivedSkip
+                sentSkip = sentSkip,
+                sentLimit = sentLimit
             });
-
-            return task.Task;
         }
+
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             WebInterface.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendship(string userId, string messageBody)
+        public void RequestFriendship(string friendUserId)
+        {
+            WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
+            {
+                action = WebInterface.FriendshipAction.REQUESTED_TO,
+                userId = friendUserId,
+            });
+        }
+
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody)
         {
             var task = new UniTaskCompletionSource<RequestFriendshipConfirmationPayload>();
 
@@ -206,7 +205,7 @@ namespace DCL.Social.Friends
             return task.Task;
         }
 
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequest(string friendRequestId)
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
         {
             var task = new UniTaskCompletionSource<CancelFriendshipConfirmationPayload>();
 
@@ -224,7 +223,7 @@ namespace DCL.Social.Friends
             return task.Task;
         }
 
-        public UniTask CancelRequestByUserId(string userId)
+        public UniTask CancelRequestByUserIdAsync(string userId)
         {
             var task = updatedFriendshipPendingRequests.ContainsKey(userId)
                 ? updatedFriendshipPendingRequests[userId]
@@ -239,6 +238,15 @@ namespace DCL.Social.Friends
             });
 
             return task.Task;
+        }
+
+        public void CancelRequestByUserId(string userId)
+        {
+            WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
+            {
+                userId = userId,
+                action = WebInterface.FriendshipAction.CANCELLED
+            });
         }
 
         public void AcceptFriendship(string userId)

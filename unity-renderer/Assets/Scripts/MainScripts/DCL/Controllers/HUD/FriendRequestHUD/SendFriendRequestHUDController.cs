@@ -79,7 +79,7 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.RequestFriendship(recipientId, messageBody)
+                await friendsController.RequestFriendshipAsync(recipientId, messageBody)
                                        .Timeout(TimeSpan.FromSeconds(10));
 
                 socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, recipientId, messageBody.Length,

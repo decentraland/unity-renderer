@@ -30,6 +30,8 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly BooleanVariable playerInfoCardVisibleState;
     private readonly List<string> loadedWearables = new List<string>();
     private readonly ISocialAnalytics socialAnalytics;
+
+    private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private double passportOpenStartTime = 0;
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
@@ -85,13 +87,25 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AddPlayerAsFriend()
     {
-        dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
-        dataStore.HUDs.sendFriendRequestSource.Set((int) PlayerActionSource.Passport);
+        if (isNewFriendRequestsEnabled)
+        {
+            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            dataStore.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.Passport);
+        }
+        else
+        {
+            friendsController.RequestFriendship(currentPlayerId);
+            socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+        }
     }
 
     private void CancelInvitation()
     {
-        friendsController.CancelRequestByUserId(currentPlayerId);
+        if (isNewFriendRequestsEnabled)
+            friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+        else
+            friendsController.CancelRequestByUserId(currentPlayerId);
+
         socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
