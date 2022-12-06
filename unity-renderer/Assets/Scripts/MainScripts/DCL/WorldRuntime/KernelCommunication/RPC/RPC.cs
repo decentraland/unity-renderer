@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using RPC;
 using rpc_csharp;
+using UnityEngine;
 
 namespace DCL
 {
@@ -9,6 +10,8 @@ namespace DCL
         private ClientEmotesKernelService emotes;
 
         private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
+
+        private RpcServer<RPCContext> rpcServer;
 
         public ClientEmotesKernelService Emotes() =>
             emotes;
@@ -35,11 +38,12 @@ namespace DCL
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.SceneController = Environment.i.world.sceneController;
 
-            RPCServerBuilder.BuildDefaultServer(context);
+            rpcServer = RPCServerBuilder.BuildDefaultServer(context);
         }
 
         public void Dispose()
         {
+            rpcServer.Dispose();
         }
     }
 }

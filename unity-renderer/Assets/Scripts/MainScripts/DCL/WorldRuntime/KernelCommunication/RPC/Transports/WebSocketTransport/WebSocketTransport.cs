@@ -44,6 +44,10 @@ namespace RPC.Transports
                 wsService.OnErrorEvent -= OnError;
                 wsService.OnCloseEvent -= OnClose;
             }
+            OnCloseEvent = null;
+            OnErrorEvent = null;
+            OnMessageEvent = null;
+            OnConnectEvent = null;
         }
 
         private void OnWebSocketServiceAdded(DCLWebSocketService service)
