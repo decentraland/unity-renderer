@@ -73,7 +73,7 @@ public class CursorController : MonoBehaviour
         if (gameObject.activeSelf)
         {
             if (alphaRoutine != null) StopCoroutine(alphaRoutine);
-            alphaRoutine = StartCoroutine(SetAlpha(0f, 1f, ALPHA_INTERPOLATION_DURATION));
+            alphaRoutine = StartCoroutine(SetAlpha(1f, ALPHA_INTERPOLATION_DURATION));
         }
     }
 
@@ -85,7 +85,8 @@ public class CursorController : MonoBehaviour
         if (gameObject.activeSelf)
         {
             if (alphaRoutine != null) StopCoroutine(alphaRoutine);
-            alphaRoutine = StartCoroutine(SetAlpha(1f, 0f, ALPHA_INTERPOLATION_DURATION,
+
+            alphaRoutine = StartCoroutine(SetAlpha(0f, ALPHA_INTERPOLATION_DURATION,
                 () => cursorImage.gameObject.SetActive(false)));
         }
         else
@@ -104,14 +105,19 @@ public class CursorController : MonoBehaviour
         cursorImage.SetNativeSize();
     }
 
-    private IEnumerator SetAlpha(float from, float to, float duration, Action callback = null)
+    private IEnumerator SetAlpha(float to, float duration, Action callback = null)
     {
+        var from = canvasGroup.alpha;
+
+        if (Math.Abs(from - to) < Mathf.Epsilon)
+            yield break;
+
         var time = 0f;
 
         while (time < duration)
         {
             time += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(from, to, time / duration);
+            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, to, time / duration);
             yield return null;
         }
 

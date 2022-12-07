@@ -82,7 +82,7 @@ MonoBehaviour:
   settings:
     deltaX: 0.001
     deltaY: 0.001
-    color: {r: 1, g: 0.89133024, b: 0, a: 1}
+    color: {r: 0.2509804, g: 0.8784314, b: 0.8156863, a: 1}
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
