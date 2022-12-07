@@ -30,7 +30,8 @@
 
             //#pragma multi_compile_fog
             
-            #include  "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            //#include  "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "UnityCG.cginc"
 
             // obj data     
             struct appdata
@@ -62,7 +63,7 @@
             v2f vert(appdata v)
             {
                 v2f v2_f;
-                v2_f.vertex = TransformObjectToHClip(v.vertex);
+                v2_f.vertex = UnityObjectToClipPos(v.vertex);
                 v2_f.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return v2_f;
             }
