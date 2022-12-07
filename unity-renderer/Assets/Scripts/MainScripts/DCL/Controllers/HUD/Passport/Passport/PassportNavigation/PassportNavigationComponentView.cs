@@ -48,10 +48,10 @@ namespace DCL.Social.Passports
 
         public void InitializeView()
         {
-            CleanEquippedWearables();
-            CleanWearables();
-            nftIconsEntryPool = GetNftIconEntryPool();
             nftPagesEntryPool = GetNftPagesEntryPool();
+            nftIconsEntryPool = GetNftIconEntryPool();
+            CleanWearables();
+            CleanEquippedWearables();
         }
 
         public void SetGuestUser(bool isGuest)
@@ -94,21 +94,24 @@ namespace DCL.Social.Passports
             }
         }
 
+        private List<GameObject> objs = new List<GameObject>();
+
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
+            nftWearablesCarousel.ResetCarousel();
+            nftWearablesCarousel.RemoveItems();
             List<BaseComponentView> pagesList = new List<BaseComponentView>();
             for (int i = 0; i < wearables.Length; i += 4)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
                 nftPagesPoolableQueue.Add(nftPagePoolElement);
                 nftPagePoolElement.gameObject.transform.SetParent(nftWearablesCarouselContent, false);
-
                 NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
 
                 NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
                 for (int j = 0; j < 4; j++)
                 {
-                    if (wearables[i + j] != null)
+                    if (wearables.Length > i + j && wearables[i + j] != null)
                     {
                         pageElements[j] = new ()
                         {
@@ -127,7 +130,11 @@ namespace DCL.Social.Passports
                     pagesList.Add(nftPageView);
                 }
             }
-            nftWearablesCarousel.SetItems(pagesList);
+
+            foreach (var page in pagesList)
+            {
+                nftWearablesCarousel.AddItem(page);
+            }
         }
 
         private void CLickOnBuyWearable(string wearableId)

@@ -31,17 +31,17 @@ namespace DCL.Social.Passports
 
         private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
-            string filteredName = await FilterContent(userProfile.userName);
+            string filteredName = await FilterContentAsync(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
             if (!userProfile.isGuest)
             {
-                string filteredDescription = await FilterContent(userProfile.description);
+                string filteredDescription = await FilterContentAsync(userProfile.description);
                 view.SetDescription(filteredDescription);
-                await LoadAndDisplayEquippedWearables(userProfile);
+                await LoadAndDisplayEquippedWearablesAsync(userProfile);
             }
         }
-        private async UniTask LoadAndDisplayEquippedWearables(UserProfile userProfile)
+        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
             foreach (var t in userProfile.avatar.wearables)
@@ -58,12 +58,10 @@ namespace DCL.Social.Passports
             }
         }
 
-        private async UniTask<string> FilterContent(string filterContent)
-        {
-            return IsProfanityFilteringEnabled()
+        private async UniTask<string> FilterContentAsync(string filterContent) =>
+            IsProfanityFilteringEnabled()
                 ? await profanityFilter.Filter(filterContent)
                 : filterContent;
-        }
 
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
