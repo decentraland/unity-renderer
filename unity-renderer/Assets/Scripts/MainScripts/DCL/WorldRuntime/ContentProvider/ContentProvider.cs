@@ -12,17 +12,14 @@ namespace DCL
         public static bool VERBOSE = false;
 
         public string baseUrl;
-        public List<MappingPair> contents = new List<MappingPair>();
-        public Dictionary<string, string> fileToHash = new Dictionary<string, string>();
+        public List<MappingPair> contents = new ();
+        public Dictionary<string, string> fileToHash = new ();
 
         public override string ToString()
         {
             string result = $"baseUrl: {baseUrl}\n";
 
-            foreach (var pair in contents)
-            {
-                result += $"file: {pair.file} ... hash: {pair.hash}\n";
-            }
+            foreach (var pair in contents) { result += $"file: {pair.file} ... hash: {pair.hash}\n"; }
 
             return result;
         }
@@ -38,10 +35,7 @@ namespace DCL
 
         public MappingPair GetMappingForHash(string hash)
         {
-            if (contents == null)
-            {
-                return null;
-            }
+            if (contents == null) { return null; }
 
             return contents.FirstOrDefault((x) => x.hash == hash);
         }
@@ -49,45 +43,34 @@ namespace DCL
         //todo: thread this
         public void BakeHashes()
         {
-            if (contents == null)
-            {
-                return;
-            }
+            if (contents == null) { return; }
 
-            if (VERBOSE)
-            {
-                Debug.Log("Baking hashes...");
-            }
+            if (VERBOSE) { Debug.Log("Baking hashes..."); }
 
-            if (fileToHash == null)
-            {
-                fileToHash = new Dictionary<string, string>(contents.Count);
-            }
+            if (fileToHash == null) { fileToHash = new Dictionary<string, string>(contents.Count); }
 
             for (int i = 0; i < contents.Count; i++)
             {
                 MappingPair m = contents[i];
                 var key = m.file.ToLower();
+
                 if (fileToHash.ContainsKey(key))
                 {
                     Debug.Log($"Hash key: {key} already exists in the map");
                     continue;
                 }
+
                 fileToHash.Add(key, m.hash);
 
-                if (VERBOSE)
-                {
-                    Debug.Log($"found file = {m.file} ... hash = {m.hash}\nfull url = {baseUrl}\\{m.hash}");
-                }
+                if (VERBOSE) { Debug.Log($"found file = {m.file} ... hash = {m.hash}\nfull url = {baseUrl}\\{m.hash}"); }
             }
         }
 
         public virtual bool HasContentsUrl(string url)
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                return false;
-            }
+            url = url.ToLower();
+
+            if (string.IsNullOrEmpty(url)) { return false; }
 
 #if UNITY_EDITOR
             if (HasTestSchema(url))
@@ -95,22 +78,17 @@ namespace DCL
                 return true;
             }
 #endif
-            if (fileToHash == null)
-            {
-                return false;
-            }
+            if (fileToHash == null) { return false; }
 
-            return fileToHash.ContainsKey(url.ToLower());
+            return fileToHash.ContainsKey(url);
         }
 
         public virtual string GetContentsUrl(string url)
         {
             string result = "";
+            url = url.ToLower();
 
-            if (TryGetContentsUrl(url, out result))
-            {
-                return result;
-            }
+            if (TryGetContentsUrl(url, out result)) { return result; }
 
             return null;
         }
@@ -136,10 +114,7 @@ namespace DCL
 
                 result = fileToHash[url];
             }
-            else
-            {
-                result = url;
-            }
+            else { result = url; }
 
             return true;
         }
@@ -149,36 +124,30 @@ namespace DCL
             url = url.ToLower();
             result = url;
 
-            if (HasTestSchema(url))
-            {
-                return true;
-            }
+            if (HasTestSchema(url)) { return true; }
 
             if (fileToHash != null)
             {
                 if (!fileToHash.ContainsKey(url))
                 {
-                    Debug.LogError($"GetContentsUrl >>> File {url} not found!!!");
+                    if (VERBOSE) { Debug.LogError($"GetContentsUrl >>> File {url} not found!!!"); }
+
                     return false;
                 }
 
                 result = baseUrl + fileToHash[url];
             }
-            else
-            {
-                result = baseUrl + url;
-            }
+            else { result = baseUrl + url; }
 
-            if (VERBOSE)
-            {
-                Debug.Log($"GetContentsURL >>> from ... {url} ... RESULTING URL... = {result}");
-            }
+            if (VERBOSE) { Debug.Log($"GetContentsURL >>> from ... {url} ... RESULTING URL... = {result}"); }
 
             return true;
         }
 
         public bool HasTestSchema(string url)
         {
+            url = url.ToLower();
+
 #if UNITY_EDITOR
             if (url.StartsWith("file://"))
             {
@@ -195,6 +164,7 @@ namespace DCL
 
         public bool TryGetContentHash(string file, out string result)
         {
+            file = file.ToLower();
             result = string.Empty;
 
             if (fileToHash == null)
@@ -203,10 +173,7 @@ namespace DCL
                 return true;
             }
 
-            if (fileToHash.TryGetValue(file.ToLower(), out result))
-            {
-                return true;
-            }
+            if (fileToHash.TryGetValue(file.ToLower(), out result)) { return true; }
 
             return false;
         }

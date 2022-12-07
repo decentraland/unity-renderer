@@ -30,9 +30,8 @@ namespace DCL.ECSComponents {
             "VEVSEAESEQoNVEFNX1RPUF9SSUdIVBACEhMKD1RBTV9NSURETEVfTEVGVBAD",
             "EhUKEVRBTV9NSURETEVfQ0VOVEVSEAQSFAoQVEFNX01JRERMRV9SSUdIVBAF",
             "EhMKD1RBTV9CT1RUT01fTEVGVBAGEhUKEVRBTV9CT1RUT01fQ0VOVEVSEAcS",
-            "FAoQVEFNX0JPVFRPTV9SSUdIVBAIKi8KBEZvbnQSFQoRRl9MSUJFUkFUSU9O",
-            "X1NBTlMQABIQCgxGX1NBTlNfU0VSSUYQAUIUqgIRRENMLkVDU0NvbXBvbmVu",
-            "dHNiBnByb3RvMw=="));
+            "FAoQVEFNX0JPVFRPTV9SSUdIVBAIKhgKBEZvbnQSEAoMRl9TQU5TX1NFUklG",
+            "EABCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextAlignMode), typeof(global::DCL.ECSComponents.Font), }, null, null));
@@ -54,8 +53,7 @@ namespace DCL.ECSComponents {
   }
 
   public enum Font {
-    [pbr::OriginalName("F_LIBERATION_SANS")] FLiberationSans = 0,
-    [pbr::OriginalName("F_SANS_SERIF")] FSansSerif = 1,
+    [pbr::OriginalName("F_SANS_SERIF")] FSansSerif = 0,
   }
 
   #endregion
