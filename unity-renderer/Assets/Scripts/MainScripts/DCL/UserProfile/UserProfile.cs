@@ -48,7 +48,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar = new AvatarModel()
     };
 
-    private int emoteLamportTimestamp = 0;
+    private int emoteLamportTimestamp = 1;
 
     public void UpdateData(UserProfileModel newModel)
     {
@@ -111,7 +111,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerTimestamp = timestamp;
 
         ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
-        
+
         // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
