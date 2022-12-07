@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -22,7 +23,7 @@ namespace DCL
 
         /// <summary>
         /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.<br/>
-        /// 
+        ///
         /// Each CombineLayer element represents a combining group, and the renderers are grouped using a set of criteria.<br/>
         ///
         /// <ul>
@@ -59,22 +60,23 @@ namespace DCL
             }
 
             // No valid materials were found
-            if ( result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
+            if (result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
             {
                 logger.Log("Slice End Fail!");
                 return null;
             }
 
-            result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
+            result = result.Where(x => x.renderers != null && x.renderers.Count > 0).ToList();
 
-            if ( VERBOSE )
+            if (VERBOSE)
             {
                 int layInd = 0;
-                foreach ( var layer in result )
+
+                foreach (var layer in result)
                 {
                     string rendererNames = layer.renderers
-                        .Select( (x) => $"{x.transform.parent.name}" )
-                        .Aggregate( (i, j) => i + "\n" + j);
+                                                .Select((x) => $"{x.transform.parent.name}")
+                                                .Aggregate((i, j) => i + "\n" + j);
 
                     logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
                     layInd++;
@@ -99,7 +101,7 @@ namespace DCL
         /// <returns>A list that at least is guaranteed to contain the given layer.
         /// If the given layer exceeds the max texture count, more than a layer can be returned.
         /// </returns>
-        internal static List<CombineLayer> SubsliceLayerByTextures( CombineLayer layer )
+        internal static List<CombineLayer> SubsliceLayerByTextures(CombineLayer layer)
         {
             var result = new List<CombineLayer>();
             int textureId = 0;
@@ -111,7 +113,7 @@ namespace DCL
             {
                 var r = layer.renderers[rendererIndex];
 
-                if ( shouldAddLayerToResult )
+                if (shouldAddLayerToResult)
                 {
                     shouldAddLayerToResult = false;
                     textureId = 0;
@@ -130,7 +132,7 @@ namespace DCL
                 var mapIdsToInsert = GetMapIds(
                     new ReadOnlyDictionary<Texture2D, int>(currentResultLayer.textureToId),
                     mats,
-                    textureId );
+                    textureId);
 
                 // The renderer is too big to fit in a single layer? (This should never happen).
                 if (mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
@@ -142,7 +144,7 @@ namespace DCL
 
                 // The renderer can fit in a single layer.
                 // But can't fit in this one, as previous renderers filled this layer out.
-                if ( textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT )
+                if (textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
                 {
                     rendererIndex--;
                     shouldAddLayerToResult = true;
@@ -150,22 +152,16 @@ namespace DCL
                 }
 
                 // put GetMapIds result into currentLayer id map.
-                foreach ( var kvp in mapIdsToInsert )
-                {
-                    currentResultLayer.textureToId[ kvp.Key ] = kvp.Value;
-                }
+                foreach (var kvp in mapIdsToInsert) { currentResultLayer.textureToId[kvp.Key] = kvp.Value; }
 
                 currentResultLayer.renderers.Add(r);
 
                 textureId += mapIdsToInsert.Count;
 
-                if ( textureId >= MAX_TEXTURE_ID_COUNT )
-                {
-                    shouldAddLayerToResult = true;
-                }
+                if (textureId >= MAX_TEXTURE_ID_COUNT) { shouldAddLayerToResult = true; }
             }
 
-            if ( VERBOSE )
+            if (VERBOSE)
             {
                 for (int i = 0; i < result.Count; i++)
                 {
@@ -194,27 +190,21 @@ namespace DCL
             List<CombineLayer> result = new List<CombineLayer>();
 
             // Group renderers on opaque and transparent materials
-            var rendererByOpaqueMode = renderers.GroupBy( IsOpaque );
+            var rendererByOpaqueMode = renderers.GroupBy(IsOpaque);
 
             // Then, make subgroups to divide them between culling modes
-            foreach ( var byOpaqueMode in rendererByOpaqueMode )
+            foreach (var byOpaqueMode in rendererByOpaqueMode)
             {
                 // For opaque renderers, we replace the CullOff value by CullBack to reduce group count,
-                // This workarounds many opaque wearables that use Culling Off by mistake. 
+                // This workarounds many opaque wearables that use Culling Off by mistake.
                 Func<SkinnedMeshRenderer, CullMode> getCullModeFunc = null;
 
-                if ( ENABLE_CULL_OPAQUE_HEURISTIC )
-                {
-                    getCullModeFunc = byOpaqueMode.Key ? new Func<SkinnedMeshRenderer, CullMode>(GetCullModeWithoutCullOff) : GetCullMode;
-                }
-                else
-                {
-                    getCullModeFunc = GetCullMode;
-                }
+                if (ENABLE_CULL_OPAQUE_HEURISTIC) { getCullModeFunc = byOpaqueMode.Key ? new Func<SkinnedMeshRenderer, CullMode>(GetCullModeWithoutCullOff) : GetCullMode; }
+                else { getCullModeFunc = GetCullMode; }
 
-                var rendererByCullingMode = byOpaqueMode.GroupBy( getCullModeFunc );
+                var rendererByCullingMode = byOpaqueMode.GroupBy(getCullModeFunc);
 
-                foreach ( var byCulling in rendererByCullingMode )
+                foreach (var byCulling in rendererByCullingMode)
                 {
                     var byCullingRenderers = byCulling.ToList();
 
@@ -238,7 +228,7 @@ namespace DCL
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="refDict"></param>
         /// <param name="mats"></param>
@@ -248,21 +238,21 @@ namespace DCL
         {
             var result = new Dictionary<Texture2D, int>();
 
-            for ( int i = 0; i < mats.Length; i++ )
+            for (int i = 0; i < mats.Length; i++)
             {
                 var mat = mats[i];
 
                 if (mat == null)
                     continue;
 
-                for ( int texIdIndex = 0; texIdIndex < textureIds.Length; texIdIndex++ )
+                for (int texIdIndex = 0; texIdIndex < textureIds.Length; texIdIndex++)
                 {
                     var texture = (Texture2D)mat.GetTexture(textureIds[texIdIndex]);
 
-                    if ( texture == null )
+                    if (texture == null)
                         continue;
 
-                    if ( refDict.ContainsKey(texture) || result.ContainsKey(texture) )
+                    if (refDict.ContainsKey(texture) || result.ContainsKey(texture))
                         continue;
 
                     result.Add(texture, startingId);
@@ -283,8 +273,12 @@ namespace DCL
             if (material == null)
                 return true;
 
-            bool isTransparent = material.HasProperty(ShaderUtils.ZWrite) &&
-                                 (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
+            bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+
+            // NOTE(Kinerius): Since GLTFast materials doesn't have ZWrite property, we check if the shader name is opaque instead
+            bool hasOpaqueName = material.shader.name.ToLower().Contains("opaque");
+
+            bool isTransparent = (!hasZWrite && !hasOpaqueName) || (hasZWrite && (int)material.GetFloat(ShaderUtils.ZWrite) == 0);
 
             return !isTransparent;
         }
@@ -294,24 +288,29 @@ namespace DCL
         /// </summary>
         /// <param name="renderer">Renderer to be checked.</param>
         /// <returns>True if its opaque</returns>
-        internal static bool IsOpaque(Renderer renderer)
-        {
-            return IsOpaque(renderer.sharedMaterials[0]);
-        }
+        internal static bool IsOpaque(Renderer renderer) => IsOpaque(renderer.sharedMaterials[0]);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="material"></param>
         /// <returns></returns>
         internal static CullMode GetCullMode(Material material)
         {
-            CullMode result = (CullMode)material.GetInt( ShaderUtils.Cull );
-            return result;
+            if (material.HasProperty(ShaderUtils.Cull))
+            {
+                CullMode result = (CullMode)material.GetInt(ShaderUtils.Cull);
+                return result;
+            }
+
+            // GLTFast materials dont have culling, instead they have the "Double Sided" check toggled on "double" suffixed shaders
+            if (material.shader.name.Contains("double")) { return CullMode.Off; }
+
+            return CullMode.Back;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="renderer"></param>
         /// <returns></returns>
@@ -321,7 +320,7 @@ namespace DCL
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="renderer"></param>
         /// <returns></returns>
