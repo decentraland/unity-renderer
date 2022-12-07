@@ -87,6 +87,8 @@ GameObject:
   - component: {fileID: 4432189254118100000}
   - component: {fileID: 3265704554849735251}
   - component: {fileID: 5978834434199400974}
+  - component: {fileID: 3164752529904213679}
+  - component: {fileID: 2736437983993711136}
   m_Layer: 5
   m_Name: TextPopup
   m_TagString: Untagged
@@ -154,6 +156,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2.38
+--- !u!225 &3164752529904213679
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5779547269933455548}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2736437983993711136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5779547269933455548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 1
+  canvasGroup: {fileID: 3164752529904213679}
 --- !u!1 &6126377801761149662
 GameObject:
   m_ObjectHideFlags: 0
