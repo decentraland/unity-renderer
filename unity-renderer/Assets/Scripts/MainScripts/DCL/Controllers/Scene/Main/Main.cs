@@ -48,7 +48,7 @@ namespace DCL
             WebInterfaceFriendsApiBridge newFriendRequestsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
             newFriendRequestsApiBridgeMock = new NewFriendRequestsApiBridgeMock(newFriendRequestsApiBridge, new UserProfileWebInterfaceBridge());
             FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
-                new RPCFriendsApiBridge(Environment.i.serviceLocator.Get<IRPC>(), newFriendRequestsApiBridge),
+                RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), newFriendRequestsApiBridge),
                 newFriendRequestsApiBridgeMock, DataStore.i));
 
             if (!EnvironmentSettings.RUNNING_TESTS)

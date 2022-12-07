@@ -1,13 +1,19 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Social.Friends;
+using JetBrains.Annotations;
+using RPC;
+using rpc_csharp;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace DCl.Social.Friends
 {
-    public class RPCFriendsApiBridge : IFriendsApiBridge
+    public class RPCFriendsApiBridge : IFriendsApiBridge, IFriendRequestRendererService<RPCContext>
     {
+        private static RPCFriendsApiBridge i;
+
         private readonly IRPC rpc;
         private readonly IFriendsApiBridge fallbackApiBridge;
 
@@ -65,10 +71,17 @@ namespace DCl.Social.Friends
             remove => fallbackApiBridge.OnTotalFriendCountUpdated -= value;
         }
 
-        public event Action<FriendRequestPayload> OnFriendRequestAdded
+        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+
+        public static RPCFriendsApiBridge CreateSharedInstance(IRPC rpc, IFriendsApiBridge fallbackApiBridge)
         {
-            add => fallbackApiBridge.OnFriendRequestAdded += value;
-            remove => fallbackApiBridge.OnFriendRequestAdded -= value;
+            i = new RPCFriendsApiBridge(rpc, fallbackApiBridge);
+            return i;
+        }
+
+        public static void RegisterService(RpcServerPort<RPCContext> port)
+        {
+            FriendRequestRendererServiceCodeGen.RegisterService(port, i);
         }
 
         public RPCFriendsApiBridge(IRPC rpc, IFriendsApiBridge fallbackApiBridge)
@@ -165,7 +178,24 @@ namespace DCl.Social.Friends
         public void AcceptFriendship(string userId) =>
             fallbackApiBridge.AcceptFriendship(userId);
 
+        [PublicAPI]
+        public UniTask<AddFriendRequestReply> AddFriendRequest(AddFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        {
+            OnFriendRequestAdded?.Invoke(ToFriendRequestPayload(request));
+            return UniTask.FromResult(new AddFriendRequestReply());
+        }
+
         private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>
+            new FriendRequestPayload
+            {
+                from = request.From,
+                timestamp = (long)request.Timestamp,
+                to = request.To,
+                messageBody = request.MessageBody,
+                friendRequestId = request.FriendRequestId
+            };
+
+        private FriendRequestPayload ToFriendRequestPayload(AddFriendRequestPayload request) =>
             new FriendRequestPayload
             {
                 from = request.From,
