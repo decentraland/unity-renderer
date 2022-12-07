@@ -110,8 +110,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
-
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().Emotes();
         // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
