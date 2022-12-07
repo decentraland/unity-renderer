@@ -23,8 +23,9 @@
              "LightMode" = "UniversalForward"
              }
             
-            // cg program
-            CGPROGRAM
+            // HLSL program            
+            HLSLPROGRAM
+            
             #pragma vertex vert
             #pragma fragment frag
 
@@ -87,8 +88,8 @@
                 
                 return coloration;
             }
-            
-            ENDCG
+                        
+            ENDHLSL
         }
     }
 }
