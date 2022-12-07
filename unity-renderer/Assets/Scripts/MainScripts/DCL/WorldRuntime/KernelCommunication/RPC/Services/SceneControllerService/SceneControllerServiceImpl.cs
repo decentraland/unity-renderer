@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
+using DCL.CRDT;
 using DCL.Models;
 using rpc_csharp;
 using System;
@@ -22,7 +24,7 @@ namespace RPC.Services
 
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log("SceneControllerServiceImpl.LoadScene() - " + request.Entity.Metadata);
+            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - {request.Entity.Metadata}");
 
             List<ContentServerUtils.MappingPair> parsedContent = new List<ContentServerUtils.MappingPair>();
             for (var i = 0; i < request.Entity.Content.Count; i++)
@@ -40,9 +42,7 @@ namespace RPC.Services
             for (int i = 0; i < parsedMetadata.scene.parcels.Length; i++)
             {
                 parsedParcels[i] = Utils.StringToVector2Int(parsedMetadata.scene.parcels[i]);
-                // Debug.Log("original parcel: " + parsedMetadata.scene.parcels[i] + "; parsed: " + parsedParcels[i]);
             }
-            // Debug.Log("original base: " + parsedMetadata.scene.@base + "; parsed: " + Utils.StringToVector2Int(parsedMetadata.scene.@base));
 
             LoadParcelScenesMessage.UnityParcelScene unityParcelScene = new LoadParcelScenesMessage.UnityParcelScene()
             {
@@ -56,29 +56,106 @@ namespace RPC.Services
                 contents = parsedContent
             };
 
+            await UniTask.SwitchToMainThread(ct);
+
             context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
 
-            // TODO: bind this result to a real 'Success' value
+            // TODO: bind this result to a real 'Success' value ?
             LoadSceneResult result = new LoadSceneResult() { Success = true };
-
             return result;
         }
 
         public async UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log("SceneControllerServiceImpl.UnloadScene()");
+            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - ");
             throw new NotImplementedException();
         }
 
         public async UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log("SceneControllerServiceImpl.SendCrdt()");
+            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.SendCrdt() - {request.Payload}");
+
+            // var deserializedMessage = DCL.CRDT.CRDTDeserializer.DeserializeSingle(request.Payload.Memory)
+            try
+            {
+                using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
+                {
+                    while (iterator.MoveNext())
+                    {
+                        if (!(iterator.Current is CRDTMessage crdtMessage))
+                        {
+                            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.SendCrdt() - Skipped NON crdtMessage...");
+                            continue;
+                        }
+
+                        Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.SendCrdt() - PARSED crdtMessage... {crdtMessage.key1}");
+
+                        // context.crdt.CrdtMessageReceived?.Invoke(request.SceneNumber, crdtMessage);
+                    }
+                }
+
+                // if (context.crdt.WorldState.TryGetScene(request.SceneNumber, out IParcelScene scene))
+                // {
+                //     // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                //     // kernel won't be sending that message for those scenes
+                //     if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                //     {
+                //         scene.MarkInitMessagesDone();
+                //     }
+                // }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
+            // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
+            // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
+            /*await UniTask.WaitUntil(() => context.crdt.MessagingControllersManager.ContainsController(messages.SceneNumber),
+                cancellationToken: ct);
+
+            await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
+                cancellationToken: ct);
+
+            await UniTask.SwitchToMainThread(ct);
+
+            try
+            {
+                using (var iterator = CRDTDeserializer.DeserializeBatch(messages.Payload.Memory))
+                {
+                    while (iterator.MoveNext())
+                    {
+                        if (!(iterator.Current is CRDTMessage crdtMessage))
+                            continue;
+
+                        context.crdt.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
+                    }
+                }
+
+                if (context.crdt.WorldState.TryGetScene(messages.SceneNumber, out IParcelScene scene))
+                {
+                    // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                    // kernel won't be sending that message for those scenes
+                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                    {
+                        scene.MarkInitMessagesDone();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
+            CRDTSceneMessage defaultResponse = new CRDTSceneMessage();
+            return defaultResponse;*/
+
             throw new NotImplementedException();
         }
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log("SceneControllerServiceImpl.GetCurrentState()");
+            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.GetCurrentState() - ");
             throw new NotImplementedException();
         }
     }
