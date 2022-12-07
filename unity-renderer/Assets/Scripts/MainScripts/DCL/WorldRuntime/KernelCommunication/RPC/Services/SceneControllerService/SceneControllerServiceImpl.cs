@@ -17,6 +17,8 @@ namespace RPC.Services
         // HACK: Until we fix the code generator, we must replace all 'Decentraland.Common.Entity' for 'DCL.ECSComponents.Entity' in RpcSceneController.gen.cs
         // to be able to access request.Entity properties.
 
+        private int sceneNumber = -1;
+
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl());
@@ -25,6 +27,8 @@ namespace RPC.Services
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
         {
             Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - {request.Entity.Metadata}");
+
+            sceneNumber = request.SceneNumber;
 
             List<ContentServerUtils.MappingPair> parsedContent = new List<ContentServerUtils.MappingPair>();
             for (var i = 0; i < request.Entity.Content.Count; i++)
@@ -46,7 +50,7 @@ namespace RPC.Services
 
             LoadParcelScenesMessage.UnityParcelScene unityParcelScene = new LoadParcelScenesMessage.UnityParcelScene()
             {
-                sceneNumber = request.SceneNumber,
+                sceneNumber = this.sceneNumber,
                 id = request.Entity.Id,
                 sdk7 = request.Sdk7,
                 baseUrl = request.BaseUrl,
@@ -57,7 +61,6 @@ namespace RPC.Services
             };
 
             await UniTask.SwitchToMainThread(ct);
-
             context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
 
             // TODO: bind this result to a real 'Success' value ?
@@ -65,10 +68,15 @@ namespace RPC.Services
             return result;
         }
 
+        private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
         public async UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - ");
-            throw new NotImplementedException();
+            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - scene number: {sceneNumber}");
+
+            await UniTask.SwitchToMainThread(ct);
+            context.crdt.SceneController.UnloadScene(sceneNumber);
+
+            return defaultUnloadSceneResult;
         }
 
         public async UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request, RPCContext context, CancellationToken ct)
