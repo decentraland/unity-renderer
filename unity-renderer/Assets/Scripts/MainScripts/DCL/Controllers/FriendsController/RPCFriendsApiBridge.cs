@@ -137,8 +137,21 @@ namespace DCl.Social.Friends
                 : throw new FriendshipException(ToErrorCode(reply.Error));
         }
 
-        UniTask<CancelFriendshipConfirmationPayload> IFriendsApiBridge.CancelRequestAsync(string friendRequestId) =>
-            fallbackApiBridge.CancelRequestAsync(friendRequestId);
+        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
+        {
+            CancelFriendRequestReply reply = await rpc.FriendRequests()
+                                                      .CancelFriendRequest(new CancelFriendRequestPayload
+                                                       {
+                                                           FriendRequestId = friendRequestId
+                                                       });
+
+            return reply.MessageCase == CancelFriendRequestReply.MessageOneofCase.Reply
+                ? new CancelFriendshipConfirmationPayload
+                {
+                    friendRequest = ToFriendRequestPayload(reply.Reply.FriendRequest),
+                }
+                : throw new FriendshipException(ToErrorCode(reply.Error));
+        }
 
         public UniTask CancelRequestByUserIdAsync(string userId) =>
             fallbackApiBridge.CancelRequestByUserIdAsync(userId);
