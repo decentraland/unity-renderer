@@ -919,9 +919,21 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2747618356799222513}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3923741239173063833 stripped
+--- !u!114 &3655070267084473585 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1484194859298698752, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2747618356799222513}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &3694001066695700219 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1176122886669866600, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+  m_CorrespondingSourceObject: {fileID: 1540858002546072586, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
     type: 3}
   m_PrefabInstance: {fileID: 2747618356799222513}
   m_PrefabAsset: {fileID: 0}
@@ -948,7 +960,8 @@ MonoBehaviour:
   title: {fileID: 3098883645285078388}
   titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 6101253936429729321}
-  infoButton: {fileID: 3923741239173063833}
+  infoButton: {fileID: 3655070267084473585}
+  tooltip: {fileID: 3694001066695700219}
   valueLabels:
   - {fileID: 4295868929499238043}
   valueLabelDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}

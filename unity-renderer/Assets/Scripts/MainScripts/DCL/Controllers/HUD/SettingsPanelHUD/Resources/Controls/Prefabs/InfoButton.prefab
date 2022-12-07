@@ -87,10 +87,9 @@ GameObject:
   - component: {fileID: 4432189254118100000}
   - component: {fileID: 3265704554849735251}
   - component: {fileID: 5978834434199400974}
-  - component: {fileID: 3164752529904213679}
-  - component: {fileID: 2736437983993711136}
+  - component: {fileID: 1297642136885283808}
   m_Layer: 5
-  m_Name: TextPopup
+  m_Name: Tooltip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,19 +155,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2.38
---- !u!225 &3164752529904213679
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5779547269933455548}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
---- !u!114 &2736437983993711136
+--- !u!114 &1297642136885283808
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,13 +164,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5779547269933455548}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Script: {fileID: 11500000, guid: c022d54a6c71c5241b36a088e8e54e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 0
-  animSpeedFactor: 1
-  disableAfterFadeOut: 1
-  canvasGroup: {fileID: 3164752529904213679}
 --- !u!1 &6126377801761149662
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +180,9 @@ GameObject:
   - component: {fileID: 4546374392389933694}
   - component: {fileID: 6256746630800988316}
   - component: {fileID: 2095740548048936042}
+  - component: {fileID: 5895144781957329590}
+  - component: {fileID: 4360500077839491310}
+  - component: {fileID: 3901435480581905895}
   m_Layer: 5
   m_Name: InfoButton
   m_TagString: Untagged
@@ -306,19 +292,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4546374392389933694}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5779547269933455548}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2095740548048936042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,6 +309,53 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
+--- !u!114 &5895144781957329590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6126377801761149662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 3901435480581905895}
+  button: {fileID: 6256746630800988316}
+  text: {fileID: 0}
+  icon: {fileID: 0}
+  model:
+    text: 
+    icon: {fileID: 0}
+--- !u!225 &4360500077839491310
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6126377801761149662}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &3901435480581905895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6126377801761149662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 4360500077839491310}
 --- !u!1 &8274121325247285239
 GameObject:
   m_ObjectHideFlags: 0
