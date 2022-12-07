@@ -112,12 +112,9 @@ public class CursorController : MonoBehaviour
         if (Math.Abs(from - to) < Mathf.Epsilon)
             yield break;
 
-        var time = 0f;
-
-        while (time < duration)
+        while (Math.Abs(canvasGroup.alpha - to) < Mathf.Epsilon)
         {
-            time += Time.deltaTime;
-            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, to, time / duration);
+            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, to, Time.deltaTime * duration);
             yield return null;
         }
 
