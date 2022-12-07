@@ -60,14 +60,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Alpha: 0.95
+    - _Alpha: 1
     - _BUILTIN_QueueControl: -1
     - _BUILTIN_QueueOffset: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _isActive: 1
     m_Colors:
-    - _Color: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 1}
+    - _Color: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4892027321069169373
 MonoBehaviour:
