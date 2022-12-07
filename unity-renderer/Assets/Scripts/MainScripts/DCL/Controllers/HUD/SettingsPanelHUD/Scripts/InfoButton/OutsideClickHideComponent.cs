@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 namespace DCL.Controllers.HUD.SettingsPanelHUD
 {
     /// <summary>
-    /// Hide gameObject, when user clicks outside of it
+    /// Hide gameObject when user clicks outside of it
     /// </summary>
     public class OutsideClickHideComponent : MonoBehaviour, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler
     {

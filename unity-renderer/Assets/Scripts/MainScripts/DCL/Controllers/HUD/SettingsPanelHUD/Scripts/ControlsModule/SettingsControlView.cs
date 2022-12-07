@@ -1,6 +1,7 @@
 using DCL.SettingsCommon;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsPanelHUD.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -24,7 +25,8 @@ namespace DCL.SettingsPanelHUD.Controls
 
         [Space]
         [SerializeField] private GameObject betaIndicator;
-        [SerializeField] private GameObject infoButton;
+        [SerializeField] private ButtonComponentView infoButton;
+        [SerializeField] private GameObject tooltip;
 
         [Space]
         [SerializeField] private List<TextMeshProUGUI> valueLabels;
@@ -53,7 +55,8 @@ namespace DCL.SettingsPanelHUD.Controls
             this.settingsControlController.Initialize();
 
             betaIndicator.SetActive(model.isBeta);
-            infoButton.SetActive(false);
+            infoButton.gameObject.SetActive(false);
+            infoButton.onClick.AddListener(() => tooltip.SetActive(true));
 
             title.text = model.title;
             originalTitleColor = title.color;
@@ -94,6 +97,8 @@ namespace DCL.SettingsPanelHUD.Controls
                 foreach (BooleanVariable flag in controlConfig.flagsThatOverrideMe)
                     flag.OnChange -= OnAnyOverrideFlagChange;
             }
+
+            infoButton.onClick.RemoveAllListeners();
 
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
@@ -147,7 +152,7 @@ namespace DCL.SettingsPanelHUD.Controls
 
         private void SetOverriden(bool @override)
         {
-            infoButton.SetActive(@override);
+            infoButton.gameObject.SetActive(@override);
             SwitchUIControlInteractibility(isInteractable: !@override, controlCanvasGroup);
         }
 
