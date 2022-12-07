@@ -94,13 +94,15 @@ namespace DCl.Social.Friends
                     ReceivedSkip = receivedSkip
                 });
 
-            return new AddFriendRequestsV2Payload
-            {
-                requestedTo = response.Reply.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
-                requestedFrom = response.Reply.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
-                totalReceivedFriendRequests = response.Reply.TotalReceivedFriendRequests,
-                totalSentFriendRequests = response.Reply.TotalSentFriendRequests,
-            };
+            return response.MessageCase == GetFriendRequestsReply.MessageOneofCase.Error
+                ? throw new FriendshipException(ToErrorCode(response.Error))
+                : new AddFriendRequestsV2Payload
+                {
+                    requestedTo = response.Reply.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
+                    requestedFrom = response.Reply.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
+                    totalReceivedFriendRequests = response.Reply.TotalReceivedFriendRequests,
+                    totalSentFriendRequests = response.Reply.TotalSentFriendRequests,
+                };
         }
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
@@ -136,5 +138,25 @@ namespace DCl.Social.Friends
                 messageBody = request.MessageBody,
                 friendRequestId = request.FriendRequestId
             };
+
+        private FriendRequestErrorCodes ToErrorCode(FriendshipErrorCode code)
+        {
+            switch (code)
+            {
+                default:
+                case FriendshipErrorCode.FecUnknown:
+                    return FriendRequestErrorCodes.Unknown;
+                case FriendshipErrorCode.FecBlockedUser:
+                    return FriendRequestErrorCodes.BlockedUser;
+                case FriendshipErrorCode.FecInvalidRequest:
+                    return FriendRequestErrorCodes.InvalidRequest;
+                case FriendshipErrorCode.FecNonExistingUser:
+                    return FriendRequestErrorCodes.NonExistingUser;
+                case FriendshipErrorCode.FecNotEnoughTimePassed:
+                    return FriendRequestErrorCodes.NotEnoughTimePassed;
+                case FriendshipErrorCode.FecTooManyRequestsSent:
+                    return FriendRequestErrorCodes.TooManyRequestsSent;
+            }
+        }
     }
 }
