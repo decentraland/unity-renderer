@@ -13,8 +13,8 @@ namespace DCL.Social.Friends
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime timestamp);
         void SetRecipientName(string userName);
-        void SetRecipientProfilePicture(ILazyTextureObserver lazyTextureObserver);
-        void SetSenderProfilePicture(ILazyTextureObserver lazyTextureObserver);
+        void SetRecipientProfilePicture(string uri);
+        void SetSenderProfilePicture(string uri);
         void Show();
         void Close();
         void ShowPendingToReject();
