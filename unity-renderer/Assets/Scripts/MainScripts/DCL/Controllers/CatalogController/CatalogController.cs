@@ -30,7 +30,7 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
-    
+
     public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
@@ -65,7 +65,7 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
-    //This temporary until the emotes are in the content server 
+    //This temporary until the emotes are in the content server
     public void EmbedWearables(IEnumerable<WearableItem> wearables)
     {
         foreach (WearableItem wearableItem in wearables)
@@ -87,7 +87,7 @@ public class CatalogController : MonoBehaviour
             // The new wearables paradigm is based on composing with optional field
             // i.e. the emotes will have an emotev0Data property with some values.
             // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
-            request = JsonConvert.DeserializeObject<WearablesRequestResponse>(payload);
+            request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
         }
         catch (Exception e)
         {

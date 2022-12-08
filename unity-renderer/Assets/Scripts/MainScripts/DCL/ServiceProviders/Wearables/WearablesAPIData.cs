@@ -75,7 +75,6 @@ public class WearablesAPIData
                 rarity = wearableData.rarity,
                 description = wearableData.description,
                 i18n = wearableData.i18n,
-                emoteDataV0 = wearableData.emoteDataV0,
                 data = new WearableItem.Data()
                 {
                     category = wearableData.data.category,
@@ -100,10 +99,10 @@ public class WearablesAPIData
                     if (string.IsNullOrEmpty(content.url))
                     {
                         Debug.Log($"WearablesAPIData - Couldn't get hash from mappings for asset '{content.key}', it's content.url is null!");
-                        
+
                         continue;
                     }
-                    
+
                     contentMappingPairs.Add(new WearableItem.MappingPair()
                     {
                         key = content.key,
