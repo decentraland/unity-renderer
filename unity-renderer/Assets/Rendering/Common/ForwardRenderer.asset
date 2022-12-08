@@ -17,12 +17,32 @@ MonoBehaviour:
   m_Settings:
     Downsample: 1
     AfterOpaque: 0
-    Source: 0
+    Source: 1
     NormalSamples: 2
     Intensity: 1.2
     DirectLightingStrength: 0.6
     Radius: 0.2
     SampleCount: 4
+--- !u!114 &-3772532583799019969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1422a59e3684d064aa9ee91f9fc69ae6, type: 3}
+  m_Name: BlurRTRFV2
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    renderPassEvent: 500
+    blurMaterial: {fileID: 2100000, guid: cb4854b61a1566e4eaf48b98fd047917, type: 2}
+    blurPasses: 6
+    downsample: 2
+    fullScreenEffect: 0
+    targetName: _BlurRTTex
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,10 +83,10 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -7551554940414059620}
   - {fileID: 4650022159256899313}
-  - {fileID: 4607269066165517132}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288404cfb7029ce4ef03f
+  - {fileID: -3772532583799019969}
+  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288403fa6124f9a45a5cb
   m_UseNativeRenderPass: 0
-  postProcessData: {fileID: 11400000, guid: f3666fa857d118b4f807732fa6b749c6, type: 2}
+  postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -106,25 +126,6 @@ MonoBehaviour:
   m_ClusteredRendering: 0
   m_TileSize: 32
   m_IntermediateTextureMode: 1
---- !u!114 &4607269066165517132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52e2e32e102e44abeb72209e7ce030c3, type: 3}
-  m_Name: BlurRTRF
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    blurMaterial: {fileID: 2100000, guid: a00afda211f274f6ca6cce958e4e13a5, type: 2}
-    blurPasses: 5
-    downSample: 2
-    renderPassEvent: 400
-    blurType: 1
 --- !u!114 &4650022159256899313
 MonoBehaviour:
   m_ObjectHideFlags: 0
