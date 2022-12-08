@@ -11,5 +11,6 @@ namespace DCL.Social.Passports
         void SetDescription(string description);
         void SetEquippedWearables(WearableItem[] wearables);
         void SetCollectibleWearables(WearableItem[] wearables);
+        void SetInitialTab();
     }
 }

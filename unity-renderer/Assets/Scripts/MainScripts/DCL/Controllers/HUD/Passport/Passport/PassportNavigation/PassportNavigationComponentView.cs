@@ -52,6 +52,7 @@ namespace DCL.Social.Passports
             nftIconsEntryPool = GetNftIconEntryPool();
             CleanWearables();
             CleanEquippedWearables();
+            SetInitialTab();
         }
 
         public void SetGuestUser(bool isGuest)
@@ -98,9 +99,7 @@ namespace DCL.Social.Passports
 
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
-            nftWearablesCarousel.ResetCarousel();
-            nftWearablesCarousel.RemoveItems();
-            List<BaseComponentView> pagesList = new List<BaseComponentView>();
+            nftWearablesCarousel.CleanInstantiatedItems();
             for (int i = 0; i < wearables.Length; i += 4)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
@@ -126,15 +125,18 @@ namespace DCL.Social.Passports
                     {
                         pageElements[j] = null;
                     }
-                    nftPageView.SetPageElementsContent(pageElements);
-                    pagesList.Add(nftPageView);
                 }
+                nftPageView.SetPageElementsContent(pageElements);
+                nftWearablesCarousel.AddItem(nftPageView);
             }
+            nftWearablesCarousel.GenerateDotsSelector();
+            nftWearablesCarousel.ResetManualCarousel();
+        }
 
-            foreach (var page in pagesList)
-            {
-                nftWearablesCarousel.AddItem(page);
-            }
+        public void SetInitialTab()
+        {
+            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).SelectToggle();
+            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).SetUnselectedVisuals();
         }
 
         private void CLickOnBuyWearable(string wearableId)
