@@ -1,3 +1,4 @@
+using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD.Controls;
 using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;
@@ -14,7 +15,7 @@ namespace SettingsWidgetTests
     {
         private const int NUMBER_OF_COLUMNS = 2;
         private const string WIDGET_VIEW_PREFAB_PATH = "Widgets/DefaultSettingsWidgetTemplate";
-        private const string CONTROL_VIEW_PREFAB_PATH = "Controls/{controlType}SettingsControlTemplate";
+        private const string CONTROL_VIEW_PREFAB_PATH = "Controls/Prefabs/{controlType}SettingsControlTemplate";
 
         private SettingsWidgetView widgetView;
         private ISettingsWidgetController widgetController;
@@ -53,7 +54,8 @@ namespace SettingsWidgetTests
         public IEnumerator GenerateControlsIntoAWidgetViewCorrectly(int columnIndex, string controlType)
         {
             // Arrange
-            SettingsControlView controlViewPrefab = ((GameObject)Resources.Load(CONTROL_VIEW_PREFAB_PATH.Replace("{controlType}", controlType))).GetComponent<SettingsControlView>();
+            string prefabPath = CONTROL_VIEW_PREFAB_PATH.Replace("{controlType}", controlType);
+            SettingsControlView controlViewPrefab = ((GameObject)Resources.Load(prefabPath)).GetComponent<SettingsControlView>();
 
             SettingsControlModel newControlConfig = ScriptableObject.CreateInstance<SettingsControlModel>();
             newControlConfig.title = $"TestControl_Col{columnIndex}";
@@ -62,7 +64,6 @@ namespace SettingsWidgetTests
             newControlConfig.flagsThatDeactivateMe = new List<BooleanVariable>();
             newControlConfig.flagsThatDisableMe = new List<BooleanVariable>();
             newControlConfig.isBeta = false;
-
 
             controlColumnsToCreate[columnIndex].controls.Add(newControlConfig);
 
@@ -73,9 +74,9 @@ namespace SettingsWidgetTests
             // Assert
             widgetController.Received(1)
                             .AddControl(
-                                Arg.Any<ISettingsControlView>(),
-                                Arg.Any<SettingsControlController>(),
-                                Arg.Any<SettingsControlModel>());
+                                 Arg.Any<ISettingsControlView>(),
+                                 Arg.Any<SettingsControlController>(),
+                                 Arg.Any<SettingsControlModel>());
         }
     }
 }
