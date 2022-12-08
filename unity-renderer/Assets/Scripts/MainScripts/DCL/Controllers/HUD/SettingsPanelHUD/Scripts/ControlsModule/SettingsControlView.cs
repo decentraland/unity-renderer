@@ -50,9 +50,9 @@ namespace DCL.SettingsPanelHUD.Controls
 
         public virtual void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
-            this.controlConfig = model;
-            this.settingsControlController = controller;
-            this.settingsControlController.Initialize();
+            controlConfig = model;
+            settingsControlController = controller;
+            settingsControlController.Initialize();
 
             betaIndicator.SetActive(model.isBeta);
             infoButton.gameObject.SetActive(false);
@@ -100,6 +100,8 @@ namespace DCL.SettingsPanelHUD.Controls
             }
 
             infoButton.onClick.RemoveAllListeners();
+
+            if (Settings.i == null) return; // fix for PlayMode tests failing on TearDown
 
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
