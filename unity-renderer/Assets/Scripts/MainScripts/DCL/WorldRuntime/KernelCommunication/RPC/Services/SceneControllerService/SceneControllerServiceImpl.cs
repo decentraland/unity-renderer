@@ -17,16 +17,19 @@ namespace RPC.Services
         // HACK: Until we fix the code generator, we must replace all 'Decentraland.Common.Entity' for 'DCL.ECSComponents.Entity' in RpcSceneController.gen.cs
         // to be able to access request.Entity properties.
 
+        private const string REQUIRED_PORT_ID_START = "scene-";
         private int sceneNumber = -1;
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
+            if (!port.portName.StartsWith(REQUIRED_PORT_ID_START)) return;
+
             RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl());
         }
 
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - {request.Entity.Metadata}");
+            // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - scene number: {request.SceneNumber}; metadata: {request.Entity.Metadata}");
 
             sceneNumber = request.SceneNumber;
 
