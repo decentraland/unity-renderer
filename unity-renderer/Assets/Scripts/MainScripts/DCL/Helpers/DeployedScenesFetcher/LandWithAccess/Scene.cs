@@ -47,7 +47,7 @@ namespace DCL.Builder
 
             deploymentSource = Source.SDK;
 
-            if (pointerData.content != null && pointerData.content.Any(content => content.file == BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
+            if (pointerData.content != null && pointerData.content.Any(content => content.file == AssetCatalogUrlSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME)) // FD:: chaged class to AssetCatalogUrlSetting 
             {
                 deploymentSource = Source.BUILDER_IN_WORLD;
             }

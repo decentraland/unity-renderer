@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-    public static class BIWSettings
+    public static class AssetCatalogUrlSettings // EX: BIWSettings // FD:: changed here
     {
-        //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
+        //Note: Don't use these URL directly, you need to get them in the AsseteCatakigUrlUtils (before known as BuilderInWorldUtils) to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
         public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";

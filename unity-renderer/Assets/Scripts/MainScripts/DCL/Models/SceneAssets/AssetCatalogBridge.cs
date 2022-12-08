@@ -59,7 +59,7 @@ public class AssetCatalogBridge : MonoBehaviour
     ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
     {
         ContentProvider contentProvider = new ContentProvider();
-        contentProvider.baseUrl = "";// BIWUrlUtils.GetUrlSceneObjectContent(); // FD:: void string for placeholder;
+        contentProvider.baseUrl = AssetCatalogUrlsUtils.GetUrlSceneObjectContent(); // FD:: reimplemented url util
         foreach (KeyValuePair<string, string> content in sceneObject.contents)
         {
             ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
