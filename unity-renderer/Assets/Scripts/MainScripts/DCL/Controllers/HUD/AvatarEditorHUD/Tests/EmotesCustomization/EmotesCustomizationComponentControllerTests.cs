@@ -102,38 +102,6 @@ namespace DCL.EmotesCustomization.Tests
         }
 
         [Test]
-        public void ProcessCatalogCorrectly()
-        {
-            // Arrange
-            emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string>());
-            string testId1 = "TestId1";
-            string testId2 = "TestId2";
-            WearableItem[] emotes = new []
-            {
-                new WearableItem
-                {
-                    id = testId1,
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId1 } }
-                },
-                new WearableItem
-                {
-                    id = testId2,
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
-                }
-            };
-
-            // Act
-            emotesCustomizationComponentController.SetEmotes(emotes);
-
-            // Assert
-            Assert.AreEqual(emotes.Length, emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Count());
-            Assert.AreEqual(testId1, emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Get().ToList()[0]);
-            Assert.AreEqual(testId2, emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Get().ToList()[1]);
-        }
-
-        [Test]
         public void RefreshEmoteLoadingStateCorrectly()
         {
             // Arrange
