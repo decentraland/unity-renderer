@@ -37,13 +37,13 @@ public class ExploreV2MenuComponentViewTests
 
     [Test]
     [TestCase(ExploreSection.Backpack, true)]
-    [TestCase(ExploreSection.Builder, true)]
+    // [TestCase(ExploreSection.Builder, true)] // FD:: commented
     [TestCase(ExploreSection.Explore, true)]
     [TestCase(ExploreSection.Map, true)]
     [TestCase(ExploreSection.Quest, true)]
     [TestCase(ExploreSection.Settings, true)]
     [TestCase(ExploreSection.Backpack, false)]
-    [TestCase(ExploreSection.Builder, false)]
+    // [TestCase(ExploreSection.Builder, false)] // FD:: commented
     [TestCase(ExploreSection.Explore, false)]
     [TestCase(ExploreSection.Map, false)]
     [TestCase(ExploreSection.Quest, false)]
@@ -59,7 +59,7 @@ public class ExploreV2MenuComponentViewTests
 
     [Test]
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
+    // [TestCase(ExploreSection.Builder)] // FD:: commented
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]

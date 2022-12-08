@@ -80,7 +80,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             new
             {
                 assetId = mockupAssetId,
-                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb" // FD:: this test fails
+                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
 

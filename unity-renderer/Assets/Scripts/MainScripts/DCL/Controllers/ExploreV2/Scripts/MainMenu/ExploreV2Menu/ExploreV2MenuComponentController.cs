@@ -36,7 +36,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal RectTransform placesAndEventsTooltipReference => view.currentPlacesAndEventsTooltipReference;
     internal RectTransform backpackTooltipReference => view.currentBackpackTooltipReference;
     internal RectTransform mapTooltipReference => view.currentMapTooltipReference;
-    internal RectTransform builderTooltipReference => view.currentBuilderTooltipReference;
+    // internal RectTransform builderTooltipReference => view.currentBuilderTooltipReference; // FD:: commented
     internal RectTransform questTooltipReference => view.currentQuestTooltipReference;
     internal RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
     internal RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
@@ -51,7 +51,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
-    // internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized; //FD:: commented
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
@@ -71,7 +70,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized,  placesAndEventsVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized,  avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized,  navmapVisible) },
-            // { ExploreSection.Builder, (isBuilderInitialized,  builderVisible) }, // FD:: commented
             { ExploreSection.Quest, (isQuestInitialized,  questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized,  settingsVisible) },
         };
@@ -100,7 +98,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference);
+        // DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference); // FD:: commented
         DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
@@ -130,7 +128,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         //view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
-        view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
+        // view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
     }
@@ -388,10 +386,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        // FD:: commented
-        // if (DataStore.i.builderInWorld.areShortcutsBlocked.Get() || !isOpen.Get() )
-        //     return;
-
         SetVisibility(false);
         exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
     }

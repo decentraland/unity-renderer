@@ -52,7 +52,7 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// Transform used to positionate the builder section tooltips.
     /// </summary>
-    RectTransform currentBuilderTooltipReference { get; }
+    // RectTransform currentBuilderTooltipReference { get; } // FD:: commented
 
     /// <summary>
     /// Transform used to positionate the quest section tooltips.
@@ -140,7 +140,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal FeatureEncapsulatorComponentView backpackSection;
     [SerializeField] internal FeatureEncapsulatorComponentView mapSection;
-    [SerializeField] internal FeatureEncapsulatorComponentView builderSection;
+    // [SerializeField] internal FeatureEncapsulatorComponentView builderSection; // FD:: commented
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
 
@@ -169,7 +169,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             { ExploreSection.Explore, null },
             { ExploreSection.Backpack, backpackSection },
             { ExploreSection.Map, mapSection },
-            { ExploreSection.Builder, builderSection },
+            // { ExploreSection.Builder, builderSection }, // FD:: commented
             { ExploreSection.Quest, questSection },
             { ExploreSection.Settings, settingsSection },
         };
@@ -197,7 +197,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public RectTransform currentPlacesAndEventsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Explore).pivot;
     public RectTransform currentBackpackTooltipReference => sectionSelector.GetSection((int)ExploreSection.Backpack).pivot;
     public RectTransform currentMapTooltipReference => sectionSelector.GetSection((int)ExploreSection.Map).pivot;
-    public RectTransform currentBuilderTooltipReference => sectionSelector.GetSection((int)ExploreSection.Builder).pivot;
+    // public RectTransform currentBuilderTooltipReference => sectionSelector.GetSection((int)ExploreSection.Builder).pivot; // FD:: commented
     public RectTransform currentQuestTooltipReference => sectionSelector.GetSection((int)ExploreSection.Quest).pivot;
     public RectTransform currentSettingsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Settings).pivot;
     public RectTransform currentProfileCardTooltipReference => profileCardTooltipReference;
