@@ -96,18 +96,20 @@ namespace DCL.Social.Friends
             return friendRequest;
         }
 
-        public void RequestFriendship(string friendUserId)
-        {
+        public void RequestFriendship(string friendUserId) =>
             apiBridge.RequestFriendship(friendUserId);
-        }
 
-        public Dictionary<string, UserStatus> GetAllocatedFriends()
-        {
-            return new Dictionary<string, UserStatus>(friends);
-        }
+        public Dictionary<string, UserStatus> GetAllocatedFriends() =>
+            new Dictionary<string, UserStatus>(friends);
+
+        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException();
 
         public void RejectFriendship(string friendUserId) =>
             apiBridge.RejectFriendship(friendUserId);
+
+        public UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException();
 
         public bool IsFriend(string userId) =>
             friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
