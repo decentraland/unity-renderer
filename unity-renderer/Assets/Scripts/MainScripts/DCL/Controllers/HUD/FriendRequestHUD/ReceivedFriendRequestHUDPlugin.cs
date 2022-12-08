@@ -8,8 +8,10 @@ namespace DCL.Social.Friends
 
         public ReceivedFriendRequestHUDPlugin()
         {
-            // TODO: inject a valid view
-            controller = new ReceivedFriendRequestHUDController(DataStore.i, null, FriendsController.i,
+            controller = new ReceivedFriendRequestHUDController(
+                DataStore.i,
+                ReceivedFriendRequestHUDComponentView.Create(),
+                FriendsController.i,
                 new UserProfileWebInterfaceBridge(),
                 Resources.Load<StringVariable>("CurrentPlayerInfoCardId"));
         }

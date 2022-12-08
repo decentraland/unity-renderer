@@ -52,6 +52,7 @@ namespace DCL
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.Register<SendFriendRequestHUDPlugin>(() => new SendFriendRequestHUDPlugin());
             pluginSystem.Register<CancelFriendRequestHUDPlugin>(() => new CancelFriendRequestHUDPlugin());
+            pluginSystem.Register<ReceivedFriendRequestHUDPlugin>(() => new ReceivedFriendRequestHUDPlugin());
 
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<BuilderInWorldPlugin>(() => new BuilderInWorldPlugin(), "builder_in_world");

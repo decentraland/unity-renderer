@@ -1,9 +1,10 @@
-using DCL.Helpers;
 using System;
+using UIComponents.Scripts.Components;
+using static DCL.Social.Friends.ReceivedFriendRequestHUDModel;
 
 namespace DCL.Social.Friends
 {
-    public interface IReceivedFriendRequestHUDView
+    public interface IReceivedFriendRequestHUDView : IBaseComponentView<ReceivedFriendRequestHUDModel>
     {
         event Action OnClose;
         event Action OnOpenProfile;
@@ -13,13 +14,10 @@ namespace DCL.Social.Friends
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime timestamp);
         void SetRecipientName(string userName);
-        void SetRecipientProfilePicture(string uri);
-        void SetSenderProfilePicture(string uri);
+        void SetOtherProfilePicture(string uri);
+        void SetOwnProfilePicture(string uri);
+        void SetState(LayoutState state);
         void Show();
         void Close();
-        void ShowPendingToReject();
-        void ShowRejectFailed();
-        void ShowPendingToConfirm();
-        void ShowAcceptFailed();
     }
 }

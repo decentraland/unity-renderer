@@ -31,6 +31,7 @@ namespace DCL.Social.Friends
             view.OnOpenProfile += OpenProfile;
             view.OnRejectFriendRequest += Reject;
             view.OnConfirmFriendRequest += Confirm;
+            view.Close();
 
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange += ShowOrHide;
         }
@@ -63,18 +64,18 @@ namespace DCL.Social.Friends
             view.SetBodyMessage(friendRequest.MessageBody);
             view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
 
-            var recipientProfile = userProfileBridge.Get(friendRequest.To);
+            var recipientProfile = userProfileBridge.Get(friendRequest.From);
 
             if (recipientProfile != null)
             {
                 view.SetRecipientName(recipientProfile.userName);
-                view.SetRecipientProfilePicture(recipientProfile.face256SnapshotURL);
+                view.SetOtherProfilePicture(recipientProfile.face256SnapshotURL);
             }
             else
-                Debug.LogError($"Cannot display user profile {friendRequest.To}, is not allocated");
+                Debug.LogError($"Cannot display user profile {friendRequest.From}, is not allocated");
 
             var ownProfile = userProfileBridge.GetOwn();
-            view.SetSenderProfilePicture(ownProfile.face256SnapshotURL);
+            view.SetOwnProfilePicture(ownProfile.face256SnapshotURL);
 
             view.Show();
         }
@@ -103,7 +104,7 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid RejectAsync(CancellationToken cancellationToken = default)
         {
-            view.ShowPendingToReject();
+            view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
             try
             {
@@ -119,7 +120,7 @@ namespace DCL.Social.Friends
             {
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO: track error to analytics
-                view.ShowRejectFailed();
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 throw;
             }
         }
@@ -129,7 +130,7 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid ConfirmAsync(CancellationToken cancellationToken = default)
         {
-            view.ShowPendingToConfirm();
+            view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
             try
             {
@@ -145,7 +146,7 @@ namespace DCL.Social.Friends
             {
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO: track error to analytics
-                view.ShowAcceptFailed();
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 throw;
             }
         }

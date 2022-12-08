@@ -605,8 +605,6 @@ public class FriendsHUDController : IHUD
         if (friendRequest.IsSentTo(userId))
             dataStore.HUDs.openSentFriendRequestDetail.Set(friendRequest.FriendRequestId, true);
         else
-        {
-            // TODO: open details for received friend requests
-        }
+            dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequest.FriendRequestId, true);
     }
 }
