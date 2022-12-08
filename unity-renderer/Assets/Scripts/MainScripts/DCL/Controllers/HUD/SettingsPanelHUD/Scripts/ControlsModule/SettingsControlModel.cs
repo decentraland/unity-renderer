@@ -1,7 +1,6 @@
 using ReorderableList;
 using System.Collections.Generic;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 using UnityEngine;
 
 namespace DCL.SettingsPanelHUD.Controls
