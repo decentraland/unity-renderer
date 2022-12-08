@@ -43,11 +43,11 @@
       "hash": "c7eedf85c79e2ce06658c8060ca38a282f2ca7ab"
     },
     "com.decentraland.rpc-csharp": {
-      "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src#fix/gracefully-dispose-rpcserver",
+      "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d1aac7e8cdfef33580fe00ac8bc9ef71fd00ae60"
+      "hash": "0edfd2eb04da488b3ea3b1bc744efb4df033b508"
     },
     "com.decentraland.unity-shared-dependencies": {
       "version": "https://github.com/decentraland/unity-shared-dependencies.git",
