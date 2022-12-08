@@ -931,12 +931,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &3694001066695700219 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1540858002546072586, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2747618356799222513}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5222907750520888858 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7951948174597467371, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
@@ -961,7 +955,7 @@ MonoBehaviour:
   titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 6101253936429729321}
   infoButton: {fileID: 3655070267084473585}
-  tooltip: {fileID: 3694001066695700219}
+  tooltip: {fileID: 8256733399724367689}
   valueLabels:
   - {fileID: 4295868929499238043}
   valueLabelDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
@@ -992,3 +986,15 @@ CanvasGroup:
     type: 3}
   m_PrefabInstance: {fileID: 2747618356799222513}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8256733399724367689 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6103590331187506616, guid: 2c0ec25bab9f21a4ca9c65c4fe07cf7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2747618356799222513}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77090e43d3864bd9878ba8ee5184b5f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
