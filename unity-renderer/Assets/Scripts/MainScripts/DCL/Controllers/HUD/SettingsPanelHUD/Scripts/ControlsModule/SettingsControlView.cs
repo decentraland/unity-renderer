@@ -56,7 +56,7 @@ namespace DCL.SettingsPanelHUD.Controls
 
             betaIndicator.SetActive(model.isBeta);
             infoButton.gameObject.SetActive(false);
-            tooltip.SetModel(new TooltipComponentModel("This setting is being controlled by the creator"));
+            tooltip.SetModel(new TooltipComponentModel("This setting is being controlled \n by the creator"));
             infoButton.onClick.AddListener(() => tooltip.Show());
 
             title.text = model.title;
