@@ -498,7 +498,7 @@ public sealed partial class LoadSceneMessage : pb::IMessage<LoadSceneMessage>
           break;
         case 10: {
           if (entity_ == null) {
-            Entity = new global::Decentraland.Common.Entity();
+            Entity = new global::DCL.ECSComponents.Entity();
           }
           input.ReadMessage(Entity);
           break;
