@@ -93,6 +93,22 @@ namespace DCl.Social.Friends
         public void RejectFriendship(string userId) =>
             fallbackApiBridge.RejectFriendship(userId);
 
+        public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId)
+        {
+            RejectFriendRequestReply response = await rpc.FriendRequests()
+                                                                         .RejectFriendRequest(new RejectFriendRequestPayload
+                                                                          {
+                                                                              FriendRequestId = friendRequestId
+                                                                          });
+
+            return response.MessageCase == RejectFriendRequestReply.MessageOneofCase.Reply
+                ? new RejectFriendshipPayload
+                {
+                    FriendRequestPayload = ToFriendRequestPayload(response.Reply.FriendRequest),
+                }
+                : throw new FriendshipException(ToErrorCode(response.Error));
+        }
+
         public void RemoveFriend(string userId) =>
             fallbackApiBridge.RemoveFriend(userId);
 
@@ -183,6 +199,22 @@ namespace DCl.Social.Friends
         {
             OnFriendRequestAdded?.Invoke(ToFriendRequestPayload(request));
             return UniTask.FromResult(new AddFriendRequestReply());
+        }
+
+        public async UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId)
+        {
+            AcceptFriendRequestReply response = await rpc.FriendRequests()
+                                                         .AcceptFriendRequest(new AcceptFriendRequestPayload
+                                                          {
+                                                              FriendRequestId = friendRequestId
+                                                          });
+
+            return response.MessageCase == AcceptFriendRequestReply.MessageOneofCase.Reply
+                ? new AcceptFriendshipPayload
+                {
+                    FriendRequest = ToFriendRequestPayload(response.Reply.FriendRequest)
+                }
+                : throw new FriendshipException(ToErrorCode(response.Error));
         }
 
         private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>

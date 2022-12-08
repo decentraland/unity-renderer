@@ -19,5 +19,8 @@ namespace DCL.Social.Friends
 
         public bool IsSentTo(string userId) =>
             To == userId;
+
+        public bool IsReceivedFrom(string userId) =>
+            From == userId;
     }
 }

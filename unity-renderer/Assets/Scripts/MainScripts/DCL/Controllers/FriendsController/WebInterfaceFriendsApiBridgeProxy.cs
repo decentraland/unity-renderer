@@ -67,6 +67,9 @@ namespace DCL.Social.Friends
         public void RejectFriendship(string userId) =>
             apiBridgeInUse.RejectFriendship(userId);
 
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
+            apiBridgeInUse.RejectFriendshipAsync(friendRequestId);
+
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
 
@@ -102,5 +105,8 @@ namespace DCL.Social.Friends
 
         public void AcceptFriendship(string userId) =>
             apiBridgeInUse.AcceptFriendship(userId);
+
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
+            apiBridgeInUse.AcceptFriendshipAsync(friendRequestId);
     }
 }

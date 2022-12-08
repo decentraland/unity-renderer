@@ -48,30 +48,31 @@ public static partial class FriendRequestKernelReflection {
           "ZFJlcXVlc3RSZXBseRIsCgVyZXBseRgBIAEoCzIbLkNhbmNlbEZyaWVuZFJl",
           "cXVlc3RSZXBseU9rSAASJQoFZXJyb3IYAiABKA4yFC5GcmllbmRzaGlwRXJy",
           "b3JDb2RlSABCCQoHbWVzc2FnZSI3ChpBY2NlcHRGcmllbmRSZXF1ZXN0UGF5",
-          "bG9hZBIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEoCSI3ChpBY2NlcHRGcmll",
-          "bmRSZXF1ZXN0UmVwbHlPaxIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEoCSJ6",
-          "ChhBY2NlcHRGcmllbmRSZXF1ZXN0UmVwbHkSLAoFcmVwbHkYASABKAsyGy5B",
-          "Y2NlcHRGcmllbmRSZXF1ZXN0UmVwbHlPa0gAEiUKBWVycm9yGAIgASgOMhQu",
-          "RnJpZW5kc2hpcEVycm9yQ29kZUgAQgkKB21lc3NhZ2UiNwoaUmVqZWN0RnJp",
-          "ZW5kUmVxdWVzdFBheWxvYWQSGQoRZnJpZW5kX3JlcXVlc3RfaWQYASABKAki",
-          "NwoaUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5T2sSGQoRZnJpZW5kX3JlcXVl",
-          "c3RfaWQYASABKAkiegoYUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5EiwKBXJl",
-          "cGx5GAEgASgLMhsuUmVqZWN0RnJpZW5kUmVxdWVzdFJlcGx5T2tIABIlCgVl",
-          "cnJvchgCIAEoDjIULkZyaWVuZHNoaXBFcnJvckNvZGVIAEIJCgdtZXNzYWdl",
-          "KrABChNGcmllbmRzaGlwRXJyb3JDb2RlEh4KGkZFQ19UT09fTUFOWV9SRVFV",
-          "RVNUU19TRU5UEAASHgoaRkVDX05PVF9FTk9VR0hfVElNRV9QQVNTRUQQARIU",
-          "ChBGRUNfQkxPQ0tFRF9VU0VSEAISGQoVRkVDX05PTl9FWElTVElOR19VU0VS",
-          "EAMSFwoTRkVDX0lOVkFMSURfUkVRVUVTVBAEEg8KC0ZFQ19VTktOT1dOEAUy",
-          "pQMKGkZyaWVuZFJlcXVlc3RLZXJuZWxTZXJ2aWNlEkkKEUdldEZyaWVuZFJl",
-          "cXVlc3RzEhkuR2V0RnJpZW5kUmVxdWVzdHNQYXlsb2FkGhcuR2V0RnJpZW5k",
-          "UmVxdWVzdHNSZXBseSIAEkkKEVNlbmRGcmllbmRSZXF1ZXN0EhkuU2VuZEZy",
-          "aWVuZFJlcXVlc3RQYXlsb2FkGhcuU2VuZEZyaWVuZFJlcXVlc3RSZXBseSIA",
-          "Ek8KE0NhbmNlbEZyaWVuZFJlcXVlc3QSGy5DYW5jZWxGcmllbmRSZXF1ZXN0",
-          "UGF5bG9hZBoZLkNhbmNlbEZyaWVuZFJlcXVlc3RSZXBseSIAEk8KE0FjY2Vw",
-          "dEZyaWVuZFJlcXVlc3QSGy5BY2NlcHRGcmllbmRSZXF1ZXN0UGF5bG9hZBoZ",
-          "LkFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseSIAEk8KE1JlamVjdEZyaWVuZFJl",
-          "cXVlc3QSGy5SZWplY3RGcmllbmRSZXF1ZXN0UGF5bG9hZBoZLlJlamVjdEZy",
-          "aWVuZFJlcXVlc3RSZXBseSIAYgZwcm90bzM="));
+          "bG9hZBIZChFmcmllbmRfcmVxdWVzdF9pZBgBIAEoCSJIChpBY2NlcHRGcmll",
+          "bmRSZXF1ZXN0UmVwbHlPaxIqCg5mcmllbmRfcmVxdWVzdBgBIAEoCzISLkZy",
+          "aWVuZFJlcXVlc3RJbmZvInoKGEFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseRIs",
+          "CgVyZXBseRgBIAEoCzIbLkFjY2VwdEZyaWVuZFJlcXVlc3RSZXBseU9rSAAS",
+          "JQoFZXJyb3IYAiABKA4yFC5GcmllbmRzaGlwRXJyb3JDb2RlSABCCQoHbWVz",
+          "c2FnZSI3ChpSZWplY3RGcmllbmRSZXF1ZXN0UGF5bG9hZBIZChFmcmllbmRf",
+          "cmVxdWVzdF9pZBgBIAEoCSJIChpSZWplY3RGcmllbmRSZXF1ZXN0UmVwbHlP",
+          "axIqCg5mcmllbmRfcmVxdWVzdBgBIAEoCzISLkZyaWVuZFJlcXVlc3RJbmZv",
+          "InoKGFJlamVjdEZyaWVuZFJlcXVlc3RSZXBseRIsCgVyZXBseRgBIAEoCzIb",
+          "LlJlamVjdEZyaWVuZFJlcXVlc3RSZXBseU9rSAASJQoFZXJyb3IYAiABKA4y",
+          "FC5GcmllbmRzaGlwRXJyb3JDb2RlSABCCQoHbWVzc2FnZSqwAQoTRnJpZW5k",
+          "c2hpcEVycm9yQ29kZRIeChpGRUNfVE9PX01BTllfUkVRVUVTVFNfU0VOVBAA",
+          "Eh4KGkZFQ19OT1RfRU5PVUdIX1RJTUVfUEFTU0VEEAESFAoQRkVDX0JMT0NL",
+          "RURfVVNFUhACEhkKFUZFQ19OT05fRVhJU1RJTkdfVVNFUhADEhcKE0ZFQ19J",
+          "TlZBTElEX1JFUVVFU1QQBBIPCgtGRUNfVU5LTk9XThAFMqUDChpGcmllbmRS",
+          "ZXF1ZXN0S2VybmVsU2VydmljZRJJChFHZXRGcmllbmRSZXF1ZXN0cxIZLkdl",
+          "dEZyaWVuZFJlcXVlc3RzUGF5bG9hZBoXLkdldEZyaWVuZFJlcXVlc3RzUmVw",
+          "bHkiABJJChFTZW5kRnJpZW5kUmVxdWVzdBIZLlNlbmRGcmllbmRSZXF1ZXN0",
+          "UGF5bG9hZBoXLlNlbmRGcmllbmRSZXF1ZXN0UmVwbHkiABJPChNDYW5jZWxG",
+          "cmllbmRSZXF1ZXN0EhsuQ2FuY2VsRnJpZW5kUmVxdWVzdFBheWxvYWQaGS5D",
+          "YW5jZWxGcmllbmRSZXF1ZXN0UmVwbHkiABJPChNBY2NlcHRGcmllbmRSZXF1",
+          "ZXN0EhsuQWNjZXB0RnJpZW5kUmVxdWVzdFBheWxvYWQaGS5BY2NlcHRGcmll",
+          "bmRSZXF1ZXN0UmVwbHkiABJPChNSZWplY3RGcmllbmRSZXF1ZXN0EhsuUmVq",
+          "ZWN0RnJpZW5kUmVxdWVzdFBheWxvYWQaGS5SZWplY3RGcmllbmRSZXF1ZXN0",
+          "UmVwbHkiAGIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(new[] {typeof(global::FriendshipErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -86,10 +87,10 @@ public static partial class FriendRequestKernelReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::CancelFriendRequestReplyOk), global::CancelFriendRequestReplyOk.Parser, new[]{ "FriendRequest" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CancelFriendRequestReply), global::CancelFriendRequestReply.Parser, new[]{ "Reply", "Error" }, new[]{ "Message" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::AcceptFriendRequestPayload), global::AcceptFriendRequestPayload.Parser, new[]{ "FriendRequestId" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::AcceptFriendRequestReplyOk), global::AcceptFriendRequestReplyOk.Parser, new[]{ "FriendRequestId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::AcceptFriendRequestReplyOk), global::AcceptFriendRequestReplyOk.Parser, new[]{ "FriendRequest" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::AcceptFriendRequestReply), global::AcceptFriendRequestReply.Parser, new[]{ "Reply", "Error" }, new[]{ "Message" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::RejectFriendRequestPayload), global::RejectFriendRequestPayload.Parser, new[]{ "FriendRequestId" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::RejectFriendRequestReplyOk), global::RejectFriendRequestReplyOk.Parser, new[]{ "FriendRequestId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::RejectFriendRequestReplyOk), global::RejectFriendRequestReplyOk.Parser, new[]{ "FriendRequest" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::RejectFriendRequestReply), global::RejectFriendRequestReply.Parser, new[]{ "Reply", "Error" }, new[]{ "Message" }, null, null, null)
         }));
   }
@@ -2937,7 +2938,7 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public AcceptFriendRequestReplyOk(AcceptFriendRequestReplyOk other) : this() {
-    friendRequestId_ = other.friendRequestId_;
+    friendRequest_ = other.friendRequest_ != null ? other.friendRequest_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2947,15 +2948,15 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
     return new AcceptFriendRequestReplyOk(this);
   }
 
-  /// <summary>Field number for the "friend_request_id" field.</summary>
-  public const int FriendRequestIdFieldNumber = 1;
-  private string friendRequestId_ = "";
+  /// <summary>Field number for the "friend_request" field.</summary>
+  public const int FriendRequestFieldNumber = 1;
+  private global::FriendRequestInfo friendRequest_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string FriendRequestId {
-    get { return friendRequestId_; }
+  public global::FriendRequestInfo FriendRequest {
+    get { return friendRequest_; }
     set {
-      friendRequestId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      friendRequest_ = value;
     }
   }
 
@@ -2974,7 +2975,7 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (FriendRequestId != other.FriendRequestId) return false;
+    if (!object.Equals(FriendRequest, other.FriendRequest)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -2982,7 +2983,7 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (FriendRequestId.Length != 0) hash ^= FriendRequestId.GetHashCode();
+    if (friendRequest_ != null) hash ^= FriendRequest.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -3001,9 +3002,9 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (FriendRequestId.Length != 0) {
+    if (friendRequest_ != null) {
       output.WriteRawTag(10);
-      output.WriteString(FriendRequestId);
+      output.WriteMessage(FriendRequest);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -3015,9 +3016,9 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (FriendRequestId.Length != 0) {
+    if (friendRequest_ != null) {
       output.WriteRawTag(10);
-      output.WriteString(FriendRequestId);
+      output.WriteMessage(FriendRequest);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -3029,8 +3030,8 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (FriendRequestId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(FriendRequestId);
+    if (friendRequest_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(FriendRequest);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -3044,8 +3045,11 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
     if (other == null) {
       return;
     }
-    if (other.FriendRequestId.Length != 0) {
-      FriendRequestId = other.FriendRequestId;
+    if (other.friendRequest_ != null) {
+      if (friendRequest_ == null) {
+        FriendRequest = new global::FriendRequestInfo();
+      }
+      FriendRequest.MergeFrom(other.FriendRequest);
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -3063,7 +3067,10 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          FriendRequestId = input.ReadString();
+          if (friendRequest_ == null) {
+            FriendRequest = new global::FriendRequestInfo();
+          }
+          input.ReadMessage(FriendRequest);
           break;
         }
       }
@@ -3082,7 +3089,10 @@ public sealed partial class AcceptFriendRequestReplyOk : pb::IMessage<AcceptFrie
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          FriendRequestId = input.ReadString();
+          if (friendRequest_ == null) {
+            FriendRequest = new global::FriendRequestInfo();
+          }
+          input.ReadMessage(FriendRequest);
           break;
         }
       }
@@ -3592,7 +3602,7 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public RejectFriendRequestReplyOk(RejectFriendRequestReplyOk other) : this() {
-    friendRequestId_ = other.friendRequestId_;
+    friendRequest_ = other.friendRequest_ != null ? other.friendRequest_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -3602,15 +3612,15 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
     return new RejectFriendRequestReplyOk(this);
   }
 
-  /// <summary>Field number for the "friend_request_id" field.</summary>
-  public const int FriendRequestIdFieldNumber = 1;
-  private string friendRequestId_ = "";
+  /// <summary>Field number for the "friend_request" field.</summary>
+  public const int FriendRequestFieldNumber = 1;
+  private global::FriendRequestInfo friendRequest_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string FriendRequestId {
-    get { return friendRequestId_; }
+  public global::FriendRequestInfo FriendRequest {
+    get { return friendRequest_; }
     set {
-      friendRequestId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      friendRequest_ = value;
     }
   }
 
@@ -3629,7 +3639,7 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (FriendRequestId != other.FriendRequestId) return false;
+    if (!object.Equals(FriendRequest, other.FriendRequest)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -3637,7 +3647,7 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (FriendRequestId.Length != 0) hash ^= FriendRequestId.GetHashCode();
+    if (friendRequest_ != null) hash ^= FriendRequest.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -3656,9 +3666,9 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (FriendRequestId.Length != 0) {
+    if (friendRequest_ != null) {
       output.WriteRawTag(10);
-      output.WriteString(FriendRequestId);
+      output.WriteMessage(FriendRequest);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -3670,9 +3680,9 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (FriendRequestId.Length != 0) {
+    if (friendRequest_ != null) {
       output.WriteRawTag(10);
-      output.WriteString(FriendRequestId);
+      output.WriteMessage(FriendRequest);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -3684,8 +3694,8 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (FriendRequestId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(FriendRequestId);
+    if (friendRequest_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(FriendRequest);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -3699,8 +3709,11 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
     if (other == null) {
       return;
     }
-    if (other.FriendRequestId.Length != 0) {
-      FriendRequestId = other.FriendRequestId;
+    if (other.friendRequest_ != null) {
+      if (friendRequest_ == null) {
+        FriendRequest = new global::FriendRequestInfo();
+      }
+      FriendRequest.MergeFrom(other.FriendRequest);
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -3718,7 +3731,10 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          FriendRequestId = input.ReadString();
+          if (friendRequest_ == null) {
+            FriendRequest = new global::FriendRequestInfo();
+          }
+          input.ReadMessage(FriendRequest);
           break;
         }
       }
@@ -3737,7 +3753,10 @@ public sealed partial class RejectFriendRequestReplyOk : pb::IMessage<RejectFrie
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          FriendRequestId = input.ReadString();
+          if (friendRequest_ == null) {
+            FriendRequest = new global::FriendRequestInfo();
+          }
+          input.ReadMessage(FriendRequest);
           break;
         }
       }

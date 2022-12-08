@@ -102,14 +102,28 @@ namespace DCL.Social.Friends
         public Dictionary<string, UserStatus> GetAllocatedFriends() =>
             new Dictionary<string, UserStatus>(friends);
 
-        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId) =>
-            throw new NotImplementedException();
+        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId)
+        {
+            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId);
+            FriendRequestPayload requestPayload = payload.FriendRequest;
+            var request = ToFriendRequest(requestPayload);
+            // NOTE: would it be better to register the new state instead of removing it?
+            friendRequests.Remove(friendRequestId);
+            return request;
+        }
 
         public void RejectFriendship(string friendUserId) =>
             apiBridge.RejectFriendship(friendUserId);
 
-        public UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId) =>
-            throw new NotImplementedException();
+        public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId)
+        {
+            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId);
+            FriendRequestPayload requestPayload = payload.FriendRequestPayload;
+            var request = ToFriendRequest(requestPayload);
+            // NOTE: would it be better to register the new state instead of removing it?
+            friendRequests.Remove(friendRequestId);
+            return request;
+        }
 
         public bool IsFriend(string userId) =>
             friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;

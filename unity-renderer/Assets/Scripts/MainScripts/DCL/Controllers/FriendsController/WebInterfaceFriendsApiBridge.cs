@@ -145,6 +145,9 @@ namespace DCL.Social.Friends
             });
         }
 
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
+
         public void RemoveFriend(string userId)
         {
             WebInterface.UpdateFriendshipStatus(new WebInterface.FriendshipUpdateStatusMessage
@@ -257,5 +260,8 @@ namespace DCL.Social.Friends
                 action = WebInterface.FriendshipAction.APPROVED
             });
         }
+
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
     }
 }

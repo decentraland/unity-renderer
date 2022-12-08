@@ -17,8 +17,9 @@ namespace DCl.Social.Friends
         event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
         event Action<FriendRequestPayload> OnFriendRequestAdded;
 
-        // TODO: refactor into async promises/tasks
+        [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string userId);
+        UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId);
         void RemoveFriend(string userId);
         void GetFriends(int limit, int skip);
         void GetFriends(string usernameOrId, int limit);
@@ -34,5 +35,6 @@ namespace DCl.Social.Friends
         [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
         void CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
+        UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId);
     }
 }
