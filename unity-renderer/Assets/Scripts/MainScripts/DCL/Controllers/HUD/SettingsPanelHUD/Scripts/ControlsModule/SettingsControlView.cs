@@ -1,10 +1,10 @@
 using DCL.SettingsCommon;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsPanelHUD.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
 using QualitySettings = DCL.SettingsCommon.QualitySettings;
@@ -26,7 +26,7 @@ namespace DCL.SettingsPanelHUD.Controls
         [Space]
         [SerializeField] private GameObject betaIndicator;
         [SerializeField] private ButtonComponentView infoButton;
-        [SerializeField] private GameObject tooltip;
+        [SerializeField] private TooltipComponentView tooltip;
 
         [Space]
         [SerializeField] private List<TextMeshProUGUI> valueLabels;
@@ -56,7 +56,8 @@ namespace DCL.SettingsPanelHUD.Controls
 
             betaIndicator.SetActive(model.isBeta);
             infoButton.gameObject.SetActive(false);
-            infoButton.onClick.AddListener(() => tooltip.SetActive(true));
+            tooltip.SetModel(new TooltipComponentModel("This setting is being controlled by the creator"));
+            infoButton.onClick.AddListener(() => tooltip.Show());
 
             title.text = model.title;
             originalTitleColor = title.color;
