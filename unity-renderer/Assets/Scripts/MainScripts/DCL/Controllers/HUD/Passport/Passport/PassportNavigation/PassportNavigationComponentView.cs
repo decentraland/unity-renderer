@@ -95,8 +95,6 @@ namespace DCL.Social.Passports
             }
         }
 
-        private List<GameObject> objs = new List<GameObject>();
-
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
             nftWearablesCarousel.CleanInstantiatedItems();
@@ -150,7 +148,6 @@ namespace DCL.Social.Passports
             {
                 nftIconsEntryPool.Release(poolObject);
             }
-
             nftIconPoolableQueue = new List<PoolableObject>();
         }
 
@@ -160,7 +157,6 @@ namespace DCL.Social.Passports
             {
                 nftPagesEntryPool.Release(poolObject);
             }
-
             nftPagesPoolableQueue = new List<PoolableObject>();
         }
 
