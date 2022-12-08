@@ -334,14 +334,14 @@ public class ExploreV2MenuComponentControllerTests
     public void GoToSectionCorrectly(ExploreSection section)
     {
         // Arrange //FD:: commented modified below
-        // if (section == ExploreSection.Backpack)
-        //     DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
-        // else
-        //     DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
+        if (section == ExploreSection.Backpack)
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
+        else
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
 
         // FD:: test new version
-        if (section == ExploreSection.Backpack)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
+        // if (section == ExploreSection.Backpack)
+        //     DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
             
 
         // Act
