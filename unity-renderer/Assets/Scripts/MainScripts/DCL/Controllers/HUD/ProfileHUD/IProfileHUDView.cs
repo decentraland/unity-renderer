@@ -11,6 +11,4 @@ public interface IProfileHUDView
     event EventHandler WalletPrivacyPolicyPressed;
     event EventHandler NonWalletTermsAndServicesPressed;
     event EventHandler NonWalletPrivacyPolicyPressed;
-
-    protected void CopyAdress();
 }
