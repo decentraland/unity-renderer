@@ -68,13 +68,13 @@ namespace DCL.Social.Friends
             if (recipientProfile != null)
             {
                 view.SetRecipientName(recipientProfile.userName);
-                view.SetRecipientProfilePicture(recipientProfile.snapshotObserver);
+                view.SetRecipientProfilePicture(recipientProfile.face256SnapshotURL);
             }
             else
                 Debug.LogError($"Cannot display user profile {friendRequest.To}, is not allocated");
 
             var ownProfile = userProfileBridge.GetOwn();
-            view.SetSenderProfilePicture(ownProfile.snapshotObserver);
+            view.SetSenderProfilePicture(ownProfile.face256SnapshotURL);
 
             view.Show();
         }
