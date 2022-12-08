@@ -1,4 +1,4 @@
-Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7_EXP_v2"
+Shader "CustomShader/CGGen/Unlit/S_InfiniteFloor_r1_7F"
 {
     Properties
     {
