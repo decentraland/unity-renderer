@@ -35,7 +35,6 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            // context = new RPCContext();
             context = DataStore.i.rpc.context;
 
             var (clientTransport, serverTransport) = MemoryTransport.Create();
@@ -68,19 +67,17 @@ namespace Tests
         {
             yield return UniTask.ToCoroutine(async () =>
             {
-                const string SERVICE_NAME = "RpcSceneControllerService";
-
                 string invalidScenePortName = "test-...";
                 UInt32 portId = 111;
                 RpcServerPort<RPCContext> testPort1 = new RpcServerPort<RPCContext>(portId, invalidScenePortName, new CancellationToken());
                 SceneControllerServiceImpl.RegisterService(testPort1);
-                Assert.Throws(Is.TypeOf<Exception>().And.Message.EqualTo($"Module ${SERVICE_NAME} is not available for port {invalidScenePortName} ({portId}))"), () => testPort1.LoadModule(SERVICE_NAME));
+                Assert.Throws(Is.TypeOf<Exception>().And.Message.EqualTo($"Module ${RpcSceneControllerServiceCodeGen.ServiceName} is not available for port {invalidScenePortName} ({portId}))"), () => testPort1.LoadModule(RpcSceneControllerServiceCodeGen.ServiceName));
                 testPort1.Close();
 
                 string validScenePortName = "scene-12324";
                 RpcServerPort<RPCContext> testPort2 = new RpcServerPort<RPCContext>(111, validScenePortName, new CancellationToken());
                 SceneControllerServiceImpl.RegisterService(testPort2);
-                Assert.DoesNotThrow(() => testPort2.LoadModule(SERVICE_NAME));
+                Assert.DoesNotThrow(() => testPort2.LoadModule(RpcSceneControllerServiceCodeGen.ServiceName));
                 testPort2.Close();
             });
         }
