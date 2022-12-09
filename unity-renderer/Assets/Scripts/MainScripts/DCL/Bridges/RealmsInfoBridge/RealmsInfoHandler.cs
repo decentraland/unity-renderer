@@ -4,6 +4,7 @@ using Variables.RealmsInfo;
 using System.Collections.Generic;
 using System.Linq;
 using Decentraland.Bff;
+using Google.Protobuf;
 
 namespace DCL
 {
@@ -40,7 +41,8 @@ namespace DCL
 
         public void SetAbout(string json)
         {
-            AboutResponse aboutResponse = AboutResponse.Parser.ParseJson(json);
+            JsonParser jsonParser = new JsonParser(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
+            AboutResponse aboutResponse = jsonParser.Parse<AboutResponse>(json);
             playerRealmAboutConfiguration.Set(aboutResponse.Configurations);
             playerRealmAboutContent.Set(aboutResponse.Content);
             playerRealmAboutLambda.Set(aboutResponse.Lambdas);

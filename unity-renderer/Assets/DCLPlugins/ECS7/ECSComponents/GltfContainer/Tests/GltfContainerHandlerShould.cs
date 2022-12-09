@@ -6,6 +6,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -51,8 +52,8 @@ namespace Tests
             pointerColliderComponent = internalEcsComponents.onPointerColliderComponent;
             physicColliderComponent = internalEcsComponents.physicColliderComponent;
             dataStoreEcs7 = new DataStore_ECS7();
-
-            handler = new GltfContainerHandler(pointerColliderComponent, physicColliderComponent, renderersComponent, dataStoreEcs7);
+            
+            handler = new GltfContainerHandler(pointerColliderComponent, physicColliderComponent, renderersComponent, dataStoreEcs7, new DataStore_FeatureFlag());
             handler.OnComponentCreated(scene, entity);
         }
 

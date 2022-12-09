@@ -22,11 +22,6 @@ public class ECS7TestScene : IParcelScene
     public ContentProvider contentProvider { get; } = new ContentProvider();
     public bool isPersistent { set; get; } = false;
     public bool isPortableExperience { get; set; } = false;
-
-    public void MarkInitMessagesDone()
-    {
-    }
-
     public bool IsInitMessageDone() =>
         true;
 

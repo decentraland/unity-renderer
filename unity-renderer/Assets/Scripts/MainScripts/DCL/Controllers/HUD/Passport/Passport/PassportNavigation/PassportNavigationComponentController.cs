@@ -14,8 +14,8 @@ namespace DCL.Social.Passports
         private readonly IWearableItemResolver wearableItemResolver;
         private readonly DataStore dataStore;
 
-        private IPassportNavigationComponentView view;
-        private HashSet<string> cachedAvatarEquippedWearables = new HashSet<string>();
+        private readonly IPassportNavigationComponentView view;
+        private HashSet<string> cachedAvatarEquippedWearables = new ();
         public event Action<string> OnClickBuyNft;
 
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, DataStore dataStore)
@@ -27,21 +27,21 @@ namespace DCL.Social.Passports
             view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
+        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
 
-        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
+        private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
-            string filteredName = await FilterContent(userProfile.userName);
+            string filteredName = await FilterContentAsync(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
             if (!userProfile.isGuest)
             {
-                string filteredDescription = await FilterContent(userProfile.description);
+                string filteredDescription = await FilterContentAsync(userProfile.description);
                 view.SetDescription(filteredDescription);
-                await LoadAndDisplayEquippedWearables(userProfile);
+                await LoadAndDisplayEquippedWearablesAsync(userProfile);
             }
         }
-        private async UniTask LoadAndDisplayEquippedWearables(UserProfile userProfile)
+        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
             foreach (var t in userProfile.avatar.wearables)
@@ -52,17 +52,16 @@ namespace DCL.Social.Passports
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems);
+                    view.SetCollectibleWearables(wearableItems);
                     return;
                 }
             }
         }
 
-        private async UniTask<string> FilterContent(string filterContent)
-        {
-            return IsProfanityFilteringEnabled()
+        private async UniTask<string> FilterContentAsync(string filterContent) =>
+            IsProfanityFilteringEnabled()
                 ? await profanityFilter.Filter(filterContent)
                 : filterContent;
-        }
 
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();

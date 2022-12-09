@@ -2,7 +2,7 @@ using DCL.Social.Friends;
 using System;
 
 [Serializable]
-public class PlayerPassportModel : BaseComponentModel
+public record PlayerPassportModel
 {
     public string name;
     public string userId;

@@ -19,12 +19,12 @@ namespace DCLPlugins.RealmPlugin
             jumpHomeButtonVisible = dataStoreHUDs.jumpHomeButtonVisible;
         }
 
+        public void Dispose() { }
+
         public void OnEnteredRealm(bool isWorld, AboutConfiguration realmConfiguration)
         {
             minimapVisible.Set(realmConfiguration.Minimap.Enabled);
             jumpHomeButtonVisible.Set(isWorld);
         }
-
-        public void Dispose() { }
     }
 }

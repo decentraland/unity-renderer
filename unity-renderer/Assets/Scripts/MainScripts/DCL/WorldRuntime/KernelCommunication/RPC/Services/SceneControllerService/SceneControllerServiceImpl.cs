@@ -34,6 +34,7 @@ namespace RPC.Services
             sceneNumber = request.SceneNumber;
 
             List<ContentServerUtils.MappingPair> parsedContent = new List<ContentServerUtils.MappingPair>();
+
             for (var i = 0; i < request.Entity.Content.Count; i++)
             {
                 parsedContent.Add(new ContentServerUtils.MappingPair()
@@ -90,6 +91,7 @@ namespace RPC.Services
         }
 
         private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
+
         public async UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request, RPCContext context, CancellationToken ct)
         {
             // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - scene number: {sceneNumber}");
@@ -102,11 +104,11 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.SendCrdt() - {request.Payload}");
+            IParcelScene scene = null;
 
             // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
             // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
-            await UniTask.WaitUntil(() => context.crdt.MessagingControllersManager.ContainsController(sceneNumber),
+            await UniTask.WaitUntil(() => context.crdt.WorldState.TryGetScene(sceneNumber, out scene),
                 cancellationToken: ct);
 
             await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
@@ -117,6 +119,7 @@ namespace RPC.Services
             try
             {
                 int counter = 0;
+
                 using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
                 {
                     while (iterator.MoveNext())
@@ -125,16 +128,24 @@ namespace RPC.Services
                             continue;
 
                         context.crdt.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
+                        counter++;
                     }
                 }
 
-                if (context.crdt.WorldState.TryGetScene(sceneNumber, out IParcelScene scene))
+                if (counter > 0)
                 {
                     // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
                     // kernel won't be sending that message for those scenes
                     if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
                     {
-                        scene.MarkInitMessagesDone();
+                        context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                        {
+                            sceneNumber = sceneNumber,
+                            tag = "scene",
+                            payload = new Protocol.SceneReady(),
+                            method = MessagingTypes.INIT_DONE,
+                            type = QueuedSceneMessage.Type.SCENE_MESSAGE
+                        });
                     }
                 }
             }

@@ -140,7 +140,7 @@ MonoBehaviour:
   horizonPlaneHeight:
   - percentage: 0
     value: 0
-  horizonPlaneSmoothRange: {x: 0, y: 0}
+  horizonPlaneSmoothRange: {x: 0.25362316, y: 0.84967387}
   horizonLightIntensity: 0
   ambientTrilight: 1
   ambientSkyColor:
@@ -301,11 +301,11 @@ MonoBehaviour:
   fogColor:
     serializedVersion: 2
     key0: {r: 0.1604927, g: 0.09189214, b: 0.3301887, a: 1}
-    key1: {r: 0.48869988, g: 0.49056602, b: 0.43271625, a: 1}
-    key2: {r: 0.4001743, g: 0.5, b: 0.36084905, a: 0}
-    key3: {r: 0.46226418, g: 0.4392157, b: 0.14117648, a: 0}
-    key4: {r: 0.16596214, g: 0.10720008, b: 0.31132078, a: 0}
-    key5: {r: 0.15780951, g: 0.08170166, b: 0.33962262, a: 0}
+    key1: {r: 0.56828094, g: 0.5943396, b: 0.4177198, a: 1}
+    key2: {r: 0.41352376, g: 0.5283019, b: 0.31149876, a: 0}
+    key3: {r: 0.5188679, g: 0.5112195, b: 0.45768064, a: 0}
+    key4: {r: 0.22201478, g: 0.15138839, b: 0.3962264, a: 0}
+    key5: {r: 0.22201478, g: 0.15138839, b: 0.3962264, a: 0}
     key6: {r: 0.13333334, g: 0, b: 0.28235295, a: 0}
     key7: {r: 0.13333334, g: 0, b: 0.28235295, a: 0}
     ctime0: 0
@@ -329,7 +329,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   fogDensity: 0.04
   fogStartDistance: 0
-  fogEndDistance: 1500
+  fogEndDistance: 800
   useDirectionalLight: 1
   directionalLightLayer:
     lightColor:
@@ -499,7 +499,7 @@ MonoBehaviour:
     timeSpan_End: 5
     fadingInTime: 5
     fadingOutTime: 5
-    tintPercentage: 0
+    tintPercentage: 100
     renderDistance: []
     texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
     cubemap: {fileID: 0}
@@ -533,7 +533,7 @@ MonoBehaviour:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 3
     tiling: {x: 27.3, y: 4}
-    flipbookRowsAndColumns: {x: 2.43, y: -9.78}
+    flipbookRowsAndColumns: {x: 2.43, y: -8}
     flipbookAnimSpeed: 0
     offset: []
     satelliteWidthHeight: []
@@ -568,7 +568,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 1
-    renderType: 0
+    renderType: 1
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -734,7 +734,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Moon

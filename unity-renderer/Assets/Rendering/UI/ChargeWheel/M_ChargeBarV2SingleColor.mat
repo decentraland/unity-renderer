@@ -2,16 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 8
+  serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_ChargeBarV2SingleColor
   m_Shader: {fileID: 4800000, guid: 537b3c029e4916749868ad462dca58c5, type: 3}
-  m_ValidKeywords:
-  - ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED
-  m_InvalidKeywords: []
+  m_ShaderKeywords: ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -37,7 +35,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
     - ENUM_173FCA8E617C4725B6502C6FBE756CEC: 1
     - Vector1_0e56f9e08ecc4d168e49d8ff9881124e: 0
@@ -51,7 +48,7 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _fillHead: 0.000114941366
+    - _fillHead: 1
     - _fillTail: 0
     - _fillTails: 0.5
     m_Colors:

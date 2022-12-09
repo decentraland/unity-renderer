@@ -14,7 +14,8 @@ namespace DCL.ECSComponents
 {
     public class GltfContainerHandler : IECSComponentHandler<PBGltfContainer>
     {
-        const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
+        private const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
+        private const string FEATURE_GLTFAST = "gltfast";
 
         internal RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
@@ -27,12 +28,14 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalColliders> physicColliderComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly DataStore_ECS7 dataStoreEcs7;
+        private DataStore_FeatureFlag featureFlags;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicColliderComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
-            DataStore_ECS7 dataStoreEcs7)
+            DataStore_ECS7 dataStoreEcs7, DataStore_FeatureFlag featureFlags)
         {
+            this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
             this.physicColliderComponent = physicColliderComponent;
             this.renderersComponent = renderersComponent;
@@ -47,7 +50,7 @@ namespace DCL.ECSComponents
             transform.SetParent(entity.gameObject.transform);
             transform.ResetLocalTRS();
 
-            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles);
+            gltfLoader = new RendereableAssetLoadHelper(scene.contentProvider, scene.sceneData.baseUrlBundles, () => featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST));
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
@@ -85,18 +88,12 @@ namespace DCL.ECSComponents
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
 
             // set colliders and renderers
-            for (int i = 0; i < pointerColliders.Count; i++)
-            {
-                pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]);
-            }
-            for (int i = 0; i < physicColliders.Count; i++)
-            {
-                physicColliderComponent.AddCollider(scene, entity, physicColliders[i]);
-            }
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                renderersComponent.AddRenderer(scene, entity, renderers[i]);
-            }
+            for (int i = 0; i < pointerColliders.Count; i++) { pointerColliderComponent.AddCollider(scene, entity, pointerColliders[i]); }
+
+            for (int i = 0; i < physicColliders.Count; i++) { physicColliderComponent.AddCollider(scene, entity, physicColliders[i]); }
+
+            for (int i = 0; i < renderers.Count; i++) { renderersComponent.AddRenderer(scene, entity, renderers[i]); }
+
             // TODO: modify Animator component to remove `AddShapeReady` usage
             dataStoreEcs7.AddShapeReady(entity.entityId, gameObject);
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
@@ -112,35 +109,30 @@ namespace DCL.ECSComponents
                 MaterialTransitionController material = transitionController[i];
                 Object.Destroy(material);
             }
+
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 
         private void CleanUp(IParcelScene scene, IDCLEntity entity)
         {
             int count = pointerColliders?.Count ?? 0;
-            for (int i = 0; i < count; i++)
-            {
-                pointerColliderComponent.RemoveCollider(scene, entity, pointerColliders[i]);
-            }
+
+            for (int i = 0; i < count; i++) { pointerColliderComponent.RemoveCollider(scene, entity, pointerColliders[i]); }
+
             count = physicColliders?.Count ?? 0;
-            for (int i = 0; i < count; i++)
-            {
-                physicColliderComponent.RemoveCollider(scene, entity, physicColliders[i]);
-            }
+
+            for (int i = 0; i < count; i++) { physicColliderComponent.RemoveCollider(scene, entity, physicColliders[i]); }
+
             count = renderers?.Count ?? 0;
-            for (int i = 0; i < count; i++)
-            {
-                renderersComponent.RemoveRenderer(scene, entity, renderers[i]);
-            }
+
+            for (int i = 0; i < count; i++) { renderersComponent.RemoveRenderer(scene, entity, renderers[i]); }
 
             physicColliders = null;
             pointerColliders = null;
             renderers = null;
 
-            if (!string.IsNullOrEmpty(prevLoadedGltf))
-            {
-                dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
-            }
+            if (!string.IsNullOrEmpty(prevLoadedGltf)) { dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf); }
+
             // TODO: modify Animator component to remove `RemoveShapeReady` usage
             dataStoreEcs7.RemoveShapeReady(entity.entityId);
 
@@ -185,9 +177,11 @@ namespace DCL.ECSComponents
                 rendererList.Add(renderer);
                 Transform rendererT = renderer.transform;
                 bool alreadyHasCollider = false;
+
                 for (int i = 0; i < rendererT.childCount; i++)
                 {
                     Transform child = rendererT.GetChild(i);
+
                     if (child.gameObject.layer != PhysicsLayers.onPointerEventLayer)
                         continue;
 
