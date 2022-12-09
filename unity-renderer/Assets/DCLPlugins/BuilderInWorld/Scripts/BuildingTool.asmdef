@@ -52,7 +52,6 @@
         "GUID:ee6523961ef177343ad763fcd55c7c46",
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
         "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
-        "GUID:4441321ef4d7544189dc9aaf74e00438",
         "GUID:a4bf61c057a098f4ca05b539a6d8c0fe",
         "GUID:75c2f974443a1fc4795b5687b5e725ef",
         "GUID:dffbb581f2650ea4990781f603ac258a",
@@ -67,7 +66,6 @@
         "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
         "GUID:7fe146b43e76fe745aeaf2020feb54b7",
         "GUID:f070f44586498a44c9e6d2ea3e166379",
-        "GUID:7653ee177bcfe9f498e2fe0753f930d6",
         "GUID:e6f5b34eba99b4ed9836f899578ee258",
         "GUID:029e05fd02d6c49d5ac9dd7e3725a35b",
         "GUID:2995626b54c60644988f134a69a77450",
@@ -96,7 +94,9 @@
         "GUID:ba1fa35f5f69c024fabff38cdd17f569",
         "GUID:ab04b35c8c4a57847889009b508e53ae",
         "GUID:fb529e4714eec4e4da9a3ff3e4da8eee",
-        "GUID:44a9db8f655ab05409802e5476cf9dd3"
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "DeployedScenesFetcher",
+        "LandWIthAccess"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
