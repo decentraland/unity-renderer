@@ -40,22 +40,24 @@ namespace DCL.Builder
         {
 
             const string builderSourceName = "builder";
-            const string builderInWorldSourceName = "builder-in-world";
+            // const string builderInWorldSourceName = "builder-in-world"; // FD:: commented
 
             metadata = pointerData.metadata;
             entityId = pointerData.id;
 
             deploymentSource = Source.SDK;
 
-            if (pointerData.content != null && pointerData.content.Any(content => content.file == AssetCatalogUrlSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME)) // FD:: chaged class to AssetCatalogUrlSetting 
-            {
-                deploymentSource = Source.BUILDER_IN_WORLD;
-            }
-            else if (metadata.source != null && metadata.source.origin == builderInWorldSourceName)
-            {
-                deploymentSource = Source.BUILDER_IN_WORLD;
-            }
-            else if (metadata.source != null && metadata.source.origin == builderSourceName)
+            // FD:: commented
+            // if (pointerData.content != null && pointerData.content.Any(content => content.file == AssetCatalogUrlSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME)) // FD:: chaged class to AssetCatalogUrlSetting 
+            // {
+            //     deploymentSource = Source.BUILDER_IN_WORLD;
+            // }
+            // else if (metadata.source != null && metadata.source.origin == builderInWorldSourceName)
+            // {
+            //     deploymentSource = Source.BUILDER_IN_WORLD;
+            // }
+            // else // FD:: commented to here
+            if (metadata.source != null && metadata.source.origin == builderSourceName)
             {
                 deploymentSource = Source.BUILDER;
             }

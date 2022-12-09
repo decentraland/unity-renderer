@@ -24,11 +24,11 @@ public static class AudioScriptableObjects
 {
     // Builder
 
-    private static AudioEvent builderEnterEvent;
-    public static AudioEvent builderEnter => CommonScriptableObjects.GetOrLoad(ref builderEnterEvent, "ScriptableObjects/AudioEvents/Builder/BuilderEnter");
+    // private static AudioEvent builderEnterEvent; // FD:: commented
+    // public static AudioEvent builderEnter => CommonScriptableObjects.GetOrLoad(ref builderEnterEvent, "ScriptableObjects/AudioEvents/Builder/BuilderEnter"); // FD:: commented
 
-    private static AudioEvent builderReadyEvent;
-    public static AudioEvent builderReady => CommonScriptableObjects.GetOrLoad(ref builderReadyEvent, "ScriptableObjects/AudioEvents/Builder/BuilderReady");
+    // private static AudioEvent builderReadyEvent; // FD:: commented
+    // public static AudioEvent builderReady => CommonScriptableObjects.GetOrLoad(ref builderReadyEvent, "ScriptableObjects/AudioEvents/Builder/BuilderReady"); // FD:: commented
 
     // Common UI
 
@@ -115,8 +115,8 @@ public static class AudioScriptableObjects
     
     public static void UnloadAll()
     {
-        Resources.UnloadAsset(builderEnterEvent);
-        Resources.UnloadAsset(builderReadyEvent);
+        // Resources.UnloadAsset(builderEnterEvent); // FD:: commented
+        // Resources.UnloadAsset(builderReadyEvent); // FD:: commented
         Resources.UnloadAsset(cameraFadeInEvent);
         Resources.UnloadAsset(cameraFadeOutEvent);
         Resources.UnloadAsset(buttonHoverEvent);
