@@ -106,15 +106,14 @@ namespace DCL.Social.Friends
         {
             model.RequestDate = timestamp;
             dateLabel.text = timestamp.Date.ToString("MMM dd").ToUpper();
-            //dateLabel.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd").ToUpper(); ;
         }
 
         public void SetRecipientName(string userName)
         {
             model.UserName = userName;
             nameLabel.text = userName;
-            rejectSuccessLabel.text = rejectSuccessLabel.text.Replace("{userName}", userName);
-            confirmSuccessLabel.text = confirmSuccessLabel.text.Replace("{userName}", userName);
+            rejectSuccessLabel.text = $"{userName} request rejected!";
+            confirmSuccessLabel.text = $"{userName} and you are friends now!";
         }
 
         public void SetOtherProfilePicture(string uri)
