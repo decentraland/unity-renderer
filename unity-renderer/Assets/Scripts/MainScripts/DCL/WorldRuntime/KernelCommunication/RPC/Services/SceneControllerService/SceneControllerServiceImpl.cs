@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
-using DCL.Helpers;
 using DCL.CRDT;
+using DCL.Helpers;
 using DCL.Models;
 using rpc_csharp;
 using System;
@@ -51,20 +51,39 @@ namespace RPC.Services
                 parsedParcels[i] = Utils.StringToVector2Int(parsedMetadata.scene.parcels[i]);
             }
 
-            LoadParcelScenesMessage.UnityParcelScene unityParcelScene = new LoadParcelScenesMessage.UnityParcelScene()
-            {
-                sceneNumber = this.sceneNumber,
-                id = request.Entity.Id,
-                sdk7 = request.Sdk7,
-                baseUrl = request.BaseUrl,
-                baseUrlBundles = request.BaseUrlAssetBundles,
-                basePosition = Utils.StringToVector2Int(parsedMetadata.scene.@base),
-                parcels = parsedParcels,
-                contents = parsedContent
-            };
-
             await UniTask.SwitchToMainThread(ct);
-            context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
+
+            if (request.IsGlobalScene)
+            {
+                CreateGlobalSceneMessage globalScene = new CreateGlobalSceneMessage()
+                {
+                    contents = parsedContent,
+                    id = request.Entity.Id,
+                    name = request.SceneName,
+                    baseUrl = request.BaseUrl,
+                    sceneNumber = sceneNumber,
+                    isPortableExperience = request.IsPortableExperience,
+                    icon = string.Empty // TODO: add icon url!
+                };
+
+                context.crdt.SceneController.CreateGlobalScene(globalScene);
+            }
+            else
+            {
+                LoadParcelScenesMessage.UnityParcelScene unityParcelScene = new LoadParcelScenesMessage.UnityParcelScene()
+                {
+                    sceneNumber = sceneNumber,
+                    id = request.Entity.Id,
+                    sdk7 = request.Sdk7,
+                    baseUrl = request.BaseUrl,
+                    baseUrlBundles = request.BaseUrlAssetBundles,
+                    basePosition = Utils.StringToVector2Int(parsedMetadata.scene.@base),
+                    parcels = parsedParcels,
+                    contents = parsedContent
+                };
+
+                context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
+            }
 
             LoadSceneResult result = new LoadSceneResult() { Success = true };
             return result;
