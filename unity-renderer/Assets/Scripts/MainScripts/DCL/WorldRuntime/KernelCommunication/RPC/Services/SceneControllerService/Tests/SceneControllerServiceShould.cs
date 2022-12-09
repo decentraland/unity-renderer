@@ -88,7 +88,6 @@ namespace Tests
             yield return UniTask.ToCoroutine(async () =>
             {
                 var rpcClient = await CreateRpcClient(testClientTransport);
-
                 int testSceneNumber = 987;
 
                 // Check scene is not already loaded
@@ -97,27 +96,7 @@ namespace Tests
                 // Simulate client requesting `LoadScene()`...
                 try
                 {
-                    await rpcClient.LoadScene(new LoadSceneMessage()
-                    {
-                        SceneNumber = testSceneNumber,
-                        Sdk7 = false,
-                        IsPortableExperience = false,
-                        IsGlobalScene = false,
-                        BaseUrl = "testUrl",
-                        BaseUrlAssetBundles = "testUrl",
-                        Entity = new Entity()
-                        {
-                            Id = "temptation",
-                            Metadata = JsonUtility.ToJson(new CatalystSceneEntityMetadata()
-                            {
-                                scene = new CatalystSceneEntityMetadata.Scene()
-                                {
-                                    @base = "0,0",
-                                    parcels = new string[] { "0,0" }
-                                }
-                            })
-                        }
-                    });
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(testSceneNumber));
                 }
                 catch (Exception e)
                 {
@@ -142,21 +121,37 @@ namespace Tests
             });
         }
 
-        /*[UnityTest]
-        public IEnumerator ProcessIncomingSceneCRDTMessage()
+        [UnityTest]
+        public IEnumerator ProcessSceneCRDTMessagesCorrectly()
         {
             yield return UniTask.ToCoroutine(async () =>
             {
-                ClientRpcSceneControllerService clientRpcSceneControllerService = await CreateClientRpcSceneControllerService(testClientTransport);
+                ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
+                int testSceneNumber = 696;
 
-                var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
-                messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
-                messagingControllersManager.ContainsController(Arg.Any<int>()).Returns(true);
+                // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
+                try
+                {
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(testSceneNumber));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
 
-                var worldState = Substitute.For<IWorldState>();
-                worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>()).Returns(false);
+                // Send entity creation CRDT message
 
-                int sceneNumber = 666;
+                // ...
+                bool messageReceived = false;
+                void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
+                {
+                    // Assert.AreEqual(sceneNumber, incommingSceneNumber);
+                    // Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                    // Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
+                    // Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                    messageReceived = true;
+                }
+                context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
@@ -165,29 +160,11 @@ namespace Tests
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
 
-                bool messageReceived = false;
-
-                // Check if incoming CRDT is dispatched as scene message
-                void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
-                {
-                    Assert.AreEqual(sceneNumber, incomingSceneNumber);
-                    Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
-                    Assert.AreEqual(crdtMessage.timestamp, incomingCrdtMessage.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
-                    messageReceived = true;
-                }
-
-                context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
-                context.crdt.MessagingControllersManager = messagingControllersManager;
-                context.crdt.WorldState = worldState;
-
-                // Simulate client sending `CRDTSceneMessage`...
                 try
                 {
-                    await clientRpcSceneControllerService.SendCrdt(new CRDTSceneMessage()
+                    await rpcClient.SendCrdt(new CRDTSceneMessage()
                     {
-                        SceneNumber = sceneNumber,
-                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtSceneMessage))
+                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
                     });
                 }
                 catch (Exception e)
@@ -200,22 +177,97 @@ namespace Tests
                 }
 
                 Assert.IsTrue(messageReceived);
-            });
-        }*/
 
-        /*static CRDTSceneMessage CreateCRDTSceneMessage(CRDTMessage message)
+                /*var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
+                messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
+                messagingControllersManager.ContainsController(Arg.Any<int>()).Returns(true);
+
+                var worldState = Substitute.For<IWorldState>();
+                worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>()).Returns(false);
+
+                CRDTMessage crdtMessage = new CRDTMessage()
+                {
+                    key1 = 7693,
+                    timestamp = 799,
+                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                };
+
+                bool messageReceived = false;
+
+                // Check if incoming CRDT is dispatched as scene message
+                void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
+                {
+                    Assert.AreEqual(sceneNumber, incommingSceneNumber);
+                    Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                    Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
+                    Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                    messageReceived = true;
+                }
+
+                context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
+                context.crdt.MessagingControllersManager = messagingControllersManager;
+                context.crdt.WorldState = worldState;
+
+                // Simulate client sending `crdtMessage` CRDT
+                try
+                {
+                    await rpcClient.SendCrdt(new CRDTManyMessages()
+                    {
+                        SceneNumber = sceneNumber,
+                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    context.crdt.CrdtMessageReceived -= OnCrdtMessageReceived;
+                }
+
+                Assert.IsTrue(messageReceived);*/
+            });
+        }
+
+        byte[] CreateCRDTMessage(CRDTMessage message)
         {
             using (MemoryStream msgStream = new MemoryStream())
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
                     KernelBinaryMessageSerializer.Serialize(msgWriter, message);
-                    return new CRDTSceneMessage() { Payload = msgStream.ToString() };
+                    return msgStream.ToArray();
                 }
             }
-        }*/
+        }
 
-        static bool AreEqual(byte[] a, byte[] b)
+        LoadSceneMessage CreateLoadSceneMessage(int sceneNumber)
+        {
+            return new LoadSceneMessage()
+            {
+                SceneNumber = sceneNumber,
+                Sdk7 = false,
+                IsPortableExperience = false,
+                IsGlobalScene = false,
+                BaseUrl = "testUrl",
+                BaseUrlAssetBundles = "testUrl",
+                Entity = new Entity()
+                {
+                    Id = "temptation",
+                    Metadata = JsonUtility.ToJson(new CatalystSceneEntityMetadata()
+                    {
+                        scene = new CatalystSceneEntityMetadata.Scene()
+                        {
+                            @base = "0,0",
+                            parcels = new string[] { "0,0" }
+                        }
+                    })
+                }
+            };
+        }
+
+        bool AreEqual(byte[] a, byte[] b)
         {
             if (a == null && b == null)
                 return true;
@@ -235,7 +287,7 @@ namespace Tests
             return true;
         }
 
-        static async UniTask<ClientRpcSceneControllerService> CreateRpcClient(ITransport transport)
+        async UniTask<ClientRpcSceneControllerService> CreateRpcClient(ITransport transport)
         {
             RpcClient client = new RpcClient(transport);
             RpcClientPort port = await client.CreatePort("scene-666999");
