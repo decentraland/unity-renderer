@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FriendRequests
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f2f6767a9ce034bd6ae573727a6399e3, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 6ebca6627bf834831a528f22f85eb9de, type: 3}
+  - {fileID: 21300000, guid: b4dd3cb22062748f3b9fd6a24bbf12dc, type: 3}
+  - {fileID: 21300000, guid: 1d615c35569ea4c1d887f690fd234748, type: 3}
+  - {fileID: 21300000, guid: 1e1fdbd5f5c9f48ffaf7bbc17b7926b5, type: 3}
+  - {fileID: 21300000, guid: c1efd816f289d442281c6d21fcb60c1f, type: 3}
+  - {fileID: 21300000, guid: 4a4af846e0dac4260b3f3337f1da4b65, type: 3}
+  - {fileID: 21300000, guid: 614df7c7ef50e40d19e8ff6fe4330290, type: 3}
+  - {fileID: 21300000, guid: a6a789f86d8b749f6975a615ccb7e07e, type: 3}
+  - {fileID: 21300000, guid: b5fe8639261274e66ae19449ffe52662, type: 3}
+  - {fileID: 21300000, guid: 460a5d79d9d9f4adc82e0bd9f4a9765d, type: 3}
+  - {fileID: 21300000, guid: e4fd7b3a4c6ab4235a26f4d14ebfb83d, type: 3}
+  - {fileID: 21300000, guid: 5465911b00404492aba3f6cd07741ba7, type: 3}
+  - {fileID: 21300000, guid: bfdfc56d68b5345d8ab13e7aa3b96f34, type: 3}
+  - {fileID: 21300000, guid: 0c45511efa4b6498b9fb3142365e67fb, type: 3}
+  - {fileID: 21300000, guid: dd61d5dfb51bf4bc8bc686cc3ee1e445, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - BrokenHeart
+  - EnvelopeOpened
+  - Shadow
+  - TwistedLine32
+  - TriangleOutline32
+  - EllipseOutline32
+  - EnvelopeClosed
+  - LineArrow
+  - EllipseGradient
+  - FloorBright
+  - GradientShape
+  - BrokenHeart-1
+  - WarningSign
+  - FollowingIcon
+  - Spark32
+  m_RenderDataMap: {}
+  m_Tag: FriendRequests
+  m_IsVariant: 0
