@@ -139,9 +139,10 @@ namespace DCL.Social.Friends
         [Test]
         public void SetTimestamp()
         {
-            view.SetTimestamp(new DateTime(2022, 1, 14));
+            var testTimestamp = DateTime.Now;
+            view.SetTimestamp(testTimestamp);
 
-            Assert.AreEqual("January 14", view.dateLabel.text);
+            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd").ToUpper(), view.dateLabel.text);
         }
     }
 }

@@ -158,7 +158,7 @@ namespace DCL.Social.Friends
 
         public void SetTimestamp(DateTime date)
         {
-            dateLabel.text = date.Date.ToString("M");
+            dateLabel.text = date.Date.ToString("MMM dd").ToUpper();
         }
 
         private void ShowConfirmationToast()
