@@ -87,6 +87,7 @@ namespace DCL.Social.Passports
                 nftIconComponentView.onMarketplaceButtonClick.AddListener(() => CLickOnBuyWearable(wearable.id));
                 NFTIconComponentModel nftModel = new NFTIconComponentModel()
                 {
+                    showMarketplaceButton = wearable.IsCollectible(),
                     showType = wearable.IsCollectible(),
                     type = wearable.data.category,
                     marketplaceURI = "",
@@ -115,6 +116,7 @@ namespace DCL.Social.Passports
                     {
                         pageElements[j] = new ()
                         {
+                            showMarketplaceButton = true,
                             showType = true,
                             type = wearables[i+j].data.category,
                             marketplaceURI = "",
@@ -152,7 +154,9 @@ namespace DCL.Social.Passports
                     {
                         pageElements[j] = new ()
                         {
-                            showType = false,
+                            showMarketplaceButton = true,
+                            showType = true,
+                            type = "emote",
                             marketplaceURI = "",
                             name = wearables[i+j].GetName(),
                             rarity = wearables[i+j].rarity,
