@@ -768,7 +768,7 @@ namespace DCL
             Environment.i.messaging.manager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
 
-        public void CreateGlobalScene(string json)
+        public void CreateGlobalScene(CreateGlobalSceneMessage globalScene)
         {
 #if UNITY_EDITOR
             DebugConfig debugConfig = DataStore.i.debugConfig;
@@ -776,7 +776,6 @@ namespace DCL
             if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
                 return;
 #endif
-            CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
 
             // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
             //              It should never have references to UI systems or higher level systems.
