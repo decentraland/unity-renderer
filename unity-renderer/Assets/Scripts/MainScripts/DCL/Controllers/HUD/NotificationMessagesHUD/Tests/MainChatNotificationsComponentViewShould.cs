@@ -51,7 +51,7 @@ namespace DCL.Chat.Notifications
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
-            ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
+            ChatNotificationMessageComponentView addedNotification = (ChatNotificationMessageComponentView)view.notificationQueue.Dequeue();
 
             Assert.AreEqual(body, addedNotification.model.message);
             Assert.AreEqual(body, addedNotification.notificationMessage.text);
@@ -70,7 +70,7 @@ namespace DCL.Chat.Notifications
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
-            ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
+            ChatNotificationMessageComponentView addedNotification = (ChatNotificationMessageComponentView)view.notificationQueue.Dequeue();
 
             Assert.AreEqual($"{newMessage.body}", addedNotification.model.message);
             Assert.AreEqual($"{newMessage.body}", addedNotification.notificationMessage.text);
@@ -89,7 +89,7 @@ namespace DCL.Chat.Notifications
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
-            ChatNotificationMessageComponentView addedNotification = view.notificationQueue.Dequeue();
+            ChatNotificationMessageComponentView addedNotification = (ChatNotificationMessageComponentView)view.notificationQueue.Dequeue();
 
             Assert.AreEqual($"{newMessage.body}", addedNotification.model.message);
             Assert.AreEqual($"{newMessage.body}", addedNotification.notificationMessage.text);

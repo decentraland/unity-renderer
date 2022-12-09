@@ -1,5 +1,6 @@
 using AvatarSystem;
-using DCl.Social.Friends;
+using DCL.Social.Friends;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -26,6 +27,8 @@ namespace DCL.Social.Passports
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
+
             view = Substitute.For<IPlayerPassportHUDView>();
 
             currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
@@ -45,7 +48,10 @@ namespace DCL.Social.Passports
                                 userProfileBridge,
                                 socialAnalytics);
 
-            playerPreviewController = new PassportPlayerPreviewComponentController(Substitute.For<IPassportPlayerPreviewComponentView>());
+            var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
+            playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
+
+            playerPreviewController = new PassportPlayerPreviewComponentController(playerPreviewView);
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,

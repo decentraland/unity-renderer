@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCL.Shaders;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;

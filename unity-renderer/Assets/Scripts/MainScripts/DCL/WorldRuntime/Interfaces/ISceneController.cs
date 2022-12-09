@@ -23,7 +23,7 @@ namespace DCL
         void LoadParcelScenes(string JSONScenePayload);
         void UpdateParcelScenes(string JSONScenePayload);
         void UnloadAllScenesQueued();
-        void CreateGlobalScene(string json);
+        void CreateGlobalScene(CreateGlobalSceneMessage globalScene);
         void IsolateScene(IParcelScene sceneToActive);
         void ReIntegrateIsolatedScene();
 

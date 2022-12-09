@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -41,16 +42,19 @@ namespace DCL
             if (!library.Add(asset))
             {
                 Debug.Log("add to library fail?");
+
                 return false;
             }
 
             if (asset == null)
             {
                 Debug.LogWarning($"Asset is null when trying to add it to the library: hash == {this.GetId()}");
+
                 return false;
             }
 
             asset = library.Get(asset.id);
+
             return true;
         }
 
@@ -62,84 +66,87 @@ namespace DCL
                 loadCoroutine = null;
             }
 
-            if (asyncOp != null)
-            {
-                asyncOp.Dispose();
-            }
+            if (asyncOp != null) { asyncOp.Dispose(); }
 
-            for (int i = 0; i < dependencyPromises.Count; i++)
-            {
-                dependencyPromises[i].Unload();
-            }
+            for (int i = 0; i < dependencyPromises.Count; i++) { dependencyPromises[i].Unload(); }
 
             dependencyPromises.Clear();
 
-            if (asset != null)
-            {
-                asset.CancelShow();
-            }
+            if (asset != null) { asset.CancelShow(); }
 
             UnregisterConcurrentRequest();
         }
 
-        protected override void OnBeforeLoadOrReuse()
-        {
-        }
-        
-        protected override void OnAfterLoadOrReuse()
-        {
-        }
+        protected override void OnBeforeLoadOrReuse() { }
+
+        protected override void OnAfterLoadOrReuse() { }
 
         protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action<Exception> OnFail)
         {
-            string finalUrl = baseUrl + hash;
+            string localUrl = Application.dataPath + "/../AssetBundles/" + hash;
 
-            if (failedRequestUrls.Contains(finalUrl))
+            // Local Asset Bundles support, if you have the asset bundles in that folder, we are going to load them from there. This is a debug feature
+#if UNITY_EDITOR
+            if (File.Exists(localUrl))
             {
-                OnFail?.Invoke(new Exception($"The url {finalUrl} has failed"));
-                yield break;
+                Debug.Log($"File exists! {localUrl}");
+                LoadLocalAssetBundle(localUrl);
             }
+            else
+            {
+#endif
+                string finalUrl = baseUrl + hash;
 
-            yield return WaitForConcurrentRequestsSlot();
+                if (failedRequestUrls.Contains(finalUrl))
+                {
+                    OnFail?.Invoke(new Exception($"The url {finalUrl} has failed"));
 
-            RegisterConcurrentRequest();
+                    yield break;
+                }
+
+                yield return WaitForConcurrentRequestsSlot();
+
+                RegisterConcurrentRequest();
 #if (UNITY_EDITOR || UNITY_STANDALONE)
-            asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash),
-                disposeOnCompleted: false);
+                asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash),
+                    disposeOnCompleted: false);
 #else
             //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
 #endif
 
-            // 1. Download asset bundle, but don't load its objects yet
-            yield return asyncOp;
+                // 1. Download asset bundle, but don't load its objects yet
+                yield return asyncOp;
 
-            if (asyncOp.isDisposed)
-            {
-                OnFail?.Invoke(new Exception("Operation is disposed"));
-                yield break;
+                if (asyncOp.isDisposed)
+                {
+                    OnFail?.Invoke(new Exception("Operation is disposed"));
+
+                    yield break;
+                }
+
+                if (!asyncOp.isSucceded)
+                {
+                    if (VERBOSE)
+                        Debug.Log($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}");
+
+                    failedRequestUrls.Add(finalUrl);
+                    OnFail?.Invoke(new Exception($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}"));
+                    asyncOp.Dispose();
+
+                    yield break;
+                }
+
+                if (!LoadAssetBundle(OnFail, finalUrl))
+                    yield break;
+#if UNITY_EDITOR
             }
-
-            if (!asyncOp.isSucceded)
-            {
-                if (VERBOSE)
-                    Debug.Log($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}");
-                failedRequestUrls.Add(finalUrl);
-                OnFail?.Invoke(new Exception($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}"));
-                asyncOp.Dispose();
-                yield break;
-            }
-
-            if (!LoadAssetBundle(OnFail, finalUrl))
-                yield break;
+#endif
 
             // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
-            TextAsset metadata = asset.GetMetadata(); 
+            TextAsset metadata = asset.GetMetadata();
 
-            if (metadata != null)
-            {
-                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
-            }
+            if (metadata != null) { AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash); }
             else
             {
                 if (!AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
@@ -165,13 +172,20 @@ namespace DCL
 
             UnregisterConcurrentRequest();
 
-            foreach (var promise in dependencyPromises)
-            {
-                yield return promise;
-            }
+            foreach (var promise in dependencyPromises) { yield return promise; }
 
             assetBundlesLoader.MarkAssetBundleForLoad(asset, containerTransform, OnSuccess, OnFail);
         }
+
+#if UNITY_EDITOR
+        private void LoadLocalAssetBundle(string localUrl)
+        {
+            var assetBundle = AssetBundle.LoadFromFile(localUrl);
+            asset.SetAssetBundle(assetBundle);
+            asset.LoadMetrics();
+        }
+#endif
+
         private bool LoadAssetBundle(Action<Exception> OnFail, string finalUrl)
         {
             var assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
@@ -201,14 +215,11 @@ namespace DCL
             else
                 result += $"null request for url: {contentUrl + hash}\n";
 
-
             if (dependencyPromises != null && dependencyPromises.Count > 0)
             {
                 result += "Dependencies:\n\n";
-                foreach (var p in dependencyPromises)
-                {
-                    result += p.ToString() + "\n\n";
-                }
+
+                foreach (var p in dependencyPromises) { result += p.ToString() + "\n\n"; }
             }
 
             result += "Concurrent requests = " + concurrentRequests;
@@ -225,10 +236,7 @@ namespace DCL
 
         IEnumerator WaitForConcurrentRequestsSlot()
         {
-            while (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
-            {
-                yield return null;
-            }
+            while (concurrentRequests >= MAX_CONCURRENT_REQUESTS) { yield return null; }
         }
 
         void RegisterConcurrentRequest()
