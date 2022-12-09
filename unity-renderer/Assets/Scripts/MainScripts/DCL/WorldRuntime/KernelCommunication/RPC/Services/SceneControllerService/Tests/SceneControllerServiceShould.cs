@@ -126,40 +126,51 @@ namespace Tests
         {
             yield return UniTask.ToCoroutine(async () =>
             {
+                const int TEST_SCENE_NUMBER = 696;
+                const int ENTITY_ID = 666;
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
-                int testSceneNumber = 696;
 
                 // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
                 try
                 {
-                    await rpcClient.LoadScene(CreateLoadSceneMessage(testSceneNumber));
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
                 }
                 catch (Exception e)
                 {
                     Debug.LogError(e);
                 }
 
-                // Send entity creation CRDT message
+                // Check scene was created correctly and it has no entities
+                Assert.IsTrue(context.crdt.WorldState.TryGetScene(TEST_SCENE_NUMBER, out IParcelScene testScene));
+                Assert.IsTrue(testScene.entities.Count == 0);
 
-                // ...
+                ISceneController sceneController = Environment.i.world.sceneController;
+                ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+                ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+                Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(1);
+                crdtExecutors.Add(TEST_SCENE_NUMBER, new CRDTExecutor(testScene, componentsManager));
+                CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
+                    Environment.i.world.state, DataStore.i.rpc.context.crdt);
+
+                // Prepare entity creation CRDT message
+                CRDTMessage crdtMessage = new CRDTMessage()
+                {
+                    key1 = ENTITY_ID,
+                    key2 = 0,
+                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                };
+
                 bool messageReceived = false;
                 void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
                 {
-                    // Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    // Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
-                    // Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
-                    // Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
+                    Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
+                    Assert.AreEqual(crdtMessage.key2, incomingCrdtMessage.key2);
+                    Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
                 }
                 context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
 
-                CRDTMessage crdtMessage = new CRDTMessage()
-                {
-                    key1 = 7693,
-                    timestamp = 799,
-                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
-                };
-
+                // Send entity creation CRDT message
                 try
                 {
                     await rpcClient.SendCrdt(new CRDTSceneMessage()
@@ -176,57 +187,9 @@ namespace Tests
                     context.crdt.CrdtMessageReceived -= OnCrdtMessageReceived;
                 }
 
+                // Check message received correctly, and entity created correctly
                 Assert.IsTrue(messageReceived);
-
-                /*var messagingControllersManager = Substitute.For<IMessagingControllersManager>();
-                messagingControllersManager.HasScenePendingMessages(Arg.Any<int>()).Returns(false);
-                messagingControllersManager.ContainsController(Arg.Any<int>()).Returns(true);
-
-                var worldState = Substitute.For<IWorldState>();
-                worldState.TryGetScene(Arg.Any<int>(), out Arg.Any<IParcelScene>()).Returns(false);
-
-                CRDTMessage crdtMessage = new CRDTMessage()
-                {
-                    key1 = 7693,
-                    timestamp = 799,
-                    data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
-                };
-
-                bool messageReceived = false;
-
-                // Check if incoming CRDT is dispatched as scene message
-                void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
-                {
-                    Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
-                    Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
-                    messageReceived = true;
-                }
-
-                context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
-                context.crdt.MessagingControllersManager = messagingControllersManager;
-                context.crdt.WorldState = worldState;
-
-                // Simulate client sending `crdtMessage` CRDT
-                try
-                {
-                    await rpcClient.SendCrdt(new CRDTManyMessages()
-                    {
-                        SceneNumber = sceneNumber,
-                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
-                    });
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-                finally
-                {
-                    context.crdt.CrdtMessageReceived -= OnCrdtMessageReceived;
-                }
-
-                Assert.IsTrue(messageReceived);*/
+                Assert.IsTrue(testScene.entities.ContainsKey(ENTITY_ID));
             });
         }
 
