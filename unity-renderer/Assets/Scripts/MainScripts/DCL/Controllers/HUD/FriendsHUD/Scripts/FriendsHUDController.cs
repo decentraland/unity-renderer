@@ -235,13 +235,28 @@ namespace DCL.Social.Friends
             }
         }
 
-        private void HandleRequestSent(string userNameOrId)
+        private void HandleRequestSent(string userNameOrId) =>
+            HandleRequestSentAsync(userNameOrId).Forget();
+
+        private async UniTaskVoid HandleRequestSentAsync(string userNameOrId)
         {
-            if (AreAlreadyFriends(userNameOrId)) { View.ShowRequestSendError(FriendRequestError.AlreadyFriends); }
+            if (AreAlreadyFriends(userNameOrId))
+                View.ShowRequestSendError(FriendRequestError.AlreadyFriends);
             else
             {
                 if (isNewFriendRequestsEnabled)
-                    friendsController.RequestFriendshipAsync(userNameOrId, "").Forget();
+                {
+                    try
+                    {
+                        await friendsController.RequestFriendshipAsync(userNameOrId, "")
+                                               .Timeout(TimeSpan.FromSeconds(10));
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: track error to analytics
+                        throw;
+                    }
+                }
                 else
                     friendsController.RequestFriendship(userNameOrId);
 
@@ -538,8 +553,9 @@ namespace DCL.Social.Friends
             if (isNewFriendRequestsEnabled)
             {
                 var allfriendRequests = await friendsController.GetFriendRequestsAsync(
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
+                                                                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                                                                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests)
+                                                               .Timeout(TimeSpan.FromSeconds(10));
 
                 AddFriendRequests(allfriendRequests);
             }
