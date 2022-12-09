@@ -41,13 +41,13 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Rotation: 0
+    - _Rotation: 180
     - _XVariant: 1
     - _YVariant: 1
     - _ZVariant: 1
     - _isFlipped: 1
     m_Colors:
-    - _Center: {r: 0, g: 1, b: 0, a: 0}
+    - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _Color: {r: 0.75471693, g: 0.75471693, b: 0.75471693, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4835358554284256603

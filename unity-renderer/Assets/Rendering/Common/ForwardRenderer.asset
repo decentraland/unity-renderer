@@ -42,7 +42,7 @@ MonoBehaviour:
     blurPasses: 4
     downsample: 2
     targetName: _blurTexture
-    copyToFramebuffer: 0
+    copyToFramebuffer: 1
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
