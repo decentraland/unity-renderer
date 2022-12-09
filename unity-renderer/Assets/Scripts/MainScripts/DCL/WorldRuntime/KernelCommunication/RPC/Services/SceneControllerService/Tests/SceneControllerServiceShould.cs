@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
+using DCL.ECSComponents;
 using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
@@ -45,6 +46,9 @@ namespace Tests
 
             testClientTransport = clientTransport;
             testCancellationSource = new CancellationTokenSource();
+
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            DCL.Environment.Setup(serviceLocator);
         }
 
         [TearDown]
@@ -77,9 +81,73 @@ namespace Tests
             });
         }
 
-        // ProcessLoadSceneRPCCorrectly()
-        // ProcessUnloadSceneRPCCorrectly()
-        // ProcessSendCrdtCorrectly()
+        [UnityTest]
+        public IEnumerator ProcessLoadSceneRPCCorrectly()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                context.crdt.SceneController = Substitute.For<ISceneController>();
+
+                var clientRpcSceneControllerService = await CreateClientRpcSceneControllerService(testClientTransport);
+
+                int testSceneNumber = 987;
+
+                // Simulate client requesting `LoadScene()`...
+                try
+                {
+                    await clientRpcSceneControllerService.LoadScene(new LoadSceneMessage()
+                    {
+                        SceneNumber = testSceneNumber,
+                        Sdk7 = false,
+                        IsPortableExperience = false,
+                        IsGlobalScene = false,
+                        BaseUrl = "testUrl",
+                        BaseUrlAssetBundles = "testUrl",
+                        Entity = new Entity()
+                        {
+                            Id = "temptation",
+                            Metadata = JsonUtility.ToJson(new CatalystSceneEntityMetadata()
+                            {
+                                scene = new CatalystSceneEntityMetadata.Scene()
+                                {
+                                    @base = "0,0",
+                                    parcels = new string[] { "0,0" }
+                                }
+                            })
+                        }
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                context.crdt.SceneController.Received(1).LoadUnityParcelScene(Arg.Any<LoadParcelScenesMessage.UnityParcelScene>());
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ProcessUnloadSceneRPCCorrectly()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                context.crdt.SceneController = Substitute.For<ISceneController>();
+
+                var clientRpcSceneControllerService = await CreateClientRpcSceneControllerService(testClientTransport);
+
+                // Simulate client requesting `UnloadScene()`...
+                try
+                {
+                    await clientRpcSceneControllerService.UnloadScene(new UnloadSceneMessage());
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                context.crdt.SceneController.Received(1).UnloadScene(Arg.Any<int>());
+            });
+        }
 
         /*[UnityTest]
         public IEnumerator ProcessIncomingSceneCRDTMessage()
@@ -174,13 +242,13 @@ namespace Tests
             return true;
         }
 
-        /*static async UniTask<ClientRpcSceneControllerService> CreateClientRpcSceneControllerService(ITransport transport)
+        static async UniTask<ClientRpcSceneControllerService> CreateClientRpcSceneControllerService(ITransport transport)
         {
             RpcClient client = new RpcClient(transport);
-            RpcClientPort port = await client.CreatePort("test-port");
+            RpcClientPort port = await client.CreatePort("scene-666999");
             RpcClientModule module = await port.LoadModule(RpcSceneControllerServiceCodeGen.ServiceName);
             ClientRpcSceneControllerService clientRpcSceneControllerService = new ClientRpcSceneControllerService(module);
             return clientRpcSceneControllerService;
-        }*/
+        }
     }
 }
