@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Interface;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -82,6 +84,7 @@ public class UserContextMenu : MonoBehaviour
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
+    private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     internal ISocialAnalytics socialAnalytics;
 
     /// <summary>
@@ -152,7 +155,7 @@ public class UserContextMenu : MonoBehaviour
     {
         FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
     }
-    
+
     public void ClickReportButton() => reportButton.onClick.Invoke();
 
     private void OnPassportButtonPressed()
@@ -209,16 +212,26 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        FriendsController.i.RequestFriendship(userId);
-
-        GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+        if (isNewFriendRequestsEnabled)
+        {
+            DataStore.i.HUDs.sendFriendRequest.Set(userId);
+            DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
+        }
+        else
+        {
+            FriendsController.i.RequestFriendship(userId);
+            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+        }
     }
 
     private void OnCancelFriendRequestButtonPressed()
     {
         OnCancelFriend?.Invoke(userId);
 
-        FriendsController.i.CancelRequest(userId);
+        if (isNewFriendRequestsEnabled)
+            FriendsController.i.CancelRequestByUserIdAsync(userId).Forget();
+        else
+            FriendsController.i.CancelRequestByUserId(userId);
 
         GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
     }
@@ -258,7 +271,7 @@ public class UserContextMenu : MonoBehaviour
         };
         var raycastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-                
+
         if (raycastResults.All(result => result.gameObject != gameObject))
             Hide();
     }

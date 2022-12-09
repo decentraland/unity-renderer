@@ -14,7 +14,6 @@ namespace DCL.Camera
     public class CameraController : MonoBehaviour
     {
         [SerializeField] internal new UnityEngine.Camera camera;
-        [SerializeField] internal UnityEngine.Camera hudsCamera;
 
         private Transform cameraTransform;
 
@@ -62,7 +61,6 @@ namespace DCL.Camera
         private void Awake()
         {
             cameraTransform = this.camera.transform;
-            DataStore.i.camera.hudsCamera.Set(hudsCamera);
             DataStore.i.camera.transform.Set(cameraTransform);
 
             SetCameraEnabledState(CommonScriptableObjects.rendererState.Get());
@@ -85,7 +83,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
 
             OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
-           
+
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
