@@ -24,7 +24,7 @@ public class NFTIconComponentViewShould : MonoBehaviour
     {
         // Act
         nftIconComponentView.OnFocus();
-
+        nftIconComponentView.SetShowMarketplaceButton(true);
         // Assert
         Assert.IsTrue(nftIconComponentView.isFocused, "The base component should be focused.");
         Assert.IsTrue(nftIconComponentView.marketplaceSection.activeSelf, "The marketplace subpanel should be visible");
@@ -35,6 +35,7 @@ public class NFTIconComponentViewShould : MonoBehaviour
     {
         // Act
         nftIconComponentView.OnLoseFocus();
+        nftIconComponentView.SetShowMarketplaceButton(true);
 
         // Assert
         Assert.IsTrue(!nftIconComponentView.isFocused, "The base component should be un-focused.");

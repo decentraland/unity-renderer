@@ -7701,6 +7701,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6126428821902402127}
     m_Modifications:
+    - target: {fileID: 559267743169334, guid: f51437f8e9c544a6496c026fb9650fd8, type: 3}
+      propertyPath: model.animationTransitionTime
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2007704924549780898, guid: f51437f8e9c544a6496c026fb9650fd8,
         type: 3}
       propertyPath: m_Name
@@ -10491,6 +10495,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6126428821902402127}
     m_Modifications:
+    - target: {fileID: 559267743169334, guid: f51437f8e9c544a6496c026fb9650fd8, type: 3}
+      propertyPath: model.animationTransitionTime
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2007704924549780898, guid: f51437f8e9c544a6496c026fb9650fd8,
         type: 3}
       propertyPath: m_Name
