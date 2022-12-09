@@ -7,6 +7,8 @@ namespace DCL.Social.Friends
 {
     public class ReceivedFriendRequestHUDController
     {
+        private const int TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING = 3000;
+
         private readonly DataStore dataStore;
         private readonly IReceivedFriendRequestHUDView view;
         private readonly IFriendsController friendsController;
@@ -114,6 +116,8 @@ namespace DCL.Social.Friends
 
                 // TODO: send analytics
 
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
+                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING);
                 view.Close();
             }
             catch (Exception)
@@ -140,6 +144,8 @@ namespace DCL.Social.Friends
 
                 // TODO: send analytics
 
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
+                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING);
                 view.Close();
             }
             catch (Exception)

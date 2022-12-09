@@ -20,6 +20,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal Button rejectButton;
         [SerializeField] internal Button confirmButton;
+        [SerializeField] internal Button retryButton;
         [SerializeField] internal GameObject defaultContainer;
         [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal GameObject rejectSuccessContainer;
@@ -33,6 +34,8 @@ namespace DCL.Social.Friends
         public event Action OnRejectFriendRequest;
         public event Action OnConfirmFriendRequest;
 
+        private bool lastTryWasConfirm;
+
         public static ReceivedFriendRequestHUDComponentView Create() =>
             Instantiate(
                 Resources.Load<ReceivedFriendRequestHUDComponentView>("FriendRequests/ReceivedFriendRequestHUD"));
@@ -45,8 +48,26 @@ namespace DCL.Social.Friends
                 button.onClick.AddListener(() => OnClose?.Invoke());
 
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
-            rejectButton.onClick.AddListener(() => OnRejectFriendRequest?.Invoke());
-            confirmButton.onClick.AddListener(() => OnConfirmFriendRequest?.Invoke());
+
+            rejectButton.onClick.AddListener(() =>
+            {
+                lastTryWasConfirm = false;
+                OnRejectFriendRequest?.Invoke();
+            });
+
+            confirmButton.onClick.AddListener(() =>
+            {
+                lastTryWasConfirm = true;
+                OnConfirmFriendRequest?.Invoke();
+            });
+
+            retryButton.onClick.AddListener(() =>
+            {
+                if (lastTryWasConfirm)
+                    OnConfirmFriendRequest?.Invoke();
+                else
+                    OnRejectFriendRequest?.Invoke();
+            });
         }
 
         public override void Dispose()
@@ -84,7 +105,8 @@ namespace DCL.Social.Friends
         public void SetTimestamp(DateTime timestamp)
         {
             model.RequestDate = timestamp;
-            dateLabel.text = timestamp.Date.ToString("M");
+            dateLabel.text = timestamp.Date.ToString("MMM dd").ToUpper();
+            //dateLabel.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd").ToUpper(); ;
         }
 
         public void SetRecipientName(string userName)
