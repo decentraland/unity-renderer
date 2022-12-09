@@ -1,45 +1,45 @@
-using System;
-using System.Collections;
-using DCL.Interface;
-using UnityEngine;
-using DataStore = DCL.DataStore;
+// using System; // FD:: commented whole class
+// using System.Collections;
+// using DCL.Interface;
+// using UnityEngine;
+// using DataStore = DCL.DataStore;
 
-public static class BIWTeleportAndEdit
-{
-    public static event Action<Vector2Int> OnTeleportStart;
-    public static event Action<Vector2Int> OnTeleportEnd;
+// public static class BIWTeleportAndEdit
+// {
+//     public static event Action<Vector2Int> OnTeleportStart;
+//     public static event Action<Vector2Int> OnTeleportEnd;
 
-    private static bool inProgress = false;
+//     private static bool inProgress = false;
 
-    public static bool TeleportAndEdit(Vector2Int targetCoords)
-    {
-        if (inProgress)
-            return false;
+//     public static bool TeleportAndEdit(Vector2Int targetCoords)
+//     {
+//         if (inProgress)
+//             return false;
 
-        CoroutineStarter.Start(TeleportAndEditRoutine(targetCoords));
-        return true;
-    }
+//         CoroutineStarter.Start(TeleportAndEditRoutine(targetCoords));
+//         return true;
+//     }
 
-    private static IEnumerator TeleportAndEditRoutine(Vector2Int targetCoords)
-    {
-        inProgress = true;
-        OnTeleportStart?.Invoke(targetCoords);
+//     private static IEnumerator TeleportAndEditRoutine(Vector2Int targetCoords)
+//     {
+//         inProgress = true;
+//         OnTeleportStart?.Invoke(targetCoords);
 
-        bool isPlayerTeleported = false;
+//         bool isPlayerTeleported = false;
 
-        void OnPlayerTeleportToNewPosition(Vector3 current, Vector3 prev) { isPlayerTeleported = true; }
+//         void OnPlayerTeleportToNewPosition(Vector3 current, Vector3 prev) { isPlayerTeleported = true; }
 
-        DataStore.i.player.lastTeleportPosition.OnChange += OnPlayerTeleportToNewPosition;
+//         DataStore.i.player.lastTeleportPosition.OnChange += OnPlayerTeleportToNewPosition;
 
-        DCL.Environment.i.world.teleportController.Teleport(targetCoords.x, targetCoords.y);
+//         DCL.Environment.i.world.teleportController.Teleport(targetCoords.x, targetCoords.y);
 
-        yield return new WaitUntil(() => isPlayerTeleported);
-        DataStore.i.player.lastTeleportPosition.OnChange -= OnPlayerTeleportToNewPosition;
+//         yield return new WaitUntil(() => isPlayerTeleported);
+//         DataStore.i.player.lastTeleportPosition.OnChange -= OnPlayerTeleportToNewPosition;
 
-        yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
-        yield return null;
+//         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+//         yield return null;
 
-        inProgress = false;
-        OnTeleportEnd?.Invoke(targetCoords);
-    }
-}
+//         inProgress = false;
+//         OnTeleportEnd?.Invoke(targetCoords);
+//     }
+// }

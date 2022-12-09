@@ -11,10 +11,10 @@ namespace DCL
     {
         public MouseCatcher mouseCatcher { get; internal set; }
         public GameObject groundVisual { get; internal set; }
-        public GameObject biwCameraParent { get; internal set; }
+        // public GameObject biwCameraParent { get; internal set; } // FD:: commented
         public InputController inputController { get; internal set; }
         public GameObject cursorCanvas { get; internal set; }
-        public GameObject biwBridgeGameObject { get; set; }
+        // public GameObject biwBridgeGameObject { get; set; } // FD:: commented
         public PlayerAvatarController playerAvatarController { get; internal set; }
         public CameraController cameraController { get; internal set; }
         public UnityEngine.Camera mainCamera { get; internal set; }
@@ -27,10 +27,10 @@ namespace DCL
 
         public void Initialize(MouseCatcher mouseCatcher,
             GameObject groundVisual,
-            GameObject biwCameraParent,
+            // GameObject biwCameraParent, // FD:: commented
             InputController inputController,
             GameObject cursorCanvas,
-            GameObject BIWBridgeGameObject,
+            // GameObject BIWBridgeGameObject, // FD:: commented
             PlayerAvatarController playerAvatarController,
             CameraController cameraController,
             UnityEngine.Camera mainCamera,
@@ -42,10 +42,10 @@ namespace DCL
         {
             this.mouseCatcher = mouseCatcher;
             this.groundVisual = groundVisual;
-            this.biwCameraParent = biwCameraParent;
+            // this.biwCameraParent = biwCameraParent; // FD:: commented
             this.inputController = inputController;
             this.cursorCanvas = cursorCanvas;
-            this.biwBridgeGameObject = BIWBridgeGameObject;
+            // this.biwBridgeGameObject = BIWBridgeGameObject; // FD:: commented
             this.playerAvatarController = playerAvatarController;
             this.cameraController = cameraController;
             this.mainCamera = mainCamera;

@@ -14,8 +14,8 @@ namespace DCL
         void SendSceneMessage(string payload);
         event Action<int> OnReadyScene;
         void SendSceneReady(int sceneNumber);
-        void ActivateBuilderInWorldEditScene();
-        void DeactivateBuilderInWorldEditScene();
+        // void ActivateBuilderInWorldEditScene(); // FD:: commented
+        // void DeactivateBuilderInWorldEditScene(); // FD:: commented
         void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene);
         void UnloadScene(int sceneNumber);
         void LoadParcelScenes(string JSONScenePayload);
