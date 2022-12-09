@@ -39,6 +39,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         SetName(model.name);
         SetMarketplaceURI(model.marketplaceURI);
         SetImageURI(model.imageURI);
+        SetShowType(model.showType);
         SetType(model.type);
         SetRarity(model.rarity);
     }
@@ -64,6 +65,14 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         model.imageURI = imageURI;
 
         nftImage.SetImage(imageURI);
+    }
+
+    public void SetShowType(bool showType)
+    {
+        model.showType = showType;
+
+        typeImage.gameObject.SetActive(showType);
+        rarityBackgroundImage.gameObject.SetActive(showType);
     }
 
     public void SetType(string type)

@@ -2,7 +2,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -12,17 +12,22 @@ namespace DCL.Social.Passports
     {
         private readonly IProfanityFilter profanityFilter;
         private readonly IWearableItemResolver wearableItemResolver;
+        private readonly IWearableCatalogBridge wearableCatalogBridge;
+        private readonly IEmotesCatalogService emotesCatalogService;
         private readonly DataStore dataStore;
 
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
+        private readonly List<string> loadedWearables = new List<string>();
         public event Action<string> OnClickBuyNft;
 
-        public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, DataStore dataStore)
+        public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, IWearableCatalogBridge wearableCatalogBridge, IEmotesCatalogService emotesCatalogService, DataStore dataStore)
         {
             this.view = view;
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
+            this.wearableCatalogBridge = wearableCatalogBridge;
+            this.emotesCatalogService = emotesCatalogService;
             this.dataStore = dataStore;
             view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
         }
@@ -31,6 +36,7 @@ namespace DCL.Social.Passports
 
         private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
+            wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             string filteredName = await FilterContentAsync(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
@@ -50,12 +56,39 @@ namespace DCL.Social.Passports
                 {
                     view.InitializeView();
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
+                    LoadAndShowOwnedWearables(userProfile);
+                    LoadAndShowOwnedEmotes(userProfile);
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems);
-                    view.SetCollectibleWearables(wearableItems);
                     return;
                 }
             }
+        }
+
+        private void LoadAndShowOwnedWearables(UserProfile userProfile)
+        {
+            wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
+                                 .Then(wearables =>
+                                  {
+                                      string[] wearableIds = wearables.GroupBy(i => i.id).Select(g => g.First().id).Take(40).ToArray();
+                                      userProfile.SetInventory(wearableIds);
+                                      loadedWearables.AddRange(wearableIds);
+                                      var containedWearables = wearables.GroupBy(i => i.id).Select(g => g.First()).Take(40)
+                                         .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                                      view.SetCollectibleWearables(containedWearables.ToArray());
+                                  })
+                                 .Catch(Debug.LogError);
+        }
+
+        private void LoadAndShowOwnedEmotes(UserProfile userProfile)
+        {
+            emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
+                                 .Then(emotes =>
+                                  {
+                                      WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).ToArray();
+                                      view.SetCollectibleEmotes(emoteItems);
+                                  })
+                                 .Catch(Debug.LogError);
         }
 
         private async UniTask<string> FilterContentAsync(string filterContent) =>

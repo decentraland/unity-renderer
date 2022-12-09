@@ -56,6 +56,8 @@ namespace DCL.Social.Passports
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
                                 wearableItemResolver,
+                                Substitute.For<IWearableCatalogBridge>(),
+                                Substitute.For<IEmotesCatalogService>(),
                                 dataStore);
 
             controller = new PlayerPassportHUDController(
