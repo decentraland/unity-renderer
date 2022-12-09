@@ -117,7 +117,7 @@ namespace DCL.Social.Friends
                 // TODO: send analytics
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING);
+                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
             catch (Exception)
@@ -145,7 +145,7 @@ namespace DCL.Social.Friends
                 // TODO: send analytics
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING);
+                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
             catch (Exception)
