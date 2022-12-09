@@ -145,7 +145,7 @@ public class MinimapHUDController : IHUD
         }
     }
 
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
+    // public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); } // FD:: commented
 
     public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
