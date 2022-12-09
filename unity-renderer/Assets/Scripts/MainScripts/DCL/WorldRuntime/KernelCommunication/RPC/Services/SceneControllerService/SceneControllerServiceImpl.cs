@@ -66,7 +66,6 @@ namespace RPC.Services
             await UniTask.SwitchToMainThread(ct);
             context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
 
-            // TODO: bind this result to a real 'Success' value ?
             LoadSceneResult result = new LoadSceneResult() { Success = true };
             return result;
         }
@@ -77,7 +76,7 @@ namespace RPC.Services
             // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - scene number: {sceneNumber}");
 
             await UniTask.SwitchToMainThread(ct);
-            context.crdt.SceneController.UnloadScene(sceneNumber);
+            context.crdt.SceneController.UnloadParcelSceneExecute(sceneNumber);
 
             return defaultUnloadSceneResult;
         }

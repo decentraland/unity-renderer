@@ -3,6 +3,7 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
@@ -14,11 +15,13 @@ using rpc_csharp.transport;
 using RPC.Services;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 using BinaryWriter = KernelCommunication.BinaryWriter;
+using Environment = DCL.Environment;
 
 namespace Tests
 {
@@ -32,7 +35,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            context = new RPCContext();
+            // context = new RPCContext();
+            context = DataStore.i.rpc.context;
 
             var (clientTransport, serverTransport) = MemoryTransport.Create();
 
@@ -82,20 +86,21 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator ProcessLoadSceneRPCCorrectly()
+        public IEnumerator LoadAndUnloadScenesCorrectly()
         {
             yield return UniTask.ToCoroutine(async () =>
             {
-                context.crdt.SceneController = Substitute.For<ISceneController>();
-
-                var clientRpcSceneControllerService = await CreateClientRpcSceneControllerService(testClientTransport);
+                var rpcClient = await CreateRpcClient(testClientTransport);
 
                 int testSceneNumber = 987;
+
+                // Check scene is not already loaded
+                Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));
 
                 // Simulate client requesting `LoadScene()`...
                 try
                 {
-                    await clientRpcSceneControllerService.LoadScene(new LoadSceneMessage()
+                    await rpcClient.LoadScene(new LoadSceneMessage()
                     {
                         SceneNumber = testSceneNumber,
                         Sdk7 = false,
@@ -122,30 +127,21 @@ namespace Tests
                     Debug.LogError(e);
                 }
 
-                context.crdt.SceneController.Received(1).LoadUnityParcelScene(Arg.Any<LoadParcelScenesMessage.UnityParcelScene>());
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator ProcessUnloadSceneRPCCorrectly()
-        {
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                context.crdt.SceneController = Substitute.For<ISceneController>();
-
-                var clientRpcSceneControllerService = await CreateClientRpcSceneControllerService(testClientTransport);
+                // Check scene loaded
+                Assert.IsTrue(context.crdt.WorldState.ContainsScene(testSceneNumber));
 
                 // Simulate client requesting `UnloadScene()`...
                 try
                 {
-                    await clientRpcSceneControllerService.UnloadScene(new UnloadSceneMessage());
+                    await rpcClient.UnloadScene(new UnloadSceneMessage());
                 }
                 catch (Exception e)
                 {
                     Debug.LogError(e);
                 }
 
-                context.crdt.SceneController.Received(1).UnloadScene(Arg.Any<int>());
+                // Check scene unloaded
+                Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));
             });
         }
 
@@ -165,7 +161,7 @@ namespace Tests
 
                 int sceneNumber = 666;
 
-                CRDTSceneMessage crdtSceneMessage = new CRDTSceneMessage()
+                CRDTMessage crdtMessage = new CRDTMessage()
                 {
                     key1 = 7693,
                     timestamp = 799,
@@ -175,12 +171,12 @@ namespace Tests
                 bool messageReceived = false;
 
                 // Check if incoming CRDT is dispatched as scene message
-                void OnCrdtMessageReceived(int incommingSceneNumber, CRDTSceneMessage incommingCrdtMessage)
+                void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
                 {
-                    Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    Assert.AreEqual(crdtSceneMessage.key1, incommingCrdtMessage.key1);
-                    Assert.AreEqual(crdtSceneMessage.timestamp, incommingCrdtMessage.timestamp);
-                    Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtSceneMessage.data));
+                    Assert.AreEqual(sceneNumber, incomingSceneNumber);
+                    Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
+                    Assert.AreEqual(crdtMessage.timestamp, incomingCrdtMessage.timestamp);
+                    Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
                 }
 
@@ -242,7 +238,7 @@ namespace Tests
             return true;
         }
 
-        static async UniTask<ClientRpcSceneControllerService> CreateClientRpcSceneControllerService(ITransport transport)
+        static async UniTask<ClientRpcSceneControllerService> CreateRpcClient(ITransport transport)
         {
             RpcClient client = new RpcClient(transport);
             RpcClientPort port = await client.CreatePort("scene-666999");
