@@ -114,7 +114,7 @@ namespace DCL.Social.Friends
             model.UserName = userName;
             nameLabel.text = userName;
             rejectSuccessLabel.text = rejectSuccessLabel.text.Replace("{userName}", userName);
-            confirmSuccessLabel.text = rejectSuccessLabel.text.Replace("{userName}", userName);
+            confirmSuccessLabel.text = confirmSuccessLabel.text.Replace("{userName}", userName);
         }
 
         public void SetOtherProfilePicture(string uri)
