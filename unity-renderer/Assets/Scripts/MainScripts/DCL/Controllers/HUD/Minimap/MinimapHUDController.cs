@@ -24,7 +24,7 @@ public class MinimapHUDController : IHUD
     public MinimapHUDController(MinimapHUDModel model, MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, DCL.Environment.Model environment)
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
+        // CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld; // FD:: commented
         minimapZoom.Set(1f);
         UpdateData(model);
         metadataController = minimapMetadataController;
@@ -49,7 +49,7 @@ public class MinimapHUDController : IHUD
             UnityEngine.Object.Destroy(view.gameObject);
 
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
+        // CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;  // FD:: commented
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
         
         if (metadataController != null)

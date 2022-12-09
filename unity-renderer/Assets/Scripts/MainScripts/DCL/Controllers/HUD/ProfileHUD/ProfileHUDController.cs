@@ -46,7 +46,7 @@ public class ProfileHUDController : IHUD
         view = UnityEngine.Object.Instantiate(GetViewPrefab()).GetComponent<ProfileHUDView>();
         view.name = "_ProfileHUD";
 
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
+        // CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;  // FD:: commented
         DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
 
         view.connectedWalletSection.SetActive(false);
@@ -141,7 +141,7 @@ public class ProfileHUDController : IHUD
         }
 
         ownUserProfile.OnUpdate -= OnProfileUpdated;
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
+        // CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;  // FD:: commented
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= OnMouseLocked;
 
