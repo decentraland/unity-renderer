@@ -23,7 +23,7 @@ MonoBehaviour:
     DirectLightingStrength: 0.6
     Radius: 0.2
     SampleCount: 4
---- !u!114 &-3772532583799019969
+--- !u!114 &-5160103774687284578
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -32,17 +32,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1422a59e3684d064aa9ee91f9fc69ae6, type: 3}
-  m_Name: BlurRTRFV2
+  m_Script: {fileID: 11500000, guid: c28fcca3f07b66f41a366134ff7684f6, type: 3}
+  m_Name: BlurRTRFV3
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
     renderPassEvent: 500
     blurMaterial: {fileID: 2100000, guid: cb4854b61a1566e4eaf48b98fd047917, type: 2}
-    blurPasses: 6
+    blurPasses: 4
     downsample: 2
-    fullScreenEffect: 0
-    targetName: _BlurRTTex
+    targetName: _blurTexture
+    copyToFramebuffer: 0
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,8 +83,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -7551554940414059620}
   - {fileID: 4650022159256899313}
-  - {fileID: -3772532583799019969}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288403fa6124f9a45a5cb
+  - {fileID: -5160103774687284578}
+  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288409eb29cd1f4a063b8
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_AssetVersion: 2
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483647
   m_TransparentLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -142,6 +142,6 @@ MonoBehaviour:
   settings:
     renderPassEvent: 500
     blurMaterial: {fileID: 2100000, guid: bd6d8afd42d202a4fb9db5a6ef1b377a, type: 2}
-    blurPasses: 3
-    downsample: 6
+    blurPasses: 4
+    downsample: 2
     targetName: _blurTexture

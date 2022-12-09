@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 
 public class BlurRTRFV2 : ScriptableRendererFeature
 {
+    // settings API for the renderer
     [System.Serializable]
     public class Settings
     {
@@ -18,7 +19,9 @@ public class BlurRTRFV2 : ScriptableRendererFeature
 
         [FormerlySerializedAs("copyToFramebuffer")] public bool fullScreenEffect; // Whether to copy the blurred image to the framebuffer
 
-        [HideInInspector]public string targetName = "_BlurRTTex"; // Name of the texture to use as the target for blurring
+        //[HideInInspector]public string targetName = "_BlurRTTex"; // Name of the texture to use as the target for blurring
+        // _blurTexture
+        [HideInInspector]public string targetName = "_blurTexture"; // Name of the texture to use as the target for blurring
     }
 
     public Settings settings = new Settings();
@@ -116,33 +119,33 @@ public class BlurRTRFV2 : ScriptableRendererFeature
                 cmd.SetGlobalFloat("_offset", 0.5f + i);
                 cmd.Blit(passRT1, passRT2, blurMaterial);
 
-                // Swap the render targets to give more definition on the blur
+                // Swap the render targets to give more definition on the blur through the shader pass
                 RenderTargetIdentifier rtTemp = passRT1;
                 passRT1 = passRT2;
                 passRT2 = rtTemp;
             }
 
-            // final pass
+            // final pass on the command buffer
             cmd.SetGlobalFloat("_offset", 0.5f + passes - 1f);
 
             // full screen effect (copy to the framebuffer)
             if (copyToFramebuffer == true)
             {
                 cmd.Blit(passRT1, source, blurMaterial);
+
+                ExecuteClearRelease(context , cmd); // Clear and release the render targets
             }
             else
             // blit sends to material
             {
                 //cmd.Blit(passRT1, source, blurMaterial);
+                cmd.SetGlobalFloat("_offset", 0.5f + passes - 1);
                 cmd.Blit(passRT1, passRT2, blurMaterial);
                 cmd.SetGlobalTexture(targetName, passRT2);
+
+                ExecuteClearRelease(context , cmd); // Clear and release the render targets
             }
 
-            context.ExecuteCommandBuffer(cmd);  // Execute the command buffer
-
-            cmd.Clear(); // Clear the command buffer
-
-            CommandBufferPool.Release(cmd); // Release the command buffer
         }
 
         public override void FrameCleanup(CommandBuffer cmd)
@@ -172,6 +175,14 @@ public class BlurRTRFV2 : ScriptableRendererFeature
         scriptablePass.renderPassEvent = settings.renderPassEvent; // Set the render pass event
     }
 
+    static void ExecuteClearRelease(ScriptableRenderContext context , CommandBuffer cmd)
+    {
+        context.ExecuteCommandBuffer(cmd);  // Execute the command buffer
+
+        cmd.Clear(); // Clear the command buffer
+
+        CommandBufferPool.Release(cmd); // Release the command buffer
+    }
     // On add of the render feature
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
