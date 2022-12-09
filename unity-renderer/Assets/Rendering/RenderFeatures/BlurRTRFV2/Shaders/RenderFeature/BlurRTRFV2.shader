@@ -9,8 +9,7 @@
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 100
-
+        
         Pass
         {
             CGPROGRAM
@@ -22,12 +21,14 @@
 
             #include "UnityCG.cginc"
 
+            // Data from mesh or object
             struct appdata
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
             };
 
+            // Data to be passed to the pixel shader
             struct v2f
             {
                 float2 uv : TEXCOORD0;
@@ -42,6 +43,7 @@
             
             float _offset;
 
+            // Vertex shader
             v2f vert (appdata v)
             {
                 v2f o;
@@ -50,17 +52,25 @@
                 return o;
             }
 
+            // Fragment shader
             fixed4 frag (v2f input) : SV_Target
             {
+                // Sample the texture at the pixel's UV coordinates
                 float2 res = _MainTex_TexelSize.xy;
+                
+                // offsetting 
                 float i = _offset;
-    
-                fixed4 col;                
+                
+                // coloration
+                fixed4 col;    
+                            
                 col.rgb = tex2D( _MainTex, input.uv ).rgb;
+                
                 col.rgb += tex2D( _MainTex, input.uv + float2( i, i ) * res ).rgb;
                 col.rgb += tex2D( _MainTex, input.uv + float2( i, -i ) * res ).rgb;
                 col.rgb += tex2D( _MainTex, input.uv + float2( -i, i ) * res ).rgb;
                 col.rgb += tex2D( _MainTex, input.uv + float2( -i, -i ) * res ).rgb;
+                
                 col.rgb /= 5.0f;
                 
                 return col;

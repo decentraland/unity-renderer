@@ -37,15 +37,20 @@ public class BlurRTRFV2 : ScriptableRendererFeature
         int PassId1; // Shader pass ID for the first blur pass
         int PassId2; // Shader pass ID for the second blur pass
 
+        // render textures for the command buffer
         RenderTargetIdentifier passRT1; // Render target for the first blur pass
         RenderTargetIdentifier passRT2; // Render target for the second blur pass
 
+        // render texture for rendering on the command buffer
         private RenderTargetIdentifier source { get; set; } // Source render target
 
         // Constructor
         public void Setup(RenderTargetIdentifier source)
         {
+            // on custom render pass
             this.source = source;
+
+            // here we could pass the identifier of the render texture we want to use as the target for blurring manually
             //this.source = new RenderTargetIdentifier("_CameraColorTexture");
             //this.source = new RenderTargetIdentifier("_CameraDepthTexture");
             //this.source = new RenderTargetIdentifier("_CameraMotionVectorsTexture");
@@ -58,11 +63,9 @@ public class BlurRTRFV2 : ScriptableRendererFeature
             //this.source = new RenderTargetIdentifier("_CameraDepthNormalsTexture");
             //this.source = new RenderTargetIdentifier("_CameraMotionVectorsTexture");
 
-
-
         }
 
-        // Configure the pass
+        // Configure the pass for the renderer
         public CustomRenderPass(string profilerTag)
         {
             this.profilerTag = profilerTag;
@@ -80,9 +83,11 @@ public class BlurRTRFV2 : ScriptableRendererFeature
             PassId1 = Shader.PropertyToID("tmpBlurRT1");
             PassId2 = Shader.PropertyToID("tmpBlurRT2");
 
+            // Create render textures
             cmd.GetTemporaryRT(PassId1, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32); // Create the first render target
             cmd.GetTemporaryRT(PassId2, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32); // Create the second render target
 
+            // Set render textures on the passes
             passRT1 = new RenderTargetIdentifier(PassId1); // Set the first render target
             passRT2 = new RenderTargetIdentifier(PassId2); // Set the second render target
 
@@ -120,14 +125,15 @@ public class BlurRTRFV2 : ScriptableRendererFeature
             // final pass
             cmd.SetGlobalFloat("_offset", 0.5f + passes - 1f);
 
-            // full screen effect
-            if (copyToFramebuffer)
+            // full screen effect (copy to the framebuffer)
+            if (copyToFramebuffer == true)
             {
                 cmd.Blit(passRT1, source, blurMaterial);
             }
             else
             // blit sends to material
             {
+                //cmd.Blit(passRT1, source, blurMaterial);
                 cmd.Blit(passRT1, passRT2, blurMaterial);
                 cmd.SetGlobalTexture(targetName, passRT2);
             }
