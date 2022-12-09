@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.Social.Friends
 {
-    public class CancelFriendRequestHUDController
+    public class SentFriendRequestHUDController
     {
         private readonly ICancelFriendRequestHUDView view;
         private readonly DataStore dataStore;
@@ -18,7 +18,7 @@ namespace DCL.Social.Friends
         private CancellationTokenSource cancellationToken = new ();
         private string friendRequestId;
 
-        public CancelFriendRequestHUDController(
+        public SentFriendRequestHUDController(
             ICancelFriendRequestHUDView view,
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,

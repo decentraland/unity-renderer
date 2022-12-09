@@ -7,7 +7,7 @@ namespace DCL.Social.Friends
     {
         private readonly ReceivedFriendRequestHUDController receivedFriendRequestHUDController;
         private readonly SendFriendRequestHUDController sendFriendRequestHUDController;
-        private readonly CancelFriendRequestHUDController cancelFriendRequestHUDController;
+        private readonly SentFriendRequestHUDController sentFriendRequestHUDController;
 
         public FriendRequestHUDPlugin()
         {
@@ -28,7 +28,7 @@ namespace DCL.Social.Friends
                 dataStore, userProfileBridge, friendsController,
                 socialAnalytics);
 
-            cancelFriendRequestHUDController = new CancelFriendRequestHUDController(CancelFriendRequestHUDComponentView.Create(),
+            sentFriendRequestHUDController = new SentFriendRequestHUDController(CancelFriendRequestHUDComponentView.Create(),
                 dataStore, userProfileBridge, friendsController,
                 socialAnalytics,
                 openPassportVariable);
@@ -38,7 +38,7 @@ namespace DCL.Social.Friends
         {
             receivedFriendRequestHUDController.Dispose();
             sendFriendRequestHUDController.Dispose();
-            cancelFriendRequestHUDController.Dispose();
+            sentFriendRequestHUDController.Dispose();
         }
     }
 }
