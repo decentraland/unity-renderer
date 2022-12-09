@@ -78,8 +78,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     [SerializeField] internal GameObject descriptionContainer;
 
-    public RectTransform expandedMenu => mainRootLayout;
-
     private InputAction_Trigger.Triggered closeActionDelegate;
 
     private Coroutine copyToastRoutine = null;
@@ -87,28 +85,49 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private Regex nameRegex = null;
     private string description;
 
-    internal event Action OnOpen;
-    internal event Action OnClose;
-
     public event EventHandler ClaimNamePressed;
-    public event EventHandler SignedUp;
-    public event EventHandler LogedOut;
+    public event EventHandler SignedUpPressed;
+    public event EventHandler LogedOutPressed;
     public event EventHandler WalletTermsAndServicesPressed;
     public event EventHandler WalletPrivacyPolicyPressed;
     public event EventHandler NonWalletTermsAndServicesPressed;
     public event EventHandler NonWalletPrivacyPolicyPressed;
+    public event EventHandler Opened;
+    public event EventHandler Closed;
+    public event EventHandler<string> NameSubmitted;
+    public event EventHandler<string> DescriptionSubmitted;
+    public event EventHandler ManaInfoPressed;
+    public event EventHandler ManaPurchasePressed;
+    public event EventHandler TermsAndServicesPressed;
+    public event EventHandler PrivacyPolicyPressed;
 
     internal bool isStartMenuInitialized = false;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
 
-    public override void Show(bool instant = false) => base.Show(instant);
+    public GameObject GameObject => gameObject;
+    public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform TutorialReference => tutorialTooltipReference;
 
-    public override void Hide(bool instant = false) => base.Hide(instant);
+
+    public bool HasManaCounterView() => manaCounterView != null;
+
+    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
+
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit >= descriptionInputText.text.Length;
+
+    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
+
+    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
+
+    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
+
+    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
+
+    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
 
     public override void RefreshControl() { }
 
-    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
 
     public void SetDescription(string description)
     {
@@ -123,11 +142,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     }
 
 
-    internal void SetProfileName(string newName) { textName.text = newName; }
+    public void SetProfileName(string newName) { textName.text = newName; }
 
-    internal void SetNameRegex(string namePattern) { nameRegex = new Regex(namePattern); }
-
-    internal void SetProfile(UserProfile userProfile)
+    public void SetProfile(UserProfile userProfile)
     {
         profile = userProfile;
         if (userProfile.hasClaimedName)
@@ -147,7 +164,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         textPostfix.text = profile.userId;
     }
 
-    internal void OpenStartMenu()
+    private void OpenStartMenu()
     {
         if (isStartMenuInitialized)
         {
@@ -164,15 +181,37 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             ToggleMenu();
     }
 
-    internal void ToggleMenu()
+    public void ToggleMenu()
     {
         if (menuShowHideAnimator.isVisible)
-            Hide();
+            HideMenu();
         else
-            Show();
+        {
+            menuShowHideAnimator.Show();
+            CommonScriptableObjects.isProfileHUDOpen.Set(true);
+            Opened?.Invoke(this, EventArgs.Empty);
+        }
     }
 
-    internal void ActivateProfileNameEditionMode(bool activate)
+    public void HideMenu()
+    {
+        if (menuShowHideAnimator.isVisible)
+        {
+            menuShowHideAnimator.Hide();
+            CommonScriptableObjects.isProfileHUDOpen.Set(false);
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (visible && !showHideAnimator.isVisible)
+            showHideAnimator.Show();
+        else if (!visible && showHideAnimator.isVisible)
+            showHideAnimator.Hide();
+    }
+
+    public void ActivateProfileNameEditionMode(bool activate)
     {
         if (profile != null && profile.hasClaimedName)
             return;
@@ -187,18 +226,32 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    internal bool IsValidAvatarName(string name)
+    public bool IsValidAvatarName(string name)
     {
         if (nameRegex == null)
             return true;
 
         return nameRegex.IsMatch(name);
     }
-    internal void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
+    public void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
 
 
     private void Awake()
     {
+        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
+        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
+        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
+
+        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+
+        manaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        manaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+
         closeActionDelegate = (x) => Hide();
 
         buttonToggleMenu.onClick.AddListener(OpenStartMenu);
@@ -209,8 +262,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
 
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
-        buttonLogOut.onClick.AddListener(() => LogedOut?.Invoke(this, EventArgs.Empty));
-        buttonSignUp.onClick.AddListener(() => SignedUp?.Invoke(this, EventArgs.Empty));
+        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
+        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
         buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => WalletTermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
         buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => WalletPrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
         buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => NonWalletTermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
@@ -323,7 +376,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
 
-    private void SetDescriptionIsEditing(bool isEditing)
+    public void SetDescriptionIsEditing(bool isEditing)
     {
         SetDescriptionCharLiitEnabled(isEditing);
         descriptionStartEditingGo.SetActive(!isEditing);

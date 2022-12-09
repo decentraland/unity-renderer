@@ -2,179 +2,155 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-public class ProfileHUDView : MonoBehaviour
+public class ProfileHUDView : BaseComponentView, IProfileHUDView
 {
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField]
-    internal ShowHideAnimator mainShowHideAnimator;
-
-    [SerializeField]
-    internal ShowHideAnimator menuShowHideAnimator;
-
-    [SerializeField]
-    private RectTransform mainRootLayout;
-
-    [SerializeField]
-    internal GameObject loadingSpinner;
-
-    [SerializeField]
-    internal ShowHideAnimator copyToast;
-
-    [SerializeField]
-    internal GameObject copyTooltip;
-
-    [SerializeField]
-    internal InputAction_Trigger closeAction;
-
-    [SerializeField]
-    internal Canvas mainCanvas;
+    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
+    [SerializeField] private RectTransform mainRootLayout;
+    [SerializeField] private GameObject loadingSpinner;
+    [SerializeField] private ShowHideAnimator copyToast;
+    [SerializeField] private GameObject copyTooltip;
+    [SerializeField] private InputAction_Trigger closeAction;
+    [SerializeField] private Canvas mainCanvas;
 
     [Header("Hide GOs on claimed name")]
-    [SerializeField]
-    internal GameObject[] hideOnNameClaimed;
+    [SerializeField] internal GameObject[] hideOnNameClaimed;
 
     [Header("Connected wallet sections")]
-    [SerializeField]
-    internal GameObject connectedWalletSection;
-
-    [SerializeField]
-    internal GameObject nonConnectedWalletSection;
+    [SerializeField] internal GameObject connectedWalletSection;
+    [SerializeField] internal GameObject nonConnectedWalletSection;
 
     [Header("Thumbnail")]
-    [SerializeField]
-    internal RawImage imageAvatarThumbnail;
-
-    [SerializeField]
-    protected internal Button buttonToggleMenu;
+    [SerializeField] internal RawImage imageAvatarThumbnail;
+    [SerializeField] protected internal Button buttonToggleMenu;
 
     [Header("Texts")]
-    [SerializeField]
-    internal TextMeshProUGUI textName;
-
-    [SerializeField]
-    internal TextMeshProUGUI textPostfix;
-
-    [SerializeField]
-    internal TextMeshProUGUI textAddress;
+    [SerializeField] internal TextMeshProUGUI textName;
+    [SerializeField] internal TextMeshProUGUI textPostfix;
+    [SerializeField] internal TextMeshProUGUI textAddress;
 
     [Header("Buttons")]
-    [SerializeField]
-    protected internal Button buttonClaimName;
-
-    [SerializeField]
-    protected internal Button buttonCopyAddress;
-
-    [SerializeField]
-    protected internal Button buttonLogOut;
-
-    [SerializeField]
-    protected internal Button buttonSignUp;
-
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
-
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
-
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
-
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
+    [SerializeField] protected internal Button buttonLogOut;
+    [SerializeField] protected internal Button buttonSignUp;
+    [SerializeField] protected internal Button buttonClaimName;
+    [SerializeField] protected internal Button buttonCopyAddress;
+    [SerializeField] protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+    [SerializeField] protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+    [SerializeField] protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
+    [SerializeField] protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonEditName;
-
-    [SerializeField]
-    protected internal Button_OnPointerDown buttonEditNamePrefix;
-
-    [SerializeField]
-    internal TMP_InputField inputName;
-
-    [SerializeField]
-    internal TextMeshProUGUI textCharLimit;
-
-    [SerializeField]
-    internal ManaCounterView manaCounterView;
-
-    [SerializeField]
-    internal ManaCounterView polygonManaCounterView;
+    [SerializeField] protected internal Button_OnPointerDown buttonEditName;
+    [SerializeField] protected internal Button_OnPointerDown buttonEditNamePrefix;
+    [SerializeField] internal TMP_InputField inputName;
+    [SerializeField] internal TextMeshProUGUI textCharLimit;
+    [SerializeField] internal ManaCounterView manaCounterView;
+    [SerializeField] internal ManaCounterView polygonManaCounterView;
 
     [Header("Tutorial Config")]
-    [SerializeField]
-    internal RectTransform tutorialTooltipReference;
+    [SerializeField] internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
-    [SerializeField]
-    internal TMP_InputField descriptionPreviewInput;
+    [SerializeField] internal TMP_InputField descriptionPreviewInput;
+    [SerializeField] internal TMP_InputField descriptionEditionInput;
+    [SerializeField] internal GameObject charLimitDescriptionContainer;
+    [SerializeField] internal TextMeshProUGUI textCharLimitDescription;
+    [SerializeField] internal GameObject descriptionContainer;
 
-    [SerializeField]
-    internal TMP_InputField descriptionEditionInput;
+    public event EventHandler ClaimNamePressed;
+    public event EventHandler SignedUpPressed;
+    public event EventHandler LogedOutPressed;
+    public event EventHandler WalletTermsAndServicesPressed;
+    public event EventHandler WalletPrivacyPolicyPressed;
+    public event EventHandler NonWalletTermsAndServicesPressed;
+    public event EventHandler NonWalletPrivacyPolicyPressed;
+    public event EventHandler Opened;
+    public event EventHandler Closed;
+    public event EventHandler<string> NameSubmitted;
+    public event EventHandler<string> DescriptionSubmitted;
+    public event EventHandler ManaInfoPressed;
+    public event EventHandler ManaPurchasePressed;
+    public event EventHandler TermsAndServicesPressed;
+    public event EventHandler PrivacyPolicyPressed;
 
-    [SerializeField]
-    internal GameObject charLimitDescriptionContainer;
-
-    [SerializeField]
-    internal TextMeshProUGUI textCharLimitDescription;
-
-    [SerializeField]
-    internal GameObject descriptionContainer;
-
-    public RectTransform expandedMenu => mainRootLayout;
+    internal bool isStartMenuInitialized = false;
 
     private InputAction_Trigger.Triggered closeActionDelegate;
-
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
-    private Regex nameRegex = null;
 
-    internal event Action OnOpen;
-    internal event Action OnClose;
-    internal bool isStartMenuInitialized = false;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
-    private void Awake()
-    {
-        closeActionDelegate = (x) => HideMenu();
 
-        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
-        buttonCopyAddress.onClick.AddListener(CopyAddress);
-        buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
-        buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
-        inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
-        descriptionPreviewInput.onSelect.AddListener(x =>
+    public GameObject GameObject => gameObject;
+    public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform TutorialReference => tutorialTooltipReference;
+
+
+    public override void RefreshControl() { }
+
+    public bool HasManaCounterView() => manaCounterView != null;
+
+    public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
+
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionEditionInput.characterLimit >= descriptionEditionInput.text.Length;
+
+    public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
+
+    public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
+
+    public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
+
+    public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
+
+    public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
+
+    public void ToggleMenu()
+    {
+        if (menuShowHideAnimator.isVisible)
+            HideMenu();
+        else
         {
-            ActivateDescriptionEditionMode(true);
-            UpdateDescriptionCharLimit(descriptionPreviewInput.text);
-        });
-        descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
-        descriptionEditionInput.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
-        copyToast.gameObject.SetActive(false);
-        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+            menuShowHideAnimator.Show();
+            CommonScriptableObjects.isProfileHUDOpen.Set(true);
+            Opened?.Invoke(this, EventArgs.Empty);
+        }
     }
 
-    internal void SetProfile(UserProfile userProfile)
+    public void HideMenu()
+    {
+        if (menuShowHideAnimator.isVisible)
+        {
+            menuShowHideAnimator.Hide();
+            CommonScriptableObjects.isProfileHUDOpen.Set(false);
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (visible && !mainShowHideAnimator.isVisible)
+            mainShowHideAnimator.Show();
+        else if (!visible && mainShowHideAnimator.isVisible)
+            mainShowHideAnimator.Hide();
+    }
+
+    public void SetProfile(UserProfile userProfile)
     {
         profile = userProfile;
         if (userProfile.hasClaimedName)
-        {
             HandleClaimedProfileName(userProfile);
-        }
         else
-        {
             HandleUnverifiedProfileName(userProfile);
-        }
 
         SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
         HandleProfileAddress(userProfile);
@@ -184,57 +160,73 @@ public class ProfileHUDView : MonoBehaviour
         ForceLayoutToRefreshSize();
     }
 
-    internal void OpenStartMenu()
+
+    private void OnEnable() => closeAction.OnTriggered += closeActionDelegate;
+
+    private void OnDisable() => closeAction.OnTriggered -= closeActionDelegate;
+
+    private void Awake()
+    {
+        buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
+        buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
+        buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
+
+        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+
+        manaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
+        manaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+        polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
+
+        closeActionDelegate = (x) => HideMenu();
+
+        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
+        buttonCopyAddress.onClick.AddListener(CopyAddress);
+        buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        inputName.onValueChanged.AddListener(UpdateNameCharLimit);
+        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
+        inputName.onEndEdit.AddListener(x => NameSubmitted(this, x));
+
+        descriptionPreviewInput.onSelect.AddListener(x =>
+        {
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(descriptionPreviewInput.text);
+        });
+        descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionEditionInput.onDeselect.AddListener(x => SetDescriptionIsEditing(false));
+        descriptionEditionInput.onEndEdit.AddListener(x => DescriptionSubmitted(this, x));
+        copyToast.gameObject.SetActive(false);
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+    }
+
+    private void ForceLayoutToRefreshSize() => LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout);
+
+    private void UpdateNameCharLimit(string newValue) => textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
+
+    public void SetProfileName(string newName) => textName.text = newName;
+
+    private void UpdateDescriptionCharLimit(string newValue) =>
+        textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
+
+    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
+
+    private void OpenStartMenu()
     {
         if (isStartMenuInitialized)
         {
             if (!DataStore.i.exploreV2.isOpen.Get())
             {
                 var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-                exploreV2Analytics.SendStartMenuVisibility(
-                    true,
-                    ExploreUIVisibilityMethod.FromClick);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromClick);
             }
             DataStore.i.exploreV2.isOpen.Set(true);
         }
         else
-        {
             ToggleMenu();
-        }
-    }
-
-    public void SetStartMenuButtonActive(bool isActive) { isStartMenuInitialized = isActive; }
-
-    internal void ToggleMenu()
-    {
-        if (menuShowHideAnimator.isVisible)
-        {
-            HideMenu();
-        }
-        else
-        {
-            menuShowHideAnimator.Show();
-            CommonScriptableObjects.isProfileHUDOpen.Set(true);
-            OnOpen?.Invoke();
-        }
-    }
-
-    internal void HideMenu()
-    {
-        if (menuShowHideAnimator.isVisible)
-        {
-            menuShowHideAnimator.Hide();
-            CommonScriptableObjects.isProfileHUDOpen.Set(false);
-            OnClose?.Invoke();
-        }
-    }
-
-    internal void SetVisibility(bool visible)
-    {
-        if (visible && !mainShowHideAnimator.isVisible)
-            mainShowHideAnimator.Show();
-        else if (!visible && mainShowHideAnimator.isVisible)
-            mainShowHideAnimator.Hide();
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
@@ -251,15 +243,9 @@ public class ProfileHUDView : MonoBehaviour
 
     private void HandleUnverifiedProfileName(UserProfile userProfile)
     {
-        if (!String.IsNullOrEmpty(userProfile.userName) &&
-            userProfile.userName.Length > NAME_POSTFIX_LENGTH)
-        {
-            textName.text = userProfile.userName.Substring(0, userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1);
-        }
-        else
-        {
-            textName.text = userProfile.userName;
-        }
+        textName.text = string.IsNullOrEmpty(userProfile.userName) || userProfile.userName.Length <= NAME_POSTFIX_LENGTH
+            ? userProfile.userName
+            : userProfile.userName.Substring(0, userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1);
 
         textPostfix.text = $"#{userProfile.userId.Substring(userProfile.userId.Length - NAME_POSTFIX_LENGTH)}";
         SetActiveUnverifiedNameGOs(true);
@@ -272,14 +258,10 @@ public class ProfileHUDView : MonoBehaviour
         buttonLogOut.gameObject.SetActive(active);
     }
 
-    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
-
     private void SetActiveUnverifiedNameGOs(bool active)
     {
         for (int i = 0; i < hideOnNameClaimed.Length; i++)
-        {
             hideOnNameClaimed[i].SetActive(active);
-        }
     }
 
     private void HandleProfileAddress(UserProfile userProfile)
@@ -306,17 +288,13 @@ public class ProfileHUDView : MonoBehaviour
     private void CopyAddress()
     {
         if (!profile)
-        {
             return;
-        }
 
         Environment.i.platform.clipboard.WriteText(profile.userId);
 
-        copyTooltip.gameObject.SetActive(false);
+        copyTooltip.SetActive(false);
         if (copyToastRoutine != null)
-        {
             StopCoroutine(copyToastRoutine);
-        }
 
         copyToastRoutine = StartCoroutine(ShowCopyToast());
     }
@@ -324,18 +302,12 @@ public class ProfileHUDView : MonoBehaviour
     private IEnumerator ShowCopyToast()
     {
         if (!copyToast.gameObject.activeSelf)
-        {
             copyToast.gameObject.SetActive(true);
-        }
 
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
     }
-
-    private void OnEnable() { closeAction.OnTriggered += closeActionDelegate; }
-
-    private void OnDisable() { closeAction.OnTriggered -= closeActionDelegate; }
 
     internal void ActivateProfileNameEditionMode(bool activate)
     {
@@ -352,27 +324,13 @@ public class ProfileHUDView : MonoBehaviour
         }
     }
 
-    private void UpdateNameCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
-
-    internal void SetProfileName(string newName) { textName.text = newName; }
-
-    internal void SetNameRegex(string namePattern) { nameRegex = new Regex(namePattern); }
-
-    internal bool IsValidAvatarName(string name)
+    public void SetDescriptionIsEditing(bool isEditing)
     {
-        if (nameRegex == null)
-            return true;
+        charLimitDescriptionContainer.SetActive(isEditing);
+        descriptionEditionInput.gameObject.SetActive(isEditing);
+        descriptionPreviewInput.gameObject.SetActive(!isEditing);
 
-        return nameRegex.IsMatch(name);
-    }
-
-    internal void ActivateDescriptionEditionMode(bool active)
-    {
-        charLimitDescriptionContainer.SetActive(active);
-        descriptionEditionInput.gameObject.SetActive(active);
-        descriptionPreviewInput.gameObject.SetActive(!active);
-
-        if (active)
+        if (isEditing)
         {
             descriptionEditionInput.text = descriptionPreviewInput.text;
             StartCoroutine(SelectComponentOnNextFrame(descriptionEditionInput));
@@ -385,15 +343,11 @@ public class ProfileHUDView : MonoBehaviour
         selectable.Select();
     }
 
-    internal void SetDescription(string description)
+    public void SetDescription(string description)
     {
         descriptionPreviewInput.text = description;
         descriptionEditionInput.text = description;
     }
-
-    private void UpdateDescriptionCharLimit(string newValue) { textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}"; }
-
-    private void SetDescriptionEnabled(bool enabled) { descriptionContainer.SetActive(enabled); }
 
     public void SetCardAsFullScreenMenuMode(bool isActive)
     {
