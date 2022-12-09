@@ -36,7 +36,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal RectTransform placesAndEventsTooltipReference => view.currentPlacesAndEventsTooltipReference;
     internal RectTransform backpackTooltipReference => view.currentBackpackTooltipReference;
     internal RectTransform mapTooltipReference => view.currentMapTooltipReference;
-    // internal RectTransform builderTooltipReference => view.currentBuilderTooltipReference; // FD:: commented
     internal RectTransform questTooltipReference => view.currentQuestTooltipReference;
     internal RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
     internal RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
@@ -98,7 +97,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        // DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference); // FD:: commented
         DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);

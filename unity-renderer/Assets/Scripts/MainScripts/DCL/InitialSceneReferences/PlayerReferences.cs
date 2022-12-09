@@ -6,7 +6,6 @@ namespace DCL
 {
     public class PlayerReferences : MonoBehaviour
     {
-        // public GameObject biwCameraRoot; // FD:: commented
         public InputController inputController;
         public GameObject cursorCanvas;
         public PlayerAvatarController avatarController;

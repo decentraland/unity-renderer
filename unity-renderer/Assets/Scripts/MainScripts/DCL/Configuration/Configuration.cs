@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-    public static class AssetCatalogUrlSettings // EX: BIWSettings // FD:: changed here
+    public static class AssetCatalogUrlSettings // EX: BIWSettings
     {
         //Note: Don't use these URL directly, you need to get them in the AsseteCatakigUrlUtils (before known as BuilderInWorldUtils) to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
@@ -71,7 +71,6 @@ namespace DCL.Configuration
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
-        // public const string BIW_HEADER_REQUEST_WITH_PARAM_EVENT_NAME = "RequestSignedHeaderForBuilder"; // FD:: commented
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
         public static float ENTITY_POSITION_REPORTING_THRESHOLD = 0.04f; // In meters
         public static float ENTITY_SCALE_REPORTING_THRESHOLD = 0.04f; // In meters

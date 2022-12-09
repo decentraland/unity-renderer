@@ -22,14 +22,6 @@ public static class NotificationScriptableObjects
 
 public static class AudioScriptableObjects
 {
-    // Builder
-
-    // private static AudioEvent builderEnterEvent; // FD:: commented
-    // public static AudioEvent builderEnter => CommonScriptableObjects.GetOrLoad(ref builderEnterEvent, "ScriptableObjects/AudioEvents/Builder/BuilderEnter"); // FD:: commented
-
-    // private static AudioEvent builderReadyEvent; // FD:: commented
-    // public static AudioEvent builderReady => CommonScriptableObjects.GetOrLoad(ref builderReadyEvent, "ScriptableObjects/AudioEvents/Builder/BuilderReady"); // FD:: commented
-
     // Common UI
 
     private static AudioEvent cameraFadeInEvent;
@@ -115,8 +107,6 @@ public static class AudioScriptableObjects
     
     public static void UnloadAll()
     {
-        // Resources.UnloadAsset(builderEnterEvent); // FD:: commented
-        // Resources.UnloadAsset(builderReadyEvent); // FD:: commented
         Resources.UnloadAsset(cameraFadeInEvent);
         Resources.UnloadAsset(cameraFadeOutEvent);
         Resources.UnloadAsset(buttonHoverEvent);
@@ -214,9 +204,6 @@ public static class CommonScriptableObjects
     private static BooleanVariable allUIHiddenValue;
     public static BooleanVariable allUIHidden => GetOrLoad(ref allUIHiddenValue, "ScriptableObjects/AllUIHidden");
 
-    // private static BooleanVariable builderInWorldNotNecessaryUIVisibilityStatusValue; // FD:: commented
-    // public static BooleanVariable builderInWorldNotNecessaryUIVisibilityStatus => GetOrLoad(ref builderInWorldNotNecessaryUIVisibilityStatusValue, "ScriptableObjects/BuilderInWorldUIHidden");  // FD:: commented
-
     private static LatestOpenChatsList latestOpenChatsValue;
     public static LatestOpenChatsList latestOpenChats => GetOrLoad(ref latestOpenChatsValue, "ScriptableObjects/LatestOpenChats");
 
@@ -286,7 +273,6 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(lastReadChatMessagesDictionary);
         Resources.UnloadAsset(lastReadChatMessagesValue);
         Resources.UnloadAsset(allUIHiddenValue);
-        // Resources.UnloadAsset(builderInWorldNotNecessaryUIVisibilityStatusValue); // FD:: commented
         Resources.UnloadAsset(latestOpenChatsValue);
         Resources.UnloadAsset(cameraModeValue);
         Resources.UnloadAsset(cameraModeInputLockedValue);

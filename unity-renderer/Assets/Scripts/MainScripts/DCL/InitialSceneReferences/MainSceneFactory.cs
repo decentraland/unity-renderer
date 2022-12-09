@@ -12,7 +12,6 @@ namespace DCL
             GameObject playerGo = LoadAndInstantiate("Player");
             var playerReferences = playerGo.GetComponent<PlayerReferences>();
             SceneReferences.i.playerAvatarController = playerReferences.avatarController;
-            // SceneReferences.i.biwCameraParent = playerReferences.biwCameraRoot; // FD:: commented
             SceneReferences.i.inputController = playerReferences.inputController;
             SceneReferences.i.cursorCanvas = playerReferences.cursorCanvas;
             SceneReferences.i.cameraController = playerReferences.cameraController;

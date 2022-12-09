@@ -522,10 +522,6 @@ namespace DCL
             OnReadyScene?.Invoke(sceneNumber);
         }
 
-        // public void ActivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_BIW()); } // FD:: commented
-
-        // public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); } // FD:: commented
-
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
             positionDirty = gridPosition.x != currentGridSceneCoordinate.x || gridPosition.y != currentGridSceneCoordinate.y;

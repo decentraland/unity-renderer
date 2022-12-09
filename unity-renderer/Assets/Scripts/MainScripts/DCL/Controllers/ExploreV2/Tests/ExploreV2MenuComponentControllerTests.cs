@@ -297,16 +297,9 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Settings)]
     public void GoToSectionCorrectly(ExploreSection section)
     {
-        // Arrange //FD:: commented modified below
-        // if (section == ExploreSection.Backpack)
-        //     DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
-        // else
-        //     DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
-
-        // FD:: test new version
+        // Arrange 
         if (section == ExploreSection.Backpack)
             DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
-            
 
         // Act
         exploreV2MenuController.SetMenuTargetVisibility(section, true);
