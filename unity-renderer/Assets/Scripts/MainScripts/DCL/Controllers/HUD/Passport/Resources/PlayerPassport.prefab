@@ -7703,7 +7703,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 559267743169334, guid: f51437f8e9c544a6496c026fb9650fd8, type: 3}
       propertyPath: model.animationTransitionTime
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 2007704924549780898, guid: f51437f8e9c544a6496c026fb9650fd8,
         type: 3}
@@ -10497,7 +10497,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 559267743169334, guid: f51437f8e9c544a6496c026fb9650fd8, type: 3}
       propertyPath: model.animationTransitionTime
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 2007704924549780898, guid: f51437f8e9c544a6496c026fb9650fd8,
         type: 3}
