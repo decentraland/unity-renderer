@@ -8,6 +8,7 @@ namespace DCL.Social.Passports
     public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
     {
         private const string GUEST_TEXT = "is a guest";
+        private const string TEMPLATE_DESCRIPTION_TEXT = "This person doesn't have an about description yet.";
         private const int ABOUT_SUB_SECTION_INDEX = 0;
         private const int COLLECTIBLES_SUB_SECTION_INDEX = 1;
 
@@ -16,7 +17,6 @@ namespace DCL.Social.Passports
         [SerializeField] private SectionSelectorComponentView subSectionSelector;
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
-        [SerializeField] private GameObject introContainer;
         [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
@@ -70,8 +70,7 @@ namespace DCL.Social.Passports
 
         public void SetDescription(string description)
         {
-            introContainer.SetActive(!string.IsNullOrEmpty(description));
-            descriptionText.text = description;
+            descriptionText.text = string.IsNullOrEmpty(description) ? TEMPLATE_DESCRIPTION_TEXT : description;
         }
 
         public void SetEquippedWearables(WearableItem[] wearables)
