@@ -4,10 +4,8 @@ using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
-using NSubstitute;
 using NUnit.Framework;
 using RPC;
 using rpc_csharp;
@@ -60,6 +58,7 @@ namespace Tests
             rpcServer.Dispose();
             testCancellationSource.Cancel();
             testCancellationSource.Dispose();
+            DataStore.Clear();
         }
 
         [UnityTest]
@@ -152,6 +151,7 @@ namespace Tests
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
                     Environment.i.world.state, DataStore.i.rpc.context.crdt);
 
+
                 // Prepare entity creation CRDT message
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
@@ -190,6 +190,8 @@ namespace Tests
                 // Check message received correctly, and entity created correctly
                 Assert.IsTrue(messageReceived);
                 Assert.IsTrue(testScene.entities.ContainsKey(ENTITY_ID));
+
+                crdtExecutorsManager.Dispose();
             });
         }
 
