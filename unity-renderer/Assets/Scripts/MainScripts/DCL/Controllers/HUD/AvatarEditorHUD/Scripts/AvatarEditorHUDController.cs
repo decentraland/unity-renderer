@@ -194,7 +194,7 @@ public class AvatarEditorHUDController : IHUD
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
-        CatalogController.RequestOwnedWearables("0x059d0025E4e1Bb1a37F2C922e54b139Bc1231eE0".ToLower())
+        CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
                              ownedWearablesAlreadyLoaded = true;
