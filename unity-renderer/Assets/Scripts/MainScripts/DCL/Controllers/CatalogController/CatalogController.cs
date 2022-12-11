@@ -83,6 +83,8 @@ public class CatalogController : MonoBehaviour
             Debug.Log("add wearables: " + payload);
 
         WearablesRequestResponse request = null;
+
+        Debug.Log("ANTES DE HACER EL TOSTRING");
         var payloadString = payload.ToString();
         cachedString += payloadString;
 
