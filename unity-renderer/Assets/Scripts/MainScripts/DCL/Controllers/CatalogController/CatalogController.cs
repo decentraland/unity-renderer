@@ -77,21 +77,22 @@ public class CatalogController : MonoBehaviour
 
     private string cachedString = "";
 
-    public void AddWearablesToCatalog(string payload)
+    public void AddWearablesToCatalog(object payload)
     {
         if (VERBOSE)
             Debug.Log("add wearables: " + payload);
 
         WearablesRequestResponse request = null;
-        cachedString += payload;
+        var payloadString = payload.ToString();
+        cachedString += payloadString;
 
         try
         {
             // The new wearables paradigm is based on composing with optional field
             // i.e. the emotes will have an emotev0Data property with some values.
             // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
-            Debug.Log(payload);
-            Debug.Log(payload.Length);
+            Debug.Log(payloadString);
+            Debug.Log(payloadString.Length);
             request = JsonConvert.DeserializeObject<WearablesRequestResponse>(cachedString);
         }
         catch (Exception e)
