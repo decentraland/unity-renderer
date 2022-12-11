@@ -51,7 +51,7 @@ public class ProfileHUDController : IHUD
 
         GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
         viewGo.name = VIEW_NAME;
-        view = viewGo.GetComponent<ProfileHUDView>();
+        view = viewGo.GetComponent<IProfileHUDView>();
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
@@ -149,7 +149,7 @@ public class ProfileHUDController : IHUD
     }
 
 
-    protected virtual GameObject GetViewPrefab() => Resources.Load<GameObject>("ProfileHUD");
+    protected virtual GameObject GetViewPrefab() => Resources.Load<GameObject>("ProfileHUD_V2");
 
 
     private void OnProfileUpdated(UserProfile profile) => view?.SetProfile(profile);

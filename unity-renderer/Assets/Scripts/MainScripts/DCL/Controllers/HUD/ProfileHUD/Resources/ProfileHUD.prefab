@@ -2178,7 +2178,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 71.7596, y: 71.76}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &117772258556419525
@@ -5596,8 +5596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32c4235571b994c96b0aac42797cc5c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainShowHideAnimator: {fileID: 280088380982461574}
-  menuShowHideAnimator: {fileID: 8660805047963294343}
+  showHideAnimator: {fileID: 280088380982461574}
   mainRootLayout: {fileID: 2784901200025860595}
   loadingSpinner: {fileID: 3475705995837572437}
   copyToast: {fileID: 7150535707475580996}
@@ -5615,10 +5614,10 @@ MonoBehaviour:
   textName: {fileID: 470573529617210512}
   textPostfix: {fileID: 4239755973591999985}
   textAddress: {fileID: 8507228843591293394}
-  buttonClaimName: {fileID: 2457515400162479628}
-  buttonCopyAddress: {fileID: 579196943523515688}
   buttonLogOut: {fileID: 2439665739510493948}
   buttonSignUp: {fileID: 3277634955613374390}
+  buttonClaimName: {fileID: 2457515400162479628}
+  buttonCopyAddress: {fileID: 579196943523515688}
   buttonTermsOfServiceForConnectedWallets: {fileID: 2723056823137290535}
   buttonPrivacyPolicyForConnectedWallets: {fileID: 5791542833153009396}
   buttonTermsOfServiceForNonConnectedWallets: {fileID: 8381696594370864404}

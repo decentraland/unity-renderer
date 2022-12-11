@@ -380,7 +380,6 @@ GameObject:
   - component: {fileID: 5728135807312501078}
   - component: {fileID: 2667795005427676968}
   - component: {fileID: 4411390016013756919}
-  - component: {fileID: 3057783629067350633}
   m_Layer: 5
   m_Name: NameContainer
   m_TagString: Untagged
@@ -446,23 +445,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &3057783629067350633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 556981871372599693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 0}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!1 &685599022342810863
 GameObject:
   m_ObjectHideFlags: 0
@@ -1558,7 +1540,6 @@ GameObject:
   - component: {fileID: 6775857958583589377}
   - component: {fileID: 7277199053881330070}
   - component: {fileID: 3243513489250627878}
-  - component: {fileID: 7809305628157109620}
   - component: {fileID: 8403742750851468215}
   m_Layer: 5
   m_Name: Fill
@@ -1626,23 +1607,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
---- !u!114 &7809305628157109620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1722585609086287906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 0}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!114 &8403742750851468215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6012,8 +5976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f8926a28e635d4bb16c25f49aedfc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainShowHideAnimator: {fileID: 280088380982461574}
-  menuShowHideAnimator: {fileID: 8660805047963294343}
+  showHideAnimator: {fileID: 280088380982461574}
   mainRootLayout: {fileID: 2784901200025860595}
   loadingSpinner: {fileID: 3475705995837572437}
   copyToast: {fileID: 7150535707475580996}
@@ -6161,7 +6124,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 5103067147336230822}
 --- !u!1 &4572852650187169043
 GameObject:
   m_ObjectHideFlags: 0
@@ -6249,7 +6212,6 @@ GameObject:
   - component: {fileID: 8185008673217826390}
   - component: {fileID: 5460771661579434760}
   - component: {fileID: 3034082306534631928}
-  - component: {fileID: 7579873655745138155}
   - component: {fileID: 3036601276668652225}
   m_Layer: 5
   m_Name: DescriptionInput
@@ -6391,23 +6353,6 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!114 &7579873655745138155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4879461777387720195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 0}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!114 &3036601276668652225
 MonoBehaviour:
   m_ObjectHideFlags: 0

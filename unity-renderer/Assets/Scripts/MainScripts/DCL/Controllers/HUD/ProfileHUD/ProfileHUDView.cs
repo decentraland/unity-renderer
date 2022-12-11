@@ -13,8 +13,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
-    [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] private ShowHideAnimator copyToast;
@@ -116,11 +114,11 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void ToggleMenu()
     {
-        if (menuShowHideAnimator.isVisible)
+        if (showHideAnimator.isVisible)
             HideMenu();
         else
         {
-            menuShowHideAnimator.Show();
+            showHideAnimator.Show();
             CommonScriptableObjects.isProfileHUDOpen.Set(true);
             Opened?.Invoke(this, EventArgs.Empty);
         }
@@ -128,9 +126,9 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void HideMenu()
     {
-        if (menuShowHideAnimator.isVisible)
+        if (showHideAnimator.isVisible)
         {
-            menuShowHideAnimator.Hide();
+            showHideAnimator.Hide();
             CommonScriptableObjects.isProfileHUDOpen.Set(false);
             Closed?.Invoke(this, EventArgs.Empty);
         }
@@ -138,10 +136,10 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void SetVisibility(bool visible)
     {
-        if (visible && !mainShowHideAnimator.isVisible)
-            mainShowHideAnimator.Show();
-        else if (!visible && mainShowHideAnimator.isVisible)
-            mainShowHideAnimator.Hide();
+        if (visible && !showHideAnimator.isVisible)
+            showHideAnimator.Show();
+        else if (!visible && showHideAnimator.isVisible)
+            showHideAnimator.Hide();
     }
 
     public void SetProfile(UserProfile userProfile)
