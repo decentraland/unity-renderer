@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
+using Decentraland.Renderer.RendererServices;
 using rpc_csharp;
 
 namespace RPC.Services

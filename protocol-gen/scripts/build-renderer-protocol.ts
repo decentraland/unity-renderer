@@ -45,17 +45,6 @@ function fixEngineInterface() {
   writeFileSync(engineInterfaceProtoPath, newContent)
 }
 
-function removePackageName(protoFiles: string[]) {
-  for (const filePath of protoFiles) {
-    const content = readFileSync(filePath).toString()
-
-    const newContent = content
-      .replace('package decentraland.renderer', '// package decentraland.renderer')
-
-    writeFileSync(filePath, newContent)
-  }
-}
-
 async function buildRendererProtocol() {
   console.log('Building Renderer Protocol...')
   cleanGeneratedCode(rendererProtocolOutputPath)
@@ -63,8 +52,6 @@ async function buildRendererProtocol() {
   fixEngineInterface()
 
   const files = glob.sync(rendererProtocolInputPath + '/**/*.proto')
-
-  removePackageName(files)
 
   const protoFiles = files.join(' ')
 
