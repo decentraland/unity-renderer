@@ -93,6 +93,9 @@ namespace DCL.Social.Friends
 
             friendRequests[friendRequest.FriendRequestId] = friendRequest;
 
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_TO, userId = friendUserId });
+
             return friendRequest;
         }
 
@@ -109,6 +112,10 @@ namespace DCL.Social.Friends
             var request = ToFriendRequest(requestPayload);
             // NOTE: would it be better to register the new state instead of removing it?
             friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.APPROVED, userId = request.From });
+
             return request;
         }
 
@@ -122,6 +129,10 @@ namespace DCL.Social.Friends
             var request = ToFriendRequest(requestPayload);
             // NOTE: would it be better to register the new state instead of removing it?
             friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REJECTED, userId = request.From });
+
             return request;
         }
 
@@ -199,6 +210,9 @@ namespace DCL.Social.Friends
 
             await apiBridge.CancelRequestByUserIdAsync(friendUserId);
 
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.CANCELLED, userId = friendUserId });
+
             return new FriendRequest("", 0, "", friendUserId, "");
         }
 
@@ -211,6 +225,10 @@ namespace DCL.Social.Friends
             var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.CANCELLED, userId = friendRequest.To });
+
             return friendRequest;
         }
 

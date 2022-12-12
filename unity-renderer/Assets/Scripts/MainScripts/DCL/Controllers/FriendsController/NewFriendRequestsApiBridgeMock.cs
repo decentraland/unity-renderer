@@ -88,19 +88,9 @@ namespace DCL.Social.Friends
         {
             await UniTask.Delay(Random.Range(100, 16000));
 
-            int userNumber = Random.Range(0, 1000);
-            var fakeUserId = $"fake_from_user_{userNumber}";
-
-            userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
-            {
-                userId = fakeUserId,
-                name = $"fake user {userNumber}",
-                snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{userNumber}" }
-            });
-
             friendRequests[friendRequestId] = new FriendRequestPayload
             {
-                from = fakeUserId,
+                from = friendRequests[friendRequestId].from,
                 friendRequestId = friendRequestId,
                 messageBody = Random.Range(0, 2) == 0 ? "" : $"fake body message {Random.Range(0, 100000000)}",
                 timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
@@ -290,8 +280,8 @@ namespace DCL.Social.Friends
         {
             await UniTask.Delay(Random.Range(100, 16000));
 
-            int userNumber = Random.Range(0, 1000);
-            var fakeUserId = $"fake_from_user_{userNumber}";
+            string fakeUserId = friendRequests[friendRequestId].from;
+            int userNumber = Random.Range(0, 100);
 
             userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
             {
