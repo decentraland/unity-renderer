@@ -89,6 +89,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
 
+    public BaseComponentView BaseView => this;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;

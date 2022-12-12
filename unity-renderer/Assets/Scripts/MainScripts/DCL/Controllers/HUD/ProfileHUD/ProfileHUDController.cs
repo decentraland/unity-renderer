@@ -166,12 +166,6 @@ public class ProfileHUDController : IHUD
         if (nameRegex != null && !nameRegex.IsMatch(newName))
             return;
 
-        if (view != null)
-        {
-            view.SetProfileName(newName);
-            view.SetDescriptionIsEditing(false);
-        }
-
         userProfileBridge.SaveUnverifiedName(newName);
     }
 
@@ -183,8 +177,6 @@ public class ProfileHUDController : IHUD
             return;
         }
 
-        view.SetDescription(description);
-        view.SetDescriptionIsEditing(false);
         userProfileBridge.SaveDescription(description);
     }
 

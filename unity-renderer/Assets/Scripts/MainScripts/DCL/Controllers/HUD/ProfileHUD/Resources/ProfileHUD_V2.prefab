@@ -2278,8 +2278,8 @@ GameObject:
   - component: {fileID: 5249297500395189288}
   - component: {fileID: 4700810712221919322}
   - component: {fileID: 9142559025543379649}
+  - component: {fileID: 6984437320998078508}
   - component: {fileID: 545291016085787874}
-  - component: {fileID: 7996780672612267617}
   m_Layer: 5
   m_Name: AvatarPic
   m_TagString: Untagged
@@ -2409,6 +2409,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6984437320998078508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2495736092994947693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 1
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 545291016085787874}
 --- !u!225 &545291016085787874
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2421,18 +2437,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &7996780672612267617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2495736092994947693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2611028964087816398
 GameObject:
   m_ObjectHideFlags: 0
@@ -5977,6 +5981,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 280088380982461574}
+  expandedLayoutAnimator: {fileID: 8660805047963294343}
+  avatarPicLayoutAnimator: {fileID: 6984437320998078508}
   mainRootLayout: {fileID: 2784901200025860595}
   loadingSpinner: {fileID: 3475705995837572437}
   copyToast: {fileID: 7150535707475580996}
@@ -6688,7 +6694,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3014677405175554396
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7555,7 +7561,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 1183806255801441734}
 --- !u!1 &5592053951017836493
 GameObject:
   m_ObjectHideFlags: 0
@@ -8570,7 +8576,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 155517992335992858}
 --- !u!1 &7119357538116548825
 GameObject:
   m_ObjectHideFlags: 0
@@ -9051,7 +9057,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 9091644049804154858}
 --- !u!1 &7359273195404972655
 GameObject:
   m_ObjectHideFlags: 0
@@ -10204,7 +10210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6398172481905595745
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10598,7 +10604,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 3701296544811578837}
 --- !u!1 &8414539453899275498
 GameObject:
   m_ObjectHideFlags: 0

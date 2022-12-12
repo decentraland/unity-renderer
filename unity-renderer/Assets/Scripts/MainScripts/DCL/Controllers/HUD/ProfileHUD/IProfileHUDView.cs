@@ -20,6 +20,7 @@ public interface IProfileHUDView
     event EventHandler PrivacyPolicyPressed;
 
 
+    public BaseComponentView BaseView { get; }
     public GameObject GameObject { get; }
     public RectTransform ExpandedMenu { get; }
     public RectTransform TutorialReference { get; }

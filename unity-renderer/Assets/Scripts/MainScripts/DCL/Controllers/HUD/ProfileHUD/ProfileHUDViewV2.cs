@@ -15,6 +15,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
 
+    [SerializeField] private ShowHideAnimator expandedLayoutAnimator;
+    [SerializeField] private ShowHideAnimator avatarPicLayoutAnimator;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal ShowHideAnimator copyToast;
@@ -104,6 +106,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
 
+    public BaseComponentView BaseView => this;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
@@ -113,7 +116,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
 
-    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit >= descriptionInputText.text.Length;
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
 
     public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
 
@@ -145,6 +148,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     public void SetProfile(UserProfile userProfile)
     {
+        expandedLayoutAnimator.Show();
+
         profile = userProfile;
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
@@ -159,8 +164,18 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
         description = profile.description;
         descriptionInputText.text = description;
-        textName.text = profile.userName;
-        textPostfix.text = profile.userId;
+
+        string[] nameSplits = profile.userName.Split('#');
+        if (nameSplits.Length > 0)
+        {
+            textName.text = nameSplits[0];
+            textPostfix.text = $"#{nameSplits[1]};";
+        }
+        else
+        {
+            textName.text = profile.userName;
+            textPostfix.text = profile.userId;
+        }
     }
 
     private void OpenStartMenu()
@@ -258,7 +273,12 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
+        inputName.onDeselect.AddListener((newName) =>
+        {
+            ActivateProfileNameEditionMode(false);
+
+            NameSubmitted?.Invoke(this, newName);
+        });
 
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
@@ -285,6 +305,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             this.description = description;
             SetDescriptionIsEditing(false);
             UpdateLinksInformation(description);
+
+            DescriptionSubmitted?.Invoke(this, description);
         });
         SetDescriptionIsEditing(false);
 
