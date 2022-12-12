@@ -1664,7 +1664,6 @@ GameObject:
   - component: {fileID: 6978426228227875072}
   - component: {fileID: 6626529523097782399}
   - component: {fileID: 3447212237509989151}
-  - component: {fileID: 8682647602818152637}
   - component: {fileID: 7150535707475580996}
   m_Layer: 5
   m_Name: ContainerCopyToast
@@ -5553,7 +5552,6 @@ GameObject:
   - component: {fileID: 8540544952857596789}
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 5103067147336230822}
-  - component: {fileID: 6605554144506243223}
   - component: {fileID: 280088380982461574}
   m_Layer: 5
   m_Name: ProfileHUD
@@ -6304,7 +6302,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8183230728845705687}
   - component: {fileID: 7364899855077846383}
-  - component: {fileID: 4665175409159933928}
   - component: {fileID: 625701827872125648}
   - component: {fileID: 7020272023182402879}
   - component: {fileID: 3977902523449707136}
@@ -6793,7 +6790,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7180900588298811771}
   - component: {fileID: 5730910163485373910}
-  - component: {fileID: 5240377967773933042}
   - component: {fileID: 3761677334045899983}
   - component: {fileID: 7148076454545280368}
   - component: {fileID: 6443759926342946213}
@@ -6959,7 +6955,6 @@ GameObject:
   - component: {fileID: 8989731962805056149}
   - component: {fileID: 6929313996513452336}
   - component: {fileID: 1183806255801441734}
-  - component: {fileID: 5844545661298511458}
   - component: {fileID: 5936786202935723071}
   m_Layer: 5
   m_Name: Tooltip
@@ -8039,7 +8034,6 @@ GameObject:
   - component: {fileID: 1646081629259534154}
   - component: {fileID: 4010885692175549171}
   - component: {fileID: 155517992335992858}
-  - component: {fileID: 4194606861736440984}
   - component: {fileID: 4057628118517757677}
   m_Layer: 5
   m_Name: Tooltip
@@ -8521,7 +8515,6 @@ GameObject:
   - component: {fileID: 4197842883998661266}
   - component: {fileID: 2703269915032604576}
   - component: {fileID: 9091644049804154858}
-  - component: {fileID: 5073981704574360024}
   - component: {fileID: 4025895129313524444}
   m_Layer: 5
   m_Name: Tooltip
@@ -9915,7 +9908,6 @@ GameObject:
   - component: {fileID: 3444357448154141700}
   - component: {fileID: 6909771042873449771}
   - component: {fileID: 1356600796964886956}
-  - component: {fileID: 4684767672997992366}
   - component: {fileID: 2482333762970271612}
   m_Layer: 5
   m_Name: ContainerTooltip
@@ -10019,7 +10011,6 @@ GameObject:
   - component: {fileID: 3503784006588372656}
   - component: {fileID: 7902827250788772588}
   - component: {fileID: 3701296544811578837}
-  - component: {fileID: 8043985350824423644}
   - component: {fileID: 1764000292566057836}
   m_Layer: 5
   m_Name: Tooltip
@@ -10147,7 +10138,6 @@ GameObject:
   - component: {fileID: 3644061574505845772}
   - component: {fileID: 8294153648474314903}
   - component: {fileID: 8238151579651059143}
-  - component: {fileID: 7770126039037567867}
   - component: {fileID: 2035218209591236856}
   - component: {fileID: 4233926345594982464}
   - component: {fileID: 3608574130201130709}
