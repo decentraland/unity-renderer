@@ -23,7 +23,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_3425DFF1:
-        m_Texture: {fileID: 2800000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
+        m_Texture: {fileID: 2800000, guid: 01894c9b0e4cc4d15a7f0fe26505e2c9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -41,14 +41,18 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 1
+    - _Center_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Rotation: 180
+    - _Roundness: 0.4
     - _XVariant: 1
     - _YVariant: 1
     - _ZVariant: 1
+    - _isActivated: 1
     - _isFlipped: 0
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 0.40566036, g: 0.40566036, b: 0.40566036, a: 1}
+    - _Color: {r: 0.4056603, g: 0.4056603, b: 0.4056603, a: 1}
+    - _WidthHeight: {r: 1.06, g: 1.67, b: 0, a: 0}
   m_BuildTextureStacks: []

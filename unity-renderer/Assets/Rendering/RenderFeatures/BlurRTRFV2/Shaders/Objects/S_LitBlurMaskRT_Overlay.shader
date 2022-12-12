@@ -2,15 +2,19 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
 {
     Properties
     {
+        [ToggleUI]_isActivated("isActivated", Float) = 0
         _Color("Color", Color) = (0, 0, 0, 0)
-        [NoScaleOffset]Texture2D_3425DFF1("Mask", 2D) = "white" {}
         [ToggleUI]_isFlipped("isFlipped", Float) = 0
         _AlphaClip("AlphaClip", Float) = 1
+        
         _XVariant("XVariant", Float) = 0
         _YVariant("YVariant", Float) = 0
         _ZVariant("ZVariant", Float) = 0
         _Center("Center", Vector) = (0, 0, 0, 0)
         _Rotation("Rotation", Float) = 0
+        _Center_1("Center (1)", Float) = 0
+        _WidthHeight("WidthHeight", Vector) = (0, 0, 0, 0)
+        _Roundness("Roundness", Float) = 0.2
         [HideInInspector]_QueueOffset("_QueueOffset", Float) = 0
         [HideInInspector]_QueueControl("_QueueControl", Float) = -1
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
@@ -37,7 +41,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -296,7 +300,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -305,6 +308,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -314,6 +321,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -384,6 +393,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -429,6 +529,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -476,21 +577,76 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
             surface.Smoothness = 0;
             surface.Occlusion = 1;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -566,7 +722,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -823,7 +979,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -832,6 +987,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -841,6 +1000,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -911,6 +1072,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -956,6 +1208,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -1003,21 +1256,76 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
             surface.Smoothness = 0;
             surface.Occlusion = 1;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -1094,7 +1402,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         ZTest LEqual
         ZWrite On
         
@@ -1269,7 +1577,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -1278,6 +1585,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -1287,6 +1598,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -1303,7 +1616,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -1345,16 +1760,69 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -1609,7 +2077,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -1618,6 +2085,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -1627,6 +2098,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -1697,6 +2170,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -1738,6 +2302,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -1785,17 +2350,72 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
             surface.Emission = float3(0, 0, 0);
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -2030,7 +2650,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -2039,6 +2658,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -2048,6 +2671,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -2064,7 +2689,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -2105,15 +2832,68 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -2186,7 +2966,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         
         // Debug
         // <None>
@@ -2346,7 +3126,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -2355,6 +3134,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -2364,6 +3147,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -2380,7 +3165,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -2421,15 +3308,68 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -2502,7 +3442,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -2670,7 +3610,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -2679,6 +3618,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -2688,6 +3631,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -2758,6 +3703,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -2798,6 +3834,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -2845,16 +3882,71 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -2941,7 +4033,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -3199,7 +4291,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -3208,6 +4299,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -3217,6 +4312,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -3287,6 +4384,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -3332,6 +4520,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -3379,21 +4568,76 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
             surface.Smoothness = 0;
             surface.Occlusion = 1;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -3469,7 +4713,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         ZTest LEqual
         ZWrite On
         
@@ -3643,7 +4887,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -3652,6 +4895,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -3661,6 +4908,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -3677,7 +4926,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -3719,16 +5070,69 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -3983,7 +5387,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -3992,6 +5395,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -4001,6 +5408,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -4071,6 +5480,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -4112,6 +5612,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -4159,17 +5660,72 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
             surface.Emission = float3(0, 0, 0);
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -4405,7 +5961,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -4414,6 +5969,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -4423,6 +5982,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -4439,7 +6000,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -4480,15 +6143,68 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -4561,7 +6277,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         
         // Debug
         // <None>
@@ -4722,7 +6438,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -4731,6 +6446,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -4740,6 +6459,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -4756,7 +6477,109 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         #endif
         
         // Graph Functions
-        // GraphFunctions: <None>
+        
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+        {
+            RGBA = float4(R, G, B, A);
+            RGB = float3(R, G, B);
+            RG = float2(R, G);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void Unity_Subtract_float(float A, float B, out float Out)
+        {
+            Out = A - B;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
         
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
@@ -4797,15 +6620,68 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
@@ -4878,7 +6754,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Off
+        Cull Back
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -5047,7 +6923,6 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         
         // Graph Properties
         CBUFFER_START(UnityPerMaterial)
-        float4 Texture2D_3425DFF1_TexelSize;
         float4 _Color;
         float _isFlipped;
         float _XVariant;
@@ -5056,6 +6931,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Rotation;
         float2 _Center;
         float _AlphaClip;
+        float2 _WidthHeight;
+        float _Roundness;
+        float _Center_1;
+        float _isActivated;
         CBUFFER_END
         
         // Object and Global properties
@@ -5065,6 +6944,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float4 _blurTexture_TexelSize;
         TEXTURE2D(Texture2D_3425DFF1);
         SAMPLER(samplerTexture2D_3425DFF1);
+        float4 Texture2D_3425DFF1_TexelSize;
+        float4 Texture2D_3425DFF1_ST;
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -5135,6 +7016,97 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Out = Predicate ? True : False;
         }
         
+        void Unity_Rectangle_Fastest_float(float2 UV, float Width, float Height, out float Out)
+        {
+            float2 d = abs(UV * 2 - 1) - float2(Width, Height);
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            d = saturate((1 - saturate(d * 1e7)));
+        #else
+            d = saturate(1 - d / fwidth(d));
+        #endif
+            Out = min(d.x, d.y);
+        }
+        
+        void Unity_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+        {
+            Out = UV * Tiling + Offset;
+        }
+        
+        void RoundedPolygon_Func_float(float2 UV, float Width, float Height, float Sides, float Roundness, out float Out)
+        {
+            UV = UV * 2. + float2(-1.,-1.);
+            float epsilon = 1e-6;
+            UV.x = UV.x / ( Width + (Width==0)*epsilon);
+            UV.y = UV.y / ( Height + (Height==0)*epsilon);
+            Roundness = clamp(Roundness, 1e-6, 1.);
+            float i_sides = floor( abs( Sides ) );
+            float fullAngle = 2. * PI / i_sides;
+            float halfAngle = fullAngle / 2.;
+            float opositeAngle = HALF_PI - halfAngle;
+            float diagonal = 1. / cos( halfAngle );
+            // Chamfer values
+            float chamferAngle = Roundness * halfAngle; // Angle taken by the chamfer
+            float remainingAngle = halfAngle - chamferAngle; // Angle that remains
+            float ratio = tan(remainingAngle) / tan(halfAngle); // This is the ratio between the length of the polygon's triangle and the distance of the chamfer center to the polygon center
+            // Center of the chamfer arc
+            float2 chamferCenter = float2(
+                cos(halfAngle) ,
+                sin(halfAngle)
+            )* ratio * diagonal;
+            // starting of the chamfer arc
+            float2 chamferOrigin = float2(
+                1.,
+                tan(remainingAngle)
+            );
+            // Using Al Kashi algebra, we determine:
+            // The distance distance of the center of the chamfer to the center of the polygon (side A)
+            float distA = length(chamferCenter);
+            // The radius of the chamfer (side B)
+            float distB = 1. - chamferCenter.x;
+            // The refence length of side C, which is the distance to the chamfer start
+            float distCref = length(chamferOrigin);
+            // This will rescale the chamfered polygon to fit the uv space
+            // diagonal = length(chamferCenter) + distB;
+            float uvScale = diagonal;
+            UV *= uvScale;
+            float2 polaruv = float2 (
+                atan2( UV.y, UV.x ),
+                length(UV)
+            );
+            polaruv.x += HALF_PI + 2*PI;
+            polaruv.x = fmod( polaruv.x + halfAngle, fullAngle );
+            polaruv.x = abs(polaruv.x - halfAngle);
+            UV = float2( cos(polaruv.x), sin(polaruv.x) ) * polaruv.y;
+            // Calculate the angle needed for the Al Kashi algebra
+            float angleRatio = 1. - (polaruv.x-remainingAngle) / chamferAngle;
+            // Calculate the distance of the polygon center to the chamfer extremity
+            float distC = sqrt( distA*distA + distB*distB - 2.*distA*distB*cos( PI - halfAngle * angleRatio ) );
+            Out = UV.x;
+            float chamferZone = ( halfAngle - polaruv.x ) < chamferAngle;
+            Out = lerp( UV.x, polaruv.y / distC, chamferZone );
+            // Output this to have the shape mask instead of the distance field
+        #if defined(SHADER_STAGE_RAY_TRACING)
+            Out = saturate((1 - Out) * 1e7);
+        #else
+            Out = saturate((1 - Out) / fwidth(Out));
+        #endif
+        }
+        
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_OneMinus_float(float In, out float Out)
+        {
+            Out = 1 - In;
+        }
+        
+        void Unity_Branch_float(float Predicate, float True, float False, out float Out)
+        {
+            Out = Predicate ? True : False;
+        }
+        
         // Custom interpolators pre vertex
         /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -5175,6 +7147,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
+            float _Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0 = _isActivated;
             float _Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0 = _isFlipped;
             UnityTexture2D _Property_8c3635df75b141839e7230099601413e_Out_0 = UnityBuildTexture2DStructNoScale(_blurTexture);
             float _Property_8168c9a702464c8cafc9881be5d4c79c_Out_0 = _XVariant;
@@ -5222,16 +7195,71 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             Unity_Multiply_float4_float4(_SampleTexture2D_2e503c71a5b26d8fb0712b7182f1d636_RGBA_0, _Property_e82af5809f2040d4ab8175ad70bccf69_Out_0, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2);
             float4 _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3;
             Unity_Branch_float4(_Property_c4aa2a2b8b724b638bfabcdaef503879_Out_0, _Multiply_84df3f6d74a046fca8b6cf61edcb4c09_Out_2, _Multiply_92f0b83d43b546c99e7ad7f5c8f4d575_Out_2, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3);
-            UnityTexture2D _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0 = UnityBuildTexture2DStructNoScale(Texture2D_3425DFF1);
-            float4 _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0 = SAMPLE_TEXTURE2D(_Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.tex, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.samplerstate, _Property_aae94238a65c9b80a861bbbbc4810bc0_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_R_4 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.r;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
-            float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
-            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
-            surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
-            surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
+            float4 _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3;
+            Unity_Branch_float4(_Property_17d700c5cc5741e49f75fd8a66e79b14_Out_0, _Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3, float4(0, 0, 0, 0), _Branch_ef9121835cfd4f13af132c2c0905930c_Out_3);
+            float _Property_6fb988081629465087579cc3f6c6cf70_Out_0 = _isActivated;
+            float4 _UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0 = IN.uv0;
+            float _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3;
+            Unity_Rectangle_Fastest_float((_UV_39fb9d1e980f44a48b4b1e87d93870fa_Out_0.xy), 1, 1, _Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3);
+            float4 _UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0 = IN.uv0;
+            float _Float_0d9eec0edaca4967b36d7993695c1bff_Out_0 = 0.3;
+            float _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0 = _Center_1;
+            float4 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4;
+            float3 _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5;
+            float2 _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6;
+            Unity_Combine_float(_Float_0d9eec0edaca4967b36d7993695c1bff_Out_0, _Property_23f9fe05761b4a20a81acc9f2bebdaba_Out_0, 0, 0, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGBA_4, _Combine_b725d53e914245de8ceae3a4d343a7ce_RGB_5, _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6);
+            float2 _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3;
+            Unity_TilingAndOffset_float((_UV_a96366586c5146dabaaee0a5b79e6d2e_Out_0.xy), float2 (1, 1), _Combine_b725d53e914245de8ceae3a4d343a7ce_RG_6, _TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3);
+            float2 _Property_adf16741b0414d8db19782b2593b9dc1_Out_0 = _WidthHeight;
+            float _Split_68623d6579274f3db940a2abd93a4a18_R_1 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[0];
+            float _Split_68623d6579274f3db940a2abd93a4a18_G_2 = _Property_adf16741b0414d8db19782b2593b9dc1_Out_0[1];
+            float _Split_68623d6579274f3db940a2abd93a4a18_B_3 = 0;
+            float _Split_68623d6579274f3db940a2abd93a4a18_A_4 = 0;
+            float _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2);
+            float _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0 = _Roundness;
+            float _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_8d3c4cc827894ccf9d8184233ef8bfc1_Out_3, _Subtract_d94903bbdfbc43dd89991f063e32a835_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5);
+            float4 _UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0 = IN.uv0;
+            float _Float_1a5e88c6f1064a10b0757459f51cd441_Out_0 = -0.3;
+            float _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0 = _Center_1;
+            float4 _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4;
+            float3 _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5;
+            float2 _Combine_2a22bea91aa24074a7b21b57139930da_RG_6;
+            Unity_Combine_float(_Float_1a5e88c6f1064a10b0757459f51cd441_Out_0, _Property_1a02c10041b94b05b56e04f3d0004d37_Out_0, 0, 0, _Combine_2a22bea91aa24074a7b21b57139930da_RGBA_4, _Combine_2a22bea91aa24074a7b21b57139930da_RGB_5, _Combine_2a22bea91aa24074a7b21b57139930da_RG_6);
+            float2 _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3;
+            Unity_TilingAndOffset_float((_UV_d17b1c16662a4daa82c3dea6434b2ec4_Out_0.xy), float2 (1, 1), _Combine_2a22bea91aa24074a7b21b57139930da_RG_6, _TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3);
+            float _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2;
+            Unity_Subtract_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.5, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2);
+            float _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_61242a1b613043d287137e9368f8f5f6_Out_3, _Subtract_8ad95d02eaea496e88059c742be4b5d3_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5);
+            float _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2;
+            Unity_Add_float(_RoundedPolygon_f895585b54fd46eeb999d44b4d10ae42_Out_5, _RoundedPolygon_a3ca7ca2be95462982d923cafc7ddeee_Out_5, _Add_bc9e96d8ed534f999dd543c74766a62f_Out_2);
+            float4 _UV_62c3ea27df5b44038907a6508a6579e9_Out_0 = IN.uv0;
+            float _Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0 = 0;
+            float _Property_0bf7b709954d42559e9479178017f719_Out_0 = _Center_1;
+            float4 _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4;
+            float3 _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5;
+            float2 _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6;
+            Unity_Combine_float(_Float_520069a03c4d4e9cb6e60fccde4fe2c7_Out_0, _Property_0bf7b709954d42559e9479178017f719_Out_0, 0, 0, _Combine_ae928e0b132946d29f842c8e422c98d3_RGBA_4, _Combine_ae928e0b132946d29f842c8e422c98d3_RGB_5, _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6);
+            float2 _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3;
+            Unity_TilingAndOffset_float((_UV_62c3ea27df5b44038907a6508a6579e9_Out_0.xy), float2 (1, 1), _Combine_ae928e0b132946d29f842c8e422c98d3_RG_6, _TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3);
+            float _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2;
+            Unity_Add_float(_Split_68623d6579274f3db940a2abd93a4a18_R_1, 0.2, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2);
+            float _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5;
+            RoundedPolygon_Func_float(_TilingAndOffset_f9d23f89941c42639a096625087d456b_Out_3, _Add_2d17eb9432874cefb525d6a8bb6b1ef7_Out_2, _Split_68623d6579274f3db940a2abd93a4a18_G_2, 4, _Property_5cbffdebfc7a4114be748cd87224f6fa_Out_0, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5);
+            float _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2;
+            Unity_Add_float(_Add_bc9e96d8ed534f999dd543c74766a62f_Out_2, _RoundedPolygon_bb4f62997ebf49d2ba5e759adaccb355_Out_5, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2);
+            float _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2;
+            Unity_Subtract_float(_Rectangle_f64d948dfb6043659b2abcfa0c0eb506_Out_3, _Add_65a23b7e78204b2e8bcd44144bb23040_Out_2, _Subtract_1745d73b75bd4a4396b204599e96528e_Out_2);
+            float _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1;
+            Unity_OneMinus_float(_Subtract_1745d73b75bd4a4396b204599e96528e_Out_2, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1);
+            float _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            Unity_Branch_float(_Property_6fb988081629465087579cc3f6c6cf70_Out_0, _OneMinus_1429c8a3569e409b843da0ca595636af_Out_1, 0, _Branch_028656a19a704245ad871b652b140c44_Out_3);
+            float _Property_60b342454604428e8c87ef4e7117f46b_Out_0 = _AlphaClip;
+            surface.BaseColor = (_Branch_ef9121835cfd4f13af132c2c0905930c_Out_3.xyz);
+            surface.Alpha = _Branch_028656a19a704245ad871b652b140c44_Out_3;
+            surface.AlphaClipThreshold = _Property_60b342454604428e8c87ef4e7117f46b_Out_0;
             return surface;
         }
         
