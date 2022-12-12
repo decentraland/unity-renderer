@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AvatarEditorHUD_Tests;
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NSubstitute.Core.Arguments;
 using NSubstitute.ReceivedExtensions;
@@ -21,15 +22,16 @@ public class AvatarEditorHUDAnimationControllerTests
     private CatalogController catalogController;
     private BaseDictionary<string, WearableItem> catalog;
 
-    
+
     [SetUp]
     public void SetUp()
     {
         editorHUDView = Substitute.For<IAvatarEditorHUDView>();
         characterPreviewController = Substitute.For<ICharacterPreviewController>();
+        editorHUDView.CharacterPreview.Returns(characterPreviewController);
         catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-        avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView, characterPreviewController);
+        avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView);
     }
 
     [Test]
@@ -44,7 +46,7 @@ public class AvatarEditorHUDAnimationControllerTests
         editorHUDView.WearableSelectorClicked += Raise.Event<Action<string>>(selectedWearable);
         Assert.True(avatarEditorHUDAnimationController.activeCategory.StartsWith(expectedAnimationStart));
     }
-    
+
     [Test]
     [TestCase("urn:decentraland:off-chain:base-avatars:BaseFemale")]
     [TestCase( "urn:decentraland:off-chain:base-avatars:eyes_00")]
@@ -53,14 +55,14 @@ public class AvatarEditorHUDAnimationControllerTests
         editorHUDView.WearableSelectorClicked += Raise.Event<Action<string>>(selectedWearable);
         Assert.True(string.IsNullOrEmpty(avatarEditorHUDAnimationController.activeCategory));
     }
-    
+
     [Test]
     public void ActiveCategoryIsEmptyOnRandomize()
     {
         editorHUDView.OnRandomize += Raise.Event<Action>();
         Assert.True(string.IsNullOrEmpty(avatarEditorHUDAnimationController.activeCategory));
     }
-    
+
     [Test]
     public void AnimationRunOnSelected()
     {
@@ -68,12 +70,12 @@ public class AvatarEditorHUDAnimationControllerTests
         editorHUDView.OnAvatarAppearFeedback += Raise.Event<Action<AvatarModel>>(new AvatarModel());
         characterPreviewController.Received().PlayEmote(Arg.Any<string>(), Arg.Any<long>());
     }
-    
+
     [TearDown]
     public void TearDown()
     {
         editorHUDView.Dispose();
     }
 
-    
+
 }

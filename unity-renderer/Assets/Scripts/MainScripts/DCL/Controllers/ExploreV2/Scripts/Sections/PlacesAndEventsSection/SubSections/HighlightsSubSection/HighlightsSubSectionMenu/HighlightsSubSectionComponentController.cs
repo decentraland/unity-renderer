@@ -1,10 +1,10 @@
 using DCL;
 using DCL.Interface;
+using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCl.Social.Friends;
 using UnityEngine;
 using static HotScenesController;
 
@@ -50,7 +50,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
     internal const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
-    
+
     internal IHighlightsSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal IEventsAPIController eventsAPIApiController;
@@ -61,7 +61,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
     private DataStore dataStore;
-    
+
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
         IPlacesAPIController placesAPI,
@@ -80,7 +80,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
-        
+
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
@@ -125,7 +125,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.SetTrendingPlacesAndEventsAsLoading(true);
         view.SetFeaturedPlacesAsLoading(true);
         view.SetLiveAsLoading(true);
-        
+
         reloadHighlights = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
@@ -258,7 +258,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
-        
+
         dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
@@ -336,7 +336,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     }
 
     internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
-    
+
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
         if (!string.IsNullOrEmpty(currentChannelId))

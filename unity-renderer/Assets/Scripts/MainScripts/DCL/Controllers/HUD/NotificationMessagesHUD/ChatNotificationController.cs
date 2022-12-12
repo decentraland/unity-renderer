@@ -6,15 +6,19 @@ using DCL.Helpers;
 using UnityEngine;
 using System;
 using Channel = DCL.Chat.Channels.Channel;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 
 namespace DCL.Chat.Notifications
 {
     public class ChatNotificationController : IHUD
     {
         private const int FADEOUT_DELAY = 8000;
+        private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
 
         private readonly DataStore dataStore;
         private readonly IChatController chatController;
+        private readonly IFriendsController friendsController;
         private readonly IMainChatNotificationsComponentView mainChatNotificationView;
         private readonly ITopNotificationsComponentView topNotificationView;
         private readonly IUserProfileBridge userProfileBridge;
@@ -28,16 +32,19 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
         private UserProfile ownUserProfile;
+        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
 
         public ChatNotificationController(DataStore dataStore,
             IMainChatNotificationsComponentView mainChatNotificationView,
             ITopNotificationsComponentView topNotificationView,
             IChatController chatController,
+            IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
             IProfanityFilter profanityFilter)
         {
             this.dataStore = dataStore;
             this.chatController = chatController;
+            this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.profanityFilter = profanityFilter;
             this.mainChatNotificationView = mainChatNotificationView;
@@ -46,13 +53,14 @@ namespace DCL.Chat.Notifications
             topNotificationView.OnResetFade += ResetFadeOut;
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
             chatController.OnAddMessage += HandleMessageAdded;
+            friendsController.OnAddFriendRequest += HandleFriendRequestAdded;
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
             visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
             shouldShowNotificationPanel.OnChange += ResetVisibility;
             ResetVisibility(shouldShowNotificationPanel.Get(), false);
         }
-        
+
         public void SetVisibility(bool visible)
         {
             ResetFadeOut(visible);
@@ -76,6 +84,7 @@ namespace DCL.Chat.Notifications
         public void Dispose()
         {
             chatController.OnAddMessage -= HandleMessageAdded;
+            friendsController.OnAddFriendRequest -= HandleFriendRequestAdded;
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
             topNotificationView.OnResetFade -= ResetFadeOut;
@@ -155,6 +164,35 @@ namespace DCL.Chat.Notifications
 
                     break;
             }
+        }
+
+        private void HandleFriendRequestAdded(FriendRequest friendRequest)
+        {
+            if (!isNewFriendRequestsEnabled)
+                return;
+
+            var ownUserProfile = userProfileBridge.GetOwn();
+
+            if (friendRequest.From == ownUserProfile.userId ||
+                friendRequest.To != ownUserProfile.userId)
+                return;
+
+            var friendRequestProfile = userProfileBridge.Get(friendRequest.From);
+            var friendRequestName = friendRequestProfile?.userName ?? friendRequest.From;
+            var friendRequestProfilePicture = friendRequestProfile?.face256SnapshotURL;
+
+            FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                friendRequest.From,
+                friendRequestName,
+                "Friend Request",
+                $"wants to be your friend.",
+                (ulong)friendRequest.Timestamp,
+                friendRequestProfilePicture,
+                false);
+
+            mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
         }
 
         private void ResetFadeOut(bool fadeOutAfterDelay = false)
