@@ -1,13 +1,12 @@
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.Social.Friends;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Interface;
-using DCL.Helpers;
 using UnityEngine;
-using System;
 using Channel = DCL.Chat.Channels.Channel;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
 
 namespace DCL.Chat.Notifications
 {
@@ -52,6 +51,8 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnResetFade += ResetFadeOut;
             topNotificationView.OnResetFade += ResetFadeOut;
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
+            mainChatNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
+            topNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             chatController.OnAddMessage += HandleMessageAdded;
             friendsController.OnAddFriendRequest += HandleFriendRequestAdded;
             friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
@@ -183,6 +184,7 @@ namespace DCL.Chat.Notifications
             var friendRequestName = friendRequestProfile?.userName ?? friendRequest.From;
 
             FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                friendRequest.FriendRequestId,
                 friendRequest.From,
                 friendRequestName,
                 "Friend Request received",
@@ -200,6 +202,7 @@ namespace DCL.Chat.Notifications
             var friendRequestProfile = userProfileBridge.Get(userId);
 
             FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                string.Empty,
                 userId,
                 friendRequestProfile.userName,
                 "Friend Request accepted",
@@ -254,5 +257,13 @@ namespace DCL.Chat.Notifications
         
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
+
+        private void HandleClickedFriendRequest(string friendRequestId)
+        {
+            if (string.IsNullOrEmpty(friendRequestId))
+                return;
+
+            dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
+        }
     }
 }

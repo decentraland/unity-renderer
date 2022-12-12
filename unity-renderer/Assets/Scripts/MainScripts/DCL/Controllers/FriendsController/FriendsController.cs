@@ -390,12 +390,16 @@ namespace DCL.Social.Friends
 
         private void AddFriendRequest(FriendRequestPayload friendRequest)
         {
-            OnAddFriendRequest?.Invoke(new FriendRequest(
+            FriendRequest newFriendRequest = new FriendRequest(
                 friendRequest.friendRequestId,
                 friendRequest.timestamp,
                 friendRequest.from,
                 friendRequest.to,
-                friendRequest.messageBody));
+                friendRequest.messageBody);
+
+            friendRequests[newFriendRequest.FriendRequestId] = newFriendRequest;
+
+            OnAddFriendRequest?.Invoke(newFriendRequest);
         }
     }
 }

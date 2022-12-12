@@ -5,6 +5,7 @@ namespace DCL.Chat.Notifications
     [Serializable]
     public class FriendRequestNotificationComponentModel : BaseComponentModel
     {
+        public string FriendRequestId;
         public string UserName;
         public string UserId;
         public string Message;

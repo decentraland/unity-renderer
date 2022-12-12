@@ -40,7 +40,8 @@ namespace DCL.Chat.Notifications
         public override void Awake()
         {
             base.Awake();
-            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.UserId));
+            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.FriendRequestId));
+
             startingXPosition = messageContainerTransform.anchoredPosition.x;
             RefreshControl();
         }
@@ -81,12 +82,16 @@ namespace DCL.Chat.Notifications
             if (model == null)
                 return;
 
+            SetFriendRequestId(model.FriendRequestId);
             SetUser(model.UserId, model.UserName);
             SetMessage(model.Message);
             SetTimestamp(model.Time);
             SetHeader(model.Header);
             SetIsAccepted(model.IsAccepted);
         }
+
+        public void SetFriendRequestId(string friendRequestId) =>
+            model.FriendRequestId = friendRequestId;
 
         public void SetUser(string userId, string userName)
         {

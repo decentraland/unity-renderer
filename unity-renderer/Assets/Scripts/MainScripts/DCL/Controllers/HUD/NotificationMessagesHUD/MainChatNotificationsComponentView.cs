@@ -311,6 +311,7 @@ namespace DCL.Chat.Notifications
         private void PopulateFriendRequestNotification(FriendRequestNotificationComponentView friendRequestNotificationComponentView,
             FriendRequestNotificationModel model)
         {
+            friendRequestNotificationComponentView.SetFriendRequestId(model.FriendRequestId);
             friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
             friendRequestNotificationComponentView.SetHeader(model.Header);
             friendRequestNotificationComponentView.SetMessage(model.Message);
@@ -318,10 +319,8 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
-        private void ClickedOnFriendRequest(string fromUserId)
-        {
-            OnClickedFriendRequest?.Invoke(fromUserId);
-        }
+        private void ClickedOnFriendRequest(string friendRequestId) =>
+            OnClickedFriendRequest?.Invoke(friendRequestId);
 
         private void FocusedOnNotification(bool isInFocus)
         {
