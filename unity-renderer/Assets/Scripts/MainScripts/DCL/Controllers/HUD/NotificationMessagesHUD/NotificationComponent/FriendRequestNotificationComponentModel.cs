@@ -10,7 +10,6 @@ namespace DCL.Chat.Notifications
         public string Message;
         public string Time;
         public string Header;
-        public string ImageUri;
         public bool IsAccepted;
     }
 }

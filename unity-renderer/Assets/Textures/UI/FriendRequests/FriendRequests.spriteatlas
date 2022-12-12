@@ -41,6 +41,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6ebca6627bf834831a528f22f85eb9de, type: 3}
   - {fileID: 21300000, guid: b4dd3cb22062748f3b9fd6a24bbf12dc, type: 3}
   - {fileID: 21300000, guid: 83b39d2370146b74cb6d93a7412e5c6e, type: 3}
+  - {fileID: 21300000, guid: e162db0583231324294eafa3ef20a7fa, type: 3}
   - {fileID: 21300000, guid: 1d615c35569ea4c1d887f690fd234748, type: 3}
   - {fileID: 21300000, guid: 1e1fdbd5f5c9f48ffaf7bbc17b7926b5, type: 3}
   - {fileID: 21300000, guid: c1efd816f289d442281c6d21fcb60c1f, type: 3}
@@ -51,6 +52,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 460a5d79d9d9f4adc82e0bd9f4a9765d, type: 3}
   - {fileID: 21300000, guid: e4fd7b3a4c6ab4235a26f4d14ebfb83d, type: 3}
   - {fileID: 21300000, guid: 5465911b00404492aba3f6cd07741ba7, type: 3}
+  - {fileID: 21300000, guid: 72605cfbbf902b04997bd203e76e56e5, type: 3}
   - {fileID: 21300000, guid: 8fb7e08cdb8220c458f8e6f5bfabf33c, type: 3}
   - {fileID: 21300000, guid: bfdfc56d68b5345d8ab13e7aa3b96f34, type: 3}
   - {fileID: 21300000, guid: 0c45511efa4b6498b9fb3142365e67fb, type: 3}
@@ -59,6 +61,7 @@ SpriteAtlas:
   - BrokenHeart
   - EnvelopeOpened
   - ConfirmFriendParticles1
+  - AddFriendNoti
   - Shadow
   - TwistedLine32
   - TriangleOutline32
@@ -69,6 +72,7 @@ SpriteAtlas:
   - FloorBright
   - GradientShape
   - BrokenHeart-1
+  - FriendIconNoti
   - ConfirmFriendParticles2
   - WarningSign
   - FollowingIcon

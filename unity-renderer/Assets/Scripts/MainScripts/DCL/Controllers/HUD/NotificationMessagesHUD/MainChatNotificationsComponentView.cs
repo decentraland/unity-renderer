@@ -315,8 +315,6 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetHeader(model.Header);
             friendRequestNotificationComponentView.SetMessage(model.Message);
             friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
-            if (!string.IsNullOrEmpty(model.ProfilePicture))
-                friendRequestNotificationComponentView.SetImage(model.ProfilePicture);
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 

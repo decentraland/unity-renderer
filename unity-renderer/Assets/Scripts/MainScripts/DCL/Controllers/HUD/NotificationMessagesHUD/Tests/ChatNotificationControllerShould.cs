@@ -152,9 +152,9 @@ namespace DCL.Chat.Notifications
                 "hey"));
 
             topNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(m =>
-                m.UserId == "sender" && m.UserName == "imsender" && m.Header == "Friend Request" && m.Message == "wants to be your friend." && m.ProfilePicture == "face256"));
+                m.UserId == "sender" && m.UserName == "imsender" && m.Header == "Friend Request" && m.Message == "wants to be your friend."));
             mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(m =>
-                m.UserId == "sender" && m.UserName == "imsender" && m.Header == "Friend Request" && m.Message == "wants to be your friend." && m.ProfilePicture == "face256"));
+                m.UserId == "sender" && m.UserName == "imsender" && m.Header == "Friend Request" && m.Message == "wants to be your friend."));
         }
 
         [Test]

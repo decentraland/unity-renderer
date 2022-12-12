@@ -54,6 +54,7 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
             chatController.OnAddMessage += HandleMessageAdded;
             friendsController.OnAddFriendRequest += HandleFriendRequestAdded;
+            friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
             visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
@@ -85,6 +86,7 @@ namespace DCL.Chat.Notifications
         {
             chatController.OnAddMessage -= HandleMessageAdded;
             friendsController.OnAddFriendRequest -= HandleFriendRequestAdded;
+            friendsController.OnSentFriendRequestApproved -= HandleSentFriendRequestApproved;
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
             topNotificationView.OnResetFade -= ResetFadeOut;
@@ -179,16 +181,31 @@ namespace DCL.Chat.Notifications
 
             var friendRequestProfile = userProfileBridge.Get(friendRequest.From);
             var friendRequestName = friendRequestProfile?.userName ?? friendRequest.From;
-            var friendRequestProfilePicture = friendRequestProfile?.face256SnapshotURL;
 
             FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
                 friendRequest.From,
                 friendRequestName,
-                "Friend Request",
+                "Friend Request received",
                 $"wants to be your friend.",
                 (ulong)friendRequest.Timestamp,
-                friendRequestProfilePicture,
                 false);
+
+            mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+        }
+
+        private void HandleSentFriendRequestApproved(string userId)
+        {
+            var friendRequestProfile = userProfileBridge.Get(userId);
+
+            FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                userId,
+                friendRequestProfile.userName,
+                "Friend Request accepted",
+                $"and you are friends now!",
+                (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                true);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)

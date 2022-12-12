@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-
 namespace DCL.Chat.Notifications
 {
     public class FriendRequestNotificationModel
@@ -9,18 +7,16 @@ namespace DCL.Chat.Notifications
         public string Header { get; }
         public string Message { get; }
         public ulong Timestamp { get; }
-        [CanBeNull] public string ProfilePicture { get; }
         public bool IsAccepted { get; }
 
-        public FriendRequestNotificationModel(string UserId, string UserName, string Header, string Message, ulong Timestamp, string ProfilePicture, bool IsAccepted)
+        public FriendRequestNotificationModel(string userId, string userName, string header, string message, ulong timestamp, bool isAccepted)
         {
-            this.UserId = UserId;
-            this.UserName = UserName;
-            this.Header = Header;
-            this.Message = Message;
-            this.Timestamp = Timestamp;
-            this.ProfilePicture = ProfilePicture;
-            this.IsAccepted = IsAccepted;
+            UserId = userId;
+            UserName = userName;
+            Header = header;
+            Message = message;
+            Timestamp = timestamp;
+            IsAccepted = isAccepted;
         }
     }
 }

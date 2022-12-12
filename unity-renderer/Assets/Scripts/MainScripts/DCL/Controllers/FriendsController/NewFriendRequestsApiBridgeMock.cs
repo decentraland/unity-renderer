@@ -317,7 +317,7 @@ namespace DCL.Social.Friends
             {
                 await UniTask.NextFrame(ct);
 
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.E))
                 {
                     long currentTicks = DateTimeOffset.UtcNow.Ticks;
                     string fakeUserId = $"new_user_{currentTicks.ToString().Substring(currentTicks.ToString().Length - 5, 5)}";
@@ -329,14 +329,25 @@ namespace DCL.Social.Friends
                         snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{DateTimeOffset.UtcNow.Ticks}" }
                     });
 
-                    OnFriendRequestAdded?.Invoke(new FriendRequestPayload
+                    if (Input.GetKeyDown(KeyCode.R))
                     {
-                        friendRequestId = Guid.NewGuid().ToString("N"),
-                        from = fakeUserId,
-                        to = userProfileBridge.GetOwn().userId,
-                        messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
-                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                    });
+                        OnFriendRequestAdded?.Invoke(new FriendRequestPayload
+                        {
+                            friendRequestId = Guid.NewGuid().ToString("N"),
+                            from = fakeUserId,
+                            to = userProfileBridge.GetOwn().userId,
+                            messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
+                            timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                        });
+                    }
+                    else
+                    {
+                        OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+                        {
+                            action = FriendshipAction.APPROVED,
+                            userId = fakeUserId
+                        });
+                    }
                 }
             }
         }
