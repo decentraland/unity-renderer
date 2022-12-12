@@ -1,0 +1,31 @@
+{
+    "name": "DCL.ECSComponents.AbstractElements.Tests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "ECS7Plugin.TestsUtils",
+        "ECS7Plugin.InternalECSComponents.Interfaces",
+        "DCL.ECSRuntime.Components",
+        "DCL.Runtime.Interfaces",
+        "Interfaces",
+        "DCL.ECSRuntime.Components.Inferfaces",
+        "DCL.ECSComponents.AbstractElements"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
