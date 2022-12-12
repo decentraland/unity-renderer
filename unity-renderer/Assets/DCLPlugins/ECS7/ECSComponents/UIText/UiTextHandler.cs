@@ -27,7 +27,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            uiElement = new Label() { text = string.Empty };
+            uiElement = new Label { text = string.Empty };
 
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
             containerModel.rootElement.Add(uiElement);
@@ -55,7 +55,7 @@ namespace DCL.ECSComponents
             uiElement.text = model.Value;
             uiElement.style.color = model.GetColor().ToUnityColor();
             uiElement.style.fontSize = model.GetFontSize();
-            uiElement.style.unityTextAlign = ToUnityTextAlign(model.GetTextAlign());
+            uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
 
             int fontId = (int)model.GetFont();
             if (lastFontId != fontId)
@@ -72,36 +72,5 @@ namespace DCL.ECSComponents
                 fontPromiseKeeper.Forget(prevPromise);
             }
         }
-
-        private static TextAnchor ToUnityTextAlign(TextAlignMode align)
-        {
-            switch (align)
-            {
-                case TextAlignMode.TamTopCenter:
-                    return TextAnchor.UpperCenter;
-                case TextAlignMode.TamTopLeft:
-                    return TextAnchor.UpperLeft;
-                case TextAlignMode.TamTopRight:
-                    return TextAnchor.UpperRight;
-                
-                case TextAlignMode.TamBottomCenter:
-                    return TextAnchor.LowerCenter;
-                case TextAlignMode.TamBottomLeft:
-                    return TextAnchor.LowerLeft;
-                case TextAlignMode.TamBottomRight:
-                    return TextAnchor.LowerRight;
-                
-                case TextAlignMode.TamMiddleCenter:
-                    return TextAnchor.MiddleCenter;
-                case TextAlignMode.TamMiddleLeft:
-                    return TextAnchor.MiddleLeft;
-                case TextAlignMode.TamMiddleRight:
-                    return TextAnchor.MiddleRight;
-                
-                default:
-                    return TextAnchor.MiddleCenter;
-            }
-        }
-        
     }
 }

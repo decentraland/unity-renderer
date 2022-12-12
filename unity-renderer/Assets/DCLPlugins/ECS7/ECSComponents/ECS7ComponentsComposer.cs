@@ -1,5 +1,6 @@
 using System;
 using DCL.ECS7;
+using DCL.ECSComponents.UIInput;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
 
@@ -31,6 +32,7 @@ namespace DCL.ECSComponents
         private readonly UITransformRegister uiTransformRegister;
         private readonly UiTextRegister uiTextRegister;
         private readonly UIBackgroundRegister uiBackgroundRegister;
+        private readonly UIInputRegister uiInputRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
         private readonly PointerEventResultRegister pointerEventResultRegister;
@@ -62,6 +64,7 @@ namespace DCL.ECSComponents
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
             uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
             uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
 
             // Components without a handler
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
@@ -95,6 +98,7 @@ namespace DCL.ECSComponents
             uiTransformRegister.Dispose();
             uiTextRegister.Dispose();
             uiBackgroundRegister.Dispose();
+            uiInputRegister.Dispose();
 
             // Components without a handler
             pointerEventResultRegister.Dispose();

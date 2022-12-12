@@ -28,5 +28,7 @@ namespace DCL.ECS7
         public const int AVATAR_SHAPE = 1080;
         public const int VISIBILITY_COMPONENT = 1081;
         public const int BILLBOARD = 1090;
+        public const int UI_INPUT = 1093;
+        public const int UI_DROPDOWN = 1094;
     }
 }

@@ -56,7 +56,7 @@ namespace Tests
         {
             handler.OnComponentModelUpdated(scene, entity, new PBUiBackground()
             {
-                BackgroundColor = new Color4()
+                Color = new Color4()
                 {
                     R = 0.1f,
                     G = 0.2f,
@@ -76,7 +76,7 @@ namespace Tests
         {
             handler.OnComponentModelUpdated(scene, entity, new PBUiBackground()
             {
-                BackgroundColor = new Color4()
+                Color = new Color4()
                 {
                     R = 0.1f,
                     G = 0.2f,
@@ -88,7 +88,7 @@ namespace Tests
 
             handler.OnComponentModelUpdated(scene, entity, new PBUiBackground()
             {
-                BackgroundColor = new Color4()
+                Color = new Color4()
                 {
                     R = 0.1f,
                     G = 0.2f,
@@ -107,7 +107,7 @@ namespace Tests
         {
             handler.OnComponentModelUpdated(scene, entity, new PBUiBackground()
             {
-                BackgroundColor = new Color4()
+                Color = new Color4()
                 {
                     R = 0.1f,
                     G = 0.2f,
@@ -130,7 +130,7 @@ namespace Tests
         {
             handler.OnComponentModelUpdated(scene, entity, new PBUiBackground()
             {
-                BackgroundColor = new Color4()
+                Color = new Color4()
                 {
                     R = 0.1f,
                     G = 0.2f,

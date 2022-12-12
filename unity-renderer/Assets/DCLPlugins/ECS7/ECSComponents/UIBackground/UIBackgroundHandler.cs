@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
 {
@@ -26,7 +27,9 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiBackground model)
         {
-            if (model.BackgroundColor == null || model.BackgroundColor.A == 0)
+            var color = model.GetColor();
+
+            if (color.A == 0)
             {
                 RemoveFromContainer(scene, entity);
             }
@@ -34,7 +37,7 @@ namespace DCL.ECSComponents
             {
                 var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
                 containerModel.components.Add(componentId);
-                containerModel.rootElement.style.backgroundColor = model.BackgroundColor.ToUnityColor();
+                containerModel.rootElement.style.backgroundColor = model.Color.ToUnityColor();
                 internalUiContainer.PutFor(scene, entity, containerModel);
             }
         }
