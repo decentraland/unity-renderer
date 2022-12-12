@@ -251,15 +251,9 @@ public class ProfileHUDView : MonoBehaviour
 
     private void HandleUnverifiedProfileName(UserProfile userProfile)
     {
-        if (!String.IsNullOrEmpty(userProfile.userName) &&
-            userProfile.userName.Length > NAME_POSTFIX_LENGTH)
-        {
-            textName.text = userProfile.userName.Substring(0, userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1);
-        }
-        else
-        {
-            textName.text = userProfile.userName;
-        }
+        textName.text = !string.IsNullOrEmpty(userProfile.userName) && userProfile.userName.Length > NAME_POSTFIX_LENGTH
+                ? userProfile.userName[..(userProfile.userName.Length - NAME_POSTFIX_LENGTH - 1)]
+                : userProfile.userName;
 
         textPostfix.text = $"#{userProfile.userId.Substring(userProfile.userId.Length - NAME_POSTFIX_LENGTH)}";
         SetActiveUnverifiedNameGOs(true);
@@ -272,14 +266,13 @@ public class ProfileHUDView : MonoBehaviour
         buttonLogOut.gameObject.SetActive(active);
     }
 
-    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
+    private void ForceLayoutToRefreshSize() =>
+        LayoutRebuilder.MarkLayoutForRebuild(mainRootLayout);
 
     private void SetActiveUnverifiedNameGOs(bool active)
     {
-        for (int i = 0; i < hideOnNameClaimed.Length; i++)
-        {
-            hideOnNameClaimed[i].SetActive(active);
-        }
+        foreach (var hideOnNameObject in hideOnNameClaimed)
+            hideOnNameObject.SetActive(active);
     }
 
     private void HandleProfileAddress(UserProfile userProfile)
