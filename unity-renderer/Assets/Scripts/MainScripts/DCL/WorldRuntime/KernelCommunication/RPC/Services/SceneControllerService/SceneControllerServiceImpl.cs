@@ -4,11 +4,15 @@ using DCL.Controllers;
 using DCL.CRDT;
 using DCL.Helpers;
 using DCL.Models;
+using Google.Protobuf;
+using KernelCommunication;
 using rpc_csharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using UnityEngine;
+using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace RPC.Services
 {
@@ -16,13 +20,17 @@ namespace RPC.Services
     {
         // HACK: Until we fix the code generator, we must replace all 'Decentraland.Common.Entity' for 'DCL.ECSComponents.Entity' in RpcSceneController.gen.cs
         // to be able to access request.Entity properties.
+        private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
 
         private const string REQUIRED_PORT_ID_START = "scene-";
+
         private int sceneNumber = -1;
         private RPCContext context;
         private RpcServerPort<RPCContext> port;
 
-        private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
+        private readonly MemoryStream memoryStream;
+        private readonly BinaryWriter binaryWriter;
+        private readonly CRDTSceneMessage reusableCrdtMessageResult = new CRDTSceneMessage();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
@@ -35,6 +43,9 @@ namespace RPC.Services
         {
             port.OnClose += OnPortClose;
             this.port = port;
+
+            memoryStream = new MemoryStream();
+            binaryWriter = new BinaryWriter(memoryStream);
         }
 
         private void OnPortClose()
@@ -135,7 +146,7 @@ namespace RPC.Services
 
             try
             {
-                int counter = 0;
+                int incomingCrdtCount = 0;
 
                 using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
                 {
@@ -145,11 +156,11 @@ namespace RPC.Services
                             continue;
 
                         context.crdt.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
-                        counter++;
+                        incomingCrdtCount++;
                     }
                 }
 
-                if (counter > 0)
+                if (incomingCrdtCount > 0)
                 {
                     // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
                     // kernel won't be sending that message for those scenes
@@ -165,13 +176,24 @@ namespace RPC.Services
                         });
                     }
                 }
+
+                reusableCrdtMessageResult.Payload = ByteString.Empty;
+
+                if (context.crdt.scenesOutgoingCrdts.TryGetValue(sceneNumber, out CRDTProtocol sceneCrdtState))
+                {
+                    memoryStream.SetLength(0);
+                    context.crdt.scenesOutgoingCrdts.Remove(sceneNumber);
+                    KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
+                    sceneCrdtState.ClearOnUpdated();
+                    reusableCrdtMessageResult.Payload = ByteString.CopyFrom(memoryStream.ToArray());
+                }
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
             }
 
-            return new CRDTSceneMessage() { Payload = request.Payload };
+            return reusableCrdtMessageResult;
         }
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
