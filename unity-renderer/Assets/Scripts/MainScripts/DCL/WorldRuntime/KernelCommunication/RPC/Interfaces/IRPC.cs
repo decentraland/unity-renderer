@@ -7,5 +7,6 @@ namespace DCL
         public UniTask EnsureRpc();
 
         public ClientEmotesKernelService Emotes();
+        public ClientFriendRequestKernelService FriendRequests();
     }
 }

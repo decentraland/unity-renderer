@@ -7,11 +7,15 @@ namespace DCL
     public class RPC : IRPC
     {
         private ClientEmotesKernelService emotes;
+        private ClientFriendRequestKernelService friendRequests;
 
         private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
 
         public ClientEmotesKernelService Emotes() =>
             emotes;
+
+        public ClientFriendRequestKernelService FriendRequests() =>
+            friendRequests;
 
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
@@ -19,6 +23,7 @@ namespace DCL
         private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
         {
             emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+            friendRequests = new ClientFriendRequestKernelService(await port.LoadModule(FriendRequestKernelServiceCodeGen.ServiceName));
             modulesLoaded.TrySetResult();
         }
 
@@ -33,6 +38,7 @@ namespace DCL
 
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             context.crdt.WorldState = Environment.i.world.state;
+            context.crdt.SceneController = Environment.i.world.sceneController;
 
             RPCServerBuilder.BuildDefaultServer(context);
         }

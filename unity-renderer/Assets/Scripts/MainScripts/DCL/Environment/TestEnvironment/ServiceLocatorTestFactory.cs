@@ -1,6 +1,8 @@
-﻿using DCL.Controllers;
+﻿using AvatarSystem;
+using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 
 namespace DCL
@@ -18,18 +20,44 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+
             result.Register<IServiceProviders>(
                 () =>
                 {
                     var mockedProviders = Substitute.For<IServiceProviders>();
-                    mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
-                    mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
-                    mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
-                    mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                    mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
+                    mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
+                    mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
+                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
                     return mockedProviders;
                 });
 
             result.Register<IUpdateEventHandler>(() => Substitute.For<IUpdateEventHandler>());
+
+            result.Register<ICharacterPreviewFactory>(() =>
+            {
+                var mockedFactory = Substitute.For<ICharacterPreviewFactory>();
+
+                mockedFactory.Create(default, default, default, default)
+                             .ReturnsForAnyArgs(Substitute.For<ICharacterPreviewController>());
+
+                return mockedFactory;
+            });
+
+            result.Register<IAvatarFactory>(() =>
+                {
+                    var mockedFactory = Substitute.For<IAvatarFactory>();
+
+                    mockedFactory.CreateAvatar(default, default, default, default)
+                                 .ReturnsForAnyArgs(Substitute.For<IAvatar>());
+
+                    mockedFactory.CreateAvatarWithHologram(default, default, default, default,
+                                      default, default)
+                                 .ReturnsForAnyArgs(Substitute.For<IAvatar>());
+
+                    return mockedFactory;
+                }
+            );
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());

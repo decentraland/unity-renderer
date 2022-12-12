@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -12,11 +13,11 @@ namespace AvatarSystem
         private ILOD lod;
         private Transform avatarRevealerContainer;
         private CancellationTokenSource transitionCts = new CancellationTokenSource();
-        
+
         public GameObject armatureContainer;
         public SkinnedMeshRenderer meshRenderer { get; private set; }
 
-        public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer, ILOD lod) 
+        public BaseAvatar(Transform avatarRevealerContainer, GameObject armatureContainer, ILOD lod)
         {
             this.avatarRevealerContainer = avatarRevealerContainer;
             this.armatureContainer = armatureContainer;
@@ -33,11 +34,15 @@ namespace AvatarSystem
             return avatarRevealer.GetMainRenderer();
         }
 
-        public void Initialize() 
+        public void Initialize()
         {
             if (avatarRevealer == null)
             {
-                avatarRevealer = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer).GetComponent<BaseAvatarReveal>();
+                var avatarRevealerObj = Object.Instantiate(Resources.Load<GameObject>("LoadingAvatar"), avatarRevealerContainer)
+                                                   .GetComponent<BaseAvatarReveal>();
+                Utils.SetLayerRecursively(avatarRevealerObj.transform, avatarRevealerContainer.gameObject.layer);
+                avatarRevealer = avatarRevealerObj;
+
                 avatarRevealer.InjectLodSystem(lod);
             }
             else
@@ -48,29 +53,28 @@ namespace AvatarSystem
             meshRenderer = avatarRevealer.GetMainRenderer();
         }
 
-        public async UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken) 
+        public async UniTask FadeOut(MeshRenderer targetRenderer, bool withTransition, CancellationToken cancellationToken)
         {
-            if (avatarRevealerContainer == null) 
+            if (avatarRevealerContainer == null)
                 return;
-            
+
             transitionCts ??= new CancellationTokenSource();
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, transitionCts.Token).Token;
             linkedCt.ThrowIfCancellationRequested();
-            
+
             avatarRevealer.AddTarget(targetRenderer);
             //If canceled, the final state of the avatar is handle inside StartAvatarRevealAnimation
             await avatarRevealer.StartAvatarRevealAnimation(withTransition, linkedCt);
-            
+
             transitionCts?.Dispose();
             transitionCts = null;
         }
-        
+
         public void CancelTransition()
         {
             transitionCts?.Cancel();
             transitionCts?.Dispose();
             transitionCts = null;
         }
-
     }
 }

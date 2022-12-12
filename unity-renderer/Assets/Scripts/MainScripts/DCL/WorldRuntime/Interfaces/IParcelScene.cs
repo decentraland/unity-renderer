@@ -37,7 +37,6 @@ namespace DCL.Controllers
         void GetWaitingComponentsDebugInfo();
         void SetEntityParent(long entityId, long parentId);
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
-        void MarkInitMessagesDone();
         bool IsInitMessageDone();
     }
 }
