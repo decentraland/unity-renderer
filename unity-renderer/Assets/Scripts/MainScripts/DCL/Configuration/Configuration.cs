@@ -5,10 +5,9 @@ namespace DCL.Configuration
 {
     public static class AssetCatalogUrlSettings // EX: BIWSettings
     {
-        //Note: Don't use these URL directly, you need to get them in the AsseteCatakigUrlUtils (before known as BuilderInWorldUtils) to take into account the ENV
+        //Note: Don't use these URL directly, you need to get them in the SceneEndpoints (before known as BuilderInWorldUtils) to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
-        public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";

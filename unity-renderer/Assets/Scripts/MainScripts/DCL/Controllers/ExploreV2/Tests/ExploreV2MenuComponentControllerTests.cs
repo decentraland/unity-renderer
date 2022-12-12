@@ -311,7 +311,6 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Backpack)]
     [TestCase(ExploreSection.Map)]
-    // [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]
     public void ShouldChangeVisibilityVarsOnViewSectionOpen(ExploreSection sectionId)

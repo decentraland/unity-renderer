@@ -1,6 +1,6 @@
 using DCL.Configuration;
 
-public static class AssetCatalogUrlsUtils
+public static class SceneEndpoints
 {
     public static string GetUrlSceneObjectContent() 
     { 
@@ -8,11 +8,6 @@ public static class AssetCatalogUrlsUtils
     }
 
     public static string GetManifestJSON(string jsonManifest) { return "{\"manifest\":" + jsonManifest + "}"; }
-    
-    public static string GetBuilderAPIBaseUrl()
-    {
-        return GetResolvedEnviromentUrl(AssetCatalogUrlSettings.BASE_URL_BUILDER_API);
-    }
 
     public static string GetBuilderProjecThumbnailUrl(string projectId, string filename)
     {
