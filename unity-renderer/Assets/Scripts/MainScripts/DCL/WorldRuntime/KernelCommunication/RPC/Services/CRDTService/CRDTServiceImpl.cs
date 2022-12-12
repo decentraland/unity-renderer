@@ -1,12 +1,14 @@
-using System;
-using System.IO;
-using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
+using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
+using System;
+using System.IO;
+using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
@@ -58,7 +60,14 @@ namespace RPC.Services
                     // kernel won't be sending that message for those scenes
                     if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
                     {
-                        scene.MarkInitMessagesDone();
+                        context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                        {
+                            sceneNumber = messages.SceneNumber,
+                            tag = "scene",
+                            payload = new Protocol.SceneReady(),
+                            method = MessagingTypes.INIT_DONE,
+                            type = QueuedSceneMessage.Type.SCENE_MESSAGE
+                        });
                     }
                 }
             }

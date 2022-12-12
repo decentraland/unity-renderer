@@ -1,5 +1,26 @@
 {
   "dependencies": {
+    "com.atteneder.draco": {
+      "version": "4.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.4.11"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "com.atteneder.gltfast": {
+      "version": "https://github.com/decentraland/glTFast.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.mathematics": "1.2.6",
+        "com.unity.burst": "1.6.6"
+      },
+      "hash": "daf38ff52e9a685a969c0dd2d890fb6e11e835cf"
+    },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
       "depth": 0,
@@ -19,14 +40,23 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "50a67d8f419b6cea0398eff6c19cf0bbe11ed609"
+      "hash": "c7eedf85c79e2ce06658c8060ca38a282f2ca7ab"
     },
     "com.decentraland.rpc-csharp": {
       "version": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "1037ec392e68a966591e1710a8687a9a8602afd5"
+      "hash": "0edfd2eb04da488b3ea3b1bc744efb4df033b508"
+    },
+    "com.decentraland.unity-shared-dependencies": {
+      "version": "https://github.com/decentraland/unity-shared-dependencies.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.atteneder.gltfast": "5.0.0-exp.1"
+      },
+      "hash": "6a549b969fd6d87577b6a8c18a1d776d28194ed2"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
@@ -59,7 +89,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "01770beeeb81d33f13f01f86720705cc004075c3"
+      "hash": "b538913dd9e0656b1363db3ffc12a723563242d9"
     },
     "com.unity.burst": {
       "version": "1.7.3",

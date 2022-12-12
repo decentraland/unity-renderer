@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DCL;
-using DCL.Helpers;
 using DCL.Models;
+using DCL.Shaders;
 using DCLPlugins.DebugPlugins.Commons;
 using UnityEngine;
 using Object = UnityEngine.Object;

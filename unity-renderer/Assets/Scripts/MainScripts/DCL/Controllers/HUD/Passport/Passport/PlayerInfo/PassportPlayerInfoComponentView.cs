@@ -5,11 +5,12 @@ using UnityEngine;
 using TMPro;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
-    public class PassportPlayerInfoComponentView : BaseComponentView, IPassportPlayerInfoComponentView, IComponentModelConfig<PlayerPassportModel>
+    public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
@@ -37,8 +38,6 @@ namespace DCL.Social.Passports
 
         [SerializeField] private JumpInButton jumpInButton;
 
-        [SerializeField] private PlayerPassportModel model;
-
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
         public event Action OnCancelFriendRequest;
@@ -51,7 +50,7 @@ namespace DCL.Social.Passports
         private bool areFriends;
         private bool isBlocked = false;
 
-        private void Start()
+        public override void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
             addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
@@ -78,25 +77,16 @@ namespace DCL.Social.Passports
             OnBlockUser?.Invoke();
         }
 
-        public void Configure(PlayerPassportModel newModel)
-        {
-            if (model == newModel)
-                return;
-
-            model = newModel;
-            RefreshControl();
-        }
-
         public override void RefreshControl()
         {
             if (model == null)
                 return;
 
-            userContextMenu.Hide();
+            SetGuestUser(model.isGuest);
             SetName(model.name);
+            userContextMenu.Hide();
             SetWallet(model.userId);
             SetPresence(model.presenceStatus);
-            SetGuestUser(model.isGuest);
             SetIsBlocked(model.isBlocked);
             SetHasBlockedOwnUser(model.hasBlocked);
             SetFriendStatus(model.friendshipStatus);

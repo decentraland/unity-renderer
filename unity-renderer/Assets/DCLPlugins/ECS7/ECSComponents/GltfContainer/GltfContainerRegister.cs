@@ -13,12 +13,14 @@ namespace DCL.ECSComponents
             IInternalECSComponents internalComponents)
         {
             var dataStoreEcs7 = DataStore.i.ecs7;
+            var featureFlags = DataStore.i.featureFlags;
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainer>,
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
                     internalComponents.physicColliderComponent,
                     internalComponents.renderersComponent,
-                    dataStoreEcs7));
+                    dataStoreEcs7,
+                    featureFlags));
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

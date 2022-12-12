@@ -71,16 +71,6 @@ namespace DCL.ECSComponents.Test
         }
 
         [Test]
-        public void OnlyDetachWhenInvalidUserId()
-        {   
-            var newModel = new PBAvatarAttach() { AvatarId = "" }; 
-
-            handler.OnComponentModelUpdated(Substitute.For<IParcelScene>(),Substitute.For<IDCLEntity>(), newModel);
-            handler.Received(1).Detach();
-            handler.DidNotReceive().Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
-        }
-
-        [Test]
         public void DetachWhenUserDisconnect()
         {
             const string userId = "Temptation";
