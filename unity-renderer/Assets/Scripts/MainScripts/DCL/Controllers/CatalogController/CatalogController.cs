@@ -90,13 +90,10 @@ public class CatalogController : MonoBehaviour
             // The new wearables paradigm is based on composing with optional field
             // i.e. the emotes will have an emotev0Data property with some values.
             // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
-            Debug.Log(payload);
-            Debug.Log(payload.Length);
             request = JsonConvert.DeserializeObject<WearablesRequestResponse>(cachedString);
         }
         catch (Exception e)
         {
-            Debug.Log(cachedString);
             Debug.LogError($"Fail to parse wearables json {e}");
             return;
         }
@@ -105,7 +102,6 @@ public class CatalogController : MonoBehaviour
             return;
 
         cachedString = "";
-        Debug.Log("Completing payload");
 
         AddWearablesToCatalog(request.wearables);
 
