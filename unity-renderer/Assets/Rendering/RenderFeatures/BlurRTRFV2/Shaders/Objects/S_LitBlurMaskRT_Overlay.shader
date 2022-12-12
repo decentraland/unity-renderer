@@ -5,6 +5,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         _Color("Color", Color) = (0, 0, 0, 0)
         [NoScaleOffset]Texture2D_3425DFF1("Mask", 2D) = "white" {}
         [ToggleUI]_isFlipped("isFlipped", Float) = 0
+        _AlphaClip("AlphaClip", Float) = 1
         _XVariant("XVariant", Float) = 0
         _YVariant("YVariant", Float) = 0
         _ZVariant("ZVariant", Float) = 0
@@ -36,7 +37,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -303,6 +304,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -480,14 +482,15 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -563,7 +566,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -828,6 +831,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -1005,14 +1009,15 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -1089,7 +1094,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         ZTest LEqual
         ZWrite On
         
@@ -1272,6 +1277,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -1345,9 +1351,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -1610,6 +1617,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -1783,10 +1791,11 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.Emission = float3(0, 0, 0);
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -2029,6 +2038,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -2101,8 +2111,9 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -2175,7 +2186,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         
         // Debug
         // <None>
@@ -2343,6 +2354,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -2415,8 +2427,9 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -2489,7 +2502,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -2665,6 +2678,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -2837,9 +2851,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -2926,7 +2941,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -3192,6 +3207,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -3369,14 +3385,15 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = float3(0, 0, 0);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -3452,7 +3469,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         ZTest LEqual
         ZWrite On
         
@@ -3634,6 +3651,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -3707,9 +3725,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -3972,6 +3991,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -4145,10 +4165,11 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.Emission = float3(0, 0, 0);
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -4392,6 +4413,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -4464,8 +4486,9 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -4538,7 +4561,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         
         // Debug
         // <None>
@@ -4707,6 +4730,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -4779,8 +4803,9 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         
@@ -4853,7 +4878,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             }
         
         // Render State
-        Cull Back
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
         ZTest LEqual
         ZWrite Off
@@ -5030,6 +5055,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _ZVariant;
         float _Rotation;
         float2 _Center;
+        float _AlphaClip;
         CBUFFER_END
         
         // Object and Global properties
@@ -5202,9 +5228,10 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_G_5 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.g;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_B_6 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.b;
             float _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7 = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_RGBA_0.a;
+            float _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0 = _AlphaClip;
             surface.BaseColor = (_Branch_83a5ba350f414ff6a00401d50428b1ba_Out_3.xyz);
             surface.Alpha = _SampleTexture2D_d193884c7f1f5187b575a7a8b85ada1a_A_7;
-            surface.AlphaClipThreshold = 0.5;
+            surface.AlphaClipThreshold = _Property_07a4fe3592574414b8bc25b53ee423a6_Out_0;
             return surface;
         }
         

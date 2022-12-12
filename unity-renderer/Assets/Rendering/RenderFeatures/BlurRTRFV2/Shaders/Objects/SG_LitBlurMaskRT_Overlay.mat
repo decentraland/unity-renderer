@@ -12,6 +12,7 @@ Material:
     type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _ALPHATEST_ON
   - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -58,10 +59,10 @@ Material:
     - _ZVariant: 1
     - _ZWrite: 0
     - _ZWriteControl: 0
-    - _isFlipped: 1
+    - _isFlipped: 0
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 0.75471693, g: 0.75471693, b: 0.75471693, a: 1}
+    - _Color: {r: 0.40566036, g: 0.40566036, b: 0.40566036, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4835358554284256603
 MonoBehaviour:

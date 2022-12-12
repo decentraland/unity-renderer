@@ -132,6 +132,8 @@ MonoBehaviour:
   receivedRequestMark: {fileID: 0}
   acceptedRequestMark: {fileID: 0}
   shouldAnimateFocus: 1
+  header: {fileID: 0}
+  content: {fileID: 0}
   model:
     UserName: Alice
     UserId: xxx
@@ -1351,7 +1353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 9ec4e4b87868e3e41a8115fd665222ce, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0.92156863}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
