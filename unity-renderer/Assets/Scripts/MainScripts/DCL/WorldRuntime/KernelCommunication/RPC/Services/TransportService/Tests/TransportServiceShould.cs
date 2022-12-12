@@ -8,6 +8,7 @@ using rpc_csharp;
 using rpc_csharp.transport;
 using RPC.Services;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -26,7 +27,7 @@ namespace Tests
         private Action tearDownDispose;
         private ClientEmotesKernelService clientEmotesKernelService;
         private TestEmoteKernelServiceImpl serverEmotesKernelService;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -41,7 +42,7 @@ namespace Tests
         {
             // Stage 1, Setup normal RPC
             var futureServerTransport = new UniTaskCompletionSource<TransportServiceImpl>();
-            
+
             // 1. Create RPC Server (renderer=server, kernel=client)
             var context = new RPCContext();
 
@@ -60,7 +61,7 @@ namespace Tests
             // 2. Create RPC Client (renderer=server, kernel=client)
             RpcClient client = new RpcClient(clientTransport);
             RpcClientPort clientPort = await client.CreatePort("test-port");
-            
+
             // 3. Loads TransportService
             RpcClientModule module = await clientPort.LoadModule(TransportServiceCodeGen.ServiceName);
             ClientTransportService clientTransportService = new ClientTransportService(module);
@@ -69,10 +70,10 @@ namespace Tests
 
             // 4. Use transport service for inverse transport
             var inverseTransportClient = new InverseTransportClient(clientTransportService);
-            
+
             // 5. Waits for server transports be created
-            var inverseTransportServer = await futureServerTransport.Task; 
-            
+            var inverseTransportServer = await futureServerTransport.Task;
+
             // 6. Create inverse RPC server (kernel=server, renderer=client)
             RpcServer<RPCContext> inverseServer = new RpcServer<RPCContext>();
             inverseServer.AttachTransport(inverseTransportServer, context);
@@ -102,24 +103,27 @@ namespace Tests
             tearDownDispose.Invoke();
         }
 
-        [Test]
-        public async void TestInverseService()
+        [UnityTest]
+        public IEnumerator TestInverseService()
         {
-            // Request expression
-            TriggerExpressionRequest request = new TriggerExpressionRequest()
+            yield return UniTask.ToCoroutine(async () =>
             {
-                Id = "le-id",
-                Timestamp = 1231451
-            };
-            
-            // This RPC cal will go through the inverse transport
-            // So if it works, it means, all the way that it takes, it's ok
-            await clientEmotesKernelService.TriggerExpression(request);
-            
-            // Check if the server receives the correct request
-            Assert.NotNull(serverEmotesKernelService.lastRequest);
-            Assert.Equals(request.Id, serverEmotesKernelService.lastRequest.Id);
-            Assert.Equals(request.Timestamp, serverEmotesKernelService.lastRequest.Timestamp);
+                // Request expression
+                TriggerExpressionRequest request = new TriggerExpressionRequest()
+                {
+                    Id = "le-id",
+                    Timestamp = 1231451
+                };
+
+                // This RPC cal will go through the inverse transport
+                // So if it works, it means, all the way that it takes, it's ok
+                await clientEmotesKernelService.TriggerExpression(request);
+
+                // Check if the server receives the correct request
+                Assert.NotNull(serverEmotesKernelService.lastRequest);
+                Assert.AreEqual(request.Id, serverEmotesKernelService.lastRequest.Id);
+                Assert.AreEqual(request.Timestamp, serverEmotesKernelService.lastRequest.Timestamp);
+            });
         }
     }
 }

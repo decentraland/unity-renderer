@@ -23,6 +23,11 @@ namespace RPC.Transports
             OnWebGLMessage += OnWebgGLMessageReceived;
         }
 
+        public void Dispose()
+        {
+            OnWebGLMessage -= OnWebgGLMessageReceived;
+        }
+
         public void SendMessage(byte[] data)
         {
             BinaryMessageFromEngine(data, data.Length);
