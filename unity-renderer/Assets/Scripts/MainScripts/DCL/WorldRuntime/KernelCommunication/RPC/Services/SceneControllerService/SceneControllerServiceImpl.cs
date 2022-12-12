@@ -147,6 +147,7 @@ namespace RPC.Services
             try
             {
                 int incomingCrdtCount = 0;
+                reusableCrdtMessageResult.Payload = ByteString.Empty;
 
                 using (var iterator = CRDTDeserializer.DeserializeBatch(request.Payload.Memory))
                 {
@@ -176,8 +177,6 @@ namespace RPC.Services
                         });
                     }
                 }
-
-                reusableCrdtMessageResult.Payload = ByteString.Empty;
 
                 if (context.crdt.scenesOutgoingCrdts.TryGetValue(sceneNumber, out CRDTProtocol sceneCrdtState))
                 {
