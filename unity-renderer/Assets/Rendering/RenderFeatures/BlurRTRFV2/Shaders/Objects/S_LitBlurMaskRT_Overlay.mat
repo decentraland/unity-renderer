@@ -45,8 +45,8 @@ Material:
     - _XVariant: 1
     - _YVariant: 1
     - _ZVariant: 1
-    - _isFlipped: 1
+    - _isFlipped: 0
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 0.75471693, g: 0.75471693, b: 0.75471693, a: 1}
+    - _Color: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 1}
   m_BuildTextureStacks: []
