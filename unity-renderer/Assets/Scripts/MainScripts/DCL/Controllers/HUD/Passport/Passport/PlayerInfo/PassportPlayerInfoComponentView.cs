@@ -45,6 +45,7 @@ namespace DCL.Social.Passports
         public event Action OnBlockUser;
         public event Action OnUnblockUser;
         public event Action OnReportUser;
+        public event Action<string> OnWhisperUser;
 
         private string fullWalletAddress;
         private bool areFriends;
@@ -210,8 +211,15 @@ namespace DCL.Social.Passports
 
         private void WhisperActionFlow()
         {
-            whisperNonFriendsPopup.SetActive(!areFriends);
-            StartCoroutine(WaitAndClosePopup());
+            if (areFriends)
+            {
+                OnWhisperUser?.Invoke(model.userId);
+            }
+            else
+            {
+                whisperNonFriendsPopup.SetActive(!areFriends);
+                StartCoroutine(WaitAndClosePopup());
+            }
         }
 
         private void OpenOptions()
