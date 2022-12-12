@@ -2,11 +2,11 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
 {
     Properties
     {
-        [ToggleUI]_isActivated("isActivated", Float) = 0
+        [ToggleUI]_isActivated("isActivated", Float) = 1
         _Color("Color", Color) = (0, 0, 0, 0)
         [ToggleUI]_isFlipped("isFlipped", Float) = 0
         _AlphaClip("AlphaClip", Float) = 1
-        
+        [NoScaleOffset]_MainTex("MainTex", 2D) = "white" {}
         _XVariant("XVariant", Float) = 0
         _YVariant("YVariant", Float) = 0
         _ZVariant("ZVariant", Float) = 0
@@ -312,6 +312,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -323,6 +324,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -991,6 +994,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -1002,6 +1006,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -1589,6 +1595,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -1600,6 +1607,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -2089,6 +2098,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -2100,6 +2110,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -2662,6 +2674,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -2673,6 +2686,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -3138,6 +3153,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -3149,6 +3165,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -3622,6 +3640,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -3633,6 +3652,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -4303,6 +4324,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -4314,6 +4336,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -4899,6 +4923,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -4910,6 +4935,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -5399,6 +5426,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -5410,6 +5438,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -5973,6 +6003,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -5984,6 +6015,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -6450,6 +6483,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -6461,6 +6495,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
@@ -6935,6 +6971,7 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         float _Roundness;
         float _Center_1;
         float _isActivated;
+        float4 _MainTex_TexelSize;
         CBUFFER_END
         
         // Object and Global properties
@@ -6946,6 +6983,8 @@ Shader "BlurRT/Objects/Unlit/S_LitBlurMaskRT_Overlay"
         SAMPLER(samplerTexture2D_3425DFF1);
         float4 Texture2D_3425DFF1_TexelSize;
         float4 Texture2D_3425DFF1_ST;
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
         
         // Graph Includes
         // GraphIncludes: <None>
