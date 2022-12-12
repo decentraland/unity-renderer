@@ -186,6 +186,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 08fb89e42a3f7d44e9b2a391aa41aff6, type: 3}
   - {fileID: 21300000, guid: f7cb20f4d2c0d4811b36bbc75a766342, type: 3}
   - {fileID: 21300000, guid: deb764059d1d1411bbe77fc7a862d919, type: 3}
+  - {fileID: 21300000, guid: e162db0583231324294eafa3ef20a7fa, type: 3}
   - {fileID: 21300000, guid: baeafb15684bb4604bd26954c2fc9240, type: 3}
   - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
@@ -360,6 +361,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b1fdbdeb128d64657bb427b7c93fbab4, type: 3}
   - {fileID: 21300000, guid: f40bf6fb414054290a754636595da223, type: 3}
   - {fileID: 21300000, guid: a3a66afb0cf6d49da8b0b2b18f7b20d0, type: 3}
+  - {fileID: 21300000, guid: 72605cfbbf902b04997bd203e76e56e5, type: 3}
   - {fileID: 21300000, guid: cea1ac0c0c969478ea2054b9a06f7c86, type: 3}
   - {fileID: 21300000, guid: 90be4f1cf715b4378954ea0510aeb9ba, type: 3}
   - {fileID: 21300000, guid: 9879272c733ec44189c11c901f5b3500, type: 3}
@@ -572,6 +574,7 @@ SpriteAtlas:
   - hohoho_256
   - JumpInArrowPink
   - VoiceChatMute
+  - AddFriendNoti
   - DiscordIconHD
   - Button14
   - ContainerShadowRadiusSix
@@ -746,6 +749,7 @@ SpriteAtlas:
   - RectRadiusStroke16
   - Outline2Top12
   - ContainerRadius8
+  - FriendIconNoti
   - OutlineRedButton
   - ManaContainer
   - ArrowDown
