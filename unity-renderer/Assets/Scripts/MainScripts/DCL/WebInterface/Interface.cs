@@ -782,16 +782,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-
-        [Serializable]
-        private class GetFriendRequestsPayload
-        {
-            public int sentLimit;
-            public int sentSkip;
-            public int receivedLimit;
-            public int receivedSkip;
-        }
-
+        
         [Serializable]
         private class LeaveChannelPayload
         {
@@ -1841,17 +1832,6 @@ namespace DCL.Interface
             {
                 userNameOrId = usernameOrId,
                 limit = limit
-            });
-        }
-
-        public static void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
-        {
-            SendMessage("GetFriendRequests", new GetFriendRequestsPayload
-            {
-                receivedSkip = receivedSkip,
-                receivedLimit = receivedLimit,
-                sentSkip = sentSkip,
-                sentLimit = sentLimit
             });
         }
 

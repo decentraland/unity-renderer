@@ -1,5 +1,5 @@
 using AvatarSystem;
-using DCl.Social.Friends;
+using DCL.Social.Friends;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
