@@ -89,8 +89,8 @@ namespace DCL.Social.Friends
 
             SetBodyMessage(model.BodyMessage);
             SetTimestamp(model.RequestDate);
-            SetRecipientName(model.UserName);
-            SetOtherProfilePicture(model.UserProfilePictureUri);
+            SetSenderName(model.UserName);
+            SetSenderProfilePicture(model.UserProfilePictureUri);
             SetOwnProfilePicture(model.OwnProfilePictureUri);
             SetState(model.State);
         }
@@ -108,7 +108,7 @@ namespace DCL.Social.Friends
             dateLabel.text = timestamp.Date.ToString("MMM dd").ToUpper();
         }
 
-        public void SetRecipientName(string userName)
+        public void SetSenderName(string userName)
         {
             model.UserName = userName;
             nameLabel.text = userName;
@@ -116,7 +116,7 @@ namespace DCL.Social.Friends
             confirmSuccessLabel.text = $"{userName} and you are friends now!";
         }
 
-        public void SetOtherProfilePicture(string uri)
+        public void SetSenderProfilePicture(string uri)
         {
             model.UserProfilePictureUri = uri;
             otherProfileImageInConfirmDefaultState.SetImage(uri);

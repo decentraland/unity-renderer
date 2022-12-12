@@ -70,8 +70,8 @@ namespace DCL.Social.Friends
 
             if (recipientProfile != null)
             {
-                view.SetRecipientName(recipientProfile.userName);
-                view.SetOtherProfilePicture(recipientProfile.face256SnapshotURL);
+                view.SetSenderName(recipientProfile.userName);
+                view.SetSenderProfilePicture(recipientProfile.face256SnapshotURL);
             }
             else
                 Debug.LogError($"Cannot display user profile {friendRequest.From}, is not allocated");
@@ -98,7 +98,7 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            openPassportVariable.Set(friendRequest.To);
+            openPassportVariable.Set(friendRequest.From);
         }
 
         private void Reject() =>

@@ -1,4 +1,3 @@
-using NSubstitute;
 using NUnit.Framework;
 using System;
 
@@ -143,7 +142,7 @@ namespace DCL.Social.Friends
             string testName = "Test name";
 
             // Act
-            view.SetRecipientName(testName);
+            view.SetSenderName(testName);
 
             // Assert
             Assert.AreEqual(testName, view.nameLabel.text);
@@ -160,7 +159,7 @@ namespace DCL.Social.Friends
         public void SetStateCorrectly(ReceivedFriendRequestHUDModel.LayoutState state)
         {
             // Arrange
-            
+
 
             // Act
             view.SetState(state);

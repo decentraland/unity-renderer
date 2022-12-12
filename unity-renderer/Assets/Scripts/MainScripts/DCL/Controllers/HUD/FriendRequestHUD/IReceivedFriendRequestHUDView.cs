@@ -13,8 +13,8 @@ namespace DCL.Social.Friends
 
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime timestamp);
-        void SetRecipientName(string userName);
-        void SetOtherProfilePicture(string uri);
+        void SetSenderName(string userName);
+        void SetSenderProfilePicture(string uri);
         void SetOwnProfilePicture(string uri);
         void SetState(LayoutState state);
         void Show();
