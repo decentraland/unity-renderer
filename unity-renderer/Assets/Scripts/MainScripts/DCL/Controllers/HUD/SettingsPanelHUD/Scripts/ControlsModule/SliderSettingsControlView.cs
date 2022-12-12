@@ -15,8 +15,6 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private Slider slider;
         [SerializeField] private TextMeshProUGUI indicatorLabel;
 
-        public Slider sliderControl => slider;
-
         private SliderControlModel sliderControlConfig;
         private SliderSettingsControlController sliderController;
 
