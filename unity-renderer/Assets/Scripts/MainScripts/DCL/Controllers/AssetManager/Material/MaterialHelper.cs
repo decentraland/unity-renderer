@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Rendering;
+using DCL.Shaders;
 
 namespace DCL
 {

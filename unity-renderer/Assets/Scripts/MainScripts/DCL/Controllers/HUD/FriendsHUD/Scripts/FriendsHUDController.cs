@@ -1,16 +1,17 @@
-using System;
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCl.Social.Friends;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FriendsHUDController : IHUD
 {
     private const int LOAD_FRIENDS_ON_DEMAND_COUNT = 30;
     private const int MAX_SEARCHED_FRIENDS = 100;
+    private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
+    private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
 
     private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
     private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
@@ -21,6 +22,8 @@ public class FriendsHUDController : IHUD
     private readonly IChatController chatController;
     private readonly IMouseCatcher mouseCatcher;
     private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+    private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+    private bool isQuickActionsForFriendRequestsEnabled => !isNewFriendRequestsEnabled || dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
 
     private UserProfile ownUserProfile;
     private bool searchingFriends;
@@ -60,6 +63,7 @@ public class FriendsHUDController : IHUD
         view.OnCancelConfirmation += HandleRequestCancelled;
         view.OnRejectConfirmation += HandleRequestRejected;
         view.OnFriendRequestSent += HandleRequestSent;
+        view.OnFriendRequestOpened += OpenFriendRequestDetails;
         view.OnWhisper += HandleOpenWhisperChat;
         view.OnClose += HandleViewClosed;
         view.OnRequireMoreFriends += DisplayMoreFriends;
@@ -80,7 +84,8 @@ public class FriendsHUDController : IHUD
             friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
             friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
             friendsController.OnFriendNotFound += OnFriendNotFound;
-            
+            friendsController.OnAddFriendRequest += AddFriendRequest;
+
             if (friendsController.IsInitialized)
             {
                 view.HideLoadingSpinner();
@@ -123,6 +128,7 @@ public class FriendsHUDController : IHUD
             View.OnCancelConfirmation -= HandleRequestCancelled;
             View.OnRejectConfirmation -= HandleRequestRejected;
             View.OnFriendRequestSent -= HandleRequestSent;
+            View.OnFriendRequestOpened -= OpenFriendRequestDetails;
             View.OnWhisper -= HandleOpenWhisperChat;
             View.OnDeleteConfirmation -= HandleUnfriend;
             View.OnClose -= HandleViewClosed;
@@ -165,8 +171,8 @@ public class FriendsHUDController : IHUD
             if (View.IsFriendListActive)
                 DisplayMoreFriends();
             else if (View.IsRequestListActive)
-                DisplayMoreFriendRequests();
-            
+                DisplayMoreFriendRequestsAsync().Forget();
+
             OnOpened?.Invoke();
         }
         else
@@ -194,9 +200,9 @@ public class FriendsHUDController : IHUD
             if (View.IsFriendListActive && lastSkipForFriends <= 0)
                 DisplayMoreFriends();
             else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
-                DisplayMoreFriendRequests();
+                DisplayMoreFriendRequestsAsync().Forget();
         }
-        
+
         UpdateNotificationsCounter();
     }
 
@@ -236,7 +242,10 @@ public class FriendsHUDController : IHUD
         }
         else
         {
-            friendsController.RequestFriendship(userNameOrId);
+            if (isNewFriendRequestsEnabled)
+                friendsController.RequestFriendshipAsync(userNameOrId, "").Forget();
+            else
+                friendsController.RequestFriendship(userNameOrId);
 
             if (ownUserProfile != null)
                 socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0,
@@ -285,20 +294,24 @@ public class FriendsHUDController : IHUD
                 friends.Remove(userId);
                 onlineFriends.Remove(userId);
                 break;
-            case FriendshipStatus.REQUESTED_TO:
+            case FriendshipStatus.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                if (isNewFriendRequestsEnabled)
+                    return;
                 var sentRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 sentRequest.CopyFrom(status);
                 sentRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = sentRequest;
                 onlineFriends.Remove(userId);
                 View.Set(userId, sentRequest);
                 break;
-            case FriendshipStatus.REQUESTED_FROM:
+            case FriendshipStatus.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                if (isNewFriendRequestsEnabled)
+                    return;
                 var receivedRequest = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 receivedRequest.CopyFrom(status);
                 receivedRequest.blocked = IsUserBlocked(userId);
                 friends[userId] = receivedRequest;
@@ -306,7 +319,7 @@ public class FriendsHUDController : IHUD
                 View.Set(userId, receivedRequest);
                 break;
         }
-        
+
         UpdateNotificationsCounter();
         ShowOrHideMoreFriendsToLoadHint();
         ShowOrHideMoreFriendRequestsToLoadHint();
@@ -344,20 +357,24 @@ public class FriendsHUDController : IHUD
                 View.Set(userId, approved);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
-            case FriendshipAction.REQUESTED_FROM:
+            case FriendshipAction.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                if (isNewFriendRequestsEnabled)
+                    return;
                 var requestReceived = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], true)
-                    : new FriendRequestEntryModel {isReceived = true};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 requestReceived.CopyFrom(userProfile);
                 requestReceived.blocked = IsUserBlocked(userId);
                 friends[userId] = requestReceived;
                 View.Set(userId, requestReceived);
                 userProfile.OnUpdate += HandleFriendProfileUpdated;
                 break;
-            case FriendshipAction.REQUESTED_TO:
+            case FriendshipAction.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+                if (isNewFriendRequestsEnabled)
+                    return;
                 var requestSent = friends.ContainsKey(userId)
-                    ? new FriendRequestEntryModel(friends[userId], false)
-                    : new FriendRequestEntryModel {isReceived = false};
+                    ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
+                    : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
                 requestSent.CopyFrom(userProfile);
                 requestSent.blocked = IsUserBlocked(userId);
                 friends[userId] = requestSent;
@@ -399,7 +416,7 @@ public class FriendsHUDController : IHUD
     {
         if (View.IsActive())
             dataStore.friendNotifications.seenFriends.Set(View.FriendCount);
-        
+
         dataStore.friendNotifications.pendingFriendRequestCount.Set(friendsController.ReceivedRequestCount);
     }
 
@@ -420,7 +437,10 @@ public class FriendsHUDController : IHUD
 
     private void HandleRequestCancelled(FriendRequestEntryModel entry)
     {
-        friendsController.CancelRequest(entry.userId);
+        if (isNewFriendRequestsEnabled)
+            friendsController.CancelRequestByUserIdAsync(entry.userId).Forget();
+        else
+            friendsController.CancelRequestByUserId(entry.userId);
 
         if (ownUserProfile != null)
             socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, entry.userId,
@@ -435,7 +455,7 @@ public class FriendsHUDController : IHUD
             socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, entry.userId,
                 PlayerActionSource.FriendsHUD);
     }
-    
+
     private void DisplayFriendsIfAnyIsLoaded()
     {
         if (View.FriendCount > 0) return;
@@ -446,37 +466,91 @@ public class FriendsHUDController : IHUD
     private void DisplayMoreFriends()
     {
         if (!friendsController.IsInitialized) return;
-        
+
         friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
 
         // We are not handling properly the case when the friends are not fetched correctly from server.
         // 'lastSkipForFriends' will have an invalid value.
         lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
-        
+
         ShowOrHideMoreFriendsToLoadHint();
     }
 
-    private void DisplayMoreFriendRequests()
+    public void DisplayMoreFriendRequests() => DisplayMoreFriendRequestsAsync().Forget();
+
+    private async UniTaskVoid DisplayMoreFriendRequestsAsync()
     {
         if (!friendsController.IsInitialized) return;
         if (searchingFriends) return;
-        
-        friendsController.GetFriendRequests(
-            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-            LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
-        
+
+        if (isNewFriendRequestsEnabled)
+        {
+            var allfriendRequests = await friendsController.GetFriendRequestsAsync(
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
+
+            AddFriendRequests(allfriendRequests);
+        }
+        else
+        {
+            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            friendsController.GetFriendRequests(
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
+        }
+
         // We are not handling properly the case when the friend requests are not fetched correctly from server.
         // 'lastSkipForFriendRequests' will have an invalid value.
         lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
-        
+
         ShowOrHideMoreFriendRequestsToLoadHint();
     }
-    
+
+    private void AddFriendRequests(List<FriendRequest> friendRequests)
+    {
+        if (friendRequests == null)
+            return;
+
+        foreach (var friendRequest in friendRequests)
+            AddFriendRequest(friendRequest);
+    }
+
+    private void AddFriendRequest(FriendRequest friendRequest)
+    {
+        bool isReceivedRequest = friendRequest.To == ownUserProfile.userId;
+        string userId = isReceivedRequest ? friendRequest.From : friendRequest.To;
+        var userProfile = userProfileBridge.Get(userId);
+
+        if (userProfile == null)
+        {
+            Debug.LogError($"UserProfile is null for {userId}! ... friendshipAction {(isReceivedRequest ? FriendshipAction.REQUESTED_FROM : FriendshipAction.REQUESTED_TO)}");
+            return;
+        }
+
+        userProfile.OnUpdate -= HandleFriendProfileUpdated;
+
+        var request = friends.ContainsKey(userId)
+            ? new FriendRequestEntryModel(friends[userId], friendRequest.MessageBody, isReceivedRequest, friendRequest.Timestamp, isQuickActionsForFriendRequestsEnabled)
+            : new FriendRequestEntryModel
+            {
+                bodyMessage = friendRequest.MessageBody,
+                isReceived = isReceivedRequest,
+                timestamp = friendRequest.Timestamp,
+                isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled
+            };
+        request.CopyFrom(userProfile);
+        request.blocked = IsUserBlocked(userId);
+        friends[userId] = request;
+        onlineFriends.Remove(userId);
+        View.Set(userId, request);
+        userProfile.OnUpdate += HandleFriendProfileUpdated;
+    }
+
     private void DisplayFriendRequestsIfAnyIsLoaded()
     {
         if (View.FriendRequestCount > 0) return;
         if (lastSkipForFriendRequests > 0) return;
-        DisplayMoreFriendRequests();
+        DisplayMoreFriendRequestsAsync().Forget();
     }
 
     private void ShowOrHideMoreFriendRequestsToLoadHint()
@@ -514,5 +588,25 @@ public class FriendsHUDController : IHUD
         View.EnableSearchMode();
         View.HideMoreFriendsToLoadHint();
         searchingFriends = true;
+    }
+
+    private void OpenFriendRequestDetails(string userId)
+    {
+        if (!isNewFriendRequestsEnabled) return;
+
+        FriendRequest friendRequest = friendsController.GetAllocatedFriendRequestByUser(userId);
+
+        if (friendRequest == null)
+        {
+            Debug.LogError($"Could not find an allocated friend request for user: {userId}");
+            return;
+        }
+
+        if (friendRequest.IsSentTo(userId))
+            dataStore.HUDs.openSentFriendRequestDetail.Set(friendRequest.FriendRequestId, true);
+        else
+        {
+            // TODO: open details for received friend requests
+        }
     }
 }

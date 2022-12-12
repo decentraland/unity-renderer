@@ -6,41 +6,20 @@ Renderer Protocol is the messages that are sent between the [Kernel](http://gith
 
 Those messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) in proto3 format.
 
+## Types of messages
+
+The messages exchange are defined by RPC calls. There are defined as Services. Those Services are bidirectional.
+You can have `RendererServices` where `Kernel` calls `Renderer`. Or `KernelService` where `Renderer` calls `Kernel`
 ## How to add a message
 
 To add a message in the Renderer Protocol, you must change the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol), and then update the package in the `protocol-gen` of the `unity-renderer` repository [here](https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen).
 
-Example of messages
-```protobuf
-syntax = "proto3";
+Example of `RendererService`: https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto
 
-package decentraland.renderer;
+Example of `KernelService`: https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto
 
-message TriggerSelfUserExpressionRequest {
-  string id = 1;
-}
-
-message TriggerExpressionRequest {
-  string id = 1;
-  float timestamp = 2;
-}
-
-message EmotesResponse {}
-
-// Service implemented in Renderer and used in Kernel
-service EmotesRendererService {
-  // Triggers an expression in our own avatar (use example: SDK triggers a expression)
-  rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (EmotesResponse) {}
-}
-
-// Service implemented in Kernel and used in Renderer through the inverse RPC transport
-service EmotesKernelService {
-  // Request Kernel to Trigger the Expression (it will be broadcasted to the avatars in the area)
-  rpc TriggerExpression(TriggerExpressionRequest) returns (EmotesResponse) {}
-}
-```
-
-After that, just run `npm run build-renderer-protocol` and the Renderer Protocol will be re-generated.
+After adding a `KernelService` or `RendererService`
+You must install the package in the `protocol-gen` just run `npm run build-renderer-protocol` and the Renderer Protocol will be re-generated.
 
 ## RPC
 
@@ -89,7 +68,12 @@ namespace RPC.Services
 
         public UniTask<EmotesResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, RPCContext context, CancellationToken ct)
         {
-            UserProfile.GetOwnUserProfile().SetAvatarExpression(request.Id, UserProfile.EmoteSource.Command);
+            DataStore.i.myInventedDataStoreWithAGoodName.avatarExpression new AvatarExpression()
+            {
+                Id = request.Id,
+                Command = UserProfile.EmoteSource.Command,
+                Timestamp = UTC.Now
+            }
             return default;
         }
     }
@@ -143,6 +127,13 @@ void rendererProtocol.then(async (protocol) => {
 
 ### Implement Kernel Services
 
+#### Example with PR
+
+protocol: https://github.com/decentraland/protocol/pull/81
+unity-renderer: https://github.com/decentraland/unity-renderer/pull/3605
+kernel: https://github.com/decentraland/kernel/pull/728
+
+#### Step by step
 Create the service:
 
 in: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
@@ -150,9 +141,9 @@ in: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesKernelServiceDefinition, EmotesResponse } from '@dcl/protocol/out-ts/decentraland/renderer/emotes.gen'
-import { allScenesEvent } from 'shared/world/parcelSceneManager'
-import { sendPublicChatMessage } from 'shared/comms'
+import { EmotesKernelServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/emotes_kernel.gen'
+import { allScenesEvent } from '../../../shared/world/parcelSceneManager'
+import { sendPublicChatMessage } from '../../../shared/comms'
 
 export function registerEmotesKernelService(port: RpcServerPort<RendererProtocolContext>) {
   codegen.registerService(port, EmotesKernelServiceDefinition, async () => ({
@@ -167,7 +158,7 @@ export function registerEmotesKernelService(port: RpcServerPort<RendererProtocol
       const body = `␐${req.id} ${req.timestamp}`
 
       sendPublicChatMessage(body)
-      return EmotesResponse
+      return {}
     }
   }))
 }
@@ -191,8 +182,9 @@ in `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/Interfac
 ```csharp
 public interface IRPC : IService
 {
-  ...
-  public ClientEmotesKernelService emotes { get; internal set; }
+    ...
+
+    public ClientEmotesKernelService Emotes();
 }
 ```
 
@@ -200,11 +192,15 @@ And we load the module:
 
 in: `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/RPC.cs`
 ```csharp
-ClientEmotesKernelService IRPC.emotes { get; set; }
+private ClientEmotesKernelService emotes;
 
-public static async UniTask LoadModules(RpcClientPort port, IRPC rpc)
+public ClientEmotesKernelService Emotes() =>
+    emotes;
+
+private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
 {
-    rpc.emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+    emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+    ...
 }
 ```
 

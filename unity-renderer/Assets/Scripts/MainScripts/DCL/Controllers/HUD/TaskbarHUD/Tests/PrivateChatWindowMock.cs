@@ -1,7 +1,7 @@
-using System;
-using DCl.Social.Friends;
+using DCL.Social.Friends;
 using NSubstitute;
 using SocialFeaturesAnalytics;
+using System;
 using UnityEngine;
 
 public class PrivateChatWindowMock : MonoBehaviour, IPrivateChatComponentView

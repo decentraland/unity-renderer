@@ -782,28 +782,19 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-
-        [Serializable]
-        private class GetFriendRequestsPayload
-        {
-            public int sentLimit;
-            public int sentSkip;
-            public int receivedLimit;
-            public int receivedSkip;
-        }
         
         [Serializable]
         private class LeaveChannelPayload
         {
             public string channelId;
         }
-        
+
         [Serializable]
         private class CreateChannelPayload
         {
             public string channelId;
         }
-        
+
         public struct MuteChannelPayload
         {
             public string channelId;
@@ -1557,7 +1548,7 @@ namespace DCL.Interface
             gotoEvent.y = y;
             SendMessage("LoadingHUDReadyForTeleport", gotoEvent);
         }
-        
+
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
@@ -1568,7 +1559,7 @@ namespace DCL.Interface
 
             SendMessage("JumpIn", jumpInPayload);
         }
-        
+
         public static void JumpInHome(string mostPopulatedRealm)
         {
             jumpInPayload.realm.serverName = mostPopulatedRealm;
@@ -1739,7 +1730,7 @@ namespace DCL.Interface
                 videoTextureId = videoClipId,
                 status = videoStatus,
                 currentOffset = currentOffset,
-                videoLength = length
+                videoLength = float.IsInfinity(length) ? float.MaxValue : length
             };
 
             SendMessage("VideoProgressEvent", progressEvent);
@@ -1812,7 +1803,7 @@ namespace DCL.Interface
             getPrivateMessagesPayload.fromMessageId = fromMessageId;
             SendMessage("GetPrivateMessages", getPrivateMessagesPayload);
         }
-        
+
         public static void MarkChannelMessagesAsSeen(string channelId)
         {
             markChannelMessagesAsSeenPayload.channelId = channelId;
@@ -1841,17 +1832,6 @@ namespace DCL.Interface
             {
                 userNameOrId = usernameOrId,
                 limit = limit
-            });
-        }
-
-        public static void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
-        {
-            SendMessage("GetFriendRequests", new GetFriendRequestsPayload
-            {
-                receivedSkip = receivedSkip,
-                receivedLimit = receivedLimit,
-                sentSkip = sentSkip,
-                sentLimit = sentLimit
             });
         }
 
@@ -1940,7 +1920,7 @@ namespace DCL.Interface
         {
             SendMessage("UpdateMemoryUsage");
         }
-        
+
         public static void RequestAudioDevices() => SendMessage("RequestAudioDevices");
 
         public static void SetInputAudioDevice(string inputDeviceId)

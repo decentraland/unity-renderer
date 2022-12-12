@@ -13,7 +13,7 @@ using Environment = DCL.Environment;
 public class BuilderInWorldEditor : IBIWEditor
 {
     internal const string AVATAR_HIDE_CONSTRAINT = "BuilderInWorld_Avatar_Invisible";
-    
+
     private GameObject cursorGO;
     private GameObject[] groundVisualsGO;
 
@@ -73,7 +73,7 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler.gameObject.SetActive(false);
 
         floorHandler.OnAllParcelsFloorLoaded += NewSceneFloorLoaded;
-        
+
         avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
     }
 
@@ -99,7 +99,6 @@ public class BuilderInWorldEditor : IBIWEditor
     private void InitHUD(IContext context)
     {
         context.editorContext.editorHUD.Initialize(context);
-        context.editorContext.editorHUD.OnTutorialAction += StartTutorial;
         context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged += ChangeProjectNameAndDescription;
     }
 
@@ -108,9 +107,8 @@ public class BuilderInWorldEditor : IBIWEditor
         if (context.editorContext.editorHUD != null)
         {
             context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged -= ChangeProjectNameAndDescription;
-            context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
         }
-        
+
         floorHandler.OnAllParcelsFloorLoaded -= NewSceneFloorLoaded;
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         BIWNFTController.i.Dispose();
@@ -185,8 +183,6 @@ public class BuilderInWorldEditor : IBIWEditor
         controllers.Add(controller);
     }
 
-    private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
-
     public void CleanItems()
     {
         if ( context.editorContext.editorHUD != null)
@@ -251,7 +247,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
         previousSkyBoxMaterial = RenderSettings.skybox;
         RenderSettings.skybox = skyBoxMaterial;
-        
+
         DeactivateAvatars();
 
         foreach (var groundVisual in groundVisualsGO)
@@ -260,7 +256,7 @@ public class BuilderInWorldEditor : IBIWEditor
         }
 
         DataStore.i.player.otherPlayers.OnAdded += DeactivatePlayerAvatar;
-        
+
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.scene.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit.scene).ToString(), BIWUtils.GetSceneSize(sceneToEdit.scene));
@@ -309,7 +305,7 @@ public class BuilderInWorldEditor : IBIWEditor
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
         ActivateAvatars();
-        
+
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
@@ -327,8 +323,8 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         player.avatar.RemoveVisibilityConstrain(AVATAR_HIDE_CONSTRAINT);
         player.playerName.RemoveVisibilityConstaint(AVATAR_HIDE_CONSTRAINT);
-    }    
-    
+    }
+
     internal void DeactivatePlayerAvatar(string id,Player player)
     {
         player.avatar.AddVisibilityConstraint(AVATAR_HIDE_CONSTRAINT);
@@ -375,7 +371,7 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         if (!sceneToEdit.HasBeenCreatedThisSession())
             return;
-        
+
         context.cameraController.TakeSceneScreenshotFromResetPosition(snapshot =>
             {
                 context.builderAPIController.SetThumbnail(sceneToEdit.manifest.project.id, snapshot);
