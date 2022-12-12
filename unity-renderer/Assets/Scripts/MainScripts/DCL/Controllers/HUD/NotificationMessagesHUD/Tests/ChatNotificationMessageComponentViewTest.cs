@@ -1,5 +1,5 @@
+using DCL.Chat.Notifications;
 using NUnit.Framework;
-using UnityEngine;
 
 public class ChatNotificationMessageComponentViewTest
 {

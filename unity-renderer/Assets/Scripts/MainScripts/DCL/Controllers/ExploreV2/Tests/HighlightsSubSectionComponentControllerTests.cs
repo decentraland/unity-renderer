@@ -1,10 +1,10 @@
 using DCL;
+using DCL.Social.Friends;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using DCl.Social.Friends;
 using UnityEngine;
 using static HotScenesController;
 

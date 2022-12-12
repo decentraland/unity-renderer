@@ -40,7 +40,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     [SerializeField] private Notification acceptedFriendNotification;
     [SerializeField] private Notification alreadyFriendsNotification;
     [SerializeField] private Model model;
-    
+
     [Header("Load More Entries")]
     [SerializeField] internal GameObject loadMoreEntriesContainer;
     [SerializeField] internal TMP_Text loadMoreEntriesLabel;
@@ -71,6 +71,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public event Action<FriendRequestEntryModel> OnRejectConfirmation;
     public event Action<FriendRequestEntryModel> OnFriendRequestApproved;
     public event Action<string> OnFriendRequestSent;
+    public event Action<string> OnFriendRequestOpened;
     public event Action OnRequireMoreEntries;
 
     public override void OnEnable()
@@ -97,7 +98,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     public override void Update()
     {
         base.Update();
-        
+
         if (isLayoutDirty)
             Utils.ForceRebuildLayoutImmediate((RectTransform) filledStateContainer.transform);
         isLayoutDirty = false;
@@ -150,7 +151,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     {
         if (creationQueue.ContainsKey(userId))
             creationQueue.Remove(userId);
-        
+
         if (!entries.ContainsKey(userId)) return;
 
         if (pooleableEntries.TryGetValue(userId, out var pooleableObject))
@@ -182,7 +183,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
     }
 
     public FriendRequestEntry Get(string userId) => entries.ContainsKey(userId) ? entries[userId] : null;
-    
+
     public void Enqueue(string userId, FriendRequestEntryModel model) => creationQueue[userId] = model;
 
     public void Set(string userId, FriendRequestEntryModel model)
@@ -192,7 +193,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
             creationQueue[userId] = model;
             return;
         }
-        
+
         if (!entries.ContainsKey(userId))
         {
             CreateEntry(userId);
@@ -203,7 +204,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         UpdateEmptyOrFilledState();
         UpdateCounterLabel();
     }
-    
+
     public void Populate(string userId, FriendRequestEntryModel model)
     {
         if (!entries.ContainsKey(userId))
@@ -212,7 +213,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
                 creationQueue[userId] = model;
             return;
         }
-        
+
         var entry = entries[userId];
         entry.Populate(model);
 
@@ -248,6 +249,8 @@ public class FriendRequestsTabComponentView : BaseComponentView
         entry.OnCancelled += OnEntryCancelButtonPressed;
         entry.OnMenuToggle -= OnEntryMenuToggle;
         entry.OnMenuToggle += OnEntryMenuToggle;
+        entry.OnOpened -= OpenFriendRequestDetails;
+        entry.OnOpened += OpenFriendRequestDetails;
     }
 
     private Pool GetEntryPool()
@@ -297,7 +300,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         loadMoreEntriesContainer.SetActive(false);
         UpdateLayout();
     }
-    
+
     public void ShowMoreEntriesToLoadHint(int hiddenCount)
     {
         loadMoreEntriesLabel.text = $"{hiddenCount} requests hidden. Scroll down to show more.";
@@ -320,6 +323,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
         if (!string.IsNullOrEmpty(friendUserName))
             NotificationsController.i?.DismissAllNotifications(NOTIFICATIONS_ID);
     }
+
+    private void OpenFriendRequestDetails(FriendRequestEntry entry) =>
+        OnFriendRequestOpened?.Invoke(entry.Model.userId);
 
     private void OnFriendRequestReceivedAccepted(FriendRequestEntry requestEntry)
     {
@@ -369,7 +375,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         friendEntryToBlock.Model.blocked = blockUser;
         Set(userId, (FriendRequestEntryModel) friendEntryToBlock.Model);
     }
-    
+
     private void FetchProfilePicturesForVisibleEntries()
     {
         foreach (var entry in entries.Values.Skip(currentAvatarSnapshotIndex).Take(AVATAR_SNAPSHOTS_PER_FRAME))
@@ -385,7 +391,7 @@ public class FriendRequestsTabComponentView : BaseComponentView
         if (currentAvatarSnapshotIndex >= entries.Count)
             currentAvatarSnapshotIndex = 0;
     }
-    
+
     private void SetQueuedEntries()
     {
         if (creationQueue.Count == 0) return;
