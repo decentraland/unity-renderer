@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 43e4abaf54877394ebd7ade28d0ef858,
     type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -39,12 +40,24 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 1
+    - _Blend: 0
+    - _CastShadows: 1
+    - _Cull: 2
+    - _DstBlend: 10
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Rotation: 180
+    - _SrcBlend: 5
+    - _Surface: 1
+    - _WorkflowMode: 1
     - _XVariant: 1
     - _YVariant: 1
+    - _ZTest: 4
     - _ZVariant: 1
+    - _ZWrite: 0
+    - _ZWriteControl: 0
     - _isFlipped: 1
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}

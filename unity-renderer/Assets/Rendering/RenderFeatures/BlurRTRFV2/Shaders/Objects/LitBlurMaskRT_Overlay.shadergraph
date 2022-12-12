@@ -2538,7 +2538,7 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.CategoryData",
     "m_ObjectId": "72008ccbbc9742a4acbb5301753e971a",
-    "m_Name": "Debug",
+    "m_Name": "FlippedSettings",
     "m_ChildObjectList": [
         {
             "m_Id": "0c9a72d05ab04023b8c805fd6be0cafb"
@@ -2642,8 +2642,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -3176.000244140625,
-            "y": -788.0000610351563,
+            "x": -2995.000244140625,
+            "y": -885.0000610351563,
             "width": 120.0,
             "height": 34.0
         }
@@ -2677,8 +2677,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2921.000244140625,
-            "y": -832.0000610351563,
+            "x": -2778.000244140625,
+            "y": -926.0,
             "width": 126.0,
             "height": 118.0
         }
@@ -3125,8 +3125,8 @@
     "m_AlphaMode": 0,
     "m_RenderFace": 2,
     "m_AlphaClip": true,
-    "m_CastShadows": true,
-    "m_ReceiveShadows": true,
+    "m_CastShadows": false,
+    "m_ReceiveShadows": false,
     "m_CustomEditorGUI": "",
     "m_SupportVFX": false
 }
