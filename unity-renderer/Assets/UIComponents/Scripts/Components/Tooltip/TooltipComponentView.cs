@@ -17,20 +17,20 @@ namespace UIComponents.Scripts.Components.Tooltip
 
         public override void OnEnable()
         {
-            EventSystem.current.SetSelectedGameObject(gameObject);
             base.OnEnable();
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnFocus()
         {
-            EventSystem.current.SetSelectedGameObject(gameObject);
             base.OnFocus();
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnLoseFocus()
         {
-            EventSystem.current.SetSelectedGameObject(gameObject);
             base.OnLoseFocus();
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnDeselect(BaseEventData eventData)

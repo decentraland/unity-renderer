@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hideOnEnable: 1
-  animSpeedFactor: 1
+  animSpeedFactor: 0.7
   disableAfterFadeOut: 1
   canvasGroup: {fileID: 1528622216977608969}
 --- !u!114 &2447974467721302299
