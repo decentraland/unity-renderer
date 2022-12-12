@@ -1,6 +1,5 @@
 using UnityEngine;
 using NUnit.Framework;
-using TMPro;
 
 public class NFTIconComponentViewShould : MonoBehaviour
 {
@@ -23,8 +22,8 @@ public class NFTIconComponentViewShould : MonoBehaviour
     public void FocusComponentCorrectly()
     {
         // Act
-        nftIconComponentView.OnFocus();
         nftIconComponentView.SetShowMarketplaceButton(true);
+        nftIconComponentView.OnFocus();
         // Assert
         Assert.IsTrue(nftIconComponentView.isFocused, "The base component should be focused.");
         Assert.IsTrue(nftIconComponentView.marketplaceSection.activeSelf, "The marketplace subpanel should be visible");
@@ -34,8 +33,8 @@ public class NFTIconComponentViewShould : MonoBehaviour
     public void UnFocusComponentCorrectly()
     {
         // Act
-        nftIconComponentView.OnLoseFocus();
         nftIconComponentView.SetShowMarketplaceButton(true);
+        nftIconComponentView.OnLoseFocus();
 
         // Assert
         Assert.IsTrue(!nftIconComponentView.isFocused, "The base component should be un-focused.");
