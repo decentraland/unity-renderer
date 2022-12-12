@@ -1099,7 +1099,7 @@ MonoBehaviour:
   controlBackgroundCanvasGroups:
   - {fileID: 2206378319009038430}
   - {fileID: 8152899809905436497}
-  controlBackgroundDeactivationAlpha: 0.5
+  controlBackgroundDeactivationAlpha: 0.3
   toggle: {fileID: 4037569235477626184}
 --- !u!225 &8553027113073084112 stripped
 CanvasGroup:
