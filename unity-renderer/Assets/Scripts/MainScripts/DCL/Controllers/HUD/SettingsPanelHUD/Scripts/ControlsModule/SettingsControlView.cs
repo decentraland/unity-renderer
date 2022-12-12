@@ -6,6 +6,8 @@ using System.Linq;
 using TMPro;
 using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
@@ -55,9 +57,10 @@ namespace DCL.SettingsPanelHUD.Controls
             settingsControlController.Initialize();
 
             betaIndicator.SetActive(model.isBeta);
-            infoButton.gameObject.SetActive(false);
+
             tooltip.SetModel(new TooltipComponentModel("This setting is being controlled \n by the creator"));
-            infoButton.onClick.AddListener(() => tooltip.Show());
+            infoButton.onClick.AddListener(OnInfoButtonClicked);
+            infoButton.gameObject.SetActive(false);
 
             title.text = model.title;
             originalTitleColor = title.color;
@@ -99,7 +102,7 @@ namespace DCL.SettingsPanelHUD.Controls
                     flag.OnChange -= OnAnyOverrideFlagChange;
             }
 
-            infoButton.onClick.RemoveAllListeners();
+            infoButton.onClick.RemoveListener(OnInfoButtonClicked);
 
             if (Settings.i == null) return; // fix for PlayMode tests failing on TearDown
 
@@ -118,6 +121,12 @@ namespace DCL.SettingsPanelHUD.Controls
         {
             settingsControlController.UpdateSetting(newValue);
             settingsControlController.ApplySettings();
+        }
+
+        private void OnInfoButtonClicked()
+        {
+            if (!tooltip.gameObject.activeSelf)
+                tooltip.Show();
         }
 
         private void OnGeneralSettingsChanged(GeneralSettings _) =>

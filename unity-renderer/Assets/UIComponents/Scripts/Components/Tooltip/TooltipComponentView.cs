@@ -1,16 +1,43 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace UIComponents.Scripts.Components.Tooltip
 {
-    public class TooltipComponentView : BaseComponentView<TooltipComponentModel>
+    public class TooltipComponentView : BaseComponentView<TooltipComponentModel>, IDeselectHandler
     {
         private const int OFFSET = 16;
 
         [SerializeField] private TMP_Text text;
 
+        private bool mouseIsOver;
+
         private RectTransform rectTransform;
         private RectTransform rect => rectTransform ??= GetComponent<RectTransform>();
+
+        public override void OnEnable()
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+            base.OnEnable();
+        }
+
+        public override void OnFocus()
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+            base.OnFocus();
+        }
+
+        public override void OnLoseFocus()
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+            base.OnLoseFocus();
+        }
+
+        public void OnDeselect(BaseEventData eventData)
+        {
+            if (!isFocused)
+                Hide();
+        }
 
         public override void Show(bool instant = false)
         {

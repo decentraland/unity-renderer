@@ -224,7 +224,6 @@ GameObject:
   - component: {fileID: 2110369137001097798}
   - component: {fileID: 7125401924563651099}
   - component: {fileID: 1528622216977608969}
-  - component: {fileID: 2457192794963588085}
   - component: {fileID: 63145900205893970}
   - component: {fileID: 2447974467721302299}
   m_Layer: 5
@@ -306,20 +305,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2457192794963588085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6930625238097076393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c022d54a6c71c5241b36a088e8e54e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 2383634813862937454}
-  rect: {fileID: 980053903516578869}
 --- !u!114 &63145900205893970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hideOnEnable: 1
   animSpeedFactor: 1
-  disableAfterFadeOut: 0
+  disableAfterFadeOut: 1
   canvasGroup: {fileID: 1528622216977608969}
 --- !u!114 &2447974467721302299
 MonoBehaviour:
