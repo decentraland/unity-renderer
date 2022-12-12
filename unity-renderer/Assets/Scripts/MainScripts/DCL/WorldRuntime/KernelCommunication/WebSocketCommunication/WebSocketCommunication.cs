@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using DCL;
+using Newtonsoft.Json;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -278,6 +279,19 @@ public class WebSocketCommunication : IKernelCommunication
                                 if (float.TryParse(msg.payload, out float durationInSeconds)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
                                     mainGO.SendMessage(msg.type, durationInSeconds);
+                                }
+                                break;
+                            case "AddWearablesToCatalog":
+                                Debug.Log("RECEIVED THE MESSAGE FROM ADD WEARABLES TO CATALOG");
+                                WearablesRequestResponse request = null;
+                                try
+                                {
+                                    request = JsonConvert.DeserializeObject<WearablesRequestResponse>(msg.payload);
+                                    mainGO.SendMessage("AddWearablesToCatalog", request);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError($"Fail to parse wearables json {e} from WebSocketCommunication");
                                 }
                                 break;
                             default:
