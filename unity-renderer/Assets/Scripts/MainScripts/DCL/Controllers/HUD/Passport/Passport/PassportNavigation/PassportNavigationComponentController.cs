@@ -59,7 +59,7 @@ namespace DCL.Social.Passports
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile);
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
-                    view.SetEquippedWearables(wearableItems);
+                    view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;
                 }
             }

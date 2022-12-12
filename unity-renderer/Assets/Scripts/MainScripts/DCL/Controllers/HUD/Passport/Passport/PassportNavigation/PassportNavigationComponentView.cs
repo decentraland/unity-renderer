@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 
@@ -73,28 +74,35 @@ namespace DCL.Social.Passports
             descriptionText.text = string.IsNullOrEmpty(description) ? TEMPLATE_DESCRIPTION_TEXT : description;
         }
 
-        public void SetEquippedWearables(WearableItem[] wearables)
+        public void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId)
         {
+            HashSet<string> hidesList = WearableItem.ComposeHiddenCategories(bodyShapeId, wearables.ToList());
+
             foreach (var wearable in wearables)
             {
-                PoolableObject poolableObject = nftIconsEntryPool.Get();
-                nftIconPoolableQueue.Add(poolableObject);
-                poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
-                poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
-                NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
-                nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
-                nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(wearable.id));
-                NFTIconComponentModel nftModel = new NFTIconComponentModel()
+                if (!hidesList.Contains(wearable.data.category))
                 {
-                    showMarketplaceButton = wearable.IsCollectible(),
-                    showType = wearable.IsCollectible(),
-                    type = wearable.data.category,
-                    marketplaceURI = "",
-                    name = wearable.GetName(),
-                    rarity = wearable.rarity,
-                    imageURI = wearable.ComposeThumbnailUrl()
-                };
-                nftIconComponentView.Configure(nftModel);
+                    PoolableObject poolableObject = nftIconsEntryPool.Get();
+                    nftIconPoolableQueue.Add(poolableObject);
+                    poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
+                    poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
+                    NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
+                    nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
+                    nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(wearable.id));
+
+                    NFTIconComponentModel nftModel = new NFTIconComponentModel()
+                    {
+                        showMarketplaceButton = wearable.IsCollectible(),
+                        showType = wearable.IsCollectible(),
+                        type = wearable.data.category,
+                        marketplaceURI = "",
+                        name = wearable.GetName(),
+                        rarity = wearable.rarity,
+                        imageURI = wearable.ComposeThumbnailUrl()
+                    };
+
+                    nftIconComponentView.Configure(nftModel);
+                }
             }
         }
 
