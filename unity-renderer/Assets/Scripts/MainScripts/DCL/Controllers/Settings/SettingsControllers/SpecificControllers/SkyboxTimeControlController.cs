@@ -18,16 +18,15 @@ namespace DCL.SettingsControls
 
         private void OnSkyboxModeChanged(SkyboxMode current, SkyboxMode previous)
         {
-            if (current == previous || skyboxConfig.mode.Equals(SkyboxMode.Dynamic))
-                return;
+            if (current == previous) return;
 
-            RaiseSliderValueChanged(skyboxConfig.fixedTime.Get());
-            UpdateSetting(skyboxConfig.fixedTime.Get());
+            RaiseSliderValueChanged((float)GetStoredValue());
+            UpdateSetting(GetStoredValue());
         }
 
         public override object GetStoredValue() =>
             skyboxConfig.mode.Equals(SkyboxMode.Dynamic)
-                ? (object) currentGeneralSettings.skyboxTime
+                ? (object)currentGeneralSettings.skyboxTime
                 : skyboxConfig.fixedTime.Get();
 
         public override void UpdateSetting(object newValue)
