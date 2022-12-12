@@ -29,6 +29,7 @@ namespace Tests
         private ITransport testClientTransport;
         private RpcServer<RPCContext> rpcServer;
         private CancellationTokenSource testCancellationSource;
+        private RpcServerPort<RPCContext> currentServerPort;
 
         [SetUp]
         public void SetUp()
@@ -42,7 +43,8 @@ namespace Tests
 
             rpcServer.SetHandler((port, t, c) =>
             {
-                RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl());
+                currentServerPort = port;
+                RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl(port));
             });
 
             testClientTransport = clientTransport;
@@ -114,6 +116,39 @@ namespace Tests
                 {
                     Debug.LogError(e);
                 }
+
+                // Check scene unloaded
+                Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator UnloadSceneIfPortIsClosed()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                var rpcClient = await CreateRpcClient(testClientTransport);
+
+                int testSceneNumber = 987;
+
+                // Check scene is not already loaded
+                Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));
+
+                // Simulate client requesting `LoadScene()`...
+                try
+                {
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(testSceneNumber));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                // Check scene loaded
+                Assert.IsTrue(context.crdt.WorldState.ContainsScene(testSceneNumber));
+
+                // Close port
+                currentServerPort.Close();
 
                 // Check scene unloaded
                 Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));

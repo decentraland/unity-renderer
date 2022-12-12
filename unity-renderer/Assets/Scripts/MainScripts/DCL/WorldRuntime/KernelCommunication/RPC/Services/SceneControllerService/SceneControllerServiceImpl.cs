@@ -19,12 +19,30 @@ namespace RPC.Services
 
         private const string REQUIRED_PORT_ID_START = "scene-";
         private int sceneNumber = -1;
+        private RPCContext context;
+        private RpcServerPort<RPCContext> port;
+
+        private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
             if (!port.portName.StartsWith(REQUIRED_PORT_ID_START)) return;
 
-            RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl());
+            RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl(port));
+        }
+
+        public SceneControllerServiceImpl(RpcServerPort<RPCContext> port)
+        {
+            port.OnClose += OnPortClose;
+            this.port = port;
+        }
+
+        private void OnPortClose()
+        {
+            port.OnClose -= OnPortClose;
+
+            if (context != null && context.crdt.WorldState.ContainsScene(sceneNumber))
+                UnloadScene(null, context, new CancellationToken());
         }
 
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
@@ -32,6 +50,7 @@ namespace RPC.Services
             // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - scene number: {request.SceneNumber}; metadata: {request.Entity.Metadata}");
 
             sceneNumber = request.SceneNumber;
+            this.context = context;
 
             List<ContentServerUtils.MappingPair> parsedContent = new List<ContentServerUtils.MappingPair>();
 
@@ -89,8 +108,6 @@ namespace RPC.Services
             LoadSceneResult result = new LoadSceneResult() { Success = true };
             return result;
         }
-
-        private static readonly UnloadSceneResult defaultUnloadSceneResult = new UnloadSceneResult();
 
         public async UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request, RPCContext context, CancellationToken ct)
         {
