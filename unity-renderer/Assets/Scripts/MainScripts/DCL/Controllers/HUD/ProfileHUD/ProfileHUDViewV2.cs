@@ -165,7 +165,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionInputText.text = description;
 
         string[] nameSplits = profile.userName.Split('#');
-        if (nameSplits.Length > 0)
+        if (nameSplits.Length >= 2)
         {
             textName.text = nameSplits[0];
             textPostfix.text = $"#{nameSplits[1]};";
