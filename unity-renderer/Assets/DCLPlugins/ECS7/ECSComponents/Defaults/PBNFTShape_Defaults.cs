@@ -1,4 +1,6 @@
-﻿namespace DCL.ECSComponents
+﻿using Decentraland.Common;
+
+namespace DCL.ECSComponents
 {
     public static class PBNFTShape_Defaults
     {
