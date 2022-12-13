@@ -219,7 +219,7 @@ namespace DCL.Social.Passports
                 return;
 
             OnWalletCopy?.Invoke();
-            GUIUtility.systemCopyBuffer = fullWalletAddress;
+            Environment.i.platform.clipboard.WriteText(fullWalletAddress);
         }
 
         private void WhisperActionFlow()

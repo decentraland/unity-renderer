@@ -64,6 +64,7 @@ namespace DCL.Social.Passports
 
         public void Dispose()
         {
+            view.PreviewCameraRotation.OnHorizontalRotation -= RotateCharacterPreview;
             cancellationTokenSource?.Cancel();
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = null;
