@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using System.Collections.Generic;
 
 namespace DCL.ECS7
 {
@@ -22,10 +22,12 @@ namespace DCL.ECS7
 
             ISceneController sceneController = Environment.i.world.sceneController;
             Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
+            DataStore.i.rpc.context.crdt.CrdtExecutors = crdtExecutors;
 
             componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
+
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
                 Environment.i.world.state, DataStore.i.rpc.context.crdt);
 

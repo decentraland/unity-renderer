@@ -7,6 +7,7 @@ using DCL.Models;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
+using RPC.Context;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,9 +29,13 @@ namespace RPC.Services
         private RPCContext context;
         private RpcServerPort<RPCContext> port;
 
-        private readonly MemoryStream memoryStream;
-        private readonly BinaryWriter binaryWriter;
+        private readonly MemoryStream sendCrdtMemoryStream;
+        private readonly BinaryWriter sendCrdtBinaryWriter;
+        private readonly MemoryStream getStateMemoryStream;
+        private readonly BinaryWriter getStateBinaryWriter;
+
         private readonly CRDTSceneMessage reusableCrdtMessageResult = new CRDTSceneMessage();
+        private readonly CRDTSceneCurrentState reusableCurrentStateResult = new CRDTSceneCurrentState();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
@@ -44,8 +49,11 @@ namespace RPC.Services
             port.OnClose += OnPortClose;
             this.port = port;
 
-            memoryStream = new MemoryStream();
-            binaryWriter = new BinaryWriter(memoryStream);
+            sendCrdtMemoryStream = new MemoryStream();
+            sendCrdtBinaryWriter = new BinaryWriter(sendCrdtMemoryStream);
+
+            getStateMemoryStream = new MemoryStream();
+            getStateBinaryWriter = new BinaryWriter(getStateMemoryStream);
         }
 
         private void OnPortClose()
@@ -133,13 +141,14 @@ namespace RPC.Services
         public async UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request, RPCContext context, CancellationToken ct)
         {
             IParcelScene scene = null;
+            CRDTServiceContext crdtContext = context.crdt;
 
             // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
             // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
-            await UniTask.WaitUntil(() => context.crdt.WorldState.TryGetScene(sceneNumber, out scene),
+            await UniTask.WaitUntil(() => crdtContext.WorldState.TryGetScene(sceneNumber, out scene),
                 cancellationToken: ct);
 
-            await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
+            await UniTask.WaitWhile(() => crdtContext.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
                 cancellationToken: ct);
 
             await UniTask.SwitchToMainThread(ct);
@@ -156,7 +165,7 @@ namespace RPC.Services
                         if (!(iterator.Current is CRDTMessage crdtMessage))
                             continue;
 
-                        context.crdt.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
+                        crdtContext.CrdtMessageReceived?.Invoke(sceneNumber, crdtMessage);
                         incomingCrdtCount++;
                     }
                 }
@@ -167,7 +176,7 @@ namespace RPC.Services
                     // kernel won't be sending that message for those scenes
                     if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
                     {
-                        context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                        crdtContext.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
                         {
                             sceneNumber = sceneNumber,
                             tag = "scene",
@@ -178,13 +187,13 @@ namespace RPC.Services
                     }
                 }
 
-                if (context.crdt.scenesOutgoingCrdts.TryGetValue(sceneNumber, out CRDTProtocol sceneCrdtState))
+                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out CRDTProtocol sceneCrdtState))
                 {
-                    memoryStream.SetLength(0);
-                    context.crdt.scenesOutgoingCrdts.Remove(sceneNumber);
-                    KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
+                    sendCrdtMemoryStream.SetLength(0);
+                    crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
+                    KernelBinaryMessageSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtState);
                     sceneCrdtState.ClearOnUpdated();
-                    reusableCrdtMessageResult.Payload = ByteString.CopyFrom(memoryStream.ToArray());
+                    reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
             }
             catch (Exception e)
@@ -197,8 +206,45 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.GetCurrentState()...");
-            throw new NotImplementedException();
+            CRDTProtocol crdtProtocol = null;
+            CRDTServiceContext crdtContext = context.crdt;
+
+            await UniTask.SwitchToMainThread(ct);
+
+            if (crdtContext.CrdtExecutors != null && crdtContext.CrdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor executor))
+            {
+                crdtProtocol = executor.crdtProtocol;
+            }
+
+            reusableCurrentStateResult.Payload = ByteString.Empty;
+            reusableCurrentStateResult.HasOwnEntities = false;
+
+            if (crdtProtocol != null)
+            {
+                try
+                {
+                    var state = crdtProtocol.GetState();
+
+                    for (int i = 0; i < state.Count; i++)
+                    {
+                        if (state[i].data != null)
+                        {
+                            reusableCurrentStateResult.HasOwnEntities = true;
+                            break;
+                        }
+                    }
+
+                    getStateMemoryStream.SetLength(0);
+                    KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, crdtProtocol);
+                    reusableCurrentStateResult.Payload = ByteString.CopyFrom(getStateMemoryStream.ToArray());
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+            }
+
+            return reusableCurrentStateResult;
         }
     }
 }
