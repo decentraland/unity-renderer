@@ -10,34 +10,19 @@ import {
   workingDirectory,
 } from './helpers'
 import * as fs from 'node:fs'
-import * as fse from 'fs-extra'
+import { readFileSync, writeFileSync } from 'node:fs'
 
-const componentsRawInputPath = normalizePath(
-  path.resolve(protocolPath),
-)
-
-const componentsPreProccessInputPath = normalizePath(
-  path.resolve(__dirname, '../temp-components/'),
-)
+const protocolInputPath = normalizePath(path.resolve(protocolPath))
 
 const componentsOutputPath = path.resolve(
   __dirname,
-  '../../unity-renderer/Assets/DCLPlugins/ECS7/ProtocolBuffers/Generated/',
+  '../../unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/',
 )
 
 async function main() {
-  if (fs.existsSync(componentsPreProccessInputPath)) {
-    fs.rmSync(componentsPreProccessInputPath, { recursive: true })
-  }
-  fse.copySync(componentsRawInputPath, componentsPreProccessInputPath, {
-    overwrite: true,
-  })
-
   await execute(`${protocPath} --version`, workingDirectory)
 
-  await buildComponents()
-
-  fs.rmSync(componentsPreProccessInputPath, { recursive: true })
+  await buildProtocol()
 }
 
 const regex = new RegExp(/option *\(common.ecs_component_id\) *= *([0-9]+) *;/)
@@ -75,29 +60,42 @@ function generateComponentsEnum(components: ComponentData[]) {
   fs.writeFileSync(outputPath, content)
 }
 
+function fixEngineInterface() {
+  const engineInterfaceProtoPath = normalizePath(
+    path.resolve(
+      protocolInputPath,
+      'decentraland/renderer/engine_interface.proto',
+    ),
+  )
+  const content = readFileSync(engineInterfaceProtoPath).toString()
+
+  const newContent = content.replace(
+    '// option csharp_namespace = "DCL.Interface";',
+    'option csharp_namespace = "DCL.Interface";',
+  )
+
+  writeFileSync(engineInterfaceProtoPath, newContent)
+}
+
 async function preProcessComponents() {
   const protoFiles = glob.sync(
-    normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/**/*.proto')),
+    normalizePath(
+      path.resolve(protocolInputPath, 'decentraland/sdk/components/**/*.proto'),
+    ),
   )
   const components: ComponentData[] = []
 
   for (const file of protoFiles) {
     const content = fs.readFileSync(file).toString()
     const lines = content.split('\n')
-    const outputLines = new Array<string>()
     let newComponentId = null
 
     for (const line of lines) {
       const componentId = getComponentId(line)
       if (componentId) {
         newComponentId = Number(componentId)
-      } else if (line.indexOf('common/id.proto') == -1) {
-        outputLines.push(line)
       }
     }
-
-    // outputLines.push('package decentraland.ecs;')
-    outputLines.push('option csharp_namespace = "DCL.ECSComponents";')
 
     if (newComponentId) {
       const fileName = path.basename(file)
@@ -107,40 +105,41 @@ async function preProcessComponents() {
         componentName,
       })
     }
-
-    fs.writeFileSync(file, outputLines.join('\n'))
   }
 
   generateComponentsEnum(components)
 }
-async function buildComponents() {
-  console.log('Building components...')
+
+function getProtofiles(pattern: string)
+{
+  return glob
+    .sync(
+      normalizePath(path.resolve(protocolInputPath, pattern)),
+    )
+}
+
+async function buildProtocol() {
+  console.log('Building protocol...')
   cleanGeneratedCode(componentsOutputPath)
+  fixEngineInterface()
   await preProcessComponents()
 
-  const protoFiles = glob
-    .sync(
-      normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/sdk/components/**/*.proto')),
-    ).filter((value) => !value.endsWith('id.proto'))
-    .join(' ')
-
-
-
-  const commonProtoFiles = glob
-    .sync(
-      normalizePath(path.resolve(componentsPreProccessInputPath, 'decentraland/common/**/*.proto')),
-    )
-    .join(' ')
+  const protoFiles = [
+    ...getProtofiles('decentraland/common/**/*.proto'),
+    ...getProtofiles('decentraland/sdk/components/**/*.proto'),
+    ...getProtofiles('decentraland/bff/**/*.proto'),
+    ...getProtofiles('decentraland/renderer/**/*.proto')
+  ].join(' ')
 
   let command = `${protocPath}`
   command += ` --csharp_out "${componentsOutputPath}"`
   command += ` --csharp_opt=file_extension=.gen.cs`
-  command += ` --proto_path "${componentsPreProccessInputPath}"`
-  command += ` ${protoFiles} ${commonProtoFiles}`
+  command += ` --proto_path "${protocolInputPath}"`
+  command += ` ${protoFiles}`
 
   await execute(command, workingDirectory)
 
-  console.log('Building components... Done!')
+  console.log('Building protocol... Done!')
 }
 
 main().catch((err) => {

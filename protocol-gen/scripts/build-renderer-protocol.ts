@@ -15,7 +15,7 @@ const tempProtocolPath = normalizePath(
 )
 
 const rendererProtocolInputPath = normalizePath(
-  path.resolve(tempProtocolPath, 'decentraland/renderer/'),
+  path.resolve(tempProtocolPath, 'decentraland/'),
 )
 
 async function main() {
