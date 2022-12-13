@@ -9,12 +9,12 @@ namespace DCL.Social.Friends
 {
     public class CancelFriendRequestHUDComponentViewShould
     {
-        private CancelFriendRequestHUDComponentView view;
+        private SentFriendRequestHUDComponentView view;
 
         [SetUp]
         public void SetUp()
         {
-            view = CancelFriendRequestHUDComponentView.Create();
+            view = SentFriendRequestHUDComponentView.Create();
         }
 
         [TearDown]

@@ -19,14 +19,14 @@ namespace DCL.Social.Friends
         private const string OWN_ID = "ownId";
 
         private SentFriendRequestHUDController controller;
-        private ICancelFriendRequestHUDView view;
+        private ISentFriendRequestHUDView view;
         private DataStore dataStore;
         private IFriendsController friendsController;
 
         [SetUp]
         public void SetUp()
         {
-            view = Substitute.For<ICancelFriendRequestHUDView>();
+            view = Substitute.For<ISentFriendRequestHUDView>();
             dataStore = new DataStore();
 
             friendsController = Substitute.For<IFriendsController>();

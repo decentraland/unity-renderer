@@ -8,7 +8,7 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDController
     {
-        private readonly ICancelFriendRequestHUDView view;
+        private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
@@ -19,7 +19,7 @@ namespace DCL.Social.Friends
         private string friendRequestId;
 
         public SentFriendRequestHUDController(
-            ICancelFriendRequestHUDView view,
+            ISentFriendRequestHUDView view,
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IFriendsController friendsController,
