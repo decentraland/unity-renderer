@@ -58,7 +58,6 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Settings)]
     public void RaiseOnSectionOpenCorrectly(ExploreSection section)
@@ -84,7 +83,6 @@ public class ExploreV2MenuComponentControllerTests
         Assert.AreEqual(section == ExploreSection.Explore, exploreV2MenuController.placesAndEventsVisible.Get());
         Assert.AreEqual(section == ExploreSection.Backpack, exploreV2MenuController.avatarEditorVisible.Get());
         Assert.AreEqual(section == ExploreSection.Map, exploreV2MenuController.navmapVisible.Get());
-        Assert.AreEqual(section == ExploreSection.Builder, exploreV2MenuController.builderVisible.Get());
         Assert.AreEqual(section == ExploreSection.Quest, exploreV2MenuController.questVisible.Get());
         Assert.AreEqual(section == ExploreSection.Settings, exploreV2MenuController.settingsVisible.Get());
         Assert.IsFalse(exploreV2MenuController.profileCardIsOpen.Get());
@@ -124,7 +122,6 @@ public class ExploreV2MenuComponentControllerTests
             Assert.IsFalse(exploreV2MenuController.avatarEditorVisible.Get());
             Assert.IsFalse(exploreV2MenuController.profileCardIsOpen.Get());
             Assert.IsFalse(exploreV2MenuController.navmapVisible.Get());
-            Assert.IsFalse(exploreV2MenuController.builderVisible.Get());
             Assert.IsFalse(exploreV2MenuController.questVisible.Get());
             Assert.IsFalse(exploreV2MenuController.settingsVisible.Get());
         }
@@ -215,36 +212,6 @@ public class ExploreV2MenuComponentControllerTests
 
     [TestCase(true)]
     [TestCase(false)]
-    public void RaiseIsBuilderInitializedChangedCorrectly(bool isVisible)
-    {
-        // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Builder, isVisible);
-
-        // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Builder, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseBuilderVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isBuilderInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Builder, isVisible);
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Builder);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Builder, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
     public void RaiseIsQuestInitializedChangedCorrectly(bool isVisible)
     {
         // Act
@@ -324,17 +291,14 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]
     public void GoToSectionCorrectly(ExploreSection section)
     {
-        // Arrange
+        // Arrange 
         if (section == ExploreSection.Backpack)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
-        else
             DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
 
         // Act
@@ -347,7 +311,6 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Backpack)]
     [TestCase(ExploreSection.Map)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]
     public void ShouldChangeVisibilityVarsOnViewSectionOpen(ExploreSection sectionId)

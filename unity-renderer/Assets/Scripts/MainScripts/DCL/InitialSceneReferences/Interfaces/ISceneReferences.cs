@@ -9,10 +9,8 @@ namespace DCL
     {
         MouseCatcher mouseCatcher { get ;  }
         GameObject groundVisual { get ;  }
-        GameObject biwCameraParent { get ;  }
         InputController inputController { get ;  }
         GameObject cursorCanvas { get ;  }
-        GameObject biwBridgeGameObject { get ;  }
         PlayerAvatarController playerAvatarController { get ;  }
         CameraController cameraController { get ;  }
         UnityEngine.Camera mainCamera { get ;  }

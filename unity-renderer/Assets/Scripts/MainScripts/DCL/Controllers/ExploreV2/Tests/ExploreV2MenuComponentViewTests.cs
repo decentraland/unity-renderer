@@ -37,13 +37,11 @@ public class ExploreV2MenuComponentViewTests
 
     [Test]
     [TestCase(ExploreSection.Backpack, true)]
-    [TestCase(ExploreSection.Builder, true)]
     [TestCase(ExploreSection.Explore, true)]
     [TestCase(ExploreSection.Map, true)]
     [TestCase(ExploreSection.Quest, true)]
     [TestCase(ExploreSection.Settings, true)]
     [TestCase(ExploreSection.Backpack, false)]
-    [TestCase(ExploreSection.Builder, false)]
     [TestCase(ExploreSection.Explore, false)]
     [TestCase(ExploreSection.Map, false)]
     [TestCase(ExploreSection.Quest, false)]
@@ -59,7 +57,6 @@ public class ExploreV2MenuComponentViewTests
 
     [Test]
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]
@@ -81,7 +78,6 @@ public class ExploreV2MenuComponentViewTests
     [TestCase(2)]
     [TestCase(3)]
     [TestCase(4)]
-    [TestCase(5)]
     public void CreateSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
@@ -103,7 +99,6 @@ public class ExploreV2MenuComponentViewTests
     [TestCase(2)]
     [TestCase(3)]
     [TestCase(4)]
-    [TestCase(5)]
     public void RemoveSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange

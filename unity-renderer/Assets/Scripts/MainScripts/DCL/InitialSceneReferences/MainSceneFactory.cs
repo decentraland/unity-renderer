@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DCL.Builder;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -13,7 +12,6 @@ namespace DCL
             GameObject playerGo = LoadAndInstantiate("Player");
             var playerReferences = playerGo.GetComponent<PlayerReferences>();
             SceneReferences.i.playerAvatarController = playerReferences.avatarController;
-            SceneReferences.i.biwCameraParent = playerReferences.biwCameraRoot;
             SceneReferences.i.inputController = playerReferences.inputController;
             SceneReferences.i.cursorCanvas = playerReferences.cursorCanvas;
             SceneReferences.i.cameraController = playerReferences.cameraController;
@@ -70,17 +68,6 @@ namespace DCL
         }
 
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");
-
-
-        public static BuilderInWorldBridge CreateBuilderInWorldBridge(GameObject gameObject = null)
-        {
-            if (gameObject == null)
-                gameObject = new GameObject("BuilderInWorldBridge");
-
-            var instance = gameObject.AddComponent<BuilderInWorldBridge>();
-            SceneReferences.i.biwBridgeGameObject = instance.gameObject;
-            return instance;
-        }
 
         private static GameObject LoadAndInstantiate(string name)
         {
