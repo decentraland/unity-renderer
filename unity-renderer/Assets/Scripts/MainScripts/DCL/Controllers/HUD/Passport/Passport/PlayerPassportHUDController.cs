@@ -28,6 +28,7 @@ namespace DCL.Social.Passports
 
         private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
         private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
+        private double passportOpenStartTime = 0;
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -107,11 +108,14 @@ namespace DCL.Social.Passports
 
             if (currentUserProfile == null)
             {
+                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
                 SetPassportPanelVisibility(false);
             }
             else
             {
                 SetPassportPanelVisibility(true);
+                passportOpenStartTime = Time.realtimeSinceStartup;
+                socialAnalytics.SendPassportOpen();
                 QueryNftCollectionsAsync(currentUserProfile.userId);
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;

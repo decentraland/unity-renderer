@@ -106,6 +106,7 @@ namespace DCL.Social.Passports
         private void RemoveFriend()
         {
             friendsController.RemoveFriend(currentPlayerId);
+            socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
         private void CancelFriendRequest()
@@ -121,7 +122,7 @@ namespace DCL.Social.Passports
         private void AcceptFriendRequest()
         {
             friendsController.AcceptFriendship(currentPlayerId);
-            //socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
         private void BlockUser()
@@ -130,7 +131,7 @@ namespace DCL.Social.Passports
             ownUserProfile.Block(currentPlayerId);
             view.SetIsBlocked(true);
             WebInterface.SendBlockPlayer(currentPlayerId);
-            //socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
         }
 
         private void UnblockUser()
@@ -139,13 +140,13 @@ namespace DCL.Social.Passports
             ownUserProfile.Unblock(currentPlayerId);
             view.SetIsBlocked(false);
             WebInterface.SendUnblockPlayer(currentPlayerId);
-            //socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
         }
 
         private void ReportUser()
         {
             WebInterface.SendReportPlayer(currentPlayerId, name);
-            //SocialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
         }
 
         private void WhisperUser(string userId)
