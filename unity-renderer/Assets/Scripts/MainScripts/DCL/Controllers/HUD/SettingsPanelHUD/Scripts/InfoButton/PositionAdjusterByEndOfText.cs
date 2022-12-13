@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUD
+namespace DCL.Controllers.HUD.SettingsPanelHUD
 {
     /// <summary>
     /// Adjust x position to be at the end of the text (with offset)
@@ -24,14 +24,14 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUD
         private void OnEnable()
         {
              SetPositionWithOffsetFromTextEnd();
+        }
 
-             void SetPositionWithOffsetFromTextEnd()
-             {
-                 Vector3 newPos = rectTransform.localPosition;
-                 newPos.x = titleText.preferredWidth - (containerWidth / 2) + offset;
+        private void SetPositionWithOffsetFromTextEnd()
+        {
+            Vector3 newPos = rectTransform.localPosition;
+            newPos.x = titleText.preferredWidth - (containerWidth / 2) + offset;
 
-                 rectTransform.localPosition = newPos;
-             }
+            rectTransform.localPosition = newPos;
         }
     }
 }

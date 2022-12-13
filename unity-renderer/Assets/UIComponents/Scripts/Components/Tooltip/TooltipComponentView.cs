@@ -1,8 +1,9 @@
 ﻿using TMPro;
+using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UIComponents.Scripts.Components.Tooltip
+namespace UIComponents.Scripts.Components
 {
     [SelectionBase, DisallowMultipleComponent]
     public class TooltipComponentView : BaseComponentView<TooltipComponentModel>, IDeselectHandler
