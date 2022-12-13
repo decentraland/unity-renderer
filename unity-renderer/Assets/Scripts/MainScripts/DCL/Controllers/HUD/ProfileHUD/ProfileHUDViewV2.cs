@@ -1,4 +1,3 @@
-using Castle.Core.Internal;
 using DCL;
 using ExploreV2Analytics;
 using System;
@@ -430,7 +429,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             bool foundLinksAtTheEnd = false;
             for (int i = words.Length - 1; i >= 0; i--)
             {
-                if (words[i].IsNullOrEmpty())
+                if (string.IsNullOrEmpty(words[i]))
                     continue;
 
                 if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
