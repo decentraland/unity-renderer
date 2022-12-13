@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using DCL;
 using Newtonsoft.Json;
+using System.Data.Common;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -287,7 +288,7 @@ public class WebSocketCommunication : IKernelCommunication
                                 try
                                 {
                                     request = JsonConvert.DeserializeObject<WearablesRequestResponse>(msg.payload);
-                                    mainGO.SendMessage("AddWearablesToCatalog", request);
+                                    CatalogController.i.AddWearablesToCatalog(request);
                                 }
                                 catch (Exception e)
                                 {
@@ -295,6 +296,11 @@ public class WebSocketCommunication : IKernelCommunication
                                 }
                                 break;
                             default:
+                                if (msg.type.Equals("AddWearablesToCatalog"))
+                                {
+                                    Debug.Log("XQ VOY AL DEFAULT???");
+                                }
+
                                 if (!messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
                                 {
                                     bridgeName = "Bridges"; // Default bridge

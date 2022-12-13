@@ -118,7 +118,7 @@ public class CatalogController : MonoBehaviour
 
     public void AddWearablesToCatalog(WearablesRequestResponse request)
     {
-        Debug.Log("LLEGO AL METODO DE ADDWEARABLESTOCATALOG" + request.wearables.Length);
+        Debug.Log("LLEGO AL METODO DE ADDWEARABLESTOCATALOG " + request.wearables.Length);
 
 
         AddWearablesToCatalog(request.wearables);
