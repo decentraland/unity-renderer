@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace UIComponents.Scripts.Components.Tooltip
 {
+    [SelectionBase, DisallowMultipleComponent]
     public class TooltipComponentView : BaseComponentView<TooltipComponentModel>, IDeselectHandler
     {
         private const int OFFSET = 16;
