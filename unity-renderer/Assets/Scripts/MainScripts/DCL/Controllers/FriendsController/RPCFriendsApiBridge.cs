@@ -53,11 +53,7 @@ namespace DCl.Social.Friends
             remove => fallbackApiBridge.OnUserPresenceUpdated -= value;
         }
 
-        public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated
-        {
-            add => fallbackApiBridge.OnFriendshipStatusUpdated += value;
-            remove => fallbackApiBridge.OnFriendshipStatusUpdated -= value;
-        }
+        public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
 
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated
         {
@@ -70,8 +66,6 @@ namespace DCl.Social.Friends
             add => fallbackApiBridge.OnTotalFriendCountUpdated += value;
             remove => fallbackApiBridge.OnTotalFriendCountUpdated -= value;
         }
-
-        public event Action<FriendRequestPayload> OnFriendRequestAdded;
 
         public static RPCFriendsApiBridge CreateSharedInstance(IRPC rpc, IFriendsApiBridge fallbackApiBridge)
         {
@@ -96,10 +90,10 @@ namespace DCl.Social.Friends
         public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId)
         {
             RejectFriendRequestReply response = await rpc.FriendRequests()
-                                                                         .RejectFriendRequest(new RejectFriendRequestPayload
-                                                                          {
-                                                                              FriendRequestId = friendRequestId
-                                                                          });
+                                                         .RejectFriendRequest(new RejectFriendRequestPayload
+                                                          {
+                                                              FriendRequestId = friendRequestId
+                                                          });
 
             return response.MessageCase == RejectFriendRequestReply.MessageOneofCase.Reply
                 ? new RejectFriendshipPayload
@@ -195,10 +189,51 @@ namespace DCl.Social.Friends
             fallbackApiBridge.AcceptFriendship(userId);
 
         [PublicAPI]
-        public UniTask<AddFriendRequestReply> AddFriendRequest(AddFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        public async UniTask<RendererApproveFriendRequestReply> ApproveFriendRequest(RendererApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            OnFriendRequestAdded?.Invoke(ToFriendRequestPayload(request));
-            return UniTask.FromResult(new AddFriendRequestReply());
+            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            {
+                action = FriendshipAction.APPROVED,
+                userId = request.UserId
+            });
+
+            return new RendererApproveFriendRequestReply();
+        }
+
+        [PublicAPI]
+        public async UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        {
+            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            {
+                action = FriendshipAction.REJECTED,
+                userId = request.UserId
+            });
+
+            return new RendererRejectFriendRequestReply();
+        }
+
+        [PublicAPI]
+        public async UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        {
+            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            {
+                action = FriendshipAction.CANCELLED,
+                userId = request.UserId
+            });
+
+            return new RendererCancelFriendRequestReply();
+        }
+
+        [PublicAPI]
+        public async UniTask<RendererReceiveFriendRequestReply> ReceiveFriendRequest(RendererReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        {
+            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            {
+                action = FriendshipAction.REQUESTED_FROM,
+                userId = request.FriendRequest.From
+            });
+
+            return new RendererReceiveFriendRequestReply();
         }
 
         public async UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId)
@@ -218,16 +253,6 @@ namespace DCl.Social.Friends
         }
 
         private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>
-            new FriendRequestPayload
-            {
-                from = request.From,
-                timestamp = (long)request.Timestamp,
-                to = request.To,
-                messageBody = request.MessageBody,
-                friendRequestId = request.FriendRequestId
-            };
-
-        private FriendRequestPayload ToFriendRequestPayload(AddFriendRequestPayload request) =>
             new FriendRequestPayload
             {
                 from = request.From,

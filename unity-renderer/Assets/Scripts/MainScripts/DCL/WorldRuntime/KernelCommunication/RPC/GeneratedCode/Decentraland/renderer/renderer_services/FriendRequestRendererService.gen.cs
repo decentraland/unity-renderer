@@ -12,7 +12,13 @@ using rpc_csharp;
 public interface IFriendRequestRendererService<Context>
 {
 
-  UniTask<AddFriendRequestReply> AddFriendRequest(AddFriendRequestPayload request, Context context, CancellationToken ct);
+  UniTask<RendererApproveFriendRequestReply> ApproveFriendRequest(RendererApproveFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, Context context, CancellationToken ct);
+
+  UniTask<RendererReceiveFriendRequestReply> ReceiveFriendRequest(RendererReceiveFriendRequestPayload request, Context context, CancellationToken ct);
 
 }
 
@@ -24,7 +30,10 @@ public static class FriendRequestRendererServiceCodeGen
   {
     var result = new ServerModuleDefinition<Context>();
       
-    result.definition.Add("AddFriendRequest", async (payload, context, ct) => { var res = await service.AddFriendRequest(AddFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("ApproveFriendRequest", async (payload, context, ct) => { var res = await service.ApproveFriendRequest(RendererApproveFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("RejectFriendRequest", async (payload, context, ct) => { var res = await service.RejectFriendRequest(RendererRejectFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("CancelFriendRequest", async (payload, context, ct) => { var res = await service.CancelFriendRequest(RendererCancelFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("ReceiveFriendRequest", async (payload, context, ct) => { var res = await service.ReceiveFriendRequest(RendererReceiveFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

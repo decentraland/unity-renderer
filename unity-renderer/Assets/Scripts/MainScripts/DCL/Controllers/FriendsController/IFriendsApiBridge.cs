@@ -9,13 +9,13 @@ namespace DCl.Social.Friends
         event Action<FriendshipInitializationMessage> OnInitialized;
         event Action<string> OnFriendNotFound;
         event Action<AddFriendsPayload> OnFriendsAdded;
+        [Obsolete("Old API. Use GetFriendRequestsAsync instead")]
         event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         event Action<UserStatus> OnUserPresenceUpdated;
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
-        event Action<FriendRequestPayload> OnFriendRequestAdded;
 
         [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string userId);

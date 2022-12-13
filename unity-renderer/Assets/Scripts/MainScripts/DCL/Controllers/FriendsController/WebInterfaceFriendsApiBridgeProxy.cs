@@ -57,9 +57,6 @@ namespace DCL.Social.Friends
             this.apiBridge.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
             this.apiBridgeMock.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
 
-            this.apiBridge.OnFriendRequestAdded += x => OnFriendRequestAdded?.Invoke(x);
-            this.apiBridgeMock.OnFriendRequestAdded += x => OnFriendRequestAdded?.Invoke(x);
-
             this.apiBridge.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
             this.apiBridgeMock.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
         }

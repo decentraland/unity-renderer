@@ -39,32 +39,31 @@ public static partial class AnalyticsReflection {
           "IAEoEBIWCg50b3RhbF9nY19hbGxvYxgYIAEoEBJACgxzY2VuZV9zY29yZXMY",
           "GSADKAsyKi5QZXJmb3JtYW5jZVJlcG9ydFJlcXVlc3QuU2NlbmVTY29yZXNF",
           "bnRyeRoyChBTY2VuZVNjb3Jlc0VudHJ5EgsKA2tleRgBIAEoEBINCgV2YWx1",
-          "ZRgCIAEoEDoCOAEiGwoZUGVyZm9ybWFuY2VSZXBvcnRSZXNwb25zZSLhAQoX",
+          "ZRgCIAEoEDoCOAEiGwoZUGVyZm9ybWFuY2VSZXBvcnRSZXNwb25zZSLDAQoX",
           "U3lzdGVtSW5mb1JlcG9ydFJlcXVlc3QSHAoUZ3JhcGhpY3NfZGV2aWNlX25h",
           "bWUYASABKAkSHwoXZ3JhcGhpY3NfZGV2aWNlX3ZlcnNpb24YAiABKAkSHAoU",
           "Z3JhcGhpY3NfbWVtb3J5X3NpemUYAyABKAcSFgoOcHJvY2Vzc29yX3R5cGUY",
           "BCABKAkSFwoPcHJvY2Vzc29yX2NvdW50GAUgASgHEhoKEnN5c3RlbV9tZW1v",
-          "cnlfc2l6ZRgGIAEoBxIcChR1c2VfYmluYXJ5X3RyYW5zZm9ybRgHIAEoCCIa",
-          "ChhTeXN0ZW1JbmZvUmVwb3J0UmVzcG9uc2UiLgoQQW5hbHl0aWNQcm9wZXJ0",
-          "eRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAkiUgoVQW5hbHl0aWNzRXZl",
-          "bnRSZXF1ZXN0EhIKCmV2ZW50X25hbWUYASABKAkSJQoKcHJvcGVydGllcxgC",
-          "IAMoCzIRLkFuYWx5dGljUHJvcGVydHkiGAoWQW5hbHl0aWNzRXZlbnRSZXNw",
-          "b25zZSIpChZEZWxpZ2h0ZWRTdXJ2ZXlSZXF1ZXN0Eg8KB2VuYWJsZWQYASAB",
-          "KAgiGQoXRGVsaWdodGVkU3VydmV5UmVzcG9uc2UyyAIKFkFuYWx5dGljc0tl",
-          "cm5lbFNlcnZpY2USTAoRUGVyZm9ybWFuY2VSZXBvcnQSGS5QZXJmb3JtYW5j",
-          "ZVJlcG9ydFJlcXVlc3QaGi5QZXJmb3JtYW5jZVJlcG9ydFJlc3BvbnNlIgAS",
-          "SQoQU3lzdGVtSW5mb1JlcG9ydBIYLlN5c3RlbUluZm9SZXBvcnRSZXF1ZXN0",
-          "GhkuU3lzdGVtSW5mb1JlcG9ydFJlc3BvbnNlIgASQwoOQW5hbHl0aWNzRXZl",
-          "bnQSFi5BbmFseXRpY3NFdmVudFJlcXVlc3QaFy5BbmFseXRpY3NFdmVudFJl",
-          "c3BvbnNlIgASUAoZU2V0RGVsaWdodGVkU3VydmV5RW5hYmxlZBIXLkRlbGln",
-          "aHRlZFN1cnZleVJlcXVlc3QaGC5EZWxpZ2h0ZWRTdXJ2ZXlSZXNwb25zZSIA",
-          "YgZwcm90bzM="));
+          "cnlfc2l6ZRgGIAEoByIaChhTeXN0ZW1JbmZvUmVwb3J0UmVzcG9uc2UiLgoQ",
+          "QW5hbHl0aWNQcm9wZXJ0eRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAki",
+          "UgoVQW5hbHl0aWNzRXZlbnRSZXF1ZXN0EhIKCmV2ZW50X25hbWUYASABKAkS",
+          "JQoKcHJvcGVydGllcxgCIAMoCzIRLkFuYWx5dGljUHJvcGVydHkiGAoWQW5h",
+          "bHl0aWNzRXZlbnRSZXNwb25zZSIpChZEZWxpZ2h0ZWRTdXJ2ZXlSZXF1ZXN0",
+          "Eg8KB2VuYWJsZWQYASABKAgiGQoXRGVsaWdodGVkU3VydmV5UmVzcG9uc2Uy",
+          "yAIKFkFuYWx5dGljc0tlcm5lbFNlcnZpY2USTAoRUGVyZm9ybWFuY2VSZXBv",
+          "cnQSGS5QZXJmb3JtYW5jZVJlcG9ydFJlcXVlc3QaGi5QZXJmb3JtYW5jZVJl",
+          "cG9ydFJlc3BvbnNlIgASSQoQU3lzdGVtSW5mb1JlcG9ydBIYLlN5c3RlbUlu",
+          "Zm9SZXBvcnRSZXF1ZXN0GhkuU3lzdGVtSW5mb1JlcG9ydFJlc3BvbnNlIgAS",
+          "QwoOQW5hbHl0aWNzRXZlbnQSFi5BbmFseXRpY3NFdmVudFJlcXVlc3QaFy5B",
+          "bmFseXRpY3NFdmVudFJlc3BvbnNlIgASUAoZU2V0RGVsaWdodGVkU3VydmV5",
+          "RW5hYmxlZBIXLkRlbGlnaHRlZFN1cnZleVJlcXVlc3QaGC5EZWxpZ2h0ZWRT",
+          "dXJ2ZXlSZXNwb25zZSIAYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::PerformanceReportRequest), global::PerformanceReportRequest.Parser, new[]{ "Samples", "FpsIsCapped", "HiccupsInThousandFrames", "HiccupsTime", "TotalTime", "GltfInProgress", "GltfFailed", "GltfCancelled", "GltfLoaded", "AbInProgress", "AbFailed", "AbCancelled", "AbLoaded", "GltfTexturesLoaded", "AbTexturesLoaded", "PromiseTexturesLoaded", "EnqueuedMessages", "ProcessedMessages", "PlayerCount", "LoadRadius", "DrawCalls", "MemoryReserved", "MemoryUsage", "TotalGcAlloc", "SceneScores" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
           new pbr::GeneratedClrTypeInfo(typeof(global::PerformanceReportResponse), global::PerformanceReportResponse.Parser, null, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::SystemInfoReportRequest), global::SystemInfoReportRequest.Parser, new[]{ "GraphicsDeviceName", "GraphicsDeviceVersion", "GraphicsMemorySize", "ProcessorType", "ProcessorCount", "SystemMemorySize", "UseBinaryTransform" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::SystemInfoReportRequest), global::SystemInfoReportRequest.Parser, new[]{ "GraphicsDeviceName", "GraphicsDeviceVersion", "GraphicsMemorySize", "ProcessorType", "ProcessorCount", "SystemMemorySize" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::SystemInfoReportResponse), global::SystemInfoReportResponse.Parser, null, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::AnalyticProperty), global::AnalyticProperty.Parser, new[]{ "Key", "Value" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::AnalyticsEventRequest), global::AnalyticsEventRequest.Parser, new[]{ "EventName", "Properties" }, null, null, null, null),
@@ -1347,7 +1346,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     processorType_ = other.processorType_;
     processorCount_ = other.processorCount_;
     systemMemorySize_ = other.systemMemorySize_;
-    useBinaryTransform_ = other.useBinaryTransform_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -1429,21 +1427,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     }
   }
 
-  /// <summary>Field number for the "use_binary_transform" field.</summary>
-  public const int UseBinaryTransformFieldNumber = 7;
-  private bool useBinaryTransform_;
-  /// <summary>
-  /// TODO: remove useBinaryTransform after ECS7 is fully in prod
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool UseBinaryTransform {
-    get { return useBinaryTransform_; }
-    set {
-      useBinaryTransform_ = value;
-    }
-  }
-
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -1465,7 +1448,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     if (ProcessorType != other.ProcessorType) return false;
     if (ProcessorCount != other.ProcessorCount) return false;
     if (SystemMemorySize != other.SystemMemorySize) return false;
-    if (UseBinaryTransform != other.UseBinaryTransform) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -1479,7 +1461,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     if (ProcessorType.Length != 0) hash ^= ProcessorType.GetHashCode();
     if (ProcessorCount != 0) hash ^= ProcessorCount.GetHashCode();
     if (SystemMemorySize != 0) hash ^= SystemMemorySize.GetHashCode();
-    if (UseBinaryTransform != false) hash ^= UseBinaryTransform.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -1522,10 +1503,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
       output.WriteRawTag(53);
       output.WriteFixed32(SystemMemorySize);
     }
-    if (UseBinaryTransform != false) {
-      output.WriteRawTag(56);
-      output.WriteBool(UseBinaryTransform);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -1560,10 +1537,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
       output.WriteRawTag(53);
       output.WriteFixed32(SystemMemorySize);
     }
-    if (UseBinaryTransform != false) {
-      output.WriteRawTag(56);
-      output.WriteBool(UseBinaryTransform);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -1591,9 +1564,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     }
     if (SystemMemorySize != 0) {
       size += 1 + 4;
-    }
-    if (UseBinaryTransform != false) {
-      size += 1 + 1;
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -1624,9 +1594,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
     }
     if (other.SystemMemorySize != 0) {
       SystemMemorySize = other.SystemMemorySize;
-    }
-    if (other.UseBinaryTransform != false) {
-      UseBinaryTransform = other.UseBinaryTransform;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -1667,10 +1634,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
           SystemMemorySize = input.ReadFixed32();
           break;
         }
-        case 56: {
-          UseBinaryTransform = input.ReadBool();
-          break;
-        }
       }
     }
   #endif
@@ -1708,10 +1671,6 @@ public sealed partial class SystemInfoReportRequest : pb::IMessage<SystemInfoRep
         }
         case 53: {
           SystemMemorySize = input.ReadFixed32();
-          break;
-        }
-        case 56: {
-          UseBinaryTransform = input.ReadBool();
           break;
         }
       }

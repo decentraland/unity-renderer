@@ -53,7 +53,6 @@ namespace DCL.Social.Friends
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
             apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-            apiBridge.OnFriendRequestAdded += AddFriendRequest;
         }
 
         private void Initialize(FriendshipInitializationMessage msg)
@@ -386,20 +385,6 @@ namespace DCL.Social.Friends
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.REQUESTED_TO, userId = userId });
             }
-        }
-
-        private void AddFriendRequest(FriendRequestPayload friendRequest)
-        {
-            FriendRequest newFriendRequest = new FriendRequest(
-                friendRequest.friendRequestId,
-                friendRequest.timestamp,
-                friendRequest.from,
-                friendRequest.to,
-                friendRequest.messageBody);
-
-            friendRequests[newFriendRequest.FriendRequestId] = newFriendRequest;
-
-            OnAddFriendRequest?.Invoke(newFriendRequest);
         }
     }
 }
