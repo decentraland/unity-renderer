@@ -10,6 +10,7 @@ namespace DCL.Social.Passports
 {
     public class PassportNavigationComponentController
     {
+        private const int MAX_NFT_COUNT = 40;
         private readonly IProfanityFilter profanityFilter;
         private readonly IWearableItemResolver wearableItemResolver;
         private readonly IWearableCatalogBridge wearableCatalogBridge;
@@ -70,10 +71,10 @@ namespace DCL.Social.Passports
             wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
                                  .Then(wearables =>
                                   {
-                                      string[] wearableIds = wearables.GroupBy(i => i.id).Select(g => g.First().id).Take(40).ToArray();
+                                      string[] wearableIds = wearables.GroupBy(i => i.id).Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
                                       userProfile.SetInventory(wearableIds);
                                       loadedWearables.AddRange(wearableIds);
-                                      var containedWearables = wearables.GroupBy(i => i.id).Select(g => g.First()).Take(40)
+                                      var containedWearables = wearables.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT)
                                          .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
                                       view.SetCollectibleWearables(containedWearables.ToArray());
                                   })
@@ -85,7 +86,7 @@ namespace DCL.Social.Passports
             emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
                                  .Then(emotes =>
                                   {
-                                      WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).ToArray();
+                                      WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
                                       view.SetCollectibleEmotes(emoteItems);
                                   })
                                  .Catch(Debug.LogError);
