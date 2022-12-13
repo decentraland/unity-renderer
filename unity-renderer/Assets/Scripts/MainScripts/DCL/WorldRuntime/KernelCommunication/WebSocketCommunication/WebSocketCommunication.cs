@@ -260,7 +260,7 @@ public class WebSocketCommunication : IKernelCommunication
                     while (queuedMessages.Count > 0)
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
-
+                        Debug.Log("MESSAGE RECEIVED " + msg.type);
                         switch (msg.type)
                         {
                             // Add to this list the messages that are used a lot and you want better performance
