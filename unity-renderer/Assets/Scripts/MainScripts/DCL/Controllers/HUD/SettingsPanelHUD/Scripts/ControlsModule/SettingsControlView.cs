@@ -4,10 +4,9 @@ using DCL.SettingsPanelHUD.Common;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
@@ -103,8 +102,6 @@ namespace DCL.SettingsPanelHUD.Controls
             }
 
             infoButton.onClick.RemoveListener(OnInfoButtonClicked);
-
-            if (Settings.i == null) return; // fix for PlayMode tests failing on TearDown
 
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;

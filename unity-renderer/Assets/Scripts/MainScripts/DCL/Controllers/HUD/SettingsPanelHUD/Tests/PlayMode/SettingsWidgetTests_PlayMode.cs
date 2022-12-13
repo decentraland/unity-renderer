@@ -1,4 +1,3 @@
-using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD.Controls;
 using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;
@@ -19,12 +18,12 @@ namespace SettingsWidgetTests
 
         private SettingsWidgetView widgetView;
         private ISettingsWidgetController widgetController;
-        private List<SettingsControlGroup> controlColumnsToCreate = new List<SettingsControlGroup>();
+        private readonly List<SettingsControlGroup> controlColumnsToCreate = new ();
 
         [UnitySetUp]
         private IEnumerator SetUp()
         {
-            for (int i = 0; i < NUMBER_OF_COLUMNS; i++)
+            for (var i = 0; i < NUMBER_OF_COLUMNS; i++)
             {
                 controlColumnsToCreate.Add(new SettingsControlGroup()
                 {
@@ -34,15 +33,6 @@ namespace SettingsWidgetTests
 
             widgetView = Object.Instantiate((GameObject)Resources.Load(WIDGET_VIEW_PREFAB_PATH)).GetComponent<SettingsWidgetView>();
             widgetController = Substitute.For<ISettingsWidgetController>();
-
-            yield return null;
-        }
-
-        [UnityTearDown]
-        private IEnumerator TearDown()
-        {
-            Object.Destroy(widgetView.gameObject);
-            controlColumnsToCreate.Clear();
 
             yield return null;
         }
@@ -77,6 +67,9 @@ namespace SettingsWidgetTests
                                  Arg.Any<ISettingsControlView>(),
                                  Arg.Any<SettingsControlController>(),
                                  Arg.Any<SettingsControlModel>());
+
+            Object.Destroy(widgetView.gameObject);
+            controlColumnsToCreate.Clear();
         }
     }
 }

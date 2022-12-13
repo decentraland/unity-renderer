@@ -25,8 +25,6 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 
         public virtual void OnDestroy()
         {
-            if (Settings.i == null) return; // fix for PlayMode tests failing on TearDown
-
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
