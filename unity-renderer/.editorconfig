@@ -95,16 +95,22 @@ dotnet_naming_rule.static_readonly_should_be_capital_snake_case.severity = warni
 
 
 #### camelCase ####
-# Non-public Fields, Properties, methods Parameters and local Variables are camelCase
+# Non-public Fields, Properties, local Variables are camelCase
 dotnet_naming_style.camel_case_style.capitalization = camel_case
 
-dotnet_naming_symbols.non_public_members.applicable_kinds = field, property, parameter, local
+dotnet_naming_symbols.non_public_members.applicable_kinds = field, property, local
 dotnet_naming_symbols.non_public_members.applicable_accessibilities = internal, private, protected, protected_internal, private_protected, local
 
 dotnet_naming_rule.non_public_members_should_be_camel_case.symbols = non_public_members
 dotnet_naming_rule.non_public_members_should_be_camel_case.style = camel_case_style
 dotnet_naming_rule.non_public_members_should_be_camel_case.severity = warning
 
+# methods Parameters are camelCase
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+
+dotnet_naming_rule.parameters_should_be_camel_case.symbols = parameters
+dotnet_naming_rule.parameters_should_be_camel_case.style = camel_case_style
+dotnet_naming_rule.parameters_should_be_camel_case.severity = warning
 
 ############################### Formatting Rules ###############################
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0055
