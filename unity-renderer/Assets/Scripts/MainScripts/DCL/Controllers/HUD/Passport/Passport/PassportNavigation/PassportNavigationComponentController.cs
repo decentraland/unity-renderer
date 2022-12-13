@@ -21,6 +21,7 @@ namespace DCL.Social.Passports
         private HashSet<string> cachedAvatarEquippedWearables = new ();
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string> OnClickBuyNft;
+        public event Action OnClickCollectibles;
 
         public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, IWearableCatalogBridge wearableCatalogBridge, IEmotesCatalogService emotesCatalogService, DataStore dataStore)
         {
@@ -31,6 +32,7 @@ namespace DCL.Social.Passports
             this.emotesCatalogService = emotesCatalogService;
             this.dataStore = dataStore;
             view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
+            view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();

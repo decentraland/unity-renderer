@@ -29,6 +29,7 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject nftPageUIReferenceObject;
 
         public event Action<string> OnClickBuyNft;
+        public event Action OnClickCollectibles;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
@@ -46,7 +47,11 @@ namespace DCL.Social.Passports
             subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
             subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
             subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.AddListener((isActive) => aboutPanel.SetActive(isActive));
-            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.AddListener((isActive) => wearablesPanel.SetActive(isActive));
+            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.AddListener((isActive) =>
+            {
+                OnClickCollectibles?.Invoke();
+                wearablesPanel.SetActive(isActive);
+            });
         }
 
         public void InitializeView()

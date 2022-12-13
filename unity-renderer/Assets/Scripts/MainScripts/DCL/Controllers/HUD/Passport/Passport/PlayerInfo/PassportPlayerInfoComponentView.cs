@@ -46,6 +46,8 @@ namespace DCL.Social.Passports
         public event Action OnUnblockUser;
         public event Action OnReportUser;
         public event Action<string> OnWhisperUser;
+        public event Action OnJumpInUser;
+        public event Action OnWalletCopy;
 
         private string fullWalletAddress;
         private bool areFriends;
@@ -63,7 +65,7 @@ namespace DCL.Social.Passports
             userContextMenu.OnReport += OnReport;
             whisperButton.onClick.AddListener(WhisperActionFlow);
             optionsButton.onClick.AddListener(OpenOptions);
-
+            jumpInButton.OnClick += () => OnJumpInUser?.Invoke();
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
             blockedFriendButton.onFocused += BlockFriendFocused;
         }
@@ -127,6 +129,9 @@ namespace DCL.Social.Passports
 
         private void SetWallet(string wallet)
         {
+            if (string.IsNullOrEmpty(wallet))
+                return;
+
             fullWalletAddress = wallet;
             this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
         }
@@ -206,6 +211,7 @@ namespace DCL.Social.Passports
             if(fullWalletAddress == null)
                 return;
 
+            OnWalletCopy?.Invoke();
             GUIUtility.systemCopyBuffer = fullWalletAddress;
         }
 

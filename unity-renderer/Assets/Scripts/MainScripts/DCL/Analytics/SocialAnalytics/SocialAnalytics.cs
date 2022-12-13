@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL;
+using System;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -20,6 +21,13 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPENED = "passport_opened";
         private const string PASSPORT_CLOSED = "passport_closed";
+        private const string PASSPORT_CLICKED_ON_COLLECTIONS = "passport_collections_click";
+        private const string PASSPORT_STARTED_CONVERSATION = "passport_started_conversation";
+        private const string PASSPORT_INSPECT_AVATAR = "passport_inspect_avatar";
+        private const string PASSPORT_CLICK_LINK = "passport_clicked_link";
+        private const string PASSPORT_WALLET_COPY = "passport_wallet_copy";
+        private const string PASSPORT_JUMP_IN = "passport_jump_in";
+        private const string PASSPORT_BUY_NFT = "passport_buy_nft";
         private const string PLAYER_BLOCKED = "user_blocked";
         private const string PLAYER_UNBLOCKED = "user_unblocked";
         private const string PLAYER_REPORT = "player_report";
@@ -30,7 +38,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
-        
+
         public static SocialAnalytics i { get; private set; }
 
         private readonly IAnalytics analytics;
@@ -86,7 +94,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
-        public void SendVoiceChannelConnection(int numberOfPeers) 
+        public void SendVoiceChannelConnection(int numberOfPeers)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("numberOfPeers", numberOfPeers.ToString());
@@ -95,6 +103,59 @@ namespace SocialFeaturesAnalytics
         }
 
         public void SendVoiceChannelDisconnection() { analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>()); }
+
+        public void SendClickedOnCollectibles()
+        {
+            analytics.SendAnalytic(PASSPORT_CLICKED_ON_COLLECTIONS, new Dictionary<string, string>());
+        }
+
+        public void SendStartedConversation(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_STARTED_CONVERSATION, data);
+        }
+
+        public void SendNftBuy(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_BUY_NFT, data);
+        }
+
+        public void SendInspectAvatar(double timeSpent)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("timeSpent", timeSpent.ToString());
+
+            analytics.SendAnalytic(PASSPORT_INSPECT_AVATAR, data);
+        }
+
+        public void SendLinkClick(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
+        }
+
+        public void SendWalletCopy(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
+        }
+
+        public void SendJumpInToPlayer(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
+        }
 
         public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)
         {

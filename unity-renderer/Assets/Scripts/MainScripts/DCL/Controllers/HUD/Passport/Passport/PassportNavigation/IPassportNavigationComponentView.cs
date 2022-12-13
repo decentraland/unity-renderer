@@ -5,6 +5,7 @@ namespace DCL.Social.Passports
     public interface IPassportNavigationComponentView
     {
         event Action<string> OnClickBuyNft;
+        event Action OnClickCollectibles;
         void InitializeView();
         void SetGuestUser(bool isGuest);
         void SetName(string username);

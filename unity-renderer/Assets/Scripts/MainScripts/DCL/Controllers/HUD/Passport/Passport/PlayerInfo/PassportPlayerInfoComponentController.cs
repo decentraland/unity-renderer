@@ -46,6 +46,18 @@ namespace DCL.Social.Passports
             view.OnUnblockUser += UnblockUser;
             view.OnReportUser += ReportUser;
             view.OnWhisperUser += WhisperUser;
+            view.OnJumpInUser += JumpInUser;
+            view.OnWalletCopy += WalletCopy;
+        }
+
+        private void WalletCopy()
+        {
+            socialAnalytics.SendWalletCopy(PlayerActionSource.Passport);
+        }
+
+        private void JumpInUser()
+        {
+            socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport);
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
@@ -152,6 +164,7 @@ namespace DCL.Social.Passports
         private void WhisperUser(string userId)
         {
             dataStore.HUDs.openPrivateChat.Set(userId);
+            socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
             OnClosePassport?.Invoke();
         }
     }
