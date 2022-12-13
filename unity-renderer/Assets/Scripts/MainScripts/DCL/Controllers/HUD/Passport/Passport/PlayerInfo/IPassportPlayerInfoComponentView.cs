@@ -20,5 +20,7 @@ namespace DCL.Social.Passports
         event Action OnWalletCopy;
 
         void SetIsBlocked(bool isBlocked);
+
+        void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
     }
 }

@@ -105,8 +105,15 @@ namespace DCL.Social.Passports
 
         public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
         {
-            jumpInButton.gameObject.SetActive(true);
-            jumpInButton.Initialize(friendsController, userId, socialAnalytics);
+            if (friendsController.IsFriend(userId))
+            {
+                jumpInButton.gameObject.SetActive(true);
+                jumpInButton.Initialize(friendsController, userId, socialAnalytics);
+            }
+            else
+            {
+                jumpInButton.gameObject.SetActive(false);
+            }
         }
 
         private void RemoveFriendsFocused(bool isFocused)
