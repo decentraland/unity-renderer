@@ -1,9 +1,9 @@
 using DCL;
+using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCl.Social.Friends;
 using UnityEngine;
 using static HotScenesController;
 
@@ -46,7 +46,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
     private DataStore dataStore;
-    
+
     public PlacesSubSectionComponentController(
         IPlacesSubSectionComponentView view,
         IPlacesAPIController placesAPI,
@@ -63,7 +63,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
-        
+
         placesAPIApiController = placesAPI;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
@@ -104,7 +104,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
-        
+
         reloadPlaces = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
@@ -137,7 +137,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
-        
+
         view.SetPlaces(places);
         view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
     }
@@ -146,7 +146,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
-        
+
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentPlacesShowed / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentPlacesShowed;
         int numberOfItemsToAdd = view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT + numberOfExtraItemsToAdd;
 
@@ -199,7 +199,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     }
 
     internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
-    
+
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
         if (!string.IsNullOrEmpty(currentChannelId))
