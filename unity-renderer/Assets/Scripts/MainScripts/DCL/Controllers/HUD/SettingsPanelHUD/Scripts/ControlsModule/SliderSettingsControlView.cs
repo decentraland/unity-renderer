@@ -15,23 +15,21 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private Slider slider;
         [SerializeField] private TextMeshProUGUI indicatorLabel;
 
-        public Slider sliderControl => slider;
-
         private SliderControlModel sliderControlConfig;
         private SliderSettingsControlController sliderController;
 
-        public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        public override void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
-            sliderController = (SliderSettingsControlController)settingsControlController;
+            sliderController = (SliderSettingsControlController)controller;
             sliderController.OnIndicatorLabelChange += OverrideIndicatorLabel;
             sliderController.SliderValueChanged += OverrideSliderValue;
 
-            this.sliderControlConfig = (SliderControlModel)controlConfig;
+            this.sliderControlConfig = (SliderControlModel)model;
             slider.maxValue = this.sliderControlConfig.sliderMaxValue;
             slider.minValue = this.sliderControlConfig.sliderMinValue;
             slider.wholeNumbers = this.sliderControlConfig.wholeNumbers;
 
-            base.Initialize(controlConfig, sliderController);
+            base.Initialize(model, sliderController);
             OverrideIndicatorLabel(slider.value.ToString());
             sliderController.UpdateSetting(this.sliderControlConfig.storeValueAsNormalized ? RemapSliderValueTo01(slider.value) : slider.value);
 
