@@ -54,7 +54,7 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             topNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             chatController.OnAddMessage += HandleMessageAdded;
-            friendsController.OnFriendRequestReceived += HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived += HandleFriendRequestReceived;
             friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
@@ -87,7 +87,7 @@ namespace DCL.Chat.Notifications
         public void Dispose()
         {
             chatController.OnAddMessage -= HandleMessageAdded;
-            friendsController.OnFriendRequestReceived -= HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived -= HandleFriendRequestReceived;
             friendsController.OnSentFriendRequestApproved -= HandleSentFriendRequestApproved;
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
@@ -175,7 +175,7 @@ namespace DCL.Chat.Notifications
             }
         }
 
-        private void HandleFriendRequestAdded(FriendRequest friendRequest)
+        private void HandleFriendRequestReceived(FriendRequest friendRequest)
         {
             if (!isNewFriendRequestsEnabled) return;
 
@@ -214,7 +214,7 @@ namespace DCL.Chat.Notifications
                 userId,
                 friendRequestProfile.userName,
                 "Friend Request accepted",
-                $"and you are friends now!",
+                "and you are friends now!",
                 (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 true);
 
