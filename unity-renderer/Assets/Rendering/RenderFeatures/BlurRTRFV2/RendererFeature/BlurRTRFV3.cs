@@ -10,7 +10,9 @@ public class BlurRTRFV3 : ScriptableRendererFeature
     public class Settings
     {
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
+
         public Material blurMaterial = null;
+        public Material blurMaterialUI = null;
 
         [Range(1,10)] public int blurPasses = 1;
 
@@ -18,6 +20,9 @@ public class BlurRTRFV3 : ScriptableRendererFeature
 
         [HideInInspector] public string targetName = "_BlurRTTex";
 
+
+        public bool blurWorld;
+        public bool blurUI;
         public bool copyToFramebuffer;
     }
 
@@ -25,10 +30,15 @@ public class BlurRTRFV3 : ScriptableRendererFeature
     public Settings settings = new Settings();
     public class BlurtRTPass : ScriptableRenderPass // SRP Pass
     {
-        public Material blurMaterial; // Material to use for blurring
+        public Material blurMaterial; // Material to use for blurring World
+        public Material blurMaterialUI; // Material to use for blurring UI
+
+
         public int passes; // Number of blur passes to perform
         public int downsample; // Downsample factor for blurring
 
+        public bool blurWorld; // Whether to blur the World
+        public bool blurUI; // Whether to blur the UI
         public bool copyToFramebuffer; // Whether to copy the blurred image to the framebuffer for full screen effect
 
         public string targetName; // Name of the texture to use as the target for blurring
@@ -96,45 +106,90 @@ public class BlurRTRFV3 : ScriptableRendererFeature
             RenderTextureDescriptor opaqueDesc = renderingData.cameraData.cameraTargetDescriptor; // Get the camera descriptor
             opaqueDesc.depthBufferBits = 0; // Disable depth buffer
 
-
-            //blit passes
-            cmd.SetGlobalFloat("_offset", 1.5f); // Set the offset for the blur OR ELSE WE GET PIXELS
-            cmd.Blit(source, passRT1, blurMaterial); // Blit the source to the temporary render texture
-
-            for (int i = 1; i < passes - 1; i++)
+            if (blurWorld == true)
             {
-                cmd.SetGlobalFloat("_offset", 0.5f + i);
-                cmd.Blit(passRT1, passRT2, blurMaterial);
+                //blit passes for world
+                cmd.SetGlobalFloat("_offset", 1.5f); // Set the offset for the blur OR ELSE WE GET PIXELS
+                cmd.Blit(source, passRT1, blurMaterial); // Blit the source to the temporary render texture
 
-                // Swap the render targets to give more definition on the blur through the shader pass
-                RenderTargetIdentifier RTtmp = passRT1;
-                passRT1 = passRT2;
-                passRT2 = RTtmp;
+                for (int i = 1; i < passes - 1; i++)
+                {
+                    cmd.SetGlobalFloat("_offset", 0.5f + i);
+                    cmd.Blit(passRT1, passRT2, blurMaterial);
+
+                    // Swap the render targets to give more definition on the blur through the shader pass
+                    RenderTargetIdentifier RTtmp = passRT1;
+                    passRT1 = passRT2;
+                    passRT2 = RTtmp;
+                }
+
+                // send to FrameBuffer
+                if (copyToFramebuffer == true)
+                {
+
+                    cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
+
+                    cmd.Blit(passRT1, source, blurMaterial); // blit to framebuffer
+
+                    cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
+
+                    ExecuteClearRelease(context , cmd); // Clear and release the render targets
+                }
+                // send to shader
+                else if (copyToFramebuffer == false)
+                {
+                    // shader pass
+                    cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
+
+                    cmd.Blit(passRT1, passRT2, blurMaterial); // last pass for shader
+
+                    cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
+
+                    ExecuteClearRelease(context , cmd); // Clear and release the render targets
+                }
             }
 
-            // send to FrameBuffer
-            if (copyToFramebuffer == true)
+            if (blurUI == true)
             {
+                //blit passes for world
+                cmd.SetGlobalFloat("_offset", 1.5f); // Set the offset for the blur OR ELSE WE GET PIXELS
+                cmd.Blit(source, passRT1, blurMaterialUI); // Blit the source to the temporary render texture
 
-                cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
+                for (int i = 1; i < passes - 1; i++)
+                {
+                    cmd.SetGlobalFloat("_offset", 0.5f + i);
+                    cmd.Blit(passRT1, passRT2, blurMaterialUI);
 
-                cmd.Blit(passRT1, source, blurMaterial); // blit to framebuffer
+                    // Swap the render targets to give more definition on the blur through the shader pass
+                    RenderTargetIdentifier RTtmp = passRT1;
+                    passRT1 = passRT2;
+                    passRT2 = RTtmp;
+                }
 
-                cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
+                // send to FrameBuffer
+                if (copyToFramebuffer == true)
+                {
 
-                ExecuteClearRelease(context , cmd); // Clear and release the render targets
-            }
-            // send to shader
-            else if (copyToFramebuffer == false)
-            {
-                // shader pass
-                cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
+                    cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
 
-                cmd.Blit(passRT1, passRT2, blurMaterial); // last pass for shader
+                    cmd.Blit(passRT1, source, blurMaterialUI); // blit to framebuffer
 
-                cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
+                    cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
 
-                ExecuteClearRelease(context , cmd); // Clear and release the render targets
+                    ExecuteClearRelease(context , cmd); // Clear and release the render targets
+                }
+                // send to shader
+                else if (copyToFramebuffer == false)
+                {
+                    // shader pass
+                    cmd.SetGlobalFloat("_offset", 0.5f + passes - 1); // global float for shader
+
+                    cmd.Blit(passRT1, passRT2, blurMaterialUI); // last pass for shader
+
+                    cmd.SetGlobalTexture(targetName, passRT2); // set the global texture
+
+                    ExecuteClearRelease(context , cmd); // Clear and release the render targets
+                }
             }
 
         }
@@ -154,12 +209,17 @@ public class BlurRTRFV3 : ScriptableRendererFeature
         scriptablePass = new BlurtRTPass("BlurRTRFV3"); // Create the pass
 
         scriptablePass.blurMaterial = settings.blurMaterial; // Set the material
+        scriptablePass.blurMaterialUI = settings.blurMaterialUI; // Set the material
+
         scriptablePass.passes = settings.blurPasses; // Set the number of blur passes
 
         scriptablePass.downsample = settings.downsample; // Set the downsample factor
         scriptablePass.targetName = settings.targetName; // Set the target name
 
         scriptablePass.renderPassEvent = settings.renderPassEvent; // Set the full screen effect
+
+        scriptablePass.blurWorld = settings.blurWorld; // blur the world
+        scriptablePass.blurUI = settings.blurUI;  // blur the UI
         scriptablePass.copyToFramebuffer = settings.copyToFramebuffer; // Set the render pass event
     }
 
