@@ -296,10 +296,7 @@ public class WebSocketCommunication : IKernelCommunication
                                 }
                                 break;
                             default:
-                                if (msg.type.Equals("AddWearablesToCatalog"))
-                                {
-                                    Debug.Log("XQ VOY AL DEFAULT???");
-                                }
+                                Debug.Log("XQ VOY AL DEFAULT??? " + msg.type);
 
                                 if (!messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
                                 {
