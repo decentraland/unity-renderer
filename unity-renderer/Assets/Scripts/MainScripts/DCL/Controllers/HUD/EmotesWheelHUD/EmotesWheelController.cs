@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Emotes;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.EmotesWheel
 {
@@ -95,7 +96,11 @@ namespace DCL.EmotesWheel
         private void UpdateEmoteSlots()
         {
             List<EmotesWheelView.EmoteSlotData> emotesToSet = new List<EmotesWheelView.EmoteSlotData>();
-            foreach (EquippedEmoteData equippedEmoteData in emotesCustomizationDataStore.equippedEmotes.Get())
+
+            var equippedEmotes = ListPool<EquippedEmoteData>.Get();
+            equippedEmotes.AddRange(emotesCustomizationDataStore.equippedEmotes.Get());
+
+            foreach (EquippedEmoteData equippedEmoteData in equippedEmotes)
             {
                 if (equippedEmoteData != null)
                 {
@@ -119,6 +124,8 @@ namespace DCL.EmotesWheel
                     emotesToSet.Add(null);
                 }
             }
+
+            ListPool<EquippedEmoteData>.Release(equippedEmotes);
 
             List<EmoteWheelSlot> updatedWheelSlots = view.SetEmotes(emotesToSet);
             foreach (EmoteWheelSlot slot in updatedWheelSlots)
@@ -170,7 +177,7 @@ namespace DCL.EmotesWheel
                 DCL.Helpers.Utils.UnlockCursor();
 
                 if (userProfile != null &&
-                    !string.IsNullOrEmpty(userProfile.userId) && 
+                    !string.IsNullOrEmpty(userProfile.userId) &&
                     !ownedWearablesAlreadyRequested)
                 {
                     CatalogController.RequestOwnedWearables(userProfile.userId)
@@ -277,28 +284,28 @@ namespace DCL.EmotesWheel
 
             auxShortcut1InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut1");
             auxShortcut1InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut2InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut2");
             auxShortcut2InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut3InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut3");
             auxShortcut3InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
 
             auxShortcut4InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut4");
             auxShortcut4InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut5InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut5");
             auxShortcut5InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut6InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut6");
             auxShortcut6InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut7InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut7");
             auxShortcut7InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut8InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut8");
             auxShortcut8InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
-            
+
             auxShortcut9InputAction = Resources.Load<InputAction_Trigger>("ToggleShortcut9");
             auxShortcut9InputAction.OnTriggered += OnNumericShortcutInputActionTriggered;
         }

@@ -59,6 +59,13 @@ namespace DCL.Social.Passports
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
             OnCurrentPlayerIdChanged(currentPlayerId, null);
+
+            playerInfoController.OnClosePassport += ClosePassport;
+        }
+
+        private void ClosePassport()
+        {
+            RemoveCurrentPlayer();
         }
 
         /// <summary>
@@ -72,13 +79,14 @@ namespace DCL.Social.Passports
 
         private void OnCloseButtonPressed(DCLAction_Trigger action = DCLAction_Trigger.CloseWindow)
         {
-            RemoveCurrentPlayer();
+            ClosePassport();
         }
 
         public void Dispose()
         {
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
+            playerInfoController.OnClosePassport -= ClosePassport;
 
             playerPreviewController.Dispose();
 
