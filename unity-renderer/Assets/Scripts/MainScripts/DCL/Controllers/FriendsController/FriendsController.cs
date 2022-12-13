@@ -33,7 +33,7 @@ namespace DCL.Social.Friends
         public event Action OnInitialized;
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         public event Action<int, int> OnTotalFriendRequestUpdated;
-        public event Action<FriendRequest> OnAddFriendRequest;
+        public event Action<FriendRequest> OnFriendRequestReceived;
         public event Action<string> OnSentFriendRequestApproved;
 
         public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
@@ -53,6 +53,7 @@ namespace DCL.Social.Friends
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
             apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+            apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
         }
 
         private void Initialize(FriendshipInitializationMessage msg)
@@ -289,6 +290,13 @@ namespace DCL.Social.Friends
                     OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
                 }
             }
+        }
+
+        private void ReceiveFriendRequest(FriendRequestPayload msg)
+        {
+            FriendRequest request = ToFriendRequest(msg);
+            friendRequests[msg.friendRequestId] = request;
+            OnFriendRequestReceived?.Invoke(request);
         }
 
         private void HandleUpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)

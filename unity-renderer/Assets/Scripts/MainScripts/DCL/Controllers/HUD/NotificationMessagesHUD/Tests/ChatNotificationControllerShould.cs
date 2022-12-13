@@ -144,7 +144,7 @@ namespace DCL.Chat.Notifications
             });
             userProfileBridge.Get("sender").Returns(senderUserProfile);
 
-            friendsController.OnAddFriendRequest += Raise.Event<Action<FriendRequest>>(new FriendRequest(
+            friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(new FriendRequest(
                 "test",
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 "sender",

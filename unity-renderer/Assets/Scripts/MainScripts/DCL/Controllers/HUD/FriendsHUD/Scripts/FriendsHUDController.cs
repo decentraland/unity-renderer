@@ -84,7 +84,7 @@ namespace DCL.Social.Friends
                 friendsController.OnUpdateFriendship += HandleFriendshipUpdated;
                 friendsController.OnUpdateUserStatus += HandleUserStatusUpdated;
                 friendsController.OnFriendNotFound += OnFriendNotFound;
-                friendsController.OnAddFriendRequest += AddFriendRequest;
+                friendsController.OnFriendRequestReceived += AddFriendRequest;
 
                 if (friendsController.IsInitialized) { view.HideLoadingSpinner(); }
                 else

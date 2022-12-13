@@ -59,7 +59,7 @@ namespace DCL.Social.Friends
             remove => apiBridge.OnTotalFriendCountUpdated -= value;
         }
 
-        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+        public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded
         {
@@ -74,7 +74,6 @@ namespace DCL.Social.Friends
             this.userProfileBridge = userProfileBridge;
 
             apiBridge.OnFriendshipStatusUpdated += message => OnFriendshipStatusUpdated?.Invoke(message);
-            apiBridge.OnFriendRequestAdded += message => OnFriendRequestAdded?.Invoke(message);
 
             AddFriendRequestByUserInputAsync(addFriendRequestByUserInputCancellationToken.Token).Forget();
         }
@@ -331,7 +330,7 @@ namespace DCL.Social.Friends
 
                     if (Input.GetKeyDown(KeyCode.R))
                     {
-                        OnFriendRequestAdded?.Invoke(new FriendRequestPayload
+                        OnFriendRequestReceived?.Invoke(new FriendRequestPayload
                         {
                             friendRequestId = Guid.NewGuid().ToString("N"),
                             from = fakeUserId,

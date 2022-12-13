@@ -15,7 +15,7 @@ namespace DCL.Social.Friends
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
-        event Action<SocialFriendRequest> OnAddFriendRequest;
+        event Action<SocialFriendRequest> OnFriendRequestReceived;
         event Action<string> OnSentFriendRequestApproved;
 
         int AllocatedFriendCount { get; }

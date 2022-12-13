@@ -16,6 +16,7 @@ namespace DCl.Social.Friends
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
+        event Action<FriendRequestPayload> OnFriendRequestReceived;
 
         [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string userId);

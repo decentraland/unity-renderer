@@ -54,7 +54,7 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             topNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             chatController.OnAddMessage += HandleMessageAdded;
-            friendsController.OnAddFriendRequest += HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived += HandleFriendRequestAdded;
             friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
@@ -66,7 +66,7 @@ namespace DCL.Chat.Notifications
         public void SetVisibility(bool visible)
         {
             ResetFadeOut(visible);
-            
+
             if (visible)
             {
                 if (shouldShowNotificationPanel.Get())
@@ -86,7 +86,7 @@ namespace DCL.Chat.Notifications
         public void Dispose()
         {
             chatController.OnAddMessage -= HandleMessageAdded;
-            friendsController.OnAddFriendRequest -= HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived -= HandleFriendRequestAdded;
             friendsController.OnSentFriendRequestApproved -= HandleSentFriendRequestApproved;
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
@@ -111,13 +111,13 @@ namespace DCL.Chat.Notifications
                            Utils.UnixToDateTimeWithTime(message.timestamp);
 
                 if (span >= maxNotificationInterval) return;
-            
+
                 var channel = chatController.GetAllocatedChannel(
                     string.IsNullOrEmpty(message.recipient) && message.messageType == ChatMessage.Type.PUBLIC
                         ? "nearby"
                         : message.recipient);
                 if (channel?.Muted ?? false) return;
-            
+
                 // TODO: entries may have an inconsistent state. We should update the entry with new data
                 if (notificationEntries.Contains(message.messageId)) return;
                 notificationEntries.Add(message.messageId);
@@ -188,7 +188,7 @@ namespace DCL.Chat.Notifications
                 friendRequest.From,
                 friendRequestName,
                 "Friend Request received",
-                $"wants to be your friend.",
+                "wants to be your friend.",
                 (ulong)friendRequest.Timestamp,
                 false);
 
@@ -254,7 +254,7 @@ namespace DCL.Chat.Notifications
             message.sender != ownUserProfile.userId ? message.sender : message.recipient;
 
         private void ResetVisibility(bool current, bool previous) => SetVisibility(current);
-        
+
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
 

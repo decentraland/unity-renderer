@@ -67,6 +67,8 @@ namespace DCl.Social.Friends
             remove => fallbackApiBridge.OnTotalFriendCountUpdated -= value;
         }
 
+        public event Action<FriendRequestPayload> OnFriendRequestReceived;
+
         public static RPCFriendsApiBridge CreateSharedInstance(IRPC rpc, IFriendsApiBridge fallbackApiBridge)
         {
             i = new RPCFriendsApiBridge(rpc, fallbackApiBridge);
@@ -227,6 +229,8 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<RendererReceiveFriendRequestReply> ReceiveFriendRequest(RendererReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
+            OnFriendRequestReceived?.Invoke(ToFriendRequestPayload(request.FriendRequest));
+
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REQUESTED_FROM,
@@ -253,6 +257,16 @@ namespace DCl.Social.Friends
         }
 
         private static FriendRequestPayload ToFriendRequestPayload(FriendRequestInfo request) =>
+            new FriendRequestPayload
+            {
+                from = request.From,
+                timestamp = (long)request.Timestamp,
+                to = request.To,
+                messageBody = request.MessageBody,
+                friendRequestId = request.FriendRequestId
+            };
+
+        private static FriendRequestPayload ToFriendRequestPayload(RendererFriendRequestInfo request) =>
             new FriendRequestPayload
             {
                 from = request.From,
