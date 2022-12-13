@@ -6,6 +6,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers.NFT;
+using Decentraland.Common;
 using NFTShape_Internal;
 using NSubstitute;
 using NUnit.Framework;
