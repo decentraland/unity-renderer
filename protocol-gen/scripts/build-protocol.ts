@@ -4,25 +4,40 @@ import {
   camelToSnakeCase,
   cleanGeneratedCode,
   execute,
+  isWin,
+  nodeModulesPath,
   normalizePath,
   protocolPath,
   protocPath,
   workingDirectory,
 } from './helpers'
 import * as fs from 'node:fs'
-import { readFileSync, writeFileSync } from 'node:fs'
+import * as fse from 'fs-extra'
 
-const protocolInputPath = normalizePath(path.resolve(protocolPath))
+const protocolRawInputPath = normalizePath(path.resolve(protocolPath))
 
-const componentsOutputPath = path.resolve(
+const protocolInputPath = normalizePath(
+  path.resolve(__dirname, '../temp/'),
+)
+
+const protocolOutputPath = path.resolve(
   __dirname,
   '../../unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/',
 )
 
 async function main() {
+  if (fs.existsSync(protocolInputPath)) {
+    fs.rmSync(protocolInputPath, { recursive: true })
+  }
+  fse.copySync(protocolRawInputPath, protocolInputPath, {
+    overwrite: true,
+  })
+
   await execute(`${protocPath} --version`, workingDirectory)
 
   await buildProtocol()
+
+  fs.rmSync(protocolInputPath, { recursive: true })
 }
 
 const regex = new RegExp(/option *\(common.ecs_component_id\) *= *([0-9]+) *;/)
@@ -56,7 +71,7 @@ function generateComponentsEnum(components: ComponentData[]) {
   content += '    }\n'
   content += '}\n'
 
-  const outputPath = path.resolve(componentsOutputPath, 'ComponentID.gen.cs')
+  const outputPath = path.resolve(protocolOutputPath, 'ComponentID.gen.cs')
   fs.writeFileSync(outputPath, content)
 }
 
@@ -67,14 +82,14 @@ function fixEngineInterface() {
       'decentraland/renderer/engine_interface.proto',
     ),
   )
-  const content = readFileSync(engineInterfaceProtoPath).toString()
+  const content = fs.readFileSync(engineInterfaceProtoPath).toString()
 
   const newContent = content.replace(
     '// option csharp_namespace = "DCL.Interface";',
     'option csharp_namespace = "DCL.Interface";',
   )
 
-  writeFileSync(engineInterfaceProtoPath, newContent)
+  fs.writeFileSync(engineInterfaceProtoPath, newContent)
 }
 
 async function preProcessComponents() {
@@ -88,14 +103,19 @@ async function preProcessComponents() {
   for (const file of protoFiles) {
     const content = fs.readFileSync(file).toString()
     const lines = content.split('\n')
+    const outputLines = new Array<string>()
     let newComponentId = null
 
     for (const line of lines) {
       const componentId = getComponentId(line)
       if (componentId) {
         newComponentId = Number(componentId)
+      } else if (line.indexOf('common/id.proto') == -1) {
+        outputLines.push(line)
       }
     }
+
+    outputLines.push('option csharp_namespace = "DCL.ECSComponents";')
 
     if (newComponentId) {
       const fileName = path.basename(file)
@@ -105,6 +125,8 @@ async function preProcessComponents() {
         componentName,
       })
     }
+
+    fs.writeFileSync(file, outputLines.join('\n'))
   }
 
   generateComponentsEnum(components)
@@ -120,20 +142,24 @@ function getProtofiles(pattern: string)
 
 async function buildProtocol() {
   console.log('Building protocol...')
-  cleanGeneratedCode(componentsOutputPath)
+  cleanGeneratedCode(protocolOutputPath)
   fixEngineInterface()
   await preProcessComponents()
 
   const protoFiles = [
     ...getProtofiles('decentraland/common/**/*.proto'),
-    ...getProtofiles('decentraland/sdk/components/**/*.proto'),
+    ...getProtofiles('decentraland/sdk/components/**/*.proto').filter((value) => !value.endsWith('id.proto')),
     ...getProtofiles('decentraland/bff/**/*.proto'),
     ...getProtofiles('decentraland/renderer/**/*.proto')
   ].join(' ')
 
+  const ext = isWin ? 'cmd' : 'js'
+
   let command = `${protocPath}`
-  command += ` --csharp_out "${componentsOutputPath}"`
+  command += ` --csharp_out "${protocolOutputPath}"`
   command += ` --csharp_opt=file_extension=.gen.cs`
+  command += ` --plugin=protoc-gen-dclunity=${nodeModulesPath}/protoc-gen-dclunity/dist/index.${ext}`
+  command += ` --dclunity_out "${protocolOutputPath}"`
   command += ` --proto_path "${protocolInputPath}"`
   command += ` ${protoFiles}`
 
