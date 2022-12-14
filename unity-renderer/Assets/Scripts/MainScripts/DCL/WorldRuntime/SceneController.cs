@@ -305,8 +305,10 @@ namespace DCL
 
                     case MessagingTypes.INIT_DONE:
                         {
-                            scene.sceneLifecycleHandler.SetInitMessagesDone();
-
+                            if (!scene.IsInitMessageDone())
+                            {
+                                scene.sceneLifecycleHandler.SetInitMessagesDone();
+                            }
                             break;
                         }
 
@@ -519,10 +521,6 @@ namespace DCL
 
             OnReadyScene?.Invoke(sceneNumber);
         }
-
-        public void ActivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_BIW()); }
-
-        public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
 
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {

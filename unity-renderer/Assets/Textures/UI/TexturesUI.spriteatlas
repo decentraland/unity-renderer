@@ -190,6 +190,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 157bc655b2606c846b7d3f9482dda522, type: 3}
   - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
+  - {fileID: 21300000, guid: f5c69b65210ee4d918cee88989f0b22e, type: 3}
   - {fileID: 21300000, guid: e0a2bc75af20840e79cb10bba9987431, type: 3}
   - {fileID: 21300000, guid: 7f27d0851d5e842b299578e8e042207a, type: 3}
   - {fileID: 21300000, guid: 1a32f285ef84d8e44856f0e495cffd4d, type: 3}
@@ -425,6 +426,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: e917afbf829204e53b97fce8b275dafd, type: 3}
   - {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
+  - {fileID: 21300000, guid: 95180acf19d8343baabfcdd0c10079d1, type: 3}
   - {fileID: 21300000, guid: 64036ccffced12d48a00a842b7c6f3e8, type: 3}
   - {fileID: 21300000, guid: 780ed9eff07384ade9aaa318dbbe63b7, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -556,6 +558,7 @@ SpriteAtlas:
   - snowball_hit_256
   - BubblePeak
   - Frame5
+  - PassportBackground
   - ArrowUp
   - BugIcon 1
   - RectRadius12Shadow
@@ -791,6 +794,7 @@ SpriteAtlas:
   - Container24
   - MinusIcon
   - CheckmarkRed
+  - ArrowOutline
   - RealmsIcon
   - OutlineGreyButton
   m_RenderDataMap: {}

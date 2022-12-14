@@ -40,7 +40,6 @@ namespace DCL
         public DataStore_Common common => i.Get<DataStore_Common>();
         public DataStore_Realm realm => i.Get<DataStore_Realm>();
         public DebugConfig debugConfig => i.Get<DebugConfig>();
-        public DataStore_BuilderInWorld builderInWorld => i.Get<DataStore_BuilderInWorld>();
         public DataStore_Quests Quests => i.Get<DataStore_Quests>();
         public DataStore_HUDs HUDs => i.Get<DataStore_HUDs>();
         public DataStore_Player player => i.Get<DataStore_Player>();
@@ -67,5 +66,6 @@ namespace DCL
         public DataStore_AvatarConfig avatarConfig => i.Get<DataStore_AvatarConfig>();
         public DataStore_Rpc rpc => i.Get<DataStore_Rpc>();
         public DataStore_Channels channels => i.Get<DataStore_Channels>();
+        public DataStore_WorldBlockers worldBlockers => i.Get<DataStore_WorldBlockers>();
     }
 }

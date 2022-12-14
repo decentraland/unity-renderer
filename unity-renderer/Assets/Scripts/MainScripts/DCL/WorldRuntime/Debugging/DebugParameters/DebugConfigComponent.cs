@@ -70,6 +70,7 @@ namespace DCL
         public bool builderInWorld = false;
         public bool soloScene = true;
         public bool disableAssetBundles = false;
+        public bool enableGLTFast = false;
         public bool enableDebugMode = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
@@ -132,13 +133,20 @@ namespace DCL
             {
                 CommonScriptableObjects.forcePerformanceMeter.Set(true);
                 performanceMeterController = new PerformanceMeterController();
-                performanceMeterController.StartSampling(999);
-                CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+
+                DataStore.i.HUDs.loadingHUD.visible.OnChange += StartSampling;
+                CommonScriptableObjects.rendererState.OnChange += EndSampling;
             }
         }
-        private void OnRendererStateChanged(bool current, bool previous)
+        
+        private void StartSampling(bool current, bool previous)
         {
-            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+            DataStore.i.HUDs.loadingHUD.visible.OnChange -= StartSampling;
+            performanceMeterController.StartSampling(999);
+        }
+        private void EndSampling(bool current, bool previous)
+        {
+            CommonScriptableObjects.rendererState.OnChange -= EndSampling;
             performanceMeterController.StopSampling();
         }
 
@@ -218,6 +226,11 @@ namespace DCL
                 debugString += "DISABLE_ASSET_BUNDLES&DISABLE_WEARABLE_ASSET_BUNDLES&";
             }
 
+            if (enableGLTFast)
+            {
+                debugString += "ENABLE_GLTFAST&";
+            }
+            
             if (enableDebugMode)
             {
                 debugString += "DEBUG_MODE&";

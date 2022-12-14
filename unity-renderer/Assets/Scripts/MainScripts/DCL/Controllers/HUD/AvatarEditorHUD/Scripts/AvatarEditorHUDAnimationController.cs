@@ -1,24 +1,22 @@
+using DCL;
 using System;
 using UnityEngine;
 
 public class AvatarEditorHUDAnimationController : IDisposable
 {
-
-    private ICharacterPreviewController characterPreviewController;
     private readonly IAvatarEditorHUDView hudView;
     internal string activeCategory;
     private int currentAnimationIndexShown;
 
-    public AvatarEditorHUDAnimationController(IAvatarEditorHUDView avatarEditorHUDView, ICharacterPreviewController characterPreviewController)
+    public AvatarEditorHUDAnimationController(IAvatarEditorHUDView avatarEditorHUDView)
     {
         this.hudView = avatarEditorHUDView;
-        this.characterPreviewController = characterPreviewController;
-        
+
         hudView.OnRandomize += OnClickRandomize;
         hudView.WearableSelectorClicked += OnSelectWearable;
         hudView.OnAvatarAppearFeedback += AvatarAppearFeedback;
     }
-    
+
     public void AvatarAppearFeedback(AvatarModel avatarModelToUpdate)
     {
         if (!string.IsNullOrEmpty(activeCategory))
@@ -31,11 +29,11 @@ public class AvatarEditorHUDAnimationController : IDisposable
     {
         activeCategory = "";
     }
-    
+
     private void PlayAnimation(AvatarModel avatarModelToUpdate)
     {
         avatarModelToUpdate.expressionTriggerTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        characterPreviewController.PlayEmote(activeCategory, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        hudView.CharacterPreview.PlayEmote(activeCategory, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 
     public void OnSelectWearable(string wearableId)

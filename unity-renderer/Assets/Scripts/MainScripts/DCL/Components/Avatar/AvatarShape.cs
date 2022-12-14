@@ -81,38 +81,32 @@ namespace DCL
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
-        private Avatar GetStandardAvatar()
+        private IAvatar GetStandardAvatar()
         {
-            Visibility visibility = new Visibility();
-            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
-            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            return new Avatar(
-                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                animator,
-                visibility,
-                avatarLOD,
-                new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+            var visibility = new Visibility();
+
+            return Environment.i.serviceLocator.Get<IAvatarFactory>()
+                              .CreateAvatar(
+                                   avatarContainer,
+                                   GetComponentInChildren<AvatarAnimatorLegacy>(),
+                                   new LOD(avatarContainer, visibility, avatarMovementController),
+                                   visibility
+                               );
         }
 
-        private AvatarWithHologram GetAvatarWithHologram()
+        private IAvatar GetAvatarWithHologram()
         {
             Visibility visibility = new Visibility();
-            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
-            AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
-            return new AvatarWithHologram(
-                    baseAvatar,
-                    new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                    new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                    animator,
-                    visibility,
-                    avatarLOD,
-                    new SimpleGPUSkinning(),
-                    new GPUSkinningThrottler(),
-                    new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+
+            return Environment.i.serviceLocator.Get<IAvatarFactory>()
+                              .CreateAvatarWithHologram(
+                                   avatarContainer,
+                                   avatarRevealContainer,
+                                   armatureContainer,
+                                   GetComponentInChildren<AvatarAnimatorLegacy>(),
+                                   new LOD(avatarContainer, visibility, avatarMovementController),
+                                   visibility
+                               );
         }
 
         private void Start()

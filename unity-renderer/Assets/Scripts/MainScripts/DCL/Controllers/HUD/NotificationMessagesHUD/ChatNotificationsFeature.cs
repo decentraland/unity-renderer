@@ -1,5 +1,5 @@
-using DCL.Chat.Channels;
 using DCL.Social.Chat;
+using DCL.Social.Friends;
 
 namespace DCL.Chat.Notifications
 {
@@ -18,6 +18,7 @@ namespace DCL.Chat.Notifications
         private ChatNotificationController CreateController() => new ChatNotificationController(DataStore.i,
             MainChatNotificationsComponentView.Create(), TopNotificationComponentView.Create(),
             ChatController.i,
+            FriendsController.i,
             new UserProfileWebInterfaceBridge(),
             ProfanityFilterSharedInstances.regexFilter);
 

@@ -6,30 +6,43 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Skybox Time", fileName = "SkyboxTime")]
     public class SkyboxTimeControlController : SliderSettingsControlController
     {
+        private readonly DataStore_SkyboxConfig skyboxConfig = DataStore.i.skyboxConfig;
+
         public override void Initialize()
         {
             base.Initialize();
             UpdateSetting(currentGeneralSettings.skyboxTime);
+
+            skyboxConfig.mode.OnChange += OnSkyboxModeChanged;
         }
 
-        public override object GetStoredValue() { return currentGeneralSettings.skyboxTime; }
+        private void OnSkyboxModeChanged(SkyboxMode current, SkyboxMode previous)
+        {
+            if (current == previous) return;
+
+            RaiseSliderValueChanged((float)GetStoredValue());
+            UpdateSetting(GetStoredValue());
+        }
+
+        public override object GetStoredValue() =>
+            skyboxConfig.mode.Equals(SkyboxMode.Dynamic)
+                ? (object)currentGeneralSettings.skyboxTime
+                : skyboxConfig.fixedTime.Get();
 
         public override void UpdateSetting(object newValue)
         {
-            float valueAsFloat = (float)newValue;
+            var valueAsFloat = (float)newValue;
 
             valueAsFloat = Mathf.Clamp(valueAsFloat, 0, 23.998f);
 
             currentGeneralSettings.skyboxTime = valueAsFloat;
-            DataStore.i.skyboxConfig.fixedTime.Set(valueAsFloat);
-            int hourSection = (int)valueAsFloat;
-            float minuteSection = valueAsFloat - hourSection;
-            minuteSection = minuteSection * 60;
-            minuteSection = (int)minuteSection;
 
-            string sliderTxt = hourSection.ToString("00") + ":" + minuteSection.ToString("00");
+            var hourSection = (int)valueAsFloat;
+            var minuteSection = (int)((valueAsFloat - hourSection) * 60);
 
-            RaiseOnIndicatorLabelChange(sliderTxt);
+            RaiseOnIndicatorLabelChange($"{hourSection:00}:{minuteSection:00}");
+
+            skyboxConfig.fixedTime.Set(valueAsFloat);
         }
     }
 }

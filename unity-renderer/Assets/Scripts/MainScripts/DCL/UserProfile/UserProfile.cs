@@ -18,7 +18,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         Backpack
     }
 
-    static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
 
@@ -48,6 +47,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         avatar = new AvatarModel()
     };
+
+    private int emoteLamportTimestamp = 1;
 
     public void UpdateData(UserProfileModel newModel)
     {
@@ -105,17 +106,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void SetAvatarExpression(string id, EmoteSource source)
     {
-        long timestamp = (long)(DateTime.UtcNow - epochStart).TotalMilliseconds;
+        int timestamp = emoteLamportTimestamp++;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().Emotes();
+        // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
             Timestamp = timestamp
         });
-        
+
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }

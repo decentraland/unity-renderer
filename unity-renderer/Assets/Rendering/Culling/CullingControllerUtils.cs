@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using DCL.Helpers;
 using UnityEngine;
+using DCL.Shaders;
 
 namespace DCL.Rendering
 {

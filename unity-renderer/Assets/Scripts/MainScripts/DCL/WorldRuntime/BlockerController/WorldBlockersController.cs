@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using DCL.Helpers;
-using DCL.Rendering;
+using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -39,6 +38,9 @@ namespace DCL.Controllers
             new Vector2Int(-1, 1)
         };
 
+        private BaseVariable<int> worldBlockersLimit => DataStore.i.worldBlockers.worldBlockerLimit;
+        private BaseVariable<bool> worldBlockersEnabled => DataStore.i.worldBlockers.worldBlockerEnabled;
+
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
             blockerInstanceHandler.SetCollision(newValue);
@@ -52,6 +54,7 @@ namespace DCL.Controllers
         {
             this.sceneHandler = sceneHandler;
             this.blockerInstanceHandler = blockerInstanceHandler;
+            worldBlockersEnabled.OnChange += OnWorldsBlockerEnabledChange;
         }
 
         public void SetupWorldBlockers()
@@ -94,6 +97,7 @@ namespace DCL.Controllers
 #endif
 
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            worldBlockersEnabled.OnChange -= OnWorldsBlockerEnabledChange;
             blockerInstanceHandler.DestroyAllBlockers();
 
             if (blockersParent != null)
@@ -163,8 +167,23 @@ namespace DCL.Controllers
                 }
             }
 
+            blockersToAdd = LookForLimits(allLoadedParcelCoords, blockers, 0);
+
+            // Remove extra blockers
+            foreach (var coords in blockersToRemove)
+                blockerInstanceHandler.HideBlocker(coords, false);
+
+            // Add missing blockers
+            foreach (var coords in blockersToAdd)
+                blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
+        }
+
+        private HashSet<Vector2Int> LookForLimits(HashSet<Vector2Int> dontAddABlockerHere, Dictionary<Vector2Int, IPoolableObject> blockers, int currentLimitIterationEvaluation)
+        {
+            HashSet<Vector2Int> blockersCandidate = new HashSet<Vector2Int>();
+
             // Detect missing blockers to be added
-            using (var it = allLoadedParcelCoords.GetEnumerator())
+            using (var it = dontAddABlockerHere.GetEnumerator())
             {
                 while (it.MoveNext())
                 {
@@ -173,27 +192,30 @@ namespace DCL.Controllers
                     for (int i = 0; i < aroundOffsets.Length; i++)
                     {
                         Vector2Int offset = aroundOffsets[i];
-                        Vector2Int checkedPosition = new Vector2Int(pos.x + offset.x, pos.y + offset.y);
+                        int xCandidate = pos.x + offset.x;
+                        int yCandidate = pos.y + offset.y;
+                        Vector2Int checkedPosition = new Vector2Int(xCandidate, yCandidate);
 
-                        if (!allLoadedParcelCoords.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
+                        if (!dontAddABlockerHere.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
                         {
-                            blockersToAdd.Add(checkedPosition);
+                            blockersCandidate.Add(checkedPosition);
                         }
                     }
                 }
             }
 
-            // Remove extra blockers
-            foreach (var coords in blockersToRemove)
+            if (currentLimitIterationEvaluation == worldBlockersLimit.Get())
+                return blockersCandidate;
+            else
             {
-                blockerInstanceHandler.HideBlocker(coords, false);
+                blockersCandidate.UnionWith(dontAddABlockerHere);
+                return LookForLimits(blockersCandidate, blockers, currentLimitIterationEvaluation + 1);
             }
+        }
 
-            // Add missing blockers
-            foreach (var coords in blockersToAdd)
-            {
-                blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
-            }
+        private void OnWorldsBlockerEnabledChange(bool newState, bool _)
+        {
+            SetEnabled(newState);
         }
     }
 }
