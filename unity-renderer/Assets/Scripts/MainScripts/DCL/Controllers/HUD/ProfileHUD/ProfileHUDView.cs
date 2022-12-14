@@ -86,8 +86,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
-
-    public BaseComponentView BaseView => this;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
@@ -119,10 +117,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     public void ShowExpanded(bool show)
     {
         expandedObject.SetActive(show);
-    }
-
-    public void SetVisibility(bool visible)
-    {
     }
 
     public void SetProfile(UserProfile userProfile)
@@ -186,8 +180,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     }
 
     private void UpdateNameCharLimit(string newValue) => textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
-
-    public void SetProfileName(string newName) => textName.text = newName;
 
     private void UpdateDescriptionCharLimit(string newValue) =>
         textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
@@ -321,15 +313,9 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         selectable.Select();
     }
 
-    public void SetDescription(string description)
+    private void SetDescription(string description)
     {
         descriptionPreviewInput.text = description;
         descriptionEditionInput.text = description;
-    }
-
-    public void SetCardAsFullScreenMenuMode(bool isActive)
-    {
-        buttonToggleMenu.gameObject.SetActive(!isActive);
-        mainCanvas.sortingOrder = isActive ? 4 : 1;
     }
 }

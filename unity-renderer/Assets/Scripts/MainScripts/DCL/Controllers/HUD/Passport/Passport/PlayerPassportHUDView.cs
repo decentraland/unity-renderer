@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using DCL;
-using DCL.Helpers;
 
 namespace DCL.Social.Passports
 {

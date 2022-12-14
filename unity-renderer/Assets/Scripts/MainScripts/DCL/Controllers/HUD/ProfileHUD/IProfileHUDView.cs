@@ -19,8 +19,6 @@ public interface IProfileHUDView
     event EventHandler TermsAndServicesPressed;
     event EventHandler PrivacyPolicyPressed;
 
-
-    public BaseComponentView BaseView { get; }
     public GameObject GameObject { get; }
     public RectTransform ExpandedMenu { get; }
     public RectTransform TutorialReference { get; }
@@ -31,8 +29,6 @@ public interface IProfileHUDView
     bool IsDesciptionIsLongerThanMaxCharacters();
 
     void SetProfile(UserProfile profile);
-    void SetProfileName(string name);
-    void SetDescription(string description);
     void SetManaBalance(string balance);
     void SetPolygonBalance(double balance);
     void SetWalletSectionEnabled(bool isEnabled);
@@ -40,8 +36,6 @@ public interface IProfileHUDView
     void SetStartMenuButtonActive(bool isActive);
 
     void SetDescriptionIsEditing(bool isEditing);
-    void SetCardAsFullScreenMenuMode(bool isFullScreen);
-    void SetVisibility(bool isVisible);
     void ShowProfileIcon(bool show);
     void ShowExpanded(bool show);
 }

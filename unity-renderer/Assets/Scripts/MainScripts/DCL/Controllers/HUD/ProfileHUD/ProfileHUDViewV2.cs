@@ -107,8 +107,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     internal bool isStartMenuInitialized = false;
 
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
-
-    public BaseComponentView BaseView => this;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
     public RectTransform TutorialReference => tutorialTooltipReference;
@@ -123,21 +121,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
     public override void RefreshControl() { }
-
-    public void SetDescription(string description)
-    {
-        this.description = description;
-        descriptionInputText.text = description;
-    }
-
-    public void SetCardAsFullScreenMenuMode(bool isActive)
-    {
-        buttonToggleMenu.gameObject.SetActive(!isActive);
-        mainCanvas.sortingOrder = isActive ? 4 : 1;
-    }
-
-
-    public void SetProfileName(string newName) { textName.text = newName; }
 
     public void SetProfile(UserProfile userProfile)
     {
@@ -198,10 +181,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void ShowExpanded(bool show)
     {
         expandedObject.SetActive(show);
-    }
-
-    public void SetVisibility(bool visible)
-    {
     }
 
     public void ActivateProfileNameEditionMode(bool activate)

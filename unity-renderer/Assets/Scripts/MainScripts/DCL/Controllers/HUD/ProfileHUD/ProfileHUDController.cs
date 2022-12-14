@@ -180,11 +180,6 @@ public class ProfileHUDController : IHUD
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
     {
-        //Debug.Log($"set fullscreen {currentIsFullScreenMenuMode}");
-        //view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
-
-        //if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
-        //    view.ToggleMenu();
         view.ShowProfileIcon(!currentIsFullScreenMenuMode);
     }
 
