@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Decentraland.Common;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
