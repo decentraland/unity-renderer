@@ -9,13 +9,13 @@ using rpc_csharp;
 using System;
 using System.Linq;
 using System.Threading;
-using CancelFriendRequestPayload = Decentraland.Renderer.RendererServices.CancelFriendRequestPayload;
-using CancelFriendRequestReply = Decentraland.Renderer.RendererServices.CancelFriendRequestReply;
+using RendererCancelFriendRequestPayload = Decentraland.Renderer.RendererServices.CancelFriendRequestPayload;
+using RendererCancelFriendRequestReply = Decentraland.Renderer.RendererServices.CancelFriendRequestReply;
 using KernelGetFriendRequestsPayload = Decentraland.Renderer.KernelServices.GetFriendRequestsPayload;
 using KernelCancelFriendRequestReply = Decentraland.Renderer.KernelServices.CancelFriendRequestReply;
 using KernelCancelFriendRequestPayload = Decentraland.Renderer.KernelServices.CancelFriendRequestPayload;
-using RejectFriendRequestPayload = Decentraland.Renderer.RendererServices.RejectFriendRequestPayload;
-using RejectFriendRequestReply = Decentraland.Renderer.RendererServices.RejectFriendRequestReply;
+using RendererRejectFriendRequestPayload = Decentraland.Renderer.RendererServices.RejectFriendRequestPayload;
+using RendererRejectFriendRequestReply = Decentraland.Renderer.RendererServices.RejectFriendRequestReply;
 
 namespace DCl.Social.Friends
 {
@@ -190,10 +190,10 @@ namespace DCl.Social.Friends
         public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException("implemented on feat/receive-friend-requests branch");
 
-        public UniTask<RejectFriendRequestReply> RejectFriendRequest(RejectFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
+        public UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException("implemented on feat/receive-friend-requests branch");
 
-        public UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
+        public UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
             throw new NotImplementedException("implemented on feat/receive-friend-requests branch");
 
         public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct) =>
