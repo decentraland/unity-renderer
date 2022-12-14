@@ -13,6 +13,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
+    [SerializeField] private ShowHideAnimator expandedLayoutAnimator;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] private ShowHideAnimator copyToast;
@@ -67,10 +68,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
     public event EventHandler LogedOutPressed;
-    public event EventHandler WalletTermsAndServicesPressed;
-    public event EventHandler WalletPrivacyPolicyPressed;
-    public event EventHandler NonWalletTermsAndServicesPressed;
-    public event EventHandler NonWalletPrivacyPolicyPressed;
     public event EventHandler Opened;
     public event EventHandler Closed;
     public event EventHandler<string> NameSubmitted;
@@ -101,7 +98,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
 
-    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionEditionInput.characterLimit >= descriptionEditionInput.text.Length;
+    public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionEditionInput.characterLimit < descriptionEditionInput.text.Length;
 
     public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
 
@@ -145,6 +142,8 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void SetProfile(UserProfile userProfile)
     {
+        expandedLayoutAnimator.Show();
+
         profile = userProfile;
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
@@ -156,7 +155,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         HandleProfileSnapshot(userProfile);
         SetDescription(userProfile.description);
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
-        ForceLayoutToRefreshSize();
     }
 
 
@@ -187,7 +185,11 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
+        inputName.onDeselect.AddListener((x) =>
+        {
+            ActivateProfileNameEditionMode(false);
+            NameSubmitted?.Invoke(this, x);
+        });
         inputName.onEndEdit.AddListener(x => NameSubmitted(this, x));
 
         descriptionPreviewInput.onSelect.AddListener(x =>
@@ -197,12 +199,10 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         });
         descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
         descriptionEditionInput.onDeselect.AddListener(x => SetDescriptionIsEditing(false));
-        descriptionEditionInput.onEndEdit.AddListener(x => DescriptionSubmitted(this, x));
+        descriptionEditionInput.onEndEdit.AddListener(x => DescriptionSubmitted?.Invoke(this, x));
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
-
-    private void ForceLayoutToRefreshSize() => LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout);
 
     private void UpdateNameCharLimit(string newValue) => textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
 

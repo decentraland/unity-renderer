@@ -275,7 +275,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         inputName.onDeselect.AddListener((newName) =>
         {
             ActivateProfileNameEditionMode(false);
-
             NameSubmitted?.Invoke(this, newName);
         });
 
