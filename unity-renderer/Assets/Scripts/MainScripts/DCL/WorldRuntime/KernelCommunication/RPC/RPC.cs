@@ -2,7 +2,7 @@
 using Decentraland.Renderer.KernelServices;
 using RPC;
 using rpc_csharp;
-using UnityEngine.Device;
+
 
 namespace DCL
 {
@@ -30,9 +30,15 @@ namespace DCL
 
         private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
         {
-            emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
-            friendRequests = new ClientFriendRequestKernelService(await port.LoadModule(FriendRequestKernelServiceCodeGen.ServiceName));
-            analytics = new ClientAnalyticsKernelService(await port.LoadModule(AnalyticsKernelServiceCodeGen.ServiceName));
+            emotes = await SafeLoadModule(EmotesKernelServiceCodeGen.ServiceName, port,
+                module => new ClientEmotesKernelService(module));
+
+            friendRequests = await SafeLoadModule(FriendRequestKernelServiceCodeGen.ServiceName, port,
+                module => new ClientFriendRequestKernelService(module));
+
+            analytics = await SafeLoadModule(AnalyticsKernelServiceCodeGen.ServiceName, port,
+                module => new ClientAnalyticsKernelService(module));
+
             modulesLoaded.TrySetResult();
             await this.StartRpc();
         }
@@ -59,15 +65,27 @@ namespace DCL
             });
         }
 
+        private async UniTask<T> SafeLoadModule<T>(string serviceName, RpcClientPort port, Func<RpcClientModule, T> builderFunction)
+            where T: class
+        {
+            try
+            {
+                RpcClientModule module = await port.LoadModule(serviceName);
+                return builderFunction.Invoke(module);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                // TODO: may be improved by returning a valid instance with dummy behaviour. This way we force to do null-checks on usage
+                return null;
+            }
+        }
 
         public void Initialize()
         {
             var context = DataStore.i.rpc.context;
 
-            context.transport.OnLoadModules += port =>
-            {
-                LoadRpcModulesAsync(port).Forget();
-            };
+            context.transport.OnLoadModules += port => { LoadRpcModulesAsync(port).Forget(); };
 
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
             context.crdt.WorldState = Environment.i.world.state;
