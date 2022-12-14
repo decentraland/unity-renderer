@@ -66,6 +66,7 @@ public class HUDFactory : IHUDFactory
                             new WearableItemResolver(),
                             new WearablesCatalogControllerBridge(),
                             Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                            new UserProfileWebInterfaceBridge(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),

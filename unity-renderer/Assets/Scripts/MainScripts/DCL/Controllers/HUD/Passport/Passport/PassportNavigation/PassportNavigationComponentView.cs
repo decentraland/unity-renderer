@@ -9,6 +9,7 @@ namespace DCL.Social.Passports
     public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
     {
         private const string GUEST_TEXT = "is a guest";
+        private const string BLOCKED_TEXT = "blocked you!";
         private const string TEMPLATE_DESCRIPTION_TEXT = "This person doesn't have an about description yet.";
         private const int ABOUT_SUB_SECTION_INDEX = 0;
         private const int COLLECTIBLES_SUB_SECTION_INDEX = 1;
@@ -18,8 +19,10 @@ namespace DCL.Social.Passports
         [SerializeField] private SectionSelectorComponentView subSectionSelector;
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
+        [SerializeField] private GameObject hasBlockedPanel;
         [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
+        [SerializeField] private TextMeshProUGUI blockedUsernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
@@ -67,11 +70,13 @@ namespace DCL.Social.Passports
         {
             guestPanel.SetActive(isGuest);
             normalPanel.SetActive(!isGuest);
+            hasBlockedPanel.SetActive(false);
         }
 
         public void SetName(string username)
         {
             usernameText.text = $"{username} {GUEST_TEXT}";
+            blockedUsernameText.text = $"{username} {BLOCKED_TEXT}";
         }
 
         public void SetDescription(string description)
@@ -195,6 +200,11 @@ namespace DCL.Social.Passports
             }
             nftEmotesCarousel.GenerateDotsSelector();
             nftEmotesCarousel.ResetManualCarousel();
+        }
+
+        public void SetHasBlockedOwnUser(bool isBlocked)
+        {
+            hasBlockedPanel.SetActive(isBlocked);
         }
 
         public void SetInitialTab()
