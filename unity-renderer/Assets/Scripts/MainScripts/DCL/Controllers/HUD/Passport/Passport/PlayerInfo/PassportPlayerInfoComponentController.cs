@@ -19,6 +19,7 @@ namespace DCL.Social.Passports
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
+        public event Action OnClosePassport;
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
@@ -44,6 +45,7 @@ namespace DCL.Social.Passports
             view.OnBlockUser += BlockUser;
             view.OnUnblockUser += UnblockUser;
             view.OnReportUser += ReportUser;
+            view.OnWhisperUser += WhisperUser;
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) =>
@@ -177,6 +179,12 @@ namespace DCL.Social.Passports
             WebInterface.SendReportPlayer(currentPlayerId, name);
 
             //SocialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+        }
+
+        private void WhisperUser(string userId)
+        {
+            dataStore.HUDs.openPrivateChat.Set(userId);
+            OnClosePassport?.Invoke();
         }
     }
 }

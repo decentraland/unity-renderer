@@ -20,12 +20,12 @@ namespace DCL.Components
         /// If that `avatarId` is loaded it will call `onSuccess`, otherwise it will wait
         /// for that `avatarId` to be loaded
         /// </summary>
-        public void SearchAnchorPoints(string avatarId, Action<IAvatarAnchorPoints> onSuccess)
+        public void SearchAnchorPoints(string avatarId, Action<IAvatarAnchorPoints> onSuccess, bool supportNullId = false)
         {
             CleanUp();
             cleaned = false;
 
-            if (string.IsNullOrEmpty(avatarId))
+            if (string.IsNullOrEmpty(avatarId) && !supportNullId)
                 return;
 
             string ownUserId = ownPlayerProfile.userId;
@@ -36,20 +36,23 @@ namespace DCL.Components
             {
                 ownPlayerProfile.OnUpdate -= GetOwnProfileUpdated;
                 ownUserId = profile.userId;
+                string targetId = string.IsNullOrEmpty(avatarId) ? ownUserId : avatarId;
 
                 if (cleaned)
                 {
                     return;
                 }
 
-                currentAnchorPointsGetterHandler = GetHandler(avatarId, ownUserId);
+                currentAnchorPointsGetterHandler = GetHandler(targetId, ownUserId);
                 currentAnchorPointsGetterHandler.OnAvatarFound += OnAvatarFoundEvent;
                 currentAnchorPointsGetterHandler.OnAvatarRemoved += OnAvatarRemovedEvent;
-                currentAnchorPointsGetterHandler.GetAnchorPoints(avatarId);
+                currentAnchorPointsGetterHandler.GetAnchorPoints(targetId);
             }
 
             if (string.IsNullOrEmpty(ownUserId))
             {
+                // Unsubscribe first in case of multiple calls.
+                ownPlayerProfile.OnUpdate -= GetOwnProfileUpdated;
                 ownPlayerProfile.OnUpdate += GetOwnProfileUpdated;
             }
             else

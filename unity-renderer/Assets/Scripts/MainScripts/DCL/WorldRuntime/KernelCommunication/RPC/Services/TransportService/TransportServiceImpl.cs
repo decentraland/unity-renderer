@@ -1,15 +1,16 @@
-﻿using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using rpc_csharp;
 using rpc_csharp.protocol;
 using rpc_csharp.transport;
+using System;
+using System.Threading;
 
 namespace RPC.Services
 {
-    public class AsyncQueueEnumerable<T> : IUniTaskAsyncEnumerable<T> where T : class
+    public class AsyncQueueEnumerable<T> : IUniTaskAsyncEnumerable<T> where T: class
     {
         private readonly ProtocolHelpers.AsyncQueue<T> queue;
 
@@ -42,7 +43,7 @@ namespace RPC.Services
 
         public TransportServiceImpl()
         {
-            queue = new ProtocolHelpers.AsyncQueue<Payload>((_, __) => {});
+            queue = new ProtocolHelpers.AsyncQueue<Payload>((_, __) => { });
         }
 
         private async UniTaskVoid BuildClient(RPCContext context)
@@ -70,6 +71,7 @@ namespace RPC.Services
             BuildClient(context).Forget();
 
             OnConnectEvent?.Invoke();
+
             return UniTaskAsyncEnumerable.Create<Payload>(async (writer, token) =>
             {
                 // Async call...
@@ -95,9 +97,12 @@ namespace RPC.Services
         {
             queue.Enqueue(new Payload() { Payload_ = ByteString.CopyFrom(data) });
         }
+
         public void Close()
         {
             queue.Close();
         }
+
+        public void Dispose() { }
     }
 }

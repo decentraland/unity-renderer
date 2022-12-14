@@ -1429,10 +1429,6 @@ namespace DCL.Interface
 
         public static void PublishStatefulScene(ProtocolV2.PublishPayload payload) { MessageFromEngine("PublishSceneState", JsonConvert.SerializeObject(payload)); }
 
-        public static void StartIsolatedMode(IsolatedConfig config) { MessageFromEngine("StartIsolatedMode", JsonConvert.SerializeObject(config)); }
-
-        public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
-
         public static void SendReportScene(int sceneNumber)
         {
             SendMessage("ReportScene", new SendReportScenePayload
