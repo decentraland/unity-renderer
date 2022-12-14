@@ -33,7 +33,6 @@ public class ProfileHUDController : IHUD
     internal AvatarEditorHUDController avatarEditorHud;
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private IMouseCatcher mouseCatcher;
     private Coroutine fetchManaIntervalRoutine = null;
     private Coroutine fetchPolygonManaIntervalRoutine = null;
 
@@ -46,7 +45,6 @@ public class ProfileHUDController : IHUD
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
         this.userProfileBridge = userProfileBridge;
-        mouseCatcher = SceneReferences.i?.mouseCatcher;
 
         GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
         viewGo.name = VIEW_NAME;

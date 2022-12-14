@@ -38,26 +38,4 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         Assert.NotNull(baseView);
         Assert.IsTrue(controller.view.HasManaCounterView());
     }
-
-    [Test]
-    public void VisibilityDefaulted()
-    {
-        Assert.IsTrue(controller.view.GameObject.activeInHierarchy);
-        Assert.IsTrue(baseView.showHideAnimator.isVisible);
-    }
-
-    [Test]
-    public void VisibilityOverridenTrue()
-    {
-        controller.SetVisibility(true);
-        Assert.IsTrue(controller.view.GameObject.activeInHierarchy);
-        Assert.IsTrue(baseView.showHideAnimator.isVisible);
-    }
-
-    [Test]
-    public void VisibilityOverridenFalse()
-    {
-        controller.SetVisibility(false);
-        Assert.IsFalse(baseView.showHideAnimator.isVisible);
-    }
 }
