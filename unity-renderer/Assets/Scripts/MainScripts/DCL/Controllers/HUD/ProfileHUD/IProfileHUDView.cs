@@ -42,6 +42,6 @@ public interface IProfileHUDView
     void SetDescriptionIsEditing(bool isEditing);
     void SetCardAsFullScreenMenuMode(bool isFullScreen);
     void SetVisibility(bool isVisible);
-    void ToggleMenu();
-    void HideMenu();
+    void ShowProfileIcon(bool show);
+    void ShowExpanded(bool show);
 }

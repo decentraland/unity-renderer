@@ -13,11 +13,12 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField] private ShowHideAnimator expandedLayoutAnimator;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] private GameObject loadingSpinner;
     [SerializeField] private ShowHideAnimator copyToast;
     [SerializeField] private GameObject copyTooltip;
+    [SerializeField] private GameObject expandedObject;
+    [SerializeField] private GameObject profilePicObject;
     [SerializeField] private InputAction_Trigger closeAction;
     [SerializeField] private Canvas mainCanvas;
 
@@ -110,40 +111,22 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
 
-    public void ToggleMenu()
+    public void ShowProfileIcon(bool show)
     {
-        if (showHideAnimator.isVisible)
-            HideMenu();
-        else
-        {
-            showHideAnimator.Show();
-            CommonScriptableObjects.isProfileHUDOpen.Set(true);
-            Opened?.Invoke(this, EventArgs.Empty);
-        }
+        profilePicObject.SetActive(show);
     }
 
-    public void HideMenu()
+    public void ShowExpanded(bool show)
     {
-        if (showHideAnimator.isVisible)
-        {
-            showHideAnimator.Hide();
-            CommonScriptableObjects.isProfileHUDOpen.Set(false);
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
+        expandedObject.SetActive(show);
     }
 
     public void SetVisibility(bool visible)
     {
-        if (visible && !showHideAnimator.isVisible)
-            showHideAnimator.Show();
-        else if (!visible && showHideAnimator.isVisible)
-            showHideAnimator.Hide();
     }
 
     public void SetProfile(UserProfile userProfile)
     {
-        expandedLayoutAnimator.Show();
-
         profile = userProfile;
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
@@ -177,8 +160,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         polygonManaCounterView.buttonManaInfo.onClick.AddListener(() => ManaInfoPressed?.Invoke(this, EventArgs.Empty));
         manaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
         polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => ManaPurchasePressed?.Invoke(this, EventArgs.Empty));
-
-        closeActionDelegate = (x) => HideMenu();
 
         buttonToggleMenu.onClick.AddListener(OpenStartMenu);
         buttonCopyAddress.onClick.AddListener(CopyAddress);
@@ -224,8 +205,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
             }
             DataStore.i.exploreV2.isOpen.Set(true);
         }
-        else
-            ToggleMenu();
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)

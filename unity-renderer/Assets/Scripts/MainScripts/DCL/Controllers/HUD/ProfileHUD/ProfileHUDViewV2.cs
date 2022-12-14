@@ -14,14 +14,15 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
 
-    [SerializeField] private ShowHideAnimator expandedLayoutAnimator;
-    [SerializeField] private ShowHideAnimator avatarPicLayoutAnimator;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal ShowHideAnimator copyToast;
     [SerializeField] internal GameObject copyTooltip;
+    [SerializeField] private GameObject expandedObject;
+    [SerializeField] private GameObject profilePicObject;
     [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal Canvas mainCanvas;
+    [SerializeField] internal Button viewPassportButton;
 
     [Header("Hide GOs on claimed name")]
     [SerializeField]
@@ -84,6 +85,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private UserProfile profile = null;
     private Regex nameRegex = null;
     private string description;
+    private string userId;
+    private StringVariable currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -102,8 +105,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public event EventHandler PrivacyPolicyPressed;
 
     internal bool isStartMenuInitialized = false;
-    private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
+    private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     public BaseComponentView BaseView => this;
     public GameObject GameObject => gameObject;
@@ -112,23 +115,14 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
 
     public bool HasManaCounterView() => manaCounterView != null;
-
     public bool HasPolygonManaCounterView() => polygonManaCounterView != null;
-
     public bool IsDesciptionIsLongerThanMaxCharacters() => descriptionInputText.characterLimit < descriptionInputText.text.Length;
-
     public void SetManaBalance(string balance) => manaCounterView.SetBalance(balance);
-
     public void SetPolygonBalance(double balance) => polygonManaCounterView.SetBalance(balance);
-
     public void SetWalletSectionEnabled(bool isEnabled) => connectedWalletSection.SetActive(isEnabled);
-
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
-
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
-
     public override void RefreshControl() { }
-
 
     public void SetDescription(string description)
     {
@@ -147,8 +141,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     public void SetProfile(UserProfile userProfile)
     {
-        expandedLayoutAnimator.Show();
-
         profile = userProfile;
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
@@ -159,6 +151,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         HandleProfileAddress(userProfile);
         HandleProfileSnapshot(userProfile);
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+        SetUserId(userProfile);
         ForceLayoutToRefreshSize();
 
         description = profile.description;
@@ -177,6 +170,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
+    private void SetUserId(UserProfile userProfile)
+    {
+        userId = userProfile.userId;
+    }
+
     private void OpenStartMenu()
     {
         if (isStartMenuInitialized)
@@ -190,38 +188,20 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             }
             DataStore.i.exploreV2.isOpen.Set(true);
         }
-        else
-            ToggleMenu();
     }
 
-    public void ToggleMenu()
+    public void ShowProfileIcon(bool show)
     {
-        if (showHideAnimator.isVisible)
-            HideMenu();
-        else
-        {
-            showHideAnimator.Show();
-            CommonScriptableObjects.isProfileHUDOpen.Set(true);
-            Opened?.Invoke(this, EventArgs.Empty);
-        }
+        profilePicObject.SetActive(show);
     }
 
-    public void HideMenu()
+    public void ShowExpanded(bool show)
     {
-        if (showHideAnimator.isVisible)
-        {
-            showHideAnimator.Hide();
-            CommonScriptableObjects.isProfileHUDOpen.Set(false);
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
+        expandedObject.SetActive(show);
     }
 
     public void SetVisibility(bool visible)
     {
-        if (visible && !base.showHideAnimator.isVisible)
-            base.showHideAnimator.Show();
-        else if (!visible && base.showHideAnimator.isVisible)
-            base.showHideAnimator.Hide();
     }
 
     public void ActivateProfileNameEditionMode(bool activate)
@@ -239,18 +219,13 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    public bool IsValidAvatarName(string name)
-    {
-        if (nameRegex == null)
-            return true;
-
-        return nameRegex.IsMatch(name);
-    }
     public void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
-
 
     private void Awake()
     {
+        if (currentPlayerId == null)
+            currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
@@ -294,10 +269,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             SetDescriptionIsEditing(true);
             UpdateDescriptionCharLimit(description);
         });
-        descriptionInputText.onValueChanged.AddListener(description =>
-        {
-            UpdateDescriptionCharLimit(description);
-        });
+        descriptionInputText.onValueChanged.AddListener(UpdateDescriptionCharLimit);
         descriptionInputText.onDeselect.AddListener(description =>
         {
             this.description = description;
@@ -311,9 +283,19 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
 
+        viewPassportButton.onClick.RemoveAllListeners();
+        viewPassportButton.onClick.AddListener(OpenPassport);
         Show(false);
     }
 
+    private void OpenPassport()
+    {
+        if (string.IsNullOrEmpty(userId))
+            return;
+
+        ShowExpanded(false);
+        currentPlayerId.Set(userId);
+    }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
     {

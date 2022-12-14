@@ -60,14 +60,4 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.SetVisibility(false);
         Assert.IsFalse(baseView.showHideAnimator.isVisible);
     }
-
-    [Test]
-    public void ContentVisibilityOnToggle()
-    {
-        Assert.IsTrue(baseView.showHideAnimator.isVisible);
-        controller.view.ToggleMenu();
-        Assert.IsFalse(baseView.showHideAnimator.isVisible);
-        controller.view.ToggleMenu();
-        Assert.IsTrue(baseView.showHideAnimator.isVisible);
-    }
 }

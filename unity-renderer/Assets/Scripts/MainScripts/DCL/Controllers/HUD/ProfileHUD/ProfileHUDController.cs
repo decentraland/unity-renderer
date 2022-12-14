@@ -16,7 +16,6 @@ public class ProfileHUDController : IHUD
         public bool connectedWallet;
     }
 
-
     private const string URL_CLAIM_NAME = "https://builder.decentraland.org/claim-name";
     private const string URL_MANA_INFO = "https://docs.decentraland.org/examples/get-a-wallet";
     private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
@@ -54,7 +53,8 @@ public class ProfileHUDController : IHUD
         view = viewGo.GetComponent<IProfileHUDView>();
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
-        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
+        DataStore.i.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
 
         view.SetWalletSectionEnabled(false);
         view.SetNonWalletSectionEnabled(false);
@@ -83,8 +83,6 @@ public class ProfileHUDController : IHUD
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += OnMouseLocked;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
         {
@@ -96,18 +94,19 @@ public class ProfileHUDController : IHUD
         ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
 
+    private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
+    {
+        view.ShowExpanded(isOpenCurrent);
+    }
+
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) => view.GameObject.SetActive(current);
 
     public void SetManaBalance(string balance) => view?.SetManaBalance(balance);
 
     public void SetPolygonManaBalance(double balance) => view?.SetPolygonBalance(balance);
 
-    public void HideProfileMenu() => view?.HideMenu();
-
     public void SetVisibility(bool visible)
     {
-        view?.SetVisibility(visible);
-
         if (visible && fetchManaIntervalRoutine == null)
             fetchManaIntervalRoutine = CoroutineStarter.Start(ManaIntervalRoutine());
         else if (!visible && fetchManaIntervalRoutine != null)
@@ -138,8 +137,6 @@ public class ProfileHUDController : IHUD
 
         ownUserProfile.OnUpdate -= OnProfileUpdated;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock -= OnMouseLocked;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
@@ -156,8 +153,6 @@ public class ProfileHUDController : IHUD
 
 
     private void OnProfileUpdated(UserProfile profile) => view?.SetProfile(profile);
-
-    private void OnMouseLocked() => HideProfileMenu();
 
     private void ExploreV2Changed(bool current, bool previous) => view.SetStartMenuButtonActive(current);
 
@@ -185,10 +180,12 @@ public class ProfileHUDController : IHUD
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
     {
-        view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
+        //Debug.Log($"set fullscreen {currentIsFullScreenMenuMode}");
+        //view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
 
-        if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
-            view.ToggleMenu();
+        //if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
+        //    view.ToggleMenu();
+        view.ShowProfileIcon(!currentIsFullScreenMenuMode);
     }
 
 
