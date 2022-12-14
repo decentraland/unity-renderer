@@ -10,6 +10,7 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
+using Decentraland.Common;
 using UnityEngine;
 using Environment = DCL.Environment;
 using Font = DCL.ECSComponents.Font;
@@ -22,7 +23,7 @@ public class ECSTestScene : MonoBehaviour
     }
 
     private static ContentProvider contentProvider;
-    
+
     private static void SceneScript(int sceneNumber, IECSComponentWriter componentWriter)
     {
         componentWriter.PutComponent(sceneNumber, 101, ComponentID.TRANSFORM,
@@ -46,9 +47,9 @@ public class ECSTestScene : MonoBehaviour
         {
             Pbr = new PBMaterial.Types.PbrMaterial()
             {
-                Texture = new DCL.ECSComponents.TextureUnion()
+                Texture = new Decentraland.Common.TextureUnion()
                 {
-                    Texture = new DCL.ECSComponents.Texture()
+                    Texture = new Decentraland.Common.Texture()
                     {
                         Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                     }

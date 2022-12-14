@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.CRDT;
 using DCL.Helpers;
 using DCL.Models;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;

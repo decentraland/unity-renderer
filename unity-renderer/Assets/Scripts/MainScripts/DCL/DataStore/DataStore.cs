@@ -40,7 +40,6 @@ namespace DCL
         public DataStore_Common common => i.Get<DataStore_Common>();
         public DataStore_Realm realm => i.Get<DataStore_Realm>();
         public DebugConfig debugConfig => i.Get<DebugConfig>();
-        public DataStore_BuilderInWorld builderInWorld => i.Get<DataStore_BuilderInWorld>();
         public DataStore_Quests Quests => i.Get<DataStore_Quests>();
         public DataStore_HUDs HUDs => i.Get<DataStore_HUDs>();
         public DataStore_Player player => i.Get<DataStore_Player>();

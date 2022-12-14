@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HideUIControlConfiguration
   m_EditorClassIdentifier: 
   title: HIDE UI
-  controlPrefab: {fileID: 202718616210799590, guid: aa5ca631e7cc4b543bf10102794f0eea,
+  controlPrefab: {fileID: 6580391891136655319, guid: 61fc2c179901ae844b48e21ae215a102,
     type: 3}
   controlController: {fileID: 11400000, guid: 91ca57d9be929074a9512f2683976c78, type: 2}
   flagsThatDisableMe: []

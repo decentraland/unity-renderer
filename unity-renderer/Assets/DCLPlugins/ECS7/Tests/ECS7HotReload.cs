@@ -10,6 +10,7 @@ using DCL.ECS7;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using KernelCommunication;
 using NSubstitute;

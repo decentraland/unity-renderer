@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AllowVoiceChatControlConfiguration
   m_EditorClassIdentifier: 
   title: ALLOW VOICE CHAT
-  controlPrefab: {fileID: 3856968550380144319, guid: 12ace77c1b449714b89d5793ef36f983,
+  controlPrefab: {fileID: 8852572457185032948, guid: c0ade9dc46c001b4aa3b78d09158ef63,
     type: 3}
   controlController: {fileID: 11400000, guid: ed9c1e48bd6951344a98119528b00590, type: 2}
   flagsThatDisableMe: []

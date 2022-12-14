@@ -54,6 +54,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<Transform> topNotificationPanelTransform => DataStore.i.HUDs.topNotificationPanelTransform;
     internal BaseVariable<bool> isExperiencesViewerOpen => DataStore.i.experiencesViewer.isOpen;
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
+    internal BaseVariable<string> openPrivateChat => DataStore.i.HUDs.openPrivateChat;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
@@ -111,7 +112,6 @@ public class TaskbarHUDController : IHUD
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
-        DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
 
         isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
         InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
@@ -124,6 +124,8 @@ public class TaskbarHUDController : IHUD
 
         numOfLoadedExperiences.OnChange += NumOfLoadedExperiencesChanged;
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
+
+        openPrivateChat.OnChange += OpenPrivateChatFromPassport;
     }
 
     private void HandleFriendsToggle(bool show)
@@ -242,7 +244,7 @@ public class TaskbarHUDController : IHUD
                                        EventSystem.current.currentSelectedGameObject != null &&
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() !=
                                        null;
-                                       
+
         if (anyInputFieldIsSelected) return;
 
         mouseCatcher.UnlockCursor();
@@ -361,6 +363,15 @@ public class TaskbarHUDController : IHUD
         view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
     }
 
+    private void OpenPrivateChatFromPassport(string current, string previous)
+    {
+        if (current == "" || current == previous)
+            return;
+
+        OpenPrivateChat(current);
+        openPrivateChat.Set("", false);
+    }
+
     public void OpenPrivateChat(string userId)
     {
         worldChatWindowHud.SetVisibility(false);
@@ -455,7 +466,7 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        
+
         chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = channelChatWindow;
     }
@@ -476,7 +487,7 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        
+
         chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = publicChatWindow;
     }
@@ -493,7 +504,7 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        
+
         chatToggleTargetWindow = worldChatWindowHud;
     }
 
@@ -689,7 +700,7 @@ public class TaskbarHUDController : IHUD
     {
         const string nearbyChannelId = "nearby";
         const string conversationListId = "conversationList";
-        
+
         if (chatId == nearbyChannelId)
             OpenPublicChat(nearbyChannelId, true);
         else if (chatController.GetAllocatedChannel(chatId) != null)
@@ -758,7 +769,6 @@ public class TaskbarHUDController : IHUD
         if (toggleWorldChatTrigger != null)
             toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
 
-        DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         isEmotesWheelInitialized.OnChange -= InitializeEmotesSelector;
         isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
@@ -825,7 +835,7 @@ public class TaskbarHUDController : IHUD
     public void AddChannelCreation(CreateChannelWindowController controller)
     {
         if (controller.View.Transform.parent == view.fullScreenWindowContainer) return;
-        
+
         controller.View.Transform.SetParent(view.fullScreenWindowContainer, false);
         experiencesViewerTransform?.SetAsLastSibling();
 
