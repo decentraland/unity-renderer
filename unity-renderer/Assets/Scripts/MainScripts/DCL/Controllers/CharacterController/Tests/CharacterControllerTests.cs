@@ -400,7 +400,7 @@ namespace Tests
         public void CharacterContainsCorrectGroundLayers()
         {
             var groundLayerMask = DCLCharacterController.i.groundLayers.value;
-            Assert.IsTrue((groundLayerMask
+            Assert.IsTrue((0
                            | (1 << PhysicsLayers.defaultLayer)
                            | (1 << PhysicsLayers.characterOnlyLayer)
                            | (1 << LayerMask.NameToLayer("Ground"))
