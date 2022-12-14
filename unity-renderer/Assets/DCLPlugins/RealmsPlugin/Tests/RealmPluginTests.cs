@@ -3,6 +3,7 @@ using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
+using WorldsFeaturesAnalytics;
 
 namespace DCLPlugins.RealmPlugin
 {
@@ -10,14 +11,18 @@ namespace DCLPlugins.RealmPlugin
     {
         private RealmPlugin realmPlugin;
         private IRealmModifier genericModifier;
+        private IWorldsAnalytics analytics;
 
         [SetUp]
         public void SetUp()
         {
-            realmPlugin = new RealmPlugin(DataStore.i);
+            analytics = Substitute.For<IWorldsAnalytics>();
+            realmPlugin = new RealmPlugin(DataStore.i, analytics);
             genericModifier = Substitute.For<IRealmModifier>();
+
             var substituteModifiers = new List<IRealmModifier>
                 { genericModifier };
+
             realmPlugin.realmsModifiers = substituteModifiers;
         }
 
@@ -33,6 +38,7 @@ namespace DCLPlugins.RealmPlugin
 
             // Assert
             genericModifier.Received(1).OnEnteredRealm(isWorld, Arg.Any<AboutResponse.Types.AboutConfiguration>());
+            analytics.Received(1).OnEnteredRealm(isWorld, Arg.Any<string>());
         }
 
         private static bool[] isWorldCases = { false, true };
