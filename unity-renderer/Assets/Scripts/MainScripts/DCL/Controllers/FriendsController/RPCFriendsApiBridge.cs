@@ -1,12 +1,15 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Social.Friends;
+using Decentraland.Renderer.KernelServices;
+using Decentraland.Renderer.RendererServices;
 using JetBrains.Annotations;
 using RPC;
 using rpc_csharp;
 using System;
 using System.Linq;
 using System.Threading;
+using GetFriendRequestsPayload = Decentraland.Renderer.KernelServices.GetFriendRequestsPayload;
 
 namespace DCl.Social.Friends
 {

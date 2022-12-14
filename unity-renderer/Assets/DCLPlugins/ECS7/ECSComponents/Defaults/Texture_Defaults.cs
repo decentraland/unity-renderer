@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using Decentraland.Common;
 
 namespace DCL.ECSComponents
 {
@@ -15,7 +16,7 @@ namespace DCL.ECSComponents
                     return self.Texture.GetTextureUrl(scene);
             }
         }
-        
+
         public static UnityEngine.TextureWrapMode GetWrapMode(this TextureUnion self)
         {
             switch (self.TexCase)
@@ -27,7 +28,7 @@ namespace DCL.ECSComponents
                     return self.Texture.GetWrapMode();
             }
         }
-        
+
         public static UnityEngine.FilterMode GetFilterMode(this TextureUnion self)
         {
             switch (self.TexCase)
@@ -39,37 +40,37 @@ namespace DCL.ECSComponents
                     return self.Texture.GetFilterMode();
             }
         }
-        
-        public static string GetTextureUrl(this ECSComponents.Texture self, IParcelScene scene)
+
+        public static string GetTextureUrl(this Decentraland.Common.Texture self, IParcelScene scene)
         {
             if (string.IsNullOrEmpty(self.Src))
                 return self.Src;
-            
+
             scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl);
 
             return textureUrl;
         }
-        
+
         public static string GetTextureUrl(this AvatarTexture self)
         {
             return KernelConfig.i.Get().avatarTextureAPIBaseUrl + self.UserId;
         }
-        
-        public static UnityEngine.TextureWrapMode GetWrapMode(this ECSComponents.Texture self)
+
+        public static UnityEngine.TextureWrapMode GetWrapMode(this Decentraland.Common.Texture self)
         {
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
-        
+
         public static UnityEngine.TextureWrapMode GetWrapMode(this AvatarTexture self)
         {
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this ECSComponents.Texture self)
+        public static UnityEngine.FilterMode GetFilterMode(this Decentraland.Common.Texture self)
         {
             return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
         }
-        
+
         public static UnityEngine.FilterMode GetFilterMode(this AvatarTexture self)
         {
             return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/GeneratedCode/Decentraland/renderer/kernel_services/AnalyticsService.gen.cs.meta
+guid: addcc38ab04dd4daf902dbba67526db3
+=======
+guid: 09fbf92700c4a42078124a7ac59a0ab8
+>>>>>>> origin/dev:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/Decentraland/renderer/kernel_services/AnalyticsService.gen.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

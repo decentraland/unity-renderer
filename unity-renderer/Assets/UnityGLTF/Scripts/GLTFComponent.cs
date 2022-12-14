@@ -100,7 +100,8 @@ namespace UnityGLTF
         private Settings settings;
 
         private  CancellationTokenSource ctokenSource;
-        
+        private bool scheduledToCleanUp;
+
         private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant:enabled";
 
 
@@ -306,7 +307,7 @@ namespace UnityGLTF
                         else
                             OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
                     }
-                    
+
                     CleanUp();
                     Destroy(loadingPlaceholder);
                     Destroy(this);
@@ -385,7 +386,7 @@ namespace UnityGLTF
                 return;
 #endif
             CleanUp();
-            
+
             if (state != State.COMPLETED)
             {
                 ctokenSource.Cancel();
@@ -394,6 +395,8 @@ namespace UnityGLTF
         }
         private void CleanUp()
         {
+            scheduledToCleanUp = true;
+
             if (state == State.QUEUED)
             {
                 DequeueDownload();
@@ -424,7 +427,7 @@ namespace UnityGLTF
 
         float IDownloadQueueElement.GetSqrDistance()
         {
-            if (mainCamera == null || transform == null)
+            if (scheduledToCleanUp || mainCamera == null || transform == null)
                 return float.MaxValue;
 
             Vector3 cameraPosition = mainCamera.transform.position;

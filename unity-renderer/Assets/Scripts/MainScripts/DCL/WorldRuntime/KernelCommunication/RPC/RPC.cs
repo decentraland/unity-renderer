@@ -1,5 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL.Interface;
+using Decentraland.Renderer.KernelServices;
 using RPC;
 using rpc_csharp;
 using UnityEngine.Device;

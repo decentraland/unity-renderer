@@ -6,24 +6,28 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Skybox Time", fileName = "SkyboxTime")]
     public class SkyboxTimeControlController : SliderSettingsControlController
     {
+        private readonly DataStore_SkyboxConfig skyboxConfig = DataStore.i.skyboxConfig;
+
         public override void Initialize()
         {
             base.Initialize();
             UpdateSetting(currentGeneralSettings.skyboxTime);
 
-            DataStore.i.skyboxConfig.mode.OnChange += OnSkyboxModeChanged;
+            skyboxConfig.mode.OnChange += OnSkyboxModeChanged;
         }
 
         private void OnSkyboxModeChanged(SkyboxMode current, SkyboxMode previous)
         {
             if (current == previous) return;
 
-            RaiseSliderValueChanged(DataStore.i.skyboxConfig.fixedTime.Get());
-            UpdateSetting(DataStore.i.skyboxConfig.fixedTime.Get());
+            RaiseSliderValueChanged((float)GetStoredValue());
+            UpdateSetting(GetStoredValue());
         }
 
         public override object GetStoredValue() =>
-            currentGeneralSettings.skyboxTime;
+            skyboxConfig.mode.Equals(SkyboxMode.Dynamic)
+                ? (object)currentGeneralSettings.skyboxTime
+                : skyboxConfig.fixedTime.Get();
 
         public override void UpdateSetting(object newValue)
         {
@@ -38,7 +42,7 @@ namespace DCL.SettingsControls
 
             RaiseOnIndicatorLabelChange($"{hourSection:00}:{minuteSection:00}");
 
-            DataStore.i.skyboxConfig.fixedTime.Set(valueAsFloat);
+            skyboxConfig.fixedTime.Set(valueAsFloat);
         }
     }
 }

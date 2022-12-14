@@ -37,8 +37,10 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
             return;
 
         SetName(model.name);
+        SetShowMarketplaceButton(model.showMarketplaceButton);
         SetMarketplaceURI(model.marketplaceURI);
         SetImageURI(model.imageURI);
+        SetShowType(model.showType);
         SetType(model.type);
         SetRarity(model.rarity);
     }
@@ -66,6 +68,14 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         nftImage.SetImage(imageURI);
     }
 
+    public void SetShowType(bool showType)
+    {
+        model.showType = showType;
+
+        typeImage.gameObject.SetActive(showType);
+        rarityBackgroundImage.gameObject.SetActive(showType);
+    }
+
     public void SetType(string type)
     {
         model.type = type;
@@ -80,9 +90,17 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         rarityBackgroundImage.color = nftTypesIcons.GetColor(rarity);
     }
 
+    public void SetShowMarketplaceButton(bool showMarketplaceButton)
+    {
+        model.showMarketplaceButton = showMarketplaceButton;
+    }
+
     public override void OnFocus()
     {
         base.OnFocus();
+
+        if (!model.showMarketplaceButton)
+            return;
 
         marketplaceSection.SetActive(true);
     }
@@ -90,6 +108,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
+
+        if (!model.showMarketplaceButton)
+            return;
 
         marketplaceSection.SetActive(false);
     }

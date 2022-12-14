@@ -10,14 +10,14 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Vector3 = DCL.ECSComponents.Vector3;
+using Vector3 = Decentraland.Common.Vector3;
 
 namespace Tests
 {
     public class ECSRaycastShould
     {
         private IECSComponentWriter componentWriter;
-        
+
         private ECS7TestUtilsScenesAndEntities testUtils;
 
         private ECS7TestScene scene;
@@ -26,7 +26,7 @@ namespace Tests
         private ECS7TestEntity entityCollider2;
 
         private InternalECSComponents internalComponents;
-        
+
         [SetUp]
         protected void SetUp()
         {
@@ -38,24 +38,24 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
 
             scene = testUtils.CreateScene(666);
-            
+
             entityRaycaster = scene.CreateEntity(512);
-            
+
             entityCollider1 = scene.CreateEntity(513);
-            entityCollider1.gameObject.transform.position = 
+            entityCollider1.gameObject.transform.position =
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 8));
             var colliderEntity1 =  entityCollider1.gameObject.AddComponent<BoxCollider>();
             internalComponents.physicColliderComponent.PutFor(scene, entityCollider1,
                 new InternalColliders() { colliders = new List<Collider>() { colliderEntity1 } });
-            
-            
+
+
             entityCollider2 = scene.CreateEntity(514);
-            entityCollider2.gameObject.transform.position = 
+            entityCollider2.gameObject.transform.position =
                 PositionUtils.WorldToUnityPosition(new UnityEngine.Vector3(8, 1, 12));
             var colliderEntity2 = entityCollider2.gameObject.AddComponent<BoxCollider>();
             internalComponents.physicColliderComponent.PutFor(scene, entityCollider2,
                 new InternalColliders() { colliders = new List<Collider>() { colliderEntity2 } });
-            
+
 
         }
 
@@ -77,17 +77,17 @@ namespace Tests
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
-            raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);           
-            
+            raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 0),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
         }
-        
+
         [Test]
         public void HitOneEntity()
         {
@@ -100,18 +100,18 @@ namespace Tests
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
-                
+
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
         }
-        
+
         [Test]
         public void HitTwoEntities()
         {
@@ -124,24 +124,24 @@ namespace Tests
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
-                
+
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 2),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
 
         }
-        
+
         [UnityTest]
         public IEnumerator ReturnResultsWithDifferentTimestamps()
         {
             RaycastComponentHandler.ResetRaycastResponseTimestamp();
-            
+
             PBRaycast raycast = new PBRaycast()
             {
                 Origin = new Vector3() { X = 8.0f, Y = 0.5f, Z = 0.0f },
@@ -151,33 +151,33 @@ namespace Tests
             };
 
             RaycastComponentHandler raycastHander = new RaycastComponentHandler(componentWriter, internalComponents.physicColliderComponent);
-                
+
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == 0),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
 
             yield return null;
-            
+
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster, raycast);
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == 1),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
-            
+
             ECS7TestEntity entityRaycaster2 = scene.CreateEntity(666);
             raycastHander.OnComponentModelUpdated(scene, entityRaycaster2, raycast);
             componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber, 
-                entityRaycaster2.entityId, 
-                ComponentID.RAYCAST_RESULT, 
+                scene.sceneData.sceneNumber,
+                entityRaycaster2.entityId,
+                ComponentID.RAYCAST_RESULT,
                 Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == 2),
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );

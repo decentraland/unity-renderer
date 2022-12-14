@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using Decentraland.Renderer.KernelServices;
 using UnityEngine;
 using Environment = System.Environment;
 
