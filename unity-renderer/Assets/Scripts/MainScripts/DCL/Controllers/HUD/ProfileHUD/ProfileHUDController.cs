@@ -149,7 +149,10 @@ public class ProfileHUDController : IHUD
     }
 
 
-    protected virtual GameObject GetViewPrefab() => Resources.Load<GameObject>("ProfileHUD_V2");
+    protected virtual GameObject GetViewPrefab()
+    {
+        return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD");
+    }
 
 
     private void OnProfileUpdated(UserProfile profile) => view?.SetProfile(profile);
