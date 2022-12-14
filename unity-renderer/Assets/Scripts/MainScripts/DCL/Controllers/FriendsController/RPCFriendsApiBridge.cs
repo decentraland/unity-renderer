@@ -10,7 +10,7 @@ using rpc_csharp;
 using System;
 using System.Linq;
 using System.Threading;
-using GetFriendRequestsPayload = Decentraland.Renderer.KernelServices.GetFriendRequestsPayload;
+using KernelGetFriendRequestsPayload = Decentraland.Renderer.KernelServices.GetFriendRequestsPayload;
 using KernelRejectFriendRequestReply = Decentraland.Renderer.KernelServices.RejectFriendRequestReply;
 using KernelRejectFriendRequestPayload = Decentraland.Renderer.KernelServices.RejectFriendRequestPayload;
 using KernelCancelFriendRequestReply = Decentraland.Renderer.KernelServices.CancelFriendRequestReply;
@@ -132,7 +132,7 @@ namespace DCl.Social.Friends
         public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
         {
             GetFriendRequestsReply response = await rpc.FriendRequests()
-                                                       .GetFriendRequests(new GetFriendRequestsPayload
+                                                       .GetFriendRequests(new KernelGetFriendRequestsPayload
                                                         {
                                                             SentLimit = sentLimit,
                                                             SentSkip = sentSkip,
