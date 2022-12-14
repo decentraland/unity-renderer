@@ -111,7 +111,6 @@ public class TaskbarHUDController : IHUD
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
-        DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
 
         isExperiencesViewerInitialized.OnChange += InitializeExperiencesViewer;
         InitializeExperiencesViewer(isExperiencesViewerInitialized.Get(), null);
@@ -769,7 +768,6 @@ public class TaskbarHUDController : IHUD
         if (toggleWorldChatTrigger != null)
             toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
 
-        DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         isEmotesWheelInitialized.OnChange -= InitializeEmotesSelector;
         isEmotesVisible.OnChange -= IsEmotesVisibleChanged;
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;

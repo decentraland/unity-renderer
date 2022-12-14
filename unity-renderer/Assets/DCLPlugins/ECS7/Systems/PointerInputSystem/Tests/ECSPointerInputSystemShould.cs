@@ -27,7 +27,7 @@ namespace Tests
         private IECSInteractionHoverCanvas interactionHoverCanvas;
         private ECSComponentsManager componentsManager;
         private InternalECSComponents internalComponents;
-        
+
         private Collider colliderEntity1;
         private Collider colliderEntity2;
 
@@ -566,7 +566,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipInput(1, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
         }
-        
+
         [Test]
         [TestCase(0,0)]
         [TestCase(66,66)]
@@ -579,7 +579,7 @@ namespace Tests
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
                 new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
-            
+
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
                 Substitute.For<BaseVariable<UnityEngine.Vector3>>());
@@ -587,14 +587,14 @@ namespace Tests
             var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
             var transformModel = new ECSTransform() { position = entityLocalPosition };
             transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
-            
+
             dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = testEntityCollider;
-            
+
             // 3. update pointer ray hit values with object unity position
             var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, newTestScene);
             dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
@@ -608,21 +608,21 @@ namespace Tests
 
             Assert.AreEqual(testEntity.entityId, enqueuedEvent.hit.EntityId);
             Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
-            
+
             // 5. Check enqueued event has correct position and origin
-            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z
             }, enqueuedEvent.hit.Position);
-            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z - 3
             }, enqueuedEvent.hit.Origin);
-            
+
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);
         }

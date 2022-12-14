@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using rpc_csharp;
 using rpc_csharp.protocol;

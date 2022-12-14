@@ -1,3 +1,5 @@
+using Decentraland.Common;
+
 namespace DCL.ECSComponents
 {
     public static class PBMaterial_Defaults
@@ -6,10 +8,10 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null && self.Pbr.HasAlphaTest)
                 return self.Pbr.HasAlphaTest ? self.Pbr.AlphaTest : 0.5f;
-            
+
             if (self.Unlit != null && self.Unlit.HasAlphaTest)
                 return self.Unlit.HasAlphaTest ? self.Unlit.AlphaTest : 0.5f;
-            
+
             return 0.5f;
         }
 
@@ -17,10 +19,10 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return !self.Pbr.HasCastShadows || self.Pbr.CastShadows;
-            
+
             if (self.Unlit != null)
                 return !self.Unlit.HasCastShadows || self.Unlit.CastShadows;
-            
+
             return true;
         }
 
@@ -28,7 +30,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.AlbedoColor ?? new Color3(Color_Defaults.colorWhite);
-            
+
             return new Color3(Color_Defaults.colorWhite);
         }
 
@@ -36,7 +38,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.EmissiveColor ?? new Color3(Color_Defaults.colorBlack);
-            
+
             return new Color3(Color_Defaults.colorBlack);
         }
 
@@ -44,7 +46,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.ReflectivityColor ?? new Color3(Color_Defaults.colorWhite);
-            
+
             return new Color3(Color_Defaults.colorWhite);
         }
 
@@ -52,7 +54,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasTransparencyMode ? self.Pbr.TransparencyMode : MaterialTransparencyMode.MtmAuto;
-            
+
             return MaterialTransparencyMode.MtmAuto;
         }
 
@@ -60,7 +62,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasMetallic ? self.Pbr.Metallic : 0.5f;
-            
+
             return 0.5f;
         }
 
@@ -68,7 +70,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasRoughness ? self.Pbr.Roughness : 0.5f;
-           
+
             return 0.5f;
         }
 
@@ -76,7 +78,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasGlossiness ? self.Pbr.Glossiness : 1f;
-            
+
             return 1f;
         }
 
@@ -84,7 +86,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasSpecularIntensity ? self.Pbr.SpecularIntensity : 1f;
-            
+
             return 1f;
         }
 
@@ -92,7 +94,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasEmissiveIntensity ? self.Pbr.EmissiveIntensity : 2f;
-            
+
             return 2f;
         }
 
@@ -100,7 +102,7 @@ namespace DCL.ECSComponents
         {
             if (self.Pbr != null)
                 return self.Pbr.HasDirectIntensity ? self.Pbr.DirectIntensity : 1f;
-            
+
             return 1f;
         }
     }

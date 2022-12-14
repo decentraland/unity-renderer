@@ -1,6 +1,8 @@
 using DCL.CameraTool;
 using DCL.Helpers;
+using Decentraland.Common;
 using UnityEngine;
+using Vector3 = Decentraland.Common.Vector3;
 
 namespace DCL.ECSComponents
 {
