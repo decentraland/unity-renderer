@@ -2,7 +2,8 @@
 using Decentraland.Renderer.KernelServices;
 using RPC;
 using rpc_csharp;
-
+using System;
+using UnityEngine;
 
 namespace DCL
 {
@@ -58,10 +59,7 @@ namespace DCL
                 GraphicsMemorySize = (uint)SystemInfo.graphicsMemorySize,
                 ProcessorType = SystemInfo.processorType,
                 ProcessorCount = (uint)SystemInfo.processorCount,
-                SystemMemorySize = (uint)SystemInfo.systemMemorySize,
-
-                // TODO: remove useBinaryTransform after ECS7 is fully in prod
-                UseBinaryTransform = true,
+                SystemMemorySize = (uint)SystemInfo.systemMemorySize
             });
         }
 
