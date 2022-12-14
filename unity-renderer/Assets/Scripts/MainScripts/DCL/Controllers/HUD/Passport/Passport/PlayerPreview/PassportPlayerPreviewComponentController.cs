@@ -3,7 +3,6 @@ using DCL.Helpers;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Threading;
-using UnityEngine;
 
 namespace DCL.Social.Passports
 {

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4415852118584911807}
+  - component: {fileID: 2082359229890880631}
   m_Layer: 5
   m_Name: PassportLink
   m_TagString: Untagged
@@ -37,6 +38,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 130, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2082359229890880631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8647875992909336317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b908d1e485fbd4e8c92bd69064128cfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  clickLinkButton: {fileID: 1173386985502581509}
+  buttonText: {fileID: 7540459930403032643}
 --- !u!1001 &6242145505980998383
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -451,9 +467,33 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1727543226122190079, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
+--- !u!114 &1173386985502581509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
+    type: 3}
+  m_PrefabInstance: {fileID: 6242145505980998383}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6224679194786298818 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
     type: 3}
   m_PrefabInstance: {fileID: 6242145505980998383}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7540459930403032643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
+    type: 3}
+  m_PrefabInstance: {fileID: 6242145505980998383}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

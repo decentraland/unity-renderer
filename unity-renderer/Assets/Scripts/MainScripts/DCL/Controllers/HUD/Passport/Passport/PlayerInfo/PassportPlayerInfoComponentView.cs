@@ -1,4 +1,3 @@
-using DCl.Social.Friends;
 using System;
 using System.Collections;
 using UnityEngine;
