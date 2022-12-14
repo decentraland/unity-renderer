@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
+using Decentraland.Renderer.KernelServices;
 using Google.Protobuf.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using Newtonsoft.Json;

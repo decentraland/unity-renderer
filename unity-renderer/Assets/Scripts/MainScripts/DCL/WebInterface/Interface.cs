@@ -694,7 +694,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-        
+
         [Serializable]
         private class LeaveChannelPayload
         {
@@ -1478,18 +1478,6 @@ namespace DCL.Interface
         {
             baseResEvent.baseResolution = resolution;
             SendMessage("SetBaseResolution", baseResEvent);
-        }
-
-        public static void ReportAnalyticsEvent(string eventName) { ReportAnalyticsEvent(eventName, null); }
-
-        public static void ReportAnalyticsEvent(string eventName, AnalyticProperty[] eventProperties)
-        {
-            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
-            analytics?.AnalyticsEvent(new AnalyticsEventRequest()
-            {
-                EventName = eventName,
-                Properties = { eventProperties },
-            });
         }
 
         public static void FetchBalanceOfMANA() { SendMessage("FetchBalanceOfMANA"); }

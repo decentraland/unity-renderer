@@ -1,6 +1,8 @@
+using DCL;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Interface;
+using Decentraland.Renderer.KernelServices;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -20,7 +22,12 @@ public class Analytics : IAnalytics
 
     internal void SendToSegment(string eventName, Dictionary<string, string> data)
     {
-        WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new AnalyticProperty() { Key = x.Key, Value = x.Value }).ToArray());
+        ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+        analytics?.AnalyticsEvent(new AnalyticsEventRequest()
+        {
+            EventName = eventName,
+            Properties = { data.Select(x => new AnalyticProperty() { Key = x.Key, Value = x.Value }).ToArray() },
+        });
     }
 
     public void Dispose() { }

@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
+using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -574,7 +575,12 @@ namespace DCL.Tutorial
                 new AnalyticProperty() { Key = "step name", Value = StepNameForStatsMessage(stepName) },
             };
 
-            WebInterface.ReportAnalyticsEvent("tutorial step started", properties);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+            analytics?.AnalyticsEvent(new AnalyticsEventRequest()
+            {
+                EventName = "tutorial step started",
+                Properties = { properties },
+            });
         }
 
         private static void SendStepCompletedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName, float elapsedTime)
@@ -588,7 +594,12 @@ namespace DCL.Tutorial
                 new AnalyticProperty() { Key = "elapsed time", Value = elapsedTime.ToString("0.00") }
             };
 
-            WebInterface.ReportAnalyticsEvent("tutorial step completed", properties);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+            analytics?.AnalyticsEvent(new AnalyticsEventRequest()
+            {
+                EventName = "tutorial step completed",
+                Properties = { properties },
+            });
         }
 
         private void SendSkipTutorialSegmentStats(int version, string stepName)
@@ -602,7 +613,12 @@ namespace DCL.Tutorial
                 new AnalyticProperty() { Key = "elapsed time", Value = (Time.realtimeSinceStartup - elapsedTimeInCurrentStep).ToString("0.00") }
             };
 
-            WebInterface.ReportAnalyticsEvent("tutorial skipped", properties);
+            ClientAnalyticsKernelService analytics = DCL.Environment.i.serviceLocator.Get<IRPC>().Analytics();
+            analytics?.AnalyticsEvent(new AnalyticsEventRequest()
+            {
+                EventName = "tutorial skipped",
+                Properties = { properties },
+            });
         }
 
         private static string StepNameForStatsMessage(string stepName) =>
