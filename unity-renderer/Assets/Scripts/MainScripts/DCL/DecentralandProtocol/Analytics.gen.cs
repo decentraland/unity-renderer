@@ -43,39 +43,38 @@ namespace Decentraland.Renderer.KernelServices {
             "UC5kZWNlbnRyYWxhbmQucmVuZGVyZXIua2VybmVsX3NlcnZpY2VzLlBlcmZv",
             "cm1hbmNlUmVwb3J0UmVxdWVzdC5TY2VuZVNjb3Jlc0VudHJ5GjIKEFNjZW5l",
             "U2NvcmVzRW50cnkSCwoDa2V5GAEgASgQEg0KBXZhbHVlGAIgASgQOgI4ASIb",
-            "ChlQZXJmb3JtYW5jZVJlcG9ydFJlc3BvbnNlIuEBChdTeXN0ZW1JbmZvUmVw",
+            "ChlQZXJmb3JtYW5jZVJlcG9ydFJlc3BvbnNlIsMBChdTeXN0ZW1JbmZvUmVw",
             "b3J0UmVxdWVzdBIcChRncmFwaGljc19kZXZpY2VfbmFtZRgBIAEoCRIfChdn",
             "cmFwaGljc19kZXZpY2VfdmVyc2lvbhgCIAEoCRIcChRncmFwaGljc19tZW1v",
             "cnlfc2l6ZRgDIAEoBxIWCg5wcm9jZXNzb3JfdHlwZRgEIAEoCRIXCg9wcm9j",
             "ZXNzb3JfY291bnQYBSABKAcSGgoSc3lzdGVtX21lbW9yeV9zaXplGAYgASgH",
-            "EhwKFHVzZV9iaW5hcnlfdHJhbnNmb3JtGAcgASgIIhoKGFN5c3RlbUluZm9S",
-            "ZXBvcnRSZXNwb25zZSIuChBBbmFseXRpY1Byb3BlcnR5EgsKA2tleRgBIAEo",
-            "CRINCgV2YWx1ZRgCIAEoCSJ4ChVBbmFseXRpY3NFdmVudFJlcXVlc3QSEgoK",
-            "ZXZlbnRfbmFtZRgBIAEoCRJLCgpwcm9wZXJ0aWVzGAIgAygLMjcuZGVjZW50",
-            "cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5BbmFseXRpY1Byb3Bl",
-            "cnR5IhgKFkFuYWx5dGljc0V2ZW50UmVzcG9uc2UiKQoWRGVsaWdodGVkU3Vy",
-            "dmV5UmVxdWVzdBIPCgdlbmFibGVkGAEgASgIIhkKF0RlbGlnaHRlZFN1cnZl",
-            "eVJlc3BvbnNlMvwEChZBbmFseXRpY3NLZXJuZWxTZXJ2aWNlEpgBChFQZXJm",
-            "b3JtYW5jZVJlcG9ydBI/LmRlY2VudHJhbGFuZC5yZW5kZXJlci5rZXJuZWxf",
-            "c2VydmljZXMuUGVyZm9ybWFuY2VSZXBvcnRSZXF1ZXN0GkAuZGVjZW50cmFs",
-            "YW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5QZXJmb3JtYW5jZVJlcG9y",
-            "dFJlc3BvbnNlIgASlQEKEFN5c3RlbUluZm9SZXBvcnQSPi5kZWNlbnRyYWxh",
-            "bmQucmVuZGVyZXIua2VybmVsX3NlcnZpY2VzLlN5c3RlbUluZm9SZXBvcnRS",
-            "ZXF1ZXN0Gj8uZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNl",
-            "cy5TeXN0ZW1JbmZvUmVwb3J0UmVzcG9uc2UiABKPAQoOQW5hbHl0aWNzRXZl",
-            "bnQSPC5kZWNlbnRyYWxhbmQucmVuZGVyZXIua2VybmVsX3NlcnZpY2VzLkFu",
-            "YWx5dGljc0V2ZW50UmVxdWVzdBo9LmRlY2VudHJhbGFuZC5yZW5kZXJlci5r",
-            "ZXJuZWxfc2VydmljZXMuQW5hbHl0aWNzRXZlbnRSZXNwb25zZSIAEpwBChlT",
-            "ZXREZWxpZ2h0ZWRTdXJ2ZXlFbmFibGVkEj0uZGVjZW50cmFsYW5kLnJlbmRl",
-            "cmVyLmtlcm5lbF9zZXJ2aWNlcy5EZWxpZ2h0ZWRTdXJ2ZXlSZXF1ZXN0Gj4u",
-            "ZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5EZWxpZ2h0",
-            "ZWRTdXJ2ZXlSZXNwb25zZSIAYgZwcm90bzM="));
+            "IhoKGFN5c3RlbUluZm9SZXBvcnRSZXNwb25zZSIuChBBbmFseXRpY1Byb3Bl",
+            "cnR5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCSJ4ChVBbmFseXRpY3NF",
+            "dmVudFJlcXVlc3QSEgoKZXZlbnRfbmFtZRgBIAEoCRJLCgpwcm9wZXJ0aWVz",
+            "GAIgAygLMjcuZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNl",
+            "cy5BbmFseXRpY1Byb3BlcnR5IhgKFkFuYWx5dGljc0V2ZW50UmVzcG9uc2Ui",
+            "KQoWRGVsaWdodGVkU3VydmV5UmVxdWVzdBIPCgdlbmFibGVkGAEgASgIIhkK",
+            "F0RlbGlnaHRlZFN1cnZleVJlc3BvbnNlMvwEChZBbmFseXRpY3NLZXJuZWxT",
+            "ZXJ2aWNlEpgBChFQZXJmb3JtYW5jZVJlcG9ydBI/LmRlY2VudHJhbGFuZC5y",
+            "ZW5kZXJlci5rZXJuZWxfc2VydmljZXMuUGVyZm9ybWFuY2VSZXBvcnRSZXF1",
+            "ZXN0GkAuZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5Q",
+            "ZXJmb3JtYW5jZVJlcG9ydFJlc3BvbnNlIgASlQEKEFN5c3RlbUluZm9SZXBv",
+            "cnQSPi5kZWNlbnRyYWxhbmQucmVuZGVyZXIua2VybmVsX3NlcnZpY2VzLlN5",
+            "c3RlbUluZm9SZXBvcnRSZXF1ZXN0Gj8uZGVjZW50cmFsYW5kLnJlbmRlcmVy",
+            "Lmtlcm5lbF9zZXJ2aWNlcy5TeXN0ZW1JbmZvUmVwb3J0UmVzcG9uc2UiABKP",
+            "AQoOQW5hbHl0aWNzRXZlbnQSPC5kZWNlbnRyYWxhbmQucmVuZGVyZXIua2Vy",
+            "bmVsX3NlcnZpY2VzLkFuYWx5dGljc0V2ZW50UmVxdWVzdBo9LmRlY2VudHJh",
+            "bGFuZC5yZW5kZXJlci5rZXJuZWxfc2VydmljZXMuQW5hbHl0aWNzRXZlbnRS",
+            "ZXNwb25zZSIAEpwBChlTZXREZWxpZ2h0ZWRTdXJ2ZXlFbmFibGVkEj0uZGVj",
+            "ZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5EZWxpZ2h0ZWRT",
+            "dXJ2ZXlSZXF1ZXN0Gj4uZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9z",
+            "ZXJ2aWNlcy5EZWxpZ2h0ZWRTdXJ2ZXlSZXNwb25zZSIAYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.PerformanceReportRequest), global::Decentraland.Renderer.KernelServices.PerformanceReportRequest.Parser, new[]{ "Samples", "FpsIsCapped", "HiccupsInThousandFrames", "HiccupsTime", "TotalTime", "GltfInProgress", "GltfFailed", "GltfCancelled", "GltfLoaded", "AbInProgress", "AbFailed", "AbCancelled", "AbLoaded", "GltfTexturesLoaded", "AbTexturesLoaded", "PromiseTexturesLoaded", "EnqueuedMessages", "ProcessedMessages", "PlayerCount", "LoadRadius", "DrawCalls", "MemoryReserved", "MemoryUsage", "TotalGcAlloc", "SceneScores" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.PerformanceReportResponse), global::Decentraland.Renderer.KernelServices.PerformanceReportResponse.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SystemInfoReportRequest), global::Decentraland.Renderer.KernelServices.SystemInfoReportRequest.Parser, new[]{ "GraphicsDeviceName", "GraphicsDeviceVersion", "GraphicsMemorySize", "ProcessorType", "ProcessorCount", "SystemMemorySize", "UseBinaryTransform" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SystemInfoReportRequest), global::Decentraland.Renderer.KernelServices.SystemInfoReportRequest.Parser, new[]{ "GraphicsDeviceName", "GraphicsDeviceVersion", "GraphicsMemorySize", "ProcessorType", "ProcessorCount", "SystemMemorySize" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SystemInfoReportResponse), global::Decentraland.Renderer.KernelServices.SystemInfoReportResponse.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.AnalyticProperty), global::Decentraland.Renderer.KernelServices.AnalyticProperty.Parser, new[]{ "Key", "Value" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.AnalyticsEventRequest), global::Decentraland.Renderer.KernelServices.AnalyticsEventRequest.Parser, new[]{ "EventName", "Properties" }, null, null, null, null),
@@ -1358,7 +1357,6 @@ namespace Decentraland.Renderer.KernelServices {
       processorType_ = other.processorType_;
       processorCount_ = other.processorCount_;
       systemMemorySize_ = other.systemMemorySize_;
-      useBinaryTransform_ = other.useBinaryTransform_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1440,21 +1438,6 @@ namespace Decentraland.Renderer.KernelServices {
       }
     }
 
-    /// <summary>Field number for the "use_binary_transform" field.</summary>
-    public const int UseBinaryTransformFieldNumber = 7;
-    private bool useBinaryTransform_;
-    /// <summary>
-    /// TODO: remove useBinaryTransform after ECS7 is fully in prod
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool UseBinaryTransform {
-      get { return useBinaryTransform_; }
-      set {
-        useBinaryTransform_ = value;
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1476,7 +1459,6 @@ namespace Decentraland.Renderer.KernelServices {
       if (ProcessorType != other.ProcessorType) return false;
       if (ProcessorCount != other.ProcessorCount) return false;
       if (SystemMemorySize != other.SystemMemorySize) return false;
-      if (UseBinaryTransform != other.UseBinaryTransform) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1490,7 +1472,6 @@ namespace Decentraland.Renderer.KernelServices {
       if (ProcessorType.Length != 0) hash ^= ProcessorType.GetHashCode();
       if (ProcessorCount != 0) hash ^= ProcessorCount.GetHashCode();
       if (SystemMemorySize != 0) hash ^= SystemMemorySize.GetHashCode();
-      if (UseBinaryTransform != false) hash ^= UseBinaryTransform.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1533,10 +1514,6 @@ namespace Decentraland.Renderer.KernelServices {
         output.WriteRawTag(53);
         output.WriteFixed32(SystemMemorySize);
       }
-      if (UseBinaryTransform != false) {
-        output.WriteRawTag(56);
-        output.WriteBool(UseBinaryTransform);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1571,10 +1548,6 @@ namespace Decentraland.Renderer.KernelServices {
         output.WriteRawTag(53);
         output.WriteFixed32(SystemMemorySize);
       }
-      if (UseBinaryTransform != false) {
-        output.WriteRawTag(56);
-        output.WriteBool(UseBinaryTransform);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1602,9 +1575,6 @@ namespace Decentraland.Renderer.KernelServices {
       }
       if (SystemMemorySize != 0) {
         size += 1 + 4;
-      }
-      if (UseBinaryTransform != false) {
-        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1635,9 +1605,6 @@ namespace Decentraland.Renderer.KernelServices {
       }
       if (other.SystemMemorySize != 0) {
         SystemMemorySize = other.SystemMemorySize;
-      }
-      if (other.UseBinaryTransform != false) {
-        UseBinaryTransform = other.UseBinaryTransform;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1678,10 +1645,6 @@ namespace Decentraland.Renderer.KernelServices {
             SystemMemorySize = input.ReadFixed32();
             break;
           }
-          case 56: {
-            UseBinaryTransform = input.ReadBool();
-            break;
-          }
         }
       }
     #endif
@@ -1719,10 +1682,6 @@ namespace Decentraland.Renderer.KernelServices {
           }
           case 53: {
             SystemMemorySize = input.ReadFixed32();
-            break;
-          }
-          case 56: {
-            UseBinaryTransform = input.ReadBool();
             break;
           }
         }

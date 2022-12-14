@@ -16,24 +16,24 @@ public class ClientFriendRequestRendererService
       this.module = module;
   }
 
-  public UniTask<RendererApproveFriendRequestReply> ApproveFriendRequest(RendererApproveFriendRequestPayload request)
+  public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request)
   {
-      return module.CallUnaryProcedure<RendererApproveFriendRequestReply>("ApproveFriendRequest", request);
+      return module.CallUnaryProcedure<ApproveFriendRequestReply>("ApproveFriendRequest", request);
   }
 
-  public UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request)
+  public UniTask<RejectFriendRequestReply> RejectFriendRequest(RejectFriendRequestPayload request)
   {
-      return module.CallUnaryProcedure<RendererRejectFriendRequestReply>("RejectFriendRequest", request);
+      return module.CallUnaryProcedure<RejectFriendRequestReply>("RejectFriendRequest", request);
   }
 
-  public UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request)
+  public UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request)
   {
-      return module.CallUnaryProcedure<RendererCancelFriendRequestReply>("CancelFriendRequest", request);
+      return module.CallUnaryProcedure<CancelFriendRequestReply>("CancelFriendRequest", request);
   }
 
-  public UniTask<RendererReceiveFriendRequestReply> ReceiveFriendRequest(RendererReceiveFriendRequestPayload request)
+  public UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request)
   {
-      return module.CallUnaryProcedure<RendererReceiveFriendRequestReply>("ReceiveFriendRequest", request);
+      return module.CallUnaryProcedure<ReceiveFriendRequestReply>("ReceiveFriendRequest", request);
   }
 }
 }
