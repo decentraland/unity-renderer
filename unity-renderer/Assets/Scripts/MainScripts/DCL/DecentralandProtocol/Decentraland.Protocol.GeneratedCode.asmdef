@@ -1,0 +1,20 @@
+{
+    "name": "Decentraland.Protocol.GeneratedCode",
+    "rootNamespace": "",
+    "references": [
+        "GUID:32414f40c5c02494097836a15ff47eac",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Google.Protobuf.dll",
+        "Google.Api.CommonProtos.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

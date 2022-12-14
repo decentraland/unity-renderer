@@ -47,6 +47,8 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 17e4c961a88d74262a222ea008152618, type: 3}
   - key: earring
     value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
+  - key: emote
+    value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
   nftColors:
   - key: rare
     value: {r: 0, g: 1, b: 0.018231153, a: 1}

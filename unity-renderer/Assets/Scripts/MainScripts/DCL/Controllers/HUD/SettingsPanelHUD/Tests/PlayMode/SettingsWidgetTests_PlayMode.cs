@@ -14,16 +14,16 @@ namespace SettingsWidgetTests
     {
         private const int NUMBER_OF_COLUMNS = 2;
         private const string WIDGET_VIEW_PREFAB_PATH = "Widgets/DefaultSettingsWidgetTemplate";
-        private const string CONTROL_VIEW_PREFAB_PATH = "Controls/{controlType}SettingsControlTemplate";
+        private const string CONTROL_VIEW_PREFAB_PATH = "Controls/Prefabs/{controlType}SettingsControlTemplate";
 
         private SettingsWidgetView widgetView;
         private ISettingsWidgetController widgetController;
-        private List<SettingsControlGroup> controlColumnsToCreate = new List<SettingsControlGroup>();
+        private readonly List<SettingsControlGroup> controlColumnsToCreate = new ();
 
         [UnitySetUp]
         private IEnumerator SetUp()
         {
-            for (int i = 0; i < NUMBER_OF_COLUMNS; i++)
+            for (var i = 0; i < NUMBER_OF_COLUMNS; i++)
             {
                 controlColumnsToCreate.Add(new SettingsControlGroup()
                 {
@@ -37,15 +37,6 @@ namespace SettingsWidgetTests
             yield return null;
         }
 
-        [UnityTearDown]
-        private IEnumerator TearDown()
-        {
-            Object.Destroy(widgetView.gameObject);
-            controlColumnsToCreate.Clear();
-
-            yield return null;
-        }
-
         [UnityTest]
         [TestCase(0, "Slider", ExpectedResult = null)]
         [TestCase(1, "SpinBox", ExpectedResult = null)]
@@ -53,7 +44,8 @@ namespace SettingsWidgetTests
         public IEnumerator GenerateControlsIntoAWidgetViewCorrectly(int columnIndex, string controlType)
         {
             // Arrange
-            SettingsControlView controlViewPrefab = ((GameObject)Resources.Load(CONTROL_VIEW_PREFAB_PATH.Replace("{controlType}", controlType))).GetComponent<SettingsControlView>();
+            string prefabPath = CONTROL_VIEW_PREFAB_PATH.Replace("{controlType}", controlType);
+            SettingsControlView controlViewPrefab = ((GameObject)Resources.Load(prefabPath)).GetComponent<SettingsControlView>();
 
             SettingsControlModel newControlConfig = ScriptableObject.CreateInstance<SettingsControlModel>();
             newControlConfig.title = $"TestControl_Col{columnIndex}";
@@ -62,7 +54,6 @@ namespace SettingsWidgetTests
             newControlConfig.flagsThatDeactivateMe = new List<BooleanVariable>();
             newControlConfig.flagsThatDisableMe = new List<BooleanVariable>();
             newControlConfig.isBeta = false;
-
 
             controlColumnsToCreate[columnIndex].controls.Add(newControlConfig);
 
@@ -73,9 +64,12 @@ namespace SettingsWidgetTests
             // Assert
             widgetController.Received(1)
                             .AddControl(
-                                Arg.Any<ISettingsControlView>(),
-                                Arg.Any<SettingsControlController>(),
-                                Arg.Any<SettingsControlModel>());
+                                 Arg.Any<ISettingsControlView>(),
+                                 Arg.Any<SettingsControlController>(),
+                                 Arg.Any<SettingsControlModel>());
+
+            Object.Destroy(widgetView.gameObject);
+            controlColumnsToCreate.Clear();
         }
     }
 }

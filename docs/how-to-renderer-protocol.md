@@ -19,7 +19,7 @@ Example of `RendererService`: https://github.com/decentraland/protocol/blob/9fca
 Example of `KernelService`: https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto
 
 After adding a `KernelService` or `RendererService`
-You must install the package in the `protocol-gen` just run `npm run build-renderer-protocol` and the Renderer Protocol will be re-generated.
+You must install the package in the `protocol-gen` just run `npm run build` and the Renderer Protocol will be re-generated.
 
 ## RPC
 

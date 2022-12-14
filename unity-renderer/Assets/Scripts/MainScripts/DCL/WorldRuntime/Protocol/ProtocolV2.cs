@@ -1,7 +1,6 @@
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Builder;
 using UnityEngine;
 
 public class ProtocolV2
@@ -154,7 +153,6 @@ public class ProtocolV2
         public Dictionary<string, object> filesToDecode;
         public CatalystSceneEntityMetadata metadata;
         public string[] pointers;
-        public StatelessManifest statelessManifest;
         public bool reloadSingleScene = false;
     }
 

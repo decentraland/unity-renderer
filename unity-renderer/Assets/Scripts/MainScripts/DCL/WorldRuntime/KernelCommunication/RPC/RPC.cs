@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using Decentraland.Renderer.KernelServices;
 using RPC;
 using rpc_csharp;
 
@@ -10,6 +11,8 @@ namespace DCL
         private ClientFriendRequestKernelService friendRequests;
 
         private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
+
+        private RpcServer<RPCContext> rpcServer;
 
         public ClientEmotesKernelService Emotes() =>
             emotes;
@@ -40,11 +43,12 @@ namespace DCL
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.SceneController = Environment.i.world.sceneController;
 
-            RPCServerBuilder.BuildDefaultServer(context);
+            rpcServer = RPCServerBuilder.BuildDefaultServer(context);
         }
 
         public void Dispose()
         {
+            rpcServer.Dispose();
         }
     }
 }

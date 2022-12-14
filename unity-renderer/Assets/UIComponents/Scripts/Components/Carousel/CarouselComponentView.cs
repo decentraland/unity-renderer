@@ -645,6 +645,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     public void ResetManualCarousel()
     {
         isInTransition = false;
+        currentItemIndex = 0;
         SetSelectedDot(0);
     }
 

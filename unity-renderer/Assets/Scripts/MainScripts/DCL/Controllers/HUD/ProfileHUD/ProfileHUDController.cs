@@ -52,7 +52,6 @@ public class ProfileHUDController : IHUD
         viewGo.name = VIEW_NAME;
         view = viewGo.GetComponent<IProfileHUDView>();
 
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         DataStore.i.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
         DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
 
@@ -136,7 +135,6 @@ public class ProfileHUDController : IHUD
             UnityEngine.Object.Destroy(view.GameObject);
 
         ownUserProfile.OnUpdate -= OnProfileUpdated;
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
             KernelConfig.i.OnChange -= OnKernelConfigChanged;

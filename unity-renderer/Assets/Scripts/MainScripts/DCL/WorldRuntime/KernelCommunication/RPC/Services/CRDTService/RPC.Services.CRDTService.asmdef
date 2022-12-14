@@ -2,7 +2,7 @@
     "name": "RPC.Services.CRDTService",
     "rootNamespace": "",
     "references": [
-        "GUID:74aca8d0fa88642fabc061875471dba2",
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
         "GUID:211458814b4045e7ad894e13b8f8d919",
         "GUID:374252a1740a422eb7762fc12ff3bf8a",
