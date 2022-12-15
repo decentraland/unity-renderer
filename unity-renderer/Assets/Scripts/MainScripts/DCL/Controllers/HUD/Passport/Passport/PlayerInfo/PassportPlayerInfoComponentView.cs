@@ -14,6 +14,7 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
         [SerializeField] private Button walletCopyButton;
+        [SerializeField] private Button usernameCopyButton;
         [SerializeField] private TextMeshProUGUI wallet;
         [SerializeField] private ButtonComponentView optionsButton;
         [SerializeField] private ButtonComponentView addFriendButton;
@@ -55,6 +56,7 @@ namespace DCL.Social.Passports
         public override void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
+            usernameCopyButton.onClick.AddListener(CopyUsernameToClipboard);
             addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
             alreadyFriendsButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
             cancelFriendRequestButton.onClick.AddListener(()=>OnCancelFriendRequest?.Invoke());
@@ -219,6 +221,14 @@ namespace DCL.Social.Passports
 
             OnWalletCopy?.Invoke();
             Environment.i.platform.clipboard.WriteText(fullWalletAddress);
+        }
+
+        private void CopyUsernameToClipboard()
+        {
+            if(string.IsNullOrEmpty(model.name))
+                return;
+
+            Environment.i.platform.clipboard.WriteText(model.name.Split('#')[0]);
         }
 
         private void WhisperActionFlow()
