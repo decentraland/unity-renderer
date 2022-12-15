@@ -3,7 +3,10 @@
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "ECS7.UIElements",
+        "DCL.ECSComponents.ProtobufData",
+        "ECSComponents.Utils"
     ],
     "includePlatforms": [
         "Editor"

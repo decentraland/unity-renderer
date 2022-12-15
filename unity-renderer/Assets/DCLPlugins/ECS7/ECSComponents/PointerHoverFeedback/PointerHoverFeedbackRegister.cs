@@ -1,3 +1,4 @@
+using DCL.ECS7.InternalComponents;
 using System;
 using DCL.ECSRuntime;
 
@@ -9,11 +10,14 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public PointerHoverFeedbackRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public PointerHoverFeedbackRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalUiContainer> internalUiContainer,
+            IInternalECSComponent<InternalInputEventResults> internalInputEventResults)
         {
             factory.AddOrReplaceComponent(componentId,
                 ProtoSerialization.Deserialize<PBPointerHoverFeedback>,
-                null);
+                () => new UIPointerHoverFeedbackHandler(internalInputEventResults, internalUiContainer, componentId));
+
             componentWriter.AddOrReplaceComponentSerializer<PBPointerHoverFeedback>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

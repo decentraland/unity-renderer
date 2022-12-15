@@ -30,5 +30,7 @@ namespace DCL.ECS7
         public const int BILLBOARD = 1090;
         public const int UI_INPUT = 1093;
         public const int UI_DROPDOWN = 1094;
+        public const int UI_INPUT_RESULT = 1095;
+        public const int UI_DROPDOWN_RESULT = 1096;
     }
 }

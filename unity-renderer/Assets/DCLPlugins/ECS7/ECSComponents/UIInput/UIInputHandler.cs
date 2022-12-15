@@ -5,6 +5,7 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
+using System;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
@@ -12,15 +13,23 @@ namespace DCL.ECSComponents.UIInput
     public class UIInputHandler : UIElementHandlerBase, IECSComponentHandler<PBUiInput>
     {
         private FontUpdater fontUpdater;
+        private readonly int resultComponentId;
+        private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+
+        private EventCallback<ChangeEvent<string>> onValueChanged;
 
         internal TextField uiElement { get; private set; }
 
         internal TextFieldPlaceholder placeholder { get; private set; }
 
         public UIInputHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer,
+            int resultComponentId,
+            IInternalECSComponent<InternalUIInputResults> inputResults,
             AssetPromiseKeeper_Font fontPromiseKeeper, int componentId) : base(internalUiContainer, componentId)
         {
+            this.resultComponentId = resultComponentId;
+            this.inputResults = inputResults;
             this.fontPromiseKeeper = fontPromiseKeeper;
         }
 
@@ -33,11 +42,25 @@ namespace DCL.ECSComponents.UIInput
 
             AddElementToRoot(scene, entity, uiElement);
             fontUpdater = new FontUpdater(uiElement, fontPromiseKeeper);
+
+            onValueChanged = UIPointerEventsUtils
+               .RegisterFeedback<ChangeEvent<string>, PBUiInputResult>
+                (inputResults,
+                    CreateInputResult,
+                    scene,
+                    entity,
+                    uiElement,
+                    resultComponentId);
         }
+
+        private static PBUiInputResult CreateInputResult(ChangeEvent<string> onValueChange) =>
+            new () { Value = onValueChange.newValue };
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
+            uiElement.UnregisterFeedback(onValueChanged);
             RemoveElementFromRoot(scene, entity, uiElement);
+            uiElement = null;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiInput model)
@@ -48,6 +71,7 @@ namespace DCL.ECSComponents.UIInput
 
             uiElement.isReadOnly = model.IsInteractable();
             uiElement.style.fontSize = model.GetFontSize();
+            uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
 
             fontUpdater.Update(model.GetFont());
         }

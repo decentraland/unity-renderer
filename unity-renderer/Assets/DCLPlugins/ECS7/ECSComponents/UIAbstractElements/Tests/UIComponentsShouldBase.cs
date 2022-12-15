@@ -4,16 +4,19 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIAbstractElements.Tests
 {
-    public class UIComponentsShouldBase
+    public abstract class UIComponentsShouldBase
     {
         protected ECS7TestEntity entity;
         protected ECS7TestScene scene;
         protected ECS7TestUtilsScenesAndEntities sceneTestHelper;
 
         protected IInternalECSComponent<InternalUiContainer> internalUiContainer;
+        protected IInternalECSComponent<InternalUIInputResults> uiInputResults;
 
         [SetUp]
         public void SetUp()
@@ -21,6 +24,8 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(1111);
+
+            uiInputResults = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
 
             ECSComponentData<InternalUiContainer> internalCompData = null;
             internalUiContainer = Substitute.For<IInternalECSComponent<InternalUiContainer>>();
@@ -38,21 +43,13 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
                                 });
         }
 
+        protected static UIDocument InstantiateUiDocument() =>
+            Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
+
         [TearDown]
         public void TearDown()
         {
             sceneTestHelper.Dispose();
         }
-
-        /*protected static void CreateUiContainer<T>(IECSComponentHandler<T> handler, string componentId)
-        {
-            handler.OnComponentCreated(scene, entity);
-
-            Assert.IsNotNull(handler.uiElement);
-            internalUiContainer.Received(1)
-                               .PutFor(scene, entity,
-                                    Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(handler.uiElement)
-                                                                     && i.components.Contains(COMPONENT_ID)));
-        }*/
     }
 }

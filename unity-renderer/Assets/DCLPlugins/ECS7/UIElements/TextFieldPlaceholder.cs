@@ -1,4 +1,5 @@
 ﻿using DCL.ECSComponents;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace DCL.UIElements
     /// Adds placeholder to the `TextField`;
     /// In Unity 2023 `Placeholder` is included in the framework
     /// </summary>
-    public class TextFieldPlaceholder
+    public class TextFieldPlaceholder : IDisposable
     {
         private string placeholder;
         private Color placeholderColor;
@@ -26,6 +27,8 @@ namespace DCL.UIElements
 
             textField.RegisterCallback<FocusInEvent>(OnFocusIn);
             textField.RegisterCallback<FocusOutEvent>(OnFocusOut);
+            // To support changing the value from code
+            textField.RegisterValueChangedCallback(OnValueChanged);
 
             OnFocusOut(null);
         }
@@ -50,7 +53,7 @@ namespace DCL.UIElements
 
         private void UpdateIfFocusStateIs(bool focusState)
         {
-            if (focusState != isFocused)
+            if (isFocused != focusState)
                 return;
 
             if (focusState)
@@ -60,7 +63,6 @@ namespace DCL.UIElements
             else
             {
                 SetPlaceholderStyle();
-                textField.SetValueWithoutNotify(placeholder);
             }
         }
 
@@ -72,6 +74,7 @@ namespace DCL.UIElements
         private void SetPlaceholderStyle()
         {
             textField.style.color = placeholderColor;
+            textField.SetValueWithoutNotify(placeholder);
         }
 
         private void OnFocusIn(FocusInEvent _)
@@ -89,12 +92,31 @@ namespace DCL.UIElements
         {
             if (string.IsNullOrEmpty(textField.text))
             {
-                textField.SetValueWithoutNotify(placeholder);
                 SetPlaceholderStyle();
                 isPlaceholder = true;
             }
+            else
+            {
+                SetNormalStyle();
+                isPlaceholder = false;
+            }
 
             isFocused = false;
+        }
+
+        private void OnValueChanged(ChangeEvent<string> newValue)
+        {
+            if (!isFocused)
+            {
+                OnFocusOut(null);
+            }
+        }
+
+        public void Dispose()
+        {
+            textField.UnregisterCallback<FocusInEvent>(OnFocusIn);
+            textField.UnregisterCallback<FocusOutEvent>(OnFocusOut);
+            textField.UnregisterValueChangedCallback(OnValueChanged);
         }
     }
 }

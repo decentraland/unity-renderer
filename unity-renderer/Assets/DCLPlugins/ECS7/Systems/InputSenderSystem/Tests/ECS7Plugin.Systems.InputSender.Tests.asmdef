@@ -17,14 +17,15 @@
         "GUID:4bd423f6dceb67540b5c246ca8cf789b",
         "GUID:97d8897529779cb49bebd400c7f402a6"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
         "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll",
         "Google.Protobuf.dll"
     ],
     "autoReferenced": false,

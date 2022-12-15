@@ -124,7 +124,7 @@ namespace DCL.ECSComponents {
     public const int ColorFieldNumber = 1;
     private global::DCL.ECSComponents.Color4 color_;
     /// <summary>
-    /// default=(0.0, 0.0, 0.0, 0.0), pixel = color * sample2D(texture, uv)
+    /// default=(1.0, 1.0, 1.0, 1.0), pixel = color * sample2D(texture, uv)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

@@ -60,17 +60,20 @@ namespace DCL.ECSComponents
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
 
+            // Multi-purposed components
+            pointerHoverFeedback = new PointerHoverFeedbackRegister(ComponentID.POINTER_HOVER_FEEDBACK, componentsFactory, componentsWriter,
+                internalComponents.uiContainerComponent, internalComponents.inputEventResultsComponent);
+
             // UI components
             uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
             uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
             uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
-            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, ComponentID.UI_INPUT_RESULT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
 
             // Components without a handler
             pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
-            pointerHoverFeedback = new PointerHoverFeedbackRegister(ComponentID.POINTER_HOVER_FEEDBACK, componentsFactory, componentsWriter);
         }
 
         public void Dispose()

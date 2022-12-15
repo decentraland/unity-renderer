@@ -1,6 +1,7 @@
 ﻿using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.Models;
+using System;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIAbstractElements
@@ -10,7 +11,8 @@ namespace DCL.ECSComponents.UIAbstractElements
         protected readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
         protected readonly int componentId;
 
-        protected UIElementHandlerBase(IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId)
+        protected UIElementHandlerBase(
+            IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId)
         {
             this.internalUiContainer = internalUiContainer;
             this.componentId = componentId;
@@ -28,14 +30,21 @@ namespace DCL.ECSComponents.UIAbstractElements
 
         protected internal void RemoveElementFromRoot(IParcelScene scene, IDCLEntity entity, VisualElement uiElement)
         {
+            RemoveComponentFromRoot(scene, entity)?.rootElement?.Remove(uiElement);
+        }
+
+        protected internal InternalUiContainer RemoveComponentFromRoot(IParcelScene scene, IDCLEntity entity)
+        {
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
                 var containerModel = containerData.model;
-                containerModel.rootElement.Remove(uiElement);
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
+                return containerModel;
             }
+
+            return null;
         }
     }
 }
