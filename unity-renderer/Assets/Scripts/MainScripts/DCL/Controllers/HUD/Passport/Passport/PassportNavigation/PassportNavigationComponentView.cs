@@ -20,12 +20,16 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private GameObject hasBlockedPanel;
+        [SerializeField] private GameObject wearableView;
+        [SerializeField] private GameObject noWearableView;
         [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI blockedUsernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
+        [SerializeField] private GameObject emptyWearablesText;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
+        [SerializeField] private GameObject emptyEmotesText;
         [SerializeField] private Transform nftWearablesCarouselContent;
         [SerializeField] private Transform nftEmotesCarouselContent;
         [SerializeField] private GameObject wearableUIReferenceObject;
@@ -119,6 +123,8 @@ namespace DCL.Social.Passports
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
             nftWearablesCarousel.CleanInstantiatedItems();
+            nftWearablesCarousel.gameObject.SetActive(wearables.Length > 0);
+            emptyWearablesText.SetActive(wearables.Length <= 0);
             for (int i = 0; i < wearables.Length; i += 4)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
@@ -162,6 +168,8 @@ namespace DCL.Social.Passports
         public void SetCollectibleEmotes(WearableItem[] wearables)
         {
             nftEmotesCarousel.CleanInstantiatedItems();
+            nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
+            emptyEmotesText.SetActive(wearables.Length <= 0);
             for (int i = 0; i < wearables.Length; i += 4)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
@@ -200,6 +208,12 @@ namespace DCL.Social.Passports
             }
             nftEmotesCarousel.GenerateDotsSelector();
             nftEmotesCarousel.ResetManualCarousel();
+        }
+
+        public void SetCollectiblesView()
+        {
+            wearableView.SetActive(nftEmotesCarousel.GetItems().Count > 0 || nftWearablesCarousel.GetItems().Count > 0);
+            noWearableView.SetActive(nftEmotesCarousel.GetItems().Count <= 0 && nftWearablesCarousel.GetItems().Count <= 0);
         }
 
         public void SetHasBlockedOwnUser(bool isBlocked)

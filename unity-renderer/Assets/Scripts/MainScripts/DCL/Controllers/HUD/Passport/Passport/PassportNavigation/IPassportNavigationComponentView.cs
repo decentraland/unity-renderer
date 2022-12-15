@@ -13,6 +13,7 @@ namespace DCL.Social.Passports
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
         void SetCollectibleEmotes(WearableItem[] emotes);
+        void SetCollectiblesView();
         void SetHasBlockedOwnUser(bool isBlocked);
     }
 }
