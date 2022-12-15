@@ -9,7 +9,6 @@ namespace WorldsFeaturesAnalytics
     {
         private const string ENTERED_WORLD = "user_entered_world";
         private const string EXIT_WORLD = "user_exit_world";
-        private const string UNABLE_TO_ENTER_WORLD = "user_unable_to_enter_world";
 
         private readonly IAnalytics analytics;
         private bool currentlyInWorld;
@@ -55,17 +54,6 @@ namespace WorldsFeaturesAnalytics
             };
 
             analytics.SendAnalytic(EXIT_WORLD, data);
-        }
-
-        private void SendPlayerUnableToAccessWorld(string worldName, UnableToAccessWorldReasonType unableToAccessReasonType)
-        {
-            var data = new Dictionary<string, string>
-            {
-                { "worldName", worldName },
-                { "unableToEnterWorldReason", unableToAccessReasonType.ToString() },
-            };
-
-            analytics.SendAnalytic(UNABLE_TO_ENTER_WORLD, data);
         }
 
         public void OnEnteredRealm(bool isWorld, string newRealmName)

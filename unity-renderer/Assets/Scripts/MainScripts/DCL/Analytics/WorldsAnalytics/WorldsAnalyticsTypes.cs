@@ -13,9 +13,4 @@ namespace WorldsFeaturesAnalytics
         Chat
     }
 
-    public enum UnableToAccessWorldReasonType
-    {
-        UnexistentWorld,
-        WorldFull
-    }
 }
