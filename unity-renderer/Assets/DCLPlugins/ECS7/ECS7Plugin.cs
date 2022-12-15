@@ -1,6 +1,8 @@
+using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using System;
 using System.Collections.Generic;
 
 namespace DCL.ECS7
@@ -16,11 +18,15 @@ namespace DCL.ECS7
         private readonly InternalECSComponents internalEcsComponents;
         private readonly CrdtExecutorsManager crdtExecutorsManager;
 
+        private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly ISceneController sceneController;
+
         public ECS7Plugin()
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
+            loadedScenes = DataStore.i.ecs7.scenes;
 
-            ISceneController sceneController = Environment.i.world.sceneController;
+            sceneController = Environment.i.world.sceneController;
             Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
             DataStore.i.rpc.context.crdt.CrdtExecutors = crdtExecutors;
 
@@ -43,6 +49,9 @@ namespace DCL.ECS7
                 (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
+
+            sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
+            sceneController.OnSceneRemoved += SceneControllerOnOnSceneRemoved;
         }
 
         public void Dispose()
@@ -53,6 +62,25 @@ namespace DCL.ECS7
             systemsController.Dispose();
             internalEcsComponents.Dispose();
             crdtExecutorsManager.Dispose();
+
+            sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
+            sceneController.OnSceneRemoved -= SceneControllerOnOnSceneRemoved;
+        }
+
+        private void SceneControllerOnOnNewSceneAdded(IParcelScene scene)
+        {
+            if (scene.sceneData.sdk7)
+            {
+                loadedScenes.Add(scene);
+            }
+        }
+
+        private void SceneControllerOnOnSceneRemoved(IParcelScene scene)
+        {
+            if (scene.sceneData.sdk7)
+            {
+                loadedScenes.Remove(scene);
+            }
         }
     }
 }
