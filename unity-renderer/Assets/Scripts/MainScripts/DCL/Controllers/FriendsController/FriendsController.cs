@@ -116,6 +116,8 @@ namespace DCL.Social.Friends
             // NOTE: would it be better to register the new state instead of removing it?
             friendRequests.Remove(friendRequestId);
 
+            await UniTask.SwitchToMainThread();
+
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.APPROVED, userId = request.From });
 
@@ -132,6 +134,8 @@ namespace DCL.Social.Friends
             var request = ToFriendRequest(requestPayload);
             // NOTE: would it be better to register the new state instead of removing it?
             friendRequests.Remove(friendRequestId);
+
+            await UniTask.SwitchToMainThread();
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REJECTED, userId = request.From });
