@@ -2,37 +2,32 @@
 
 ## What?
 
-Renderer Protocol are the messages that are sent between the [Kernel](http://github.com/decentraland/kernel) and the [Renderer](http://github.com/decentraland/unity-renderer).
-
-Those messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) in proto3 format.
+The Renderer Protocol consists of messages that are sent between the [Kernel](http://github.com/decentraland/kernel) and the [Renderer](http://github.com/decentraland/unity-renderer). These messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) using the proto3 format.
 
 ## Types of messages
 
-The message exchange is defined by RPC calls. They are defined as bi-directional Services. You can have `RendererServices` where the `Kernel` calls the `Renderer`. Or `KernelService` where the `Renderer` calls the `Kernel`.
+The message exchange is defined by RPC calls, which are bi-directional Services. For example, the `Renderer` can call the `Kernel` using a `KernelService`, or the `Kernel` can call the `Renderer` using a `RendererService`.
 
 ## How to add a message
 
-To add a message in the Renderer Protocol, you must change the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) and then update the package in the `protocol-gen` of the `unity-renderer` repository [here](https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen).
+To add a message to the Renderer Protocol, you must first modify the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) and then update the `protocol-gen` package in the [unity-renderer repository]((https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen)).
 
-Example of `RendererService`: check it out [here](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto).
+[Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto) of `RendererService`.
 
-Example of `KernelService`: check it out [here](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto).
+[Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto) of `KernelService`.
 
-After adding a `KernelService` or `RendererService` you must install the package in the `protocol-gen`. To do so, run `npm run build` and the Renderer Protocol will be re-generated.
+After adding a `KernelService` or `RendererService`, you must install the package in `protocol-gen` by running `npm run build`. This will regenerate the Renderer Protocol.
 
 ## RPC
 
-The Renderer works as an `RPC Server` which is connected by the Kernel, the `RPC Client`.
-The Renderer implements a service called `TransportService` which is used to create an RPC Transport which is used as an InverseRPC where we can use the Kernel as an `RPC Server` and the Renderer as an `RPC Client`.
-
-Therefore, services can be implemented in both directions. We have Kernel services and Renderer services for the Renderer protocol.
+The Renderer acts as an `RPC Server`, while the Kernel is the `RPC Client`. The Renderer implements a service called TransportService which allows it to create an RPC Transport that functions as an InverseRPC. This allows the Kernel to act as an`RPC Server` and the Renderer to act as an `RPC Client`. As a result, services can be implemented in either direction. There are both Kernel services and Renderer services for the Renderer protocol.
 
 > **_NOTE:_**  You can read the following articles to understand RPC [article 1](https://www.techtarget.com/searchapparchitecture/definition/Remote-Procedure-Call-RPC); [article 2](https://grpc.io/docs/what-is-grpc/introduction/)
 
 ## Implement Renderer Service
 ### **Renderer Side:**
 
-In the next example, we will implement the following service from the protobuf below:
+In the next example, we will implement the service described in the protobuf below:
 ```protobuf
 // Service implemented in Renderer and used in Kernel
 service EmotesRendererService {
@@ -41,16 +36,13 @@ service EmotesRendererService {
 }
 ```
 
-Once we've generated the code, we need to create a folder named `EmotesService` in the path:
-`Assets\Scripts\MainScripts\DCL\WorldRuntime\KernelCommunication\RPC\Services`
-
-Inside it, we have to create the following files:
+Once we've generated the code, we need first to create a folder named `EmotesService` in the path `Assets\Scripts\MainScripts\DCL\WorldRuntime\KernelCommunication\RPC\Services` and then create the following files:
 ```
 RPC.Service.Emotes.asmdef
 EmotesRendererServiceImpl.cs
 ```
 
-And in the `EmotesRendererServiceImpl.cs` file, we need to add the code:
+In the `EmotesRendererServiceImpl.cs` file, we need to add the code:
 
 ```csharp
 using System.Threading;
@@ -81,8 +73,7 @@ namespace RPC.Services
 ```
 
 ### **Kernel Side:**
-To run this code in the Kernel, we need to go to the Kernel and create the following file:
-`packages/renderer-protocol/services/emotesRendererService.ts` and paste this code:
+To run this code in the Kernel, we need first create the file `packages/renderer-protocol/services/emotesRendererService.ts` and then paste this code:
 
 ```ts
 import { RpcClientPort } from '@dcl/rpc'
@@ -166,9 +157,7 @@ export function registerEmotesKernelService(port: RpcServerPort<RendererProtocol
 }
 ```
 
-Add the service to the registering list:
-
-In: `packages/renderer-protocol/inverseRpc/rpcServer.ts`
+Add the service to the registering list in: `packages/renderer-protocol/inverseRpc/rpcServer.ts`
 ```ts
 async function registerKernelServices(serverPort: RpcServerPort<RendererProtocolContext>) {
   ...
