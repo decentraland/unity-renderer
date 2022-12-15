@@ -27,21 +27,21 @@ namespace DCL.ECSComponents {
             "Ci1kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfZHJvcGRvd24ucHJv",
             "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5k",
             "L2NvbW1vbi9jb2xvcnMucHJvdG8aLmRlY2VudHJhbGFuZC9zZGsvY29tcG9u",
-            "ZW50cy9jb21tb24vdGV4dHMucHJvdG8iiwMKDFBCVWlEcm9wZG93bhIUCgxh",
+            "ZW50cy9jb21tb24vdGV4dHMucHJvdG8iowMKDFBCVWlEcm9wZG93bhIUCgxh",
             "Y2NlcHRfZW1wdHkYASABKAgSGAoLZW1wdHlfbGFiZWwYAiABKAlIAIgBARIP",
-            "CgdvcHRpb25zGAMgAygJEhYKDnNlbGVjdGVkX2luZGV4GAQgASgFEhAKCGRp",
-            "c2FibGVkGAUgASgIEi8KBWNvbG9yGAYgASgLMhsuZGVjZW50cmFsYW5kLmNv",
-            "bW1vbi5Db2xvcjRIAYgBARJKCgp0ZXh0X2FsaWduGAogASgOMjEuZGVjZW50",
-            "cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5UZXh0QWxpZ25Nb2RlSAKI",
-            "AQESOwoEZm9udBgLIAEoDjIoLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50",
-            "cy5jb21tb24uRm9udEgDiAEBEhYKCWZvbnRfc2l6ZRgMIAEoBUgEiAEBQg4K",
-            "DF9lbXB0eV9sYWJlbEIICgZfY29sb3JCDQoLX3RleHRfYWxpZ25CBwoFX2Zv",
-            "bnRCDAoKX2ZvbnRfc2l6ZUIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3Rv",
-            "Mw=="));
+            "CgdvcHRpb25zGAMgAygJEhsKDnNlbGVjdGVkX2luZGV4GAQgASgFSAGIAQES",
+            "EAoIZGlzYWJsZWQYBSABKAgSLwoFY29sb3IYBiABKAsyGy5kZWNlbnRyYWxh",
+            "bmQuY29tbW9uLkNvbG9yNEgCiAEBEkoKCnRleHRfYWxpZ24YCiABKA4yMS5k",
+            "ZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbk1v",
+            "ZGVIA4gBARI7CgRmb250GAsgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21w",
+            "b25lbnRzLmNvbW1vbi5Gb250SASIAQESFgoJZm9udF9zaXplGAwgASgFSAWI",
+            "AQFCDgoMX2VtcHR5X2xhYmVsQhEKD19zZWxlY3RlZF9pbmRleEIICgZfY29s",
+            "b3JCDQoLX3RleHRfYWxpZ25CBwoFX2ZvbnRCDAoKX2ZvbnRfc2l6ZUIUqgIR",
+            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiDropdown), global::DCL.ECSComponents.PBUiDropdown.Parser, new[]{ "AcceptEmpty", "EmptyLabel", "Options", "SelectedIndex", "Disabled", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "EmptyLabel", "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiDropdown), global::DCL.ECSComponents.PBUiDropdown.Parser, new[]{ "AcceptEmpty", "EmptyLabel", "Options", "SelectedIndex", "Disabled", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "EmptyLabel", "SelectedIndex", "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
     }
     #endregion
@@ -158,10 +158,23 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int SelectedIndex {
-      get { return selectedIndex_; }
+      get { if ((_hasBits0 & 1) != 0) { return selectedIndex_; } else { return 0; } }
       set {
+        _hasBits0 |= 1;
         selectedIndex_ = value;
       }
+    }
+    /// <summary>Gets whether the "selected_index" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasSelectedIndex {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "selected_index" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearSelectedIndex() {
+      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "disabled" field.</summary>
@@ -200,9 +213,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.TextAlignMode TextAlign {
-      get { if ((_hasBits0 & 1) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamTopLeft; } }
+      get { if ((_hasBits0 & 2) != 0) { return textAlign_; } else { return global::DCL.ECSComponents.TextAlignMode.TamTopLeft; } }
       set {
-        _hasBits0 |= 1;
+        _hasBits0 |= 2;
         textAlign_ = value;
       }
     }
@@ -210,13 +223,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTextAlign {
-      get { return (_hasBits0 & 1) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "text_align" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTextAlign() {
-      _hasBits0 &= ~1;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "font" field.</summary>
@@ -228,9 +241,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.Font Font {
-      get { if ((_hasBits0 & 2) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.FSansSerif; } }
+      get { if ((_hasBits0 & 4) != 0) { return font_; } else { return global::DCL.ECSComponents.Font.FSansSerif; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         font_ = value;
       }
     }
@@ -238,13 +251,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFont {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "font" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFont() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "font_size" field.</summary>
@@ -256,9 +269,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int FontSize {
-      get { if ((_hasBits0 & 4) != 0) { return fontSize_; } else { return 0; } }
+      get { if ((_hasBits0 & 8) != 0) { return fontSize_; } else { return 0; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 8;
         fontSize_ = value;
       }
     }
@@ -266,13 +279,13 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasFontSize {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 8) != 0; }
     }
     /// <summary>Clears the value of the "font_size" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearFontSize() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~8;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -309,7 +322,7 @@ namespace DCL.ECSComponents {
       if (AcceptEmpty != false) hash ^= AcceptEmpty.GetHashCode();
       if (HasEmptyLabel) hash ^= EmptyLabel.GetHashCode();
       hash ^= options_.GetHashCode();
-      if (SelectedIndex != 0) hash ^= SelectedIndex.GetHashCode();
+      if (HasSelectedIndex) hash ^= SelectedIndex.GetHashCode();
       if (Disabled != false) hash ^= Disabled.GetHashCode();
       if (color_ != null) hash ^= Color.GetHashCode();
       if (HasTextAlign) hash ^= TextAlign.GetHashCode();
@@ -342,7 +355,7 @@ namespace DCL.ECSComponents {
         output.WriteString(EmptyLabel);
       }
       options_.WriteTo(output, _repeated_options_codec);
-      if (SelectedIndex != 0) {
+      if (HasSelectedIndex) {
         output.WriteRawTag(32);
         output.WriteInt32(SelectedIndex);
       }
@@ -385,7 +398,7 @@ namespace DCL.ECSComponents {
         output.WriteString(EmptyLabel);
       }
       options_.WriteTo(ref output, _repeated_options_codec);
-      if (SelectedIndex != 0) {
+      if (HasSelectedIndex) {
         output.WriteRawTag(32);
         output.WriteInt32(SelectedIndex);
       }
@@ -426,7 +439,7 @@ namespace DCL.ECSComponents {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(EmptyLabel);
       }
       size += options_.CalculateSize(_repeated_options_codec);
-      if (SelectedIndex != 0) {
+      if (HasSelectedIndex) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(SelectedIndex);
       }
       if (Disabled != false) {
@@ -463,7 +476,7 @@ namespace DCL.ECSComponents {
         EmptyLabel = other.EmptyLabel;
       }
       options_.Add(other.options_);
-      if (other.SelectedIndex != 0) {
+      if (other.HasSelectedIndex) {
         SelectedIndex = other.SelectedIndex;
       }
       if (other.Disabled != false) {

@@ -27,7 +27,7 @@ namespace Tests
         private IECSInteractionHoverCanvas interactionHoverCanvas;
         private ECSComponentsManager componentsManager;
         private InternalECSComponents internalComponents;
-        
+
         private Collider colliderEntity1;
         private Collider colliderEntity2;
 
@@ -55,7 +55,7 @@ namespace Tests
             systemUpdate = ECSPointerInputSystem.CreateSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
-                (ECSComponent<PBPointerHoverFeedback>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_HOVER_FEEDBACK),
+                (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
                 interactionHoverCanvas,
                 worldState,
                 dataStoreEcs7);
@@ -287,16 +287,16 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetDown,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaAny,
                                 HoverText = "Temptation"
@@ -306,7 +306,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             systemUpdate();
 
@@ -329,16 +329,16 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.distance = 1.1f;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetDown,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaAny,
                                 HoverText = "Temptation",
@@ -349,7 +349,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             systemUpdate();
 
@@ -362,16 +362,16 @@ namespace Tests
         [Test]
         public void ShowPointerUpHoverTooltip()
         {
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetUp,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaPointer,
                                 HoverText = "Temptation"
@@ -381,7 +381,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
@@ -411,16 +411,16 @@ namespace Tests
         [Test]
         public void NotShowPointerUpHoverTooltipWhenMoreThanMaxDistance()
         {
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetUp,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaPointer,
                                 HoverText = "Temptation",
@@ -431,7 +431,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
@@ -461,16 +461,16 @@ namespace Tests
         [Test]
         public void NotShowPointerUpHoverTooltipWhenButtonMismatch()
         {
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetUp,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaSecondary,
                                 HoverText = "Temptation"
@@ -480,7 +480,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             dataStoreEcs7.lastPointerInputEvent.buttonId = (int)InputAction.IaPointer;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
@@ -517,34 +517,34 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            PBPointerHoverFeedback pointerEvents = new PBPointerHoverFeedback()
+            PBPointerEvents pointerEvents = new PBPointerEvents()
             {
                 PointerEvents =
                 {
-                    new List<PBPointerHoverFeedback.Types.Entry>()
+                    new List<PBPointerEvents.Types.Entry>()
                     {
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetDown,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaAny,
                                 HoverText = "Temptation"
                             }
                         },
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetDown,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaPointer,
                                 HoverText = "Temptation2"
                             }
                         },
-                        new PBPointerHoverFeedback.Types.Entry()
+                        new PBPointerEvents.Types.Entry()
                         {
                             EventType = PointerEventType.PetDown,
-                            EventInfo = new PBPointerHoverFeedback.Types.Info()
+                            EventInfo = new PBPointerEvents.Types.Info()
                             {
                                 Button = InputAction.IaPrimary,
                                 HoverText = "Temptation3"
@@ -554,7 +554,7 @@ namespace Tests
                 }
             };
 
-            componentsManager.DeserializeComponent(ComponentID.POINTER_HOVER_FEEDBACK, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
+            componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
             systemUpdate();
 
@@ -566,7 +566,7 @@ namespace Tests
             interactionHoverCanvas.Received(1).SetTooltipInput(1, InputAction.IaPointer);
             interactionHoverCanvas.Received(1).Show();
         }
-        
+
         [Test]
         [TestCase(0,0)]
         [TestCase(66,66)]
@@ -579,7 +579,7 @@ namespace Tests
             Collider testEntityCollider = new GameObject("testEntityCollider").AddComponent<BoxCollider>();
             internalComponents.onPointerColliderComponent.PutFor(newTestScene, testEntity,
                 new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
-            
+
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
                 Substitute.For<BaseVariable<UnityEngine.Vector3>>());
@@ -587,14 +587,14 @@ namespace Tests
             var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
             var transformModel = new ECSTransform() { position = entityLocalPosition };
             transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
-            
+
             dataStoreEcs7.lastPointerInputEvent.buttonId = 0;
             dataStoreEcs7.lastPointerInputEvent.isButtonDown = true;
             dataStoreEcs7.lastPointerInputEvent.hasValue = true;
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = testEntityCollider;
-            
+
             // 3. update pointer ray hit values with object unity position
             var entityGlobalPosition = WorldStateUtils.ConvertSceneToUnityPosition(entityLocalPosition, newTestScene);
             dataStoreEcs7.lastPointerRayHit.hit.point = entityGlobalPosition;
@@ -608,7 +608,7 @@ namespace Tests
 
             Assert.AreEqual(testEntity.entityId, enqueuedEvent.hit.EntityId);
             Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
-            
+
             // 5. Check enqueued event has correct position and origin
             Assert.AreEqual(new DCL.ECSComponents.Vector3()
             {
@@ -622,7 +622,7 @@ namespace Tests
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z - 3
             }, enqueuedEvent.hit.Origin);
-            
+
             // 6. Clean up
             Object.DestroyImmediate(testEntityCollider.gameObject);
         }

@@ -55,12 +55,12 @@ namespace DCL.ECSComponents.Tests
 
             yield return CreateStretchedElement();
 
-            var requestedInteraction = new List<PBPointerHoverFeedback.Types.Entry>
+            var requestedInteraction = new List<PBPointerEvents.Types.Entry>
             {
                 new ()
                 {
                     EventType = PointerEventType.PetDown,
-                    EventInfo = new PBPointerHoverFeedback.Types.Info { Button = InputAction.IaPointer }
+                    EventInfo = new PBPointerEvents.Types.Info { Button = InputAction.IaPointer }
                 }
             };
 
@@ -92,12 +92,12 @@ namespace DCL.ECSComponents.Tests
 
             yield return CreateStretchedElement();
 
-            var requestedInteraction = new List<PBPointerHoverFeedback.Types.Entry>
+            var requestedInteraction = new List<PBPointerEvents.Types.Entry>
             {
                 new ()
                 {
                     EventType = PointerEventType.PetDown,
-                    EventInfo = new PBPointerHoverFeedback.Types.Info { Button = unsupportedAction }
+                    EventInfo = new PBPointerEvents.Types.Info { Button = unsupportedAction }
                 }
             };
 
@@ -129,12 +129,12 @@ namespace DCL.ECSComponents.Tests
 
             yield return CreateStretchedElement();
 
-            var requestedInteraction = new List<PBPointerHoverFeedback.Types.Entry>
+            var requestedInteraction = new List<PBPointerEvents.Types.Entry>
             {
                 new ()
                 {
                     EventType = PointerEventType.PetDown,
-                    EventInfo = new PBPointerHoverFeedback.Types.Info { Button = InputAction.IaPointer }
+                    EventInfo = new PBPointerEvents.Types.Info { Button = InputAction.IaPointer }
                 }
             };
 

@@ -17,7 +17,7 @@ namespace DCL.ECSComponents
                 IParcelScene parcelScene,
                 IDCLEntity dclEntity,
                 PointerEventType pointerEventType,
-                PBPointerHoverFeedback.Types.Info requestInfo,
+                PBPointerEvents.Types.Info requestInfo,
                 IInternalECSComponent<InternalInputEventResults> results);
         }
 
@@ -29,7 +29,7 @@ namespace DCL.ECSComponents
                 IParcelScene parcelScene,
                 IDCLEntity dclEntity,
                 PointerEventType pointerEventType,
-                PBPointerHoverFeedback.Types.Info requestInfo,
+                PBPointerEvents.Types.Info requestInfo,
                 IInternalECSComponent<InternalInputEventResults> results) =>
                 new UIEventSubscription<TEvent>(uiElement, parcelScene, dclEntity, pointerEventType, requestInfo, results);
         }
@@ -47,7 +47,7 @@ namespace DCL.ECSComponents
             VisualElement uiElement,
             IParcelScene parcelScene,
             IDCLEntity dclEntity,
-            IReadOnlyList<PBPointerHoverFeedback.Types.Entry> requestedInteraction,
+            IReadOnlyList<PBPointerEvents.Types.Entry> requestedInteraction,
             IInternalECSComponent<InternalInputEventResults> results)
         {
             if (requestedInteraction is null or { Count: 0 })

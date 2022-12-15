@@ -17,7 +17,7 @@ namespace ECSSystems.PointerInputSystem
         {
             public IInternalECSComponent<InternalColliders> pointerColliderComponent;
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-            public ECSComponent<PBPointerHoverFeedback> pointerEvents;
+            public ECSComponent<PBPointerEvents> pointerEvents;
             public DataStore_ECS7 dataStoreEcs7;
             public bool isLastInputPointerDown;
             public IWorldState worldState;
@@ -46,7 +46,7 @@ namespace ECSSystems.PointerInputSystem
         public static Action CreateSystem(
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
-            ECSComponent<PBPointerHoverFeedback> pointerEvents,
+            ECSComponent<PBPointerEvents> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
             DataStore_ECS7 dataStoreEcs)
@@ -316,7 +316,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowPointerDownHover(this IECSInteractionHoverCanvas canvas,
-            IReadOnlyList<PBPointerHoverFeedback.Types.Entry> entityEvents, float distance)
+            IReadOnlyList<PBPointerEvents.Types.Entry> entityEvents, float distance)
         {
             canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
                 pointerEvent.EventType == PointerEventType.PetDown
@@ -326,7 +326,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowPointerUpHover(this IECSInteractionHoverCanvas canvas,
-            IReadOnlyList<PBPointerHoverFeedback.Types.Entry> entityEvents, float distance, InputAction expectedButton)
+            IReadOnlyList<PBPointerEvents.Types.Entry> entityEvents, float distance, InputAction expectedButton)
         {
             canvas.ShowHoverTooltips(entityEvents, (pointerEvent) =>
                 pointerEvent.EventType == PointerEventType.PetUp
@@ -337,7 +337,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void ShowHoverTooltips(this IECSInteractionHoverCanvas canvas,
-            IReadOnlyList<PBPointerHoverFeedback.Types.Entry> entityEvents, Func<PBPointerHoverFeedback.Types.Entry, bool> filter)
+            IReadOnlyList<PBPointerEvents.Types.Entry> entityEvents, Func<PBPointerEvents.Types.Entry, bool> filter)
         {
             if (entityEvents is null)
                 return;
@@ -346,7 +346,7 @@ namespace ECSSystems.PointerInputSystem
             int eventIndex = 0;
             for (int i = 0; i < canvas.tooltipsCount; i++)
             {
-                PBPointerHoverFeedback.Types.Entry pointerEvent = null;
+                PBPointerEvents.Types.Entry pointerEvent = null;
                 for (; eventIndex < entityEvents.Count; eventIndex++)
                 {
                     pointerEvent = entityEvents[eventIndex];

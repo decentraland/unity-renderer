@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
             IParcelScene parcelScene,
             IDCLEntity dclEntity,
             PointerEventType pointerEventType,
-            PBPointerHoverFeedback.Types.Info requestInfo,
+            PBPointerEvents.Types.Info requestInfo,
             IInternalECSComponent<InternalInputEventResults> results
         )
         {

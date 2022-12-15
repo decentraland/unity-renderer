@@ -61,6 +61,7 @@ namespace DCL.ECSComponents.UIInput
             uiElement.UnregisterFeedback(onValueChanged);
             RemoveElementFromRoot(scene, entity, uiElement);
             uiElement = null;
+            fontUpdater.Dispose();
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiInput model)

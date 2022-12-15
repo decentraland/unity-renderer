@@ -9,13 +9,13 @@ namespace DCL.ECSComponents
     /// <summary>
     /// Adds interactivity to UI components
     /// </summary>
-    public class UIPointerHoverFeedbackHandler : UIElementHandlerBase, IECSComponentHandler<PBPointerHoverFeedback>
+    public class UIPointerEventsHandler : UIElementHandlerBase, IECSComponentHandler<PBPointerEvents>
     {
         private UIEventsSubscriptions eventsSubscriptions;
 
         private readonly IInternalECSComponent<InternalInputEventResults> internalInputResults;
 
-        public UIPointerHoverFeedbackHandler(
+        public UIPointerEventsHandler(
             IInternalECSComponent<InternalInputEventResults> internalInputResults,
             IInternalECSComponent<InternalUiContainer> internalUiContainer,
             int componentId) : base(internalUiContainer, componentId)
@@ -32,9 +32,9 @@ namespace DCL.ECSComponents
             eventsSubscriptions = null;
         }
 
-        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPointerHoverFeedback model)
+        public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPointerEvents model)
         {
-            // PBPointerHoverFeedback is used for both 3D objects and UI
+            // PBPointerEvents is used for both 3D objects and UI
             // but for the former the handler is not needed.
             // TODO: how to avoid allocation of this class?
 

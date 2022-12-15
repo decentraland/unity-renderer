@@ -35,5 +35,10 @@ namespace DCL.ECSComponents.Utils
         {
             targetElement.style.unityFont = font.font.sourceFontFile;
         }
+
+        public void Dispose()
+        {
+            fontPromiseKeeper.Forget(lastPromise);
+        }
     }
 }

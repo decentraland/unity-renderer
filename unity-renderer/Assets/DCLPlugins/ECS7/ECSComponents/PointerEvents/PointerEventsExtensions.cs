@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace DCL.ECSComponents
 {
-    public static class PointerHoverFeedbackExtensions
+    public static class PointerEventsExtensions
     {
-        public static IReadOnlyList<PBPointerHoverFeedback.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerHoverFeedback> component,
+        public static IReadOnlyList<PBPointerEvents.Types.Entry> GetPointerEventsForEntity(this ECSComponent<PBPointerEvents> component,
             IParcelScene scene, IDCLEntity entity)
         {
             var componentData = component.Get(scene, entity);
