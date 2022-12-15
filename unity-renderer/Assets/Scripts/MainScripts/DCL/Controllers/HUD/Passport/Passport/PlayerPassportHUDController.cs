@@ -18,7 +18,7 @@ namespace DCL.Social.Passports
 
         internal UserProfile currentUserProfile;
 
-        private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
+        private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
         private readonly InputAction_Trigger closeWindowTrigger;
 
