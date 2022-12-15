@@ -28,6 +28,23 @@ namespace RPC.Transports
             }
         }
 
+        public void Dispose()
+        {
+            WebSocketCommunication.OnWebSocketServiceAdded -= OnWebSocketServiceAdded;
+
+            if (wsService != null)
+            {
+                wsService.OnConnectEvent -= OnConnect;
+                wsService.OnMessageEvent -= OnMessage;
+                wsService.OnErrorEvent -= OnError;
+                wsService.OnCloseEvent -= OnClose;
+            }
+            OnCloseEvent = null;
+            OnErrorEvent = null;
+            OnMessageEvent = null;
+            OnConnectEvent = null;
+        }
+
         public void SendMessage(byte[] data)
         {
             wsService?.SendBinary(data);

@@ -15,6 +15,7 @@ namespace DCL.Social.Passports
         event Action OnBlockUser;
         event Action OnUnblockUser;
         event Action OnReportUser;
+        event Action<string> OnWhisperUser;
 
         void SetIsBlocked(bool isBlocked);
     }

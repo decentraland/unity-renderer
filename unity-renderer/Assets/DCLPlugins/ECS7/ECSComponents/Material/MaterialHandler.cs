@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using Decentraland.Common;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -48,7 +49,7 @@ namespace DCL.ECSComponents
                 texture.GetWrapMode(),
                 texture.GetFilterMode()
             ) : null;
-            
+
             if (model.Pbr != null)
             {
                 AssetPromise_Material_Model.Texture? alphaTexture = model.Pbr.AlphaTexture != null ? CreateMaterialPromiseTextureModel (
@@ -56,19 +57,19 @@ namespace DCL.ECSComponents
                     model.Pbr.AlphaTexture.GetWrapMode(),
                     model.Pbr.AlphaTexture.GetFilterMode()
                 ) : null;
-                
+
                 AssetPromise_Material_Model.Texture? emissiveTexture = model.Pbr.EmissiveTexture != null ? CreateMaterialPromiseTextureModel (
                     model.Pbr.EmissiveTexture.GetTextureUrl(scene),
                     model.Pbr.EmissiveTexture.GetWrapMode(),
                     model.Pbr.EmissiveTexture.GetFilterMode()
                 ) : null;
-                
+
                 AssetPromise_Material_Model.Texture? bumpTexture = model.Pbr.BumpTexture != null ? CreateMaterialPromiseTextureModel (
                     model.Pbr.BumpTexture.GetTextureUrl(scene),
                     model.Pbr.BumpTexture.GetWrapMode(),
                     model.Pbr.BumpTexture.GetFilterMode()
                 ) : null;
-                
+
                 promiseModel = CreatePBRMaterialPromiseModel(model, albedoTexture, alphaTexture, emissiveTexture, bumpTexture);
             }
             else

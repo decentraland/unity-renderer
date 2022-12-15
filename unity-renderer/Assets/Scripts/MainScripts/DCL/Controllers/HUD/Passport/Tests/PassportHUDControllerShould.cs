@@ -1,5 +1,5 @@
 using AvatarSystem;
-using DCl.Social.Friends;
+using DCL.Social.Friends;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
@@ -56,6 +56,8 @@ namespace DCL.Social.Passports
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
                                 wearableItemResolver,
+                                Substitute.For<IWearableCatalogBridge>(),
+                                Substitute.For<IEmotesCatalogService>(),
                                 dataStore);
 
             controller = new PlayerPassportHUDController(

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 
@@ -13,6 +14,7 @@ public class FriendsController_Mock : IFriendsController
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     public event Action<int, int> OnTotalFriendRequestUpdated;
     public event Action<int> OnTotalFriendsUpdated;
+    public event Action<FriendRequest> OnAddFriendRequest;
 
     private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
@@ -30,7 +32,7 @@ public class FriendsController_Mock : IFriendsController
     public int TotalFriendsWithDirectMessagesCount => friends.Count;
 
     public Dictionary<string, UserStatus> GetAllocatedFriends() { return friends; }
-    
+
     public void RejectFriendship(string friendUserId)
     {
         friends.Remove(friendUserId);
@@ -38,7 +40,7 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public bool IsFriend(string userId) => friends.ContainsKey(userId);
-    
+
     public void RemoveFriend(string friendId)
     {
         if (!friends.ContainsKey(friendId)) return;
@@ -58,6 +60,11 @@ public class FriendsController_Mock : IFriendsController
     {
     }
 
+    public UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+    {
+        return UniTask.FromResult(new List<FriendRequest>());
+    }
+
     public void GetFriendsWithDirectMessages(int limit, int skip)
     {
     }
@@ -65,6 +72,12 @@ public class FriendsController_Mock : IFriendsController
     public void GetFriendsWithDirectMessages(string userNameOrId, int limit)
     {
     }
+
+    public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
+        null;
+
+    public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
+        null;
 
     public UserStatus GetUserStatus(string userId)
     {
@@ -76,42 +89,38 @@ public class FriendsController_Mock : IFriendsController
         return friends.ContainsKey(friendId) && friends[friendId].friendshipStatus == status;
     }
 
-    public void RequestFriendship(string friendUserId)
+    public UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody)
     {
         if (!friends.ContainsKey(friendUserId))
             friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
+        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
     }
 
-    public void CancelRequest(string friendUserId)
+    public void RequestFriendship(string friendUserId)
     {
-        if (!friends.ContainsKey(friendUserId)) return;
+    }
+
+    public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
+    {
+        if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.CANCELLED);
+        return new FriendRequest(friendUserId, 0, "", "", "");
     }
+
+    public void CancelRequestByUserId(string friendUserId)
+    {
+    }
+
+    public UniTask<FriendRequest> CancelRequestAsync(string friendRequestId) =>
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
 
     public void AcceptFriendship(string friendUserId)
     {
         if (!friends.ContainsKey(friendUserId)) return;
         friends[friendUserId].friendshipStatus = FriendshipStatus.FRIEND;
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.APPROVED);
-    }
-
-    public void RaiseUpdateFriendship(string id, FriendshipAction action)
-    {
-        if (action == FriendshipAction.NONE)
-        {
-            if (friends.ContainsKey(id))
-                friends.Remove(id);
-        }
-
-        if (action == FriendshipAction.APPROVED)
-        {
-            if (!friends.ContainsKey(id))
-                friends.Add(id, new UserStatus());
-        }
-
-        OnUpdateFriendship?.Invoke(id, action);
     }
 
     public void RaiseUpdateUserStatus(string id, UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }

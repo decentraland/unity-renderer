@@ -4,6 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using Decentraland.Common;
 using TMPro;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
@@ -155,7 +156,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
                 return TextAlignmentOptions.Center;
             case TextAlignMode.TamMiddleRight:
                 return TextAlignmentOptions.Right;
-            default: 
+            default:
                 return TextAlignmentOptions.Center;
         }
     }

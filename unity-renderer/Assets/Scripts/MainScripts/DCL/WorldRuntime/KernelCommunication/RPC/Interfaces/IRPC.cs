@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using Decentraland.Renderer.KernelServices;
 
 namespace DCL
 {
@@ -7,5 +8,6 @@ namespace DCL
         public UniTask EnsureRpc();
 
         public ClientEmotesKernelService Emotes();
+        public ClientFriendRequestKernelService FriendRequests();
     }
 }

@@ -9,6 +9,9 @@ namespace DCL.Social.Passports
         void SetGuestUser(bool isGuest);
         void SetName(string username);
         void SetDescription(string description);
-        void SetEquippedWearables(WearableItem[] wearables);
+        void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
+        void SetCollectibleWearables(WearableItem[] wearables);
+        void SetCollectibleEmotes(WearableItem[] emotes);
+        void SetInitialTab();
     }
 }
