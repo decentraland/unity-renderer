@@ -1,12 +1,12 @@
 namespace WorldsFeaturesAnalytics
 {
-    public enum WorldAccessType
+    public enum AccessType
     {
         URL,
         Chat
     }
 
-    public enum ExitSourceType
+    public enum ExitType
     {
         GoBackButton,
         ApplicationClosed,

@@ -28,43 +28,41 @@ namespace WorldsFeaturesAnalytics
         private void IsApplicationQuittingOnChange(bool current, bool previous)
         {
             if(currentlyInWorld)
-                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, ExitSourceType.ApplicationClosed);
+                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, ExitType.ApplicationClosed);
 
             commonDataStore.isApplicationQuitting.OnChange -= IsApplicationQuittingOnChange;
         }
 
-        private void SendPlayerEnteredWorld(string worldName, WorldAccessType accessType)
+        private void SendPlayerEnteredWorld(string worldName, AccessType accessType)
         {
             var data = new Dictionary<string, string>
             {
                 { "worldName", worldName },
-                { "worldAccessType", accessType.ToString() },
+                { "accessType", accessType.ToString() },
             };
-
             analytics.SendAnalytic(ENTERED_WORLD, data);
         }
 
-        private void SendPlayerLeavesWorld(string worldName, double sessionTimeInSeconds, ExitSourceType exitSourceType)
+        private void SendPlayerLeavesWorld(string worldName, double sessionTimeInSeconds, ExitType exitType)
         {
             var data = new Dictionary<string, string>
             {
                 { "worldName", worldName },
                 { "sessionTime", sessionTimeInSeconds.ToString() },
-                { "exitSourceType", exitSourceType.ToString() },
+                { "exitType", exitType.ToString() },
             };
-
             analytics.SendAnalytic(EXIT_WORLD, data);
         }
 
         public void OnEnteredRealm(bool isWorld, string newRealmName)
         {
             if (currentlyInWorld)
-                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, commonDataStore.exitedWorldThroughGoBackButton.Get() ? ExitSourceType.GoBackButton : ExitSourceType.Chat);
+                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, commonDataStore.exitedWorldThroughGoBackButton.Get() ? ExitType.GoBackButton : ExitType.Chat);
 
             if (isWorld)
             {
                 currentWorldName = newRealmName;
-                SendPlayerEnteredWorld(currentWorldName, firstRealmEntered ? WorldAccessType.URL : WorldAccessType.Chat);
+                SendPlayerEnteredWorld(currentWorldName, firstRealmEntered ? AccessType.Chat : AccessType.URL);
             }
 
             currentlyInWorld = isWorld;
