@@ -57,12 +57,12 @@ namespace DCL.ECSComponents.Test
             // Assert
             areasController.Received(1).ChangeAreaMode(componentHandler.cameraModeRepresentantion);
         }
-        
+
         [Test]
         public void NotUpdateComponentIfSameMode()
         {
             // Arrange
-            var model = CreateModel();  
+            var model = CreateModel();
             componentHandler.lastModel = CreateModel();
             componentHandler.lastModel.Mode = model.Mode;
 
@@ -96,7 +96,7 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             componentHandler.isPlayerInside = true;
             componentHandler.OnComponentModelUpdated(scene, entity, model);
-            
+
             // Act
             componentHandler.Update();
 
@@ -127,7 +127,7 @@ namespace DCL.ECSComponents.Test
         private PBCameraModeArea CreateModel()
         {
             PBCameraModeArea model = new PBCameraModeArea();
-            model.Area = new Vector3();
+            model.Area = new Decentraland.Common.Vector3();
             model.Area.X = 2f;
             model.Area.Y = 2f;
             model.Area.Z = 2f;
