@@ -1,5 +1,6 @@
 ﻿using DCL.Controllers;
 using DCL.Models;
+using Decentraland.Common;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NSubstitute.ReceivedExtensions;
@@ -11,13 +12,13 @@ namespace DCL.ECSComponents.Tests
     public class AvatarShapeComponentHandlerShould
     {
         private const string AVATAR_POOL_NAME = "AvatarShapeECS";
-        
+
         private IDCLEntity entity;
         private IParcelScene scene;
         private IAvatarShape avatarShape;
         private AvatarShapeComponentHandler componentHandler;
         private GameObject gameObject;
-        
+
         private Pool pool;
 
         [SetUp]
@@ -65,7 +66,7 @@ namespace DCL.ECSComponents.Tests
             // Assert
             avatarShape.Received(1).ApplyModel(scene,entity,model);
         }
-        
+
         [Test]
         public void DisposeComponentCorrectly()
         {
@@ -73,7 +74,7 @@ namespace DCL.ECSComponents.Tests
             var model = CreateModel();
             componentHandler.OnComponentCreated(scene,entity);
             componentHandler.OnComponentModelUpdated(scene, entity, model);
-            
+
             // Act
             componentHandler.OnComponentRemoved(scene,entity);
 
@@ -95,11 +96,11 @@ namespace DCL.ECSComponents.Tests
             Assert.AreEqual(model.Name, newModel.Name);
             Assert.AreEqual(model.BodyShape, newModel.BodyShape);
             Assert.AreEqual(model.ExpressionTriggerId, newModel.ExpressionTriggerId);
-            
+
             Assert.AreEqual(model.EyeColor, newModel.EyeColor);
             Assert.AreEqual(model.HairColor, newModel.HairColor);
             Assert.AreEqual(model.SkinColor, newModel.SkinColor);
-            
+
             Assert.AreEqual(model.Wearables, newModel.Wearables);
         }
 
@@ -144,10 +145,10 @@ namespace DCL.ECSComponents.Tests
             avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xbada8a315e84e4d78e3b6914003647226d9b4001:1");
             avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:5");
             avatarShape.Wearables.Add("urn:decentraland:matic:collections-v2:0xd89efd0be036410d4ff194cd6ecece4ef8851d86:0");
-            
+
             return avatarShape;
         }
-        
+
         internal void ConfigurePool(GameObject prefab)
         {
             pool = PoolManager.i.GetPool(AVATAR_POOL_NAME);

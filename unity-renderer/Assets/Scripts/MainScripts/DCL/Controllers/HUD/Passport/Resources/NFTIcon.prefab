@@ -181,6 +181,8 @@ MonoBehaviour:
   rarityBackgroundImage: {fileID: 9034444005350581713}
   nftTypesIcons: {fileID: 11400000, guid: c4c1fb78d1c9a4db5ba93b000ce13026, type: 2}
   model:
+    showType: 0
+    showMarketplaceButton: 0
     type: 
     marketplaceURI: 
     name: testNFT
@@ -435,8 +437,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.1807, y: -87.34996}
-  m_SizeDelta: {x: 158.9608, y: 47.3}
+  m_AnchoredPosition: {x: -0.1807, y: -87.3}
+  m_SizeDelta: {x: 158.9608, y: 28.597}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4456790811891697547
 CanvasRenderer:
@@ -512,7 +514,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
@@ -878,7 +880,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
@@ -897,7 +899,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 10.520386, z: 0, w: 7.5980835}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

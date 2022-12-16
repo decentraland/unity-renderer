@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Decentraland.Renderer.KernelServices;
+using Decentraland.Renderer.RendererServices;
 using NUnit.Framework;
 using RPC;
 using rpc_csharp;
