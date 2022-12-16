@@ -86,7 +86,7 @@ jobs:
           command: |
             cd protocol-gen
             npm install
-            npm run build-all
+            npm run build
       - save_cache:
           name: Store large files in cache
           key: git-lfs-{{ .Branch }}

@@ -3,6 +3,7 @@ using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.Models;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using KernelCommunication;
 using NSubstitute;

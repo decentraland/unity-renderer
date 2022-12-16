@@ -39,7 +39,7 @@ namespace DCL.ECSComponents.Test
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
-            
+
             componentHandler.OnComponentCreated(scene, entity);
         }
 
@@ -87,10 +87,10 @@ namespace DCL.ECSComponents.Test
             var model = CreateModel();
             model.ExcludeIds.Add("PlayerId");
             dataStorePlayer.otherPlayers.Add("PlayerId", new Player());
-            
+
             // Act
             var result = componentHandler.GetExcludedColliders(model);
-            
+
             // Assert
             Assert.AreEqual(1, result.Count);
         }
@@ -103,7 +103,7 @@ namespace DCL.ECSComponents.Test
 
             // Act
             var newModel = SerializaAndDeserialize(model);
-            
+
             // Assert
             Assert.AreEqual(model.Area, newModel.Area);
             Assert.AreEqual(model.Modifiers, newModel.Modifiers);
@@ -119,14 +119,14 @@ namespace DCL.ECSComponents.Test
         private PBAvatarModifierArea CreateModel()
         {
             PBAvatarModifierArea model = new PBAvatarModifierArea();
-            model.Area = new Vector3();
+            model.Area = new Decentraland.Common.Vector3();
             model.Area.X = 2f;
             model.Area.Y = 2f;
             model.Area.Z = 2f;
 
             model.Modifiers.Add(AvatarModifierType.AmtHideAvatars);
             model.ExcludeIds.Add("IdToExclude");
-            
+
             return model;
         }
     }
