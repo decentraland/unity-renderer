@@ -122,8 +122,8 @@ namespace DCL.Social.Passports
 
         public void SetCollectibleWearables(WearableItem[] wearables)
         {
-            nftWearablesCarousel.CleanInstantiatedItems();
             nftWearablesCarousel.gameObject.SetActive(wearables.Length > 0);
+            nftWearablesCarousel.CleanInstantiatedItems();
             emptyWearablesText.SetActive(wearables.Length <= 0);
             for (int i = 0; i < wearables.Length; i += 4)
             {
@@ -167,8 +167,8 @@ namespace DCL.Social.Passports
 
         public void SetCollectibleEmotes(WearableItem[] wearables)
         {
-            nftEmotesCarousel.CleanInstantiatedItems();
             nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
+            nftEmotesCarousel.CleanInstantiatedItems();
             emptyEmotesText.SetActive(wearables.Length <= 0);
             for (int i = 0; i < wearables.Length; i += 4)
             {

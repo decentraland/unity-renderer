@@ -86,8 +86,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     public void SetRarity(string rarity)
     {
         model.rarity = rarity;
-        backgroundImage.color = nftTypesIcons.GetColor(rarity);
-        rarityBackgroundImage.color = nftTypesIcons.GetColor(rarity);
+        Color rarityColor = nftTypesIcons.GetColor(rarity);
+        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 0.8f);
+        rarityBackgroundImage.color = rarityColor;
     }
 
     public void SetShowMarketplaceButton(bool showMarketplaceButton)
