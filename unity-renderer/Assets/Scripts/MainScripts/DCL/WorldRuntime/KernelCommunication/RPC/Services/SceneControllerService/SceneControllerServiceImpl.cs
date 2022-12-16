@@ -207,24 +207,36 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            CRDTProtocol crdtProtocol = null;
+            CRDTProtocol outgoingMessages = null;
+            CRDTProtocol sceneState = null;
             CRDTServiceContext crdtContext = context.crdt;
+
+            // we wait until messages for scene are set
+            await UniTask.WaitUntil(() => crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out outgoingMessages),
+                cancellationToken: ct);
 
             await UniTask.SwitchToMainThread(ct);
 
             if (crdtContext.CrdtExecutors != null && crdtContext.CrdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor executor))
             {
-                crdtProtocol = executor.crdtProtocol;
+                sceneState = executor.crdtProtocol;
             }
 
-            reusableCurrentStateResult.Payload = ByteString.Empty;
             reusableCurrentStateResult.HasOwnEntities = false;
 
-            if (crdtProtocol != null)
+            try
             {
-                try
+                sendCrdtMemoryStream.SetLength(0);
+
+                // serialize outgoing messages
+                crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
+                KernelBinaryMessageSerializer.Serialize(sendCrdtBinaryWriter, outgoingMessages);
+                outgoingMessages.ClearOnUpdated();
+
+                // serialize scene state
+                if (sceneState != null)
                 {
-                    var state = crdtProtocol.GetState();
+                    var state = sceneState.GetState();
 
                     for (int i = 0; i < state.Count; i++)
                     {
@@ -235,14 +247,15 @@ namespace RPC.Services
                         }
                     }
 
-                    getStateMemoryStream.SetLength(0);
-                    KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, crdtProtocol);
-                    reusableCurrentStateResult.Payload = ByteString.CopyFrom(getStateMemoryStream.ToArray());
+                    KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, sceneState);
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
+
+                reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                reusableCrdtMessageResult.Payload = ByteString.Empty;
             }
 
             return reusableCurrentStateResult;
