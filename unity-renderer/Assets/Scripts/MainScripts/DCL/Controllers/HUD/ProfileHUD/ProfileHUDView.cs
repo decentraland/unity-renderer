@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -60,7 +62,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     [SerializeField] internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
-    [SerializeField] internal TMP_InputField descriptionPreviewInput;
     [SerializeField] internal TMP_InputField descriptionEditionInput;
     [SerializeField] internal GameObject charLimitDescriptionContainer;
     [SerializeField] internal TextMeshProUGUI textCharLimitDescription;
@@ -117,21 +118,15 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     public void ShowExpanded(bool show)
     {
         expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
     }
 
     public void SetProfile(UserProfile userProfile)
     {
         profile = userProfile;
-        if (userProfile.hasClaimedName)
-            HandleClaimedProfileName(userProfile);
-        else
-            HandleUnverifiedProfileName(userProfile);
-
-        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
-        HandleProfileAddress(userProfile);
-        HandleProfileSnapshot(userProfile);
-        SetDescription(userProfile.description);
-        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+        if (expandedObject.activeSelf)
+            UpdateLayoutByProfile(userProfile);
     }
 
 
@@ -167,10 +162,10 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         });
         inputName.onEndEdit.AddListener(x => NameSubmitted(this, x));
 
-        descriptionPreviewInput.onSelect.AddListener(x =>
+        descriptionEditionInput.onSelect.AddListener(description =>
         {
+            UpdateDescriptionCharLimit(description);
             SetDescriptionIsEditing(true);
-            UpdateDescriptionCharLimit(descriptionPreviewInput.text);
         });
         descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
         descriptionEditionInput.onDeselect.AddListener(x => SetDescriptionIsEditing(false));
@@ -179,12 +174,30 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
 
+    private void UpdateLayoutByProfile(UserProfile userProfile)
+    {
+        if (userProfile.hasClaimedName)
+            HandleClaimedProfileName(userProfile);
+        else
+            HandleUnverifiedProfileName(userProfile);
+
+        SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
+        HandleProfileAddress(userProfile);
+        HandleProfileSnapshot(userProfile);
+        SetDescription(userProfile.description);
+        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+    }
+
     private void UpdateNameCharLimit(string newValue) => textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
 
     private void UpdateDescriptionCharLimit(string newValue) =>
-        textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
+        textCharLimitDescription.text = $"{newValue.Length}/{descriptionEditionInput.characterLimit}";
 
-    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
+    private void SetDescriptionEnabled(bool enabled)
+    {
+        if (descriptionContainer.activeSelf != enabled)
+            StartCoroutine(EnableNextFrame(descriptionContainer, enabled));
+    }
 
     private void OpenStartMenu()
     {
@@ -297,25 +310,17 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     public void SetDescriptionIsEditing(bool isEditing)
     {
         charLimitDescriptionContainer.SetActive(isEditing);
-        descriptionEditionInput.gameObject.SetActive(isEditing);
-        descriptionPreviewInput.gameObject.SetActive(!isEditing);
-
-        if (isEditing)
-        {
-            descriptionEditionInput.text = descriptionPreviewInput.text;
-            StartCoroutine(SelectComponentOnNextFrame(descriptionEditionInput));
-        }
-    }
-
-    private IEnumerator SelectComponentOnNextFrame(Selectable selectable)
-    {
-        yield return null;
-        selectable.Select();
     }
 
     private void SetDescription(string description)
     {
-        descriptionPreviewInput.text = description;
-        descriptionEditionInput.text = description;
+        if (descriptionEditionInput.text != description)
+            descriptionEditionInput.text = description;
+    }
+
+    private IEnumerator EnableNextFrame(GameObject go, bool shouldEnable)
+    {
+        yield return null;
+        go.SetActive(shouldEnable);
     }
 }
