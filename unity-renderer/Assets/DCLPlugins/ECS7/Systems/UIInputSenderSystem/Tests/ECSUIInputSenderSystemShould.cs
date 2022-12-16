@@ -18,7 +18,7 @@ namespace ECSSystems.UIInputSenderSystem
         public void SetUpSystem()
         {
             componentWriter = Substitute.For<IECSComponentWriter>();
-            system = new ECSUIInputSenderSystem(uiInputResults, componentWriter);
+            system = new ECSUIInputSenderSystem(uiInputResultsComponent, componentWriter);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace ECSSystems.UIInputSenderSystem
                 (Substitute.For<IMessage>(), 400),
             };
 
-            uiInputResults.GetForAll()
+            uiInputResultsComponent.GetForAll()
                           .Returns(new List<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalUIInputResults>>>
                            {
                                CreateComponentData(true, results)
@@ -65,7 +65,7 @@ namespace ECSSystems.UIInputSenderSystem
                 (Substitute.For<IMessage>(), 400),
             };
 
-            uiInputResults.GetForAll()
+            uiInputResultsComponent.GetForAll()
                           .Returns(new List<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalUIInputResults>>>
                            {
                                CreateComponentData(false, results)

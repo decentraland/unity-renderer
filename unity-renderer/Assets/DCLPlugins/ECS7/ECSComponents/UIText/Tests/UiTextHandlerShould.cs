@@ -2,6 +2,7 @@ using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCL.Models;
 using NSubstitute;

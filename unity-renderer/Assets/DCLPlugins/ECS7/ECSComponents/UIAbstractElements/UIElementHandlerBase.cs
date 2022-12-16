@@ -30,10 +30,10 @@ namespace DCL.ECSComponents.UIAbstractElements
 
         protected internal void RemoveElementFromRoot(IParcelScene scene, IDCLEntity entity, VisualElement uiElement)
         {
-            RemoveComponentFromRoot(scene, entity)?.rootElement?.Remove(uiElement);
+            RemoveComponentFromEntity(scene, entity)?.rootElement?.Remove(uiElement);
         }
 
-        protected internal InternalUiContainer RemoveComponentFromRoot(IParcelScene scene, IDCLEntity entity)
+        protected internal InternalUiContainer RemoveComponentFromEntity(IParcelScene scene, IDCLEntity entity)
         {
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)

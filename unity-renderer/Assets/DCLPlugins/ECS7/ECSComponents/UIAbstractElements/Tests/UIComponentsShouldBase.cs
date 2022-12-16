@@ -16,7 +16,8 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         protected ECS7TestUtilsScenesAndEntities sceneTestHelper;
 
         protected IInternalECSComponent<InternalUiContainer> internalUiContainer;
-        protected IInternalECSComponent<InternalUIInputResults> uiInputResults;
+        protected IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent;
+        protected InternalUIInputResults uiInputResults;
 
         [SetUp]
         public void SetUp()
@@ -25,7 +26,19 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(1111);
 
-            uiInputResults = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
+            uiInputResultsComponent = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
+            uiInputResults = new InternalUIInputResults();
+
+            uiInputResultsComponent.GetFor(scene, entity).Returns(_ =>
+            {
+                var subs = Substitute.For<IECSReadOnlyComponentData<InternalUIInputResults>>();
+                subs.entity.Returns(entity);
+                subs.scene.Returns(scene);
+                subs.model.Returns(uiInputResults);
+                return subs;
+            });
+
+            var uiDoc = InstantiateUiDocument();
 
             ECSComponentData<InternalUiContainer> internalCompData = null;
             internalUiContainer = Substitute.For<IInternalECSComponent<InternalUiContainer>>();
@@ -37,9 +50,13 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
                                     internalCompData ??= new ECSComponentData<InternalUiContainer>
                                     {
                                         scene = info.ArgAt<IParcelScene>(0),
-                                        entity = info.ArgAt<IDCLEntity>(1)
+                                        entity = info.ArgAt<IDCLEntity>(1),
                                     };
                                     internalCompData.model = info.ArgAt<InternalUiContainer>(2);
+
+                                    // to test events we need a panel, panel comes from `UIDocument`
+                                    if (!uiDoc.rootVisualElement.Contains(internalCompData.model.rootElement))
+                                        uiDoc.rootVisualElement.Add(internalCompData.model.rootElement);
                                 });
         }
 

@@ -23,7 +23,7 @@ namespace DCL.ECSComponents.UIAbstractElements
             factory.AddOrReplaceComponent(feedbackResultComponentId, ProtoSerialization.Deserialize<TFeedbackResult>,
                 () => null);
 
-            componentWriter.AddOrReplaceComponentSerializer<TFeedbackResult>(componentId, ProtoSerialization.Serialize);
+            componentWriter.AddOrReplaceComponentSerializer<TFeedbackResult>(feedbackResultComponentId, ProtoSerialization.Serialize);
         }
 
         public sealed override void Dispose()

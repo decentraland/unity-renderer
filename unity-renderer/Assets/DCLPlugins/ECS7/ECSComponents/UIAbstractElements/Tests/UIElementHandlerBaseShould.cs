@@ -42,5 +42,21 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
                                     Arg.Is<InternalUiContainer>(i => i.rootElement.childCount == 0
                                                                      && i.components.Count == 0));
         }
+
+        [Test]
+        public void RemoveComponentFromRoot()
+        {
+            var containerModel = new InternalUiContainer();
+            containerModel.components.Add(COMPONENT_ID);
+            internalUiContainer.PutFor(scene, entity, containerModel);
+
+            internalUiContainer.ClearReceivedCalls();
+
+            handler.RemoveComponentFromEntity(scene, entity);
+
+            internalUiContainer.Received(1)
+                               .PutFor(scene, entity,
+                                    Arg.Is<InternalUiContainer>(i => i.components.Count == 0));
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace DCL.ECSComponents.UIInput
 {
     public class UIInputHandler : UIElementHandlerBase, IECSComponentHandler<PBUiInput>
     {
-        private FontUpdater fontUpdater;
+        private UIFontUpdater fontUpdater;
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
@@ -41,7 +41,7 @@ namespace DCL.ECSComponents.UIInput
             placeholder = new TextFieldPlaceholder(uiElement);
 
             AddElementToRoot(scene, entity, uiElement);
-            fontUpdater = new FontUpdater(uiElement, fontPromiseKeeper);
+            fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils
                .RegisterFeedback<ChangeEvent<string>, PBUiInputResult>

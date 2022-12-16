@@ -43,10 +43,6 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         [Test]
         public void AddResultDeserializer()
         {
-            factory.Received(1)
-                   .AddOrReplaceComponent(RESULT_COMPONENT_ID,
-                        Arg.Any<Func<object, PBUiInputResult>>(), default);
-
             Assert.IsTrue(factory.componentBuilders.TryGetValue(RESULT_COMPONENT_ID, out var componentBuilder));
             Assert.AreEqual(typeof(ECSComponent<PBUiInputResult>), componentBuilder().GetType());
         }

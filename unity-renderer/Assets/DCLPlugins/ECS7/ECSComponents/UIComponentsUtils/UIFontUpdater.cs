@@ -2,14 +2,14 @@
 
 namespace DCL.ECSComponents.Utils
 {
-    public struct FontUpdater
+    public struct UIFontUpdater
     {
         private Font? lastFont;
         private AssetPromise_Font lastPromise;
         private readonly VisualElement targetElement;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
 
-        public FontUpdater(VisualElement targetElement, AssetPromiseKeeper_Font fontPromiseKeeper)
+        public UIFontUpdater(VisualElement targetElement, AssetPromiseKeeper_Font fontPromiseKeeper)
         {
             this.targetElement = targetElement;
             this.fontPromiseKeeper = fontPromiseKeeper;

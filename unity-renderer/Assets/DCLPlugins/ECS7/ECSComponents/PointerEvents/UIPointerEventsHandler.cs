@@ -27,7 +27,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            RemoveComponentFromRoot(scene, entity);
+            RemoveComponentFromEntity(scene, entity);
             eventsSubscriptions?.Dispose();
             eventsSubscriptions = null;
         }
