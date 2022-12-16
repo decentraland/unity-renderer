@@ -30,7 +30,6 @@ namespace Tests
         private ITransport testClientTransport;
         private RpcServer<RPCContext> rpcServer;
         private CancellationTokenSource testCancellationSource;
-        private RpcServerPort<RPCContext> currentServerPort;
 
         [SetUp]
         public void SetUp()
@@ -44,7 +43,6 @@ namespace Tests
 
             rpcServer.SetHandler((port, t, c) =>
             {
-                currentServerPort = port;
                 RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl(port));
             });
 
@@ -77,7 +75,7 @@ namespace Tests
                 testPort1.Close();
 
                 string validScenePortName = "scene-12324";
-                RpcServerPort<RPCContext> testPort2 = new RpcServerPort<RPCContext>(111, validScenePortName, new CancellationToken());
+                RpcServerPort<RPCContext> testPort2 = new RpcServerPort<RPCContext>(portId, validScenePortName, new CancellationToken());
                 SceneControllerServiceImpl.RegisterService(testPort2);
                 Assert.DoesNotThrow(() => testPort2.LoadModule(RpcSceneControllerServiceCodeGen.ServiceName));
                 testPort2.Close();
@@ -126,9 +124,21 @@ namespace Tests
         [UnityTest]
         public IEnumerator UnloadSceneIfPortIsClosed()
         {
+            var (clientTransport, serverTransport) = MemoryTransport.Create();
+
+            var testRpcServer = new RpcServer<RPCContext>();
+            testRpcServer.AttachTransport(serverTransport, context);
+
+            RpcServerPort<RPCContext> currentServerPort = null;
+            testRpcServer.SetHandler((port, t, c) =>
+            {
+                currentServerPort = port;
+                RpcSceneControllerServiceCodeGen.RegisterService(port, new SceneControllerServiceImpl(port));
+            });
+
             yield return UniTask.ToCoroutine(async () =>
             {
-                var rpcClient = await CreateRpcClient(testClientTransport);
+                var rpcClient = await CreateRpcClient(clientTransport);
 
                 int testSceneNumber = 987;
 
@@ -149,7 +159,7 @@ namespace Tests
                 Assert.IsTrue(context.crdt.WorldState.ContainsScene(testSceneNumber));
 
                 // Close port
-                currentServerPort.Close();
+                testRpcServer.Dispose();
 
                 // Check scene unloaded
                 Assert.IsFalse(context.crdt.WorldState.ContainsScene(testSceneNumber));
