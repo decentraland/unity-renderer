@@ -7,6 +7,7 @@ namespace DCL.Social.Passports
         event Action<string> OnClickBuyNft;
         event Action OnClickCollectibles;
         void InitializeView();
+        void SetInitialPage();
         void SetGuestUser(bool isGuest);
         void SetName(string username);
         void SetDescription(string description);

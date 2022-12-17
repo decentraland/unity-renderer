@@ -67,7 +67,7 @@ namespace DCL.Social.Passports
             nftIconsEntryPool = GetNftIconEntryPool();
             CleanWearables();
             CleanEquippedWearables();
-            SetInitialTab();
+            SetInitialPage();
         }
 
         public void SetGuestUser(bool isGuest)
@@ -221,7 +221,7 @@ namespace DCL.Social.Passports
             hasBlockedPanel.SetActive(isBlocked);
         }
 
-        public void SetInitialTab()
+        public void SetInitialPage()
         {
             subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).SelectToggle();
             subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).SetUnselectedVisuals();

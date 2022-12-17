@@ -51,6 +51,7 @@ namespace DCL.Social.Passports
         {
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             string filteredName = await FilterContentAsync(userProfile.userName);
+            view.SetInitialPage();
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
             if (!userProfile.isGuest)
