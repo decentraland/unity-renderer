@@ -15,6 +15,7 @@ namespace DCL.Social.Passports
         [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
         [SerializeField] private PassportNavigationComponentView passportNavigationView;
         [SerializeField] internal Button hideCardButton;
+        [SerializeField] internal Button backgroundButton;
         [SerializeField] internal GameObject container;
 
         public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
@@ -31,6 +32,8 @@ namespace DCL.Social.Passports
         {
             hideCardButton.onClick.RemoveAllListeners();
             hideCardButton.onClick.AddListener(ClosePassport);
+            backgroundButton.onClick.RemoveAllListeners();
+            backgroundButton.onClick.AddListener(ClosePassport);
             mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
 
             if (mouseCatcher != null)
