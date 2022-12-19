@@ -5,7 +5,6 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.Helpers;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ECSSystems.PlayerSystem
@@ -60,11 +59,7 @@ namespace ECSSystems.PlayerSystem
             lastAvatarRotation = avatarRotation;
             Vector3 worldOffset = this.worldOffset.Get();
 
-            IReadOnlyList<IParcelScene> loadedScenes = this.loadedScenes;
-            var componentsWriter = this.componentsWriter;
-
             IParcelScene scene;
-
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 scene = loadedScenes[i];
