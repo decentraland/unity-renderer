@@ -6,10 +6,10 @@ using static Decentraland.Bff.AboutResponse.Types;
 
 namespace WorldsFeaturesAnalytics
 {
-    public class WorldsAnalytics : IWorldsAnalytics
+    public class WorldsAnalytics : IService
     {
-        private const string ENTERED_WORLD = "user_entered_world";
-        private const string EXIT_WORLD = "user_exit_world";
+        internal const string ENTERED_WORLD = "user_entered_world";
+        internal const string EXIT_WORLD = "user_exit_world";
 
         private readonly DataStore_Common commonDataStore;
         private readonly DataStore_Realm realmDataStore;
@@ -39,7 +39,7 @@ namespace WorldsFeaturesAnalytics
             realmDataStore.playerRealmAboutConfiguration.OnChange -= OnEnteredRealm;
         }
 
-        public void OnEnteredRealm(AboutConfiguration current, AboutConfiguration previous)
+        private void OnEnteredRealm(AboutConfiguration current, AboutConfiguration previous)
         {
             if (currentlyInWorld)
                 SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, commonDataStore.exitedWorldThroughGoBackButton.Get() ? ExitType.GoBackButton : ExitType.Chat);

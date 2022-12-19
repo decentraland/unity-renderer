@@ -1,9 +1,7 @@
 using DCL;
-using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
-using WorldsFeaturesAnalytics;
 
 namespace DCLPlugins.RealmPlugin
 {
@@ -13,19 +11,15 @@ namespace DCLPlugins.RealmPlugin
         private const string ENABLE_GREEN_BLOCKERS_WORLDS_FF = "realms_blockers_in_worlds";
 
         private RealmBlockerModifier realmBlockerModiferSubstitute;
-        private IWorldsAnalytics analytics;
-
 
         [SetUp]
         public void SetUp()
         {
-            analytics = Substitute.For<IWorldsAnalytics>();
-
             realmPlugin = new RealmPlugin(DataStore.i);
             realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i.worldBlockers);
 
             var substituteModifiers = new List<IRealmModifier>
-                { realmBlockerModiferSubstitute, };
+                { realmBlockerModiferSubstitute };
 
             realmPlugin.realmsModifiers = substituteModifiers;
         }

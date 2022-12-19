@@ -11,12 +11,10 @@ namespace DCLPlugins.RealmPlugin
     {
         private RealmPlugin realmPlugin;
         private IRealmModifier genericModifier;
-        private IWorldsAnalytics analytics;
 
         [SetUp]
         public void SetUp()
         {
-            analytics = Substitute.For<IWorldsAnalytics>();
             realmPlugin = new RealmPlugin(DataStore.i);
             genericModifier = Substitute.For<IRealmModifier>();
 
@@ -38,7 +36,6 @@ namespace DCLPlugins.RealmPlugin
 
             // Assert
             genericModifier.Received(1).OnEnteredRealm(isWorld, Arg.Any<AboutResponse.Types.AboutConfiguration>());
-            analytics.Received(1).OnEnteredRealm(Arg.Any<AboutResponse.Types.AboutConfiguration>(), null);
         }
 
         private static bool[] isWorldCases = { false, true };
