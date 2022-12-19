@@ -138,8 +138,6 @@ namespace DCL
         {
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
-            DisablePassport();
-
             var model = (AvatarModel) newModel;
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
@@ -239,8 +237,6 @@ namespace DCL
 
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
-
-            EnablePasssport();
 
             onPointerDown.SetColliderEnabled(isGlobalSceneAvatar);
             onPointerDown.SetOnClickReportEnabled(isGlobalSceneAvatar);
