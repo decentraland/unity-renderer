@@ -132,6 +132,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: EquippedWearable
       objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: normalScale
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 8427683350302303334, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
       propertyPath: m_SizeDelta.x
