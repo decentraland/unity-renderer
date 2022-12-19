@@ -153,12 +153,12 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((x) =>
+        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
+        inputName.onEndEdit.AddListener(x => 
         {
-            ActivateProfileNameEditionMode(false);
             NameSubmitted?.Invoke(this, x);
+            inputName.OnDeselect(null);
         });
-        inputName.onEndEdit.AddListener(x => NameSubmitted(this, x));
 
         descriptionEditionInput.onSelect.AddListener(description =>
         {
