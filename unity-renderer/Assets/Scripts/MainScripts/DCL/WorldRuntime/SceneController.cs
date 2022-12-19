@@ -623,6 +623,8 @@ namespace DCL
                 }
 
                 worldState.AddScene(newScene);
+                if(newScene.sceneData.sdk7)
+                    DataStore.i.ecs7.scenes.Add(newScene);
 
                 sceneSortDirty = true;
 
@@ -696,6 +698,8 @@ namespace DCL
                 return;
 
             worldState.RemoveScene(sceneNumber);
+            if (scene.sceneData.sdk7)
+                DataStore.i.ecs7.scenes.Remove(scene);
 
             DataStore.i.world.portableExperienceIds.Remove(scene.sceneData.id);
 
@@ -816,6 +820,9 @@ namespace DCL
             }
 
             worldState.AddScene(newScene);
+            if(newScene.sceneData.sdk7)
+                DataStore.i.ecs7.scenes.Add(newScene);
+
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)
