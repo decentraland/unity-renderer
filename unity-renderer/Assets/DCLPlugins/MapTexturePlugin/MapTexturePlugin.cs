@@ -20,6 +20,9 @@ public class MapTexturePlugin : IPlugin
         DataStore.i.HUDs.mapMainTexture.Set(Resources.Load<Texture2D>("MapDefault"));
         DataStore.i.HUDs.mapEstatesTexture.Set(Resources.Load<Texture2D>("MapDefaultEstates"));
 
+        if (!SystemInfo.SupportsTextureFormat(TextureFormat.ETC2_RGBA8))
+            return;
+
         DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, cts.Token);
         DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, cts.Token);
     }
