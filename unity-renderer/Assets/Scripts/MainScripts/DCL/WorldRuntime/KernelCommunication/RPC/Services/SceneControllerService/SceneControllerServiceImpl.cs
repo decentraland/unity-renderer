@@ -62,7 +62,7 @@ namespace RPC.Services
             port.OnClose -= OnPortClose;
 
             if (context != null && context.crdt.WorldState.ContainsScene(sceneNumber))
-                UnloadScene(null, context, new CancellationToken());
+                UnloadScene(null, context, new CancellationToken()).Forget();
         }
 
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
