@@ -3,12 +3,13 @@ using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Helpers;
+using Decentraland.Common;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Texture = DCL.ECSComponents.Texture;
-using TextureWrapMode = DCL.ECSComponents.TextureWrapMode;
+using Texture = Decentraland.Common.Texture;
+using TextureWrapMode = Decentraland.Common.TextureWrapMode;
 
 namespace Tests
 {
@@ -49,9 +50,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -72,9 +73,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -101,9 +102,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -133,9 +134,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -153,9 +154,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             WrapMode = TextureWrapMode.TwmMirror
                         }
@@ -175,9 +176,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -200,9 +201,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -224,9 +225,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             WrapMode = TextureWrapMode.TwmMirror
                         }
@@ -249,9 +250,9 @@ namespace Tests
             {
                 Pbr = new PBMaterial.Types.PbrMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -285,8 +286,8 @@ namespace Tests
                                      .RemoveFor(scene, entity,
                                          Arg.Is<InternalMaterial>(x => x.material == null));
         }
-        
-        
+
+
         [UnityTest]
         public IEnumerator CreateUnlitMaterial()
         {
@@ -294,9 +295,9 @@ namespace Tests
             {
                 Unlit = new PBMaterial.Types.UnlitMaterial()
                 {
-                    Texture = new DCL.ECSComponents.TextureUnion()
+                    Texture = new Decentraland.Common.TextureUnion()
                     {
-                        Texture = new DCL.ECSComponents.Texture()
+                        Texture = new Decentraland.Common.Texture()
                         {
                             Src = TestAssetsUtils.GetPath() + "/Images/avatar.png"
                         }
@@ -365,6 +366,6 @@ namespace Tests
 
             // Wait for materials to be forgotten
             yield return new WaitUntil(() => AssetPromiseKeeper_Material.i.library.masterAssets.Count == 0);
-        }        
+        }
     }
 }

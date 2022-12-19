@@ -17,7 +17,7 @@ public class FriendEntryModel
     public FriendEntryModel()
     {
     }
-    
+
     public FriendEntryModel(FriendEntryModel model)
     {
         userId = model.userId;

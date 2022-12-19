@@ -1,12 +1,8 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DCL;
 using DCL.Interface;
-using DCL.Helpers;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
-using DCl.Social.Friends;
+using System;
 
 namespace DCL.Social.Passports
 {
@@ -18,10 +14,12 @@ namespace DCL.Social.Passports
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly StringVariable currentPlayerId;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-        private StringVariable currentPlayerId;
         private string name;
+        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
+        public event Action OnClosePassport;
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
@@ -47,6 +45,7 @@ namespace DCL.Social.Passports
             view.OnBlockUser += BlockUser;
             view.OnUnblockUser += UnblockUser;
             view.OnReportUser += ReportUser;
+            view.OnWhisperUser += WhisperUser;
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
@@ -95,10 +94,13 @@ namespace DCL.Social.Passports
 
         private void AddPlayerAsFriend()
         {
-            UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-
-            friendsController.RequestFriendship(currentPlayerId);
-            //socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+            if (isNewFriendRequestsEnabled)
+                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            else
+            {
+                friendsController.RequestFriendship(currentPlayerId);
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+            }
         }
 
         private void RemoveFriend()
@@ -108,8 +110,12 @@ namespace DCL.Social.Passports
 
         private void CancelFriendRequest()
         {
-            friendsController.CancelRequest(currentPlayerId);
-            //socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            if (isNewFriendRequestsEnabled)
+                friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+            else
+                friendsController.CancelRequestByUserId(currentPlayerId);
+
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
         private void AcceptFriendRequest()
@@ -140,6 +146,12 @@ namespace DCL.Social.Passports
         {
             WebInterface.SendReportPlayer(currentPlayerId, name);
             //SocialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+        }
+
+        private void WhisperUser(string userId)
+        {
+            dataStore.HUDs.openPrivateChat.Set(userId);
+            OnClosePassport?.Invoke();
         }
     }
 }
