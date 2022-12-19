@@ -53,7 +53,7 @@ namespace Tests
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter);
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
 
             system.Update();
 
@@ -81,7 +81,7 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter);
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
 
             system.Update();
 
@@ -114,7 +114,7 @@ namespace Tests
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
 
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter);
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
 
             system.Update();
 
@@ -148,7 +148,7 @@ namespace Tests
         {
             Utils.LockCursor();
 
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter);
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
 
             system.Update();
 
