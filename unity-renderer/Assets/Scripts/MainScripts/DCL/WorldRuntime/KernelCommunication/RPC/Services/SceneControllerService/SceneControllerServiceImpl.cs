@@ -67,8 +67,6 @@ namespace RPC.Services
 
         public async UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.LoadScene() - scene number: {request.SceneNumber}; metadata: {request.Entity.Metadata}");
-
             sceneNumber = request.SceneNumber;
             this.context = context;
 
@@ -131,8 +129,6 @@ namespace RPC.Services
 
         public async UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request, RPCContext context, CancellationToken ct)
         {
-            // Debug.Log($"{GetHashCode()} SceneControllerServiceImpl.UnloadScene() - scene number: {sceneNumber}");
-
             await UniTask.SwitchToMainThread(ct);
             context.crdt.SceneController.UnloadParcelSceneExecute(sceneNumber);
 
