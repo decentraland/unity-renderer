@@ -139,7 +139,7 @@ namespace DCL
             
         }
 
-        private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null)
+        private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null, bool isRecursiveCall = false)
         {
             if (someTransform.childCount > 0)
             {
@@ -150,26 +150,29 @@ namespace DCL
                         GetComponents<Renderer>();
                   
                     foreach (Renderer renderer in renderers)
-                    {
-                        rendererDict[renderer] = renderer.materials;
-
-                        if (optionalParcelScene != null)
-                        {
-                            parcelToRendererMultimap.Add(optionalParcelScene, renderer);
-                        }
-
-                        if (renderer.tag.Equals(FROM_ASSET_BUNDLE_TAG))
-                        {
-                            renderer.material = abDetectorMaterialsHolder.ABMaterial;
-                        }
-                        else if(renderer.tag.Equals(FROM_RAW_GLTF_TAG))
-                        {
-                            renderer.material = abDetectorMaterialsHolder.GLTFMaterial;
-                        }
-                    }
+                        ApplyMaterialToRenderer(renderer);
                     
-                    ApplyMaterials(childTransform, optionalParcelScene);
+                    ApplyMaterials(childTransform, optionalParcelScene, true);
                 }
+            }
+            else if (!isRecursiveCall)
+            {
+                Renderer renderer = someTransform.GetComponent<Renderer>();
+                if (renderer != null)
+                    ApplyMaterialToRenderer(renderer);
+            }
+
+            void ApplyMaterialToRenderer(Renderer renderer)
+            {
+                rendererDict[renderer] = renderer.materials;
+
+                if (optionalParcelScene != null)
+                    parcelToRendererMultimap.Add(optionalParcelScene, renderer);
+
+                if (renderer.tag.Equals(FROM_ASSET_BUNDLE_TAG))
+                    renderer.material = abDetectorMaterialsHolder.ABMaterial;
+                else if (renderer.tag.Equals(FROM_RAW_GLTF_TAG))
+                    renderer.material = abDetectorMaterialsHolder.GLTFMaterial;
             }
         }
     }
