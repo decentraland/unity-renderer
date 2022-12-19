@@ -1,4 +1,5 @@
 using DCL;
+using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.InputSenderSystem;
@@ -51,7 +52,7 @@ public class ECSSystemsController : IDisposable
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
-        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter);
+        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock());
         playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);

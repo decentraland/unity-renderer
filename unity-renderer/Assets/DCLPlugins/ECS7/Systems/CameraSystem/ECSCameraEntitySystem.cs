@@ -15,9 +15,8 @@ namespace ECSSystems.CameraSystem
 {
     public class ECSCameraEntitySystem : IDisposable
     {
-        private static readonly PBCameraMode reusableCameraMode = new PBCameraMode();
-        private static readonly PBPointerLock reusablePointerLock = new PBPointerLock();
-
+        private readonly PBCameraMode reusableCameraMode;
+        private readonly PBPointerLock reusablePointerLock;
         private readonly BaseVariable<Transform> cameraTransform;
         private readonly RendererState rendererState;
         private readonly Vector3Variable worldOffset;
@@ -29,7 +28,7 @@ namespace ECSSystems.CameraSystem
         private Quaternion lastCameraRotation = Quaternion.identity;
         private bool newSceneAdded = false;
 
-        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter)
+        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter,  PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock)
         {
             cameraTransform = DataStore.i.camera.transform;
             rendererState = CommonScriptableObjects.rendererState;
@@ -37,6 +36,8 @@ namespace ECSSystems.CameraSystem
             loadedScenes = DataStore.i.ecs7.scenes;
             this.componentsWriter = componentsWriter;
             cameraMode = CommonScriptableObjects.cameraMode;
+            this.reusableCameraMode = reusableCameraMode;
+            this.reusablePointerLock = reusablePointerLock;
 
             loadedScenes.OnAdded += LoadedScenesOnOnAdded;
         }
