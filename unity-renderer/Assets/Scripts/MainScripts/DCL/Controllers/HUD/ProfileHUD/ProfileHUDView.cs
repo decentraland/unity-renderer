@@ -166,8 +166,12 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
             SetDescriptionIsEditing(true);
         });
         descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionEditionInput.onEndEdit.AddListener(description =>
+        {
+            DescriptionSubmitted?.Invoke(this, description);
+            descriptionEditionInput.OnDeselect(null);
+        });
         descriptionEditionInput.onDeselect.AddListener(x => SetDescriptionIsEditing(false));
-        descriptionEditionInput.onEndEdit.AddListener(x => DescriptionSubmitted?.Invoke(this, x));
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
