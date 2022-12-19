@@ -1,6 +1,8 @@
 using DCL;
+using DCLPlugins.RealmPlugin;
 using System.Collections.Generic;
 using UnityEngine;
+using static Decentraland.Bff.AboutResponse.Types;
 
 namespace WorldsFeaturesAnalytics
 {
@@ -9,28 +11,49 @@ namespace WorldsFeaturesAnalytics
         private const string ENTERED_WORLD = "user_entered_world";
         private const string EXIT_WORLD = "user_exit_world";
 
+        private readonly DataStore_Common commonDataStore;
+        private readonly DataStore_Realm realmDataStore;
+
         private readonly IAnalytics analytics;
         private bool currentlyInWorld;
         private string currentWorldName;
         private double lastRealmEnteredTime;
         private bool firstRealmEntered;
-        private readonly DataStore_Common commonDataStore;
-        internal readonly IUpdateEventHandler updateEventHandler;
 
-        public WorldsAnalytics(DataStore_Common commonDataStore, IAnalytics analytics, IUpdateEventHandler updateEventHandler)
+        public WorldsAnalytics(DataStore_Common commonDataStore, DataStore_Realm realmDataStore, IAnalytics analytics)
         {
             this.commonDataStore = commonDataStore;
             this.analytics = analytics;
-            this.updateEventHandler = updateEventHandler;
-            updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnDestroy, ApplicationQuitting);
+            this.realmDataStore = realmDataStore;
+
+            realmDataStore.playerRealmAboutConfiguration.OnChange += OnEnteredRealm;
         }
 
-        private void ApplicationQuitting()
+        public void Initialize() { }
+
+        public void Dispose()
         {
             if (currentlyInWorld)
                 SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, ExitType.ApplicationClosed);
 
-            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnDestroy, ApplicationQuitting);
+            realmDataStore.playerRealmAboutConfiguration.OnChange -= OnEnteredRealm;
+        }
+
+        public void OnEnteredRealm(AboutConfiguration current, AboutConfiguration previous)
+        {
+            if (currentlyInWorld)
+                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, commonDataStore.exitedWorldThroughGoBackButton.Get() ? ExitType.GoBackButton : ExitType.Chat);
+
+            if (current.IsWorld())
+            {
+                currentWorldName = current.RealmName;
+                SendPlayerEnteredWorld(currentWorldName, firstRealmEntered ? AccessType.Chat : AccessType.URL);
+            }
+
+            currentlyInWorld = current.IsWorld();
+            lastRealmEnteredTime = Time.realtimeSinceStartup;
+            firstRealmEntered = true;
+            commonDataStore.exitedWorldThroughGoBackButton.Set(false);
         }
 
         private void SendPlayerEnteredWorld(string worldName, AccessType accessType)
@@ -54,23 +77,6 @@ namespace WorldsFeaturesAnalytics
             };
 
             analytics.SendAnalytic(EXIT_WORLD, data);
-        }
-
-        public void OnEnteredRealm(bool isWorld, string newRealmName)
-        {
-            if (currentlyInWorld)
-                SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, commonDataStore.exitedWorldThroughGoBackButton.Get() ? ExitType.GoBackButton : ExitType.Chat);
-
-            if (isWorld)
-            {
-                currentWorldName = newRealmName;
-                SendPlayerEnteredWorld(currentWorldName, firstRealmEntered ? AccessType.Chat : AccessType.URL);
-            }
-
-            currentlyInWorld = isWorld;
-            lastRealmEnteredTime = Time.realtimeSinceStartup;
-            firstRealmEntered = true;
-            commonDataStore.exitedWorldThroughGoBackButton.Set(false);
         }
     }
 }

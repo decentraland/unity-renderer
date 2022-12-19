@@ -19,7 +19,7 @@ namespace DCLPlugins.RealmPlugin
         {
             analytics = Substitute.For<IWorldsAnalytics>();
 
-            realmPlugin = new RealmPlugin(DataStore.i, analytics);
+            realmPlugin = new RealmPlugin(DataStore.i);
             realmMinimapModiferSubstitute = Substitute.For<RealmMinimapModifier>(DataStore.i.HUDs);
 
             var substituteModifiers = new List<IRealmModifier>
