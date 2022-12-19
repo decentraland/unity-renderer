@@ -1,5 +1,4 @@
 using DCL;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,21 +15,22 @@ namespace WorldsFeaturesAnalytics
         private double lastRealmEnteredTime;
         private bool firstRealmEntered;
         private readonly DataStore_Common commonDataStore;
+        internal readonly IUpdateEventHandler updateEventHandler;
 
-
-        public WorldsAnalytics(DataStore_Common commonDataStore, IAnalytics analytics)
+        public WorldsAnalytics(DataStore_Common commonDataStore, IAnalytics analytics, IUpdateEventHandler updateEventHandler)
         {
             this.commonDataStore = commonDataStore;
             this.analytics = analytics;
-            commonDataStore.isApplicationQuitting.OnChange += IsApplicationQuittingOnChange;
+            this.updateEventHandler = updateEventHandler;
+            updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnDestroy, ApplicationQuitting);
         }
 
-        private void IsApplicationQuittingOnChange(bool current, bool previous)
+        private void ApplicationQuitting()
         {
-            if(currentlyInWorld)
+            if (currentlyInWorld)
                 SendPlayerLeavesWorld(currentWorldName, Time.realtimeSinceStartup - lastRealmEnteredTime, ExitType.ApplicationClosed);
 
-            commonDataStore.isApplicationQuitting.OnChange -= IsApplicationQuittingOnChange;
+            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnDestroy, ApplicationQuitting);
         }
 
         private void SendPlayerEnteredWorld(string worldName, AccessType accessType)
@@ -40,6 +40,7 @@ namespace WorldsFeaturesAnalytics
                 { "worldName", worldName },
                 { "accessType", accessType.ToString() },
             };
+
             analytics.SendAnalytic(ENTERED_WORLD, data);
         }
 
@@ -51,6 +52,7 @@ namespace WorldsFeaturesAnalytics
                 { "sessionTime", sessionTimeInSeconds.ToString() },
                 { "exitType", exitType.ToString() },
             };
+
             analytics.SendAnalytic(EXIT_WORLD, data);
         }
 
