@@ -31,12 +31,12 @@ namespace ECSSystems.PlayerSystem
             loadedScenes = DataStore.i.ecs7.scenes;
             this.componentsWriter = componentsWriter;
 
-            loadedScenes.OnAdded += LoadedScenesOnOnAdded;
+            loadedScenes.OnAdded += OnSceneLoaded;
         }
 
         public void Dispose()
         {
-            loadedScenes.OnAdded -= LoadedScenesOnOnAdded;
+            loadedScenes.OnAdded -= OnSceneLoaded;
         }
 
         public void Update()
@@ -81,7 +81,7 @@ namespace ECSSystems.PlayerSystem
             timeStamp++;
         }
 
-        private void LoadedScenesOnOnAdded(IParcelScene obj)
+        private void OnSceneLoaded(IParcelScene obj)
         {
             newSceneAdded = true;
         }
