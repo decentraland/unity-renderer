@@ -140,6 +140,8 @@ namespace RPC.Services
             IParcelScene scene = null;
             CRDTServiceContext crdtContext = context.crdt;
 
+            await UniTask.SwitchToMainThread(ct);
+
             // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
             // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
             await UniTask.WaitUntil(() => crdtContext.WorldState.TryGetScene(sceneNumber, out scene),
@@ -147,8 +149,6 @@ namespace RPC.Services
 
             await UniTask.WaitWhile(() => crdtContext.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
                 cancellationToken: ct);
-
-            await UniTask.SwitchToMainThread(ct);
 
             try
             {
