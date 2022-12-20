@@ -797,7 +797,7 @@ GameObject:
   - component: {fileID: 4572648605274755478}
   - component: {fileID: 5561584339888838550}
   m_Layer: 5
-  m_Name: NameLengthLabel
+  m_Name: BodyLengthLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2271,7 +2271,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2304,7 +2304,7 @@ MonoBehaviour:
   m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 0
+  m_CharacterLimit: 140
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
@@ -3705,6 +3705,7 @@ MonoBehaviour:
   sendButton: {fileID: 6819322043546649347}
   retryButton: {fileID: 1370654358253166480}
   messageBodyInput: {fileID: 2056955224897217072}
+  messageBodyLengthLabel: {fileID: 5561584339888838550}
   profileImage: {fileID: 1246008765715212516}
 --- !u!1 &8299142760375165370
 GameObject:

@@ -19,6 +19,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button sendButton;
         [SerializeField] internal Button retryButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
+        [SerializeField] internal TMP_Text messageBodyLengthLabel;
         [SerializeField] internal ImageComponentView profileImage;
 
         private readonly Model model = new Model();
@@ -39,7 +40,11 @@ namespace DCL.Social.Friends
             foreach (var button in cancelButtons)
                 button.onClick.AddListener(() => OnCancel?.Invoke());
 
-            messageBodyInput.onValueChanged.AddListener(s => OnMessageBodyChanged?.Invoke(s));
+            messageBodyInput.onValueChanged.AddListener(s =>
+            {
+                messageBodyLengthLabel.text = $"{s.Length}/140";
+                OnMessageBodyChanged?.Invoke(s);
+            });
             sendButton.onClick.AddListener(() => OnSend?.Invoke());
             retryButton.onClick.AddListener(() => OnSend?.Invoke());
         }
@@ -59,6 +64,7 @@ namespace DCL.Social.Friends
             nameLabel.text = model.Name;
             pendingStateLabel.text = $"Sending friend request to {model.Name}";
             successStateLabel.text = $"Friend request sent to {model.Name}";
+            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/140";
 
             // the load of the profile picture gets stuck if the same listener is registered many times
             if (lastProfilePictureObserver != model.ProfilePictureObserver)
