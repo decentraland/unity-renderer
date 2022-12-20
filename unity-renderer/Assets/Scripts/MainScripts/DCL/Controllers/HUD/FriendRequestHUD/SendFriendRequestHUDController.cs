@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -16,6 +17,7 @@ namespace DCL.Social.Friends
 
         private string messageBody;
         private string recipientId;
+        private CancellationTokenSource hideCancellationToken = new ();
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -75,6 +77,9 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid SendAsync()
         {
+            hideCancellationToken?.Cancel();
+            hideCancellationToken = new CancellationTokenSource();
+
             view.ShowPendingToSend();
 
             try
@@ -86,17 +91,23 @@ namespace DCL.Social.Friends
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
 
                 view.ShowSendSuccess();
+
+                await UniTask.Delay(2000, cancellationToken: hideCancellationToken.Token);
+
+                if (!hideCancellationToken.IsCancellationRequested)
+                    view.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
-                Debug.LogException(e);
                 view.ShowSendFailed();
+                throw;
             }
         }
 
         private void Hide()
         {
+            hideCancellationToken?.Cancel();
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             view.Close();
         }

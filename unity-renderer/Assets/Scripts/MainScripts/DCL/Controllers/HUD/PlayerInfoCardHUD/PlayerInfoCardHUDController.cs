@@ -91,7 +91,7 @@ public class PlayerInfoCardHUDController : IHUD
     {
         if (isNewFriendRequestsEnabled)
         {
-            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             dataStore.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.Passport);
         }
         else
