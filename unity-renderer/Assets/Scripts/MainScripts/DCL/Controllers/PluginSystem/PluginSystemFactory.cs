@@ -10,6 +10,7 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
@@ -53,6 +54,7 @@ namespace DCL
             pluginSystem.Register<SendFriendRequestHUDPlugin>(() => new SendFriendRequestHUDPlugin());
             pluginSystem.Register<CancelFriendRequestHUDPlugin>(() => new CancelFriendRequestHUDPlugin());
 
+            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), "loading_screen_plugin");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2), "tutorial");
             pluginSystem.RegisterWithFlag<TextureCompressionTogglePlugin>(() => new TextureCompressionTogglePlugin(), "perf_tex_compression");

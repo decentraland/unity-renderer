@@ -1,0 +1,19 @@
+{
+    "name": "DCLPlugins.LoadingScreenPlugin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:410d113a616fe7a46bdbf47941da22a4",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:97d8897529779cb49bebd400c7f402a6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
