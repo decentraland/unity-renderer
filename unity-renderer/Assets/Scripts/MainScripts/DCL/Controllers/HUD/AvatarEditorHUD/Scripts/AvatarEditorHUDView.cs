@@ -97,11 +97,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
     {
         AvatarEditorHUDView view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AvatarEditorHUDView>();
-        view.Initialize(controller).Forget();
+        view.Initialize(controller);
         return view;
     }
 
-    private async UniTask Initialize(AvatarEditorHUDController controller)
+    private void Initialize(AvatarEditorHUDController controller)
     {
         this.controller = controller;
         gameObject.name = VIEW_OBJECT_NAME;
@@ -129,10 +129,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked;
 
         ConfigureSectionSelector();
-
-        foreach (var filter in wearableGridPairs)
-            await filter.selector.PrewarmContainersAsync();
-    }
+   }
 
     public void Dispose()
     {

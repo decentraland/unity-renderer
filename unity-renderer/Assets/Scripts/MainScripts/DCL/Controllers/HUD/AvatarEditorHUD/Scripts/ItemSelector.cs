@@ -59,9 +59,6 @@ public class ItemSelector : MonoBehaviour
         DataStore.i.screen.size.OnChange -= OnScreenSizeChanged;
     }
 
-    public async UniTask PrewarmContainersAsync() =>
-        await itemToggleContainer.PrewarmAsync(TOTAL_ROWS_OF_ITEMS *  CalculateColumnsAmount(((RectTransform)transform).rect));
-
     private void OnScreenSizeChanged(Vector2Int _, Vector2Int __) =>
         SetupPaginationWithColumns();
 
@@ -86,6 +83,7 @@ public class ItemSelector : MonoBehaviour
             cancellationToken.ThrowIfCancellationRequested();
 
             maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * CalculateColumnsAmount(rt.rect);
+
             await SetupWearablePagination(cancellationToken, true);
         }
         catch (OperationCanceledException) { }
@@ -103,10 +101,9 @@ public class ItemSelector : MonoBehaviour
     {
         if (isActiveAndEnabled || forceRebuild || EnvironmentSettings.RUNNING_TESTS)
         {
+            await UpdateWearableListAsync(lastPage, token);
             itemToggleContainer.Rebuild(maxVisibleWearables);
             pageSelector.Setup(GetMaxPages(), forceRebuild);
-
-            await UpdateWearableListAsync(lastPage, token);
         }
     }
 

@@ -15,18 +15,6 @@ public class ItemToggleContainer : MonoBehaviour
 
     private int maxItems;
 
-    public async UniTask PrewarmAsync(int amount)
-    {
-        for (var i = 0; i < amount; i++)
-        {
-            var newItemToggle = Instantiate(itemPrefab, itemContainer);
-            items.Add(newItemToggle);
-            newItemToggle.Hide();
-
-            await UniTask.Yield();
-        }
-    }
-
     public void Rebuild(int newMaxItems)
     {
         if (maxItems == newMaxItems) return;
