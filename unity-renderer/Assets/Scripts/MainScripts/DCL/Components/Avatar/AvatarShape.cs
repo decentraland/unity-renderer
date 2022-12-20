@@ -11,10 +11,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
-using GPUSkinning;
-using NSubstitute.ClearExtensions;
 using UnityEngine;
-using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
 
 namespace DCL
