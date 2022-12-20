@@ -89,7 +89,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception e)
             {
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 Debug.LogException(e);
                 view.ShowSendFailed();
             }

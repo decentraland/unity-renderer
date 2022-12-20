@@ -42,7 +42,6 @@ public class FriendRequestNotificationComponentViewTest
             Header = "Friend Request",
             Message = "Test message",
             Time = "12:44",
-            ImageUri = null,
             IsAccepted = false
         };
 
@@ -51,7 +50,6 @@ public class FriendRequestNotificationComponentViewTest
 
         // Assert
         Assert.AreEqual(testModel, friendRequestNotificationComponent.model, "The model does not match after configuring the notification.");
-        Assert.True(friendRequestNotificationComponent.image.gameObject.activeInHierarchy);
     }
 
     [Test]

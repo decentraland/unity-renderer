@@ -3,6 +3,7 @@ using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
+using WorldsFeaturesAnalytics;
 
 namespace DCLPlugins.RealmPlugin
 {
@@ -16,8 +17,10 @@ namespace DCLPlugins.RealmPlugin
         {
             realmPlugin = new RealmPlugin(DataStore.i);
             genericModifier = Substitute.For<IRealmModifier>();
+
             var substituteModifiers = new List<IRealmModifier>
                 { genericModifier };
+
             realmPlugin.realmsModifiers = substituteModifiers;
         }
 

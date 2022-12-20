@@ -10,5 +10,6 @@ namespace DCL
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new ();
         public readonly BaseVariable<bool> isTutorialRunning = new (false);
         public readonly BaseVariable<bool> isWorld = new (false);
+        public readonly BaseVariable<bool> exitedWorldThroughGoBackButton = new (false);
     }
 }
