@@ -6,7 +6,7 @@ using static Decentraland.Bff.AboutResponse.Types;
 
 namespace WorldsFeaturesAnalytics
 {
-    public class WorldsAnalytics : IService
+    public class WorldsAnalytics : IWorldsAnalytics
     {
         internal const string ENTERED_WORLD = "user_entered_world";
         internal const string EXIT_WORLD = "user_exit_world";
