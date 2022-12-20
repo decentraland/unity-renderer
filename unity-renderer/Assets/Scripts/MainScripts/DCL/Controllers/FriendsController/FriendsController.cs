@@ -113,8 +113,6 @@ namespace DCL.Social.Friends
             AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId);
             FriendRequestPayload requestPayload = payload.FriendRequest;
             var request = ToFriendRequest(requestPayload);
-            // NOTE: would it be better to register the new state instead of removing it?
-            friendRequests.Remove(friendRequestId);
 
             await UniTask.SwitchToMainThread();
 
@@ -132,8 +130,6 @@ namespace DCL.Social.Friends
             RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId);
             FriendRequestPayload requestPayload = payload.FriendRequestPayload;
             var request = ToFriendRequest(requestPayload);
-            // NOTE: would it be better to register the new state instead of removing it?
-            friendRequests.Remove(friendRequestId);
 
             await UniTask.SwitchToMainThread();
 
@@ -212,8 +208,11 @@ namespace DCL.Social.Friends
             if (request != null)
             {
                 await apiBridge.CancelRequestAsync(request.FriendRequestId);
-                friendRequests.Remove(request.FriendRequestId);
                 await UniTask.SwitchToMainThread();
+
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                    { action = FriendshipAction.CANCELLED, userId = friendUserId });
+
                 return request;
             }
 
