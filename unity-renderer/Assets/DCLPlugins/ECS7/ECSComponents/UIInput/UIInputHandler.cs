@@ -38,6 +38,8 @@ namespace DCL.ECSComponents.UIInput
             // `TextField` contains a label as well but
             // passing a null string will actually make it invisible
             uiElement = new TextField();
+            uiElement.style.flexGrow = 1f;
+
             placeholder = new TextFieldPlaceholder(uiElement);
 
             AddElementToRoot(scene, entity, uiElement);
