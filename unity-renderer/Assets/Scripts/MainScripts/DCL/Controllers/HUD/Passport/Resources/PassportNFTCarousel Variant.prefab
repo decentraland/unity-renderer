@@ -436,6 +436,21 @@ PrefabInstance:
       propertyPath: m_Spacing
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 2573473210683253683, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.81960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 2573473210683253683, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.81960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 2573473210683253683, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.81960785
+      objectReference: {fileID: 0}
     - target: {fileID: 3039892168281033923, guid: 117cfad517329394a8c1ea8c91298f8f,
         type: 3}
       propertyPath: m_SizeDelta.y
@@ -606,6 +621,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6808503081253779930, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 8.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875030513066093076, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.81960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875030513066093076, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.81960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875030513066093076, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.81960785
+      objectReference: {fileID: 0}
     - target: {fileID: 7116257524669431443, guid: 117cfad517329394a8c1ea8c91298f8f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -701,7 +736,9 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 1774
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 849799310013176229, guid: 117cfad517329394a8c1ea8c91298f8f, type: 3}
+    - {fileID: 4807360143631521587, guid: 117cfad517329394a8c1ea8c91298f8f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 117cfad517329394a8c1ea8c91298f8f, type: 3}
 --- !u!224 &4575780064592813004 stripped
 RectTransform:
