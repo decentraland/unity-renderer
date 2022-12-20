@@ -83,7 +83,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         selected = isSelected;
         amountContainer.gameObject.SetActive(amount > 1);
         amountText.text = $"x{amount.ToString()}";
-        
+
         UpdateThumbnail();
     }
 
@@ -136,13 +136,13 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void SetBodyShapeCompatibilityStrategy(Func<WearableItem, bool> function) =>
         getBodyShapeCompatibility = function;
-    
+
     public void SetReplaceOtherWearablesToastStrategy(Func<WearableItem, bool> function) =>
         getEquippedWearablesReplacedByFunc = function;
 
-    private void OnEnable() 
-    { 
-        UpdateThumbnail(); 
+    private void OnEnable()
+    {
+        UpdateThumbnail();
     }
 
     protected virtual void OnDestroy()
@@ -172,7 +172,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private void UpdateThumbnail()
     {
         string url = wearableItem?.ComposeThumbnailUrl();
-        
+
         if (wearableItem == null || string.IsNullOrEmpty(url))
         {
             SetLoadingAnimation(ANIMATION_LOADED);
@@ -183,7 +183,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
     }
-    
+
     private void OnThumbnailReady(Asset_Texture texture)
     {
         SetLoadingAnimation(ANIMATION_LOADED);
@@ -197,7 +197,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         }
         SetColorScale();
     }
-    
+
     private void SetLoadingAnimation(string id)
     {
         if (!loadingAnimation.isActiveAndEnabled)
@@ -205,7 +205,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         loadingAnimation.Play(id);
     }
-    
+
     public void Hide()
     {
         root.gameObject.SetActive(false);

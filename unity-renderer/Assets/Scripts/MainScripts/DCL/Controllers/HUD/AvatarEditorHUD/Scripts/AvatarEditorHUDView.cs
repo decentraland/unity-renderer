@@ -18,92 +18,34 @@ using Random = UnityEngine.Random;
 
 public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointerDownHandler
 {
-    private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
-    internal const int AVATAR_SECTION_INDEX = 0;
-    internal const string AVATAR_SECTION_TITLE = "Avatar";
+    private const int AVATAR_SECTION_INDEX = 0;
+    private const string AVATAR_SECTION_TITLE = "Avatar";
     internal const int EMOTES_SECTION_INDEX = 1;
-    internal const string EMOTES_SECTION_TITLE = "Emotes";
+    private const string EMOTES_SECTION_TITLE = "Emotes";
     private const string RESET_PREVIEW_ANIMATION = "Idle";
     private const float TIME_TO_RESET_PREVIEW_ANIMATION = 0.2f;
 
-    public bool isOpen { get; private set; }
-    internal DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+    private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
 
-    internal bool arePanelsInitialized;
-
-    [Serializable]
-    public class AvatarEditorNavigationInfo
-    {
-        public Toggle toggle;
-        public Canvas canvas;
-        public bool enabledByDefault;
-        public CharacterPreviewController.CameraFocus focus = CharacterPreviewController.CameraFocus.DefaultEditing;
-
-        //To remove when we refactor this to avoid ToggleGroup issues when quitting application
-        public void Initialize()
-        {
-            Application.quitting += () => toggle.onValueChanged.RemoveAllListeners();
-        }
-    }
-
-    [Serializable]
-    public class AvatarEditorWearableFilter
-    {
-        public string categoryFilter;
-        public ItemSelector selector;
-    }
-
-    [SerializeField]
-    internal Canvas avatarEditorCanvas;
-
-    [SerializeField]
-    internal CanvasGroup avatarEditorCanvasGroup;
-
-    [SerializeField]
-    internal AvatarEditorNavigationInfo[] navigationInfos;
-
-    [SerializeField]
-    internal AvatarEditorWearableFilter[] wearableGridPairs;
-
-    [SerializeField]
-    internal AvatarEditorNavigationInfo collectiblesNavigationInfo;
-
+    [SerializeField] internal Canvas avatarEditorCanvas;
+    [SerializeField] internal CanvasGroup avatarEditorCanvasGroup;
+    [SerializeField] internal AvatarEditorNavigationInfo[] navigationInfos;
+    [SerializeField] internal AvatarEditorWearableFilter[] wearableGridPairs;
+    [SerializeField] internal AvatarEditorNavigationInfo collectiblesNavigationInfo;
     [SerializeField] internal ItemSelector collectiblesItemSelector;
-
-    [SerializeField]
-    internal ColorSelector skinColorSelector;
-
-    [SerializeField]
-    internal ColorPickerComponentView eyeColorPickerComponent;
-
-    [SerializeField]
-    internal ColorPickerComponentView hairColorPickerComponent;
-
-    [SerializeField]
-    internal ColorPickerComponentView facialHairColorPickerComponent;
-
-    [SerializeField]
-    internal ColorPickerComponentView eyeBrowsColorPickerComponent;
-
-    [SerializeField]
-    internal PreviewCameraRotation characterPreviewRotation;
-
-    [SerializeField]
-    internal RawImage characterPreviewImage;
-
-    [SerializeField]
-    internal Button randomizeButton;
-
-    [SerializeField]
-    internal Animator randomizeAnimator;
-
-    [SerializeField]
-    internal Button doneButton;
-
+    [SerializeField] internal ColorSelector skinColorSelector;
+    [SerializeField] internal ColorPickerComponentView eyeColorPickerComponent;
+    [SerializeField] internal ColorPickerComponentView hairColorPickerComponent;
+    [SerializeField] internal ColorPickerComponentView facialHairColorPickerComponent;
+    [SerializeField] internal ColorPickerComponentView eyeBrowsColorPickerComponent;
+    [SerializeField] internal PreviewCameraRotation characterPreviewRotation;
+    [SerializeField] internal RawImage characterPreviewImage;
+    [SerializeField] internal Button randomizeButton;
+    [SerializeField] internal Animator randomizeAnimator;
+    [SerializeField] internal Button doneButton;
     [SerializeField] internal Button[] goToMarketplaceButtons;
-
     [SerializeField] internal GameObject loadingSpinnerGameObject;
 
     [Header("Collectibles")]
@@ -113,18 +55,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     [Header("Skins")]
     [SerializeField] internal GameObject skinsFeatureContainer;
-
     [SerializeField] internal GameObject skinsWeb3Container;
-
     [SerializeField] internal GameObject skinsMissingWeb3Container;
-
     [SerializeField] internal GameObject skinsConnectWalletButtonContainer;
-
     [SerializeField] private GameObject skinsPopulatedListContainer;
     [SerializeField] private GameObject skinsEmptyListContainer;
-
-    [SerializeField]
-    internal DropdownComponentView collectionsDropdown;
+    [SerializeField] internal DropdownComponentView collectionsDropdown;
 
     [Header("Section Selector")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -134,6 +70,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     [SerializeField] internal UIHelper_ClickBlocker clickBlocker;
     [SerializeField] internal Notification noItemInCollectionWarning;
+
+    private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
+    private bool arePanelsInitialized;
 
     private Service<ICharacterPreviewFactory> characterPreviewFactory;
 
@@ -146,22 +85,23 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     private bool doAvatarFeedback;
 
+    public bool isOpen { get; private set; }
     public ICharacterPreviewController CharacterPreview { get; private set; }
 
     public event Action<AvatarModel> OnAvatarAppearFeedback;
     public event Action<bool> OnSetVisibility;
     public event Action OnRandomize;
+
     public event Action<string> WearableSelectorClicked;
 
-    private void Awake()
+    internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
     {
-        loadingSpinnerGameObject.SetActive(false);
-        doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
-        isOpen = false;
-        arePanelsInitialized = false;
+        AvatarEditorHUDView view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AvatarEditorHUDView>();
+        view.Initialize(controller).Forget();
+        return view;
     }
 
-    private void Initialize(AvatarEditorHUDController controller)
+    private async UniTask Initialize(AvatarEditorHUDController controller)
     {
         this.controller = controller;
         gameObject.name = VIEW_OBJECT_NAME;
@@ -183,12 +123,81 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
         clickBlocker.OnClicked += ClickBlockerClicked;
 
-        for (var i = 0; i < wearableGridPairs.Length; i++)
-            wearableGridPairs[i].selector.OnItemClicked += OnWearablesSelectorsClicked;
+        foreach (var filter in wearableGridPairs)
+            filter.selector.OnItemClicked += OnWearablesSelectorsClicked;
 
         collectiblesItemSelector.OnItemClicked += OnWearablesSelectorsClicked;
 
         ConfigureSectionSelector();
+
+        foreach (var filter in wearableGridPairs)
+            await filter.selector.PrewarmContainersAsync();
+    }
+
+    public void Dispose()
+    {
+        loadingSpinnerGameObject = null;
+        randomizeAnimator = null;
+
+        if (wearableGridPairs != null)
+        {
+            int nPairs = wearableGridPairs.Length;
+
+            for (var i = 0; i < nPairs; i++)
+            {
+                ItemSelector itemSelector = wearableGridPairs[i].selector;
+
+                if (itemSelector != null)
+                {
+                    itemSelector.OnItemClicked -= controller.WearableClicked;
+                    itemSelector.OnSellClicked -= controller.SellCollectible;
+                    itemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
+                }
+            }
+        }
+
+        if (collectiblesItemSelector != null)
+        {
+            collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
+            collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
+            collectiblesItemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
+        }
+
+        if (skinColorSelector != null)
+            skinColorSelector.OnColorSelectorChange -= controller.SkinColorClicked;
+
+        if (eyeColorPickerComponent != null)
+            eyeColorPickerComponent.OnColorChanged -= controller.EyesColorClicked;
+
+        if (hairColorPickerComponent != null)
+            hairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
+
+        if (facialHairColorPickerComponent != null)
+            facialHairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
+
+        if (eyeBrowsColorPickerComponent != null)
+            eyeBrowsColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
+
+        if (this != null)
+            Destroy(gameObject);
+
+        CharacterPreview.Dispose();
+
+        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
+        collectionsDropdown.Dispose();
+
+        sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
+        sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
+
+        clickBlocker.OnClicked -= ClickBlockerClicked;
+    }
+
+    private void Awake()
+    {
+        loadingSpinnerGameObject.SetActive(false);
+        doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
+        isOpen = false;
+        arePanelsInitialized = false;
     }
 
     private void Update()
@@ -258,23 +267,16 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         eyeBrowsColorPickerComponent.OnColorChanged += controller.HairColorClicked;
     }
 
-    internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
-    {
-        AvatarEditorHUDView view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AvatarEditorHUDView>();
-        view.Initialize(controller);
-        return view;
-    }
-
     public void UpdateSelectedBody(WearableItem bodyShape)
     {
-        for (var i = 0; i < wearableGridPairs.Length; i++)
-            if (wearableGridPairs[i].categoryFilter == WearableLiterals.Categories.BODY_SHAPE)
+        foreach (var filter in wearableGridPairs)
+            if (filter.categoryFilter == WearableLiterals.Categories.BODY_SHAPE)
             {
-                wearableGridPairs[i].selector.UnselectAll();
-                wearableGridPairs[i].selector.Select(bodyShape.id);
+                filter.selector.UnselectAll();
+                filter.selector.Select(bodyShape.id);
             }
             else
-                wearableGridPairs[i].selector.SetBodyShape(bodyShape.id);
+                filter.selector.SetBodyShape(bodyShape.id);
 
         collectiblesItemSelector.SetBodyShape(bodyShape.id);
     }
@@ -293,7 +295,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         collectiblesItemSelector.Unselect(wearable.id);
     }
 
-    internal void SetWearableLoadingSpinner(WearableItem wearable, bool isActive)
+    private void SetWearableLoadingSpinner(WearableItem wearable, bool isActive)
     {
         selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, isActive);
         collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, isActive);
@@ -304,7 +306,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             wearablesWithLoadingSpinner.Remove(wearable);
     }
 
-    internal void ClearWearablesLoadingSpinner()
+    private void ClearWearablesLoadingSpinner()
     {
         foreach (WearableItem wearable in wearablesWithLoadingSpinner)
         {
@@ -350,9 +352,9 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void UnselectAllWearables()
     {
-        for (var i = 0; i < wearableGridPairs.Length; i++)
-            if (wearableGridPairs[i].categoryFilter != WearableLiterals.Categories.BODY_SHAPE)
-                wearableGridPairs[i].selector.UnselectAll();
+        foreach (var filter in wearableGridPairs)
+            if (filter.categoryFilter != WearableLiterals.Categories.BODY_SHAPE)
+                filter.selector.UnselectAll();
 
         collectiblesItemSelector.UnselectAll();
     }
@@ -373,10 +375,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         loadingSpinnerGameObject.SetActive(true);
     }
 
-    public void AddFeedbackOnAppear()
-    {
+    public void AddFeedbackOnAppear() =>
         doAvatarFeedback = true;
-    }
 
     public void AddWearable(WearableItem wearableItem, int amount,
         Func<WearableItem, bool> hideOtherWearablesToastStrategy,
@@ -480,10 +480,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         eyeBrowsColorPickerComponent.SetActive(false);
     }
 
-    private void OnWearablesSelectorsClicked(string obj)
-    {
+    private void OnWearablesSelectorsClicked(string obj) =>
         WearableSelectorClicked?.Invoke(obj);
-    }
 
     private IEnumerator TakeSnapshotsAfterStopPreviewAnimation()
     {
@@ -499,10 +497,8 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         controller.SaveAvatar(face256, body);
     }
 
-    private void OnSnapshotsFailed()
-    {
+    private void OnSnapshotsFailed() =>
         doneButton.interactable = true;
-    }
 
     public void SetVisibility(bool visible)
     {
@@ -520,64 +516,6 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
         }
 
         isOpen = visible;
-    }
-
-    public void Dispose()
-    {
-        loadingSpinnerGameObject = null;
-        randomizeAnimator = null;
-
-        if (wearableGridPairs != null)
-        {
-            int nPairs = wearableGridPairs.Length;
-
-            for (var i = 0; i < nPairs; i++)
-            {
-                ItemSelector itemSelector = wearableGridPairs[i].selector;
-
-                if (itemSelector != null)
-                {
-                    itemSelector.OnItemClicked -= controller.WearableClicked;
-                    itemSelector.OnSellClicked -= controller.SellCollectible;
-                    itemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
-                }
-            }
-        }
-
-        if (collectiblesItemSelector != null)
-        {
-            collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
-            collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
-            collectiblesItemSelector.OnItemClicked -= OnWearablesSelectorsClicked;
-        }
-
-        if (skinColorSelector != null)
-            skinColorSelector.OnColorSelectorChange -= controller.SkinColorClicked;
-
-        if (eyeColorPickerComponent != null)
-            eyeColorPickerComponent.OnColorChanged -= controller.EyesColorClicked;
-
-        if (hairColorPickerComponent != null)
-            hairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
-
-        if (facialHairColorPickerComponent != null)
-            facialHairColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
-
-        if (eyeBrowsColorPickerComponent != null)
-            eyeBrowsColorPickerComponent.OnColorChanged -= controller.HairColorClicked;
-
-        if (this != null)
-            Destroy(gameObject);
-
-        CharacterPreview.Dispose();
-
-        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleThirdPartyCollection;
-        collectionsDropdown.Dispose();
-
-        sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
-
-        clickBlocker.OnClicked -= ClickBlockerClicked;
     }
 
     public void SetAsFullScreenMenuMode(Transform parentTransform)
@@ -652,7 +590,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     public void SetThirdPartyCollectionsVisibility(bool visible) =>
         collectionsDropdown.gameObject.SetActive(visible);
 
-    internal void ConfigureSectionSelector()
+    private void ConfigureSectionSelector()
     {
         sectionTitle.text = AVATAR_SECTION_TITLE;
 
@@ -752,5 +690,27 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
             UpdateAvatarAsync().Forget();
             isAvatarDirty = false;
         }
+    }
+
+    [Serializable]
+    public class AvatarEditorNavigationInfo
+    {
+        public Toggle toggle;
+        public Canvas canvas;
+        public bool enabledByDefault;
+        public CharacterPreviewController.CameraFocus focus = CharacterPreviewController.CameraFocus.DefaultEditing;
+
+        //To remove when we refactor this to avoid ToggleGroup issues when quitting application
+        public void Initialize()
+        {
+            Application.quitting += () => toggle.onValueChanged.RemoveAllListeners();
+        }
+    }
+
+    [Serializable]
+    public class AvatarEditorWearableFilter
+    {
+        public string categoryFilter;
+        public ItemSelector selector;
     }
 }

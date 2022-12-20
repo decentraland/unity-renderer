@@ -54,7 +54,13 @@ public class ItemSelector : MonoBehaviour
     {
         cancellationTokenSource.Cancel();
         cancellationTokenSource.Dispose();
+
+        pageSelector.OnValueChanged -= UpdateWearableList;
+        DataStore.i.screen.size.OnChange -= OnScreenSizeChanged;
     }
+
+    public async UniTask PrewarmContainersAsync() =>
+        await itemToggleContainer.PrewarmAsync(TOTAL_ROWS_OF_ITEMS *  CalculateColumnsAmount(((RectTransform)transform).rect));
 
     private void OnScreenSizeChanged(Vector2Int _, Vector2Int __) =>
         SetupPaginationWithColumns();

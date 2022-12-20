@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +15,18 @@ public class ItemToggleContainer : MonoBehaviour
     private readonly List<ItemToggle> items = new ();
 
     private int maxItems;
+
+    public async UniTask PrewarmAsync(int amount)
+    {
+        for (var i = 0; i < amount; i++)
+        {
+            var newItemToggle = Instantiate(itemPrefab, itemContainer);
+            items.Add(newItemToggle);
+            newItemToggle.Hide();
+
+            await UniTask.Yield();
+        }
+    }
 
     public void Rebuild(int newMaxItems)
     {
@@ -43,10 +54,11 @@ public class ItemToggleContainer : MonoBehaviour
             newToggle = items[index];
         else
         {
+            await UniTask.Yield();
+
             newToggle = Instantiate(itemPrefab, itemContainer);
             items.Add(newToggle);
-
-            await UniTask.Yield();
+            newToggle.transform.SetAsLastSibling();
         }
 
         newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
@@ -59,7 +71,7 @@ public class ItemToggleContainer : MonoBehaviour
 
     public void HideItem(int i)
     {
-        if(i<items.Count)
+        if (i < items.Count)
             items[i].Hide();
     }
 }
