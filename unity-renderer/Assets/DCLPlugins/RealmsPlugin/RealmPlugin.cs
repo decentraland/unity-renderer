@@ -1,7 +1,6 @@
 using DCL;
 using DCLPlugins.RealmsPlugin;
 using System.Collections.Generic;
-using System.Linq;
 using Variables.RealmsInfo;
 using static Decentraland.Bff.AboutResponse.Types;
 
@@ -12,7 +11,7 @@ namespace DCLPlugins.RealmPlugin
     /// </summary>
     public class RealmPlugin : IPlugin
     {
-        private BaseVariable<AboutConfiguration> realmAboutConfiguration => DataStore.i.realm.playerRealmAboutConfiguration;
+        private BaseVariable<AboutConfiguration> realmAboutConfiguration;
         private List<RealmModel> currentCatalystRealmList;
 
         internal List<IRealmModifier> realmsModifiers;
@@ -26,6 +25,7 @@ namespace DCLPlugins.RealmPlugin
                 new RealmsSkyboxModifier(dataStore.skyboxConfig),
             };
 
+            realmAboutConfiguration = dataStore.realm.playerRealmAboutConfiguration;
             realmAboutConfiguration.OnChange += RealmChanged;
         }
 
@@ -37,11 +37,9 @@ namespace DCLPlugins.RealmPlugin
 
         private void RealmChanged(AboutConfiguration current, AboutConfiguration _)
         {
-            bool isWorld = current.ScenesUrn.Any() && string.IsNullOrEmpty(current.CityLoaderContentServer);
+            DataStore.i.common.isWorld.Set(current.IsWorld());
 
-            DataStore.i.common.isWorld.Set(isWorld);
-
-            realmsModifiers.ForEach(rm => rm.OnEnteredRealm(isWorld, current));
+            realmsModifiers.ForEach(rm => rm.OnEnteredRealm(current.IsWorld(), current));
         }
     }
 }

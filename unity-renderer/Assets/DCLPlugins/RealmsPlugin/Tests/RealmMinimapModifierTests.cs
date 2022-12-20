@@ -1,5 +1,4 @@
 using DCL;
-using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
