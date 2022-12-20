@@ -111,7 +111,7 @@ public class PlayerInfoCardHUDController : IHUD
             try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
             catch (Exception)
             {
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 throw;
             }
         }
@@ -135,7 +135,7 @@ public class PlayerInfoCardHUDController : IHUD
             }
             catch (Exception)
             {
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 throw;
             }
         }
@@ -159,7 +159,7 @@ public class PlayerInfoCardHUDController : IHUD
             }
             catch (Exception)
             {
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 throw;
             }
         }

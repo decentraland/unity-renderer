@@ -104,14 +104,14 @@ namespace DCL.Social.Friends
                                        .Timeout(TimeSpan.FromSeconds(10));
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO: send analytics
+                // TODO FRIEND REQUESTS (#3807): send analytics
 
                 view.Close();
             }
             catch (Exception)
             {
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.ShowCancelFailed();
                 throw;
             }

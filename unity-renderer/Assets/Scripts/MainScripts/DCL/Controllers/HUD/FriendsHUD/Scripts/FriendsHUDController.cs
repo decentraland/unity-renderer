@@ -253,7 +253,7 @@ namespace DCL.Social.Friends
                     }
                     catch (Exception)
                     {
-                        // TODO: track error to analytics
+                        // TODO FRIEND REQUESTS (#3807): track error to analytics
                         throw;
                     }
                 }
@@ -484,7 +484,7 @@ namespace DCL.Social.Friends
                 try { await friendsController.CancelRequestByUserIdAsync(userId); }
                 catch (Exception)
                 {
-                    // TODO: track error to analytics
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
                     throw;
                 }
             }
@@ -510,7 +510,7 @@ namespace DCL.Social.Friends
                 }
                 catch
                 {
-                    // TODO: track error to analytics
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
                     throw;
                 }
             }

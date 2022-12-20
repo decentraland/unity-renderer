@@ -114,7 +114,7 @@ namespace DCL.Social.Friends
                                        .Timeout(TimeSpan.FromSeconds(10));
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO: send analytics
+                // TODO FRIEND REQUESTS (#3807): send analytics
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
@@ -123,7 +123,7 @@ namespace DCL.Social.Friends
             catch (Exception)
             {
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 throw;
             }
@@ -142,7 +142,7 @@ namespace DCL.Social.Friends
                                        .Timeout(TimeSpan.FromSeconds(10));
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO: send analytics
+                // TODO FRIEND REQUESTS (#3807): send analytics
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
@@ -151,7 +151,7 @@ namespace DCL.Social.Friends
             catch (Exception)
             {
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 throw;
             }

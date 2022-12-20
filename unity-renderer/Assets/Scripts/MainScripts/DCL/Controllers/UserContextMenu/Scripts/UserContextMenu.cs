@@ -238,7 +238,7 @@ public class UserContextMenu : MonoBehaviour
             try { await FriendsController.i.CancelRequestByUserIdAsync(userId).Timeout(TimeSpan.FromSeconds(10)); }
             catch (Exception)
             {
-                // TODO: track error to analytics
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
                 throw;
             }
         }

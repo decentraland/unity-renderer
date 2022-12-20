@@ -120,7 +120,7 @@ namespace DCL.Social.Passports
                 try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
                 catch (Exception)
                 {
-                    // TODO: track error to analytics
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
                     throw;
                 }
             }
@@ -144,7 +144,7 @@ namespace DCL.Social.Passports
                 }
                 catch (Exception)
                 {
-                    // TODO: track error to analytics
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
                     throw;
                 }
             }
