@@ -1,48 +1,54 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;   
+using UnityEngine.UI;
 
 public class ItemToggleContainer : MonoBehaviour
 {
     public Transform itemContainer;
+
     [SerializeField] private ItemToggle itemPrefab;
     [SerializeField] private NFTSkinFactory skinFactory;
     [SerializeField] private RectTransform rectTransform;
 
-    private List<ItemToggle> items = new List<ItemToggle>();
+    private readonly List<ItemToggle> items = new ();
+
     private int maxItems;
 
-    public void Setup(int newMaxItems)
+    public void Rebuild(int newMaxItems)
     {
         if (maxItems == newMaxItems) return;
+
         maxItems = newMaxItems;
-        
-        var diff = maxItems - items.Count;
 
-        if (diff > 0)
-        {
-            for (int i = 0; i < diff; i++)
-            {
-                var newItemToggle = Instantiate(itemPrefab, itemContainer);
-                items.Add(newItemToggle);
-            }
-        }
-
-        for (int i = 0; i < items.Count; i++)
+        for (var i = 0; i < items.Count; i++)
         {
             var itemToggle = items[i];
             itemToggle.gameObject.SetActive(i < maxItems);
             itemToggle.transform.SetAsLastSibling();
         }
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
-    public ItemToggle LoadItem(int index, WearableSettings wearableSettings)
+    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings)
     {
         var item = wearableSettings.Item;
-        var newToggle = items[index];
-        
+
+        ItemToggle newToggle;
+
+        if (index < items.Count)
+            newToggle = items[index];
+        else
+        {
+            newToggle = Instantiate(itemPrefab, itemContainer);
+            items.Add(newToggle);
+
+            await UniTask.Yield();
+        }
+
         newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
         newToggle.SetHideOtherWerablesToastStrategy(wearableSettings.HideOtherWearablesToastStrategy);
         newToggle.SetBodyShapeCompatibilityStrategy(wearableSettings.IncompatibleWearableToastStrategy);
@@ -50,9 +56,10 @@ public class ItemToggleContainer : MonoBehaviour
 
         return newToggle;
     }
+
     public void HideItem(int i)
     {
-        var newToggle = items[i];
-        newToggle.Hide();
+        if(i<items.Count)
+            items[i].Hide();
     }
 }
