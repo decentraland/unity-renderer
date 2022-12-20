@@ -11,8 +11,8 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, 
-            IAnalytics analytics) 
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags,
+            IAnalytics analytics)
             : base(featureFlags, analytics)
         {
         }
@@ -67,13 +67,16 @@ namespace AvatarEditorHUD_Tests
             yield return base.TearDown();
         }
 
-        [Test]
-        public void BeAddedWhenEquiped()
+        [UnityTest]
+        public IEnumerator BeAddedWhenEquiped()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
 
+            yield return null;
+
             controller.WearableClicked(sunglassesId);
+
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
 
