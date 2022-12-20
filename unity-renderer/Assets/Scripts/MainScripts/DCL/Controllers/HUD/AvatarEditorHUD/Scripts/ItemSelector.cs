@@ -158,8 +158,6 @@ public class ItemSelector : MonoBehaviour
             itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
 
             newItemToggles[item.id] = itemToggle;
-
-            await UniTask.Yield(token);
         }
 
         if (selectedItems.Contains(item.id))
@@ -214,13 +212,13 @@ public class ItemSelector : MonoBehaviour
 
     public void UpdateSelectorLayout()
     {
-        SetupWearablePagination(CancellationToken.None).Forget();
+        SetupWearablePagination(cancellationTokenSource.Token).Forget();
     }
 
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.ToList();
-        SetupWearablePagination(CancellationToken.None).Forget();
+        SetupWearablePagination(cancellationTokenSource.Token).Forget();
     }
 
     public void Select(string itemID)
