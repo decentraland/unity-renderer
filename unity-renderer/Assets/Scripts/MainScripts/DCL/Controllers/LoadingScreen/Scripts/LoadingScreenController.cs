@@ -25,9 +25,7 @@ namespace DCL.LoadingScreen
             view.UpdateLoadingMessage();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             view.Dispose();
-        }
     }
 }

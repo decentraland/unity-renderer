@@ -12,8 +12,9 @@ namespace DCL.LoadingScreen
         public static LoadingScreenView Create() =>
             Instantiate(Resources.Load<LoadingScreenView>(PATH));
 
+        public void UpdateLoadingMessage() { }
+
         public void Dispose() { }
 
-        public void UpdateLoadingMessage() { }
     }
 }
