@@ -10,7 +10,7 @@ namespace DCL.Social.Passports
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string TEMPLATE_DESCRIPTION_TEXT = "This person doesn't have an about description yet.";
+        private const string TEMPLATE_DESCRIPTION_TEXT = "No intro description.";
         private const int ABOUT_SUB_SECTION_INDEX = 0;
         private const int COLLECTIBLES_SUB_SECTION_INDEX = 1;
 
@@ -34,6 +34,9 @@ namespace DCL.Social.Passports
         [SerializeField] private Transform nftEmotesCarouselContent;
         [SerializeField] private GameObject wearableUIReferenceObject;
         [SerializeField] private GameObject nftPageUIReferenceObject;
+        [SerializeField] private Color emptyDescriptionTextColor;
+        [SerializeField] private Color normalDescriptionTextColor;
+
 
         public event Action<string> OnClickBuyNft;
         public event Action OnClickCollectibles;
@@ -42,7 +45,6 @@ namespace DCL.Social.Passports
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
         private const int MAX_NFT_ICON_ENTRIES = 20;
         private const int MAX_NFT_PAGES_ENTRIES = 20;
-        private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.7f, 0.7f, 0.7f);
 
         private List<PoolableObject> nftIconPoolableQueue = new List<PoolableObject>();
         private List<PoolableObject> nftPagesPoolableQueue = new List<PoolableObject>();
@@ -86,6 +88,7 @@ namespace DCL.Social.Passports
         public void SetDescription(string description)
         {
             descriptionText.text = string.IsNullOrEmpty(description) ? TEMPLATE_DESCRIPTION_TEXT : description;
+            descriptionText.color = string.IsNullOrEmpty(description) ? emptyDescriptionTextColor : normalDescriptionTextColor;
         }
 
         public void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId)
@@ -99,7 +102,6 @@ namespace DCL.Social.Passports
                     PoolableObject poolableObject = nftIconsEntryPool.Get();
                     nftIconPoolableQueue.Add(poolableObject);
                     poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
-                    poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
                     NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
                     nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
                     nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(wearable.id));

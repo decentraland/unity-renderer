@@ -114,7 +114,6 @@ RectTransform:
   - {fileID: 1849754071838965258}
   - {fileID: 6003728051520246268}
   - {fileID: 9162670643599675606}
-  - {fileID: 8501595308999642458}
   - {fileID: 3881002831068431914}
   - {fileID: 6040646308179061134}
   m_Father: {fileID: 4178844371693911781}
@@ -8202,6 +8201,8 @@ MonoBehaviour:
     type: 3}
   nftPageUIReferenceObject: {fileID: 1579844706231847910, guid: f0edbb12cb6a44afa9242f488d03d147,
     type: 3}
+  emptyDescriptionTextColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
+  normalDescriptionTextColor: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 1}
 --- !u!1 &7590974253276029638
 GameObject:
   m_ObjectHideFlags: 0
@@ -8595,7 +8596,7 @@ RectTransform:
   - {fileID: 8605756226012868885}
   - {fileID: 7476833984793927262}
   m_Father: {fileID: 4644694189284051188}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9965,8 +9966,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8260064548711506705}
+  - {fileID: 8501595308999642458}
   m_Father: {fileID: 4644694189284051188}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10386,7 +10388,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 4644694189284051188}
+    m_TransformParent: {fileID: 3881002831068431914}
     m_Modifications:
     - target: {fileID: 141624545272207563, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
@@ -10681,7 +10683,7 @@ PrefabInstance:
     - target: {fileID: 6139840743846935115, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6139840743846935115, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
@@ -10751,12 +10753,12 @@ PrefabInstance:
     - target: {fileID: 6139840743846935115, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 47.3
+      value: -156.89996
       objectReference: {fileID: 0}
     - target: {fileID: 6139840743846935115, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -84
+      value: -154.7
       objectReference: {fileID: 0}
     - target: {fileID: 6139840743846935115, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
