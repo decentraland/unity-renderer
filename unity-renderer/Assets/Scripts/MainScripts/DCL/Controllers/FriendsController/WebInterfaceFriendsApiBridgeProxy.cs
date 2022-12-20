@@ -24,7 +24,7 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
-        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+        public event Action<FriendRequestPayload> OnFriendRequestReceived;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
 
         public WebInterfaceFriendsApiBridgeProxy(IFriendsApiBridge apiBridge, IFriendsApiBridge apiBridgeMock, DataStore dataStore)
@@ -57,15 +57,18 @@ namespace DCL.Social.Friends
             this.apiBridge.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
             this.apiBridgeMock.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
 
-            this.apiBridge.OnFriendRequestAdded += x => OnFriendRequestAdded?.Invoke(x);
-            this.apiBridgeMock.OnFriendRequestAdded += x => OnFriendRequestAdded?.Invoke(x);
-
             this.apiBridge.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
             this.apiBridgeMock.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
+
+            this.apiBridge.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
+            this.apiBridgeMock.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
         }
 
         public void RejectFriendship(string userId) =>
             apiBridgeInUse.RejectFriendship(userId);
+
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
+            apiBridgeInUse.RejectFriendshipAsync(friendRequestId);
 
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
@@ -102,5 +105,8 @@ namespace DCL.Social.Friends
 
         public void AcceptFriendship(string userId) =>
             apiBridgeInUse.AcceptFriendship(userId);
+
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
+            apiBridgeInUse.AcceptFriendshipAsync(friendRequestId);
     }
 }

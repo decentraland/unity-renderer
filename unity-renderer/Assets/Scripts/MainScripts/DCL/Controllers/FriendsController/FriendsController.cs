@@ -33,7 +33,8 @@ namespace DCL.Social.Friends
         public event Action OnInitialized;
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         public event Action<int, int> OnTotalFriendRequestUpdated;
-        public event Action<FriendRequest> OnAddFriendRequest;
+        public event Action<FriendRequest> OnFriendRequestReceived;
+        public event Action<string> OnSentFriendRequestApproved;
 
         public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
         {
@@ -48,11 +49,11 @@ namespace DCL.Social.Friends
             apiBridge.OnFriendsAdded += AddFriends;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
-            apiBridge.OnFriendshipStatusUpdated += UpdateFriendshipStatus;
+            apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
             apiBridge.OnTotalFriendRequestCountUpdated += UpdateTotalFriendRequests;
             apiBridge.OnTotalFriendCountUpdated += UpdateTotalFriends;
             apiBridge.OnFriendRequestsAdded += AddFriendRequests; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-            apiBridge.OnFriendRequestAdded += AddFriendRequest;
+            apiBridge.OnFriendRequestReceived += ReceiveFriendRequest;
         }
 
         private void Initialize(FriendshipInitializationMessage msg)
@@ -93,21 +94,48 @@ namespace DCL.Social.Friends
 
             friendRequests[friendRequest.FriendRequestId] = friendRequest;
 
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REQUESTED_TO, userId = friendUserId });
+
             return friendRequest;
         }
 
-        public void RequestFriendship(string friendUserId)
-        {
+        public void RequestFriendship(string friendUserId) =>
             apiBridge.RequestFriendship(friendUserId);
-        }
 
-        public Dictionary<string, UserStatus> GetAllocatedFriends()
+        public Dictionary<string, UserStatus> GetAllocatedFriends() =>
+            new Dictionary<string, UserStatus>(friends);
+
+        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId)
         {
-            return new Dictionary<string, UserStatus>(friends);
+            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId);
+            FriendRequestPayload requestPayload = payload.FriendRequest;
+            var request = ToFriendRequest(requestPayload);
+            // NOTE: would it be better to register the new state instead of removing it?
+            friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.APPROVED, userId = request.From });
+
+            return request;
         }
 
         public void RejectFriendship(string friendUserId) =>
             apiBridge.RejectFriendship(friendUserId);
+
+        public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId)
+        {
+            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId);
+            FriendRequestPayload requestPayload = payload.FriendRequestPayload;
+            var request = ToFriendRequest(requestPayload);
+            // NOTE: would it be better to register the new state instead of removing it?
+            friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.REJECTED, userId = request.From });
+
+            return request;
+        }
 
         public bool IsFriend(string userId) =>
             friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
@@ -183,6 +211,9 @@ namespace DCL.Social.Friends
 
             await apiBridge.CancelRequestByUserIdAsync(friendUserId);
 
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.CANCELLED, userId = friendUserId });
+
             return new FriendRequest("", 0, "", friendUserId, "");
         }
 
@@ -195,6 +226,10 @@ namespace DCL.Social.Friends
             var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.CANCELLED, userId = friendRequest.To });
+
             return friendRequest;
         }
 
@@ -255,6 +290,21 @@ namespace DCL.Social.Friends
                     OnUpdateUserStatus?.Invoke(newUserStatus.userId, newUserStatus);
                 }
             }
+        }
+
+        private void ReceiveFriendRequest(FriendRequestPayload msg)
+        {
+            FriendRequest request = ToFriendRequest(msg);
+            friendRequests[msg.friendRequestId] = request;
+            OnFriendRequestReceived?.Invoke(request);
+        }
+
+        private void HandleUpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
+        {
+            UpdateFriendshipStatus(msg);
+
+            if (msg.action == FriendshipAction.APPROVED)
+                OnSentFriendRequestApproved?.Invoke(msg.userId);
         }
 
         private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
@@ -343,16 +393,6 @@ namespace DCL.Social.Friends
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.REQUESTED_TO, userId = userId });
             }
-        }
-
-        private void AddFriendRequest(FriendRequestPayload friendRequest)
-        {
-            OnAddFriendRequest?.Invoke(new FriendRequest(
-                friendRequest.friendRequestId,
-                friendRequest.timestamp,
-                friendRequest.from,
-                friendRequest.to,
-                friendRequest.messageBody));
         }
     }
 }

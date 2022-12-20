@@ -15,7 +15,8 @@ namespace DCL.Social.Friends
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
-        event Action<SocialFriendRequest> OnAddFriendRequest;
+        event Action<SocialFriendRequest> OnFriendRequestReceived;
+        event Action<string> OnSentFriendRequestApproved;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }
@@ -36,8 +37,12 @@ namespace DCL.Social.Friends
         [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
         void CancelRequestByUserId(string friendUserId);
         UniTask<SocialFriendRequest> CancelRequestAsync(string friendRequestId);
+        [Obsolete("Old API. Use AcceptFriendshipAsync instead")]
         void AcceptFriendship(string friendUserId);
+        UniTask<SocialFriendRequest> AcceptFriendshipAsync(string friendRequestId);
+        [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string friendUserId);
+        UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
         void GetFriends(int limit, int skip);
