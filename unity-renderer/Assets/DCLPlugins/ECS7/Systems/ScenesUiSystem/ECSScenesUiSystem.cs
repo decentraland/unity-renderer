@@ -234,6 +234,7 @@ namespace ECSSystems.ScenesUiSystem
                 var styleObject = parentDataModel.rootElement.style;
 
                 // Initialize with default values
+                parentDataModel.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
                 styleObject.width = new Length(100f, LengthUnit.Percent);
                 styleObject.height = new Length(100f, LengthUnit.Percent);
                 styleObject.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
