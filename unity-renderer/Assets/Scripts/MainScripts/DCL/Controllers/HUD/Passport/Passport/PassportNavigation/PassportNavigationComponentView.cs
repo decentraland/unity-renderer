@@ -37,7 +37,7 @@ namespace DCL.Social.Passports
         [SerializeField] private Color emptyDescriptionTextColor;
         [SerializeField] private Color normalDescriptionTextColor;
 
-
+        private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.7f, 0.7f, 0.7f);
         public event Action<string> OnClickBuyNft;
         public event Action OnClickCollectibles;
 
@@ -102,6 +102,7 @@ namespace DCL.Social.Passports
                     PoolableObject poolableObject = nftIconsEntryPool.Get();
                     nftIconPoolableQueue.Add(poolableObject);
                     poolableObject.gameObject.transform.SetParent(equippedWearablesContainer, false);
+                    poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
                     NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
                     nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
                     nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(wearable.id));

@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07bb5885d837e4bb7acb350512a7dc35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   nftElements:
   - {fileID: 1441810464581406807}
   - {fileID: 9152854463297262754}
@@ -109,6 +110,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 380
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
@@ -174,6 +190,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NFTIcon (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: normalScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}
@@ -249,6 +275,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -311,6 +352,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NFTIcon
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: normalScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}
@@ -386,6 +437,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -448,6 +514,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NFTIcon (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: normalScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}
@@ -523,6 +599,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400455510302736797, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -585,6 +676,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NFTIcon (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371599230136950535, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: normalScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}

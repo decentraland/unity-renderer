@@ -62,6 +62,12 @@ namespace DCL.Social.Passports
                 await LoadAndDisplayEquippedWearablesAsync(userProfile);
             }
         }
+
+        public void ResetPanel()
+        {
+            view.SetCollectiblesView();
+        }
+
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();
@@ -91,7 +97,6 @@ namespace DCL.Social.Passports
                                       var containedWearables = wearables.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT)
                                          .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
                                       view.SetCollectibleWearables(containedWearables.ToArray());
-                                      view.SetCollectiblesView();
                                   })
                                  .Catch(Debug.LogError);
         }
@@ -103,7 +108,6 @@ namespace DCL.Social.Passports
                                   {
                                       WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
                                       view.SetCollectibleEmotes(emoteItems);
-                                      view.SetCollectiblesView();
                                   })
                                  .Catch(Debug.LogError);
         }
