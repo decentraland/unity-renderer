@@ -34,7 +34,7 @@ namespace DCL.Social.Friends
         public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         public event Action<int, int> OnTotalFriendRequestUpdated;
         public event Action<FriendRequest> OnFriendRequestReceived;
-        public event Action<string> OnSentFriendRequestApproved;
+        public event Action<FriendRequest> OnSentFriendRequestApproved;
 
         public static void CreateSharedInstance(IFriendsApiBridge apiBridge)
         {
@@ -315,7 +315,7 @@ namespace DCL.Social.Friends
             UpdateFriendshipStatus(msg);
 
             if (msg.action == FriendshipAction.APPROVED)
-                OnSentFriendRequestApproved?.Invoke(msg.userId);
+                OnSentFriendRequestApproved?.Invoke(GetAllocatedFriendRequestByUser(msg.userId));
         }
 
         private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)

@@ -15,7 +15,7 @@ public class FriendsController_Mock : IFriendsController
     public event Action<int, int> OnTotalFriendRequestUpdated;
     public event Action<int> OnTotalFriendsUpdated;
     public event Action<FriendRequest> OnFriendRequestReceived;
-    public event Action<string> OnSentFriendRequestApproved;
+    public event Action<FriendRequest> OnSentFriendRequestApproved;
 
     private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 

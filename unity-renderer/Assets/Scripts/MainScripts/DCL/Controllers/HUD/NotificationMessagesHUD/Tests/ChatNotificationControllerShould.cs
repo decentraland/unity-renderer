@@ -300,7 +300,8 @@ namespace DCL.Chat.Notifications
             GivenProfile("friendId", "friendName");
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
-            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<string>>("friendId");
+            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
+                new FriendRequest("friendRequestId", 0, "ownId", "friendId", "hey"));
 
             mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
                 f.UserId == "friendId"
