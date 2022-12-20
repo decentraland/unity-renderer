@@ -3,7 +3,7 @@ using System;
 namespace DCL.LoadingScreen
 {
     /// <summary>
-    /// Controls the state of the loading screen
+    /// Controls the state of the loading screen. It's responsibility is to update the view depending on the SceneController state
     /// </summary>
     public class LoadingScreenController : IDisposable
     {

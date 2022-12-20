@@ -3,6 +3,9 @@ using DCL.LoadingScreen;
 
 namespace DCLPlugins.LoadingScreenPlugin
 {
+    /// <summary>
+    /// Plugin controller for the decoupled Loading Screen
+    /// </summary>
     public class LoadingScreenPlugin : IPlugin
     {
         private readonly LoadingScreenController loadingScreenController;
