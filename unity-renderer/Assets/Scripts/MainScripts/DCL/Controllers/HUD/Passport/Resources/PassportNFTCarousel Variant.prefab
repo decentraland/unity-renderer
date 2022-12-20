@@ -468,6 +468,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3502379854844355979, guid: 117cfad517329394a8c1ea8c91298f8f,
         type: 3}
+      propertyPath: showOnFocus
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3502379854844355979, guid: 117cfad517329394a8c1ea8c91298f8f,
+        type: 3}
       propertyPath: model.maxItems
       value: 3
       objectReference: {fileID: 0}
