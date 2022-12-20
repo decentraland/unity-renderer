@@ -103,7 +103,9 @@ public class ItemSelector : MonoBehaviour
         {
             await UpdateWearableListAsync(lastPage, token);
             itemToggleContainer.Rebuild(maxVisibleWearables);
-            pageSelector.Setup(GetMaxPages(), forceRebuild);
+
+            if (pageSelector != null)
+                pageSelector.Setup(GetMaxPages(), forceRebuild);
         }
     }
 
