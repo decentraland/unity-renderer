@@ -7,7 +7,18 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.KernelServices {
-public class ClientAnalyticsKernelService
+public interface IClientAnalyticsKernelService
+{
+  UniTask<PerformanceReportResponse> PerformanceReport(PerformanceReportRequest request);
+
+  UniTask<SystemInfoReportResponse> SystemInfoReport(SystemInfoReportRequest request);
+
+  UniTask<AnalyticsEventResponse> AnalyticsEvent(AnalyticsEventRequest request);
+
+  UniTask<DelightedSurveyResponse> SetDelightedSurveyEnabled(DelightedSurveyRequest request);
+}
+
+public class ClientAnalyticsKernelService : IClientAnalyticsKernelService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +27,7 @@ public class ClientAnalyticsKernelService
       this.module = module;
   }
 
+  
   public UniTask<PerformanceReportResponse> PerformanceReport(PerformanceReportRequest request)
   {
       return module.CallUnaryProcedure<PerformanceReportResponse>("PerformanceReport", request);
@@ -35,5 +47,6 @@ public class ClientAnalyticsKernelService
   {
       return module.CallUnaryProcedure<DelightedSurveyResponse>("SetDelightedSurveyEnabled", request);
   }
+
 }
 }

@@ -7,7 +7,12 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.KernelServices {
-public class ClientEmotesKernelService
+public interface IClientEmotesKernelService
+{
+  UniTask<TriggerExpressionResponse> TriggerExpression(TriggerExpressionRequest request);
+}
+
+public class ClientEmotesKernelService : IClientEmotesKernelService
 {
   private readonly RpcClientModule module;
 
@@ -16,9 +21,11 @@ public class ClientEmotesKernelService
       this.module = module;
   }
 
+  
   public UniTask<TriggerExpressionResponse> TriggerExpression(TriggerExpressionRequest request)
   {
       return module.CallUnaryProcedure<TriggerExpressionResponse>("TriggerExpression", request);
   }
+
 }
 }
