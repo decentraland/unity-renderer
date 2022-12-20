@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
@@ -16,7 +17,8 @@ namespace DCL.Social.Passports
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;
-        [SerializeField] private SectionSelectorComponentView subSectionSelector;
+        [SerializeField] private Toggle aboutToggle;
+        [SerializeField] private Toggle collectiblesToggle;
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private GameObject hasBlockedPanel;
@@ -36,8 +38,12 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject nftPageUIReferenceObject;
         [SerializeField] private Color emptyDescriptionTextColor;
         [SerializeField] private Color normalDescriptionTextColor;
+        [SerializeField] private GameObject aboutToggleOn;
+        [SerializeField] private GameObject aboutToggleOff;
+        [SerializeField] private GameObject collectiblesToggleOn;
+        [SerializeField] private GameObject collectiblesToggleOff;
 
-        private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.7f, 0.7f, 0.7f);
+        private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string> OnClickBuyNft;
         public event Action OnClickCollectibles;
 
@@ -53,13 +59,24 @@ namespace DCL.Social.Passports
 
         public override void Start()
         {
-            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
-            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.RemoveAllListeners();
-            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).onSelect.AddListener((isActive) => aboutPanel.SetActive(isActive));
-            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).onSelect.AddListener((isActive) =>
+            collectiblesToggle.isOn = false;
+            aboutToggle.isOn = true;
+            aboutToggle.onValueChanged.AddListener((isActive) =>
+            {
+                aboutPanel.SetActive(isActive);
+                aboutToggleOn.SetActive(true);
+                aboutToggleOff.SetActive(false);
+                collectiblesToggleOn.SetActive(false);
+                collectiblesToggleOff.SetActive(true);
+            });
+            collectiblesToggle.onValueChanged.AddListener((isActive) =>
             {
                 OnClickCollectibles?.Invoke();
                 wearablesPanel.SetActive(isActive);
+                aboutToggleOn.SetActive(false);
+                aboutToggleOff.SetActive(true);
+                collectiblesToggleOn.SetActive(true);
+                collectiblesToggleOff.SetActive(false);
             });
         }
 
@@ -226,8 +243,7 @@ namespace DCL.Social.Passports
 
         public void SetInitialPage()
         {
-            subSectionSelector.GetSection(ABOUT_SUB_SECTION_INDEX).SelectToggle();
-            subSectionSelector.GetSection(COLLECTIBLES_SUB_SECTION_INDEX).SetUnselectedVisuals();
+            aboutToggle.isOn = true;
         }
 
         private void ClickOnBuyWearable(string wearableId)
