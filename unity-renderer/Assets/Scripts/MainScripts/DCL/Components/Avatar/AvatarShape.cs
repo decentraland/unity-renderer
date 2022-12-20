@@ -12,6 +12,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
 using GPUSkinning;
+using NSubstitute.ClearExtensions;
 using UnityEngine;
 using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
@@ -262,7 +263,7 @@ namespace DCL
 
         private void PlayerPointerExit()
         {
-            Resources.Load<OutlineRenderers>("OutlineRenderers").avatars?.Clear();
+            DataStore.i.outliner.avatarOutlined.Remove(avatar.GetMainRenderer());
             playerName?.SetForceShow(false);
         }
 
@@ -273,7 +274,7 @@ namespace DCL
                 var renderer = avatar.GetMainRenderer();
 
                 if (renderer != null)
-                    Resources.Load<OutlineRenderers>("OutlineRenderers").avatars = new List<(Renderer, int)>() { (renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount) };
+                    DataStore.i.outliner.avatarOutlined.Add(renderer);
             }
 
             playerName?.SetForceShow(true);

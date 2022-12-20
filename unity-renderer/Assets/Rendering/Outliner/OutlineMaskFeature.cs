@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -25,7 +26,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         private static readonly int AVATAR_MAP11 = Shader.PropertyToID("_AvatarMap11");
         private static readonly int AVATAR_MAP12 = Shader.PropertyToID("_AvatarMap12");
 
-        private readonly OutlineRenderers outlineRenderers;
+        private readonly OutlineRenderersSO outlineRenderersSo;
         private readonly Material material;
         private readonly Material gpuSkinningMaterial;
 
@@ -34,11 +35,11 @@ public class OutlineMaskFeature : ScriptableRendererFeature
 
         private readonly List<Material> toDispose = new List<Material>();
 
-        public OutlinerRenderPass(OutlineRenderers outlineRenderers)
+        public OutlinerRenderPass(OutlineRenderersSO outlineRenderersSo)
         {
             material = CoreUtils.CreateEngineMaterial("Hidden/DCL/OutlineMaskPass");
             gpuSkinningMaterial = CoreUtils.CreateEngineMaterial("Hidden/DCL/OutlineGPUSkinningMaskPass");
-            this.outlineRenderers = outlineRenderers;
+            this.outlineRenderersSo = outlineRenderersSo;
         }
 
         public void Setup(RenderTextureDescriptor descriptor, RenderTargetHandle outlineTextureHandle)
@@ -66,8 +67,9 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                //DrawRenderers(outlineRenderers?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
-                DrawAvatars(outlineRenderers?.avatars, renderingData.cameraData.camera.cullingMask, cmd);
+                //By now only outline avatars
+                DrawRenderers(outlineRenderersSo?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
+                DrawAvatars(outlineRenderersSo?.avatars, renderingData.cameraData.camera.cullingMask, cmd);
 
                 cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
             }
@@ -90,14 +92,6 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 // We have to manually render all the submeshes of the selected objects.
                 for (var i = 0; i < meshCount; i++) { cmd.DrawRenderer(renderer, material, i); }
             }
-        }
-
-        private static string GetHierarchyPath(Transform transform)
-        {
-            if (transform.parent == null)
-                return transform.name;
-
-            return $"{GetHierarchyPath(transform.parent)}/{transform.name}";
         }
 
         private void DrawAvatars(List<(Renderer renderer, int meshCount)> renderers, int cameraCulling, CommandBuffer cmd)
@@ -187,7 +181,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         }
     }
 
-    public OutlineRenderers renderers;
+    public OutlineRenderersSO renderers;
     private OutlinerRenderPass scriptablePass;
 
     private RenderTargetHandle outlineTexture;
@@ -196,7 +190,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
     {
         scriptablePass = new OutlinerRenderPass(renderers)
         {
-            renderPassEvent = RenderPassEvent.BeforeRendering,
+            renderPassEvent = RenderPassEvent.AfterRenderingTransparents,
         };
 
         outlineTexture.Init("_OutlineTexture");

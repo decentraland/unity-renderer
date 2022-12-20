@@ -80,9 +80,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    deltaX: 0.001
-    deltaY: 0.001
-    color: {r: 0.2509804, g: 0.8784314, b: 0.8156863, a: 1}
+    outlineSize: 1
+    blurSize: 1
+    blurSigma: 5
+    outlineColor: {r: 0, g: 1, b: 1, a: 1}
+    blurColor: {r: 0, g: 1, b: 1, a: 1}
+    innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.050980393}
+    effectFade: 0
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,9 +7,13 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 {
     private class OutlinePass : ScriptableRenderPass
     {
-        private static readonly int _DeltaX = Shader.PropertyToID("_DeltaX");
-        private static readonly int _DeltaY = Shader.PropertyToID("_DeltaY");
+        private static readonly int _InnerColor = Shader.PropertyToID("_InnerColor");
         private static readonly int _OutlineColor = Shader.PropertyToID("_OutlineColor");
+        private static readonly int _OutlineSize = Shader.PropertyToID("_OutlineSize");
+        private static readonly int _BlurColor = Shader.PropertyToID("_BlurColor");
+        private static readonly int _BlurSize = Shader.PropertyToID("_BlurSize");
+        private static readonly int _Sigma = Shader.PropertyToID("_BlurSigma");
+        private static readonly int _Fade = Shader.PropertyToID("_Fade");
 
         private readonly OutlineSettings settings;
         private const string PROFILER_TAG = "Outline Screen Effect Pass";
@@ -17,27 +21,38 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
         private RenderTargetIdentifier source { get; set; }
         private RenderTargetHandle destination { get; set; }
-        private RenderTargetHandle outlineTexture { get; set; }
-        private RenderTargetHandle finalOutput;
+        private RenderTargetHandle outlineMask { get; set; }
+
+        private enum ShaderPasses
+        {
+            Outline = 0,
+            BlurHorizontal = 1,
+            BlurVertical = 2,
+            Compose = 3
+        }
 
         public OutlinePass(OutlineSettings settings)
         {
             this.settings = settings;
-            material = CoreUtils.CreateEngineMaterial("Hidden/DCL/SobelFilter");
+            material = CoreUtils.CreateEngineMaterial("DCL/OutlinerEffect");
         }
 
         public void Setup(RenderTargetIdentifier source, RenderTargetHandle destination, RenderTargetHandle outlineTexture)
         {
             this.source = source;
             this.destination = destination;
-            this.outlineTexture = outlineTexture;
+            this.outlineMask = outlineTexture;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            material.SetColor(_OutlineColor, settings.color);
-            material.SetFloat(_DeltaX, settings.deltaX);
-            material.SetFloat(_DeltaY, settings.deltaY);
+            material.SetColor(_InnerColor, settings.innerColor);
+            material.SetColor(_OutlineColor, settings.outlineColor);
+            material.SetFloat(_OutlineSize, settings.outlineSize);
+            material.SetColor(_BlurColor, settings.blurColor);
+            material.SetFloat(_BlurSize, settings.blurSize);
+            material.SetFloat(_Sigma, settings.blurSigma);
+            material.SetFloat(_Fade, settings.effectFade);
             CommandBuffer cmd = CommandBufferPool.Get(PROFILER_TAG);
 
             using (new ProfilingScope(cmd, new ProfilingSampler(PROFILER_TAG)))
@@ -56,16 +71,19 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
         public override void FrameCleanup(CommandBuffer cmd)
         {
-            cmd.ReleaseTemporaryRT(finalOutput.id);
         }
     }
 
     [System.Serializable]
     public class OutlineSettings
     {
-        [Range(0, 0.05f)] public float deltaX = 0.001f;
-        [Range(0, 0.05f)] public float deltaY = 0.001f;
-        public Color color = Color.cyan;
+        [Range(1, 6)] public float outlineSize = 0.001f;
+        [Range(1, 6)] public float blurSize = 0.001f;
+        public float blurSigma = 1;
+        public Color outlineColor = Color.cyan;
+        public Color blurColor = Color.cyan;
+        public Color innerColor = Color.cyan;
+        [Range(0, 1)] public float effectFade = 1;
     }
 
     public OutlineSettings settings = new ();
