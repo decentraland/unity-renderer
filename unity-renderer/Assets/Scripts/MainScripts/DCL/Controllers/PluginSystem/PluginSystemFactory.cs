@@ -50,9 +50,8 @@ namespace DCL
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
-            pluginSystem.Register<SendFriendRequestHUDPlugin>(() => new SendFriendRequestHUDPlugin());
-            pluginSystem.Register<CancelFriendRequestHUDPlugin>(() => new CancelFriendRequestHUDPlugin());
 
+            pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2), "tutorial");

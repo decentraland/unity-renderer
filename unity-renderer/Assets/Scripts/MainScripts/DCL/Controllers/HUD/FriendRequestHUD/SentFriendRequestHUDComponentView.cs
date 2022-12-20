@@ -6,13 +6,14 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class CancelFriendRequestHUDComponentView : BaseComponentView, ICancelFriendRequestHUDView
+    public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
     {
         [SerializeField] internal GameObject defaultContainer;
         [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal Button cancelButton;
+        [SerializeField] internal Button tryCancelButton;
         [SerializeField] internal Button retryButton;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
@@ -26,15 +27,14 @@ namespace DCL.Social.Friends
         private readonly Model model = new Model();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
         private ILazyTextureObserver lastSenderProfilePictureObserver;
-        private bool cancelConfirmed;
 
         public event Action OnCancel;
         public event Action OnClose;
         public event Action OnOpenProfile;
 
-        public static CancelFriendRequestHUDComponentView Create() =>
+        public static SentFriendRequestHUDComponentView Create() =>
             Instantiate(
-                Resources.Load<CancelFriendRequestHUDComponentView>("FriendRequests/CancelFriendRequestHUD"));
+                Resources.Load<SentFriendRequestHUDComponentView>("FriendRequests/SentFriendRequestHUD"));
 
         public override void Awake()
         {
@@ -43,25 +43,20 @@ namespace DCL.Social.Friends
             foreach (var button in closeButtons)
                 button.onClick.AddListener(() => OnClose?.Invoke());
 
-            cancelButton.onClick.AddListener(() =>
+            cancelButton.onClick.AddListener(() => OnCancel?.Invoke());
+
+            tryCancelButton.onClick.AddListener(() =>
             {
-                if (cancelConfirmed)
-                {
-                    OnCancel?.Invoke();
-                    cancelConfirmed = false;
-                }
-                else
-                {
-                    cancelConfirmed = true;
-                    ShowConfirmationToast();
-                }
+                ShowConfirmationToast();
+                SwitchToCancelButton();
             });
 
             rejectOperationButton.onClick.AddListener(() =>
             {
-                cancelConfirmed = false;
                 HideConfirmationToast();
+                SwitchToTryCancelButton();
             });
+
             retryButton.onClick.AddListener(() => OnCancel?.Invoke());
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
         }
@@ -77,6 +72,7 @@ namespace DCL.Social.Friends
             defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
             failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
+            tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
 
             foreach (Button button in closeButtons)
                 button.interactable = model.State != Model.LayoutState.Pending;
@@ -116,10 +112,10 @@ namespace DCL.Social.Friends
 
         public void Show()
         {
-            cancelConfirmed = false;
             gameObject.SetActive(true);
             base.Show(instant: true);
             HideConfirmationToast();
+            SwitchToTryCancelButton();
             model.State = Model.LayoutState.Default;
             RefreshControl();
         }
@@ -147,6 +143,7 @@ namespace DCL.Social.Friends
         {
             model.State = Model.LayoutState.Failed;
             HideConfirmationToast();
+            SwitchToTryCancelButton();
             RefreshControl();
         }
 
@@ -158,7 +155,7 @@ namespace DCL.Social.Friends
 
         public void SetTimestamp(DateTime date)
         {
-            dateLabel.text = date.Date.ToString("M");
+            dateLabel.text = date.Date.ToString("MMM dd").ToUpper();
         }
 
         private void ShowConfirmationToast()
@@ -167,11 +164,22 @@ namespace DCL.Social.Friends
             confirmationToast.Show();
         }
 
-
         private void HideConfirmationToast()
         {
             rejectOperationButton.gameObject.SetActive(false);
             confirmationToast.Hide();
+        }
+
+        private void SwitchToCancelButton()
+        {
+            tryCancelButton.gameObject.SetActive(false);
+            cancelButton.gameObject.SetActive(true);
+        }
+
+        private void SwitchToTryCancelButton()
+        {
+            tryCancelButton.gameObject.SetActive(true);
+            cancelButton.gameObject.SetActive(false);
         }
 
         private class Model
