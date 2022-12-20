@@ -199,7 +199,8 @@ public ClientEmotesKernelService Emotes() =>
 
 private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
 {
-    emotes = new ClientEmotesKernelService(await port.LoadModule(EmotesKernelServiceCodeGen.ServiceName));
+    emotes = await SafeLoadModule(EmotesKernelServiceCodeGen.ServiceName, port,
+                module => new ClientEmotesKernelService(module));
     ...
 }
 ```
