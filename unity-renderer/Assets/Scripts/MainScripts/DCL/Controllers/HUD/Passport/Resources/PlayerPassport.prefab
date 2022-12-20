@@ -1057,6 +1057,7 @@ RectTransform:
   - {fileID: 4678537708473192366}
   - {fileID: 4701169004977081534}
   - {fileID: 7295819361835542089}
+  - {fileID: 7879546819357779367}
   m_Father: {fileID: 1524519944648100468}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2404,18 +2405,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2268621067551708692}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7945848041623068096}
-  m_Father: {fileID: 1026214534275938383}
-  m_RootOrder: 1
+  m_Father: {fileID: 2243724110475058062}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 722, y: 423}
+  m_AnchoredPosition: {x: -472.00012, y: -423}
   m_SizeDelta: {x: 36, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3420375831634116094
@@ -2621,6 +2622,7 @@ MonoBehaviour:
   playerPreviewView: {fileID: 2601554836565791447}
   passportNavigationView: {fileID: 1667156755321658656}
   hideCardButton: {fileID: 64611024393635981}
+  hideCardButtonGuest: {fileID: 5732172875686817256}
   backgroundButton: {fileID: 8371671624581896299}
   container: {fileID: 3233482078622637777}
 --- !u!222 &371137286749869486
@@ -2675,6 +2677,7 @@ RectTransform:
   - {fileID: 5004228031952003381}
   - {fileID: 5300823088955411562}
   - {fileID: 269916952262219225}
+  - {fileID: 4404188314049681348}
   m_Father: {fileID: 1524519944648100468}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
@@ -2864,8 +2867,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1891251765153169804}
-  - {fileID: 4404188314049681348}
-  - {fileID: 7879546819357779367}
   m_Father: {fileID: 1725008647501640696}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6962,7 +6963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7879546819357779367
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6976,12 +6977,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3927727245073539659}
-  m_Father: {fileID: 1026214534275938383}
-  m_RootOrder: 2
+  m_Father: {fileID: 88414972987005180}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 722, y: 423}
+  m_AnchoredPosition: {x: 472, y: 423}
   m_SizeDelta: {x: 36, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4539106336960259113
