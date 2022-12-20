@@ -57,12 +57,29 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
             using (new ProfilingScope(cmd, new ProfilingSampler(PROFILER_TAG)))
             {
-                RenderTextureDescriptor opaqueDescriptor = renderingData.cameraData.cameraTargetDescriptor;
-                opaqueDescriptor.depthBufferBits = 0;
-                cmd.GetTemporaryRT(finalOutput.id, opaqueDescriptor, FilterMode.Point);
-                Blit(cmd, source, finalOutput.Identifier());
-                cmd.SetGlobalTexture("_Source", finalOutput.Identifier());
-                Blit(cmd, outlineTexture.Identifier(), source, material);
+                RenderTextureDescriptor descriptor = renderingData.cameraData.cameraTargetDescriptor;
+                descriptor.depthBufferBits = 0;
+                RenderTargetHandle camera = new RenderTargetHandle() { id = Shader.PropertyToID("_OutlinerEffect_Camera") };
+                RenderTargetHandle outline1 = new RenderTargetHandle() { id = Shader.PropertyToID("_OutlinerEffect_Outline1") };
+                RenderTargetHandle outline2 = new RenderTargetHandle() { id = Shader.PropertyToID("_OutlinerEffect_Outline2") };
+                cmd.GetTemporaryRT(camera.id, descriptor, FilterMode.Point);
+                cmd.GetTemporaryRT(outline1.id, descriptor, FilterMode.Point);
+                cmd.GetTemporaryRT(outline2.id, descriptor, FilterMode.Point);
+
+                Blit(cmd, outlineMask.id, outline1.id, material, (int)ShaderPasses.Outline); // Get the outline. Output in outline1
+                Blit(cmd, outline1.id, outline2.id, material, (int)ShaderPasses.BlurHorizontal); // Apply Vertical blur. Output in outline2
+                Blit(cmd, outline2.id, outline1.id, material, (int)ShaderPasses.BlurVertical); // Apply Horizontal blur. Output in outline1
+
+                Blit(cmd, source, camera.id); // Get camera in a RT
+                cmd.SetGlobalTexture("_Source", camera.id); // Apply RT as _Source for the material
+                cmd.SetGlobalTexture("_ComposeMask", outlineMask.id); // Set the original outline mask
+                Blit(cmd, outline1.id, source, material, (int)ShaderPasses.Compose);
+
+                cmd.ReleaseTemporaryRT(camera.id);
+                cmd.ReleaseTemporaryRT(outline1.id);
+                cmd.ReleaseTemporaryRT(outline2.id);
+
+
             }
 
             context.ExecuteCommandBuffer(cmd);
