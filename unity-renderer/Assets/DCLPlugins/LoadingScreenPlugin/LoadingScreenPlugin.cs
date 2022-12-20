@@ -12,7 +12,7 @@ namespace DCLPlugins.LoadingScreenPlugin
 
         public LoadingScreenPlugin()
         {
-            loadingScreenController = new LoadingScreenController(LoadingScreenView.Create(),  Environment.i.world.sceneController);
+            loadingScreenController = new LoadingScreenController(LoadingScreenView.Create(), Environment.i.world.sceneController);
         }
 
         public void Dispose()
