@@ -88,7 +88,9 @@ namespace DCL.Social.Friends
         public void SetBodyMessage(string messageBody)
         {
             model.BodyMessage = messageBody;
-            bodyMessageInput.text = messageBody;
+            bodyMessageInput.text = !string.IsNullOrEmpty(model.UserName)
+                ? $"<b>{model.UserName}:</b> {messageBody}"
+                : messageBody;
             bodyMessageContainer.SetActive(!string.IsNullOrEmpty(messageBody));
         }
 
@@ -104,6 +106,9 @@ namespace DCL.Social.Friends
             nameLabel.text = userName;
             rejectSuccessLabel.text = $"{userName} request rejected!";
             confirmSuccessLabel.text = $"{userName} and you are friends now!";
+
+            if (!string.IsNullOrEmpty(model.BodyMessage))
+                bodyMessageInput.text = $"<b>{model.UserName}:</b> {model.BodyMessage}";
         }
 
         public void SetSenderProfilePicture(string uri)
