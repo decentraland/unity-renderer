@@ -6,6 +6,7 @@ using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using Sentry.Unity;
 using UnityEngine;
 
 namespace DCL
@@ -65,6 +66,9 @@ namespace DCL
 
             InitializeDataStore();
             SetupPlugins();
+#if !UNITY_EDITOR
+            SetupSentry();
+#endif
             InitializeCommunication();
         }
 
@@ -106,6 +110,16 @@ namespace DCL
         {
             pluginSystem = PluginSystemFactory.Create();
             pluginSystem.Initialize();
+        }
+
+        protected virtual void SetupSentry()
+        {
+            SentryUnity.Init(o =>
+            {
+                o.Environment = SentryConfiguration.Environment;
+                o.Dsn = SentryConfiguration.Dsn;
+                o.Release = SentryConfiguration.Release;
+            });
         }
 
         protected virtual void SetupServices()
