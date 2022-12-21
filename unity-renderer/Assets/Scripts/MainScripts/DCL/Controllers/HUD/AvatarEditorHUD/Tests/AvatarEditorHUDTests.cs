@@ -58,6 +58,7 @@ namespace AvatarEditorHUD_Tests
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
+
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
@@ -67,13 +68,11 @@ namespace AvatarEditorHUD_Tests
             yield return base.TearDown();
         }
 
-        [UnityTest]
-        public IEnumerator BeAddedWhenEquiped()
+        [Test]
+        public void BeAddedWhenEquiped()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
-
-            yield return null;
 
             controller.WearableClicked(sunglassesId);
 

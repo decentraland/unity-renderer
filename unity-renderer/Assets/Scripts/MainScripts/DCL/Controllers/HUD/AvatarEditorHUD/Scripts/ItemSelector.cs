@@ -97,11 +97,11 @@ public class ItemSelector : MonoBehaviour
         return Mathf.Max(Mathf.CeilToInt(width / itemAndSpaceSize), MIN_AMOUNT_OF_COLUMNS);
     }
 
-    private async UniTask SetupWearablePagination(CancellationToken token, bool forceRebuild = false)
+    private async UniTask SetupWearablePagination(CancellationToken token, bool isRefresh = false, bool forceRebuild = false)
     {
         if (isActiveAndEnabled || forceRebuild || EnvironmentSettings.RUNNING_TESTS)
         {
-            await UpdateWearableListAsync(lastPage, token);
+            await UpdateWearableListAsync(lastPage, token, isRefresh);
             itemToggleContainer.Rebuild(maxVisibleWearables);
 
             if (pageSelector != null)
@@ -121,7 +121,7 @@ public class ItemSelector : MonoBehaviour
         UpdateWearableListAsync(page, cancellationTokenSource.Token).Forget();
     }
 
-    private async UniTask UpdateWearableListAsync(int page, CancellationToken token)
+    private async UniTask UpdateWearableListAsync(int page, CancellationToken token, bool isRefresh = false)
     {
         lastPage = page;
 
@@ -135,7 +135,7 @@ public class ItemSelector : MonoBehaviour
             int wearableIndex = baseIndex + itemToggleIndex;
 
             if (wearableIndex < availableWearables.Count)
-                await ShowItem(availableWearables[wearableIndex], itemToggleIndex, token);
+                await ShowItem(availableWearables[wearableIndex], itemToggleIndex, token, isRefresh);
             else
                 itemToggleContainer.HideItem(itemToggleIndex);
         }
@@ -143,7 +143,7 @@ public class ItemSelector : MonoBehaviour
         currentItemToggles = new Dictionary<string, ItemToggle>(newItemToggles);
     }
 
-    private async Task ShowItem(WearableSettings wearableSettings, int itemToggleIndex, CancellationToken token)
+    private async UniTask ShowItem(WearableSettings wearableSettings, int itemToggleIndex, CancellationToken token, bool isRefresh)
     {
         WearableItem item = wearableSettings.Item;
 
@@ -151,7 +151,9 @@ public class ItemSelector : MonoBehaviour
             newItemToggles[item.id] = currentItemToggles[item.id];
         else
         {
-            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings);
+            // special timing is needed for wearables refresh
+            var awaitTiming = isRefresh ? PlayerLoopTiming.LastPostLateUpdate : PlayerLoopTiming.Initialization;
+            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings, awaitTiming, token);
 
             itemToggle.SetCallbacks(ToggleClicked, SellClicked);
             itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
@@ -217,7 +219,7 @@ public class ItemSelector : MonoBehaviour
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.ToList();
-        SetupWearablePagination(cancellationTokenSource.Token).Forget();
+        SetupWearablePagination(cancellationTokenSource.Token, isRefresh: true);
     }
 
     public void Select(string itemID)

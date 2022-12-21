@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +32,7 @@ public class ItemToggleContainer : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
-    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings)
+    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings, PlayerLoopTiming instantiateTiming, CancellationToken token)
     {
         var item = wearableSettings.Item;
 
@@ -41,7 +42,7 @@ public class ItemToggleContainer : MonoBehaviour
             newToggle = items[index];
         else
         {
-            await UniTask.Yield();
+            await UniTask.NextFrame(instantiateTiming, token);
 
             newToggle = Instantiate(itemPrefab, itemContainer);
             items.Add(newToggle);
