@@ -84,7 +84,7 @@ public class ItemSelector : MonoBehaviour
 
             maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * CalculateColumnsAmount(rt.rect);
 
-            await SetupWearablePagination(cancellationToken, true);
+            await SetupWearablePagination(cancellationToken);
         }
         catch (OperationCanceledException) { }
     }
