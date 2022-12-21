@@ -20,9 +20,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal Button rejectButton;
         [SerializeField] internal Button confirmButton;
-        [SerializeField] internal Button retryButton;
         [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal GameObject rejectSuccessContainer;
         [SerializeField] internal GameObject confirmSuccessContainer;
         [SerializeField] internal Button[] buttonsToDisableOnPendingState;
@@ -59,14 +57,6 @@ namespace DCL.Social.Friends
             {
                 lastTryWasConfirm = true;
                 OnConfirmFriendRequest?.Invoke();
-            });
-
-            retryButton.onClick.AddListener(() =>
-            {
-                if (lastTryWasConfirm)
-                    OnConfirmFriendRequest?.Invoke();
-                else
-                    OnRejectFriendRequest?.Invoke();
             });
         }
 
@@ -142,9 +132,6 @@ namespace DCL.Social.Friends
                 case ReceivedFriendRequestHUDModel.LayoutState.Pending:
                     SetPendingState();
                     break;
-                case ReceivedFriendRequestHUDModel.LayoutState.Failed:
-                    SetFailedState();
-                    break;
                 case ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess:
                     SetConfirmSuccessState();
                     break;
@@ -167,7 +154,6 @@ namespace DCL.Social.Friends
         private void SetDefaultState()
         {
             defaultContainer.SetActive(true);
-            failedContainer.SetActive(false);
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(false);
 
@@ -178,7 +164,6 @@ namespace DCL.Social.Friends
         private void SetPendingState()
         {
             defaultContainer.SetActive(true);
-            failedContainer.SetActive(false);
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(false);
 
@@ -189,7 +174,6 @@ namespace DCL.Social.Friends
         private void SetFailedState()
         {
             defaultContainer.SetActive(false);
-            failedContainer.SetActive(true);
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(false);
 
@@ -200,7 +184,6 @@ namespace DCL.Social.Friends
         private void SetConfirmSuccessState()
         {
             defaultContainer.SetActive(false);
-            failedContainer.SetActive(false);
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(true);
         }
@@ -208,7 +191,6 @@ namespace DCL.Social.Friends
         private void SetRejectSuccessState()
         {
             defaultContainer.SetActive(false);
-            failedContainer.SetActive(false);
             rejectSuccessContainer.SetActive(true);
             confirmSuccessContainer.SetActive(false);
         }

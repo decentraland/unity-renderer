@@ -22,7 +22,6 @@ namespace DCL.Social.Friends
         [Test]
         [TestCase(0)]
         [TestCase(1)]
-        [TestCase(2)]
         public void ClickOnCloseButtonsCorrectly(int closeButtonIndex)
         {
             // Arrange
@@ -79,32 +78,6 @@ namespace DCL.Social.Friends
         }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ClickOnRetryButtonCorrectly(bool lastTryWasConfirm)
-        {
-            // Arrange
-            if (lastTryWasConfirm)
-                view.confirmButton.onClick.Invoke();
-            else
-                view.rejectButton.onClick.Invoke();
-
-            bool confirmFriendRequestTriggered = false;
-            view.OnConfirmFriendRequest += () => confirmFriendRequestTriggered = true;
-            bool rejectFriendRequestTriggered = false;
-            view.OnRejectFriendRequest += () => rejectFriendRequestTriggered = true;
-
-            // Act
-            view.retryButton.onClick.Invoke();
-
-            // Assert
-            if (lastTryWasConfirm)
-                Assert.IsTrue(confirmFriendRequestTriggered);
-            else
-                Assert.IsTrue(rejectFriendRequestTriggered);
-        }
-
-        [Test]
         public void SetBodyMessageCorrectly()
         {
             // Arrange
@@ -153,7 +126,6 @@ namespace DCL.Social.Friends
         [Test]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Default)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Pending)]
-        [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Failed)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess)]
         public void SetStateCorrectly(ReceivedFriendRequestHUDModel.LayoutState state)
@@ -169,7 +141,6 @@ namespace DCL.Social.Friends
             {
                 case ReceivedFriendRequestHUDModel.LayoutState.Default:
                     Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
                     Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
                     Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
                     foreach (var button in view.buttonsToDisableOnPendingState)
@@ -177,29 +148,18 @@ namespace DCL.Social.Friends
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.Pending:
                     Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
                     Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
                     Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
                     foreach (var button in view.buttonsToDisableOnPendingState)
                         Assert.IsFalse(button.interactable);
                     break;
-                case ReceivedFriendRequestHUDModel.LayoutState.Failed:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsTrue(view.failedContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
-                    foreach (var button in view.buttonsToDisableOnPendingState)
-                        Assert.IsTrue(button.interactable);
-                    break;
                 case ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess:
                     Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
                     Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
                     Assert.IsTrue(view.confirmSuccessContainer.activeSelf);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess:
                     Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
                     Assert.IsTrue(view.rejectSuccessContainer.activeSelf);
                     Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
                     break;
@@ -214,7 +174,6 @@ namespace DCL.Social.Friends
 
             // Assert
             Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
             Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
             Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
             foreach (var button in view.buttonsToDisableOnPendingState)

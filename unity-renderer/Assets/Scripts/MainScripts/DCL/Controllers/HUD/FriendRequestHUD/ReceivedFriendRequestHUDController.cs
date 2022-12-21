@@ -125,8 +125,8 @@ namespace DCL.Social.Friends
             {
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;
             }
         }
@@ -154,8 +154,8 @@ namespace DCL.Social.Friends
             {
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;
             }
         }
