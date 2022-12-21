@@ -1800,7 +1800,7 @@ GameObject:
   - component: {fileID: 3100182512639381603}
   - component: {fileID: 2189584474661119872}
   m_Layer: 5
-  m_Name: SelectedTitle
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1865,8 +1865,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6231,7 +6231,7 @@ GameObject:
   - component: {fileID: 7567500348694542939}
   - component: {fileID: 2335580107551307023}
   m_Layer: 5
-  m_Name: UnselectedTitle
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8127,6 +8127,8 @@ MonoBehaviour:
   aboutToggleOff: {fileID: 3263023804558951154}
   collectiblesToggleOn: {fileID: 4448947785835570144}
   collectiblesToggleOff: {fileID: 5654261210808100715}
+  aboutText: {fileID: 2189584474661119872}
+  collectiblesText: {fileID: 2335580107551307023}
 --- !u!1 &7590974253276029638
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,6 +42,8 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject aboutToggleOff;
         [SerializeField] private GameObject collectiblesToggleOn;
         [SerializeField] private GameObject collectiblesToggleOff;
+        [SerializeField] private TMP_Text aboutText;
+        [SerializeField] private TMP_Text collectiblesText;
 
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string> OnClickBuyNft;
@@ -64,6 +66,8 @@ namespace DCL.Social.Passports
             aboutToggle.onValueChanged.AddListener((isActive) =>
             {
                 aboutPanel.SetActive(isActive);
+                aboutText.color = Color.white;
+                collectiblesText.color = Color.black;
                 aboutToggleOn.SetActive(true);
                 aboutToggleOff.SetActive(false);
                 collectiblesToggleOn.SetActive(false);
@@ -73,6 +77,8 @@ namespace DCL.Social.Passports
             {
                 OnClickCollectibles?.Invoke();
                 wearablesPanel.SetActive(isActive);
+                aboutText.color = Color.black;
+                collectiblesText.color = Color.white;
                 aboutToggleOn.SetActive(false);
                 aboutToggleOff.SetActive(true);
                 collectiblesToggleOn.SetActive(true);
