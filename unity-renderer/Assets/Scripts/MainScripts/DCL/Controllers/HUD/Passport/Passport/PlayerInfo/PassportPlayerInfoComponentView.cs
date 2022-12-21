@@ -12,9 +12,11 @@ namespace DCL.Social.Passports
     public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
         [SerializeField] private TextMeshProUGUI name;
+        [SerializeField] private TextMeshProUGUI address;
         [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
         [SerializeField] private Button walletCopyButton;
         [SerializeField] private Button usernameCopyButton;
+        [SerializeField] private RectTransform usernameRect;
         [SerializeField] private TextMeshProUGUI wallet;
         [SerializeField] private ButtonComponentView optionsButton;
         [SerializeField] private ButtonComponentView addFriendButton;
@@ -131,7 +133,19 @@ namespace DCL.Social.Passports
 
         private void SetName(string name)
         {
-            this.name.text = name;
+
+            if (name.Contains('#'))
+            {
+                this.name.SetText(name.Split('#')[0]);
+                address.SetText(name.Split('#')[1]);
+            }
+            else
+            {
+                this.name.SetText(name);
+                address.text = "";
+            }
+            LayoutRebuilder.ForceRebuildLayoutImmediate(usernameRect);
+
             nameInOptionsPanel.text = name;
         }
 

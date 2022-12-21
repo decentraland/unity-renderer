@@ -377,9 +377,11 @@ MonoBehaviour:
     hasBlocked: 0
     friendshipStatus: 0
   name: {fileID: 8579926864359992106}
+  address: {fileID: 4665858801143337952}
   nameInOptionsPanel: {fileID: 5711823414928867930}
   walletCopyButton: {fileID: 7346261851112717960}
   usernameCopyButton: {fileID: 5912848531842380913}
+  usernameRect: {fileID: 870942983124635862}
   wallet: {fileID: 3817117728883854603}
   optionsButton: {fileID: 2385284515346383722}
   addFriendButton: {fileID: 7763143838359252762}
@@ -1981,7 +1983,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 59.085, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 19.14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4220642054528436811
@@ -6171,7 +6173,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 68.61, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8963026252533260794
@@ -8129,7 +8131,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 931, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 839, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &529896173261396989
