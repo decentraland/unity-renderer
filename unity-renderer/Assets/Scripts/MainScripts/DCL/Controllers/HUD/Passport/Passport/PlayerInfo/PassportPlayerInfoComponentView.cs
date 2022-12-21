@@ -11,6 +11,8 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
+        private const float COPY_TOAST_VISIBLE_TIME = 3;
+
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI address;
         [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
@@ -39,6 +41,8 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject unblockVariation;
 
         [SerializeField] private JumpInButton jumpInButton;
+        [SerializeField] private ShowHideAnimator copyAddressToast;
+        [SerializeField] private ShowHideAnimator copyUsernameToast;
 
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
@@ -54,6 +58,8 @@ namespace DCL.Social.Passports
         private string fullWalletAddress;
         private bool areFriends;
         private bool isBlocked = false;
+        private Coroutine copyAddressRoutine = null;
+        private Coroutine copyNameRoutine = null;
 
         public override void Start()
         {
@@ -142,7 +148,7 @@ namespace DCL.Social.Passports
             else
             {
                 this.name.SetText(name);
-                address.text = "";
+                address.SetText("");
             }
             LayoutRebuilder.ForceRebuildLayoutImmediate(usernameRect);
 
@@ -235,6 +241,12 @@ namespace DCL.Social.Passports
 
             OnWalletCopy?.Invoke();
             Environment.i.platform.clipboard.WriteText(fullWalletAddress);
+            if (copyAddressRoutine != null)
+            {
+                StopCoroutine(copyAddressRoutine);
+            }
+
+            copyAddressRoutine = StartCoroutine(ShowCopyToast(copyAddressToast));
         }
 
         private void CopyUsernameToClipboard()
@@ -243,6 +255,24 @@ namespace DCL.Social.Passports
                 return;
 
             Environment.i.platform.clipboard.WriteText(model.name.Split('#')[0]);
+            if (copyNameRoutine != null)
+            {
+                StopCoroutine(copyNameRoutine);
+            }
+
+            copyNameRoutine = StartCoroutine(ShowCopyToast(copyUsernameToast));
+        }
+
+        private IEnumerator ShowCopyToast(ShowHideAnimator toast)
+        {
+            if (!toast.gameObject.activeSelf)
+            {
+                toast.gameObject.SetActive(true);
+            }
+
+            toast.Show();
+            yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
+            toast.Hide();
         }
 
         private void WhisperActionFlow()
