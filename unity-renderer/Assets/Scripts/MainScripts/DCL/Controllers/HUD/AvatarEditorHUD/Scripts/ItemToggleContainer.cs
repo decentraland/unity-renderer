@@ -43,7 +43,7 @@ public class ItemToggleContainer : MonoBehaviour
         else
         {
             if(isRefresh)
-                await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, token);
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, token);
             else
                 await UniTask.Yield(token);
 
