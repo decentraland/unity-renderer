@@ -9,14 +9,12 @@ namespace DCL.Social.Friends
     public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
     {
         [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal GameObject pendingToSendContainer;
         [SerializeField] internal GameObject successContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text successStateLabel;
         [SerializeField] internal Button[] cancelButtons;
         [SerializeField] internal Button sendButton;
-        [SerializeField] internal Button retryButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal TMP_Text messageBodyLengthLabel;
         [SerializeField] internal ImageComponentView profileImage;
@@ -45,7 +43,6 @@ namespace DCL.Social.Friends
                 OnMessageBodyChanged?.Invoke(s);
             });
             sendButton.onClick.AddListener(() => OnSend?.Invoke());
-            retryButton.onClick.AddListener(() => OnSend?.Invoke());
         }
 
         public override void Dispose()
@@ -57,7 +54,6 @@ namespace DCL.Social.Friends
         public override void RefreshControl()
         {
             defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
-            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             successContainer.SetActive(model.State == Model.LayoutState.Success);
             pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
             sendButton.gameObject.SetActive(model.State != Model.LayoutState.Pending);
@@ -117,12 +113,6 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void ShowSendFailed()
-        {
-            model.State = Model.LayoutState.Failed;
-            RefreshControl();
-        }
-
         public void ClearInputField() => messageBodyInput.text = "";
 
         private class Model
@@ -135,7 +125,6 @@ namespace DCL.Social.Friends
             {
                 Default,
                 Pending,
-                Failed,
                 Success
             }
         }

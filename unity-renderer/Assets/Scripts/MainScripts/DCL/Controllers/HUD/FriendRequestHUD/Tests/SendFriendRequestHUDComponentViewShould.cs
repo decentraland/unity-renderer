@@ -29,18 +29,6 @@ namespace DCL.Social.Friends
 
             Assert.IsTrue(view.gameObject.activeSelf);
             Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
-            Assert.IsFalse(view.successContainer.activeSelf);
-            Assert.IsFalse(view.pendingToSendContainer.activeSelf);
-        }
-
-        [Test]
-        public void ShowFailed()
-        {
-            view.ShowSendFailed();
-
-            Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsTrue(view.failedContainer.activeSelf);
             Assert.IsFalse(view.successContainer.activeSelf);
             Assert.IsFalse(view.pendingToSendContainer.activeSelf);
         }
@@ -51,7 +39,6 @@ namespace DCL.Social.Friends
             view.ShowSendSuccess();
 
             Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
             Assert.IsTrue(view.successContainer.activeSelf);
             Assert.IsFalse(view.pendingToSendContainer.activeSelf);
         }
@@ -61,8 +48,6 @@ namespace DCL.Social.Friends
         {
             view.ShowPendingToSend();
 
-            Assert.IsFalse(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
             Assert.IsFalse(view.successContainer.activeSelf);
             Assert.IsTrue(view.pendingToSendContainer.activeSelf);
         }

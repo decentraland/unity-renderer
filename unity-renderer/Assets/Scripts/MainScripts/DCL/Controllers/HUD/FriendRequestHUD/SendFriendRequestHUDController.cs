@@ -100,7 +100,7 @@ namespace DCL.Social.Friends
             catch (Exception)
             {
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.ShowSendFailed();
+                view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
             }

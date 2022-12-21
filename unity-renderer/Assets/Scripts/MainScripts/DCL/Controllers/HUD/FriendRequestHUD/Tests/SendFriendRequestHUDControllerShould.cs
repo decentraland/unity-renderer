@@ -126,7 +126,7 @@ namespace DCL.Social.Friends
             socialAnalytics.DidNotReceiveWithAnyArgs().SendFriendRequestSent(default, default, default, default);
             view.DidNotReceiveWithAnyArgs().ShowSendSuccess();
             friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey");
-            view.Received(1).ShowSendFailed();
+            view.Received().Show();
         }
     }
 }

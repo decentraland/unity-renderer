@@ -16,7 +16,6 @@ namespace DCL.Social.Friends
         void SetProfilePicture(ILazyTextureObserver textureObserver);
         void ShowPendingToSend();
         void ShowSendSuccess();
-        void ShowSendFailed();
         void ClearInputField();
     }
 }
