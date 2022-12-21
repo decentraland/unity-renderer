@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Chat;
+using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

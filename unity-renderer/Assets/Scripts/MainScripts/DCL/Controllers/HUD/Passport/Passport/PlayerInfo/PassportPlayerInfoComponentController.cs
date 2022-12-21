@@ -60,7 +60,8 @@ namespace DCL.Social.Passports
             socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport);
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile);
+        public void UpdateWithUserProfile(UserProfile userProfile) =>
+            UpdateWithUserProfileAsync(userProfile);
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
@@ -68,7 +69,7 @@ namespace DCL.Social.Passports
             string filteredName = await FilterName(userProfile);
             PlayerPassportModel playerPassportModel;
 
-            if(userProfile.isGuest)
+            if (userProfile.isGuest)
             {
                 playerPassportModel = new PlayerPassportModel
                 {
@@ -89,6 +90,7 @@ namespace DCL.Social.Passports
                     friendshipStatus = friendsController.GetUserStatus(userProfile.userId).friendshipStatus
                 };
             }
+
             view.SetModel(playerPassportModel);
             view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
         }
@@ -122,20 +124,46 @@ namespace DCL.Social.Passports
             socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
-        private void CancelFriendRequest()
+        private void CancelFriendRequest() =>
+            CancelFriendRequestAsync().Forget();
+
+        private async UniTaskVoid CancelFriendRequestAsync()
         {
             if (isNewFriendRequestsEnabled)
-                friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+            {
+                try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
+                catch (Exception)
+                {
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    throw;
+                }
+            }
             else
                 friendsController.CancelRequestByUserId(currentPlayerId);
 
             socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
-        private void AcceptFriendRequest()
+        private void AcceptFriendRequest() =>
+            AcceptFriendRequestAsync().Forget();
+
+        private async UniTaskVoid AcceptFriendRequestAsync()
         {
-            friendsController.AcceptFriendship(currentPlayerId);
-            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            if (isNewFriendRequestsEnabled)
+            {
+                try
+                {
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                }
+                catch (Exception)
+                {
+                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    throw;
+                }
+            }
+            else
+                friendsController.AcceptFriendship(currentPlayerId);
         }
 
         private void BlockUser()

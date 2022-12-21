@@ -15,7 +15,7 @@ namespace DCL.Chat.Notifications
         private const int NEW_NOTIFICATION_DELAY = 5000;
 
         public event Action<string> OnClickedNotification;
-        public event Action<string> OnClickedFriendRequestNotification;
+        public event Action<string> OnClickedFriendRequest;
 
         [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
         [SerializeField] private FriendRequestNotificationComponentView friendRequestNotificationComponentView;
@@ -223,12 +223,11 @@ namespace DCL.Chat.Notifications
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationModel model)
         {
+            friendRequestNotificationComponentView.SetFriendRequestId(model.FriendRequestId);
             friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
             friendRequestNotificationComponentView.SetHeader(model.Header);
             friendRequestNotificationComponentView.SetMessage(model.Message);
             friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
-            if (!string.IsNullOrEmpty(model.ProfilePicture))
-                friendRequestNotificationComponentView.SetImage(model.ProfilePicture);
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
@@ -287,12 +286,12 @@ namespace DCL.Chat.Notifications
             OnClickedNotification?.Invoke(targetId);
         }
 
-        private void ClickedOnFriendRequestNotification(string userId)
+        private void ClickedOnFriendRequestNotification(string friendRequestId)
         {
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedFriendRequestNotification?.Invoke(userId);
+            OnClickedFriendRequest?.Invoke(friendRequestId);
         }
 
         public override void Dispose()
