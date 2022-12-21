@@ -27,7 +27,15 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            uiElement = new Label() { text = string.Empty };
+            uiElement = new Label()
+            {
+                text = string.Empty,
+                style =
+                {
+                    width = new Length(100f, LengthUnit.Percent),
+                    height = new Length(100f, LengthUnit.Percent)
+                }
+            };
 
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
             containerModel.rootElement.Add(uiElement);
@@ -83,25 +91,25 @@ namespace DCL.ECSComponents
                     return TextAnchor.UpperLeft;
                 case TextAlignMode.TamTopRight:
                     return TextAnchor.UpperRight;
-                
+
                 case TextAlignMode.TamBottomCenter:
                     return TextAnchor.LowerCenter;
                 case TextAlignMode.TamBottomLeft:
                     return TextAnchor.LowerLeft;
                 case TextAlignMode.TamBottomRight:
                     return TextAnchor.LowerRight;
-                
+
                 case TextAlignMode.TamMiddleCenter:
                     return TextAnchor.MiddleCenter;
                 case TextAlignMode.TamMiddleLeft:
                     return TextAnchor.MiddleLeft;
                 case TextAlignMode.TamMiddleRight:
                     return TextAnchor.MiddleRight;
-                
+
                 default:
                     return TextAnchor.MiddleCenter;
             }
         }
-        
+
     }
 }
