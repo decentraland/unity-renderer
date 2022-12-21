@@ -45,5 +45,10 @@ namespace DCL.ECSComponents.Utils
         {
             target.Texture = texture.texture;
         }
+
+        public void Dispose()
+        {
+            texturePromiseKeeper.Forget(lastPromise);
+        }
     }
 }

@@ -36,6 +36,7 @@ namespace DCL.ECSComponents
         {
             RemoveElementFromRoot(scene, entity, image);
             image = null;
+            textureUpdater.Dispose();
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiBackground model)
