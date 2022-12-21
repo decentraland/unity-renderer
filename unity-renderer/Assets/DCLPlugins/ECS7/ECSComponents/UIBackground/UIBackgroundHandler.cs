@@ -28,7 +28,8 @@ namespace DCL.ECSComponents
 
             textureUpdater = new UITextureUpdater(image, fontPromiseKeeper);
 
-            AddElementToRoot(scene, entity, image);
+            var internalUiContainer = AddComponentToEntity(scene, entity);
+            internalUiContainer.rootElement.Insert(0, image);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)

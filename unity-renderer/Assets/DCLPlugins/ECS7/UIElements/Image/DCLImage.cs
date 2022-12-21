@@ -136,7 +136,8 @@ namespace DCL.UIElements.Image
         private void AdjustUVs()
         {
             // check uvs
-            if (uvs.Equals(default)) { uvs = DCLUVs.Default; }
+            if (uvs.Equals(default))
+                uvs = DCLUVs.Default;
         }
 
         private void AdjustSlices()
@@ -233,6 +234,8 @@ namespace DCL.UIElements.Image
             VERTICES[2].uv = uvs.TopRight * uvRegion.size + uvRegion.min;
             VERTICES[3].uv = uvs.BottomRight * uvRegion.size + uvRegion.min;
 
+            ApplyVerticesTint();
+
             mwd.SetAllVertices(VERTICES);
             mwd.SetAllIndices(INDICES);
         }
@@ -272,8 +275,15 @@ namespace DCL.UIElements.Image
             VERTICES[2].uv = uvs.TopRight * uvRegion.size + uvRegion.min;
             VERTICES[3].uv = uvs.BottomRight * uvRegion.size + uvRegion.min;
 
+            ApplyVerticesTint();
+
             mwd.SetAllVertices(VERTICES);
             mwd.SetAllIndices(INDICES);
+        }
+
+        private void ApplyVerticesTint()
+        {
+            for (var i = 0; i < VERTICES.Length; i++) { VERTICES[i].tint = color; }
         }
     }
 }
