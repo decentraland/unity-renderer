@@ -327,13 +327,15 @@ GameObject:
   - component: {fileID: 5598834315846791794}
   - component: {fileID: 9108633970461138891}
   - component: {fileID: 7440903046634906385}
+  - component: {fileID: 2274957237541168649}
+  - component: {fileID: 8435172790012182335}
   m_Layer: 5
   m_Name: TutorialContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5598834315846791794
 RectTransform:
   m_ObjectHideFlags: 0
@@ -394,6 +396,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2.5
+--- !u!225 &2274957237541168649
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4036707323481506663}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &8435172790012182335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4036707323481506663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 2274957237541168649}
 --- !u!1 &5332777309366391086
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,7 +559,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   <CharacterPreviewImage>k__BackingField: {fileID: 1453265991699970119}
   <PreviewCameraRotation>k__BackingField: {fileID: 2043418101042698383}
-  tutorialContainer: {fileID: 4036707323481506663}
+  tutorialShowHide: {fileID: 8435172790012182335}
 --- !u!1 &6875055614704630242
 GameObject:
   m_ObjectHideFlags: 0

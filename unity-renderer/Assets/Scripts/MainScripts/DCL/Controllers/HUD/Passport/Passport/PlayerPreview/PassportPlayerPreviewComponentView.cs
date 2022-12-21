@@ -14,11 +14,23 @@ namespace DCL.Social.Passports
         [field: SerializeField]
         public PreviewCameraRotation PreviewCameraRotation { get; private set; }
 
-        [SerializeField] private GameObject tutorialContainer;
+        [SerializeField] private ShowHideAnimator tutorialShowHide;
+
+        public void HideTutorial()
+        {
+            tutorialShowHide.Hide();
+        }
 
         public override void RefreshControl()
         {
-            tutorialContainer.SetActive(model.TutorialEnabled);
+            if (model.TutorialEnabled)
+            {
+                tutorialShowHide.gameObject.SetActive(true);
+            }
+            else
+            {
+                HideTutorial();
+            }
         }
 
         RenderTexture IPassportPlayerPreviewComponentView.CharacterPreviewTexture => (RenderTexture) CharacterPreviewImage.texture;
