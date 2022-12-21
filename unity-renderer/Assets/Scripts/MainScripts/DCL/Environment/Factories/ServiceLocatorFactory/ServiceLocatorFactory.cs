@@ -7,6 +7,7 @@ using DCL.Rendering;
 using DCL.Services;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using UnityEngine;
+using WorldsFeaturesAnalytics;
 
 namespace DCL
 {
@@ -52,6 +53,10 @@ namespace DCL
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
+
+            // Analytics
+
+            result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
 
             return result;
         }

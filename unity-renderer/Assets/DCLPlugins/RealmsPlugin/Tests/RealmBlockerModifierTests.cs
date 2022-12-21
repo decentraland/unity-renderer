@@ -1,5 +1,4 @@
 using DCL;
-using Decentraland.Bff;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace DCLPlugins.RealmPlugin
             realmBlockerModiferSubstitute = Substitute.For<RealmBlockerModifier>(DataStore.i.worldBlockers);
 
             var substituteModifiers = new List<IRealmModifier>
-                { realmBlockerModiferSubstitute, };
+                { realmBlockerModiferSubstitute };
 
             realmPlugin.realmsModifiers = substituteModifiers;
         }

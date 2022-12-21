@@ -11,22 +11,22 @@ using UnityEngine.TestTools;
 
 namespace DCL.Social.Friends
 {
-    public class CancelFriendRequestHUDControllerShould
+    public class SentFriendRequestHUDControllerShould
     {
         private const string FRIEND_REQ_ID = "friendRequest";
         private const string RECIPIENT_ID = "recipientId";
         private const string RECIPIENT_NAME = "recipientName";
         private const string OWN_ID = "ownId";
 
-        private CancelFriendRequestHUDController controller;
-        private ICancelFriendRequestHUDView view;
+        private SentFriendRequestHUDController controller;
+        private ISentFriendRequestHUDView view;
         private DataStore dataStore;
         private IFriendsController friendsController;
 
         [SetUp]
         public void SetUp()
         {
-            view = Substitute.For<ICancelFriendRequestHUDView>();
+            view = Substitute.For<ISentFriendRequestHUDView>();
             dataStore = new DataStore();
 
             friendsController = Substitute.For<IFriendsController>();
@@ -54,7 +54,7 @@ namespace DCL.Social.Friends
 
             userProfileBridge.GetOwn().Returns(ownProfile);
 
-            controller = new CancelFriendRequestHUDController(view,
+            controller = new SentFriendRequestHUDController(view,
                 dataStore,
                 userProfileBridge,
                 friendsController,
