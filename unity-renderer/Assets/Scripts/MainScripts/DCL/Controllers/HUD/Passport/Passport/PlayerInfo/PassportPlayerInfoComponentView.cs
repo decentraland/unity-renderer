@@ -23,7 +23,7 @@ namespace DCL.Social.Passports
         [SerializeField] private ButtonComponentView acceptFriendButton;
         [SerializeField] private ButtonComponentView blockedFriendButton;
         [SerializeField] private Button whisperButton;
-        [SerializeField] private GameObject whisperNonFriendsPopup;
+        [SerializeField] private TooltipComponentView whisperNonFriendsPopup;
         [SerializeField] private GameObject onlineStatus;
         [SerializeField] private GameObject offlineStatus;
         [SerializeField] private GameObject normalUserPanel;
@@ -202,7 +202,7 @@ namespace DCL.Social.Passports
                 default:
                 break;
             }
-            whisperNonFriendsPopup.SetActive(false);
+            whisperNonFriendsPopup.Hide(true);
         }
 
         private void DisableAllFriendFlowButtons()
@@ -239,20 +239,20 @@ namespace DCL.Social.Passports
             }
             else
             {
-                whisperNonFriendsPopup.SetActive(!areFriends);
-                StartCoroutine(WaitAndClosePopup());
+                if (areFriends)
+                {
+                    whisperNonFriendsPopup.Hide();
+                }
+                else
+                {
+                    whisperNonFriendsPopup.Show();
+                }
             }
         }
 
         private void OpenOptions()
         {
             userContextMenu.Show(model.userId);
-        }
-
-        private IEnumerator WaitAndClosePopup()
-        {
-            yield return new WaitForSeconds(3);
-            whisperNonFriendsPopup.SetActive(false);
         }
     }
 }
