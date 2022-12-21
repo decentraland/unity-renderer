@@ -21,6 +21,8 @@ namespace DCL.UIElements
         private bool isPlaceholder;
         private bool isFocused;
 
+        private bool isReadonly;
+
         public TextFieldPlaceholder(TextField textField)
         {
             this.textField = textField;
@@ -36,19 +38,30 @@ namespace DCL.UIElements
         public void SetPlaceholder(string placeholder)
         {
             this.placeholder = placeholder;
-            UpdateIfFocusStateIs(false);
+
+            if (isPlaceholder)
+                UpdateIfFocusStateIs(false);
         }
 
         public void SetNormalColor(Color4 color)
         {
             normalColor = color.ToUnityColor();
-            UpdateIfFocusStateIs(true);
+
+            if (!isPlaceholder || isFocused)
+                SetNormalStyle();
+        }
+
+        public void SetReadOnly(bool isReadOnly)
+        {
+            this.isReadonly = isReadOnly;
         }
 
         public void SetPlaceholderColor(Color4 color)
         {
             placeholderColor = color.ToUnityColor();
-            UpdateIfFocusStateIs(false);
+
+            if (isPlaceholder)
+                UpdateIfFocusStateIs(false);
         }
 
         private void UpdateIfFocusStateIs(bool focusState)
@@ -79,6 +92,9 @@ namespace DCL.UIElements
 
         private void OnFocusIn(FocusInEvent _)
         {
+            if (isReadonly)
+                return;
+
             if (isPlaceholder)
             {
                 textField.SetValueWithoutNotify(string.Empty);
@@ -90,7 +106,10 @@ namespace DCL.UIElements
 
         private void OnFocusOut(FocusOutEvent _)
         {
-            if (string.IsNullOrEmpty(textField.text))
+            if (isReadonly)
+                return;
+
+            if (InputIsNullOrEmpty())
             {
                 SetPlaceholderStyle();
                 isPlaceholder = true;
@@ -103,6 +122,9 @@ namespace DCL.UIElements
 
             isFocused = false;
         }
+
+        private bool InputIsNullOrEmpty() =>
+            string.IsNullOrEmpty(textField.text);
 
         private void OnValueChanged(ChangeEvent<string> newValue)
         {

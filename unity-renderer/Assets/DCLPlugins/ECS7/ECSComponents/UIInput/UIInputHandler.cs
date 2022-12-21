@@ -72,7 +72,10 @@ namespace DCL.ECSComponents.UIInput
             placeholder.SetPlaceholderColor(model.GetPlaceholderColor());
             placeholder.SetNormalColor(model.GetColor());
 
-            uiElement.isReadOnly = model.IsInteractable();
+            var isReadonly = !model.IsInteractable();
+
+            placeholder.SetReadOnly(isReadonly);
+            uiElement.isReadOnly = isReadonly;
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
 

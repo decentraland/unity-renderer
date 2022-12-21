@@ -81,6 +81,7 @@ namespace DCL.ECSComponents
             {
                 var model = inputResults.GetFor(scene, entity)?.model ?? new InternalUIInputResults();
                 model.Results.Enqueue(new InternalUIInputResults.Result(createResult(evt), resultComponentId));
+                inputResults.PutFor(scene, entity, model);
             };
 
             uiElement.RegisterCallback(callback);

@@ -50,7 +50,7 @@ namespace DCL.ECSComponents.UIInput.Tests
                 Color = new Color4 { R = 0.1f, G = 0.5f, B = 0.3f, A = 1 },
                 PlaceholderColor = new Color4 { R = 0.6f, G = 0.6f, B = 0.6f, A = 0.6f },
                 Placeholder = "PLACEHOLDER",
-                Disabled = true,
+                Disabled = false,
                 FontSize = 14,
                 TextAlign = TextAlignMode.TamMiddleLeft
             });

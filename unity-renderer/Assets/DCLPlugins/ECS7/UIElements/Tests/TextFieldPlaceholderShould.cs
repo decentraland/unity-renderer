@@ -62,6 +62,23 @@ namespace DCL.UIElements.Tests
         }
 
         [Test]
+        public void NotUpdatePlaceholderWhenFocusedIn()
+        {
+            textField.Focus();
+            textField.value = NORMAL_TEXT;
+            placeholder.SetPlaceholder(PLACEHOLDER);
+            ConformToNormalSchema(NORMAL_TEXT);
+        }
+
+        [Test]
+        public void IgnoreEventsIfReadonly()
+        {
+            placeholder.SetReadOnly(true);
+            textField.Focus();
+            ConformToPlaceholderSchema();
+        }
+
+        [Test]
         public void RemovePlaceholderWhenFocusedOut()
         {
             textField.value = NORMAL_TEXT;
