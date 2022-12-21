@@ -179,7 +179,8 @@ namespace DCL
 
                 for (int i = 0; i < lastHoveredEventList.Count; i++)
                 {
-                    if (lastHoveredEventList[i] is IPointerInputEvent e)
+                    //If cursor is unlocked we ignore the button being pressed, avatars use case.
+                    if (lastHoveredEventList[i] is IPointerInputEvent e && Utils.IsCursorLocked)
                     {
                         bool eventButtonIsPressed = inputControllerLegacy.IsPressed(e.GetActionButton());
 

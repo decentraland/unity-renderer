@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class OutlinerPlugin : IPlugin
 {
-    private OutlinerController controller;
+    private readonly OutlinerController controller;
 
     public OutlinerPlugin()
     {
