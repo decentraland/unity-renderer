@@ -5,6 +5,7 @@ using DCL;
 using DCL.Interface;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -227,9 +228,20 @@ public class UserContextMenu : MonoBehaviour
     private void OnCancelFriendRequestButtonPressed()
     {
         OnCancelFriend?.Invoke(userId);
+        CancelFriendRequestAsync(userId).Forget();
+    }
 
+    private async UniTaskVoid CancelFriendRequestAsync(string userId)
+    {
         if (isNewFriendRequestsEnabled)
-            FriendsController.i.CancelRequestByUserIdAsync(userId).Forget();
+        {
+            try { await FriendsController.i.CancelRequestByUserIdAsync(userId).Timeout(TimeSpan.FromSeconds(10)); }
+            catch (Exception)
+            {
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                throw;
+            }
+        }
         else
             FriendsController.i.CancelRequestByUserId(userId);
 
