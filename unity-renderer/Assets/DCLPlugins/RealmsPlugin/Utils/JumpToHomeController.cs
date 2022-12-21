@@ -19,17 +19,39 @@ namespace DCLPlugins.RealmPlugin
         [SerializeField] private RectTransform positionWithoutMiniMap;
 
         private BaseCollection<RealmModel> realms => DataStore.i.realm.realmsInfo;
+        private BaseVariable<bool> isWorld => DataStore.i.common.isWorld;
+
         private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
         private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
         private BaseVariable<bool> exitedThroughButton => DataStore.i.common.exitedWorldThroughGoBackButton;
 
         private RectTransform rectTransform;
 
-        private void Start()
+        private void Awake()
         {
             rectTransform = jumpButton.GetComponent<RectTransform>();
+        }
+
+        private void OnEnable()
+        {
             jumpButton.onClick.AddListener(GoHome);
             jumpHomeButtonVisible.OnChange += SetVisibility;
+            isWorld.OnChange += OnIsWorldChanged;
+        }
+
+        private void OnDisable()
+        {
+            jumpButton.onClick.RemoveListener(GoHome);
+            jumpHomeButtonVisible.OnChange -= SetVisibility;
+            isWorld.OnChange -= OnIsWorldChanged;
+        }
+
+        private void OnIsWorldChanged(bool current, bool previous)
+        {
+            if (JumpedFromWorldToNotWorld())
+                GoHome();
+
+            bool JumpedFromWorldToNotWorld() => previous && current == false;
         }
 
         private void SetVisibility(bool current, bool _)
@@ -60,11 +82,6 @@ namespace DCLPlugins.RealmPlugin
         {
             var currentRealms = realms.Get().ToList();
             return currentRealms.OrderByDescending(e => e.usersCount).FirstOrDefault()?.serverName;
-        }
-
-        private void OnDestroy()
-        {
-            jumpButton.onClick.RemoveListener(GoHome);
         }
     }
 }
