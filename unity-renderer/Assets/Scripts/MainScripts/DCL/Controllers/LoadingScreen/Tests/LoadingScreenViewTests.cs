@@ -7,9 +7,9 @@ namespace DCL.LoadingScreen.Test
         private LoadingScreenView loadingScreenView;
 
         [SetUp]
-        private void SetUp()
+        public void SetUp()
         {
-            loadingScreenView = LoadingScreenView.Create();
+            loadingScreenView = BaseComponentView.Create<LoadingScreenView>("_LoadingScreen");
         }
 
         [Test]

@@ -11,7 +11,7 @@ namespace DCL.LoadingScreen.Test
         private LoadingScreenController loadingScreenController;
 
         [SetUp]
-        private void SetUp()
+        public void SetUp()
         {
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
@@ -19,19 +19,19 @@ namespace DCL.LoadingScreen.Test
         }
 
         [Test]
-        private void OnSceneAdded()
+        public void OnSceneAdded()
         {
             Assert.True(true);
         }
 
         [Test]
-        private void OnSceneRemoved()
+        public void OnSceneRemoved()
         {
             Assert.True(true);
         }
 
         [Test]
-        private void OnSceneLoading()
+        public void OnSceneLoading()
         {
             Assert.True(true);
         }
