@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -56,6 +57,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalUiContainer : InternalComponent
     {
         public readonly VisualElement rootElement = new VisualElement();
+        public Action<VisualElement> OnUiElementStyleUpdated;
         public readonly HashSet<int> components = new HashSet<int>();
         public VisualElement parentElement;
         public long parentId;

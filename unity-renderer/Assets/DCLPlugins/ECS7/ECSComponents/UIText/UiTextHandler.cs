@@ -27,6 +27,8 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
+
             uiElement = new Label()
             {
                 text = string.Empty,
@@ -38,11 +40,21 @@ namespace DCL.ECSComponents
                 }
             };
 
-            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
+            UpdateStyleBoundToContainerUiElement(containerModel.rootElement);
+            containerModel.OnUiElementStyleUpdated += UpdateStyleBoundToContainerUiElement;
+
             containerModel.rootElement.Add(uiElement);
             containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);
+        }
+
+        private void UpdateStyleBoundToContainerUiElement(VisualElement element)
+        {
+            uiElement.style.left = element.style.paddingLeft;
+            uiElement.style.right = element.style.paddingRight;
+            uiElement.style.top = element.style.paddingTop;
+            uiElement.style.bottom = element.style.paddingBottom;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -51,6 +63,7 @@ namespace DCL.ECSComponents
             if (containerData != null)
             {
                 var containerModel = containerData.model;
+                containerModel.OnUiElementStyleUpdated -= UpdateStyleBoundToContainerUiElement;
                 containerModel.rootElement.Remove(uiElement);
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
