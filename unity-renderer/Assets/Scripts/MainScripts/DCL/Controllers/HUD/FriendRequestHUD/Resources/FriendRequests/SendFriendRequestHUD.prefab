@@ -3477,8 +3477,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 95, y: -67}
-  m_SizeDelta: {x: 90, y: 30}
+  m_AnchoredPosition: {x: 106, y: -64.744774}
+  m_SizeDelta: {x: 79.5314, y: 26.5105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8324568121903536039
 CanvasRenderer:
@@ -4268,7 +4268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRectTransform: {fileID: 1767993552507509700}
-  hoverScale: 1.02
+  hoverScale: 1.01
   normalScale: 1
 --- !u!114 &6819322043546649347 stripped
 MonoBehaviour:
@@ -4666,17 +4666,17 @@ PrefabInstance:
     - target: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.103773594
+      value: 0.1509434
       objectReference: {fileID: 0}
     - target: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.09349413
+      value: 0.14026344
       objectReference: {fileID: 0}
     - target: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.096920624
+      value: 0.14560342
       objectReference: {fileID: 0}
     - target: {fileID: 5170059318450306070, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -4769,7 +4769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRectTransform: {fileID: 5688241845223161120}
-  hoverScale: 1.02
+  hoverScale: 1.01
   normalScale: 1
 --- !u!114 &637967786927924711 stripped
 MonoBehaviour:
