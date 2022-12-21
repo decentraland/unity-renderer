@@ -153,17 +153,25 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
-        inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
         inputName.onEndEdit.AddListener(x =>
         {
-            NameSubmitted?.Invoke(this, x);
             inputName.OnDeselect(null);
         });
+        inputName.onDeselect.AddListener(x =>
+        {
+            ActivateProfileNameEditionMode(false);
+            NameSubmitted?.Invoke(this, x);
+        });
 
+        descriptionEditionInput.onTextSelection.AddListener((description, x, y) =>
+        {
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
         descriptionEditionInput.onSelect.AddListener(description =>
         {
-            UpdateDescriptionCharLimit(description);
             SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
         });
         descriptionEditionInput.onValueChanged.AddListener(description =>
         {
@@ -171,10 +179,13 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         });
         descriptionEditionInput.onEndEdit.AddListener(description =>
         {
-            DescriptionSubmitted?.Invoke(this, description);
             descriptionEditionInput.OnDeselect(null);
         });
-        descriptionEditionInput.onDeselect.AddListener(x => SetDescriptionIsEditing(false));
+        descriptionEditionInput.onDeselect.AddListener(description =>
+        {
+            SetDescriptionIsEditing(false);
+            DescriptionSubmitted?.Invoke(this, description);
+        });
         copyToast.gameObject.SetActive(false);
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
     }
@@ -314,7 +325,8 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public void SetDescriptionIsEditing(bool isEditing)
     {
-        charLimitDescriptionContainer.SetActive(isEditing);
+        if (charLimitDescriptionContainer.activeSelf != isEditing)
+            StartCoroutine(EnableNextFrame(charLimitDescriptionContainer, isEditing));
     }
 
     private void SetDescription(string description)

@@ -166,10 +166,7 @@ public class ProfileHUDController : IHUD
     private void UpdateProfileDescription(string description)
     {
         if (!ownUserProfile.hasConnectedWeb3 || view.IsDesciptionIsLongerThanMaxCharacters())
-        {
-            view.SetDescriptionIsEditing(false);
             return;
-        }
 
         userProfileBridge.SaveDescription(description);
     }
