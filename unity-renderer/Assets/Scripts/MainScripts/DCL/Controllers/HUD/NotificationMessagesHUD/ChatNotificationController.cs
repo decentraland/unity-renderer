@@ -1,13 +1,12 @@
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.Social.Friends;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Interface;
-using DCL.Helpers;
 using UnityEngine;
-using System;
 using Channel = DCL.Chat.Channels.Channel;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
 
 namespace DCL.Chat.Notifications
 {
@@ -52,8 +51,11 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnResetFade += ResetFadeOut;
             topNotificationView.OnResetFade += ResetFadeOut;
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
+            mainChatNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
+            topNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             chatController.OnAddMessage += HandleMessageAdded;
-            friendsController.OnAddFriendRequest += HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived += HandleFriendRequestReceived;
+            friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
             notificationPanelTransform.Set(mainChatNotificationView.GetPanelTransform());
             topNotificationPanelTransform.Set(topNotificationView.GetPanelTransform());
             visibleTaskbarPanels.OnChange += VisiblePanelsChanged;
@@ -64,7 +66,7 @@ namespace DCL.Chat.Notifications
         public void SetVisibility(bool visible)
         {
             ResetFadeOut(visible);
-            
+
             if (visible)
             {
                 if (shouldShowNotificationPanel.Get())
@@ -76,6 +78,7 @@ namespace DCL.Chat.Notifications
             else
             {
                 mainChatNotificationView.Hide();
+
                 if (!visibleTaskbarPanels.Get().Contains("WorldChatPanel"))
                     topNotificationView.Show();
             }
@@ -84,7 +87,8 @@ namespace DCL.Chat.Notifications
         public void Dispose()
         {
             chatController.OnAddMessage -= HandleMessageAdded;
-            friendsController.OnAddFriendRequest -= HandleFriendRequestAdded;
+            friendsController.OnFriendRequestReceived -= HandleFriendRequestReceived;
+            friendsController.OnSentFriendRequestApproved -= HandleSentFriendRequestApproved;
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
             topNotificationView.OnResetFade -= ResetFadeOut;
@@ -101,20 +105,22 @@ namespace DCL.Chat.Notifications
             {
                 if (message.messageType != ChatMessage.Type.PRIVATE &&
                     message.messageType != ChatMessage.Type.PUBLIC) return;
+
                 ownUserProfile ??= userProfileBridge.GetOwn();
                 if (message.sender == ownUserProfile.userId) return;
 
-                var span = Utils.UnixToDateTimeWithTime((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
+                var span = Utils.UnixToDateTimeWithTime((ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
                            Utils.UnixToDateTimeWithTime(message.timestamp);
 
                 if (span >= maxNotificationInterval) return;
-            
+
                 var channel = chatController.GetAllocatedChannel(
                     string.IsNullOrEmpty(message.recipient) && message.messageType == ChatMessage.Type.PUBLIC
                         ? "nearby"
                         : message.recipient);
+
                 if (channel?.Muted ?? false) return;
-            
+
                 // TODO: entries may have an inconsistent state. We should update the entry with new data
                 if (notificationEntries.Contains(message.messageId)) return;
                 notificationEntries.Add(message.messageId);
@@ -140,6 +146,7 @@ namespace DCL.Chat.Notifications
                     if (message.sender != openedChat.Get())
                     {
                         mainChatNotificationView.AddNewChatNotification(privateModel);
+
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(privateModel);
                     }
@@ -151,6 +158,7 @@ namespace DCL.Chat.Notifications
                         peerName = await profanityFilter.Filter(peerProfile?.userName ?? peerId);
                         body = await profanityFilter.Filter(message.body);
                     }
+
                     var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
                         body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
                         peerName);
@@ -158,6 +166,7 @@ namespace DCL.Chat.Notifications
                     if (channel?.ChannelId != openedChat.Get())
                     {
                         mainChatNotificationView.AddNewChatNotification(publicModel);
+
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(publicModel);
                     }
@@ -166,10 +175,9 @@ namespace DCL.Chat.Notifications
             }
         }
 
-        private void HandleFriendRequestAdded(FriendRequest friendRequest)
+        private void HandleFriendRequestReceived(FriendRequest friendRequest)
         {
-            if (!isNewFriendRequestsEnabled)
-                return;
+            if (!isNewFriendRequestsEnabled) return;
 
             var ownUserProfile = userProfileBridge.GetOwn();
 
@@ -179,18 +187,39 @@ namespace DCL.Chat.Notifications
 
             var friendRequestProfile = userProfileBridge.Get(friendRequest.From);
             var friendRequestName = friendRequestProfile?.userName ?? friendRequest.From;
-            var friendRequestProfilePicture = friendRequestProfile?.face256SnapshotURL;
 
             FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                friendRequest.FriendRequestId,
                 friendRequest.From,
                 friendRequestName,
-                "Friend Request",
-                $"wants to be your friend.",
+                "Friend Request received",
+                "wants to be your friend.",
                 (ulong)friendRequest.Timestamp,
-                friendRequestProfilePicture,
                 false);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+
+            if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+        }
+
+        private void HandleSentFriendRequestApproved(string userId)
+        {
+            if (!isNewFriendRequestsEnabled) return;
+
+            var friendRequestProfile = userProfileBridge.Get(userId);
+
+            FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
+                string.Empty,
+                userId,
+                friendRequestProfile.userName,
+                "Friend Request accepted",
+                "and you are friends now!",
+                (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                true);
+
+            mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
+
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                 topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
         }
@@ -198,6 +227,7 @@ namespace DCL.Chat.Notifications
         private void ResetFadeOut(bool fadeOutAfterDelay = false)
         {
             mainChatNotificationView.ShowNotifications();
+
             if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                 topNotificationView.ShowNotification();
 
@@ -220,6 +250,7 @@ namespace DCL.Chat.Notifications
         {
             await UniTask.Delay(FADEOUT_DELAY, cancellationToken: cancellationToken);
             await UniTask.SwitchToMainThread(cancellationToken);
+
             if (cancellationToken.IsCancellationRequested)
                 return;
 
@@ -233,9 +264,18 @@ namespace DCL.Chat.Notifications
         private string ExtractPeerId(ChatMessage message) =>
             message.sender != ownUserProfile.userId ? message.sender : message.recipient;
 
-        private void ResetVisibility(bool current, bool previous) => SetVisibility(current);
-        
+        private void ResetVisibility(bool current, bool previous) =>
+            SetVisibility(current);
+
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
+
+        private void HandleClickedFriendRequest(string friendRequestId)
+        {
+            if (string.IsNullOrEmpty(friendRequestId))
+                return;
+
+            dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
+        }
     }
 }

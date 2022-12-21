@@ -17,7 +17,6 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal TMP_Text notificationHeader;
         [SerializeField] internal TMP_Text notificationSender;
         [SerializeField] internal TMP_Text notificationTimestamp;
-        [SerializeField] internal ImageComponentView image;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
         [SerializeField] internal GameObject receivedRequestMark;
@@ -32,35 +31,36 @@ namespace DCL.Chat.Notifications
         public event Action<string> OnClickedNotification;
         private float startingXPosition;
 
-        public void Configure(FriendRequestNotificationComponentModel NewModel)
+        public void Configure(FriendRequestNotificationComponentModel newModel)
         {
-            model = NewModel;
+            model = newModel;
             RefreshControl();
         }
 
         public override void Awake()
         {
             base.Awake();
-            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.UserId));
+            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.FriendRequestId));
+
             startingXPosition = messageContainerTransform.anchoredPosition.x;
             RefreshControl();
         }
 
-        public override void Show(bool Instant = false)
+        public override void Show(bool instant = false)
         {
             if (showHideAnimator != null)
                 showHideAnimator.animSpeedFactor = 0.7f;
 
-            base.Show(Instant);
+            base.Show(instant);
             ForceUIRefresh();
         }
 
-        public override void Hide(bool Instant = false)
+        public override void Hide(bool instant = false)
         {
             if (showHideAnimator != null)
                 showHideAnimator.animSpeedFactor = 0.05f;
 
-            base.Hide(Instant);
+            base.Hide(instant);
         }
 
         public override void OnFocus()
@@ -82,59 +82,56 @@ namespace DCL.Chat.Notifications
             if (model == null)
                 return;
 
+            SetFriendRequestId(model.FriendRequestId);
             SetUser(model.UserId, model.UserName);
             SetMessage(model.Message);
             SetTimestamp(model.Time);
             SetHeader(model.Header);
-            SetImage(model.ImageUri);
             SetIsAccepted(model.IsAccepted);
         }
 
-        public void SetUser(string UserId, string UserName)
-        {
-            model.UserId = UserId;
-            model.UserName = UserName;
+        public void SetFriendRequestId(string friendRequestId) =>
+            model.FriendRequestId = friendRequestId;
 
-            notificationSender.text = UserName;
+        public void SetUser(string userId, string userName)
+        {
+            model.UserId = userId;
+            model.UserName = userName;
+
+            notificationSender.text = userName;
             ForceUIRefresh();
         }
 
-        public void SetMessage(string Message)
+        public void SetMessage(string message)
         {
-            model.Message = Message;
-            notificationMessage.text = Message;
+            model.Message = message;
+            notificationMessage.text = message;
             ForceUIRefresh();
         }
 
-        public void SetTimestamp(string Timestamp)
+        public void SetTimestamp(string timestamp)
         {
-            model.Time = Timestamp;
-            notificationTimestamp.text = Timestamp;
+            model.Time = timestamp;
+            notificationTimestamp.text = timestamp;
             ForceUIRefresh();
         }
 
-        public void SetHeader(string Header)
+        public void SetHeader(string header)
         {
-            model.Header = Header;
-            notificationHeader.text = Header;
+            model.Header = header;
+            notificationHeader.text = header;
             ForceUIRefresh();
         }
 
-        public void SetImage(string ImageUri)
+        public void SetIsAccepted(bool isAccepted)
         {
-            model.ImageUri = ImageUri;
-            image.SetImage(ImageUri);
-        }
-
-        public void SetIsAccepted(bool IsAccepted)
-        {
-            model.IsAccepted = IsAccepted;
+            model.IsAccepted = isAccepted;
 
             if (receivedRequestMark != null)
-                receivedRequestMark.SetActive(!IsAccepted);
+                receivedRequestMark.SetActive(!isAccepted);
 
             if (acceptedRequestMark != null)
-                acceptedRequestMark.SetActive(IsAccepted);
+                acceptedRequestMark.SetActive(isAccepted);
         }
 
         private void ForceUIRefresh()

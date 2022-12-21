@@ -21,6 +21,8 @@ namespace DCLPlugins.RealmPlugin
         private BaseCollection<RealmModel> realms => DataStore.i.realm.realmsInfo;
         private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
         private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
+        private BaseVariable<bool> exitedThroughButton => DataStore.i.common.exitedWorldThroughGoBackButton;
+
         private RectTransform rectTransform;
 
         private void Start()
@@ -45,7 +47,7 @@ namespace DCLPlugins.RealmPlugin
         private void GoHome()
         {
             jumpButton.interactable = false;
-
+            exitedThroughButton.Set(true);
             WebInterface.SendChatMessage(new ChatMessage
             {
                 messageType = ChatMessage.Type.NONE,

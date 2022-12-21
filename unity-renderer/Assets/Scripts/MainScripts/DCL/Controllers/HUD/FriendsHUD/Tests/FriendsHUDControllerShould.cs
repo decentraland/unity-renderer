@@ -204,7 +204,7 @@ namespace DCl.Social.Friends
         [Test]
         public void UpdateUserStatusWhenRequestSent()
         {
-            friendsController.OnAddFriendRequest +=
+            friendsController.OnFriendRequestReceived +=
                 Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,
@@ -214,7 +214,7 @@ namespace DCl.Social.Friends
         [Test]
         public void UpdateUserStatusWhenRequestReceived()
         {
-            friendsController.OnAddFriendRequest +=
+            friendsController.OnFriendRequestReceived +=
                 Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,

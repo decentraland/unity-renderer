@@ -8,6 +8,7 @@ namespace DCL.Chat.Notifications
     {
         event Action<bool> OnResetFade;
         event Action<bool> OnPanelFocus;
+        event Action<string> OnClickedFriendRequest;
 
         Transform GetPanelTransform();
         void AddNewChatNotification(PrivateChatMessageNotificationModel model);

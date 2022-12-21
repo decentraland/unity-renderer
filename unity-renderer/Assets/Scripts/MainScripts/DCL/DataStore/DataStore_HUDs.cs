@@ -43,6 +43,7 @@ namespace DCL
         public readonly BaseVariable<string> sendFriendRequest = new BaseVariable<string>();
         public readonly BaseVariable<int> sendFriendRequestSource = new BaseVariable<int>();
         public readonly BaseVariable<string> openSentFriendRequestDetail = new BaseVariable<string>();
+        public readonly BaseVariable<string> openReceivedFriendRequestDetail = new BaseVariable<string>();
 
         public class LoadingHUD
         {

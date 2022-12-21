@@ -59,7 +59,7 @@ namespace DCL.Social.Friends
             remove => apiBridge.OnTotalFriendCountUpdated -= value;
         }
 
-        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+        public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded
         {
@@ -74,7 +74,6 @@ namespace DCL.Social.Friends
             this.userProfileBridge = userProfileBridge;
 
             apiBridge.OnFriendshipStatusUpdated += message => OnFriendshipStatusUpdated?.Invoke(message);
-            apiBridge.OnFriendRequestAdded += message => OnFriendRequestAdded?.Invoke(message);
 
             AddFriendRequestByUserInputAsync(addFriendRequestByUserInputCancellationToken.Token).Forget();
         }
@@ -82,6 +81,25 @@ namespace DCL.Social.Friends
         public void RejectFriendship(string userId)
         {
             apiBridge.RejectFriendship(userId);
+        }
+
+        public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId)
+        {
+            await UniTask.Delay(Random.Range(100, 16000));
+
+            friendRequests[friendRequestId] = new FriendRequestPayload
+            {
+                from = friendRequests[friendRequestId].from,
+                friendRequestId = friendRequestId,
+                messageBody = Random.Range(0, 2) == 0 ? "" : $"fake body message {Random.Range(0, 100000000)}",
+                timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                to = userProfileBridge.GetOwn().userId
+            };
+
+            return new RejectFriendshipPayload
+            {
+                FriendRequestPayload = friendRequests[friendRequestId]
+            };
         }
 
         public void RemoveFriend(string userId)
@@ -257,6 +275,35 @@ namespace DCL.Social.Friends
             apiBridge.AcceptFriendship(userId);
         }
 
+        public async UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId)
+        {
+            await UniTask.Delay(Random.Range(100, 16000));
+
+            string fakeUserId = friendRequests[friendRequestId].from;
+            int userNumber = Random.Range(0, 100);
+
+            userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
+            {
+                userId = fakeUserId,
+                name = $"fake user {userNumber}",
+                snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{userNumber}" }
+            });
+
+            friendRequests[friendRequestId] = new FriendRequestPayload
+            {
+                from = fakeUserId,
+                friendRequestId = friendRequestId,
+                messageBody = Random.Range(0, 2) == 0 ? "" : $"fake body message {Random.Range(0, 100000000)}",
+                timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                to = userProfileBridge.GetOwn().userId
+            };
+
+            return new AcceptFriendshipPayload
+            {
+                FriendRequest = friendRequests[friendRequestId]
+            };
+        }
+
         public void Dispose()
         {
             addFriendRequestByUserInputCancellationToken.Cancel();
@@ -269,7 +316,7 @@ namespace DCL.Social.Friends
             {
                 await UniTask.NextFrame(ct);
 
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.E))
                 {
                     long currentTicks = DateTimeOffset.UtcNow.Ticks;
                     string fakeUserId = $"new_user_{currentTicks.ToString().Substring(currentTicks.ToString().Length - 5, 5)}";
@@ -281,14 +328,25 @@ namespace DCL.Social.Friends
                         snapshots = new UserProfileModel.Snapshots { face256 = $"https://picsum.photos/50?{DateTimeOffset.UtcNow.Ticks}" }
                     });
 
-                    OnFriendRequestAdded?.Invoke(new FriendRequestPayload
+                    if (Input.GetKeyDown(KeyCode.R))
                     {
-                        friendRequestId = Guid.NewGuid().ToString("N"),
-                        from = fakeUserId,
-                        to = userProfileBridge.GetOwn().userId,
-                        messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
-                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                    });
+                        OnFriendRequestReceived?.Invoke(new FriendRequestPayload
+                        {
+                            friendRequestId = Guid.NewGuid().ToString("N"),
+                            from = fakeUserId,
+                            to = userProfileBridge.GetOwn().userId,
+                            messageBody = Random.Range(0, 2) == 0 ? $"Test message from {fakeUserId}..." : string.Empty,
+                            timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                        });
+                    }
+                    else
+                    {
+                        OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+                        {
+                            action = FriendshipAction.APPROVED,
+                            userId = fakeUserId
+                        });
+                    }
                 }
             }
         }
