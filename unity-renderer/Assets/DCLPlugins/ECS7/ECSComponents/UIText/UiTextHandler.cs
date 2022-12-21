@@ -32,6 +32,7 @@ namespace DCL.ECSComponents
                 text = string.Empty,
                 style =
                 {
+                    position = new StyleEnum<Position>(Position.Absolute),
                     width = new Length(100f, LengthUnit.Percent),
                     height = new Length(100f, LengthUnit.Percent)
                 }
