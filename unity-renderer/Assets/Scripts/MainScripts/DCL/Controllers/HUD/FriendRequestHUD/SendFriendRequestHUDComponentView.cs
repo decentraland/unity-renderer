@@ -9,11 +9,10 @@ namespace DCL.Social.Friends
     public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
     {
         [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject pendingToSendContainer;
         [SerializeField] internal GameObject failedContainer;
+        [SerializeField] internal GameObject pendingToSendContainer;
         [SerializeField] internal GameObject successContainer;
         [SerializeField] internal TMP_Text nameLabel;
-        [SerializeField] internal TMP_Text pendingStateLabel;
         [SerializeField] internal TMP_Text successStateLabel;
         [SerializeField] internal Button[] cancelButtons;
         [SerializeField] internal Button sendButton;
@@ -57,12 +56,17 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State == Model.LayoutState.Default);
-            pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
+            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
             failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             successContainer.SetActive(model.State == Model.LayoutState.Success);
+            pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
+            sendButton.gameObject.SetActive(model.State != Model.LayoutState.Pending);
+            sendButton.interactable = model.State != Model.LayoutState.Pending;
+
+            foreach (Button cancelButton in cancelButtons)
+                cancelButton.interactable = model.State != Model.LayoutState.Pending;
+
             nameLabel.text = model.Name;
-            pendingStateLabel.text = $"Sending friend request to {model.Name}";
             successStateLabel.text = $"Friend request sent to {model.Name}";
             messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/140";
 

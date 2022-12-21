@@ -82,7 +82,6 @@ namespace DCL.Social.Friends
             view.SetName(expectedName);
 
             Assert.AreEqual(expectedName, view.nameLabel.text);
-            Assert.AreEqual($"Sending friend request to {expectedName}", view.pendingStateLabel.text);
             Assert.AreEqual($"Friend request sent to {expectedName}", view.successStateLabel.text);
         }
 
