@@ -87,6 +87,10 @@ jobs:
             cd protocol-gen
             npm install
             npm run build
+      - run:
+          name: Update sentry params
+          command: |
+            node inject-params.js
       - save_cache:
           name: Store large files in cache
           key: git-lfs-{{ .Branch }}
