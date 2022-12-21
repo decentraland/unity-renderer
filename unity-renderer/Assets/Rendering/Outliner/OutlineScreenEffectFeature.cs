@@ -94,8 +94,8 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
     [System.Serializable]
     public class OutlineSettings
     {
-        [Range(0, 6)] public float outlineSize = 0.001f;
-        [Range(0, 6)] public float blurSize = 0.001f;
+        public float outlineSize = 0.001f;
+        public float blurSize = 0.001f;
         public float blurSigma = 1;
         public Color outlineColor = Color.cyan;
         public Color blurColor = Color.cyan;

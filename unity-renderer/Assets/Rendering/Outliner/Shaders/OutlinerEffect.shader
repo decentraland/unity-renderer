@@ -48,6 +48,7 @@ Shader "DCL/OutlinerEffect"
 
         float4 frag_outline(v2f_img IN) : COLOR
         {
+
             float outline = Sobel(_MainTex, IN.uv, float3(0.001f, 0.001f, 0)*_OutlineSize);
             float outlineForBlur = Sobel(_MainTex, IN.uv, float3(0.001f, 0.001f, 0)*_BlurSize);
             
@@ -89,7 +90,7 @@ Shader "DCL/OutlinerEffect"
             const float outlineValue = outline.r;
 
             // This is hard outline
-            if(outline.r > 0.9f)
+            if(outline.r > 0.99f)
                 return lerp(camera, _OutlineColor, outlineValue*_Fade);
 
             // We are tinting, not outlining

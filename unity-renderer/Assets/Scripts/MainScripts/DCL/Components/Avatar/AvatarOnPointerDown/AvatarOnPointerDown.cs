@@ -78,12 +78,8 @@ namespace DCL.Components
             CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
         }
 
-        public bool IsAtHoverDistance(float distance)
-        {
-            if (!Utils.IsCursorLocked || Utils.LockedThisFrame())
-                return true;
-            return distance <= model.distance;
-        }
+        public bool IsAtHoverDistance(float distance) =>
+            true;
 
         public bool IsVisible()
         {

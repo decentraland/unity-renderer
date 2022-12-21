@@ -68,8 +68,8 @@ public class OutlinerController : IDisposable
 
     private async UniTaskVoid SetOutlineFadeAsync(float target, CancellationToken ct = default)
     {
-        const float SPEED_IN = 1f;
-        const float SPEED_OUT = 3f;
+        const float SPEED_IN = 1 / 0.333f; // 300ms
+        const float SPEED_OUT = 1 / 0.333f; // 300ms
 
         float speed = target > 0 ? SPEED_IN : SPEED_OUT;
         var settings = outlineScreenEffectFeature.settings;
