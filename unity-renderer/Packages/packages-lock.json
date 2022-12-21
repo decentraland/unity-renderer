@@ -92,7 +92,7 @@
       "hash": "b538913dd9e0656b1363db3ffc12a723563242d9"
     },
     "com.unity.burst": {
-      "version": "1.7.3",
+      "version": "1.8.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -196,7 +196,7 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.7.3",
+        "com.unity.burst": "1.8.2",
         "com.unity.render-pipelines.core": "12.1.8",
         "com.unity.shadergraph": "12.1.8"
       }
@@ -253,7 +253,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.testtools.codecoverage": {
-      "version": "1.1.0",
+      "version": "1.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
