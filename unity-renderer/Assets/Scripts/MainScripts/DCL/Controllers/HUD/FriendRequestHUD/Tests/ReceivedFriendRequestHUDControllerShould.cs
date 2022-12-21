@@ -152,7 +152,11 @@ namespace DCL.Social.Friends
 
             view.OnRejectFriendRequest += Raise.Event<Action>();
 
-            view.Received().SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
+            Received.InOrder(() =>
+            {
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
+            });
         }
 
         [UnityTest]
@@ -190,7 +194,11 @@ namespace DCL.Social.Friends
 
             view.OnConfirmFriendRequest += Raise.Event<Action>();
 
-            view.Received().SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
+            Received.InOrder(() =>
+            {
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
+            });
         }
 
         private void WhenShow()

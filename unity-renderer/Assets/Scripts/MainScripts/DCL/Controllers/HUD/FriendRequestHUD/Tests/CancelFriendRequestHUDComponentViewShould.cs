@@ -30,7 +30,6 @@ namespace DCL.Social.Friends
 
             Assert.IsTrue(view.gameObject.activeSelf);
             Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
             Assert.IsTrue(view.cancelButton.interactable);
 
             foreach (Button button in view.closeButtons)
@@ -77,7 +76,6 @@ namespace DCL.Social.Friends
             view.ShowPendingToCancel();
 
             Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
             Assert.IsFalse(view.cancelButton.interactable);
 
             foreach (Button button in view.closeButtons)

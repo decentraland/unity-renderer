@@ -16,7 +16,6 @@ namespace DCL.Social.Friends
         void Close();
         void Dispose();
         void ShowPendingToCancel();
-        void ShowCancelFailed();
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime date);
     }

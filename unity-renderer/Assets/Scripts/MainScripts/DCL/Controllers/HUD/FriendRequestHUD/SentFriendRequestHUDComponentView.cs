@@ -9,12 +9,10 @@ namespace DCL.Social.Friends
     public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
     {
         [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button tryCancelButton;
-        [SerializeField] internal Button retryButton;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal ImageComponentView profileImage;
@@ -57,7 +55,6 @@ namespace DCL.Social.Friends
                 SwitchToTryCancelButton();
             });
 
-            retryButton.onClick.AddListener(() => OnCancel?.Invoke());
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
         }
 
@@ -70,7 +67,6 @@ namespace DCL.Social.Friends
         public override void RefreshControl()
         {
             defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
-            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
             tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
 
@@ -136,14 +132,6 @@ namespace DCL.Social.Friends
         {
             model.State = Model.LayoutState.Pending;
             HideConfirmationToast();
-            RefreshControl();
-        }
-
-        public void ShowCancelFailed()
-        {
-            model.State = Model.LayoutState.Failed;
-            HideConfirmationToast();
-            SwitchToTryCancelButton();
             RefreshControl();
         }
 

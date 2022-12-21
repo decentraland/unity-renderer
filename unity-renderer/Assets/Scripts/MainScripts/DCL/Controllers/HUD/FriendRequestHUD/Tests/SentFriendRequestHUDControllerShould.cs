@@ -114,7 +114,6 @@ namespace DCL.Social.Friends
             view.OnCancel += Raise.Event<Action>();
 
             view.Received(1).ShowPendingToCancel();
-            view.Received(1).ShowCancelFailed();
             friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
         }
 

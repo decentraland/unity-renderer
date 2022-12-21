@@ -114,7 +114,7 @@ namespace DCL.Social.Friends
             {
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.ShowCancelFailed();
+                view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
             }

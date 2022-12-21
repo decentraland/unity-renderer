@@ -87,7 +87,7 @@ namespace DCL.Social.Friends
             view.SetBodyMessage(testMessage);
 
             // Assert
-            Assert.AreEqual(testMessage, view.bodyMessageInput.text);
+            Assert.IsTrue(view.bodyMessageInput.text.Contains(testMessage));
 
             if (!string.IsNullOrEmpty(testMessage))
                 Assert.IsTrue(view.bodyMessageContainer.activeSelf);
