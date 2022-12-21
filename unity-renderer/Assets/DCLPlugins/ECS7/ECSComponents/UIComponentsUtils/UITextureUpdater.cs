@@ -1,4 +1,5 @@
 ﻿using DCL.UIElements.Image;
+using JetBrains.Annotations;
 
 namespace DCL.ECSComponents.Utils
 {
@@ -17,18 +18,27 @@ namespace DCL.ECSComponents.Utils
             lastTexture = null;
         }
 
-        public void Update(Texture texture)
+        public void Update([CanBeNull] Texture texture)
         {
             if (Equals(lastTexture, texture))
                 return;
 
             lastTexture = texture;
-            var prevPromise = lastPromise;
 
-            lastPromise = new AssetPromise_Texture(texture.Src, texture.GetWrapMode(), texture.GetFilterMode());
-            lastPromise.OnSuccessEvent += OnTextureDownloaded;
-            texturePromiseKeeper.Keep(lastPromise);
+            var prevPromise = lastPromise;
             texturePromiseKeeper.Forget(prevPromise);
+
+            if (texture == null)
+            {
+                target.Texture = null;
+                lastPromise = null;
+            }
+            else
+            {
+                lastPromise = new AssetPromise_Texture(texture.Src, texture.GetWrapMode(), texture.GetFilterMode());
+                lastPromise.OnSuccessEvent += OnTextureDownloaded;
+                texturePromiseKeeper.Keep(lastPromise);
+            }
         }
 
         private void OnTextureDownloaded(Asset_Texture texture)

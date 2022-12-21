@@ -1,4 +1,4 @@
 {
 	"name": "ECS7.UIElements",
-	"references":[ "GUID:4bd423f6dceb67540b5c246ca8cf789b", "GUID:46951180f4d84b25a1619640aa317e5b" ]
+	"references":[ "GUID:4bd423f6dceb67540b5c246ca8cf789b", "GUID:46951180f4d84b25a1619640aa317e5b", "GUID:091c556278214ab49cfdc87549e3135c" ]
 }

@@ -1,59 +1,49 @@
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents.UIAbstractElements;
+using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
-using UnityEngine;
-using UnityEngine.UIElements;
+using DCL.UIElements.Image;
 
 namespace DCL.ECSComponents
 {
-    public class UIBackgroundHandler : IECSComponentHandler<PBUiBackground>
+    public class UIBackgroundHandler : UIElementHandlerBase, IECSComponentHandler<PBUiBackground>
     {
-        private readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;
-        private readonly int componentId;
+        private readonly AssetPromiseKeeper_Texture fontPromiseKeeper;
+        private UITextureUpdater textureUpdater;
 
-        public UIBackgroundHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId)
+        internal DCLImage image { get; private set; }
+
+        public UIBackgroundHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId, AssetPromiseKeeper_Texture fontPromiseKeeper)
+            : base(internalUiContainer, componentId)
         {
-            this.internalUiContainer = internalUiContainer;
-            this.componentId = componentId;
+            this.fontPromiseKeeper = fontPromiseKeeper;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            image = new DCLImage();
+            image.style.flexGrow = 1;
+
+            textureUpdater = new UITextureUpdater(image, fontPromiseKeeper);
+
+            AddElementToRoot(scene, entity, image);
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            RemoveFromContainer(scene, entity);
+            RemoveElementFromRoot(scene, entity, image);
+            image = null;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiBackground model)
         {
-            var color = model.GetColor();
-
-            if (color.A == 0)
-            {
-                RemoveFromContainer(scene, entity);
-            }
-            else
-            {
-                var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
-                containerModel.components.Add(componentId);
-                containerModel.rootElement.style.backgroundColor = model.Color.ToUnityColor();
-                internalUiContainer.PutFor(scene, entity, containerModel);
-            }
-        }
-
-        private void RemoveFromContainer(IParcelScene scene, IDCLEntity entity)
-        {
-            var containerData = internalUiContainer.GetFor(scene, entity);
-            if (containerData != null)
-            {
-                var containerModel = containerData.model;
-                if (containerModel.components.Remove(componentId))
-                {
-                    containerModel.rootElement.style.backgroundColor = Color.clear;
-                    internalUiContainer.PutFor(scene, entity, containerModel);
-                }
-            }
+            textureUpdater.Update(model.Texture);
+            image.Color = model.GetColor().ToUnityColor();
+            image.Slices = model.GetBorder().ToUnityBorder();
+            image.UVs = model.Uvs.ToDCLUVs();
+            image.ScaleMode = model.TextureMode.ToDCLImageScaleMode();
         }
     }
 }
