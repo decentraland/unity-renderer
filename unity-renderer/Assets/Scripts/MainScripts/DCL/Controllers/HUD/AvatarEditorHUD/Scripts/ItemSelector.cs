@@ -151,9 +151,7 @@ public class ItemSelector : MonoBehaviour
             newItemToggles[item.id] = currentItemToggles[item.id];
         else
         {
-            // special timing is needed for wearables refresh
-            var awaitTiming = isRefresh ? PlayerLoopTiming.LastPostLateUpdate : PlayerLoopTiming.Initialization;
-            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings, awaitTiming, token);
+            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings, isRefresh, token);
 
             itemToggle.SetCallbacks(ToggleClicked, SellClicked);
             itemToggle.SetLoadingSpinner(wearableSettings.isLoading);

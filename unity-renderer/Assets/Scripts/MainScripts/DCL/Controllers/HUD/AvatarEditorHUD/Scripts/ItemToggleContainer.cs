@@ -32,7 +32,7 @@ public class ItemToggleContainer : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
-    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings, PlayerLoopTiming instantiateTiming, CancellationToken token)
+    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings, bool isRefresh, CancellationToken token)
     {
         var item = wearableSettings.Item;
 
@@ -42,7 +42,10 @@ public class ItemToggleContainer : MonoBehaviour
             newToggle = items[index];
         else
         {
-            await UniTask.NextFrame(instantiateTiming, token);
+            if(isRefresh)
+                await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, token);
+            else
+                await UniTask.Yield(token);
 
             newToggle = Instantiate(itemPrefab, itemContainer);
             items.Add(newToggle);
