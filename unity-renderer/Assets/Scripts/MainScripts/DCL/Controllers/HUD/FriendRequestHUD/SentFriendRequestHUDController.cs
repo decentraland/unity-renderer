@@ -8,6 +8,8 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDController
     {
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+
         private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -113,6 +115,7 @@ namespace DCL.Social.Friends
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.ShowCancelFailed();
+                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
             }
         }

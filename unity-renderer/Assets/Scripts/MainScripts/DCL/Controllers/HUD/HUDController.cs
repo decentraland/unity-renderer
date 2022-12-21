@@ -198,7 +198,7 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement(configuration, hudElementId);
-                NotificationsController.i?.Initialize(notificationHud);
+                NotificationsController.i?.Initialize(notificationHud, DataStore.i.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 CreateHudElement(configuration, hudElementId);

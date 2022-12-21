@@ -1,14 +1,14 @@
-using System;
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
 using System.Threading;
-using UnityEngine;
 
 namespace DCL.Social.Friends
 {
     public class SendFriendRequestHUDController
     {
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+
         private readonly ISendFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -101,6 +101,7 @@ namespace DCL.Social.Friends
             {
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.ShowSendFailed();
+                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
             }
         }
