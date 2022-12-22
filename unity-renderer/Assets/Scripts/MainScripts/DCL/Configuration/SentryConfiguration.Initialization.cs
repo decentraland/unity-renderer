@@ -14,7 +14,7 @@ namespace DCL.Configuration
         const string UNKNOWN_BRANCH = "branch/unknown";
         public static void Initialize()
         {
-            if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
+            // if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
 
 #if !UNITY_EDITOR
             SentryUnity.Init(o =>
