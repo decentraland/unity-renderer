@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Position = UnityEngine.UIElements.Position;
 
 namespace Tests
 {
@@ -65,6 +66,14 @@ namespace Tests
                                .PutFor(scene, entity,
                                    Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(handler.uiElement)
                                                                     && i.components.Contains(COMPONENT_ID)));
+
+            // check it initialized correctly
+            var style = handler.uiElement.style;
+            Assert.AreEqual(Position.Absolute, style.position.value);
+            Assert.AreEqual(LengthUnit.Percent, style.width.value.unit);
+            Assert.AreEqual(100, style.width.value.value);
+            Assert.AreEqual(LengthUnit.Percent, style.height.value.unit);
+            Assert.AreEqual(100, style.height.value.value);
         }
 
         [Test]
