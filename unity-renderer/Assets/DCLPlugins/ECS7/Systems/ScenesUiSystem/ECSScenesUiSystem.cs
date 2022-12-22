@@ -300,9 +300,29 @@ namespace ECSSystems.ScenesUiSystem
 
                 while (sceneSort.TryGetValue(nextElementId, out RightOfData rightOfData))
                 {
-                    sceneSort.Remove(nextElementId);
-                    parentElement.Remove(rightOfData.element);
-                    parentElement.Insert(index, rightOfData.element);
+                    sceneSort.Remove(nextElementId); // remove current element being sorted
+
+                    VisualElement elementToInsert = rightOfData.element;
+
+                    // The 'rightOf' element may have non-UiContainer child elements (e.g. 'Label') and in that
+                    // scenario the current element should attach to the last one of those instead, to avoid
+                    // displacing them and affecting their rendering order that way
+                    for (int i = 0; i < rightOfData.element.childCount; i++)
+                    {
+                        var currentElement = rightOfData.element[i];
+                        if (currentElement.GetType() != typeof(VisualElement))
+                            elementToInsert = currentElement;
+                        else
+                            break;
+                    }
+
+                    // 'Contains()' doesn't work here because it also searches below the first children layer
+                    if (parentElement.IndexOf(elementToInsert) >= 0)
+                    {
+                        parentElement.Remove(elementToInsert);
+                        parentElement.Insert(index, elementToInsert);
+                    }
+
                     nextElementId = rightOfData.id;
                     index++;
                 }
