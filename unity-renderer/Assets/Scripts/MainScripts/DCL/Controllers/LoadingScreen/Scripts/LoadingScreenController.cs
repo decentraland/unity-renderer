@@ -20,6 +20,7 @@ namespace DCL.LoadingScreen
             this.sceneController = sceneController;
             sceneController.OnNewSceneAdded += NewSceneAdded;
             sceneController.OnReadyScene += OnReadyScene;
+            CommonScriptableObjects.isLoadingHUDOpen.Set(true);
         }
 
         private void NewSceneAdded(IParcelScene obj)
@@ -34,6 +35,7 @@ namespace DCL.LoadingScreen
             if (currentLoadingScenes.Equals(0))
             {
                 CommonScriptableObjects.rendererState.Set(true);
+                CommonScriptableObjects.isLoadingHUDOpen.Set(false);
                 view.FadeOut();
             }
         }

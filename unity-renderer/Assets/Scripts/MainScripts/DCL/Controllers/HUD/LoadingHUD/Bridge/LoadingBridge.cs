@@ -30,11 +30,7 @@ public class LoadingBridge : MonoBehaviour
 
     public void SetLoadingScreen(string jsonMessage)
     {
-        if (isDecoupledLoadingScreenEnabled)
-        {
-            CommonScriptableObjects.isLoadingHUDOpen.Set(false);
-            return;
-        }
+        if (isDecoupledLoadingScreenEnabled) return;
 
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
 
