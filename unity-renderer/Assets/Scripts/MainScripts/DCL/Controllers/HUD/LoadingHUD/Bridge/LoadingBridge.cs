@@ -6,6 +6,10 @@ using UnityEngine;
 
 public class LoadingBridge : MonoBehaviour
 {
+
+    private const string DECOUPLED_LOADING_SCREEN = "decoupled_loading_screen";
+    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DECOUPLED_LOADING_SCREEN);
+
     [Serializable]
     public class Payload
     {
@@ -22,8 +26,16 @@ public class LoadingBridge : MonoBehaviour
         public string message;
     }
 
+
+
     public void SetLoadingScreen(string jsonMessage)
     {
+        if (isDecoupledLoadingScreenEnabled)
+        {
+            CommonScriptableObjects.isLoadingHUDOpen.Set(false);
+            return;
+        }
+
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
 
         if (payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeIn.Get() && !DataStore.i.HUDs.loadingHUD.visible.Get())
@@ -36,18 +48,19 @@ public class LoadingBridge : MonoBehaviour
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
     }
-    
+
     public void FadeInLoadingHUD(string jsonMessage)
     {
+        if (isDecoupledLoadingScreenEnabled) return;
         //TODO: Logic to be cleaned by the RFC-1
         StartCoroutine(WaitForLoadingHUDVisible(jsonMessage));
     }
-    
+
     IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
         //TODO: Logic to be cleaned by the RFC-1
         WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
-        
+
         PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
         if (!string.IsNullOrEmpty(payload.message))
         {
@@ -64,7 +77,7 @@ public class LoadingBridge : MonoBehaviour
         {
             yield return null;
         }
-        
+
         WebInterface.LoadingHUDReadyForTeleport(payload.xCoord, payload.yCoord);
     }
 }

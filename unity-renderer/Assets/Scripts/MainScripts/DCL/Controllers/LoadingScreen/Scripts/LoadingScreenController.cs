@@ -1,4 +1,6 @@
+using DCL.Controllers;
 using System;
+using UnityEngine;
 
 namespace DCL.LoadingScreen
 {
@@ -10,13 +12,32 @@ namespace DCL.LoadingScreen
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
 
+        private int currentLoadingScenes;
+
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController)
         {
             this.view = view;
             this.sceneController = sceneController;
+            sceneController.OnNewSceneAdded += NewSceneAdded;
+            sceneController.OnReadyScene += OnReadyScene;
         }
 
-        private void NewSceneAdded() { }
+        private void NewSceneAdded(IParcelScene obj)
+        {
+            currentLoadingScenes++;
+        }
+
+        private void OnReadyScene(int obj)
+        {
+            currentLoadingScenes--;
+            if (obj == 1) return;
+            if (currentLoadingScenes.Equals(0))
+            {
+                CommonScriptableObjects.rendererState.Set(true);
+                view.FadeOut();
+            }
+        }
+
 
         private void SceneRemoved() { }
 

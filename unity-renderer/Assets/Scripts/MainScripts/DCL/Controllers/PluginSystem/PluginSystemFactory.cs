@@ -53,7 +53,7 @@ namespace DCL
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
 
 
-            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), "loading_screen_plugin");
+            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), "decoupled_loading_screen");
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 

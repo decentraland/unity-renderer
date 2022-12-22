@@ -1,5 +1,3 @@
-using System;
-
 namespace DCL.LoadingScreen
 {
     public interface ILoadingScreenView
@@ -7,5 +5,7 @@ namespace DCL.LoadingScreen
         void UpdateLoadingMessage();
 
         void Dispose();
+
+        void FadeOut();
     }
 }

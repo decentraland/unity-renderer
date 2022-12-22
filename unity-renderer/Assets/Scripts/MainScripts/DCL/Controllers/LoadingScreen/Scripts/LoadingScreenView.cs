@@ -7,6 +7,11 @@ namespace DCL.LoadingScreen
     {
         public void UpdateLoadingMessage() { }
 
+        public void FadeOut()
+        {
+            showHideAnimator.Hide();
+        }
+
         public override void RefreshControl() { }
     }
 }
