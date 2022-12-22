@@ -89,9 +89,9 @@ GameObject:
   - component: {fileID: 8357128369511491275}
   - component: {fileID: 2355457883833974318}
   - component: {fileID: 6268933099198464178}
-  - component: {fileID: 3054485634330205389}
-  - component: {fileID: 845468669056653445}
-  - component: {fileID: 6065991155200957884}
+  - component: {fileID: 7396981149671188192}
+  - component: {fileID: 1054737520794358197}
+  - component: {fileID: 2481086363144932030}
   m_Layer: 5
   m_Name: _LoadingScreen
   m_TagString: Untagged
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3054485634330205389
+--- !u!114 &7396981149671188192
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,8 +193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a8e8f74bcb1554d895ef9b6a9f38d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 6065991155200957884}
---- !u!225 &845468669056653445
+  showHideAnimator: {fileID: 2481086363144932030}
+--- !u!225 &1054737520794358197
 CanvasGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -206,7 +206,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6065991155200957884
+--- !u!114 &2481086363144932030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

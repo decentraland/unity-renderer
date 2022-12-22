@@ -5,6 +5,8 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
+        private static readonly string PATH = "_LoadingScreen";
+
         public void UpdateLoadingMessage() { }
 
         public void FadeOut()
@@ -13,5 +15,8 @@ namespace DCL.LoadingScreen
         }
 
         public override void RefreshControl() { }
+
+        public static LoadingScreenView Create() =>
+            Create<LoadingScreenView>(PATH);
     }
 }
