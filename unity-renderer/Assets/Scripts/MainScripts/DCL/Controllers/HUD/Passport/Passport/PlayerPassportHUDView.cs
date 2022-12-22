@@ -1,11 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using DCL;
-using DCL.Helpers;
+using DG.Tweening;
+using System.Threading;
 
 namespace DCL.Social.Passports
 {
@@ -18,12 +16,15 @@ namespace DCL.Social.Passports
         [SerializeField] internal Button hideCardButtonGuest;
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal GameObject container;
+        [SerializeField] internal RectTransform passportMask;
+        [SerializeField] internal CanvasGroup passportCanvas;
 
         public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
         public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
         public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
         public event Action OnClose;
 
+        private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
         private MouseCatcher mouseCatcher;
 
         public static PlayerPassportHUDView CreateView() =>
@@ -54,8 +55,70 @@ namespace DCL.Social.Passports
             {
                 mouseCatcher.UnlockCursor();
             }
-            container.SetActive(visible);
             CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
+
+            animationCancellationToken.Cancel();
+            animationCancellationToken = new CancellationTokenSource();
+
+            if (visible)
+            {
+                container.SetActive(true);
+                ShowPassportAnimation(animationCancellationToken.Token).Forget();
+            }
+            else
+            {
+                HidePassportAnimation(animationCancellationToken.Token);
+            }
+
+        }
+
+        private async UniTaskVoid ShowPassportAnimation(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            passportMask.anchoredPosition = new Vector2(0, -180);
+            passportCanvas.alpha = 0;
+            passportCanvas.DOFade(1, 0.3f)
+                          .SetEase(Ease.Linear);
+            try
+            {
+                Vector2 endPosition = new Vector2(0, 0);
+                Vector2 currentPosition = passportMask.anchoredPosition;
+                DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.3f).SetEase(Ease.OutBack);
+                while (passportMask.anchoredPosition.y < 0)
+                {
+                    passportMask.anchoredPosition = currentPosition;
+                    await UniTask.NextFrame(cancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+        }
+
+        private async UniTaskVoid HidePassportAnimation(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            passportMask.anchoredPosition = new Vector2(0, 0);
+            passportCanvas.alpha = 1;
+            passportCanvas.DOFade(0, 0.3f)
+                          .SetEase(Ease.Linear);
+            try
+            {
+                Vector2 endPosition = new Vector2(0, -180);
+                Vector2 currentPosition = passportMask.anchoredPosition;
+                DOTween.To(() => currentPosition, x => currentPosition = x, endPosition, 0.3f).SetEase(Ease.InBack);
+                while (passportMask.anchoredPosition.y > -180)
+                {
+                    passportMask.anchoredPosition = currentPosition;
+                    await UniTask.NextFrame(cancellationToken);
+                }
+                container.SetActive(false);
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
         }
 
         public override void RefreshControl()

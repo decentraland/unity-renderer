@@ -2673,8 +2673,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 15, y: -14.5}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchoredPosition: {x: -51.130493, y: -14.5}
+  m_SizeDelta: {x: 1787.739, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &-9062427975078753998
 Canvas:
@@ -2757,6 +2757,8 @@ MonoBehaviour:
   hideCardButtonGuest: {fileID: 5732172875686817256}
   backgroundButton: {fileID: 8371671624581896299}
   container: {fileID: 3233482078622637777}
+  passportMask: {fileID: 1026214534275938383}
+  passportCanvas: {fileID: 2627891395171691147}
 --- !u!222 &371137286749869486
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3014,6 +3016,7 @@ GameObject:
   - component: {fileID: 2964919724212011404}
   - component: {fileID: 4953645032902063147}
   - component: {fileID: 8549206111739304891}
+  - component: {fileID: 3181572017598922474}
   m_Layer: 5
   m_Name: PassportMask
   m_TagString: Untagged
@@ -3093,6 +3096,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1.3
+--- !u!225 &3181572017598922474
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2556230762541458213}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2610848306345917770
 GameObject:
   m_ObjectHideFlags: 0
