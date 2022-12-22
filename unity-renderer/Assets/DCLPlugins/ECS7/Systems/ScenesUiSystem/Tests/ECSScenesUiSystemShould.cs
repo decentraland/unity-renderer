@@ -130,7 +130,7 @@ namespace Tests
         }
 
         [Test]
-        public void CreateSceneRootUIContainer()
+        public void CreateSceneRootUIContainerCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
 
@@ -152,6 +152,23 @@ namespace Tests
             var rootSceneModel = uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
             var entityModel = uiContainerComponent.GetFor(scene, entityId).model;
             Assert.IsTrue(rootSceneModel.rootElement.Contains(entityModel.rootElement));
+
+            // check if it was initialized correctly
+            var style = rootSceneModel.rootElement.style;
+            Assert.AreEqual(PickingMode.Ignore, rootSceneModel.rootElement.pickingMode);
+            Assert.AreEqual(LengthUnit.Percent, style.width.value.unit);
+            Assert.AreEqual(100, style.width.value.value);
+            Assert.AreEqual(LengthUnit.Percent, style.height.value.unit);
+            Assert.AreEqual(100, style.height.value.value);
+            Assert.AreEqual(FlexDirection.Row, style.flexDirection.value);
+            Assert.AreEqual(StyleKeyword.Auto, style.flexBasis.keyword);
+            Assert.AreEqual(0, style.flexGrow.value);
+            Assert.AreEqual(1, style.flexShrink.value);
+            Assert.AreEqual(Justify.FlexStart, style.justifyContent.value);
+            Assert.AreEqual(Wrap.NoWrap, style.flexWrap.value);
+            Assert.AreEqual(Align.Stretch, style.alignItems.value);
+            Assert.AreEqual(Align.Auto, style.alignSelf.value);
+            Assert.AreEqual(Align.Stretch, style.alignContent.value);
         }
 
         [Test]

@@ -231,21 +231,21 @@ namespace ECSSystems.ScenesUiSystem
             if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 parentDataModel = new InternalUiContainer();
-                var styleObject = parentDataModel.rootElement.style;
+                var style = parentDataModel.rootElement.style;
 
                 // Initialize with default values
                 parentDataModel.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
-                styleObject.width = new Length(100f, LengthUnit.Percent);
-                styleObject.height = new Length(100f, LengthUnit.Percent);
-                styleObject.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
-                styleObject.flexBasis = new StyleLength(StyleKeyword.Auto);
-                styleObject.flexGrow = 0;
-                styleObject.flexShrink = 1;
-                styleObject.flexWrap = new StyleEnum<Wrap>(Wrap.NoWrap);
-                styleObject.justifyContent = new StyleEnum<Justify>(Justify.FlexStart);
-                styleObject.alignItems = new StyleEnum<Align>(Align.Stretch);
-                styleObject.alignSelf = new StyleEnum<Align>(Align.Auto);
-                styleObject.alignContent = new StyleEnum<Align>(Align.Stretch);
+                style.width = new Length(100f, LengthUnit.Percent);
+                style.height = new Length(100f, LengthUnit.Percent);
+                style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+                style.flexBasis = new StyleLength(StyleKeyword.Auto);
+                style.flexGrow = 0;
+                style.flexShrink = 1;
+                style.flexWrap = new StyleEnum<Wrap>(Wrap.NoWrap);
+                style.justifyContent = new StyleEnum<Justify>(Justify.FlexStart);
+                style.alignItems = new StyleEnum<Align>(Align.Stretch);
+                style.alignSelf = new StyleEnum<Align>(Align.Auto);
+                style.alignContent = new StyleEnum<Align>(Align.Stretch);
             }
 
             return parentDataModel;
