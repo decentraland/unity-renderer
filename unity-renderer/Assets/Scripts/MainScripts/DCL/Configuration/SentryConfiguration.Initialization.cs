@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-    // production == 'main' branch
-    // development == 'dev' branch
-    // branch/{branch} == 'branch/xyz'
     public static partial class SentryConfiguration
     {
-        const string DEVELOPMENT = "Development";
+        // production == 'main' branch
+        // development == 'dev' branch
+        // branch/{branch} == 'branch/xyz'
+        const string DEVELOPMENT = "development";
         const string PRODUCTION = "production";
         const string UNKNOWN_BRANCH = "branch/unknown";
         public static void Initialize()
