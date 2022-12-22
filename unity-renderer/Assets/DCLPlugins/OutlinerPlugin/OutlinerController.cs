@@ -10,11 +10,13 @@ using UnityEngine.Rendering.Universal;
 
 public class OutlinerController : IDisposable
 {
+
     private readonly DataStore_Outliner dataStore;
     private readonly OutlineRenderersSO outlineRenderersSO;
     private readonly OutlineScreenEffectFeature outlineScreenEffectFeature;
 
     private CancellationTokenSource animationCTS = new CancellationTokenSource();
+    private bool shouldShow;
 
     public OutlinerController(DataStore_Outliner dataStore, OutlineRenderersSO outlineRenderersSO)
     {
@@ -23,10 +25,12 @@ public class OutlinerController : IDisposable
 
         outlineScreenEffectFeature = GetOutlineScreenEffectFeature();
         outlineScreenEffectFeature.settings.effectFade = 0;
+        shouldShow = false;
 
-        this.dataStore.avatarOutlined.OnAdded += OnAvatarOutlinedAdded;
-        this.dataStore.avatarOutlined.OnRemoved += OnAvatarOutlinedRemoved;
+        this.dataStore.avatarOutlined.OnChange += OnAvatarOutlinedChange;
     }
+
+
 
     private OutlineScreenEffectFeature GetOutlineScreenEffectFeature()
     {
@@ -42,49 +46,81 @@ public class OutlinerController : IDisposable
         return scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
     }
 
-    private void OnAvatarOutlinedAdded(Renderer renderer)
+    private void OnAvatarOutlinedChange(Renderer current, Renderer previous)
     {
-        outlineRenderersSO.avatars.Add((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount));
-        UpdateFadeTarget(1);
+        if (current != null)
+        {
+            outlineRenderersSO.avatar.renderer = current;
+            outlineRenderersSO.avatar.meshCount = current.GetComponent<MeshFilter>().sharedMesh.subMeshCount;
+
+            //We are currently showing (or animating towards showing), nothing else to do
+            if (shouldShow)
+                return;
+
+            shouldShow = true;
+            animationCTS?.Cancel();
+            animationCTS?.Dispose();
+            animationCTS = new CancellationTokenSource();
+            FadeInOutlineAsync(animationCTS.Token).Forget();
+        }
+        else //We have to fade out and then clear the scriptable object
+        {
+            //We are already fade out (or animating towards it)
+            if (!shouldShow)
+                return;
+
+            shouldShow = false;
+            animationCTS?.Cancel();
+            animationCTS?.Dispose();
+            animationCTS = new CancellationTokenSource();
+            FadeOutOutlineAsync(animationCTS.Token).Forget();
+        }
     }
 
-    private void OnAvatarOutlinedRemoved(Renderer rendererToRemove)
+    private async UniTaskVoid FadeInOutlineAsync(CancellationToken ct = default)
     {
-        outlineRenderersSO.avatars.RemoveAll((avatarWithMeshCount) => avatarWithMeshCount.avatar == rendererToRemove);
+        const float SPEED = 1 / 0.333f; // 300ms
+        const float SHOW_FADE = 1;
 
-        if (outlineRenderersSO.avatars.Count > 0)
-            UpdateFadeTarget(1);
-        else
-            UpdateFadeTarget(0);
-    }
-
-    private void UpdateFadeTarget(float newTargetFade)
-    {
-        animationCTS?.Cancel();
-        animationCTS?.Dispose();
-        animationCTS = new CancellationTokenSource();
-        SetOutlineFadeAsync(newTargetFade, animationCTS.Token).Forget();
-    }
-
-    private async UniTaskVoid SetOutlineFadeAsync(float target, CancellationToken ct = default)
-    {
-        const float SPEED_IN = 1 / 0.333f; // 300ms
-        const float SPEED_OUT = 1 / 0.333f; // 300ms
-
-        float speed = target > 0 ? SPEED_IN : SPEED_OUT;
         var settings = outlineScreenEffectFeature.settings;
 
         try
         {
             ct.ThrowIfCancellationRequested();
 
-            while (!Mathf.Approximately(settings.effectFade, target))
+            while (!Mathf.Approximately(settings.effectFade, SHOW_FADE))
             {
-                settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, target, speed * Time.deltaTime);
+                settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, SHOW_FADE, SPEED * Time.deltaTime);
                 await UniTask.NextFrame(ct);
             }
 
-            settings.effectFade = target;
+            settings.effectFade = SHOW_FADE;
+        }
+        catch (OperationCanceledException)
+        {
+            //Do nothing
+        }
+    }
+
+    private async UniTaskVoid FadeOutOutlineAsync(CancellationToken ct = default)
+    {
+        const float SPEED = 1 / 0.333f; // 300ms
+        const float HIDE_FADE = 0;
+
+        var settings = outlineScreenEffectFeature.settings;
+
+        try
+        {
+            ct.ThrowIfCancellationRequested();
+
+            while (!Mathf.Approximately(settings.effectFade, HIDE_FADE))
+            {
+                settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, HIDE_FADE, SPEED * Time.deltaTime);
+                await UniTask.NextFrame(ct);
+            }
+
+            settings.effectFade = HIDE_FADE;
+            outlineRenderersSO.avatar = (null, -1);
         }
         catch (OperationCanceledException)
         {
@@ -94,8 +130,7 @@ public class OutlinerController : IDisposable
 
     public void Dispose()
     {
-        this.dataStore.avatarOutlined.OnAdded -= OnAvatarOutlinedAdded;
-        this.dataStore.avatarOutlined.OnRemoved -= OnAvatarOutlinedRemoved;
+        this.dataStore.avatarOutlined.OnChange -= OnAvatarOutlinedChange;
         animationCTS?.Cancel();
         animationCTS?.Dispose();
         animationCTS = null;

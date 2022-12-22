@@ -67,9 +67,12 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                //By now only outline avatars
-                DrawRenderers(outlineRenderersSo?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
-                DrawAvatars(outlineRenderersSo?.avatars, renderingData.cameraData.camera.cullingMask, cmd);
+                if (outlineRenderersSo != null)
+                {
+                    //By now only outline avatars
+                    //DrawRenderers(outlineRenderersSo?.renderers, renderingData.cameraData.camera.cullingMask, cmd);
+                    DrawAvatar(outlineRenderersSo.avatar, renderingData.cameraData.camera.cullingMask, cmd);
+                }
 
                 cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
             }
@@ -94,37 +97,34 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             }
         }
 
-        private void DrawAvatars(List<(Renderer renderer, int meshCount)> renderers, int cameraCulling, CommandBuffer cmd)
+        private void DrawAvatar((Renderer renderer, int meshCount) avatar, int cameraCulling, CommandBuffer cmd)
         {
-            if (renderers == null)
+            if (avatar.renderer == null)
                 return;
 
-            foreach ((Renderer renderer, int meshCount) in renderers)
+            //Ignore disabled or culled by camera avatars
+            if (!avatar.renderer.gameObject.activeSelf || (cameraCulling & (1 << avatar.renderer.gameObject.layer)) == 0)
+                return;
+
+            for (var i = 0; i < avatar.meshCount; i++)
             {
-                //Ignore disabled renderers
-                if (!renderer.gameObject.activeSelf || (cameraCulling & (1 << renderer.gameObject.layer)) == 0)
-                    continue;
+                Material materialToUse = null;
 
-                for (var i = 0; i < meshCount; i++)
+                //We need a material to copy the GPUSkinning values, we enter GPU Skinning flow if we find it.
+                if (avatar.renderer.materials[i] != null)
                 {
-                    Material materialToUse = null;
-
-                    //We need a material to copy the GPUSkinning values, we enter GPU Skinning flow if we find it.
-                    if (renderer.materials[i] != null)
-                    {
-                        //We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
-                        materialToUse = new Material(gpuSkinningMaterial);
-                        toDispose.Add(materialToUse);
-                        CopyAvatarProperties(renderer.materials[i], materialToUse);
-                    }
-                    else //Fallback to the normal outliner
-                    {
-                        materialToUse = material;
-                    }
-
-                    // We have to manually render all the submeshes of the selected objects.
-                    cmd.DrawRenderer(renderer, materialToUse, i);
+                    //We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
+                    materialToUse = new Material(gpuSkinningMaterial);
+                    toDispose.Add(materialToUse);
+                    CopyAvatarProperties(avatar.renderer.materials[i], materialToUse);
                 }
+                else //Fallback to the normal outliner
+                {
+                    materialToUse = material;
+                }
+
+                // We have to manually render all the submeshes of the selected objects.
+                cmd.DrawRenderer(avatar.renderer, materialToUse, i);
             }
         }
 
