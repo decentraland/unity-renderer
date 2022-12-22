@@ -41,7 +41,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiBackground model)
         {
-            textureUpdater.Update(model.Texture);
+            textureUpdater.Update(model.Texture, scene);
             image.Color = model.GetColor().ToUnityColor();
             image.Slices = model.GetBorder().ToUnityBorder();
             image.UVs = model.Uvs.ToDCLUVs();

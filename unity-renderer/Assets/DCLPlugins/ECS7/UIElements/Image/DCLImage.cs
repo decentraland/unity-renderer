@@ -84,7 +84,7 @@ namespace DCL.UIElements.Image
 
         private void SetSlices(Vector4 slices)
         {
-            if (this.slices == slices || scaleMode != DCLImageScaleMode.NINE_SLICES)
+            if (this.slices == slices)
                 return;
 
             this.slices = slices;
@@ -102,7 +102,7 @@ namespace DCL.UIElements.Image
 
         private void SetUVs(DCLUVs uvs)
         {
-            if (this.uvs.Equals(uvs) || scaleMode != DCLImageScaleMode.STRETCH)
+            if (this.uvs.Equals(uvs))
                 return;
 
             this.uvs = uvs;
@@ -160,6 +160,7 @@ namespace DCL.UIElements.Image
             // Instead of generating a sliced mesh manually pass it to the existing logic of background
             style.backgroundImage = Background.FromTexture2D(texture2D);
             style.unityBackgroundImageTintColor = new StyleColor(color);
+            style.backgroundColor = new StyleColor(StyleKeyword.None);
 
             var texWidth = texture2D.width;
             var texHeight = texture2D.height;
@@ -270,10 +271,14 @@ namespace DCL.UIElements.Image
             // uv Rect [0;1] that was assigned by the Dynamic atlas by UI Toolkit
             var uvRegion = mwd.uvRegion;
 
-            VERTICES[0].uv = uvs.BottomLeft * uvRegion.size + uvRegion.min;
-            VERTICES[1].uv = uvs.TopLeft * uvRegion.size + uvRegion.min;
-            VERTICES[2].uv = uvs.TopRight * uvRegion.size + uvRegion.min;
-            VERTICES[3].uv = uvs.BottomRight * uvRegion.size + uvRegion.min;
+            // the texture should be cut off if it exceeds the parent rect
+            var uvsDisplacementX = (1 - width / targetTextureWidth) / 2f;
+            var uvsDisplacementY = (1 - height / targetTextureHeight) / 2f;
+
+            VERTICES[0].uv = new Vector2(uvsDisplacementX, uvsDisplacementY) * uvRegion.size + uvRegion.min;
+            VERTICES[1].uv = new Vector2(uvsDisplacementX, 1 - uvsDisplacementY) * uvRegion.size + uvRegion.min;
+            VERTICES[2].uv = new Vector2(1 - uvsDisplacementX, 1 - uvsDisplacementY) * uvRegion.size + uvRegion.min;
+            VERTICES[3].uv = new Vector2(1 - uvsDisplacementX, uvsDisplacementY) * uvRegion.size + uvRegion.min;
 
             ApplyVerticesTint();
 
@@ -283,7 +288,8 @@ namespace DCL.UIElements.Image
 
         private void ApplyVerticesTint()
         {
-            for (var i = 0; i < VERTICES.Length; i++) { VERTICES[i].tint = color; }
+            for (var i = 0; i < VERTICES.Length; i++)
+                VERTICES[i].tint = color;
         }
     }
 }
