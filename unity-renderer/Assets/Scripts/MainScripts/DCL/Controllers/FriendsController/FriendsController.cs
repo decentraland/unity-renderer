@@ -320,8 +320,17 @@ namespace DCL.Social.Friends
         {
             UpdateFriendshipStatus(msg);
 
+            var friendRequest = GetAllocatedFriendRequestByUser(msg.userId);
+
             if (msg.action == FriendshipAction.APPROVED)
-                OnSentFriendRequestApproved?.Invoke(GetAllocatedFriendRequestByUser(msg.userId));
+            {
+                friendRequest.State = FriendRequestState.Accepted;
+                OnSentFriendRequestApproved?.Invoke(friendRequest);
+            }
+            else if (msg.action == FriendshipAction.REJECTED)
+                friendRequest.State = FriendRequestState.Rejected;
+            else if (msg.action == FriendshipAction.CANCELLED)
+                friendRequest.State = FriendRequestState.Cancelled;
         }
 
         private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
