@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -98,7 +97,7 @@ namespace DCL.Social.Friends
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
             friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
-                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, bodyMessage)));
+                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, bodyMessage, FriendRequestState.Pending)));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>(bodyMessage);
             view.OnSend += Raise.Event<Action>();

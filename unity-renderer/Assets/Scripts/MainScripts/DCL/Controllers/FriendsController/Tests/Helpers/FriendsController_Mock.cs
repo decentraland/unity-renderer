@@ -35,7 +35,7 @@ public class FriendsController_Mock : IFriendsController
     public Dictionary<string, UserStatus> GetAllocatedFriends() { return friends; }
 
     public UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", "", FriendRequestState.Accepted));
 
     public void RejectFriendship(string friendUserId)
     {
@@ -44,7 +44,7 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", "", FriendRequestState.Rejected));
 
     public bool IsFriend(string userId) => friends.ContainsKey(userId);
 
@@ -101,7 +101,7 @@ public class FriendsController_Mock : IFriendsController
         if (!friends.ContainsKey(friendUserId))
             friends.Add(friendUserId, new UserStatus{friendshipStatus = FriendshipStatus.REQUESTED_TO});
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.REQUESTED_TO);
-        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody));
+        return UniTask.FromResult(new FriendRequest("oiqwdjqowi", 0, "me", friendUserId, messageBody, FriendRequestState.Pending));
     }
 
     public void RequestFriendship(string friendUserId)
@@ -113,7 +113,7 @@ public class FriendsController_Mock : IFriendsController
         if (!friends.ContainsKey(friendUserId)) return null;
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.CANCELLED);
-        return new FriendRequest(friendUserId, 0, "", "", "");
+        return new FriendRequest(friendUserId, 0, "", "", "", FriendRequestState.Cancelled);
     }
 
     public void CancelRequestByUserId(string friendUserId)
@@ -121,7 +121,7 @@ public class FriendsController_Mock : IFriendsController
     }
 
     public UniTask<FriendRequest> CancelRequestAsync(string friendRequestId) =>
-        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", "", FriendRequestState.Cancelled));
 
     public void AcceptFriendship(string friendUserId)
     {

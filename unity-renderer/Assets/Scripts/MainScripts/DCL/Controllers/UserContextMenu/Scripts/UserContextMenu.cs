@@ -327,14 +327,8 @@ public class UserContextMenu : MonoBehaviour
         }
         if ((configFlags & usesFriendsApiFlags) != 0)
         {
-            if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
-            {
-                SetupFriendship(status.friendshipStatus);
-            }
-            else
-            {
-                SetupFriendship(FriendshipStatus.NOT_FRIEND);
-            }
+            UserStatus status = FriendsController.i.GetUserStatus(userId);
+            SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
             FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
             FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
         }
