@@ -272,7 +272,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     private void SetProfileImage(Texture2D texture)
     {
-        Debug.Log("Pass");
         loadingSpinner.SetActive(false);
         imageAvatarThumbnail.texture = texture;
     }
