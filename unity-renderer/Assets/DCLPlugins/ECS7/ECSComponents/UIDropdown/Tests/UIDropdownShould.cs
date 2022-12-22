@@ -26,7 +26,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
 
             Assert.AreEqual(new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)), handler.uiElement.style.color);
             Assert.AreEqual(new StyleLength(new Length(16)), handler.uiElement.style.fontSize);
-            Assert.AreEqual(new StyleEnum<TextAnchor>(TextAnchor.LowerCenter), handler.uiElement.style.unityTextAlign);
+            Assert.AreEqual(new StyleEnum<TextAnchor>(TextAnchor.LowerCenter), handler.textField.style.unityTextAlign);
             CollectionAssert.AreEquivalent(new[] { "OPTION1", "OPTION2", "OPTION3", "OPTION4" }, handler.uiElement.choices);
             Assert.AreEqual("OPTION3", handler.uiElement.text);
             Assert.AreEqual(2, handler.uiElement.index);

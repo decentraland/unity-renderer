@@ -4,7 +4,7 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents.UIDropdown
 {
-    public class UIDropdownRegister : UIElementRegisterBase<PBUiDropdown, UIDropdownHandler, PBUiInputResult>
+    public class UIDropdownRegister : UIElementRegisterBase<PBUiDropdown, UIDropdownHandler, PBUiDropdownResult>
     {
         public UIDropdownRegister(
             int componentId,

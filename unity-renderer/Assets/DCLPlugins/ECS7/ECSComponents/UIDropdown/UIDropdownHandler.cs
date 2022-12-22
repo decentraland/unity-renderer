@@ -14,6 +14,8 @@ namespace DCL.ECSComponents.UIDropdown
         private const string READONLY_CLASS = "dcl-dropdown-readonly";
         private const string CLASS = "dcl-dropdown";
 
+        private const string TEXT_ELEMENT_CLASS = "unity-base-popup-field__text";
+
         private UIFontUpdater fontUpdater;
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
@@ -26,6 +28,8 @@ namespace DCL.ECSComponents.UIDropdown
         // it according to the user provided styles
         internal DropdownField uiElement { get; private set; }
 
+        internal TextElement textField { get; private set; }
+
         public UIDropdownHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer,
             int resultComponentId,
             IInternalECSComponent<InternalUIInputResults> inputResults,
@@ -37,6 +41,7 @@ namespace DCL.ECSComponents.UIDropdown
             this.inputResults = inputResults;
             this.fontPromiseKeeper = fontPromiseKeeper;
 
+            // it is temporary until we decide on how to handle styles properly
             styleSheet = Resources.Load<StyleSheet>("DCL.UIDropdown");
         }
 
@@ -45,8 +50,11 @@ namespace DCL.ECSComponents.UIDropdown
             // `DropdownField` contains a label as well but
             // passing a null string will actually make it invisible
             uiElement = new DropdownField(null);
+            textField = uiElement.Q<TextElement>(className: TEXT_ELEMENT_CLASS);
             uiElement.styleSheets.Add(styleSheet);
             uiElement.AddToClassList(CLASS);
+
+            uiElement.style.flexGrow = 1;
 
             AddElementToRoot(scene, entity, uiElement);
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
@@ -78,7 +86,6 @@ namespace DCL.ECSComponents.UIDropdown
             fontUpdater.Update(model.GetFont());
 
             uiElement.style.fontSize = model.GetFontSize();
-            uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
             uiElement.style.color = model.GetColor().ToUnityColor();
 
             uiElement.choices.Clear();
@@ -98,6 +105,13 @@ namespace DCL.ECSComponents.UIDropdown
             uiElement.EnableInClassList(READONLY_CLASS, model.Disabled);
             // TODO it's not fully correct
             uiElement.pickingMode = model.Disabled ? PickingMode.Ignore : PickingMode.Position;
+
+            ApplyTextElementStyle(model);
+        }
+
+        private void ApplyTextElementStyle(PBUiDropdown dropdown)
+        {
+            textField.style.unityTextAlign = dropdown.GetTextAlign().ToUnityTextAlign();
         }
     }
 }
