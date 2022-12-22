@@ -123,8 +123,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     public void SetProfile(UserProfile userProfile)
     {
         profile = userProfile;
-        if (expandedObject.activeSelf)
-            UpdateLayoutByProfile(userProfile);
+        UpdateLayoutByProfile(userProfile);
     }
 
 
@@ -273,6 +272,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     private void SetProfileImage(Texture2D texture)
     {
+        Debug.Log("Pass");
         loadingSpinner.SetActive(false);
         imageAvatarThumbnail.texture = texture;
     }
