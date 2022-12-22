@@ -543,5 +543,12 @@ namespace Tests
 
             Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
         }
+
+        [Test]
+        public void HaveCorrectConfiguration()
+        {
+            Assert.AreEqual(0, uiDocument.panelSettings.sortingOrder);
+            Assert.AreEqual(PanelScaleMode.ConstantPixelSize, uiDocument.panelSettings.scaleMode);
+        }
     }
 }
