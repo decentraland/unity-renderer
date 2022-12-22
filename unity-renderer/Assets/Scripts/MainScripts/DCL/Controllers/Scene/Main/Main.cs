@@ -66,10 +66,9 @@ namespace DCL
 
             InitializeDataStore();
             SetupPlugins();
-#if !UNITY_EDITOR
-            SetupSentry();
-#endif
             InitializeCommunication();
+            
+            SentryConfiguration.Initialize();
         }
 
         protected virtual void InitializeDataStore()
@@ -110,16 +109,6 @@ namespace DCL
         {
             pluginSystem = PluginSystemFactory.Create();
             pluginSystem.Initialize();
-        }
-
-        protected virtual void SetupSentry()
-        {
-            SentryUnity.Init(o =>
-            {
-                o.Environment = SentryConfiguration.Environment;
-                o.Dsn = SentryConfiguration.Dsn;
-                o.Release = SentryConfiguration.Release;
-            });
         }
 
         protected virtual void SetupServices()

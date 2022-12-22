@@ -10,9 +10,9 @@ const fileContents = fs.readFileSync(fileToEdit).toString()
 let rendererEnvironment = 'editor'
 
 if(process.env.CIRCLE_BRANCH == 'main') {
-  rendererEnvironment = 'prd-build'
+  rendererEnvironment = 'production'
 } else if(process.env.CIRCLE_BRANCH == 'dev') {
-  rendererEnvironment = 'dev-build'
+  rendererEnvironment = 'development'
 } else {
   rendererEnvironment = `branch/${process.env.CIRCLE_BRANCH || 'unknown'}`
 }
