@@ -19,9 +19,9 @@ public interface IProfileHUDView
     event EventHandler TermsAndServicesPressed;
     event EventHandler PrivacyPolicyPressed;
 
-    public GameObject GameObject { get; }
-    public RectTransform ExpandedMenu { get; }
-    public RectTransform TutorialReference { get; }
+    GameObject GameObject { get; }
+    RectTransform ExpandedMenu { get; }
+    RectTransform TutorialReference { get; }
 
 
     bool HasManaCounterView();

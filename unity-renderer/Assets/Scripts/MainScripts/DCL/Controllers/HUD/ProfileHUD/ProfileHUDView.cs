@@ -20,7 +20,6 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
     [SerializeField] private GameObject expandedObject;
     [SerializeField] private GameObject profilePicObject;
     [SerializeField] private InputAction_Trigger closeAction;
-    [SerializeField] private Canvas mainCanvas;
 
     [Header("Hide GOs on claimed name")]
     [SerializeField] internal GameObject[] hideOnNameClaimed;

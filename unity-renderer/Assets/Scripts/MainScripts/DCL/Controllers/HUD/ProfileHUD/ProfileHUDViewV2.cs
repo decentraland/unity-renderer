@@ -91,10 +91,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
     public event EventHandler LogedOutPressed;
-    public event EventHandler WalletTermsAndServicesPressed;
-    public event EventHandler WalletPrivacyPolicyPressed;
-    public event EventHandler NonWalletTermsAndServicesPressed;
-    public event EventHandler NonWalletPrivacyPolicyPressed;
     public event EventHandler Opened;
     public event EventHandler Closed;
     public event EventHandler<string> NameSubmitted;
@@ -235,10 +231,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => WalletTermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => WalletPrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => NonWalletTermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => NonWalletPrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
+        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
+        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
 
         descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
