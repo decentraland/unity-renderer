@@ -7,7 +7,8 @@ namespace DCL.Chat.Notifications
     public interface ITopNotificationsComponentView
     {
         event Action<bool> OnResetFade;
-    
+        event Action<string> OnClickedFriendRequest;
+
         Transform GetPanelTransform();
         void AddNewChatNotification(PrivateChatMessageNotificationModel model);
         void AddNewChatNotification(PublicChannelMessageNotificationModel model);

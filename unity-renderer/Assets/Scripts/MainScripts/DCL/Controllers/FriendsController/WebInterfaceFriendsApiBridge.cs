@@ -22,7 +22,7 @@ namespace DCL.Social.Friends
         public event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         public event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
         public event Action<UpdateTotalFriendsPayload> OnTotalFriendCountUpdated;
-        public event Action<FriendRequestPayload> OnFriendRequestAdded;
+        public event Action<FriendRequestPayload> OnFriendRequestReceived;
 
         [PublicAPI]
         public void InitializeFriends(string json) =>
@@ -45,7 +45,7 @@ namespace DCL.Social.Friends
         public void AddFriendRequest(string json)
         {
             var payload = JsonUtility.FromJson<FriendRequestPayload>(json);
-            OnFriendRequestAdded?.Invoke(payload);
+            OnFriendRequestReceived?.Invoke(payload);
         }
 
         [PublicAPI]
@@ -144,6 +144,9 @@ namespace DCL.Social.Friends
                 userId = userId
             });
         }
+
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
 
         public void RemoveFriend(string userId)
         {
@@ -257,5 +260,8 @@ namespace DCL.Social.Friends
                 action = WebInterface.FriendshipAction.APPROVED
             });
         }
+
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
     }
 }

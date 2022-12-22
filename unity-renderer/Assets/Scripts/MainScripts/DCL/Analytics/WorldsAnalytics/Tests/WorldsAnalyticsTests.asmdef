@@ -1,0 +1,26 @@
+{
+    "name": "WorldsAnalyticsTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7a891a64b16f27644941da155a30c859",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:0663fad624d836944b40ae27c3414652",
+        "GUID:6992d9eae8b9d2446ba1a4f1cd3db70f",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
