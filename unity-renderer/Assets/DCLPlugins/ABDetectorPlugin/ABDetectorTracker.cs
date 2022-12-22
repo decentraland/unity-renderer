@@ -10,13 +10,13 @@ namespace DCL
         private const string FROM_ASSET_BUNDLE_TAG = "FromAssetBundle";
         private const string FROM_RAW_GLTF_TAG = "FromRawGLTF";
         private const string AB_DETECTOR_MATERIALS_PREFAB_NAME = "AbDetectorMaterials";
-        
+
         private readonly DebugConfig debugConfig;
         private readonly DataStore_Player player;
 
-        private readonly Dictionary<Renderer, Material[]> rendererDict  = 
+        private readonly Dictionary<Renderer, Material[]> rendererDict  =
             new Dictionary<Renderer, Material[]>();
-        private readonly Multimap<IParcelScene, Renderer> parcelToRendererMultimap = 
+        private readonly Multimap<IParcelScene, Renderer> parcelToRendererMultimap =
             new Multimap<IParcelScene, Renderer>();
 
         private ABDetectorMaterialsHolder abDetectorMaterialsHolder;
@@ -27,21 +27,21 @@ namespace DCL
             this.debugConfig = debugConfig;
             this.player = player;
             this.worldState = worldState;
-            
+
             debugConfig.showGlobalABDetectionLayer.OnChange += OnGlobalABDetectionChanged;
             debugConfig.showSceneABDetectionLayer.OnChange += OnSceneABDetectionChanged;
         }
-        
+
         public void Dispose()
         {
             debugConfig.showGlobalABDetectionLayer.OnChange -= OnGlobalABDetectionChanged;
             debugConfig.showSceneABDetectionLayer.OnChange -= OnSceneABDetectionChanged;
         }
-        
+
         private IParcelScene FindSceneForPlayer()
         {
             var currentPos = player.playerGridPosition.Get();
-            if (worldState.TryGetScene(worldState.GetSceneNumberByCoords(currentPos), 
+            if (worldState.TryGetScene(worldState.GetSceneNumberByCoords(currentPos),
                     out IParcelScene resultScene))
                 return resultScene;
 
@@ -60,8 +60,10 @@ namespace DCL
 
         private void OnGlobalABDetectionChanged(bool current, bool previous)
         {
+            throw new Exception("stack trace test");
+
             LoadMaterialsIfNeeded();
-            
+
             if (current)
             {
                 RemoveGlobalABDetectionPainting();
@@ -76,7 +78,7 @@ namespace DCL
         private void OnSceneABDetectionChanged(bool current, bool previous)
         {
             LoadMaterialsIfNeeded();
-            
+
             if (current)
             {
                 RemoveGlobalABDetectionPainting();
@@ -108,17 +110,17 @@ namespace DCL
                 if (keyValuePair.Key != null)
                     keyValuePair.Key.materials = keyValuePair.Value;
             }
-        
+
             rendererDict.Clear();
             parcelToRendererMultimap.Clear();
         }
-        
+
         private void ApplyABDetectionPaintingForCurrentScene()
         {
             var currentScene = FindSceneForPlayer();
             ApplyMaterials(currentScene.GetSceneTransform(), currentScene);
         }
-        
+
         private void RemoveABDetectionPaintingForCurrentScene()
         {
             var currentScene = FindSceneForPlayer();
@@ -133,10 +135,10 @@ namespace DCL
 
                     rendererDict.Remove(renderer);
                 }
-                
+
                 parcelToRendererMultimap.Remove(currentScene);
             }
-            
+
         }
 
         private void ApplyMaterials(Transform someTransform, IParcelScene optionalParcelScene = null)
@@ -148,7 +150,7 @@ namespace DCL
                     var childTransform = someTransform.GetChild(i).transform;
                     var renderers = childTransform.
                         GetComponents<Renderer>();
-                  
+
                     foreach (Renderer renderer in renderers)
                     {
                         rendererDict[renderer] = renderer.materials;
@@ -167,7 +169,7 @@ namespace DCL
                             renderer.material = abDetectorMaterialsHolder.GLTFMaterial;
                         }
                     }
-                    
+
                     ApplyMaterials(childTransform, optionalParcelScene);
                 }
             }
