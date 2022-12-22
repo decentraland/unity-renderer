@@ -80,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    outlineSize: 1
+    outlineSize: 0.5
     blurSize: 1
     blurSigma: 5
     outlineColor: {r: 0, g: 1, b: 1, a: 1}
