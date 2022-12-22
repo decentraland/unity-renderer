@@ -11,8 +11,10 @@ namespace DCL.Social.Friends
         [SerializeField] internal GameObject defaultContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
+        [SerializeField] internal GameObject cancelButtonsContainer;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button tryCancelButton;
+        [SerializeField] internal GameObject pendingToCancelContainer;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal ImageComponentView profileImage;
@@ -69,6 +71,8 @@ namespace DCL.Social.Friends
             defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
             tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
+            cancelButtonsContainer.SetActive(model.State != Model.LayoutState.Pending);
+            pendingToCancelContainer.SetActive(model.State == Model.LayoutState.Pending);
 
             foreach (Button button in closeButtons)
                 button.interactable = model.State != Model.LayoutState.Pending;

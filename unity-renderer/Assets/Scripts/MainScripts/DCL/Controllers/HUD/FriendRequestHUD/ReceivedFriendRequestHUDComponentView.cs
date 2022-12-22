@@ -19,7 +19,9 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal Button rejectButton;
+        [SerializeField] internal GameObject pendingToRejectContainer;
         [SerializeField] internal Button confirmButton;
+        [SerializeField] internal GameObject pendingToConfirmContainer;
         [SerializeField] internal GameObject defaultContainer;
         [SerializeField] internal GameObject rejectSuccessContainer;
         [SerializeField] internal GameObject confirmSuccessContainer;
@@ -162,6 +164,11 @@ namespace DCL.Social.Friends
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(false);
 
+            confirmButton.gameObject.SetActive(true);
+            pendingToConfirmContainer.SetActive(false);
+            rejectButton.gameObject.SetActive(true);
+            pendingToRejectContainer.SetActive(false);
+
             foreach (var button in buttonsToDisableOnPendingState)
                 button.interactable = true;
         }
@@ -172,18 +179,13 @@ namespace DCL.Social.Friends
             rejectSuccessContainer.SetActive(false);
             confirmSuccessContainer.SetActive(false);
 
+            confirmButton.gameObject.SetActive(!lastTryWasConfirm);
+            pendingToConfirmContainer.SetActive(lastTryWasConfirm);
+            rejectButton.gameObject.SetActive(lastTryWasConfirm);
+            pendingToRejectContainer.SetActive(!lastTryWasConfirm);
+
             foreach (var button in buttonsToDisableOnPendingState)
                 button.interactable = false;
-        }
-
-        private void SetFailedState()
-        {
-            defaultContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
-
-            foreach (var button in buttonsToDisableOnPendingState)
-                button.interactable = true;
         }
 
         private void SetConfirmSuccessState()
