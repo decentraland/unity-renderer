@@ -1,3 +1,4 @@
+using Sentry;
 using Sentry.Unity;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,8 +16,9 @@ namespace DCL.Configuration
         public static void Initialize()
         {
             // if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
-
+            SentrySdk.CaptureMessage("Sentry is initializng...test 1");
 #if !UNITY_EDITOR
+            SentrySdk.CaptureMessage("Sentry is initializng...test 2");
             SentryUnity.Init(o =>
             {
                 o.Environment = SentryConfiguration.Environment;
