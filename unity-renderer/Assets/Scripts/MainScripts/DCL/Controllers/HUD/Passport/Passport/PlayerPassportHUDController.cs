@@ -66,6 +66,16 @@ namespace DCL.Social.Passports
             OnCurrentPlayerIdChanged(currentPlayerId, null);
 
             playerInfoController.OnClosePassport += ClosePassport;
+            dataStore.HUDs.closedWalletModal.OnChange += ClosedGuestWalletPanel;
+        }
+
+        private void ClosedGuestWalletPanel(bool current, bool previous)
+        {
+            if (current)
+            {
+                ClosePassport();
+                dataStore.HUDs.closedWalletModal.Set(false, false);
+            }
         }
 
         private void ClosePassport()
@@ -92,6 +102,7 @@ namespace DCL.Social.Passports
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             playerInfoController.OnClosePassport -= ClosePassport;
+            dataStore.HUDs.closedWalletModal.OnChange -= ClosedGuestWalletPanel;
 
             playerPreviewController.Dispose();
 
