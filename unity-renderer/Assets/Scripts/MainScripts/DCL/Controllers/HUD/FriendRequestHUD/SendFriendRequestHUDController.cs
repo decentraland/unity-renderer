@@ -18,6 +18,7 @@ namespace DCL.Social.Friends
         private string messageBody;
         private string recipientId;
         private CancellationTokenSource hideCancellationToken = new ();
+        private bool sendInProgress;
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -84,6 +85,7 @@ namespace DCL.Social.Friends
 
             try
             {
+                sendInProgress = true;
                 await friendsController.RequestFriendshipAsync(recipientId, messageBody)
                                        .Timeout(TimeSpan.FromSeconds(10));
 
@@ -91,6 +93,7 @@ namespace DCL.Social.Friends
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
 
                 view.ShowSendSuccess();
+                sendInProgress = false;
 
                 await UniTask.Delay(2000, cancellationToken: hideCancellationToken.Token);
 
@@ -100,6 +103,10 @@ namespace DCL.Social.Friends
             catch (Exception)
             {
                 await UniTask.SwitchToMainThread();
+
+                if (!sendInProgress)
+                    return;
+
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
