@@ -14,6 +14,17 @@ namespace DCL.LoadingScreen
             showHideAnimator.Hide();
         }
 
+        public void FadeIn()
+        {
+            if (isVisible) return;
+
+            //TODO: The blit to avoid the flash of the empty camera
+            showHideAnimator.Show(true);
+        }
+
+        public ShowHideAnimator GetShowHideAnimator() =>
+            showHideAnimator;
+
         public override void RefreshControl() { }
 
         public static LoadingScreenView Create() =>

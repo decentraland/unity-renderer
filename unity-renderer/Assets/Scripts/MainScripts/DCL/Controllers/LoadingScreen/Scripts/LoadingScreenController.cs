@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using System;
 using UnityEngine;
 
@@ -14,41 +13,50 @@ namespace DCL.LoadingScreen
 
         private int currentLoadingScenes;
 
+        private Vector3 lastTeleportRequested;
+
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController)
         {
             this.view = view;
             this.sceneController = sceneController;
-            sceneController.OnNewSceneAdded += NewSceneAdded;
-            sceneController.OnReadyScene += OnReadyScene;
+
+            lastTeleportRequested = Vector3.one * float.MaxValue;
+            DataStore.i.player.lastTeleportPosition.OnChange += TeleportRequested;
+
+            //Needed since CameraController is using it to activate its component
             CommonScriptableObjects.isLoadingHUDOpen.Set(true);
+            view.GetShowHideAnimator().OnWillFinishStart += LoadingScreenVisible;
         }
 
-        private void NewSceneAdded(IParcelScene obj)
-        {
-            currentLoadingScenes++;
-        }
+        private void LoadingScreenVisible(ShowHideAnimator obj) =>
+            SetCommmonScriptableObjectRenderState(false);
 
-        private void OnReadyScene(int obj)
+        public void Dispose() =>
+            view.Dispose();
+
+        private void TeleportRequested(Vector3 current, Vector3 previous)
         {
-            currentLoadingScenes--;
-            if (obj == 1) return;
-            if (currentLoadingScenes.Equals(0))
+            if (lastTeleportRequested.Equals(current))
             {
-                CommonScriptableObjects.rendererState.Set(true);
-                CommonScriptableObjects.isLoadingHUDOpen.Set(false);
+                SetCommmonScriptableObjectRenderState(true);
                 view.FadeOut();
             }
+            else
+                view.FadeIn();
+
+            lastTeleportRequested = current;
         }
-
-
-        private void SceneRemoved() { }
 
         private void UpdateLoadingMessage()
         {
             view.UpdateLoadingMessage();
         }
 
-        public void Dispose() =>
-            view.Dispose();
+        //TODO: Get rid of the usage variables. Now we need them to activate the CameraController
+        private void SetCommmonScriptableObjectRenderState(bool newRendererState)
+        {
+            CommonScriptableObjects.rendererState.Set(newRendererState);
+            CommonScriptableObjects.isLoadingHUDOpen.Set(!newRendererState);
+        }
     }
 }

@@ -4,8 +4,10 @@ namespace DCL.LoadingScreen
     {
         void UpdateLoadingMessage();
 
-        void Dispose();
-
         void FadeOut();
+
+        void FadeIn();
+
+        ShowHideAnimator GetShowHideAnimator();
     }
 }
