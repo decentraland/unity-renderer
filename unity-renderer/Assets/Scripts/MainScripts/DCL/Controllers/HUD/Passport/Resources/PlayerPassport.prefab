@@ -289,6 +289,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6126428821902402127}
+  - {fileID: 2397802637861017110}
   - {fileID: 3221178093064234415}
   m_Father: {fileID: 5300823088955411562}
   m_RootOrder: 1
@@ -1488,7 +1490,7 @@ RectTransform:
   m_Children:
   - {fileID: 7636552013866064422}
   - {fileID: 5625389001159354412}
-  m_Father: {fileID: 6728099021044348908}
+  m_Father: {fileID: 3425842930955453908}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3665,7 +3667,7 @@ RectTransform:
   - {fileID: 7117946408200287687}
   - {fileID: 2886392900551548553}
   - {fileID: 2459069504684812869}
-  m_Father: {fileID: 6728099021044348908}
+  m_Father: {fileID: 3425842930955453908}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -11112,6 +11114,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIScrollRect
       objectReference: {fileID: 0}
+    - target: {fileID: 83353336438305603, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 83353336438305660, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
         type: 3}
       propertyPath: m_Pivot.x
@@ -11125,7 +11132,7 @@ PrefabInstance:
     - target: {fileID: 83353336438305660, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 83353336438305660, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
         type: 3}
@@ -11317,12 +11324,6 @@ PrefabInstance:
 --- !u!224 &3221178093064234415 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 83353336438305660, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
-    type: 3}
-  m_PrefabInstance: {fileID: 3286445762684294867}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &6728099021044348908 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8125847689933021503, guid: aa6e57f9ae6ceee4a9f4415a79bb34e9,
     type: 3}
   m_PrefabInstance: {fileID: 3286445762684294867}
   m_PrefabAsset: {fileID: 0}

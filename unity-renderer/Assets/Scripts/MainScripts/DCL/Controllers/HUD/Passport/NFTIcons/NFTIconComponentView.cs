@@ -88,7 +88,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         model.rarity = rarity;
         Color rarityColor = nftTypesIcons.GetColor(rarity);
-        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 0.8f);
+        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
         rarityBackgroundImage.color = rarityColor;
     }
 
