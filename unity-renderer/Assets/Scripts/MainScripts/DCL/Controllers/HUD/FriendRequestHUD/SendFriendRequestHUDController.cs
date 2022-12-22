@@ -99,6 +99,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception)
             {
+                await UniTask.SwitchToMainThread();
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
