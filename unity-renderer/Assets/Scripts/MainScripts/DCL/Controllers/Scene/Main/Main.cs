@@ -66,6 +66,8 @@ namespace DCL
             InitializeDataStore();
             SetupPlugins();
             InitializeCommunication();
+
+            // delete me
         }
 
         protected virtual void InitializeDataStore()
