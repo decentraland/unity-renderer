@@ -12,8 +12,6 @@ namespace DCL.Social.Passports
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
         private const string TEMPLATE_DESCRIPTION_TEXT = "No intro description.";
-        private const int ABOUT_SUB_SECTION_INDEX = 0;
-        private const int COLLECTIBLES_SUB_SECTION_INDEX = 1;
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;

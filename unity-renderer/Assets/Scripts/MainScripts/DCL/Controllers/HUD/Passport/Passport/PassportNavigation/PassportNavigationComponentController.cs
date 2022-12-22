@@ -24,6 +24,7 @@ namespace DCL.Social.Passports
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string> OnClickBuyNft;
         public event Action OnClickCollectibles;
+        private UserProfile previousUserProfile;
 
         public PassportNavigationComponentController(
             IPassportNavigationComponentView view,
@@ -51,7 +52,6 @@ namespace DCL.Social.Passports
         {
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             string filteredName = await FilterContentAsync(userProfile.userName);
-            view.SetInitialPage();
             view.SetGuestUser(userProfile.isGuest);
             view.SetName(filteredName);
             if (!userProfile.isGuest)
@@ -61,11 +61,6 @@ namespace DCL.Social.Passports
                 view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
                 await LoadAndDisplayEquippedWearablesAsync(userProfile);
             }
-        }
-
-        public void ResetPanel()
-        {
-            view.SetCollectiblesView();
         }
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
