@@ -260,7 +260,7 @@ namespace DCL
 
         private void PlayerPointerExit()
         {
-            DataStore.i.outliner.avatarOutlined.Set(null);
+            DataStore.i.outliner.avatarOutlined.Set((null, -1, -1));
             playerName?.SetForceShow(false);
         }
 
@@ -271,7 +271,7 @@ namespace DCL
                 var renderer = avatar.GetMainRenderer();
 
                 if (renderer != null)
-                    DataStore.i.outliner.avatarOutlined.Set(renderer);
+                    DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
             }
 
             playerName?.SetForceShow(true);

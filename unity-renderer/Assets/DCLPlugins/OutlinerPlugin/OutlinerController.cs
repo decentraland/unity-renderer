@@ -30,8 +30,6 @@ public class OutlinerController : IDisposable
         this.dataStore.avatarOutlined.OnChange += OnAvatarOutlinedChange;
     }
 
-
-
     private OutlineScreenEffectFeature GetOutlineScreenEffectFeature()
     {
         // Unity refuses to make this accessible.
@@ -46,13 +44,11 @@ public class OutlinerController : IDisposable
         return scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
     }
 
-    private void OnAvatarOutlinedChange(Renderer current, Renderer previous)
+    private void OnAvatarOutlinedChange((Renderer renderer, int meshCount, float avatarHeight) current, (Renderer renderer, int meshCount, float avatarHeight) previous)
     {
-        if (current != null)
+        if (current.renderer != null)
         {
-            outlineRenderersSO.avatar.renderer = current;
-            outlineRenderersSO.avatar.meshCount = current.GetComponent<MeshFilter>().sharedMesh.subMeshCount;
-
+            outlineRenderersSO.avatar = current;
             //We are currently showing (or animating towards showing), nothing else to do
             if (shouldShow)
                 return;
@@ -120,7 +116,7 @@ public class OutlinerController : IDisposable
             }
 
             settings.effectFade = HIDE_FADE;
-            outlineRenderersSO.avatar = (null, -1);
+            outlineRenderersSO.avatar = (null, -1, -1);
         }
         catch (OperationCanceledException)
         {
