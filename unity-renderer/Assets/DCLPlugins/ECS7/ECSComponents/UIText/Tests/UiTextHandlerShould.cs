@@ -127,6 +127,8 @@ namespace Tests
             Assert.AreEqual(uiTransformModel.PaddingRight, style.right.value.value);
             Assert.AreEqual(uiTransformModel.PaddingLeft, style.left.value.value);
             Assert.AreEqual(uiTransformModel.PaddingTop, style.top.value.value);
+
+            uiTransformHandler.OnComponentRemoved(scene, entity);
         }
 
         [Test]
