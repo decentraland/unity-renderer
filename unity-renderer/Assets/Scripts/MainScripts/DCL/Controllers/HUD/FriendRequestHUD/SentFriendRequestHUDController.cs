@@ -112,6 +112,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception)
             {
+                await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 view.Show();

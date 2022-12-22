@@ -123,6 +123,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception)
             {
+                await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
@@ -152,6 +153,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception)
             {
+                await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
                 // TODO FRIEND REQUESTS (#3807): track error to analytics
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
