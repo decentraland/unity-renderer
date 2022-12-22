@@ -73,7 +73,8 @@ public class HUDFactory : IHUDFactory
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
-                            new UserProfileWebInterfaceBridge()));
+                            new UserProfileWebInterfaceBridge()),
+                        DataStore.i);
                 }
                 else
                 {

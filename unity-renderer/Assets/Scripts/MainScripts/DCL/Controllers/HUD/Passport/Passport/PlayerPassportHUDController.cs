@@ -15,6 +15,7 @@ namespace DCL.Social.Passports
         internal readonly IUserProfileBridge userProfileBridge;
         private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly DataStore dataStore;
 
         internal UserProfile currentUserProfile;
 
@@ -38,7 +39,8 @@ namespace DCL.Social.Passports
             StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            DataStore dataStore)
         {
             this.view = view;
             this.playerInfoController = playerInfoController;
@@ -48,6 +50,7 @@ namespace DCL.Social.Passports
             this.userProfileBridge = userProfileBridge;
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
+            this.dataStore = dataStore;
 
             view.Initialize();
             view.OnClose += RemoveCurrentPlayer;
@@ -126,6 +129,10 @@ namespace DCL.Social.Passports
 
         private void SetPassportPanelVisibility(bool visible)
         {
+            if (visible && userProfileBridge.GetOwn().isGuest)
+            {
+                dataStore.HUDs.connectWalletModalVisible.Set(true);
+            }
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);
         }

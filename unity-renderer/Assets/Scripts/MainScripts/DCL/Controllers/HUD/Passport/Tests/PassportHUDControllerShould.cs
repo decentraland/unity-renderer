@@ -69,7 +69,8 @@ namespace DCL.Social.Passports
                 currentPlayerInfoCardId,
                 userProfileBridge,
                 passportApiBridge,
-                socialAnalytics
+                socialAnalytics,
+                dataStore
             );
         }
 
