@@ -1,21 +1,19 @@
-using System;
-using System.Collections;
 using DCL;
 using DCL.Interface;
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class LoadingBridge : MonoBehaviour
 {
-
-    private const string DECOUPLED_LOADING_SCREEN = "decoupled_loading_screen";
-    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DECOUPLED_LOADING_SCREEN);
+    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("decoupled_loading_screen");
 
     [Serializable]
     public class Payload
     {
-        public bool isVisible = false;
+        public bool isVisible;
         public string message = "";
-        public bool showTips = false;
+        public bool showTips;
     }
 
     [Serializable]
@@ -25,8 +23,6 @@ public class LoadingBridge : MonoBehaviour
         public int yCoord;
         public string message;
     }
-
-
 
     public void SetLoadingScreen(string jsonMessage)
     {
@@ -42,37 +38,35 @@ public class LoadingBridge : MonoBehaviour
 
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
+
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
     }
 
     public void FadeInLoadingHUD(string jsonMessage)
     {
         if (isDecoupledLoadingScreenEnabled) return;
+
         //TODO: Logic to be cleaned by the RFC-1
         StartCoroutine(WaitForLoadingHUDVisible(jsonMessage));
     }
 
-    IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
+    private IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
         //TODO: Logic to be cleaned by the RFC-1
         WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
 
         PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
+
         if (!string.IsNullOrEmpty(payload.message))
-        {
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
-        }
         else
-        {
             DataStore.i.HUDs.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
-        }
+
         DataStore.i.HUDs.loadingHUD.percentage.Set(0);
         DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
 
         while (!DataStore.i.HUDs.loadingHUD.visible.Get())
-        {
             yield return null;
-        }
 
         WebInterface.LoadingHUDReadyForTeleport(payload.xCoord, payload.yCoord);
     }
