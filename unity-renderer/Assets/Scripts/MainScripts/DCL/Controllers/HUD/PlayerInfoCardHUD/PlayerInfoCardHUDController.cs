@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 public class PlayerInfoCardHUDController : IHUD
 {
@@ -99,25 +101,71 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void CancelInvitation()
+    private void CancelInvitation() =>
+        CancelInvitationAsync().Forget();
+
+    private async UniTaskVoid CancelInvitationAsync()
     {
         if (isNewFriendRequestsEnabled)
-            friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+        {
+            try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
+            catch (Exception)
+            {
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                throw;
+            }
+        }
         else
             friendsController.CancelRequestByUserId(currentPlayerId);
 
         socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
-    private void AcceptFriendRequest()
+    private void AcceptFriendRequest() =>
+        AcceptFriendRequestAsync().Forget();
+
+    private async UniTaskVoid AcceptFriendRequestAsync()
     {
-        friendsController.AcceptFriendship(currentPlayerId);
+        if (isNewFriendRequestsEnabled)
+        {
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+            }
+            catch (Exception)
+            {
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                throw;
+            }
+        }
+        else
+            friendsController.AcceptFriendship(currentPlayerId);
+
         socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
-    private void RejectFriendRequest()
+    private void RejectFriendRequest() =>
+        RejectFriendRequestAsync().Forget();
+
+    private async UniTaskVoid RejectFriendRequestAsync()
     {
-        friendsController.RejectFriendship(currentPlayerId);
+        if (isNewFriendRequestsEnabled)
+        {
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                await friendsController.RejectFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+            }
+            catch (Exception)
+            {
+                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                throw;
+            }
+        }
+        else
+            friendsController.RejectFriendship(currentPlayerId);
+
         socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
     }
 
