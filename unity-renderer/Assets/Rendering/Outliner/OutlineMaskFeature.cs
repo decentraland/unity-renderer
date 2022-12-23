@@ -8,7 +8,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
 {
     private class OutlinerRenderPass : ScriptableRenderPass
     {
-        private const int DEPTH_BUFFER_BITS = 32;
+        private const int DEPTH_BUFFER_BITS = 0;
         private const string PROFILER_TAG = "Outliner Mask Pass";
         private const bool USE_BASE_MATERIAL = false; // Use the material in the renderer and look for an "Outliner" pass
 
