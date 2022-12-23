@@ -181,6 +181,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b387035aa46399445bdc7951a41d5213, type: 3}
+--- !u!1 &1124502666 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1387384965948666, guid: b387035aa46399445bdc7951a41d5213,
+    type: 3}
+  m_PrefabInstance: {fileID: 322303337}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1124502667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124502666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63a0f98def430f44acd416ad34bd35a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1444882335
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +233,7 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
+    logWs: 0
   OpenBrowserOnStart: 1
   webSocketSSL: 0
   kernelVersion: 
@@ -230,6 +249,7 @@ MonoBehaviour:
   builderInWorld: 0
   soloScene: 0
   disableAssetBundles: 0
+  enableGLTFast: 0
   enableDebugMode: 0
   debugPanelMode: 0
   disableGLTFDownloadThrottle: 0
@@ -245,6 +265,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.5098898, y: -0.5752002, z: 7.8599234}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
