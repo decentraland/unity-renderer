@@ -45,7 +45,7 @@ Shader "DCL/OutlinerEffect"
                 abs(pixelUp.r - pixelCenter.r) +
                 abs(pixelDown.r - pixelCenter.r);
             
-            float averageAlpha = (pixelCenter.g + pixelLeft.g + pixelRight.g)/3.0; 
+            float averageAlpha = max(pixelCenter.g, max(pixelLeft.g, pixelRight.g)); 
 
             return float2(result, saturate(result)*averageAlpha);
         }
