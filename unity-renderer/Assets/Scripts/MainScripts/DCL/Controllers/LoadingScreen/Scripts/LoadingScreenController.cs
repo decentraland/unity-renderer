@@ -28,6 +28,18 @@ namespace DCL.LoadingScreen
             //Needed since CameraController is using it to activate its component
             CommonScriptableObjects.isLoadingHUDOpen.Set(true);
             view.OnFadeInFinish += LoadingScreenVisible;
+            DataStore.i.common.isSignUpFlow.OnChange += OnSignupFlow;
+        }
+
+        private void OnSignupFlow(bool current, bool previous)
+        {
+            if (current)
+            {
+                view.FadeOut();
+                SetCommmonScriptableObjectRenderState(true);
+            }
+            else
+                view.FadeIn(false);
         }
 
         private void LoadingScreenVisible(ShowHideAnimator obj)
@@ -50,7 +62,7 @@ namespace DCL.LoadingScreen
                 view.FadeOut();
             }
             else
-                view.FadeIn();
+                view.FadeIn(true);
 
             lastTeleportRequested = current;
         }

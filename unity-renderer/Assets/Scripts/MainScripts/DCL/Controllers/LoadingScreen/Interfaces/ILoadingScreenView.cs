@@ -8,7 +8,7 @@ namespace DCL.LoadingScreen
 
         void FadeOut();
 
-        void FadeIn();
+        void FadeIn(bool instant);
 
         event Action<ShowHideAnimator> OnFadeInFinish;
     }
