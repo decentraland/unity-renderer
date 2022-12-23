@@ -25,14 +25,19 @@ namespace DCL.LoadingScreen
 
             //Needed since CameraController is using it to activate its component
             CommonScriptableObjects.isLoadingHUDOpen.Set(true);
-            view.GetShowHideAnimator().OnWillFinishStart += LoadingScreenVisible;
+            view.OnFadeInFinish += LoadingScreenVisible;
         }
 
-        private void LoadingScreenVisible(ShowHideAnimator obj) =>
+        private void LoadingScreenVisible(ShowHideAnimator obj)
+        {
             SetCommmonScriptableObjectRenderState(false);
+        }
 
-        public void Dispose() =>
+        public void Dispose()
+        {
             view.Dispose();
+            view.OnFadeInFinish -= LoadingScreenVisible;
+        }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {

@@ -1,3 +1,5 @@
+using System;
+
 namespace DCL.LoadingScreen
 {
     /// <summary>
@@ -6,12 +8,21 @@ namespace DCL.LoadingScreen
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
         private static readonly string PATH = "_LoadingScreen";
+        public event Action<ShowHideAnimator> OnFadeInFinish;
 
-        public void UpdateLoadingMessage() { }
+        public static LoadingScreenView Create() =>
+            Create<LoadingScreenView>(PATH);
 
-        public void FadeOut()
+        public override void Start()
         {
-            showHideAnimator.Hide();
+            base.Start();
+            showHideAnimator.OnWillFinishStart += OnFadeInFinish;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
         }
 
         public void FadeIn()
@@ -19,15 +30,14 @@ namespace DCL.LoadingScreen
             if (isVisible) return;
 
             //TODO: The blit to avoid the flash of the empty camera
-            showHideAnimator.Show(true);
+            Show(true);
         }
 
-        public ShowHideAnimator GetShowHideAnimator() =>
-            showHideAnimator;
+        public void FadeOut() =>
+            Hide();
+
+        public void UpdateLoadingMessage() { }
 
         public override void RefreshControl() { }
-
-        public static LoadingScreenView Create() =>
-            Create<LoadingScreenView>(PATH);
     }
 }

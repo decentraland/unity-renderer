@@ -1,3 +1,5 @@
+using System;
+
 namespace DCL.LoadingScreen
 {
     public interface ILoadingScreenView : IBaseComponentView
@@ -8,6 +10,6 @@ namespace DCL.LoadingScreen
 
         void FadeIn();
 
-        ShowHideAnimator GetShowHideAnimator();
+        event Action<ShowHideAnimator> OnFadeInFinish;
     }
 }
