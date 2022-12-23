@@ -23,6 +23,7 @@ public class HUDController : IHUDController
     public IHUDFactory hudFactory = null;
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
+    private DataStore_FeatureFlag featureFlags;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -31,9 +32,10 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(IHUDFactory hudFactory = null)
+    public HUDController(DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
+        this.featureFlags = featureFlags;
     }
 
     public void Initialize()
@@ -90,10 +92,10 @@ public class HUDController : IHUDController
 
     private ChatChannelHUDController chatChannelHud =>
         GetHUDElement(HUDElementID.CHANNELS_CHAT) as ChatChannelHUDController;
-    
+
     private SearchChannelsWindowController channelSearchHud =>
         GetHUDElement(HUDElementID.CHANNELS_SEARCH) as SearchChannelsWindowController;
-    
+
     private CreateChannelWindowController channelCreateHud =>
         GetHUDElement(HUDElementID.CHANNELS_CREATE) as CreateChannelWindowController;
 
@@ -277,7 +279,7 @@ public class HUDController : IHUDController
                 if (chatChannelHud == null)
                 {
                     CreateHudElement(configuration, HUDElementID.CHANNELS_CHAT);
-                    
+
                     chatChannelHud.Initialize();
                     chatChannelHud.SetVisibility(false);
                     chatChannelHud.OnPressBack -= HandleChannelBacked;
@@ -402,13 +404,12 @@ public class HUDController : IHUDController
 
                 break;
             case HUDElementID.LOADING:
-                if (loadingHud == null)
+                if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled("decoupled_loading_screen"))
                 {
                     CreateHudElement(configuration, hudElementId);
                     if (loadingHud != null && configuration.active)
                         loadingController.Initialize();
                 }
-
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
@@ -442,7 +443,7 @@ public class HUDController : IHUDController
     {
         taskbarHud?.OpenPublicChat(channelId, true);
     }
-    
+
     private void OpenChannelChatWindow(string channelId)
     {
         taskbarHud?.OpenChannelChat(channelId);
