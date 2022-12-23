@@ -4,7 +4,10 @@ using UnityEngine.UIElements;
 
 namespace DCL.UIElements.Image
 {
-    public class DCLImage : VisualElement, IUITextureConsumer
+    /// <summary>
+    /// Draw an image on a canvas according to the custom logic
+    /// </summary>
+    public class DCLImage : IUITextureConsumer
     {
         private static readonly Vertex[] VERTICES = new Vertex[4];
         private static readonly ushort[] INDICES = { 0, 1, 2, 2, 3, 0 };
@@ -15,6 +18,8 @@ namespace DCL.UIElements.Image
         private Vector4 slices;
         private Color color;
         private DCLUVs uvs;
+
+        internal VisualElement canvas { get; private set; }
 
         internal bool customMeshGenerationRequired { get; private set; }
 
@@ -51,17 +56,25 @@ namespace DCL.UIElements.Image
             set => SetUVs(value);
         }
 
-        public DCLImage() : this(null, default, Vector4.zero, new Color(1, 1, 1, 0), default) { }
+        private IStyle style => canvas.style;
 
-        public DCLImage(Texture2D texture2D, DCLImageScaleMode scaleMode, Vector4 slices, Color color, DCLUVs uvs)
+        public DCLImage(VisualElement canvas) : this(canvas, null, default, Vector4.zero, new Color(1, 1, 1, 0), default) { }
+
+        public DCLImage(VisualElement canvas, Texture2D texture2D, DCLImageScaleMode scaleMode, Vector4 slices, Color color, DCLUVs uvs)
         {
             this.texture2D = texture2D;
             this.scaleMode = scaleMode;
             this.slices = slices;
             this.color = color;
             this.uvs = uvs;
+            this.canvas = canvas;
 
-            generateVisualContent += OnGenerateVisualContent;
+            canvas.generateVisualContent += OnGenerateVisualContent;
+        }
+
+        public void Dispose()
+        {
+            canvas.generateVisualContent -= OnGenerateVisualContent;
         }
 
         private void SetScaleMode(DCLImageScaleMode scaleMode)
@@ -130,7 +143,7 @@ namespace DCL.UIElements.Image
             }
             else SetSolidColor();
 
-            MarkDirtyRepaint();
+            canvas.MarkDirtyRepaint();
         }
 
         private void AdjustUVs()
@@ -213,7 +226,7 @@ namespace DCL.UIElements.Image
         private void GenerateStretched(MeshGenerationContext mgc)
         {
             // in local coords
-            var r = contentRect;
+            var r = canvas.contentRect;
 
             float left = 0;
             float right = r.width;
@@ -244,9 +257,9 @@ namespace DCL.UIElements.Image
         private void GenerateCenteredTexture(MeshGenerationContext mgc)
         {
             // in local coords
-            var r = contentRect;
+            var r = canvas.contentRect;
 
-            var panelScale = worldTransform.lossyScale;
+            var panelScale = canvas.worldTransform.lossyScale;
             float targetTextureWidth = texture2D.width * panelScale[0];
             float targetTextureHeight = texture2D.height * panelScale[1];
 

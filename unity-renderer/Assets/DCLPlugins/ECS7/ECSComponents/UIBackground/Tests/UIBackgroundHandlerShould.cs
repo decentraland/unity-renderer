@@ -35,12 +35,12 @@ namespace Tests
 
             handler.image.Texture = new Texture2D(64, 64);
 
-            Assert.AreEqual(new StyleColor(new Color(0.5f, 0.5f, 0.1f, 0.95f)), handler.image.style.unityBackgroundImageTintColor);
+            Assert.AreEqual(new StyleColor(new Color(0.5f, 0.5f, 0.1f, 0.95f)), handler.image.canvas.style.unityBackgroundImageTintColor);
             Assert.AreEqual(DCLImageScaleMode.NINE_SLICES, handler.image.ScaleMode);
-            Assert.AreEqual(new StyleInt(6), handler.image.style.unitySliceLeft);
-            Assert.AreEqual(new StyleInt(12), handler.image.style.unitySliceTop);
-            Assert.AreEqual(new StyleInt(32), handler.image.style.unitySliceBottom);
-            Assert.AreEqual(new StyleInt(32), handler.image.style.unitySliceRight);
+            Assert.AreEqual(new StyleInt(6), handler.image.canvas.style.unitySliceLeft);
+            Assert.AreEqual(new StyleInt(12), handler.image.canvas.style.unitySliceTop);
+            Assert.AreEqual(new StyleInt(32), handler.image.canvas.style.unitySliceBottom);
+            Assert.AreEqual(new StyleInt(32), handler.image.canvas.style.unitySliceRight);
         }
     }
 }

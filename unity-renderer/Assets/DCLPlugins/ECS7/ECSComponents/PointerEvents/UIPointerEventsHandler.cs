@@ -43,9 +43,11 @@ namespace DCL.ECSComponents
             if (containerModel == null)
                 return;
 
-            containerModel.components.Add(componentId);
-            eventsSubscriptions = UIPointerEventsUtils.AddCommonInteractivity(containerModel.rootElement, scene, entity, model.PointerEvents, internalInputResults);
-            internalUiContainer.PutFor(scene, entity, containerModel);
+            if (containerModel.components.Add(componentId))
+            {
+                eventsSubscriptions = UIPointerEventsUtils.AddCommonInteractivity(containerModel.rootElement, scene, entity, model.PointerEvents, internalInputResults);
+                internalUiContainer.PutFor(scene, entity, containerModel);
+            }
         }
     }
 }

@@ -23,18 +23,16 @@ namespace DCL.ECSComponents
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
-            image = new DCLImage();
-            image.style.flexGrow = 1;
+            var container = AddComponentToEntity(scene, entity);
+            image = new DCLImage(container.rootElement);
 
             textureUpdater = new UITextureUpdater(image, fontPromiseKeeper);
-
-            var internalUiContainer = AddComponentToEntity(scene, entity);
-            internalUiContainer.rootElement.Insert(0, image);
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            RemoveElementFromRoot(scene, entity, image);
+            RemoveComponentFromEntity(scene, entity);
+            image.Dispose();
             image = null;
             textureUpdater.Dispose();
         }

@@ -17,7 +17,15 @@ namespace DCL.UIElements.Image.Tests
         public void SetUp()
         {
             uiDocument = Object.Instantiate(Resources.Load<UIDocument>("ScenesUI"));
-            uiDocument.rootVisualElement.Insert(0, image = new DCLImage());
+            var canvas = new VisualElement();
+            uiDocument.rootVisualElement.Add(canvas);
+            image = new DCLImage(canvas);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            image.Dispose();
         }
 
         [Test]
@@ -28,8 +36,8 @@ namespace DCL.UIElements.Image.Tests
             image.Texture = null;
 
             Assert.IsFalse(image.customMeshGenerationRequired);
-            Assert.AreEqual(new StyleColor(color), image.style.backgroundColor);
-            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.style.backgroundImage);
+            Assert.AreEqual(new StyleColor(color), image.canvas.style.backgroundColor);
+            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.canvas.style.backgroundImage);
         }
 
         [Test]
@@ -43,8 +51,8 @@ namespace DCL.UIElements.Image.Tests
             image.Slices = new Vector4(0.4f, 0.1f, 0.1f, 0.5f);
 
             Assert.IsTrue(image.customMeshGenerationRequired);
-            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.style.backgroundImage);
-            Assert.AreEqual(new StyleColor(StyleKeyword.None), image.style.backgroundColor);
+            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.canvas.style.backgroundImage);
+            Assert.AreEqual(new StyleColor(StyleKeyword.None), image.canvas.style.backgroundColor);
         }
 
         [Test]
@@ -58,8 +66,8 @@ namespace DCL.UIElements.Image.Tests
             image.Slices = new Vector4(20, 5, 10, 2);
 
             Assert.IsTrue(image.customMeshGenerationRequired);
-            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.style.backgroundImage);
-            Assert.AreEqual(new StyleColor(StyleKeyword.None), image.style.backgroundColor);
+            Assert.AreEqual(new StyleBackground(StyleKeyword.Null), image.canvas.style.backgroundImage);
+            Assert.AreEqual(new StyleColor(StyleKeyword.None), image.canvas.style.backgroundColor);
         }
 
         [Test]
@@ -73,12 +81,12 @@ namespace DCL.UIElements.Image.Tests
             image.Slices = new Vector4(0.125f, 0.0625f, 0.25f, 0.5f);
 
             Assert.IsFalse(image.customMeshGenerationRequired);
-            Assert.AreEqual(new StyleBackground(tex), image.style.backgroundImage);
-            Assert.AreEqual(new StyleColor(color), image.style.unityBackgroundImageTintColor);
-            Assert.AreEqual(new StyleInt(8), image.style.unitySliceLeft);
-            Assert.AreEqual(new StyleInt(4), image.style.unitySliceTop);
-            Assert.AreEqual(new StyleInt(16), image.style.unitySliceRight);
-            Assert.AreEqual(new StyleInt(32), image.style.unitySliceBottom);
+            Assert.AreEqual(new StyleBackground(tex), image.canvas.style.backgroundImage);
+            Assert.AreEqual(new StyleColor(color), image.canvas.style.unityBackgroundImageTintColor);
+            Assert.AreEqual(new StyleInt(8), image.canvas.style.unitySliceLeft);
+            Assert.AreEqual(new StyleInt(4), image.canvas.style.unitySliceTop);
+            Assert.AreEqual(new StyleInt(16), image.canvas.style.unitySliceRight);
+            Assert.AreEqual(new StyleInt(32), image.canvas.style.unitySliceBottom);
         }
 
         [Test]
