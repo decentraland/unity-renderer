@@ -43,6 +43,7 @@ namespace DCL
             EnsureEventType(IUpdateEventHandler.EventType.LateUpdate);
             EnsureEventType(IUpdateEventHandler.EventType.FixedUpdate);
             EnsureEventType(IUpdateEventHandler.EventType.OnGui);
+            EnsureEventType(IUpdateEventHandler.EventType.OnDestroy);
         }
 
         void EnsureEventType( IUpdateEventHandler.EventType eventType )
@@ -80,6 +81,11 @@ namespace DCL
         void OnGUI()
         {
             Dispatch(IUpdateEventHandler.EventType.OnGui);
+        }
+
+        private void OnDestroy()
+        {
+            Dispatch(IUpdateEventHandler.EventType.OnDestroy);
         }
     }
 }

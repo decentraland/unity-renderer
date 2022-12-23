@@ -3,7 +3,7 @@ using System;
 
 namespace DCL.Social.Friends
 {
-    public interface ICancelFriendRequestHUDView
+    public interface ISentFriendRequestHUDView
     {
         event Action OnCancel;
         event Action OnClose;
