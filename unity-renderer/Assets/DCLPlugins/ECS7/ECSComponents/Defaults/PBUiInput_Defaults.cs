@@ -5,7 +5,7 @@
         private static readonly Color4 PLACEHOLDER_COLOR = new () { R = 0.3f, G = 0.3f, B = 0.3f, A = 1.0f };
 
         public static Color4 GetColor(this PBUiInput self) =>
-            self.Color ?? Color_Defaults.color4White;
+            self.Color ?? Color_Defaults.color4Black;
 
         public static Color4 GetPlaceholderColor(this PBUiInput self) =>
             self.PlaceholderColor ?? PLACEHOLDER_COLOR;

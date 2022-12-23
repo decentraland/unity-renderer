@@ -3,7 +3,7 @@ namespace DCL.ECSComponents
     public static class PBUiDropdown_Defaults
     {
         public static Color4 GetColor(this PBUiDropdown self) =>
-            self.Color ?? Color_Defaults.color4White;
+            self.Color ?? Color_Defaults.color4Black;
 
         public static Font GetFont(this PBUiDropdown self) =>
             self.HasFont ? self.Font : Font.FSansSerif;
@@ -15,7 +15,7 @@ namespace DCL.ECSComponents
             !self.Disabled;
 
         public static int GetSelectedIndex(this PBUiDropdown self) =>
-            self.HasSelectedIndex ? self.SelectedIndex : (self.AcceptEmpty ? -1 : 0);
+            self.SelectedIndex <= -1 ? (self.AcceptEmpty ? -1 : 0) : self.SelectedIndex;
 
         public static TextAlignMode GetTextAlign(this PBUiDropdown self) =>
             self.HasTextAlign ? self.TextAlign : TextAlignMode.TamMiddleCenter;

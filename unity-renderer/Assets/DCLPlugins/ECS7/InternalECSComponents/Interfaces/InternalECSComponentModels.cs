@@ -61,5 +61,10 @@ namespace DCL.ECS7.InternalComponents
         public long parentId;
         public long rigthOf;
         public bool shouldSort;
+
+        public InternalUiContainer(long entityId)
+        {
+            rootElement.name += $"(Id: {entityId})";
+        }
     }
 }

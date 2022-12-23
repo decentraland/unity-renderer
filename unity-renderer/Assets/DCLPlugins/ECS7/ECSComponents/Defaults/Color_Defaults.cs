@@ -16,5 +16,10 @@ namespace DCL.ECSComponents
         {
             R = 1, G = 1, B = 1, A = 1
         };
+
+        public static readonly Color4 color4Black = new Color4()
+        {
+            R = 0, G = 0, B = 0, A = 1
+        };
     }
 }

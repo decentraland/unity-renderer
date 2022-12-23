@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.UIAbstractElements
 
         protected internal InternalUiContainer AddComponentToEntity(IParcelScene scene, IDCLEntity entity)
         {
-            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
+            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer(entity.entityId);
             containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);

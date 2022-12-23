@@ -46,7 +46,7 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         [Test]
         public void RemoveComponentFromRoot()
         {
-            var containerModel = new InternalUiContainer();
+            var containerModel = new InternalUiContainer(entity.entityId);
             containerModel.components.Add(COMPONENT_ID);
             internalUiContainer.PutFor(scene, entity, containerModel);
 

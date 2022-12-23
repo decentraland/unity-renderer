@@ -4,6 +4,7 @@ using DCL.ECSComponents.UIAbstractElements;
 using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -93,13 +94,9 @@ namespace DCL.ECSComponents.UIDropdown
 
             int selectedIndex = model.GetSelectedIndex();
 
-            // if index == -1 it will nullify the displayed value: there is no option for a "default" value
-            uiElement.index = selectedIndex;
-
-            // so we imitate default value
-            if (selectedIndex == -1)
-                // It looks like a hack but this is how it works in the Unity's `DropdownField` itself
-                uiElement.SetValueWithoutNotify(model.EmptyLabel);
+            // Don't report the value back to the scene
+            // there is no `SetIndexWithoutNotify`
+            uiElement.SetValueWithoutNotify(uiElement.choices.ElementAtOrDefault(selectedIndex) ?? model.EmptyLabel);
 
             // it is controlled from the style sheet
             uiElement.EnableInClassList(READONLY_CLASS, model.Disabled);
