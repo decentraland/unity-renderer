@@ -10,6 +10,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
     {
         private const int DEPTH_BUFFER_BITS = 32;
         private const string PROFILER_TAG = "Outliner Mask Pass";
+        private const bool USE_BASE_MATERIAL = false; // Use the material in the renderer and look for an "Outliner" pass
+
         private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
         private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
         private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
@@ -114,14 +116,18 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 // We use a GPU Skinning based material
                 if (avatar.renderer.materials[i] != null)
                 {
-                    int originalMaterialOutlinerPass = avatar.renderer.materials[i].FindPass("Outliner");
-
-                    if (originalMaterialOutlinerPass != -1)
+                    //Enable it when we are capable of adding the pass into the Toon Shader
+                    if (USE_BASE_MATERIAL)
                     {
-                        //The material has a built in pass we can use
-                        avatar.renderer.materials[i].SetFloat(_Height, avatar.avatarHeight);
-                        cmd.DrawRenderer(avatar.renderer, avatar.renderer.materials[i], i, originalMaterialOutlinerPass);
-                        continue;
+                        int originalMaterialOutlinerPass = avatar.renderer.materials[i].FindPass("Outliner");
+
+                        if (originalMaterialOutlinerPass != -1)
+                        {
+                            //The material has a built in pass we can use
+                            avatar.renderer.materials[i].SetFloat(_Height, avatar.avatarHeight);
+                            cmd.DrawRenderer(avatar.renderer, avatar.renderer.materials[i], i, originalMaterialOutlinerPass);
+                            continue;
+                        }
                     }
 
                     // We use the original material to copy the GPUSkinning values.
