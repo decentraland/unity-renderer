@@ -13,12 +13,13 @@ namespace DCL.Configuration
         const string DEVELOPMENT = "development";
         const string PRODUCTION = "production";
         const string UNKNOWN_BRANCH = "branch/unknown";
+        
         public static void Initialize()
         {
-            // if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
-            SentrySdk.CaptureMessage("Sentry is initializng...test 1");
+            if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
+
 #if !UNITY_EDITOR
-            SentrySdk.CaptureMessage("Sentry is initializng...test 2");
+
             SentryUnity.Init(o =>
             {
                 o.Environment = SentryConfiguration.Environment;
@@ -31,7 +32,10 @@ namespace DCL.Configuration
                     o.TracesSampleRate = 1.0f;
                 }
             });
+
+            SentrySdk.CaptureMessage("Sentry is initializng...test inside");
 #endif
+            SentrySdk.CaptureMessage("Sentry is initializng...test outside");
         }
     }
 }
