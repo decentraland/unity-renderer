@@ -1,8 +1,6 @@
 using NUnit.Framework;
 using System.Linq;
-using System.Reflection;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
+using UnityEngine;
 
 public class OutlinerEditorValidations
 {
@@ -10,11 +8,8 @@ public class OutlinerEditorValidations
     public void OutlinerRenderFeaturesAreDisabled()
     {
         // Arrange
-        var pipeline = ((UniversalRenderPipelineAsset)GraphicsSettings.renderPipelineAsset);
-        FieldInfo propertyInfo = pipeline.GetType().GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
-        var scriptableRendererData = ((ScriptableRendererData[])propertyInfo?.GetValue(pipeline))?[0];
-        var maskFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineMaskFeature>().First();
-        var screenFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
+        var maskFeature = Resources.FindObjectsOfTypeAll<OutlineMaskFeature>().FirstOrDefault();
+        var screenFeature = Resources.FindObjectsOfTypeAll<OutlineScreenEffectFeature>().FirstOrDefault();
 
         // Assert
         Assert.NotNull(maskFeature, "The Outliner Mask Feature is missing in the ForwardRender asset");

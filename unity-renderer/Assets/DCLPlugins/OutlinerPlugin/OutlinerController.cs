@@ -24,30 +24,14 @@ public class OutlinerController : IDisposable
         this.dataStore = dataStore;
         this.outlineRenderersSO = outlineRenderersSO;
 
-        (outlineMaskFeature, outlineScreenEffectFeature) = GetOutlineRenderFeatures();
+        outlineMaskFeature = Resources.FindObjectsOfTypeAll<OutlineMaskFeature>().FirstOrDefault();
+        outlineScreenEffectFeature = Resources.FindObjectsOfTypeAll<OutlineScreenEffectFeature>().FirstOrDefault();
         outlineMaskFeature.SetActive(true);
         outlineScreenEffectFeature.SetActive(true);
         outlineScreenEffectFeature.settings.effectFade = 0;
         shouldShow = false;
 
         this.dataStore.avatarOutlined.OnChange += OnAvatarOutlinedChange;
-    }
-
-    private (OutlineMaskFeature maskFeature, OutlineScreenEffectFeature screenEffectFeature) GetOutlineRenderFeatures()
-    {
-        // Unity refuses to make this accessible.
-        // Some alternatives could be moving ForwardRenderer to Resources
-        // Have an ScriptableObject with all the references somewhere.
-        // I find reflection cleaner.
-
-        var pipeline = ((UniversalRenderPipelineAsset)GraphicsSettings.renderPipelineAsset);
-        FieldInfo propertyInfo = pipeline.GetType().GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
-        var scriptableRendererData = ((ScriptableRendererData[])propertyInfo?.GetValue(pipeline))?[0];
-
-        var maskFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineMaskFeature>().First();
-        var screenFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
-
-        return (maskFeature, screenFeature);
     }
 
     private void OnAvatarOutlinedChange((Renderer renderer, int meshCount, float avatarHeight) current, (Renderer renderer, int meshCount, float avatarHeight) previous)

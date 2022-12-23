@@ -1,11 +1,7 @@
-﻿// unset:none
-using DCL;
+﻿using DCL;
 using NUnit.Framework;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 public class OutlinerControllerShould
 {
@@ -13,12 +9,9 @@ public class OutlinerControllerShould
     public void PrepareTheRenderFeatures()
     {
         // Arrange
-        var pipeline = ((UniversalRenderPipelineAsset)GraphicsSettings.renderPipelineAsset);
-        FieldInfo propertyInfo = pipeline.GetType().GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
-        var scriptableRendererData = ((ScriptableRendererData[])propertyInfo?.GetValue(pipeline))?[0];
-        var maskFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineMaskFeature>().First();
-        var screenFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
+        var maskFeature = Resources.FindObjectsOfTypeAll<OutlineMaskFeature>().FirstOrDefault();
         maskFeature.SetActive(false);
+        var screenFeature = Resources.FindObjectsOfTypeAll<OutlineScreenEffectFeature>().FirstOrDefault();
         screenFeature.SetActive(false);
 
         // Act
