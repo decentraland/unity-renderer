@@ -27,7 +27,6 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         private static readonly int AVATAR_MAP10 = Shader.PropertyToID("_AvatarMap10");
         private static readonly int AVATAR_MAP11 = Shader.PropertyToID("_AvatarMap11");
         private static readonly int AVATAR_MAP12 = Shader.PropertyToID("_AvatarMap12");
-        private static readonly int _Height = Shader.PropertyToID("_Height");
 
         private readonly OutlineRenderersSO outlineRenderersSo;
         private readonly Material material;
@@ -124,7 +123,6 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                         if (originalMaterialOutlinerPass != -1)
                         {
                             //The material has a built in pass we can use
-                            avatar.renderer.materials[i].SetFloat(_Height, avatar.avatarHeight);
                             cmd.DrawRenderer(avatar.renderer, avatar.renderer.materials[i], i, originalMaterialOutlinerPass);
                             continue;
                         }
@@ -140,8 +138,6 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                 {
                     materialToUse = material;
                 }
-
-                materialToUse.SetFloat(_Height, avatar.avatarHeight);
 
                 // We have to manually render all the submeshes of the selected objects.
                 cmd.DrawRenderer(avatar.renderer, materialToUse, i);

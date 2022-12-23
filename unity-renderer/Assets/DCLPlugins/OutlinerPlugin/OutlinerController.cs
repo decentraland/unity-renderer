@@ -70,22 +70,16 @@ public class OutlinerController : IDisposable
 
         var settings = outlineScreenEffectFeature.settings;
 
-        try
+        while (!Mathf.Approximately(settings.effectFade, SHOW_FADE))
         {
-            ct.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested)
+                return;
 
-            while (!Mathf.Approximately(settings.effectFade, SHOW_FADE))
-            {
-                settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, SHOW_FADE, SPEED * Time.deltaTime);
-                await UniTask.NextFrame(ct);
-            }
+            settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, SHOW_FADE, SPEED * Time.deltaTime);
+            await UniTask.NextFrame(ct);
+        }
 
-            settings.effectFade = SHOW_FADE;
-        }
-        catch (OperationCanceledException)
-        {
-            //Do nothing
-        }
+        settings.effectFade = SHOW_FADE;
     }
 
     private async UniTaskVoid FadeOutOutlineAsync(CancellationToken ct = default)
@@ -95,23 +89,17 @@ public class OutlinerController : IDisposable
 
         var settings = outlineScreenEffectFeature.settings;
 
-        try
+        while (!Mathf.Approximately(settings.effectFade, HIDE_FADE))
         {
-            ct.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested)
+                return;
 
-            while (!Mathf.Approximately(settings.effectFade, HIDE_FADE))
-            {
-                settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, HIDE_FADE, SPEED * Time.deltaTime);
-                await UniTask.NextFrame(ct);
-            }
+            settings.effectFade = Mathf.MoveTowards(outlineScreenEffectFeature.settings.effectFade, HIDE_FADE, SPEED * Time.deltaTime);
+            await UniTask.NextFrame(ct);
+        }
 
-            settings.effectFade = HIDE_FADE;
-            outlineRenderersSO.avatar = (null, -1, -1);
-        }
-        catch (OperationCanceledException)
-        {
-            //Do nothing
-        }
+        settings.effectFade = HIDE_FADE;
+        outlineRenderersSO.avatar = (null, -1, -1);
     }
 
     public void Dispose()

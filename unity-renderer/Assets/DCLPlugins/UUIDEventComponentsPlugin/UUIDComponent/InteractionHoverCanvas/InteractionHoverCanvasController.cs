@@ -136,7 +136,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
         }
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.transform as RectTransform,
+            (RectTransform)canvas.transform,
             Input.mousePosition, canvas.worldCamera,
             out Vector2 movePos);
 
