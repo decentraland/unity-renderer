@@ -139,11 +139,10 @@ namespace DCL.Social.Passports
 
         private void SetName(string name)
         {
-
             if (name.Contains('#'))
             {
                 this.name.SetText(name.Split('#')[0]);
-                address.SetText(name.Split('#')[1]);
+                address.SetText($"#{name.Split('#')[1]}");
             }
             else
             {

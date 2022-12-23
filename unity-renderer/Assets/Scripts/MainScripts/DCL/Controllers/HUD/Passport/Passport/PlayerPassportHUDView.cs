@@ -133,7 +133,6 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
-            mouseCatcher.LockCursor();
             passportNavigationView.SetInitialPage();
             OnClose?.Invoke();
         }

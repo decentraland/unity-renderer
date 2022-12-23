@@ -119,6 +119,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 903e82323051c41339d97e1f52c7c984, type: 3}
   - {fileID: 21300000, guid: fb2a51422f4f0f84ca589e9716428e06, type: 3}
   - {fileID: 21300000, guid: 6d6f6142025570c4c8c8705c19f66da4, type: 3}
+  - {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   - {fileID: 21300000, guid: 6ebca6627bf834831a528f22f85eb9de, type: 3}
   - {fileID: 21300000, guid: 9622f862db0a54f49a26e220aac90cbe, type: 3}
   - {fileID: 21300000, guid: 16a5648277f4daa4d9c15a5365076da6, type: 3}
@@ -126,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e0b16592248644670b24222cef732ed0, type: 3}
   - {fileID: 21300000, guid: b3a558a257e4f4f988f0f1b57a559485, type: 3}
   - {fileID: 21300000, guid: aa3440b27b8b9423f9821f663863c0c0, type: 3}
+  - {fileID: 21300000, guid: b86aa5b2e1b3a4e2bb9e3afe59315b46, type: 3}
   - {fileID: 21300000, guid: b4dd3cb22062748f3b9fd6a24bbf12dc, type: 3}
   - {fileID: 21300000, guid: f0a40db225b774307b56e6cfbc73889a, type: 3}
   - {fileID: 21300000, guid: 03b222c2450ce4c57ba7e9d6268b0c92, type: 3}
@@ -384,6 +386,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9440a54c9ef22324ebdbd9239d2e6021, type: 3}
   - {fileID: 21300000, guid: 5e3b705ca4d7f6b45ba6ea1b7cf43785, type: 3}
   - {fileID: 21300000, guid: b3dde05c995029e4c8e4a4acd0f99337, type: 3}
+  - {fileID: 21300000, guid: d680666c4c5134b9f8615ffaaf5da043, type: 3}
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 8fb7e08cdb8220c458f8e6f5bfabf33c, type: 3}
@@ -438,6 +441,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 48839cbe5b4274e8699c1d592a48d375, type: 3}
   - {fileID: 21300000, guid: cdfa22ce5f6194faa94218aa69dc20f1, type: 3}
   - {fileID: 21300000, guid: a76b94def1e7d4365aefc6bf53f6f81f, type: 3}
+  - {fileID: 21300000, guid: eafeb5ee04f824648b1a9f8b4412d485, type: 3}
   - {fileID: 21300000, guid: f992e8febb67b5d47a24e9f16d5cc190, type: 3}
   - {fileID: 21300000, guid: aa5bccfe420b24d5c89f0e8b12b4f537, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
@@ -521,6 +525,7 @@ SpriteAtlas:
   - Container12Shadow10
   - dance_male2_256
   - InputFieldBuilderFocus
+  - NameIcon
   - BrokenHeart
   - snowfall_256
   - SmartItemIcon
@@ -528,6 +533,7 @@ SpriteAtlas:
   - NFTUniqueContainer
   - RoundedSquare20x20
   - ExpandIcon
+  - IntroIcon
   - EnvelopeOpened
   - DialogBubble
   - WifiIcon
@@ -786,6 +792,7 @@ SpriteAtlas:
   - RarityCornerEmotes
   - DclLogoLine1
   - InputRed
+  - WearablesIcon
   - CrowdIcon
   - OutlineGradient
   - ConfirmFriendParticles2
@@ -840,6 +847,7 @@ SpriteAtlas:
   - BuilderOff
   - Outline1Radius24
   - Bell
+  - EmotesIcon
   - shrug_256
   - Outline3Radius14
   - PatternPC
