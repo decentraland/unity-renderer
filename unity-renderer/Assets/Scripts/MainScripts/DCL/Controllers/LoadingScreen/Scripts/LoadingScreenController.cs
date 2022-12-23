@@ -10,18 +10,20 @@ namespace DCL.LoadingScreen
     {
         private readonly ILoadingScreenView view;
         private readonly ISceneController sceneController;
+        private DataStore_Player playerDataStore;
 
         private int currentLoadingScenes;
 
         private Vector3 lastTeleportRequested;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController)
+        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore)
         {
             this.view = view;
             this.sceneController = sceneController;
+            this.playerDataStore = playerDataStore;
 
             lastTeleportRequested = Vector3.one * float.MaxValue;
-            DataStore.i.player.lastTeleportPosition.OnChange += TeleportRequested;
+            playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
 
             //Needed since CameraController is using it to activate its component
             CommonScriptableObjects.isLoadingHUDOpen.Set(true);
@@ -37,6 +39,7 @@ namespace DCL.LoadingScreen
         {
             view.Dispose();
             view.OnFadeInFinish -= LoadingScreenVisible;
+            playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
