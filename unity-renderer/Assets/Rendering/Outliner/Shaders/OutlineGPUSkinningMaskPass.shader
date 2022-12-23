@@ -136,6 +136,7 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
                 //that offset is baked when combining the avatar into a single mesh, so the pivot is offsetted
                 const float avatar_offset = 0.755;
                 float heightFade = ( input.positionOS.y - avatar_offset) / _Height;
+                heightFade = saturate(heightFade*1.3f);
                 
                 return half4(1, heightFade, 0, 0);
             }
