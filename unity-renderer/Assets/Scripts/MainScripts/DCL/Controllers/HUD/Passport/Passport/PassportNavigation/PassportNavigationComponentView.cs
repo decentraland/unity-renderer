@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -12,6 +13,9 @@ namespace DCL.Social.Passports
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
         private const string TEMPLATE_DESCRIPTION_TEXT = "No intro description.";
+        private const string linksRegex = @"\[(.*?)\)";
+        private const string linkTitleRegex = @"(?<=\[).+?(?=\])";
+        private const string linkRegex = @"(?<=\().+?(?=\))";
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;
@@ -36,6 +40,9 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject nftPageUIReferenceObject;
         [SerializeField] private Color emptyDescriptionTextColor;
         [SerializeField] private Color normalDescriptionTextColor;
+        [SerializeField] private GameObject linksContainer;
+        [SerializeField] private GameObject linksTitle;
+        [SerializeField] private GameObject linkPrefabReference;
         [SerializeField] private GameObject aboutToggleOn;
         [SerializeField] private GameObject aboutToggleOff;
         [SerializeField] private GameObject collectiblesToggleOn;
@@ -108,8 +115,28 @@ namespace DCL.Social.Passports
 
         public void SetDescription(string description)
         {
+            MatchCollection matchCollection = Regex.Matches(description, linksRegex, RegexOptions.IgnoreCase);
+            List<string> links = new List<string>();
+            foreach (Match link in matchCollection)
+            {
+                description = description.Replace(link.Value, "");
+                links.Add(link.Value);
+            }
+            linksTitle.SetActive(links.Count > 0);
+            linksContainer.SetActive(links.Count > 0);
             descriptionText.text = string.IsNullOrEmpty(description) ? TEMPLATE_DESCRIPTION_TEXT : description;
             descriptionText.color = string.IsNullOrEmpty(description) ? emptyDescriptionTextColor : normalDescriptionTextColor;
+            SetLinks(links);
+        }
+
+        private void SetLinks(List<string> links)
+        {
+            foreach (string link in links)
+            {
+                PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
+                newLink.SetLinkTitle(Regex.Matches(link, linkTitleRegex, RegexOptions.IgnoreCase)[0].Value);
+                newLink.SetLink(Regex.Matches(link, linkRegex, RegexOptions.IgnoreCase)[0].Value);
+            }
         }
 
         public void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId)
