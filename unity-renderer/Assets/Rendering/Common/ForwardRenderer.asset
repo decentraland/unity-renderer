@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: NewScreenSpaceAmbientOcclusion
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
   m_Settings:
     Downsample: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
     blurSigma: 5
     outlineColor: {r: 0, g: 1, b: 1, a: 1}
     blurColor: {r: 0, g: 1, b: 1, a: 1}
-    innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.12156863}
+    innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.050980393}
     effectFade: 0
 --- !u!114 &-981180908113067146
 MonoBehaviour:

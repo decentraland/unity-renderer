@@ -10616,7 +10616,6 @@ Shader "DCL/Toon Shader"
             float4 _AvatarMap12_TexelSize;
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
-            float _Height;
 
             #include "Assets/Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
@@ -10637,7 +10636,6 @@ Shader "DCL/Toon Shader"
                 float4 uv0: TEXCOORD0;
                 float4 uv1: TEXCOORD1;
                 float4 uv2: TEXCOORD2;
-                float3 positionOS: TEXCOORD3;
             };
 
             Varyings vert(Attributes input)
@@ -10650,7 +10648,6 @@ Shader "DCL/Toon Shader"
                 output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
                 output.uv2 = input.uv2;
-                output.positionOS = input.positionOS;
                 return output;
             }
 
@@ -10660,14 +10657,7 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 1), input.uv2.r, input.uv0, out_AlbedoColor);
                 const float alphaThreshold = input.uv2.b;
                 clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
-
-                //Avatar pivot is displaced by 0.755 due to the malformed armature
-                //that offset is baked when combining the avatar into a single mesh, so the pivot is offsetted
-                const float avatar_offset = 0.755;
-                float heightFade = ( input.positionOS.y - avatar_offset) / _Height;
-                heightFade = saturate(heightFade*1.3f);
-                
-                return half4(1, heightFade, 0, 0);
+                return half4(1, 1, 1, 1);
             }
             ENDHLSL
         }
@@ -19998,7 +19988,6 @@ Shader "DCL/Toon Shader"
             float4 _AvatarMap12_TexelSize;
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
-            float _Height;
 
             #include "Assets/Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
@@ -20019,7 +20008,6 @@ Shader "DCL/Toon Shader"
                 float4 uv0: TEXCOORD0;
                 float4 uv1: TEXCOORD1;
                 float4 uv2: TEXCOORD2;
-                float3 positionOS: TEXCOORD3;
             };
 
             Varyings vert(Attributes input)
@@ -20032,7 +20020,6 @@ Shader "DCL/Toon Shader"
                 output.uv0 = input.uv0;
                 output.uv1 = input.uv1;
                 output.uv2 = input.uv2;
-                output.positionOS = input.positionOS;
                 return output;
             }
 
@@ -20042,14 +20029,7 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 1), input.uv2.r, input.uv0, out_AlbedoColor);
                 const float alphaThreshold = input.uv2.b;
                 clip(out_AlbedoColor.a - alphaThreshold - 0.05f);
-
-                //Avatar pivot is displaced by 0.755 due to the malformed armature
-                //that offset is baked when combining the avatar into a single mesh, so the pivot is offsetted
-                const float avatar_offset = 0.755;
-                float heightFade = ( input.positionOS.y - avatar_offset) / _Height;
-                heightFade = saturate(heightFade*1.3f);
-
-                return half4(1, heightFade, 0, 0);
+                return half4(1, 1, 1, 1);
             }
             ENDHLSL
         }
