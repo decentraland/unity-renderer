@@ -58,7 +58,6 @@ namespace DCL.Social.Passports
         private void JumpInUser()
         {
             socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport);
-            OnClosePassport?.Invoke();
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) =>
