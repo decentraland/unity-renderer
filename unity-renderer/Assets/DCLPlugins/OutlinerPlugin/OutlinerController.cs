@@ -14,6 +14,7 @@ public class OutlinerController : IDisposable
     private readonly DataStore_Outliner dataStore;
     private readonly OutlineRenderersSO outlineRenderersSO;
     private readonly OutlineScreenEffectFeature outlineScreenEffectFeature;
+    private readonly OutlineMaskFeature outlineMaskFeature;
 
     private CancellationTokenSource animationCTS = new CancellationTokenSource();
     private bool shouldShow;
@@ -23,14 +24,16 @@ public class OutlinerController : IDisposable
         this.dataStore = dataStore;
         this.outlineRenderersSO = outlineRenderersSO;
 
-        outlineScreenEffectFeature = GetOutlineScreenEffectFeature();
+        (outlineMaskFeature, outlineScreenEffectFeature) = GetOutlineRenderFeatures();
+        outlineMaskFeature.SetActive(true);
+        outlineScreenEffectFeature.SetActive(true);
         outlineScreenEffectFeature.settings.effectFade = 0;
         shouldShow = false;
 
         this.dataStore.avatarOutlined.OnChange += OnAvatarOutlinedChange;
     }
 
-    private OutlineScreenEffectFeature GetOutlineScreenEffectFeature()
+    private (OutlineMaskFeature maskFeature, OutlineScreenEffectFeature screenEffectFeature) GetOutlineRenderFeatures()
     {
         // Unity refuses to make this accessible.
         // Some alternatives could be moving ForwardRenderer to Resources
@@ -41,7 +44,10 @@ public class OutlinerController : IDisposable
         FieldInfo propertyInfo = pipeline.GetType().GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
         var scriptableRendererData = ((ScriptableRendererData[])propertyInfo?.GetValue(pipeline))?[0];
 
-        return scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
+        var maskFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineMaskFeature>().First();
+        var screenFeature = scriptableRendererData?.rendererFeatures.OfType<OutlineScreenEffectFeature>().First();
+
+        return (maskFeature, screenFeature);
     }
 
     private void OnAvatarOutlinedChange((Renderer renderer, int meshCount, float avatarHeight) current, (Renderer renderer, int meshCount, float avatarHeight) previous)
@@ -130,5 +136,7 @@ public class OutlinerController : IDisposable
         animationCTS?.Cancel();
         animationCTS?.Dispose();
         animationCTS = null;
+        outlineMaskFeature.SetActive(false);
+        outlineScreenEffectFeature.SetActive(false);
     }
 }

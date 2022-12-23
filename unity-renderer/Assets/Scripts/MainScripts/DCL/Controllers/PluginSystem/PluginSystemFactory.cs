@@ -52,7 +52,6 @@ namespace DCL
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.Register<SendFriendRequestHUDPlugin>(() => new SendFriendRequestHUDPlugin());
             pluginSystem.Register<CancelFriendRequestHUDPlugin>(() => new CancelFriendRequestHUDPlugin());
-            pluginSystem.Register<OutlinerPlugin>(() => new OutlinerPlugin());
 
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2), "tutorial");
@@ -61,6 +60,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
+            pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 FriendsController.i,

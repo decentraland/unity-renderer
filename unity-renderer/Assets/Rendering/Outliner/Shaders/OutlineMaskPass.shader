@@ -2,15 +2,14 @@ Shader "Hidden/DCL/OutlineMaskPass"
 {
     SubShader
     {
-        Tags
-        {
-            "RenderType" = "Opaque"
-            "RenderPipeline" = "UniversalPipeline"
-            "LightMode" = "Outliner"
-        }
-
         Pass
         {
+            Tags
+            {
+                "RenderType" = "Opaque"
+                "RenderPipeline" = "UniversalPipeline"
+                "LightMode" = "Outliner"
+            }
             Name "Outliner"
 
             HLSLPROGRAM

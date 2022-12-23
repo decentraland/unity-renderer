@@ -18,17 +18,13 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
 
     SubShader
     {
-        Tags
-        {
-            "RenderPipeline" = "UniversalPipeline"
-        }
-
         Pass
         {
             Name "Outliner"
             Tags
             {
                 "LightMode" = "Outliner"
+                "RenderPipeline" = "UniversalPipeline"
             }
 
             HLSLPROGRAM

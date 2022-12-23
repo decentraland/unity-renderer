@@ -111,15 +111,26 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             {
                 Material materialToUse = null;
 
-                //We need a material to copy the GPUSkinning values, we enter GPU Skinning flow if we find it.
+                // We use a GPU Skinning based material
                 if (avatar.renderer.materials[i] != null)
                 {
-                    //We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
+                    int originalMaterialOutlinerPass = avatar.renderer.materials[i].FindPass("Outliner");
+
+                    if (originalMaterialOutlinerPass != -1)
+                    {
+                        //The material has a built in pass we can use
+                        avatar.renderer.materials[i].SetFloat(_Height, avatar.avatarHeight);
+                        cmd.DrawRenderer(avatar.renderer, avatar.renderer.materials[i], i, originalMaterialOutlinerPass);
+                        continue;
+                    }
+
+                    // We use the original material to copy the GPUSkinning values.
+                    // We cannot use materialToUse.CopyPropertiesFromMaterial because there are non serialized uniforms to set
                     materialToUse = new Material(gpuSkinningMaterial);
                     toDispose.Add(materialToUse);
                     CopyAvatarProperties(avatar.renderer.materials[i], materialToUse);
                 }
-                else //Fallback to the normal outliner
+                else // Fallback to the normal outliner without GPUSkinning
                 {
                     materialToUse = material;
                 }

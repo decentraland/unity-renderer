@@ -81,7 +81,14 @@ namespace DCL
 
             Type typeToUse = typeof(IPointerEvent);
 
-            if (!Utils.IsCursorLocked) { typeToUse = typeof(IAvatarOnPointerDown); }
+            if (!Utils.IsCursorLocked)
+            {
+                //New interaction model
+                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                    return;
+
+                typeToUse = typeof(IAvatarOnPointerDown);
+            }
 
             IWorldState worldState = Environment.i.world.state;
 
@@ -343,6 +350,14 @@ namespace DCL
             {
                 if (!renderingEnabled)
                     return;
+
+                if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
+                {
+                    //New interaction model
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                        return;
+                }
+
             }
 
             if (charCamera == null)
