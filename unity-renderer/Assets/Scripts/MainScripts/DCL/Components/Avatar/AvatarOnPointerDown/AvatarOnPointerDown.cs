@@ -107,6 +107,7 @@ namespace DCL.Components
 
             if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
+                AudioScriptableObjects.buttonClick.Play(true);
                 WebInterface.ReportAvatarClick(
                     playerScene.sceneData.sceneNumber,
                     avatarPlayer.id,
