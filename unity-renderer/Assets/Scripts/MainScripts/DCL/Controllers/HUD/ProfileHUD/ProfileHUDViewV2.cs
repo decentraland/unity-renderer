@@ -231,13 +231,15 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
 
         descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
+        descriptionInputText.onTextSelection.AddListener((description, x, y) =>
+        {
+            descriptionInputText.text = description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
         descriptionInputText.onSelect.AddListener(x =>
         {
             descriptionInputText.text = description;
