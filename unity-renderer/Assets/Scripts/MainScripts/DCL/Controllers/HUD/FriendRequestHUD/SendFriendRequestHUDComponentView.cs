@@ -17,10 +17,13 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button sendButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal TMP_Text messageBodyLengthLabel;
+        [SerializeField] internal Image messageBodyMaxLimitMark;
         [SerializeField] internal ImageComponentView profileImage;
+        [SerializeField] internal Color bodyMaxLimitColor;
 
         private readonly Model model = new Model();
         private ILazyTextureObserver lastProfilePictureObserver;
+        private Color messageBodyLengthOriginalColor;
 
         public event Action<string> OnMessageBodyChanged;
         public event Action OnSend;
@@ -39,10 +42,12 @@ namespace DCL.Social.Friends
 
             messageBodyInput.onValueChanged.AddListener(s =>
             {
-                messageBodyLengthLabel.text = $"{s.Length}/140";
+                RefreshMessageBodyValidations();
                 OnMessageBodyChanged?.Invoke(s);
             });
             sendButton.onClick.AddListener(() => OnSend?.Invoke());
+
+            messageBodyLengthOriginalColor = messageBodyLengthLabel.color;
         }
 
         public override void Dispose()
@@ -64,7 +69,8 @@ namespace DCL.Social.Friends
 
             nameLabel.text = model.Name;
             successStateLabel.text = $"Friend request sent to {model.Name}";
-            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/140";
+            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/{messageBodyInput.characterLimit}";
+            RefreshMessageBodyValidations();
 
             // the load of the profile picture gets stuck if the same listener is registered many times
             if (lastProfilePictureObserver != model.ProfilePictureObserver)
@@ -114,6 +120,14 @@ namespace DCL.Social.Friends
         }
 
         public void ClearInputField() => messageBodyInput.text = "";
+
+        private void RefreshMessageBodyValidations()
+        {
+            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/{messageBodyInput.characterLimit}";
+            messageBodyMaxLimitMark.gameObject.SetActive(messageBodyInput.text.Length >= messageBodyInput.characterLimit);
+            messageBodyMaxLimitMark.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
+            messageBodyLengthLabel.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
+        }
 
         private class Model
         {
