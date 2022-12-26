@@ -565,6 +565,7 @@ namespace Tests
             // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
             Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
 
+            uiTransformHandler.OnComponentRemoved(scene, baseParentChildEntity);
             uiTextHandler.OnComponentRemoved(scene, baseParentChildEntity);
             AssetPromiseKeeper_Font.i.Cleanup();
         }

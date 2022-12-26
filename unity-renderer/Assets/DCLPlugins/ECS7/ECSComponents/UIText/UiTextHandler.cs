@@ -44,6 +44,8 @@ namespace DCL.ECSComponents
             containerModel.OnUiElementStyleUpdated += UpdateStyleBoundToContainerUiElement;
 
             containerModel.rootElement.Add(uiElement);
+            if(containerModel.rootElement[0] != uiElement)
+                uiElement.PlaceBehind(containerModel.rootElement[0]);
             containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);
