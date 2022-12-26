@@ -517,35 +517,20 @@ namespace Tests
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
 
-            ECS7TestEntity baseParentEntity = scene.CreateEntity(110); // base parent
-            ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111); // child of base parent
-            ECS7TestEntity baseParentGrandChildEntity1 = scene.CreateEntity(112); // grand child of base parent
-            ECS7TestEntity baseParentGrandChildEntity2 = scene.CreateEntity(113); // grand child of base parent
-            ECS7TestEntity baseParentGrandChildEntity3 = scene.CreateEntity(114); // grand child of base parent
+            ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
+            ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
+            ECS7TestEntity baseParentGrandChildEntity1 = scene.CreateEntity(112);
+            ECS7TestEntity baseParentGrandChildEntity2 = scene.CreateEntity(113);
+            ECS7TestEntity baseParentGrandChildEntity3 = scene.CreateEntity(114);
 
-            InternalUiContainer sceneModel = new InternalUiContainer();
-            InternalUiContainer baseParentEntityModel = new InternalUiContainer();
-            InternalUiContainer baseParentChildEntityModel = new InternalUiContainer();
-            InternalUiContainer baseParentGrandChildEntity1Model = new InternalUiContainer();
-            InternalUiContainer baseParentGrandChildEntity2Model = new InternalUiContainer();
-            InternalUiContainer baseParentGrandChildEntity3Model = new InternalUiContainer();
+            UITransformHandler uiTransformHandler = new UITransformHandler(uiContainerComponent, 35);
 
             // Set scene root as baseParentEntity parent
-            sceneModel.rootElement.Add(baseParentEntityModel.rootElement);
-            baseParentEntityModel.parentElement = sceneModel.rootElement;
-            baseParentEntityModel.rigthOf = 0;
-            baseParentEntityModel.shouldSort = true;
-            baseParentEntityModel.components.Add(0);
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneModel);
-            uiContainerComponent.PutFor(scene, baseParentEntity.entityId, baseParentEntityModel);
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentEntity, new PBUiTransform() { Parent = 0 });
 
             // Set baseParentEntity as baseParentChildEntity parent
-            baseParentEntityModel.rootElement.Add(baseParentChildEntityModel.rootElement);
-            baseParentChildEntityModel.parentElement = baseParentEntityModel.rootElement;
-            baseParentChildEntityModel.rigthOf = baseParentEntity.entityId;
-            baseParentChildEntityModel.shouldSort = true;
-            baseParentChildEntityModel.components.Add(0);
-            uiContainerComponent.PutFor(scene, baseParentChildEntity.entityId, baseParentChildEntityModel);
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentChildEntity, new PBUiTransform() { Parent = (int)baseParentEntity.entityId });
+            InternalUiContainer baseParentChildEntityModel = uiContainerComponent.GetFor(scene, baseParentChildEntity).model;
 
             // Add UiText to baseParentChildEntity
             UiTextHandler uiTextHandler = new UiTextHandler(uiContainerComponent, AssetPromiseKeeper_Font.i, 34);
@@ -553,30 +538,28 @@ namespace Tests
             Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
 
             // Set baseParentChildEntity as baseParentGrandChildEntity1 parent
-            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity1Model.rootElement);
-            baseParentGrandChildEntity1Model.parentElement = baseParentChildEntityModel.rootElement;
-            baseParentGrandChildEntity1Model.rigthOf = baseParentChildEntity.entityId;
-            baseParentGrandChildEntity1Model.shouldSort = true;
-            baseParentGrandChildEntity1Model.components.Add(0);
-            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity1.entityId, baseParentGrandChildEntity1Model);
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity1, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = 0
+            });
 
             // Set baseParentChildEntity as baseParentGrandChildEntity2 parent
-            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity2Model.rootElement);
-            baseParentGrandChildEntity2Model.parentElement = baseParentChildEntityModel.rootElement;
-            baseParentGrandChildEntity2Model.rigthOf = baseParentChildEntity.entityId;
-            baseParentGrandChildEntity2Model.shouldSort = true;
-            baseParentGrandChildEntity2Model.components.Add(0);
-            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity2.entityId, baseParentGrandChildEntity2Model);
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity2, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = (int)baseParentGrandChildEntity1.entityId
+            });
 
             // Set baseParentChildEntity as baseParentGrandChildEntity3 parent
-            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity3Model.rootElement);
-            baseParentGrandChildEntity3Model.parentElement = baseParentChildEntityModel.rootElement;
-            baseParentGrandChildEntity3Model.rigthOf = baseParentChildEntity.entityId;
-            baseParentGrandChildEntity3Model.shouldSort = true;
-            baseParentGrandChildEntity3Model.components.Add(0);
-            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity3.entityId, baseParentGrandChildEntity3Model);
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity3, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = (int)baseParentGrandChildEntity2.entityId
+            });
 
             // Sort
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
             ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
 
             // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
