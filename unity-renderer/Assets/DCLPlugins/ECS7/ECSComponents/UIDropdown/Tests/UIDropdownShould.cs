@@ -36,7 +36,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
         [Test]
         public void AllowEmptyValue()
         {
-            UpdateComponentModel(true, null);
+            UpdateComponentModel(true, -1);
 
             Assert.AreEqual(-1, handler.uiElement.index);
             Assert.AreEqual("EMPTY", handler.uiElement.text);
@@ -45,13 +45,13 @@ namespace DCL.ECSComponents.UIDropdown.Tests
         [Test]
         public void DisallowEmptyValue()
         {
-            UpdateComponentModel(false, null);
+            UpdateComponentModel(false, -1);
 
             Assert.AreEqual(0, handler.uiElement.index);
             Assert.AreEqual("OPTION1", handler.uiElement.text);
         }
 
-        private void UpdateComponentModel(bool acceptEmpty, int? selectedIndex)
+        private void UpdateComponentModel(bool acceptEmpty, int selectedIndex)
         {
             handler.OnComponentCreated(scene, entity);
 
@@ -66,8 +66,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
                 Options = { "OPTION1", "OPTION2", "OPTION3", "OPTION4" },
             };
 
-            if (selectedIndex.HasValue)
-                c.SelectedIndex = selectedIndex.Value;
+            c.SelectedIndex = selectedIndex;
 
             handler.OnComponentModelUpdated(scene, entity, c);
         }
@@ -75,7 +74,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
         [Test]
         public void EmitResult()
         {
-            UpdateComponentModel(true, 2);
+            UpdateComponentModel(true, 1);
 
             handler.uiElement.index = 2;
 
