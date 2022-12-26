@@ -29,7 +29,6 @@ namespace DCL.LoadingScreen
         {
             if (isVisible) return;
 
-            //TODO: The blit to avoid the flash of the empty camera
             Show(instant);
         }
 
