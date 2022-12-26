@@ -42,10 +42,7 @@ public class ItemToggleContainer : MonoBehaviour
             newToggle = items[index];
         else
         {
-            if (isRefresh)
-                await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, token);
-            else
-                await UniTask.Yield(token);
+            await UniTask.Yield(token);
 
             newToggle = Instantiate(itemPrefab, itemContainer);
             items.Add(newToggle);
