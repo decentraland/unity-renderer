@@ -37,7 +37,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    renderPassEvent: 600
+    renderPassEvent: 500
     blurMaterial: {fileID: 2100000, guid: cb4854b61a1566e4eaf48b98fd047917, type: 2}
     blurMaterialUI: {fileID: 2100000, guid: cd214df172ab0884aa071f15ce2306aa, type: 2}
     blurPasses: 4
