@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.ECSComponents;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -509,6 +510,80 @@ namespace Tests
             Assert.AreEqual(sceneModel.rootElement[1], modelEntity1.rootElement);
             Assert.AreEqual(sceneModel.rootElement[2], modelEntity3.rootElement);
             Assert.AreEqual(sceneModel.rootElement[3], modelEntity2.rootElement);
+        }
+
+        [Test]
+        public void AvoidMovingNonUiContainerElementsWhenSorting()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+
+            ECS7TestEntity baseParentEntity = scene.CreateEntity(110); // base parent
+            ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111); // child of base parent
+            ECS7TestEntity baseParentGrandChildEntity1 = scene.CreateEntity(112); // grand child of base parent
+            ECS7TestEntity baseParentGrandChildEntity2 = scene.CreateEntity(113); // grand child of base parent
+            ECS7TestEntity baseParentGrandChildEntity3 = scene.CreateEntity(114); // grand child of base parent
+
+            InternalUiContainer sceneModel = new InternalUiContainer();
+            InternalUiContainer baseParentEntityModel = new InternalUiContainer();
+            InternalUiContainer baseParentChildEntityModel = new InternalUiContainer();
+            InternalUiContainer baseParentGrandChildEntity1Model = new InternalUiContainer();
+            InternalUiContainer baseParentGrandChildEntity2Model = new InternalUiContainer();
+            InternalUiContainer baseParentGrandChildEntity3Model = new InternalUiContainer();
+
+            // Set scene root as baseParentEntity parent
+            sceneModel.rootElement.Add(baseParentEntityModel.rootElement);
+            baseParentEntityModel.parentElement = sceneModel.rootElement;
+            baseParentEntityModel.rigthOf = 0;
+            baseParentEntityModel.shouldSort = true;
+            baseParentEntityModel.components.Add(0);
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneModel);
+            uiContainerComponent.PutFor(scene, baseParentEntity.entityId, baseParentEntityModel);
+
+            // Set baseParentEntity as baseParentChildEntity parent
+            baseParentEntityModel.rootElement.Add(baseParentChildEntityModel.rootElement);
+            baseParentChildEntityModel.parentElement = baseParentEntityModel.rootElement;
+            baseParentChildEntityModel.rigthOf = baseParentEntity.entityId;
+            baseParentChildEntityModel.shouldSort = true;
+            baseParentChildEntityModel.components.Add(0);
+            uiContainerComponent.PutFor(scene, baseParentChildEntity.entityId, baseParentChildEntityModel);
+
+            // Add UiText to baseParentChildEntity
+            UiTextHandler uiTextHandler = new UiTextHandler(uiContainerComponent, AssetPromiseKeeper_Font.i, 34);
+            uiTextHandler.OnComponentCreated(scene, baseParentChildEntity);
+            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity1 parent
+            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity1Model.rootElement);
+            baseParentGrandChildEntity1Model.parentElement = baseParentChildEntityModel.rootElement;
+            baseParentGrandChildEntity1Model.rigthOf = baseParentChildEntity.entityId;
+            baseParentGrandChildEntity1Model.shouldSort = true;
+            baseParentGrandChildEntity1Model.components.Add(0);
+            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity1.entityId, baseParentGrandChildEntity1Model);
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity2 parent
+            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity2Model.rootElement);
+            baseParentGrandChildEntity2Model.parentElement = baseParentChildEntityModel.rootElement;
+            baseParentGrandChildEntity2Model.rigthOf = baseParentChildEntity.entityId;
+            baseParentGrandChildEntity2Model.shouldSort = true;
+            baseParentGrandChildEntity2Model.components.Add(0);
+            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity2.entityId, baseParentGrandChildEntity2Model);
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity3 parent
+            baseParentChildEntityModel.rootElement.Add(baseParentGrandChildEntity3Model.rootElement);
+            baseParentGrandChildEntity3Model.parentElement = baseParentChildEntityModel.rootElement;
+            baseParentGrandChildEntity3Model.rigthOf = baseParentChildEntity.entityId;
+            baseParentGrandChildEntity3Model.shouldSort = true;
+            baseParentGrandChildEntity3Model.components.Add(0);
+            uiContainerComponent.PutFor(scene, baseParentGrandChildEntity3.entityId, baseParentGrandChildEntity3Model);
+
+            // Sort
+            ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
+
+            // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
+            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
+
+            uiTextHandler.OnComponentRemoved(scene, baseParentChildEntity);
+            AssetPromiseKeeper_Font.i.Cleanup();
         }
 
         [Test]
