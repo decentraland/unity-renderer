@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -66,7 +67,8 @@ namespace DCL.Social.Friends
                 view,
                 friendsController,
                 userProfileBridge,
-                openPassportVariable);
+                openPassportVariable,
+                Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
         }

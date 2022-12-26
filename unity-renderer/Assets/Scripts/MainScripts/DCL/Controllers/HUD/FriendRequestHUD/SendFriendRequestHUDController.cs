@@ -86,6 +86,7 @@ namespace DCL.Social.Friends
             try
             {
                 sendInProgress = true;
+
                 await friendsController.RequestFriendshipAsync(recipientId, messageBody)
                                        .Timeout(TimeSpan.FromSeconds(10));
 
@@ -100,14 +101,19 @@ namespace DCL.Social.Friends
                 if (!hideCancellationToken.IsCancellationRequested)
                     view.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 await UniTask.SwitchToMainThread();
 
                 if (!sendInProgress)
                     return;
 
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                socialAnalytics.SendFriendRequestError(userProfileBridge.GetOwn().userId, recipientId,
+                    dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+
                 view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;

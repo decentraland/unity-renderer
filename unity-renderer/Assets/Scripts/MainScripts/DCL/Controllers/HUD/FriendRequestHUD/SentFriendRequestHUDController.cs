@@ -102,19 +102,25 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.CancelRequestAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId)
+                                                                     .Timeout(TimeSpan.FromSeconds(10));
+
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
 
                 view.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    "modal",
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
                 view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
