@@ -63,7 +63,7 @@ namespace DCL
                 foreach (Material material in renderer.sharedMaterials) { materials.Add(material); }
             }
 
-            for (int i = 0; i < ownerPromise.asset.GltfImport.textureCount; i++)
+            for (int i = 0; i < ownerPromise.asset.GltfImport.TextureCount; i++)
                 textures.Add(ownerPromise.asset.GltfImport.GetTexture(i));
 
             HashSet<AnimationClip> animations = new HashSet<AnimationClip>();
