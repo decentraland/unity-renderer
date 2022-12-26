@@ -2,7 +2,6 @@ using AvatarSystem;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
-using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
@@ -65,6 +64,8 @@ public class HUDFactory : IHUDFactory
                             view.PassportNavigationView,
                             ProfanityFilterSharedInstances.regexFilter,
                             new WearableItemResolver(),
+                            new WearablesCatalogControllerBridge(),
+                            Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),

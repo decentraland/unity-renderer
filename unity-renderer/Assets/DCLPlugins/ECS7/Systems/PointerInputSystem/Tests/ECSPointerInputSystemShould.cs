@@ -610,13 +610,13 @@ namespace Tests
             Assert.IsTrue(enqueuedEvent.type == PointerEventType.PetDown);
 
             // 5. Check enqueued event has correct position and origin
-            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,
                 Z = entityLocalPosition.z
             }, enqueuedEvent.hit.Position);
-            Assert.AreEqual(new DCL.ECSComponents.Vector3()
+            Assert.AreEqual(new Decentraland.Common.Vector3()
             {
                 X = entityLocalPosition.x,
                 Y = entityLocalPosition.y,

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Controllers;
 using UnityEngine;
@@ -105,7 +105,8 @@ namespace DCL
         {
             foreach (KeyValuePair<Renderer,Material[]> keyValuePair in rendererDict)
             {
-                keyValuePair.Key.materials = keyValuePair.Value;
+                if (keyValuePair.Key != null)
+                    keyValuePair.Key.materials = keyValuePair.Value;
             }
         
             rendererDict.Clear();

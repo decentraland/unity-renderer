@@ -5,6 +5,7 @@ using DCL.ECSComponents;
 using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCL.Models;
+using Decentraland.Common;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;

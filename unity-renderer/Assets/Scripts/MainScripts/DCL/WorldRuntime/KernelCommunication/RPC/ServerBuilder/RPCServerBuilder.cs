@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
-using DCL;
-using rpc_csharp;
-using rpc_csharp.transport;
+using DCl.Social.Friends;
 using RPC.Services;
 using RPC.Transports;
+using rpc_csharp;
+using rpc_csharp.transport;
+using System;
+using System.Collections.Generic;
 
 namespace RPC
 {
@@ -26,6 +26,8 @@ namespace RPC
                    .RegisterService(CRDTServiceImpl.RegisterService)
                    .RegisterService(TransportServiceImpl.RegisterService)
                    .RegisterService(EmotesRendererServiceImpl.RegisterService)
+                   .RegisterService(RPCFriendsApiBridge.RegisterService)
+                   .RegisterService(SceneControllerServiceImpl.RegisterService)
                    .Build();
         }
 

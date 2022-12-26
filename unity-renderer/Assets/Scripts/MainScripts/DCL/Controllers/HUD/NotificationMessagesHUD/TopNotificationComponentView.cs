@@ -1,7 +1,8 @@
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DG.Tweening;
 using System;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 
 namespace DCL.Chat.Notifications
@@ -14,8 +15,10 @@ namespace DCL.Chat.Notifications
         private const int NEW_NOTIFICATION_DELAY = 5000;
 
         public event Action<string> OnClickedNotification;
+        public event Action<string> OnClickedFriendRequest;
 
         [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
+        [SerializeField] private FriendRequestNotificationComponentView friendRequestNotificationComponentView;
 
         public event Action<bool> OnResetFade;
 
@@ -26,6 +29,8 @@ namespace DCL.Chat.Notifications
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource waitCancellationToken = new CancellationTokenSource();
         private RectTransform notificationRect;
+        private RectTransform friendRequestRect;
+        private IShowableNotificationView showableNotification;
 
         public bool isShowingNotification;
 
@@ -36,13 +41,18 @@ namespace DCL.Chat.Notifications
 
         public override void Start()
         {
-            chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
             offsetContentXPos = NORMAL_CONTENT_X_POS - X_OFFSET;
             offsetHeaderXPos = NORMAL_HEADER_X_POS - X_OFFSET;
+
+            chatNotificationComponentView.OnClickedNotification += ClickedOnNotification;
             chatNotificationComponentView.SetPositionOffset(NORMAL_HEADER_X_POS, NORMAL_CONTENT_X_POS);
             notificationRect = chatNotificationComponentView.gameObject.GetComponent<RectTransform>();
             chatNotificationComponentView.shouldAnimateFocus = false;
             chatNotificationComponentView.SetIsPrivate(true);
+
+            friendRequestNotificationComponentView.OnClickedNotification += ClickedOnFriendRequestNotification;
+            friendRequestRect = friendRequestNotificationComponentView.gameObject.GetComponent<RectTransform>();
+            friendRequestNotificationComponentView.shouldAnimateFocus = false;
         }
 
         public Transform GetPanelTransform()
@@ -64,7 +74,9 @@ namespace DCL.Chat.Notifications
             isShowingNotification = true;
             animationCancellationToken.Cancel();
             animationCancellationToken = new CancellationTokenSource();
+            friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(true);
+            showableNotification = chatNotificationComponentView;
             if (stackedNotifications > 2)
             {
                 OnResetFade?.Invoke(true);
@@ -96,7 +108,9 @@ namespace DCL.Chat.Notifications
             isShowingNotification = true;
             animationCancellationToken.Cancel();
             animationCancellationToken = new CancellationTokenSource();
+            friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(true);
+            showableNotification = chatNotificationComponentView;
             if (stackedNotifications > 2)
             {
                 OnResetFade?.Invoke(true);
@@ -111,6 +125,21 @@ namespace DCL.Chat.Notifications
             PopulatePublicNotification(model);
             chatNotificationComponentView.SetPositionOffset(offsetHeaderXPos, offsetContentXPos);
             AnimateNewEntry(notificationRect, animationCancellationToken.Token).Forget();
+            ShowNotificationCooldown().Forget();
+        }
+
+        public void AddNewFriendRequestNotification(FriendRequestNotificationModel model)
+        {
+            isShowingNotification = true;
+            animationCancellationToken.Cancel();
+            animationCancellationToken = new CancellationTokenSource();
+            chatNotificationComponentView.gameObject.SetActive(false);
+            friendRequestNotificationComponentView.gameObject.SetActive(true);
+            showableNotification = friendRequestNotificationComponentView;
+
+            OnResetFade?.Invoke(true);
+            PopulateFriendRequestNotification(model);
+            AnimateNewEntry(friendRequestRect, animationCancellationToken.Token).Forget();
             ShowNotificationCooldown().Forget();
         }
 
@@ -135,6 +164,14 @@ namespace DCL.Chat.Notifications
                 await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken);
 
             AddNewChatNotification(model);
+        }
+
+        private async UniTaskVoid WaitBeforeShowingNewNotification(FriendRequestNotificationModel model, CancellationToken cancellationToken)
+        {
+            while (isShowingNotification)
+                await UniTask.NextFrame(cancellationToken).AttachExternalCancellation(cancellationToken);
+
+            AddNewFriendRequestNotification(model);
         }
 
         private async UniTaskVoid AnimateNewEntry(RectTransform notification, CancellationToken cancellationToken)
@@ -184,6 +221,16 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
         }
 
+        private void PopulateFriendRequestNotification(FriendRequestNotificationModel model)
+        {
+            friendRequestNotificationComponentView.SetFriendRequestId(model.FriendRequestId);
+            friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
+            friendRequestNotificationComponentView.SetHeader(model.Header);
+            friendRequestNotificationComponentView.SetMessage(model.Message);
+            friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
+            friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
+        }
+
         private void PopulateMultipleNotification()
         {
             chatNotificationComponentView.SetMessage("");
@@ -198,6 +245,7 @@ namespace DCL.Chat.Notifications
             if (gameObject.activeInHierarchy)
                 return;
 
+            friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(false);
             gameObject.SetActive(true);
         }
@@ -209,19 +257,24 @@ namespace DCL.Chat.Notifications
 
             isShowingNotification = false;
             stackedNotifications = 0;
+            friendRequestNotificationComponentView.gameObject.SetActive(false);
             chatNotificationComponentView.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
 
         public void ShowNotification()
         {
-            chatNotificationComponentView.Show();
+            if (showableNotification == null)
+                return;
+
+            showableNotification.Show();
         }
 
         public void HideNotification()
         {
             isShowingNotification = false;
             stackedNotifications = 0;
+            friendRequestNotificationComponentView.Hide();
             chatNotificationComponentView.Hide();
         }
 
@@ -233,11 +286,20 @@ namespace DCL.Chat.Notifications
             OnClickedNotification?.Invoke(targetId);
         }
 
+        private void ClickedOnFriendRequestNotification(string friendRequestId)
+        {
+            HideNotification();
+            isShowingNotification = false;
+            stackedNotifications = 0;
+            OnClickedFriendRequest?.Invoke(friendRequestId);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
 
             chatNotificationComponentView.OnClickedNotification -= ClickedOnNotification;
+            friendRequestNotificationComponentView.OnClickedNotification -= ClickedOnFriendRequestNotification;
         }
 
         public override void RefreshControl()

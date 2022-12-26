@@ -384,16 +384,27 @@ namespace Tests
             WebInterface.OnMessageFromEngine += OnMessageFromEngine;
             yield return null;
             WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
-            
+
             Assert.IsTrue(rotationMatch);
         }
-        
+
         [UnityTest]
         public IEnumerator CharacterTeleportOnVariableChange()
         {
             yield return InitCharacterPosition(50, 2, 0);
             DataStore.i.player.lastTeleportPosition.Set(Vector3.zero);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, Vector3.zero), 2.0f);
+        }
+
+        [Test]
+        public void CharacterContainsCorrectGroundLayers()
+        {
+            var groundLayerMask = DCLCharacterController.i.groundLayers.value;
+            Assert.IsTrue((0
+                           | (1 << PhysicsLayers.defaultLayer)
+                           | (1 << PhysicsLayers.characterOnlyLayer)
+                           | (1 << LayerMask.NameToLayer("Ground"))
+                           ) == groundLayerMask);
         }
     }
 }

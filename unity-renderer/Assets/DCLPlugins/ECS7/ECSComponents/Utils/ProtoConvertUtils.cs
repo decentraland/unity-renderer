@@ -3,7 +3,9 @@ using DCL.Helpers;
 using DCL.UIElements.Structures;
 using Google.Protobuf.Collections;
 using JetBrains.Annotations;
+using Decentraland.Common;
 using UnityEngine;
+using Vector3 = Decentraland.Common.Vector3;
 
 namespace DCL.ECSComponents
 {

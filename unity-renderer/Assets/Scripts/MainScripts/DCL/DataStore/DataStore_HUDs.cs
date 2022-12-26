@@ -34,11 +34,16 @@ namespace DCL
         public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseVariable<HashSet<string>> autoJoinChannelList = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseVariable<string> openedChat = new BaseVariable<string>("");
+        public readonly BaseVariable<string> openPrivateChat = new BaseVariable<string>("");
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
         public readonly BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<int, Queue<IUIRefreshable>>>(new Dictionary<int, Queue<IUIRefreshable>>());
         public readonly BaseVariable<bool> enableNewPassport = new BaseVariable<bool>(false);
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
+        public readonly BaseVariable<string> sendFriendRequest = new BaseVariable<string>();
+        public readonly BaseVariable<int> sendFriendRequestSource = new BaseVariable<int>();
+        public readonly BaseVariable<string> openSentFriendRequestDetail = new BaseVariable<string>();
+        public readonly BaseVariable<string> openReceivedFriendRequestDetail = new BaseVariable<string>();
 
         public class LoadingHUD
         {

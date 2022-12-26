@@ -5,6 +5,7 @@ using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using Decentraland.Common;
 using ECSSystems.MaterialSystem;
 using NSubstitute;
 using NUnit.Framework;
