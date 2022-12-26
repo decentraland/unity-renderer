@@ -90,19 +90,25 @@ namespace DCl.Social.Friends
         [Test]
         public void SendFriendRequestByNameCorrectly()
         {
+            friendsController.RequestFriendshipAsync(OTHER_USER_NAME, "")
+                             .Returns(UniTask.FromResult(
+                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "", FriendRequestState.Pending)));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
             friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_NAME, "");
             socialAnalytics.Received(1)
-                .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_NAME, 0, PlayerActionSource.FriendsHUD);
+                .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
         }
 
         [Test]
         public void SendFriendRequestByIdCorrectly()
         {
+            friendsController.RequestFriendshipAsync(OTHER_USER_ID, "")
+                             .Returns(UniTask.FromResult(
+                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "", FriendRequestState.Pending)));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);

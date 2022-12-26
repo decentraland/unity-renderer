@@ -124,6 +124,7 @@ namespace DCL.Social.Friends
         [UnityTest]
         public IEnumerator RejectFriendRequest()
         {
+            WhenShow();
             friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey",
