@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -126,6 +127,24 @@ namespace DCL.Social.Friends
             view.DidNotReceiveWithAnyArgs().ShowSendSuccess();
             friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey");
             view.Received().Show();
+        }
+
+        [UnityTest]
+        public IEnumerator AutomaticallyCloseAfterSucces()
+        {
+            dataStore.HUDs.sendFriendRequestSource.Set(0);
+            dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
+                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, "", FriendRequestState.Pending)));
+            view.ClearReceivedCalls();
+
+            view.OnSend += Raise.Event<Action>();
+
+            view.Received(0).Close();
+
+            yield return new WaitForSeconds(3f);
+
+            view.Received(1).Close();
         }
     }
 }
