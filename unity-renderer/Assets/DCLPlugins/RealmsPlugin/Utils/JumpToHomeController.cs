@@ -22,6 +22,7 @@ namespace DCLPlugins.RealmPlugin
         private BaseVariable<bool> jumpHomeButtonVisible => DataStore.i.HUDs.jumpHomeButtonVisible;
         private BaseVariable<bool> minimapVisible => DataStore.i.HUDs.minimapVisible;
         private BaseVariable<bool> exitedThroughButton => DataStore.i.common.exitedWorldThroughGoBackButton;
+        private BaseVariable<bool> isWorld => DataStore.i.common.isWorld;
 
         private RectTransform rectTransform;
 
@@ -30,6 +31,24 @@ namespace DCLPlugins.RealmPlugin
             rectTransform = jumpButton.GetComponent<RectTransform>();
             jumpButton.onClick.AddListener(GoHome);
             jumpHomeButtonVisible.OnChange += SetVisibility;
+        }
+
+        private void OnEnable()
+        {
+            isWorld.OnChange += OnIsWorldChanged;
+        }
+
+        private void OnDisable()
+        {
+            isWorld.OnChange -= OnIsWorldChanged;
+        }
+
+        private void OnIsWorldChanged(bool current, bool previous)
+        {
+            if (JumpedFromWorldToNotWorld())
+                GoHome();
+
+            bool JumpedFromWorldToNotWorld() => previous && current == false;
         }
 
         private void SetVisibility(bool current, bool _)
