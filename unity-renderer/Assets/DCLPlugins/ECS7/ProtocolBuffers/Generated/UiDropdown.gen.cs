@@ -153,7 +153,7 @@ namespace DCL.ECSComponents {
     public const int SelectedIndexFieldNumber = 4;
     private int selectedIndex_;
     /// <summary>
-    /// default=-1 when accept_empty==true; default=0 when accept_empty==false
+    /// default=null when accept_empty==true; default=0 when accept_empty==false
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

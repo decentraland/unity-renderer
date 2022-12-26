@@ -408,6 +408,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "line_spacing" field.</summary>
     public const int LineSpacingFieldNumber = 12;
     private float lineSpacing_;
+    /// <summary>
+    /// The amount of additional spacing to add between each lines of text.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float LineSpacing {
@@ -433,6 +436,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "line_count" field.</summary>
     public const int LineCountFieldNumber = 13;
     private int lineCount_;
+    /// <summary>
+    /// Allows control over how many lines of text are displayed.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int LineCount {
@@ -458,6 +464,9 @@ namespace DCL.ECSComponents {
     /// <summary>Field number for the "text_wrapping" field.</summary>
     public const int TextWrappingFieldNumber = 14;
     private bool textWrapping_;
+    /// <summary>
+    /// Enables text wrapping
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool TextWrapping {
