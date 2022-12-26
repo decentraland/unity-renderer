@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,7 +148,7 @@ namespace DCL.Social.Friends
 
         public void SetTimestamp(DateTime date)
         {
-            dateLabel.text = date.Date.ToString("MMM dd").ToUpper();
+            dateLabel.text = date.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
 
         private void ShowConfirmationToast()

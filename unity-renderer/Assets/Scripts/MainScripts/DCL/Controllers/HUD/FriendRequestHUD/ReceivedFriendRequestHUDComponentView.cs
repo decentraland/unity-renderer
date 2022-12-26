@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -99,7 +100,7 @@ namespace DCL.Social.Friends
         public void SetTimestamp(DateTime timestamp)
         {
             model.RequestDate = timestamp;
-            dateLabel.text = timestamp.Date.ToString("MMM dd").ToUpper();
+            dateLabel.text = timestamp.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
 
         public void SetSenderName(string userName)
