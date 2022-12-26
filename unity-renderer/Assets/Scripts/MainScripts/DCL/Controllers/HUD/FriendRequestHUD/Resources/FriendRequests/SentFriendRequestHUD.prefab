@@ -2761,7 +2761,7 @@ MonoBehaviour:
   playHover: 1
   playClick: 1
   playRelease: 1
-  extraClickEvent: {fileID: 11400000, guid: 71d95c991cfe14a43b69f63de00cc73e, type: 2}
+  extraClickEvent: {fileID: 0}
 --- !u!1 &6022807864011138286
 GameObject:
   m_ObjectHideFlags: 0
@@ -3489,6 +3489,8 @@ GameObject:
   m_Component:
   - component: {fileID: 334105295397510177}
   - component: {fileID: 732256080388820253}
+  - component: {fileID: 8829328474453912520}
+  - component: {fileID: 5110586565438484524}
   - component: {fileID: 376254513247646150}
   - component: {fileID: 3224361231076479731}
   - component: {fileID: 5633315213905063559}
@@ -3542,6 +3544,34 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
+--- !u!225 &8829328474453912520
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886239998420550621}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5110586565438484524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886239998420550621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 0}
 --- !u!114 &376254513247646150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3594,8 +3624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c078cdebb9f3418db25c5a87222330bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 0}
-  defaultContainer: {fileID: 6150239558006173254}
+  showHideAnimator: {fileID: 5110586565438484524}
   nameLabel: {fileID: 465482504103365880}
   closeButtons:
   - {fileID: 1157310377002194378}

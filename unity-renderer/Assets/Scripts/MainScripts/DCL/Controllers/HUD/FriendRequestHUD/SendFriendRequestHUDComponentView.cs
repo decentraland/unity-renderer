@@ -8,9 +8,9 @@ namespace DCL.Social.Friends
 {
     public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
     {
-        [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject pendingToSendContainer;
-        [SerializeField] internal GameObject successContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForPendingState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForSuccessState;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text successStateLabel;
         [SerializeField] internal Button[] cancelButtons;
@@ -58,9 +58,6 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
-            successContainer.SetActive(model.State == Model.LayoutState.Success);
-            pendingToSendContainer.SetActive(model.State == Model.LayoutState.Pending);
             sendButton.gameObject.SetActive(model.State != Model.LayoutState.Pending);
             sendButton.interactable = model.State != Model.LayoutState.Pending;
 
@@ -81,17 +78,15 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Close()
-        {
-            base.Hide(instant: true);
-            gameObject.SetActive(false);
-        }
+        public void Close() => base.Hide();
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
-            gameObject.SetActive(true);
-            base.Show(instant: true);
+            base.Show(instant);
             model.State = Model.LayoutState.Default;
+            showHideAnimatorForDefaultState.Show(true);
+            showHideAnimatorForPendingState.Hide(true);
+            showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
 
@@ -110,12 +105,18 @@ namespace DCL.Social.Friends
         public void ShowPendingToSend()
         {
             model.State = Model.LayoutState.Pending;
+            showHideAnimatorForDefaultState.Hide();
+            showHideAnimatorForPendingState.Show();
+            showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
 
         public void ShowSendSuccess()
         {
             model.State = Model.LayoutState.Success;
+            showHideAnimatorForDefaultState.Hide(true);
+            showHideAnimatorForPendingState.Hide();
+            showHideAnimatorForSuccessState.Show();
             RefreshControl();
         }
 

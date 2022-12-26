@@ -23,9 +23,9 @@ namespace DCL.Social.Friends
         [SerializeField] internal GameObject pendingToRejectContainer;
         [SerializeField] internal Button confirmButton;
         [SerializeField] internal GameObject pendingToConfirmContainer;
-        [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject rejectSuccessContainer;
-        [SerializeField] internal GameObject confirmSuccessContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForConfirmSuccessState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForRejectSuccessState;
         [SerializeField] internal Button[] buttonsToDisableOnPendingState;
         [SerializeField] internal TMP_Text rejectSuccessLabel;
         [SerializeField] internal TMP_Text confirmSuccessLabel;
@@ -151,19 +151,19 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
             SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
-            gameObject.SetActive(true);
+            base.Show(instant);
         }
 
-        public void Close() => gameObject.SetActive(false);
+        public void Close() => base.Hide();
 
         private void SetDefaultState()
         {
-            defaultContainer.SetActive(true);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
+            showHideAnimatorForDefaultState.Show();
+            showHideAnimatorForRejectSuccessState.Hide(true);
+            showHideAnimatorForConfirmSuccessState.Hide(true);
 
             confirmButton.gameObject.SetActive(true);
             pendingToConfirmContainer.SetActive(false);
@@ -176,10 +176,6 @@ namespace DCL.Social.Friends
 
         private void SetPendingState()
         {
-            defaultContainer.SetActive(true);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
-
             confirmButton.gameObject.SetActive(!lastTryWasConfirm);
             pendingToConfirmContainer.SetActive(lastTryWasConfirm);
             rejectButton.gameObject.SetActive(lastTryWasConfirm);
@@ -191,16 +187,16 @@ namespace DCL.Social.Friends
 
         private void SetConfirmSuccessState()
         {
-            defaultContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(true);
+            showHideAnimatorForDefaultState.Hide();
+            showHideAnimatorForRejectSuccessState.Hide(true);
+            showHideAnimatorForConfirmSuccessState.Show();
         }
 
         private void SetRejectSuccessState()
         {
-            defaultContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(true);
-            confirmSuccessContainer.SetActive(false);
+            showHideAnimatorForDefaultState.Hide();
+            showHideAnimatorForRejectSuccessState.Show();
+            showHideAnimatorForConfirmSuccessState.Hide(true);
         }
     }
 }

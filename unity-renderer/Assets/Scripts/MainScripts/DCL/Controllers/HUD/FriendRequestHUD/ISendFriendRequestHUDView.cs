@@ -10,7 +10,7 @@ namespace DCL.Social.Friends
         event Action OnCancel;
 
         void Close();
-        void Show();
+        void Show(bool instant = false);
         void Dispose();
         void SetName(string name);
         void SetProfilePicture(ILazyTextureObserver textureObserver);

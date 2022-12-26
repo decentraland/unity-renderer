@@ -2,6 +2,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,20 +29,10 @@ namespace DCL.Social.Friends
         {
             view.Show();
 
-            Assert.IsTrue(view.gameObject.activeSelf);
-            Assert.IsTrue(view.defaultContainer.activeSelf);
             Assert.IsTrue(view.cancelButton.interactable);
 
             foreach (Button button in view.closeButtons)
                 Assert.IsTrue(button.interactable);
-        }
-
-        [Test]
-        public void Close()
-        {
-            view.Close();
-
-            Assert.IsFalse(view.gameObject.activeSelf);
         }
 
         [Test]
@@ -75,7 +66,6 @@ namespace DCL.Social.Friends
         {
             view.ShowPendingToCancel();
 
-            Assert.IsTrue(view.defaultContainer.activeSelf);
             Assert.IsFalse(view.cancelButton.interactable);
 
             foreach (Button button in view.closeButtons)
@@ -140,7 +130,7 @@ namespace DCL.Social.Friends
             var testTimestamp = DateTime.Now;
             view.SetTimestamp(testTimestamp);
 
-            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd").ToUpper(), view.dateLabel.text);
+            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper(), view.dateLabel.text);
         }
     }
 }

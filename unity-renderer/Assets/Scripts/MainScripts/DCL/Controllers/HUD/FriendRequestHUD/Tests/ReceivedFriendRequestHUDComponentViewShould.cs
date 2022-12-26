@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Globalization;
 
 namespace DCL.Social.Friends
 {
@@ -105,7 +106,7 @@ namespace DCL.Social.Friends
             view.SetTimestamp(testTimestamp);
 
             // Assert
-            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd").ToUpper(), view.dateLabel.text);
+            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper(), view.dateLabel.text);
         }
 
         [Test]
@@ -140,28 +141,28 @@ namespace DCL.Social.Friends
             switch (state)
             {
                 case ReceivedFriendRequestHUDModel.LayoutState.Default:
-                    Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     foreach (var button in view.buttonsToDisableOnPendingState)
                         Assert.IsTrue(button.interactable);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.Pending:
-                    Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     foreach (var button in view.buttonsToDisableOnPendingState)
                         Assert.IsFalse(button.interactable);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsTrue(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsTrue(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsTrue(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsTrue(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     break;
             }
         }
@@ -173,22 +174,11 @@ namespace DCL.Social.Friends
             view.Show();
 
             // Assert
-            Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-            Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+            Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+            Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+            Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
             foreach (var button in view.buttonsToDisableOnPendingState)
                 Assert.IsTrue(button.interactable);
-            Assert.IsTrue(view.gameObject.activeSelf);
-        }
-
-        [Test]
-        public void CloseCorrectly()
-        {
-            // Act
-            view.Close();
-
-            // Assert
-            Assert.IsFalse(view.gameObject.activeSelf);
         }
     }
 }

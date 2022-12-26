@@ -9,7 +9,6 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
     {
-        [SerializeField] internal GameObject defaultContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal GameObject cancelButtonsContainer;
@@ -69,7 +68,6 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
             tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
             cancelButtonsContainer.SetActive(model.State != Model.LayoutState.Pending);
@@ -99,11 +97,7 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Close()
-        {
-            base.Hide(instant: true);
-            gameObject.SetActive(false);
-        }
+        public void Close() => base.Hide();
 
         public void SetSenderProfilePicture(ILazyTextureObserver textureObserver)
         {
@@ -111,10 +105,9 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
-            gameObject.SetActive(true);
-            base.Show(instant: true);
+            base.Show(instant);
             HideConfirmationToast();
             SwitchToTryCancelButton();
             model.State = Model.LayoutState.Default;

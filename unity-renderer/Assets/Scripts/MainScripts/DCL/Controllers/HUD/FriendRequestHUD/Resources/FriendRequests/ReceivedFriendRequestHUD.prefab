@@ -12,13 +12,15 @@ GameObject:
   - component: {fileID: 2016860969352135591}
   - component: {fileID: 7496129585899487067}
   - component: {fileID: 1475861266508050835}
+  - component: {fileID: 9201868701965713635}
+  - component: {fileID: 7839359532582781684}
   m_Layer: 5
   m_Name: ConfirmSuccessState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &655511934743324440
 RectTransform:
   m_ObjectHideFlags: 0
@@ -94,6 +96,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!225 &9201868701965713635
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204136004155615365}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!114 &7839359532582781684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204136004155615365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 9201868701965713635}
 --- !u!1 &215060164815167914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1058,7 +1088,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1941341678244745279
@@ -2494,7 +2524,7 @@ MonoBehaviour:
   playHover: 1
   playClick: 1
   playRelease: 1
-  extraClickEvent: {fileID: 11400000, guid: 71d95c991cfe14a43b69f63de00cc73e, type: 2}
+  extraClickEvent: {fileID: 0}
 --- !u!1 &6021298152727816266
 GameObject:
   m_ObjectHideFlags: 0
@@ -2789,6 +2819,8 @@ GameObject:
   - component: {fileID: 424981647407856322}
   - component: {fileID: 390931854261043918}
   - component: {fileID: 8722178245602580679}
+  - component: {fileID: 4689805342718709289}
+  - component: {fileID: 8015964207401977725}
   m_Layer: 5
   m_Name: DefaultState
   m_TagString: Untagged
@@ -2875,6 +2907,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!225 &4689805342718709289
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6150239558006173254}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &8015964207401977725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6150239558006173254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 4689805342718709289}
 --- !u!1 &6455597802136546733
 GameObject:
   m_ObjectHideFlags: 0
@@ -3364,7 +3424,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ENE. 01
+  m_text: JAN 01
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -3521,6 +3581,8 @@ GameObject:
   - component: {fileID: 334105295397510177}
   - component: {fileID: 732256080388820253}
   - component: {fileID: 376254513247646150}
+  - component: {fileID: 95814980108353431}
+  - component: {fileID: 725640758248301688}
   - component: {fileID: 3224361231076479731}
   - component: {fileID: 587675852406894578}
   m_Layer: 5
@@ -3598,6 +3660,34 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!225 &95814980108353431
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886239998420550621}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &725640758248301688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7886239998420550621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 1
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 0}
 --- !u!114 &3224361231076479731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3627,7 +3717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da3f3351dd20c9844b6d1883df0cbabf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 0}
+  showHideAnimator: {fileID: 725640758248301688}
   <model>k__BackingField:
     State: 0
     BodyMessage: This is a test...
@@ -3660,6 +3750,9 @@ MonoBehaviour:
   - {fileID: 1157310377002194378}
   rejectSuccessLabel: {fileID: 1062692253404095684}
   confirmSuccessLabel: {fileID: 7573140463004759126}
+  showHideAnimatorForDefaultState: {fileID: 8015964207401977725}
+  showHideAnimatorForConfirmSuccessState: {fileID: 7839359532582781684}
+  showHideAnimatorForRejectSuccessState: {fileID: 6273864848088284155}
 --- !u!1 &7976889171558284917
 GameObject:
   m_ObjectHideFlags: 0
@@ -3900,13 +3993,15 @@ GameObject:
   - component: {fileID: 2319235038885948581}
   - component: {fileID: 6248801796235425489}
   - component: {fileID: 1442150671285948612}
+  - component: {fileID: 4170402397804024025}
+  - component: {fileID: 6273864848088284155}
   m_Layer: 5
   m_Name: RejectSuccessState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2437175336224733607
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3980,6 +4075,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!225 &4170402397804024025
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601204175054878834}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!114 &6273864848088284155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601204175054878834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hideOnEnable: 0
+  animSpeedFactor: 1
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 4170402397804024025}
 --- !u!1 &8697632877454303311
 GameObject:
   m_ObjectHideFlags: 0
