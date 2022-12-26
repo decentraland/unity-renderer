@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace DCL.ECSComponents {
+namespace Decentraland.Common {
 
   /// <summary>Holder for reflection information generated from decentraland/common/border_rect.proto</summary>
   public static partial class BorderRectReflection {
@@ -26,12 +26,12 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CiVkZWNlbnRyYWxhbmQvY29tbW9uL2JvcmRlcl9yZWN0LnByb3RvEhNkZWNl",
             "bnRyYWxhbmQuY29tbW9uIkYKCkJvcmRlclJlY3QSCwoDdG9wGAEgASgCEgwK",
-            "BGxlZnQYAiABKAISDQoFcmlnaHQYAyABKAISDgoGYm90dG9tGAQgASgCQhSq",
-            "AhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "BGxlZnQYAiABKAISDQoFcmlnaHQYAyABKAISDgoGYm90dG9tGAQgASgCYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.BorderRect), global::DCL.ECSComponents.BorderRect.Parser, new[]{ "Top", "Left", "Right", "Bottom" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Common.BorderRect), global::Decentraland.Common.BorderRect.Parser, new[]{ "Top", "Left", "Right", "Bottom" }, null, null, null, null)
           }));
     }
     #endregion
@@ -55,7 +55,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::DCL.ECSComponents.BorderRectReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Decentraland.Common.BorderRectReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

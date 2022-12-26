@@ -1,3 +1,5 @@
+using Decentraland.Common;
+
 namespace DCL.ECSComponents
 {
     public static class PBUiDropdown_Defaults

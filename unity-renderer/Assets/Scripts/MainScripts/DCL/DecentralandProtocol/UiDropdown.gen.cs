@@ -39,7 +39,7 @@ namespace DCL.ECSComponents {
             "b3JCDQoLX3RleHRfYWxpZ25CBwoFX2ZvbnRCDAoKX2ZvbnRfc2l6ZUIUqgIR",
             "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiDropdown), global::DCL.ECSComponents.PBUiDropdown.Parser, new[]{ "AcceptEmpty", "EmptyLabel", "Options", "SelectedIndex", "Disabled", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "EmptyLabel", "SelectedIndex", "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
@@ -191,13 +191,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 6;
-    private global::DCL.ECSComponents.Color4 color_;
+    private global::Decentraland.Common.Color4 color_;
     /// <summary>
     /// default=(0.0,0.0,0.0,1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color4 Color {
+    public global::Decentraland.Common.Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -484,7 +484,7 @@ namespace DCL.ECSComponents {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::DCL.ECSComponents.Color4();
+          Color = new global::Decentraland.Common.Color4();
         }
         Color.MergeFrom(other.Color);
       }
@@ -534,7 +534,7 @@ namespace DCL.ECSComponents {
           }
           case 50: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color4();
+              Color = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(Color);
             break;
@@ -588,7 +588,7 @@ namespace DCL.ECSComponents {
           }
           case 50: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color4();
+              Color = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(Color);
             break;

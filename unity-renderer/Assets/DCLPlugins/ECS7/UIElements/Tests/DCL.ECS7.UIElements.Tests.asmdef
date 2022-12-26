@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "ECS7.UIElements",
         "DCL.ECSComponents.ProtobufData",
-        "ECSComponents.Utils"
+        "ECSComponents.Utils",
+        "Decentraland.Protocol.GeneratedCode"
     ],
     "includePlatforms": [
         "Editor"

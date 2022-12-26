@@ -1,5 +1,6 @@
 ﻿using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
+using Decentraland.Common;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;

@@ -38,7 +38,7 @@ namespace DCL.ECSComponents {
             "bGFjZWhvbGRlcl9jb2xvckINCgtfdGV4dF9hbGlnbkIHCgVfZm9udEIMCgpf",
             "Zm9udF9zaXplQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::DCL.ECSComponents.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiInput), global::DCL.ECSComponents.PBUiInput.Parser, new[]{ "Placeholder", "Color", "PlaceholderColor", "Disabled", "TextAlign", "Font", "FontSize" }, new[]{ "Color", "PlaceholderColor", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
@@ -113,13 +113,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 2;
-    private global::DCL.ECSComponents.Color4 color_;
+    private global::Decentraland.Common.Color4 color_;
     /// <summary>
     /// default=(0.0,0.0,0.0,1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color4 Color {
+    public global::Decentraland.Common.Color4 Color {
       get { return color_; }
       set {
         color_ = value;
@@ -128,13 +128,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "placeholder_color" field.</summary>
     public const int PlaceholderColorFieldNumber = 3;
-    private global::DCL.ECSComponents.Color4 placeholderColor_;
+    private global::Decentraland.Common.Color4 placeholderColor_;
     /// <summary>
     /// default=(0.3,0.3,0.3,1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.Color4 PlaceholderColor {
+    public global::Decentraland.Common.Color4 PlaceholderColor {
       get { return placeholderColor_; }
       set {
         placeholderColor_ = value;
@@ -405,13 +405,13 @@ namespace DCL.ECSComponents {
       }
       if (other.color_ != null) {
         if (color_ == null) {
-          Color = new global::DCL.ECSComponents.Color4();
+          Color = new global::Decentraland.Common.Color4();
         }
         Color.MergeFrom(other.Color);
       }
       if (other.placeholderColor_ != null) {
         if (placeholderColor_ == null) {
-          PlaceholderColor = new global::DCL.ECSComponents.Color4();
+          PlaceholderColor = new global::Decentraland.Common.Color4();
         }
         PlaceholderColor.MergeFrom(other.PlaceholderColor);
       }
@@ -448,14 +448,14 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color4();
+              Color = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 26: {
             if (placeholderColor_ == null) {
-              PlaceholderColor = new global::DCL.ECSComponents.Color4();
+              PlaceholderColor = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(PlaceholderColor);
             break;
@@ -497,14 +497,14 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (color_ == null) {
-              Color = new global::DCL.ECSComponents.Color4();
+              Color = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(Color);
             break;
           }
           case 26: {
             if (placeholderColor_ == null) {
-              PlaceholderColor = new global::DCL.ECSComponents.Color4();
+              PlaceholderColor = new global::Decentraland.Common.Color4();
             }
             input.ReadMessage(PlaceholderColor);
             break;
