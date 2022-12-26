@@ -537,6 +537,23 @@ namespace DCL.Social.Friends
                 Verify(requests[1], requestedFrom[1]);
                 Verify(requests[2], requestedTo[0]);
                 Verify(requests[3], requestedTo[1]);
+
+                FriendRequest request = controller.GetAllocatedFriendRequest("fr1");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequest("fr2");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequest("fr3");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequest("fr4");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequestByUser("usr1");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequestByUser("usr2");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequestByUser("usr3");
+                Assert.IsNotNull(request);
+                request = controller.GetAllocatedFriendRequestByUser("usr4");
+                Assert.IsNotNull(request);
             });
     }
 }
