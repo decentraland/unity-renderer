@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/PointerEvents.gen.cs.meta
-guid: 911461a8a7fb6d442bdeb58e543b664c
-========
-guid: aa0463728706a41e687660902cdcd3ae
->>>>>>>> dev:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/Decentraland/renderer/kernel_services/ClientEmotesKernelService.gen.cs.meta
+guid: d79261eb570309746beae3860895aa89
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

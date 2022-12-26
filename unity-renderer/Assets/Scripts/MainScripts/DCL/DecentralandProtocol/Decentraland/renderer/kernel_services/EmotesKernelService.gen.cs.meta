@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/UiDropdownResult.gen.cs.meta
-guid: 2001fe3b7a7cb2e4692cc48d0b217c55
-========
-guid: 7211fad0abc0743f5b95128ac252cb8a
->>>>>>>> dev:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/Decentraland/renderer/kernel_services/EmotesKernelService.gen.cs.meta
+guid: 5f030b29901898743af2ebc779e52d6c
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
