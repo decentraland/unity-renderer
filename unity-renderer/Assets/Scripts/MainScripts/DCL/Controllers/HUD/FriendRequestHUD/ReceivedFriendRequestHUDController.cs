@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace DCL.Social.Friends
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly StringVariable openPassportVariable;
+        private readonly ISocialAnalytics socialAnalytics;
 
         private string friendRequestId;
 
@@ -22,13 +24,15 @@ namespace DCL.Social.Friends
             IReceivedFriendRequestHUDView view,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
-            StringVariable openPassportVariable)
+            StringVariable openPassportVariable,
+            ISocialAnalytics socialAnalytics)
         {
             this.dataStore = dataStore;
             this.view = view;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.openPassportVariable = openPassportVariable;
+            this.socialAnalytics = socialAnalytics;
 
             view.OnClose += Hide;
             view.OnOpenProfile += OpenProfile;
@@ -111,21 +115,28 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.RejectFriendshipAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId)
+                                                                     .Timeout(TimeSpan.FromSeconds(10));
+
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
+
+                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    "modal",
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;
@@ -141,21 +152,27 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.AcceptFriendshipAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId)
+                                                                     .Timeout(TimeSpan.FromSeconds(10));
+
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    "modal",
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;

@@ -248,21 +248,32 @@ namespace DCL.Social.Friends
                 {
                     try
                     {
-                        await friendsController.RequestFriendshipAsync(userNameOrId, "")
-                                               .Timeout(TimeSpan.FromSeconds(10));
+                        FriendRequest request = await friendsController.RequestFriendshipAsync(userNameOrId, "")
+                                                                       .Timeout(TimeSpan.FromSeconds(10));
+
+                        socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
+                            PlayerActionSource.FriendsHUD);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        // TODO FRIEND REQUESTS (#3807): track error to analytics
+                        FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userNameOrId);
+
+                        socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                            PlayerActionSource.FriendsHUD.ToString(),
+                            e is FriendshipException fe
+                                ? fe.ErrorCode.ToString()
+                                : FriendRequestErrorCodes.Unknown.ToString());
+
                         throw;
                     }
                 }
                 else
+                {
                     friendsController.RequestFriendship(userNameOrId);
 
-                if (ownUserProfile != null)
-                    socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userNameOrId, 0,
+                    socialAnalytics.SendFriendRequestSent(ownUserProfile?.userId, userNameOrId, 0,
                         PlayerActionSource.FriendsHUD);
+                }
 
                 View.ShowRequestSendSuccess();
             }
@@ -457,19 +468,33 @@ namespace DCL.Social.Friends
         {
             if (isNewFriendRequestsEnabled)
             {
-                try { await friendsController.RejectFriendshipAsync(userId).Timeout(TimeSpan.FromSeconds(10)); }
-                catch (Exception)
+                try
                 {
-                    // TODO: send analytic notification
+                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId).Timeout(TimeSpan.FromSeconds(10));
+
+                    socialAnalytics.SendFriendRequestRejected(request.From, request.To,
+                        PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage);
+                }
+                catch (Exception e)
+                {
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+
+                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                        PlayerActionSource.FriendsHUD.ToString(),
+                        e is FriendshipException fe
+                            ? fe.ErrorCode.ToString()
+                            : FriendRequestErrorCodes.Unknown.ToString());
+
                     throw;
                 }
             }
             else
+            {
                 friendsController.RejectFriendship(userId);
 
-            if (ownUserProfile != null)
-                socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, userId,
-                    PlayerActionSource.FriendsHUD);
+                socialAnalytics.SendFriendRequestRejected(ownUserProfile?.userId, userId,
+                    PlayerActionSource.FriendsHUD.ToString(), false);
+            }
 
             UpdateNotificationsCounter();
         }
@@ -481,19 +506,30 @@ namespace DCL.Social.Friends
         {
             if (isNewFriendRequestsEnabled)
             {
-                try { await friendsController.CancelRequestByUserIdAsync(userId); }
-                catch (Exception)
+                try
                 {
-                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId);
+
+                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To,
+                        PlayerActionSource.FriendsHUD.ToString());
+                }
+                catch (Exception e)
+                {
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                        PlayerActionSource.FriendsHUD.ToString(),
+                        e is FriendshipException fe
+                            ? fe.ErrorCode.ToString()
+                            : FriendRequestErrorCodes.Unknown.ToString());
                     throw;
                 }
             }
             else
+            {
                 friendsController.CancelRequestByUserId(userId);
-
-            if (ownUserProfile != null)
-                socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
-                    PlayerActionSource.FriendsHUD);
+                socialAnalytics.SendFriendRequestCancelled(ownUserProfile?.userId, userId,
+                    PlayerActionSource.FriendsHUD.ToString());
+            }
         }
 
         private void HandleRequestAccepted(FriendRequestEntryModel entry) =>
@@ -506,20 +542,28 @@ namespace DCL.Social.Friends
                 try
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    socialAnalytics.SendFriendRequestApproved(request.From, request.To,
+                        PlayerActionSource.FriendsHUD.ToString(),
+                        request.HasBodyMessage);
                 }
-                catch
+                catch (Exception e)
                 {
-                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                        PlayerActionSource.FriendsHUD.ToString(),
+                        e is FriendshipException fe
+                            ? fe.ErrorCode.ToString()
+                            : FriendRequestErrorCodes.Unknown.ToString());
                     throw;
                 }
             }
             else
+            {
                 friendsController.AcceptFriendship(userId);
-
-            if (ownUserProfile != null)
-                socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId,
-                    PlayerActionSource.FriendsHUD);
+                socialAnalytics.SendFriendRequestApproved(ownUserProfile?.userId, userId,
+                    PlayerActionSource.FriendsHUD.ToString(), false);
+            }
         }
 
         private void DisplayFriendsIfAnyIsLoaded()
