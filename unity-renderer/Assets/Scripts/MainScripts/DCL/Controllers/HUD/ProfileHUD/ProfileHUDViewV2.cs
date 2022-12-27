@@ -5,6 +5,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -121,6 +122,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetProfile(UserProfile userProfile)
     {
         profile = userProfile;
+        UpdateLayoutByProfile(userProfile);
+    }
+
+    private void UpdateLayoutByProfile(UserProfile userProfile)
+    {
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
         else
@@ -131,9 +137,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         HandleProfileSnapshot(userProfile);
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         SetUserId(userProfile);
-        ForceLayoutToRefreshSize();
 
-        description = profile.description;
+        description = userProfile.description;
+        descriptionInputText.text = description;
         UpdateLinksInformation(description);
 
         string[] nameSplits = profile.userName.Split('#');
@@ -177,6 +183,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void ShowExpanded(bool show)
     {
         expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
     }
 
     public void ActivateProfileNameEditionMode(bool activate)
@@ -194,7 +202,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    public void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
+    public void SetDescriptionCharLiitEnabled(bool enabled)
+    {
+        charLimitDescriptionContainer.SetActive(enabled);
+    }
 
     private void Awake()
     {
@@ -304,8 +315,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonLogOut.gameObject.SetActive(active);
     }
 
-    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
-
     private void SetActiveUnverifiedNameGOs(bool active)
     {
         for (int i = 0; i < hideOnNameClaimed.Length; i++)
@@ -353,7 +362,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateNameCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
 
-    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
+    private void SetDescriptionEnabled(bool enabled)
+    {
+        descriptionContainer.SetActive(enabled);
+    }
 
     public void SetDescriptionIsEditing(bool isEditing)
     {
@@ -420,5 +432,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
+    }
+
+    private IEnumerator EnableNextFrame(GameObject go, bool shouldEnable)
+    {
+        yield return null;
+        go.SetActive(shouldEnable);
     }
 }
