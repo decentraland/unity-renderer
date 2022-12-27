@@ -42,7 +42,7 @@ namespace DCL.Social.Friends
 
             messageBodyInput.onValueChanged.AddListener(s =>
             {
-                RefreshMessageBodyValidations();
+                RefreshMessageBodyValidations(s);
                 OnMessageBodyChanged?.Invoke(s);
             });
             sendButton.onClick.AddListener(() => OnSend?.Invoke());
@@ -67,7 +67,7 @@ namespace DCL.Social.Friends
             nameLabel.text = model.Name;
             successStateLabel.text = $"Friend request sent to {model.Name}";
             messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/{messageBodyInput.characterLimit}";
-            RefreshMessageBodyValidations();
+            RefreshMessageBodyValidations(messageBodyInput.text);
 
             // the load of the profile picture gets stuck if the same listener is registered many times
             if (lastProfilePictureObserver != model.ProfilePictureObserver)
@@ -122,10 +122,10 @@ namespace DCL.Social.Friends
 
         public void ClearInputField() => messageBodyInput.text = "";
 
-        private void RefreshMessageBodyValidations()
+        private void RefreshMessageBodyValidations(string message)
         {
-            messageBodyLengthLabel.text = $"{messageBodyInput.text.Length}/{messageBodyInput.characterLimit}";
-            messageBodyMaxLimitMark.gameObject.SetActive(messageBodyInput.text.Length >= messageBodyInput.characterLimit);
+            messageBodyLengthLabel.text = $"{message.Length}/{messageBodyInput.characterLimit}";
+            messageBodyMaxLimitMark.gameObject.SetActive(message.Length >= messageBodyInput.characterLimit);
             messageBodyMaxLimitMark.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
             messageBodyLengthLabel.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
         }
