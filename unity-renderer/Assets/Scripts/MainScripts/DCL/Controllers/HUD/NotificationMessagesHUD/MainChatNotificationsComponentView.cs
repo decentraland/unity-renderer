@@ -24,7 +24,7 @@ namespace DCL.Chat.Notifications
         private const string FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX = "FriendRequestNotificationEntriesPool_";
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
-        public event Action<string> OnClickedNotification;
+        public event Action<string> OnClickedChatMessage;
         public event Action<string> OnClickedFriendRequest;
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
@@ -305,7 +305,7 @@ namespace DCL.Chat.Notifications
 
         private void ClickedOnNotification(string targetId)
         {
-            OnClickedNotification?.Invoke(targetId);
+            OnClickedChatMessage?.Invoke(targetId);
         }
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationComponentView friendRequestNotificationComponentView,

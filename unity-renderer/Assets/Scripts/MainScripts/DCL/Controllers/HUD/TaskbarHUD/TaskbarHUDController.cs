@@ -56,6 +56,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openPrivateChat => DataStore.i.HUDs.openPrivateChat;
     internal BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
+    internal BaseVariable<string> openChat => DataStore.i.HUDs.openChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
     public TaskbarHUDController(IChatController chatController, IFriendsController friendsController)
@@ -126,6 +127,7 @@ public class TaskbarHUDController : IHUD
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
 
         openPrivateChat.OnChange += OpenPrivateChatFromPassport;
+        openChat.OnChange += OpenClickedChat;
     }
 
     private void HandleFriendsToggle(bool show)
@@ -682,7 +684,6 @@ public class TaskbarHUDController : IHUD
         notificationViewerTransform.SetParent(view.leftWindowContainer, false);
         notificationViewerTransform.SetAsLastSibling();
         experiencesViewerTransform.SetAsLastSibling();
-        notificationViewerTransform.GetComponent<MainChatNotificationsComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
     private void InitializeTopNotificationPanel(Transform currentPanelTransform, Transform previousPanelTransform)
@@ -693,10 +694,9 @@ public class TaskbarHUDController : IHUD
         topNotificationViewerTransform = currentPanelTransform;
         topNotificationViewerTransform.SetParent(view.leftWindowContainer, false);
         topNotificationViewerTransform.SetAsFirstSibling();
-        topNotificationViewerTransform.GetComponent<TopNotificationComponentView>().OnClickedNotification += OpenClickedChat;
     }
 
-    private void OpenClickedChat(string chatId)
+    private void OpenClickedChat(string chatId, string previous)
     {
         const string nearbyChannelId = "nearby";
         const string conversationListId = "conversationList";

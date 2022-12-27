@@ -7,14 +7,18 @@ namespace DCL.Social.Friends
         public string From { get; }
         public string To { get; }
         public string MessageBody { get; }
+        public FriendRequestState State { get; set; }
+        public bool HasBodyMessage => !string.IsNullOrEmpty(MessageBody);
 
-        public FriendRequest(string friendRequestId, long timestamp, string @from, string to, string messageBody)
+        public FriendRequest(string friendRequestId, long timestamp, string from, string to, string messageBody,
+            FriendRequestState state)
         {
             FriendRequestId = friendRequestId;
             Timestamp = timestamp;
-            From = @from;
+            From = from;
             To = to;
             MessageBody = messageBody;
+            State = state;
         }
 
         public bool IsSentTo(string userId) =>
@@ -22,5 +26,8 @@ namespace DCL.Social.Friends
 
         public bool IsReceivedFrom(string userId) =>
             From == userId;
+
+        public bool IsPending() =>
+            State == FriendRequestState.Pending;
     }
 }

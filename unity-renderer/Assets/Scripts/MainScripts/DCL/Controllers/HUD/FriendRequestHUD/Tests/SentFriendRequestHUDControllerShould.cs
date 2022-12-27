@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
-using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -31,7 +30,7 @@ namespace DCL.Social.Friends
 
             friendsController = Substitute.For<IFriendsController>();
             friendsController.GetAllocatedFriendRequest(FRIEND_REQ_ID)
-                             .Returns(new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey"));
+                             .Returns(new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey", FriendRequestState.Pending));
 
             IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
             var recipientProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -95,7 +94,8 @@ namespace DCL.Social.Friends
         {
             friendsController.CancelRequestAsync(FRIEND_REQ_ID)
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah")));
+                                  new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah",
+                                      FriendRequestState.Cancelled)));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 
@@ -114,7 +114,6 @@ namespace DCL.Social.Friends
             view.OnCancel += Raise.Event<Action>();
 
             view.Received(1).ShowPendingToCancel();
-            view.Received(1).ShowCancelFailed();
             friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
         }
 

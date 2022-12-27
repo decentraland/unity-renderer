@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,13 +9,12 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
     {
-        [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
+        [SerializeField] internal GameObject cancelButtonsContainer;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button tryCancelButton;
-        [SerializeField] internal Button retryButton;
+        [SerializeField] internal GameObject pendingToCancelContainer;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal ImageComponentView profileImage;
@@ -57,7 +57,6 @@ namespace DCL.Social.Friends
                 SwitchToTryCancelButton();
             });
 
-            retryButton.onClick.AddListener(() => OnCancel?.Invoke());
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
         }
 
@@ -69,10 +68,10 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
-            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
             cancelButton.interactable = model.State != Model.LayoutState.Pending;
             tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
+            cancelButtonsContainer.SetActive(model.State != Model.LayoutState.Pending);
+            pendingToCancelContainer.SetActive(model.State == Model.LayoutState.Pending);
 
             foreach (Button button in closeButtons)
                 button.interactable = model.State != Model.LayoutState.Pending;
@@ -98,11 +97,7 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Close()
-        {
-            base.Hide(instant: true);
-            gameObject.SetActive(false);
-        }
+        public void Close() => base.Hide();
 
         public void SetSenderProfilePicture(ILazyTextureObserver textureObserver)
         {
@@ -110,10 +105,9 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
-            gameObject.SetActive(true);
-            base.Show(instant: true);
+            base.Show(instant);
             HideConfirmationToast();
             SwitchToTryCancelButton();
             model.State = Model.LayoutState.Default;
@@ -139,14 +133,6 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void ShowCancelFailed()
-        {
-            model.State = Model.LayoutState.Failed;
-            HideConfirmationToast();
-            SwitchToTryCancelButton();
-            RefreshControl();
-        }
-
         public void SetBodyMessage(string messageBody)
         {
             model.BodyMessage = messageBody;
@@ -155,7 +141,7 @@ namespace DCL.Social.Friends
 
         public void SetTimestamp(DateTime date)
         {
-            dateLabel.text = date.Date.ToString("MMM dd").ToUpper();
+            dateLabel.text = date.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
 
         private void ShowConfirmationToast()

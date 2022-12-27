@@ -164,7 +164,8 @@ namespace DCL.Chat.Notifications
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 "sender",
                 "ownUserId",
-                "hey"));
+                "hey",
+                FriendRequestState.Pending));
 
             topNotificationsView.Received(1)
                                 .AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(m =>
@@ -300,7 +301,9 @@ namespace DCL.Chat.Notifications
             GivenProfile("friendId", "friendName");
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
-            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<string>>("friendId");
+            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
+                new FriendRequest("friendRequestId", 0, "ownId", "friendId", "hey",
+                    FriendRequestState.Accepted));
 
             mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
                 f.UserId == "friendId"
@@ -324,7 +327,8 @@ namespace DCL.Chat.Notifications
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(
-                new FriendRequest("friendRequestId", 100, "friendId", "ownUserId", "hey!"));
+                new FriendRequest("friendRequestId", 100, "friendId", "ownUserId", "hey!",
+                    FriendRequestState.Pending));
 
             mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
                 f.UserId == "friendId"
@@ -341,6 +345,26 @@ namespace DCL.Chat.Notifications
                 && f.Message == "wants to be your friend."
                 && f.IsAccepted == false
                 && f.FriendRequestId == "friendRequestId"));
+        }
+
+        [Test]
+        public void OpenChatWhenClickOnAnApprovedFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", "", FriendRequestState.Accepted));
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<Action<string>>("fr");
+
+            Assert.AreEqual("sender", dataStore.HUDs.openChat.Get());
+        }
+
+        [Test]
+        public void OpenFriendRequestWhenClickOnAnPendingFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", "", FriendRequestState.Pending));
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<Action<string>>("fr");
+
+            Assert.AreEqual("fr", dataStore.HUDs.openReceivedFriendRequestDetail.Get());
         }
     }
 }

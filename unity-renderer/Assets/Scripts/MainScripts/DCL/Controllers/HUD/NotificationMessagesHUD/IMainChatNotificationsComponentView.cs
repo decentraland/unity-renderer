@@ -1,4 +1,3 @@
-using DCL.Social.Friends;
 using System;
 using UnityEngine;
 
@@ -8,6 +7,7 @@ namespace DCL.Chat.Notifications
     {
         event Action<bool> OnResetFade;
         event Action<bool> OnPanelFocus;
+        event Action<string> OnClickedChatMessage;
         event Action<string> OnClickedFriendRequest;
 
         Transform GetPanelTransform();

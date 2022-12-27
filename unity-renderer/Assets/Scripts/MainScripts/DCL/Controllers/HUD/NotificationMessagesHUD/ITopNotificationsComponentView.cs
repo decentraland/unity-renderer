@@ -1,4 +1,3 @@
-using DCL.Social.Friends;
 using System;
 using UnityEngine;
 
@@ -7,6 +6,7 @@ namespace DCL.Chat.Notifications
     public interface ITopNotificationsComponentView
     {
         event Action<bool> OnResetFade;
+        event Action<string> OnClickedChatMessage;
         event Action<string> OnClickedFriendRequest;
 
         Transform GetPanelTransform();
