@@ -9,7 +9,7 @@ namespace DCL.Social.Friends
     public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
     {
         [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
-        [SerializeField] internal ShowHideAnimator showHideAnimatorForPendingState;
+        [SerializeField] internal GameObject pendingToSendContainer;
         [SerializeField] internal ShowHideAnimator showHideAnimatorForSuccessState;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal TMP_Text successStateLabel;
@@ -85,7 +85,7 @@ namespace DCL.Social.Friends
             base.Show(instant);
             model.State = Model.LayoutState.Default;
             showHideAnimatorForDefaultState.Show(true);
-            showHideAnimatorForPendingState.Hide(true);
+            pendingToSendContainer.SetActive(false);
             showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
@@ -105,8 +105,8 @@ namespace DCL.Social.Friends
         public void ShowPendingToSend()
         {
             model.State = Model.LayoutState.Pending;
-            showHideAnimatorForDefaultState.Hide();
-            showHideAnimatorForPendingState.Show();
+            showHideAnimatorForDefaultState.Show(true);
+            pendingToSendContainer.SetActive(true);
             showHideAnimatorForSuccessState.Hide(true);
             RefreshControl();
         }
@@ -115,7 +115,7 @@ namespace DCL.Social.Friends
         {
             model.State = Model.LayoutState.Success;
             showHideAnimatorForDefaultState.Hide(true);
-            showHideAnimatorForPendingState.Hide();
+            pendingToSendContainer.SetActive(false);
             showHideAnimatorForSuccessState.Show();
             RefreshControl();
         }

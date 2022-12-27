@@ -1234,7 +1234,7 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &3359865144886276909
 MonoBehaviour:
@@ -1251,7 +1251,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 6982234772972173869}
 --- !u!1 &5259764645000867622
 GameObject:
   m_ObjectHideFlags: 0
@@ -2949,7 +2949,7 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &949928462192606337
 MonoBehaviour:
@@ -3058,7 +3058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 0
+  hideOnEnable: 1
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   canvasGroup: {fileID: 0}
@@ -3116,7 +3116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 1370006789490427460}
   showHideAnimatorForDefaultState: {fileID: 7067588097786324621}
-  showHideAnimatorForPendingState: {fileID: 949928462192606337}
+  pendingToSendContainer: {fileID: 4456484930834788033}
   showHideAnimatorForSuccessState: {fileID: 3359865144886276909}
   nameLabel: {fileID: 465482504103365880}
   successStateLabel: {fileID: 1025801133111614104}

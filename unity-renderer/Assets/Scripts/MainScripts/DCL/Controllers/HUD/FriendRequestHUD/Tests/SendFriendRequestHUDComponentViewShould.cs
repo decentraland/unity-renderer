@@ -27,10 +27,9 @@ namespace DCL.Social.Friends
         {
             view.Show();
 
-            Assert.IsTrue(view.gameObject.activeSelf);
             Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+            Assert.IsFalse(view.pendingToSendContainer.activeSelf);
             Assert.IsFalse(view.showHideAnimatorForSuccessState.isVisible);
-            Assert.IsFalse(view.showHideAnimatorForPendingState.isVisible);
         }
 
         [Test]
@@ -39,8 +38,8 @@ namespace DCL.Social.Friends
             view.ShowSendSuccess();
 
             Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
+            Assert.IsFalse(view.pendingToSendContainer.activeSelf);
             Assert.IsTrue(view.showHideAnimatorForSuccessState.isVisible);
-            Assert.IsFalse(view.showHideAnimatorForPendingState.isVisible);
         }
 
         [Test]
@@ -48,8 +47,9 @@ namespace DCL.Social.Friends
         {
             view.ShowPendingToSend();
 
+            Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+            Assert.IsTrue(view.pendingToSendContainer.activeSelf);
             Assert.IsFalse(view.showHideAnimatorForSuccessState.isVisible);
-            Assert.IsTrue(view.showHideAnimatorForPendingState.isVisible);
         }
 
         [TestCase("bleh")]
