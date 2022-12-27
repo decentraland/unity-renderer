@@ -79,13 +79,21 @@ namespace DCL
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
 
+            Type typeToUse = typeof(IPointerEvent);
+
             if (!Utils.IsCursorLocked)
-                return;
+            {
+                //New interaction model
+                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                    return;
+
+                typeToUse = typeof(IAvatarOnPointerDown);
+            }
 
             IWorldState worldState = Environment.i.world.state;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
-            Ray ray = GetRayFromCamera();
+            Ray ray = Utils.IsCursorLocked ? GetRayFromCamera() : GetRayFromMouse();
             bool didHit = Physics.Raycast(ray, out hitInfo, Mathf.Infinity,
                 PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
 
@@ -102,7 +110,7 @@ namespace DCL
 
                 if (raycaster)
                 {
-                    uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width / 2, Screen.height / 2);
+                    uiGraphicRaycastPointerEventData.position = Utils.IsCursorLocked ? new Vector2(Screen.width / 2, Screen.height / 2) : Input.mousePosition;
                     uiGraphicRaycastResults.Clear();
                     raycaster.Raycast(uiGraphicRaycastPointerEventData, uiGraphicRaycastResults);
                     uiIsBlocking = uiGraphicRaycastResults.Count > 0;
@@ -118,7 +126,7 @@ namespace DCL
                 dataStoreEcs7.lastPointerRayHit.didHit = didHit;
                 dataStoreEcs7.lastPointerRayHit.ray = ray;
                 dataStoreEcs7.lastPointerRayHit.hasValue = true;
-            }            
+            }
 
             if (!didHit || uiIsBlocking)
             {
@@ -139,9 +147,9 @@ namespace DCL
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredInputEvent = GetPointerEvent(info.entity);
+                newHoveredInputEvent = (IPointerEvent)info.entity.gameObject.GetComponentInChildren(typeToUse);
             else
-                newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = (IPointerEvent)hitInfo.collider.GetComponentInChildren(typeToUse);
 
             clickHandler = null;
 
@@ -178,7 +186,8 @@ namespace DCL
 
                 for (int i = 0; i < lastHoveredEventList.Count; i++)
                 {
-                    if (lastHoveredEventList[i] is IPointerInputEvent e)
+                    //If cursor is unlocked we ignore the button being pressed, avatars use case.
+                    if (lastHoveredEventList[i] is IPointerInputEvent e && Utils.IsCursorLocked)
                     {
                         bool eventButtonIsPressed = inputControllerLegacy.IsPressed(e.GetActionButton());
 
@@ -220,13 +229,10 @@ namespace DCL
                                     .ToArray();
         }
 
-        private IPointerEvent GetPointerEvent(IDCLEntity entity)
-        {
-            return entity.gameObject.GetComponentInChildren<IPointerEvent>();
-        }
-
         private IList<IPointerInputEvent> GetPointerInputEvents(GameObject hitGameObject)
         {
+            if (!Utils.IsCursorLocked || Utils.LockedThisFrame())
+                return hitGameObject.GetComponentsInChildren<IAvatarOnPointerDown>();
             return hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
         }
 
@@ -331,17 +337,27 @@ namespace DCL
 
         public Ray GetRayFromCamera() { return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)); }
 
+        public Ray GetRayFromMouse()
+        {
+            return charCamera.ScreenPointToRay(Input.mousePosition);
+        }
+
         void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast,
             bool enablePointerEvent)
         {
             //TODO(Brian): We should remove this when we get a proper initialization layer
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
-                if (Utils.LockedThisFrame())
+                if (!renderingEnabled)
                     return;
 
-                if (!Utils.IsCursorLocked || !renderingEnabled)
-                    return;
+                if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
+                {
+                    //New interaction model
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                        return;
+                }
+
             }
 
             if (charCamera == null)
@@ -365,7 +381,7 @@ namespace DCL
             {
                 ProcessButtonUp(buttonId, useRaycast, enablePointerEvent, pointerEventLayer, globalLayer);
             }
-            
+
             if (dataStoreEcs7.isEcs7Enabled)
             {
                 dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
@@ -384,7 +400,7 @@ namespace DCL
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
-            Ray ray = GetRayFromCamera();
+            Ray ray = !Utils.IsCursorLocked || Utils.LockedThisFrame() ? GetRayFromMouse() : GetRayFromCamera();
 
             // Raycast for global pointer events
             worldState.TryGetScene(currentSceneNumber, out var loadedScene);
@@ -424,7 +440,7 @@ namespace DCL
             List<string> currentPortableExperienceIds = DataStore.i.Get<DataStore_World>().portableExperienceIds.Get().ToList();
             for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
-                IParcelScene pexSene = worldState.GetPortableExperienceScene(currentPortableExperienceIds[i]); 
+                IParcelScene pexSene = worldState.GetPortableExperienceScene(currentPortableExperienceIds[i]);
                 if (pexSene != null)
                 {
                     raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, pexSene);
@@ -446,7 +462,7 @@ namespace DCL
                 return;
 
             RaycastHitInfo raycastGlobalLayerHitInfo;
-            Ray ray = GetRayFromCamera();
+            Ray ray = !Utils.IsCursorLocked || Utils.LockedThisFrame() ? GetRayFromMouse() : GetRayFromCamera();
             worldState.TryGetScene(currentSceneNumber, out var loadedScene);
 
             // Raycast for pointer event components
@@ -517,7 +533,7 @@ namespace DCL
                     raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
                     ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, pexSene.sceneData.sceneNumber);
-                }                
+                }
             }
         }
 

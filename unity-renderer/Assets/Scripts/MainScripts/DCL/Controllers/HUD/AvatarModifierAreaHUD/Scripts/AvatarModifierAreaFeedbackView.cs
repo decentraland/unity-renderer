@@ -156,7 +156,7 @@ namespace DCL.AvatarModifierAreaFeedback
                 case AvatarModifierAreaID.HIDE_AVATAR:
                     return "\u2022  The avatars are hidden";
                 case AvatarModifierAreaID.DISABLE_PASSPORT:
-                    return "\u2022  Your passport is disable for\n    other players";
+                    return "\u2022  Your passport is disabled for\n    other players";
                 default:
                     throw new NotImplementedException();
             }

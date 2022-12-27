@@ -11,9 +11,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
-using GPUSkinning;
 using UnityEngine;
-using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
 
 namespace DCL
@@ -256,8 +254,24 @@ namespace DCL
             currentLazyObserver.AddListener(avatar.SetImpostorTexture);
         }
 
-        private void PlayerPointerExit() { playerName?.SetForceShow(false); }
-        private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
+        private void PlayerPointerExit()
+        {
+            DataStore.i.outliner.avatarOutlined.Set((null, -1, -1));
+            playerName?.SetForceShow(false);
+        }
+
+        private void PlayerPointerEnter()
+        {
+            if (avatar.status == IAvatar.Status.Loaded)
+            {
+                var renderer = avatar.GetMainRenderer();
+
+                if (renderer != null)
+                    DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
+            }
+
+            playerName?.SetForceShow(true);
+        }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {

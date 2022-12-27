@@ -36,9 +36,9 @@ namespace DCL.Tutorial
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
                 tutorialController.hudController.profileHud != null &&
-                tutorialController.hudController.profileHud.tutorialTooltipReference)
+                tutorialController.hudController.profileHud.TutorialTooltipReference)
             {
-                tooltipTransform.position = tutorialController.hudController.profileHud.tutorialTooltipReference.position;
+                tooltipTransform.position = tutorialController.hudController.profileHud.TutorialTooltipReference.position;
             }
         }
 

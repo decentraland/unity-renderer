@@ -3,14 +3,13 @@ using DCL.Helpers;
 using DCL.Interface;
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
-    private readonly IUserProfileBridge userProfileBridge;
-
     [Serializable]
     public struct Configuration
     {
@@ -22,67 +21,65 @@ public class ProfileHUDController : IHUD
     private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
     private const string URL_TERMS_OF_USE = "https://decentraland.org/terms";
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
+    private const string VIEW_NAME = "_ProfileHUD";
     private const float FETCH_MANA_INTERVAL = 60;
 
-    public readonly ProfileHUDView view;
-    internal AvatarEditorHUDController avatarEditorHud;
-
-    private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private IMouseCatcher mouseCatcher;
-    private Coroutine fetchManaIntervalRoutine = null;
-    private Coroutine fetchPolygonManaIntervalRoutine = null;
-
-    public RectTransform tutorialTooltipReference { get => view.tutorialTooltipReference; }
+    public readonly IProfileHUDView view;
+    private readonly IUserProfileBridge userProfileBridge;
 
     public event Action OnOpen;
     public event Action OnClose;
 
+    internal AvatarEditorHUDController avatarEditorHud;
+
+    private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
+    private Coroutine fetchManaIntervalRoutine = null;
+    private Coroutine fetchPolygonManaIntervalRoutine = null;
+
+    private Regex nameRegex = null;
+
+
+    public RectTransform TutorialTooltipReference => view.TutorialReference;
+
+
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
         this.userProfileBridge = userProfileBridge;
-        mouseCatcher = SceneReferences.i?.mouseCatcher;
 
+        GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
+        viewGo.name = VIEW_NAME;
+        view = viewGo.GetComponent<IProfileHUDView>();
 
-        view = UnityEngine.Object.Instantiate(GetViewPrefab()).GetComponent<ProfileHUDView>();
-        view.name = "_ProfileHUD";
+        DataStore.i.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
 
-        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
+        view.SetWalletSectionEnabled(false);
+        view.SetNonWalletSectionEnabled(false);
+        view.SetDescriptionIsEditing(false);
 
-        view.connectedWalletSection.SetActive(false);
-        view.nonConnectedWalletSection.SetActive(false);
-        view.ActivateDescriptionEditionMode(false);
+        view.LogedOutPressed += (object sender, EventArgs args) => WebInterface.LogOut();
+        view.SignedUpPressed += (object sender, EventArgs args) => WebInterface.RedirectToSignUp();
+        view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
 
-        view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
-        view.buttonSignUp.onClick.AddListener(WebInterface.RedirectToSignUp);
-        view.buttonClaimName.onClick.AddListener(() => WebInterface.OpenURL(URL_CLAIM_NAME));
-        view.buttonTermsOfServiceForConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        view.buttonPrivacyPolicyForConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
-        view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
-        view.inputName.onSubmit.AddListener(UpdateProfileName);
-        view.descriptionEditionInput.onSubmit.AddListener(UpdateProfileDescription);
-        view.OnOpen += () =>
+        view.Opened += (object sender, EventArgs args) =>
         {
             WebInterface.RequestOwnProfileUpdate();
             OnOpen?.Invoke();
         };
-        view.OnClose += () => OnClose?.Invoke();
+        view.Closed += (object sender, EventArgs args) => OnClose?.Invoke();
+        view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
+        view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
 
-        if (view.manaCounterView)
-        {
-            view.manaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
-            view.manaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
-        }
+        view.TermsAndServicesPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_TERMS_OF_USE);
+        view.PrivacyPolicyPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_PRIVACY_POLICY);
 
-        if (view.polygonManaCounterView)
+        if (view.HasManaCounterView() || view.HasPolygonManaCounterView())
         {
-            view.polygonManaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
-            view.polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
+            view.ManaInfoPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_INFO);
+            view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock += OnMouseLocked;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
         {
@@ -94,19 +91,21 @@ public class ProfileHUDController : IHUD
         ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
 
-    protected virtual GameObject GetViewPrefab()
+    private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
     {
-        return Resources.Load<GameObject>("ProfileHUD");
+        view.ShowExpanded(isOpenCurrent);
     }
+
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) => view.GameObject.SetActive(current);
+
+    public void SetManaBalance(string balance) => view?.SetManaBalance(balance);
+
+    public void SetPolygonManaBalance(double balance) => view?.SetPolygonBalance(balance);
 
     public void SetVisibility(bool visible)
     {
-        view?.SetVisibility(visible);
-
         if (visible && fetchManaIntervalRoutine == null)
-        {
             fetchManaIntervalRoutine = CoroutineStarter.Start(ManaIntervalRoutine());
-        }
         else if (!visible && fetchManaIntervalRoutine != null)
         {
             CoroutineStarter.Stop(fetchManaIntervalRoutine);
@@ -114,9 +113,7 @@ public class ProfileHUDController : IHUD
         }
 
         if (visible && fetchPolygonManaIntervalRoutine == null)
-        {
             fetchPolygonManaIntervalRoutine = CoroutineStarter.Start(PolygonManaIntervalRoutine());
-        }
         else if (!visible && fetchPolygonManaIntervalRoutine != null)
         {
             CoroutineStarter.Stop(fetchPolygonManaIntervalRoutine);
@@ -132,31 +129,55 @@ public class ProfileHUDController : IHUD
             fetchManaIntervalRoutine = null;
         }
 
-        if (view)
-        {
-            GameObject.Destroy(view.gameObject);
-        }
+        if (view.GameObject)
+            UnityEngine.Object.Destroy(view.GameObject);
 
         ownUserProfile.OnUpdate -= OnProfileUpdated;
-        if (mouseCatcher != null)
-            mouseCatcher.OnMouseLock -= OnMouseLocked;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
-        {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
-        }
 
-        view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
         DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
-
         DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
 
-    void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
 
-    void OnMouseLocked() { HideProfileMenu(); }
+    protected virtual GameObject GetViewPrefab()
+    {
+        return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD");
+    }
 
-    IEnumerator ManaIntervalRoutine()
+
+    private void OnProfileUpdated(UserProfile profile) => view?.SetProfile(profile);
+
+    private void ExploreV2Changed(bool current, bool previous) => view.SetStartMenuButtonActive(current);
+
+    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) =>
+        nameRegex = new Regex(current.profiles.nameValidRegex);
+
+    private void UpdateProfileName(string newName)
+    {
+        if (nameRegex != null && !nameRegex.IsMatch(newName))
+            return;
+
+        userProfileBridge.SaveUnverifiedName(newName);
+    }
+
+    private void UpdateProfileDescription(string description)
+    {
+        if (!ownUserProfile.hasConnectedWeb3 || view.IsDesciptionIsLongerThanMaxCharacters())
+            return;
+
+        userProfileBridge.SaveDescription(description);
+    }
+
+    private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
+    {
+        view.ShowProfileIcon(!currentIsFullScreenMenuMode);
+    }
+
+
+    private IEnumerator ManaIntervalRoutine()
     {
         while (true)
         {
@@ -165,7 +186,7 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    IEnumerator PolygonManaIntervalRoutine()
+    private IEnumerator PolygonManaIntervalRoutine()
     {
         while (true)
         {
@@ -174,7 +195,7 @@ public class ProfileHUDController : IHUD
             Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
 
             // This can be null if theGraph is mocked
-            if ( promise != null )
+            if (promise != null)
             {
                 yield return promise;
                 SetPolygonManaBalance(promise.value);
@@ -183,64 +204,4 @@ public class ProfileHUDController : IHUD
             yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
         }
     }
-
-    /// <summary>
-    /// Set an amount of MANA on the HUD.
-    /// </summary>
-    /// <param name="balance">Amount of MANA.</param>
-    public void SetManaBalance(string balance) { view.manaCounterView?.SetBalance(balance); }
-
-    public void SetPolygonManaBalance(double balance) { view.polygonManaCounterView.SetBalance(balance); }
-
-    /// <summary>
-    /// Close the Profile menu.
-    /// </summary>
-    public void HideProfileMenu() { view?.HideMenu(); }
-
-    private void UpdateProfileName(string newName)
-    {
-        if (view.inputName.wasCanceled)
-            return;
-
-        if (!view.IsValidAvatarName(newName))
-        {
-            view.inputName.ActivateInputField();
-            return;
-        }
-
-        if (view != null)
-        {
-            view.SetProfileName(newName);
-            view.ActivateProfileNameEditionMode(false);
-        }
-
-        userProfileBridge.SaveUnverifiedName(newName);
-    }
-
-    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
-
-    private void UpdateProfileDescription(string description)
-    {
-        if (view.descriptionEditionInput.wasCanceled
-            || !ownUserProfile.hasConnectedWeb3
-            || description.Length > view.descriptionEditionInput.characterLimit)
-        {
-            view.ActivateDescriptionEditionMode(false);
-            return;
-        }
-
-        view.SetDescription(description);
-        view.ActivateDescriptionEditionMode(false);
-        userProfileBridge.SaveDescription(description);
-    }
-
-    private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
-    {
-        view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
-
-        if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
-            view.ToggleMenu();
-    }
-
-    private void ExploreV2Changed(bool current, bool previous) { view.SetStartMenuButtonActive(current); }
 }

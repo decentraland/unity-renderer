@@ -19,7 +19,7 @@ namespace DCL.ECSComponents
 
         public static YGWrap GetFlexWrap(this PBUiTransform self)
         {
-            return self.HasFlexWrap ? self.FlexWrap : YGWrap.YgwWrap;
+            return self.HasFlexWrap ? self.FlexWrap : YGWrap.YgwNoWrap;
         }
     }
 }
