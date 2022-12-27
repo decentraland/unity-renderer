@@ -7,10 +7,10 @@ public class LoadingHUDControllerShould
 {
     private LoadingHUDController hudController;
     private LoadingHUDView hudView;
-    private BaseVariable<bool> fadeIn => DataStore.i.HUDs.loadingHUD.fadeIn;
-    private BaseVariable<bool> fadeOut => DataStore.i.HUDs.loadingHUD.fadeOut;
-    private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
-    private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
+    private BaseVariable<bool> fadeIn => DataStore.i.loadingScreen.loadingHUD.fadeIn;
+    private BaseVariable<bool> fadeOut => DataStore.i.loadingScreen.loadingHUD.fadeOut;
+    private BaseVariable<string> message => DataStore.i.loadingScreen.loadingHUD.message;
+    private BaseVariable<bool> showTips => DataStore.i.loadingScreen.loadingHUD.showTips;
 
     [SetUp]
     public void SetUp()

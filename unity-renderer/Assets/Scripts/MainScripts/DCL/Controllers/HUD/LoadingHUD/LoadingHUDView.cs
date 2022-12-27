@@ -31,18 +31,18 @@ public class LoadingHUDView : MonoBehaviour
     private void OnFinishHide(ShowHideAnimator obj)
     {
         showHideAnimator.OnWillFinishHide -= OnFinishHide;
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
-        DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(false);
+        DataStore.i.loadingScreen.loadingHUD.fadeIn.Set(false);
+        DataStore.i.loadingScreen.loadingHUD.fadeOut.Set(false);
+        DataStore.i.loadingScreen.loadingHUD.visible.Set(false);
     }
 
     private void OnFinishStart(ShowHideAnimator obj)
     {
         showHideAnimator.OnWillFinishStart -= OnFinishStart;
         CommonScriptableObjects.isLoadingHUDOpen.Set(true);
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
-        DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(true);
+        DataStore.i.loadingScreen.loadingHUD.fadeIn.Set(false);
+        DataStore.i.loadingScreen.loadingHUD.fadeOut.Set(false);
+        DataStore.i.loadingScreen.loadingHUD.visible.Set(true);
     }
 
     public void SetVisible(bool isVisible, bool instant) {

@@ -404,7 +404,7 @@ public class HUDController : IHUDController
 
                 break;
             case HUDElementID.LOADING:
-                if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled("decoupled_loading_screen"))
+                if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
                 {
                     CreateHudElement(configuration, hudElementId);
                     if (loadingHud != null && configuration.active)

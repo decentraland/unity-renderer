@@ -4,12 +4,12 @@ using UnityEngine;
 public class LoadingHUDController : IHUD
 {
     internal LoadingHUDView view;
-    internal BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
-    internal BaseVariable<bool> fadeIn => DataStore.i.HUDs.loadingHUD.fadeIn;
-    internal BaseVariable<bool> fadeOut => DataStore.i.HUDs.loadingHUD.fadeOut;
-    internal BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
-    internal BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
-    internal BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
+    internal BaseVariable<bool> visible => DataStore.i.loadingScreen.loadingHUD.visible;
+    internal BaseVariable<bool> fadeIn => DataStore.i.loadingScreen.loadingHUD.fadeIn;
+    internal BaseVariable<bool> fadeOut => DataStore.i.loadingScreen.loadingHUD.fadeOut;
+    internal BaseVariable<string> message => DataStore.i.loadingScreen.loadingHUD.message;
+    internal BaseVariable<float> percentage => DataStore.i.loadingScreen.loadingHUD.percentage;
+    internal BaseVariable<bool> showTips => DataStore.i.loadingScreen.loadingHUD.showTips;
 
     protected internal virtual LoadingHUDView CreateView() { return LoadingHUDView.CreateView(); }
 
@@ -25,7 +25,7 @@ public class LoadingHUDController : IHUD
         // set initial states to prevent reconciliation errors
         fadeIn.OnChange += OnFadeInChange;
         fadeOut.OnChange += OnFadeOutChange;
-        
+
         message.OnChange += OnMessageChanged;
         percentage.OnChange += OnPercentageChanged;
         showTips.OnChange += OnShowTipsChanged;

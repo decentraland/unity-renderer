@@ -10,10 +10,10 @@ namespace DCL.FatalErrorReporter
         {
             this.dataStore = dataStore;
         }
-        
+
         public void Report(Exception exception)
         {
-            dataStore.HUDs.loadingHUD.fatalError.Set(exception);
+            dataStore.loadingScreen.loadingHUD.fatalError.Set(exception);
         }
     }
 }

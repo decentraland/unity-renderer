@@ -34,7 +34,7 @@ namespace DCL
         public LayerMask OnPointerDownTarget = 1 << 9;
 
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
-        
+
         private void Start()
         {
             hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, DataStore.i.camera.hudsCamera);
@@ -49,7 +49,7 @@ namespace DCL
 
         public void LockCursor()
         {
-            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || DataStore.i.loadingScreen.loadingHUD.visible.Get() || DataStore.i.loadingScreen.decoupledLoadingHUD.visible.Get())
                 return;
 
             Utils.LockCursor();
@@ -73,7 +73,7 @@ namespace DCL
             OnMouseDown?.Invoke();
             LockCursor();
         }
-        
+
         public void OnPointerUp(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)

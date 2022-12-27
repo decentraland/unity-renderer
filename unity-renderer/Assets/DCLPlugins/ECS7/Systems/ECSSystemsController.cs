@@ -43,12 +43,20 @@ public class ECSSystemsController : IDisposable
         scenesUiDocument.name = "_ECSScenesUI";
         scenesUi = scenesUiDocument.gameObject;
 
+        BaseVariable<bool> loadingScreenVisible;
+
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
+            loadingScreenVisible = DataStore.i.loadingScreen.decoupledLoadingHUD.visible;
+        else
+            loadingScreenVisible = DataStore.i.loadingScreen.loadingHUD.visible;
+
+
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
-            DataStore.i.ecs7.scenes, Environment.i.world.state, DataStore.i.HUDs.loadingHUD.visible);
+            DataStore.i.ecs7.scenes, Environment.i.world.state, loadingScreenVisible);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-        
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 

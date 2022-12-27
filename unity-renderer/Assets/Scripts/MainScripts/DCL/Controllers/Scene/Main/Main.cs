@@ -56,7 +56,9 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
 
-                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                DataStore.i.loadingScreen.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+
             }
 
 #if UNITY_STANDALONE || UNITY_EDITOR
@@ -98,7 +100,8 @@ namespace DCL
             {
                 // Prewarm shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                DataStore.i.loadingScreen.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             }
         }
 
@@ -145,7 +148,9 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            DataStore.i.loadingScreen.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+
 
             DataStore.i.common.isApplicationQuitting.Set(true);
 
