@@ -119,8 +119,15 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     public void SetProfile(UserProfile userProfile)
     {
-        profile = userProfile;
         UpdateLayoutByProfile(userProfile);
+        if (profile == null)
+        {
+            description = userProfile.description;
+            descriptionInputText.text = description;
+            UpdateLinksInformation(description);
+        }
+
+        profile = userProfile;
     }
 
     private void UpdateLayoutByProfile(UserProfile userProfile)
@@ -136,11 +143,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         SetUserId(userProfile);
 
-        description = userProfile.description;
-        descriptionInputText.text = description;
-        UpdateLinksInformation(description);
-
-        string[] nameSplits = profile.userName.Split('#');
+        string[] nameSplits = userProfile.userName.Split('#');
         if (nameSplits.Length >= 2)
         {
             textName.text = nameSplits[0];
@@ -148,8 +151,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
         else
         {
-            textName.text = profile.userName;
-            textPostfix.text = profile.userId;
+            textName.text = userProfile.userName;
+            textPostfix.text = userProfile.userId;
         }
     }
 
@@ -245,25 +248,24 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
         descriptionInputText.onTextSelection.AddListener((description, x, y) =>
         {
-            descriptionInputText.text = description;
+            descriptionInputText.text = profile.description;
             SetDescriptionIsEditing(true);
             UpdateDescriptionCharLimit(description);
         });
         descriptionInputText.onSelect.AddListener(x =>
         {
-            descriptionInputText.text = description;
+            descriptionInputText.text = profile.description;
             SetDescriptionIsEditing(true);
             UpdateDescriptionCharLimit(description);
         });
         descriptionInputText.onValueChanged.AddListener(UpdateDescriptionCharLimit);
-        descriptionInputText.onEndEdit.AddListener(description => descriptionInputText.OnDeselect(null));
         descriptionInputText.onDeselect.AddListener(description =>
         {
             this.description = description;
+            DescriptionSubmitted?.Invoke(this, description);
+
             SetDescriptionIsEditing(false);
             UpdateLinksInformation(description);
-
-            DescriptionSubmitted?.Invoke(this, description);
         });
         SetDescriptionIsEditing(false);
 
@@ -383,10 +385,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (words[i].Contains("[") && words[i].Contains("]"))
+            if (words[i].Contains("[") && words[i].Contains("]") && words[i].Contains("(") && words[i].Contains(")"))
             {
                 string link = words[i].Substring(words[i].IndexOf("[") + 1, words[i].IndexOf("]") - 1);
-                string id = words[i].Substring(words[i].IndexOf("]") + 1);
+                string id = words[i].Substring(words[i].IndexOf("]") + 1).Replace("(", "").Replace(")", "");
                 string[] elements = words[i].Split('.');
                 if (elements.Length >= 2)
                 {
