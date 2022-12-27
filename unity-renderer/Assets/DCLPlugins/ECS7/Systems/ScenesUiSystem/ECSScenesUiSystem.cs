@@ -231,6 +231,21 @@ namespace ECSSystems.ScenesUiSystem
             if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 parentDataModel = new InternalUiContainer();
+                var style = parentDataModel.rootElement.style;
+
+                // Initialize with default values
+                parentDataModel.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
+                style.width = new Length(100f, LengthUnit.Percent);
+                style.height = new Length(100f, LengthUnit.Percent);
+                style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+                style.flexBasis = new StyleLength(StyleKeyword.Auto);
+                style.flexGrow = 0;
+                style.flexShrink = 1;
+                style.flexWrap = new StyleEnum<Wrap>(Wrap.NoWrap);
+                style.justifyContent = new StyleEnum<Justify>(Justify.FlexStart);
+                style.alignItems = new StyleEnum<Align>(Align.Stretch);
+                style.alignSelf = new StyleEnum<Align>(Align.Auto);
+                style.alignContent = new StyleEnum<Align>(Align.Stretch);
             }
 
             return parentDataModel;
@@ -286,8 +301,7 @@ namespace ECSSystems.ScenesUiSystem
                 while (sceneSort.TryGetValue(nextElementId, out RightOfData rightOfData))
                 {
                     sceneSort.Remove(nextElementId);
-                    parentElement.Remove(rightOfData.element);
-                    parentElement.Insert(index, rightOfData.element);
+                    rightOfData.element.PlaceInFront(parentElement[index]);
                     nextElementId = rightOfData.id;
                     index++;
                 }
