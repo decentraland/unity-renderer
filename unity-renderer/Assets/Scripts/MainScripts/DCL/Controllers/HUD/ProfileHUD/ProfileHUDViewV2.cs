@@ -83,7 +83,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
-    private Regex nameRegex = null;
     private string description;
     private string userId;
     private StringVariable currentPlayerId;
@@ -117,6 +116,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
     public override void RefreshControl() { }
+    
 
     public void SetProfile(UserProfile userProfile)
     {
@@ -134,7 +134,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         ForceLayoutToRefreshSize();
 
         description = profile.description;
-        descriptionInputText.text = description;
+        UpdateLinksInformation(description);
 
         string[] nameSplits = profile.userName.Split('#');
         if (nameSplits.Length >= 2)
@@ -366,17 +366,21 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateLinksInformation(string description)
     {
-        string[] words = description.Split(' ');
+        string[] words = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        bool[] areLinks = new bool[words.Length];
         bool linksFound = false;
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (words[i].Contains("www."))
+            if (words[i].Contains("[") && words[i].Contains("]"))
             {
+                string link = words[i].Substring(words[i].IndexOf("[") + 1, words[i].IndexOf("]") - 1);
+                string id = words[i].Substring(words[i].IndexOf("]") + 1);
                 string[] elements = words[i].Split('.');
-                if (elements.Length >= 1)
+                if (elements.Length >= 2)
                 {
-                    words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
+                    words[i] = $"<color=\"blue\"><link=\"{id}\">{link}</link></color>";
+                    areLinks[i] = true;
                     linksFound = true;
                 }
             }
@@ -390,20 +394,18 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
                 if (string.IsNullOrEmpty(words[i]))
                     continue;
 
-                if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
+                Debug.Log(areLinks[i]);
+                if (!foundLinksAtTheEnd && !areLinks[i])
                     break;
 
-                if (words[i].Contains("<link=\""))
+                if (areLinks[i])
                 {
                     foundLinksAtTheEnd = true;
                     continue;
                 }
 
-                if (foundLinksAtTheEnd && i > 0)
-                {
-                    words[i] += "\n\n";
-                    break;
-                }
+                words[i] += "\n\n";
+                break;
             }
             descriptionInputText.text = string.Join(" ", words);
         }
