@@ -16,7 +16,7 @@ namespace DCL.CRDT
             {
                 Clear();
             }
-            
+
             TryGetState(message.key1, message.key2, out CRDTMessage storedMessage);
 
             // The received message is > than our current value, update our state.
@@ -179,6 +179,9 @@ namespace DCL.CRDT
 
         private static bool CompareData(object a, object b)
         {
+            if (a == null)
+                return true;
+
             if (a is byte[] bytesA && b is byte[] bytesB)
             {
                 return bytesA.Length > bytesB.Length;
