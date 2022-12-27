@@ -8,6 +8,8 @@ namespace DCL.Social.Friends
     public class SendFriendRequestHUDController
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const int AUTOMATIC_CLOSE_DELAY = 2000;
+        private const int SEND_TIMEOUT = 10;
 
         private readonly ISendFriendRequestHUDView view;
         private readonly DataStore dataStore;
@@ -88,7 +90,7 @@ namespace DCL.Social.Friends
                 sendInProgress = true;
 
                 await friendsController.RequestFriendshipAsync(recipientId, messageBody)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                                       .Timeout(TimeSpan.FromSeconds(SEND_TIMEOUT));
 
                 socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, recipientId, messageBody.Length,
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
@@ -96,7 +98,7 @@ namespace DCL.Social.Friends
                 view.ShowSendSuccess();
                 sendInProgress = false;
 
-                await UniTask.Delay(2000, cancellationToken: hideCancellationToken.Token);
+                await UniTask.Delay(AUTOMATIC_CLOSE_DELAY, cancellationToken: hideCancellationToken.Token);
 
                 if (!hideCancellationToken.IsCancellationRequested)
                     view.Close();

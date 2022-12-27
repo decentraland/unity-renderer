@@ -14,6 +14,7 @@ public class NotificationsController : MonoBehaviour
     private INotificationHUDController controller;
     private DataStore_Notifications notificationsDataStore;
 
+    // TODO: refactor into a bridge->service architecture so this dependencies are properly injected
     public void Initialize(
         INotificationHUDController controller,
         DataStore_Notifications notificationsDataStore)

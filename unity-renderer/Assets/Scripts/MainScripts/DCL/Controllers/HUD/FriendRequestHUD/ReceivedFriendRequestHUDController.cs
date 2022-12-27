@@ -10,6 +10,7 @@ namespace DCL.Social.Friends
     {
         private const int TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING = 3000;
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const int FRIEND_REQUEST_OPERATION_TIMEOUT = 10;
 
         private readonly DataStore dataStore;
         private readonly IReceivedFriendRequestHUDView view;
@@ -116,7 +117,7 @@ namespace DCL.Social.Friends
             try
             {
                 FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId)
-                                                                     .Timeout(TimeSpan.FromSeconds(10));
+                                                                     .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_OPERATION_TIMEOUT));
 
                 if (cancellationToken.IsCancellationRequested) return;
 
@@ -153,7 +154,7 @@ namespace DCL.Social.Friends
             try
             {
                 FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId)
-                                                                     .Timeout(TimeSpan.FromSeconds(10));
+                                                                     .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_OPERATION_TIMEOUT));
 
                 if (cancellationToken.IsCancellationRequested) return;
 
