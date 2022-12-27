@@ -30,6 +30,7 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI blockedUsernameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
+        [SerializeField] private GameObject emptyDescriptionGO;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
         [SerializeField] private GameObject emptyWearablesText;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
@@ -38,8 +39,6 @@ namespace DCL.Social.Passports
         [SerializeField] private Transform nftEmotesCarouselContent;
         [SerializeField] private GameObject wearableUIReferenceObject;
         [SerializeField] private GameObject nftPageUIReferenceObject;
-        [SerializeField] private Color emptyDescriptionTextColor;
-        [SerializeField] private Color normalDescriptionTextColor;
         [SerializeField] private GameObject linksContainer;
         [SerializeField] private GameObject linksTitle;
         [SerializeField] private GameObject linkPrefabReference;
@@ -124,8 +123,19 @@ namespace DCL.Social.Passports
             }
             linksTitle.SetActive(links.Count > 0);
             linksContainer.SetActive(links.Count > 0);
-            descriptionText.text = string.IsNullOrEmpty(description) ? TEMPLATE_DESCRIPTION_TEXT : description;
-            descriptionText.color = string.IsNullOrEmpty(description) ? emptyDescriptionTextColor : normalDescriptionTextColor;
+
+            if (string.IsNullOrEmpty(description))
+            {
+                emptyDescriptionGO.SetActive(true);
+                descriptionText.gameObject.SetActive(false);
+            }
+            else
+            {
+                emptyDescriptionGO.SetActive(false);
+                descriptionText.gameObject.SetActive(true);
+                descriptionText.text = description;
+            }
+
             SetLinks(links);
         }
 

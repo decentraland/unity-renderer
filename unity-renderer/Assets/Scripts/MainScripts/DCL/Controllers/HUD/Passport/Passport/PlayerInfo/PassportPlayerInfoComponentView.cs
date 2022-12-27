@@ -112,6 +112,12 @@ namespace DCL.Social.Passports
             addFriendButton.onClick.RemoveAllListeners();
         }
 
+        public void ResetPanelOnClose()
+        {
+            copyAddressToast.Hide(true);
+            copyUsernameToast.Hide(true);
+        }
+
         public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
         {
             if (friendsController.IsFriend(userId))
