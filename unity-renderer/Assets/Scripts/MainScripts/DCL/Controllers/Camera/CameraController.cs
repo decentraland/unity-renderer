@@ -84,6 +84,7 @@ namespace DCL.Camera
 
             OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
 
+            DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange += OnDecoupledLoadingScreenChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
@@ -94,6 +95,14 @@ namespace DCL.Camera
             SetInvertYAxis(DataStore.i.camera.invertYAxis.Get(), false);
 
             wasBlendingLastFrame = false;
+        }
+
+        private void OnDecoupledLoadingScreenChange(bool visibleState, bool prevVisibleState)
+        {
+            if (visibleState == prevVisibleState)
+                return;
+
+            SetCameraEnabledState(!visibleState);
         }
 
         void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
@@ -224,6 +233,7 @@ namespace DCL.Camera
 
         private void SetCameraEnabledState(bool enabled)
         {
+            Debug.Log("LA CAMARA ESTA " + enabled);
             camera.enabled = enabled;
         }
 
@@ -249,6 +259,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
             DataStore.i.camera.outputTexture.OnChange -= OnOutputTextureChange;
             DataStore.i.camera.invertYAxis.OnChange -= SetInvertYAxis;
+            DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange -= OnFullscreenUIVisibilityChange;
         }
 
         [Serializable]

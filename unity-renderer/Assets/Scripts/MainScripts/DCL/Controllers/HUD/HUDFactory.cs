@@ -210,7 +210,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.SIGNUP:
                 var analytics = Environment.i.platform.serviceProviders.analytics;
-                hudElement = new SignupHUDController(analytics);
+                hudElement = new SignupHUDController(analytics, DataStore.i.loadingScreen);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
