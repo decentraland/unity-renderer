@@ -2,10 +2,8 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
