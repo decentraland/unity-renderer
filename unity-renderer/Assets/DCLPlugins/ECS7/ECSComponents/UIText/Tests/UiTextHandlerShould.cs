@@ -66,69 +66,6 @@ namespace Tests
                                .PutFor(scene, entity,
                                    Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(handler.uiElement)
                                                                     && i.components.Contains(COMPONENT_ID)));
-
-            // check it initialized correctly
-            var style = handler.uiElement.style;
-            Assert.AreEqual(Position.Absolute, style.position.value);
-            Assert.AreEqual(LengthUnit.Percent, style.width.value.unit);
-            Assert.AreEqual(100, style.width.value.value);
-            Assert.AreEqual(LengthUnit.Percent, style.height.value.unit);
-            Assert.AreEqual(100, style.height.value.value);
-        }
-
-        [Test]
-        public void AdaptCorrectlyToUiTransformPadding ()
-        {
-            // 1. Set UiTransform padding style
-            var uiTransformHandler = new UITransformHandler(internalUiContainer, COMPONENT_ID+1);
-            PBUiTransform uiTransformModel = new PBUiTransform()
-            {
-                PaddingBottomUnit = YGUnit.YguPoint,
-                PaddingBottom = 25,
-                PaddingLeftUnit = YGUnit.YguPoint,
-                PaddingLeft = 15,
-                PaddingTopUnit = YGUnit.YguPoint,
-                PaddingTop = 35,
-                PaddingRightUnit = YGUnit.YguPoint,
-                PaddingRight = 50,
-            };
-            uiTransformHandler.OnComponentModelUpdated(scene, entity, uiTransformModel);
-
-            handler.OnComponentCreated(scene, entity);
-            handler.OnComponentModelUpdated(scene, entity, new PBUiText()
-            {
-                Value = "temptation",
-                TextAlign = TextAlignMode.TamMiddleCenter
-            });
-
-            // 2. Check that the UiText style adapted to its padding
-            var style = handler.uiElement.style;
-            Assert.AreEqual(uiTransformModel.PaddingBottom, style.bottom.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingRight, style.right.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingLeft, style.left.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingTop, style.top.value.value);
-
-            // 3. Update UiTransform padding style
-            uiTransformModel = new PBUiTransform()
-            {
-                PaddingBottomUnit = YGUnit.YguPoint,
-                PaddingBottom = 5,
-                PaddingLeftUnit = YGUnit.YguPoint,
-                PaddingLeft = 50,
-                PaddingTopUnit = YGUnit.YguPoint,
-                PaddingTop = 15,
-                PaddingRightUnit = YGUnit.YguPoint,
-                PaddingRight = 37,
-            };
-            uiTransformHandler.OnComponentModelUpdated(scene, entity, uiTransformModel);
-
-            // 4. Check that the UiText style adapted to the new padding
-            Assert.AreEqual(uiTransformModel.PaddingBottom, style.bottom.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingRight, style.right.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingLeft, style.left.value.value);
-            Assert.AreEqual(uiTransformModel.PaddingTop, style.top.value.value);
-
-            uiTransformHandler.OnComponentRemoved(scene, entity);
         }
 
         [Test]

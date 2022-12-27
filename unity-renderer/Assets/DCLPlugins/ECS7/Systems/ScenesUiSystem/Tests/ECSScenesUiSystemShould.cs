@@ -513,64 +513,6 @@ namespace Tests
         }
 
         [Test]
-        public void AvoidMovingNonUiContainerElementsWhenSorting()
-        {
-            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
-
-            ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
-            ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
-            ECS7TestEntity baseParentGrandChildEntity1 = scene.CreateEntity(112);
-            ECS7TestEntity baseParentGrandChildEntity2 = scene.CreateEntity(113);
-            ECS7TestEntity baseParentGrandChildEntity3 = scene.CreateEntity(114);
-
-            UITransformHandler uiTransformHandler = new UITransformHandler(uiContainerComponent, 35);
-
-            // Set scene root as baseParentEntity parent
-            uiTransformHandler.OnComponentModelUpdated(scene, baseParentEntity, new PBUiTransform() { Parent = 0 });
-
-            // Set baseParentEntity as baseParentChildEntity parent
-            uiTransformHandler.OnComponentModelUpdated(scene, baseParentChildEntity, new PBUiTransform() { Parent = (int)baseParentEntity.entityId });
-            InternalUiContainer baseParentChildEntityModel = uiContainerComponent.GetFor(scene, baseParentChildEntity).model;
-
-            // Add UiText to baseParentChildEntity
-            UiTextHandler uiTextHandler = new UiTextHandler(uiContainerComponent, AssetPromiseKeeper_Font.i, 34);
-            uiTextHandler.OnComponentCreated(scene, baseParentChildEntity);
-            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
-
-            // Set baseParentChildEntity as baseParentGrandChildEntity1 parent
-            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity1, new PBUiTransform()
-            {
-                Parent = (int)baseParentChildEntity.entityId,
-                RightOf = 0
-            });
-
-            // Set baseParentChildEntity as baseParentGrandChildEntity2 parent
-            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity2, new PBUiTransform()
-            {
-                Parent = (int)baseParentChildEntity.entityId,
-                RightOf = (int)baseParentGrandChildEntity1.entityId
-            });
-
-            // Set baseParentChildEntity as baseParentGrandChildEntity3 parent
-            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity3, new PBUiTransform()
-            {
-                Parent = (int)baseParentChildEntity.entityId,
-                RightOf = (int)baseParentGrandChildEntity2.entityId
-            });
-
-            // Sort
-            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
-            ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
-
-            // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
-            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
-
-            uiTransformHandler.OnComponentRemoved(scene, baseParentChildEntity);
-            uiTextHandler.OnComponentRemoved(scene, baseParentChildEntity);
-            AssetPromiseKeeper_Font.i.Cleanup();
-        }
-
-        [Test]
         public void GetSceneToSortUI()
         {
             const int sceneNumber = 666;

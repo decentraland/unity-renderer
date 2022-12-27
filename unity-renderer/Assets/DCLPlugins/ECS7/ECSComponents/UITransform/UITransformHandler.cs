@@ -59,8 +59,6 @@ namespace DCL.ECSComponents
 
             SetUpVisualElement(element, model);
             internalUiContainer.PutFor(scene, entity, containerModel);
-
-            containerModel.OnUiElementStyleUpdated?.Invoke(element);
         }
 
         private static void SetUpVisualElement(VisualElement element, PBUiTransform model)

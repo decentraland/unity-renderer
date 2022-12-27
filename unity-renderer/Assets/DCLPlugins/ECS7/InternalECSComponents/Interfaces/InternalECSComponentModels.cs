@@ -57,7 +57,6 @@ namespace DCL.ECS7.InternalComponents
     public class InternalUiContainer : InternalComponent
     {
         public readonly VisualElement rootElement = new VisualElement();
-        public Action<VisualElement> OnUiElementStyleUpdated;
         public readonly HashSet<int> components = new HashSet<int>();
         public VisualElement parentElement;
         public long parentId;

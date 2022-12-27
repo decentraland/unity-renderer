@@ -29,19 +29,7 @@ namespace DCL.ECSComponents
         {
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
 
-            uiElement = new Label()
-            {
-                text = string.Empty,
-                style =
-                {
-                    position = new StyleEnum<Position>(Position.Absolute),
-                    width = new Length(100f, LengthUnit.Percent),
-                    height = new Length(100f, LengthUnit.Percent)
-                }
-            };
-
-            UpdateStyleBoundToContainerUiElement(containerModel.rootElement);
-            containerModel.OnUiElementStyleUpdated += UpdateStyleBoundToContainerUiElement;
+            uiElement = new Label() { text = string.Empty };
 
             containerModel.rootElement.Add(uiElement);
             if(containerModel.rootElement[0] != uiElement)
@@ -51,21 +39,12 @@ namespace DCL.ECSComponents
             internalUiContainer.PutFor(scene, entity, containerModel);
         }
 
-        private void UpdateStyleBoundToContainerUiElement(VisualElement element)
-        {
-            uiElement.style.left = element.style.paddingLeft;
-            uiElement.style.right = element.style.paddingRight;
-            uiElement.style.top = element.style.paddingTop;
-            uiElement.style.bottom = element.style.paddingBottom;
-        }
-
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
                 var containerModel = containerData.model;
-                containerModel.OnUiElementStyleUpdated -= UpdateStyleBoundToContainerUiElement;
                 containerModel.rootElement.Remove(uiElement);
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
