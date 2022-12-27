@@ -2,7 +2,6 @@ using DCL;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +82,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
-    private Regex nameRegex = null;
     private string description;
     private string userId;
     private StringVariable currentPlayerId;
@@ -117,10 +115,23 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
     public override void RefreshControl() { }
+    
 
     public void SetProfile(UserProfile userProfile)
     {
+        UpdateLayoutByProfile(userProfile);
+        if (profile == null)
+        {
+            description = userProfile.description;
+            descriptionInputText.text = description;
+            UpdateLinksInformation(description);
+        }
+
         profile = userProfile;
+    }
+
+    private void UpdateLayoutByProfile(UserProfile userProfile)
+    {
         if (userProfile.hasClaimedName)
             HandleClaimedProfileName(userProfile);
         else
@@ -131,12 +142,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         HandleProfileSnapshot(userProfile);
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         SetUserId(userProfile);
-        ForceLayoutToRefreshSize();
 
-        description = profile.description;
-        descriptionInputText.text = description;
-
-        string[] nameSplits = profile.userName.Split('#');
+        string[] nameSplits = userProfile.userName.Split('#');
         if (nameSplits.Length >= 2)
         {
             textName.text = nameSplits[0];
@@ -144,8 +151,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
         else
         {
-            textName.text = profile.userName;
-            textPostfix.text = profile.userId;
+            textName.text = userProfile.userName;
+            textPostfix.text = userProfile.userId;
         }
     }
 
@@ -177,6 +184,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void ShowExpanded(bool show)
     {
         expandedObject.SetActive(show);
+        if (show && profile)
+            UpdateLayoutByProfile(profile);
     }
 
     public void ActivateProfileNameEditionMode(bool activate)
@@ -194,7 +203,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         }
     }
 
-    public void SetDescriptionCharLiitEnabled(bool active) => charLimitDescriptionContainer.SetActive(active);
+    public void SetDescriptionCharLiitEnabled(bool enabled)
+    {
+        charLimitDescriptionContainer.SetActive(enabled);
+    }
 
     private void Awake()
     {
@@ -231,16 +243,18 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonClaimName.onClick.AddListener(() => ClaimNamePressed?.Invoke(this, EventArgs.Empty));
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
-        buttonTermsOfServiceForNonConnectedWallets.onClick.AddListener(() => TermsAndServicesPressed?.Invoke(this, EventArgs.Empty));
-        buttonPrivacyPolicyForNonConnectedWallets.onClick.AddListener(() => PrivacyPolicyPressed?.Invoke(this, EventArgs.Empty));
 
         descriptionStartEditingButton.onClick.AddListener(descriptionInputText.Select);
         descriptionIsEditingButton.onClick.AddListener(() => descriptionInputText.OnDeselect(null));
+        descriptionInputText.onTextSelection.AddListener((description, x, y) =>
+        {
+            descriptionInputText.text = profile.description;
+            SetDescriptionIsEditing(true);
+            UpdateDescriptionCharLimit(description);
+        });
         descriptionInputText.onSelect.AddListener(x =>
         {
-            descriptionInputText.text = description;
+            descriptionInputText.text = profile.description;
             SetDescriptionIsEditing(true);
             UpdateDescriptionCharLimit(description);
         });
@@ -248,10 +262,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         descriptionInputText.onDeselect.AddListener(description =>
         {
             this.description = description;
+            DescriptionSubmitted?.Invoke(this, description);
+
             SetDescriptionIsEditing(false);
             UpdateLinksInformation(description);
-
-            DescriptionSubmitted?.Invoke(this, description);
         });
         SetDescriptionIsEditing(false);
 
@@ -301,8 +315,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         buttonLogOut.gameObject.SetActive(active);
     }
 
-    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
-
     private void SetActiveUnverifiedNameGOs(bool active)
     {
         for (int i = 0; i < hideOnNameClaimed.Length; i++)
@@ -350,7 +362,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateNameCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
 
-    private void SetDescriptionEnabled(bool enabled) => descriptionContainer.SetActive(enabled);
+    private void SetDescriptionEnabled(bool enabled)
+    {
+        descriptionContainer.SetActive(enabled);
+    }
 
     public void SetDescriptionIsEditing(bool isEditing)
     {
@@ -364,17 +379,21 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void UpdateLinksInformation(string description)
     {
-        string[] words = description.Split(' ');
+        string[] words = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        bool[] areLinks = new bool[words.Length];
         bool linksFound = false;
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (words[i].Contains("www."))
+            if (words[i].Contains("[") && words[i].Contains("]") && words[i].Contains("(") && words[i].Contains(")"))
             {
+                string link = words[i].Substring(words[i].IndexOf("[") + 1, words[i].IndexOf("]") - 1);
+                string id = words[i].Substring(words[i].IndexOf("]") + 1).Replace("(", "").Replace(")", "");
                 string[] elements = words[i].Split('.');
-                if (elements.Length >= 1)
+                if (elements.Length >= 2)
                 {
-                    words[i] = $"<color=\"blue\"><link=\"{words[i]}\">{elements[1]}</link></color>";
+                    words[i] = $"<color=\"blue\"><link=\"{id}\">{link}</link></color>";
+                    areLinks[i] = true;
                     linksFound = true;
                 }
             }
@@ -388,20 +407,17 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
                 if (string.IsNullOrEmpty(words[i]))
                     continue;
 
-                if (!foundLinksAtTheEnd && !words[i].Contains("<link=\""))
+                if (!foundLinksAtTheEnd && !areLinks[i])
                     break;
 
-                if (words[i].Contains("<link=\""))
+                if (areLinks[i])
                 {
                     foundLinksAtTheEnd = true;
                     continue;
                 }
 
-                if (foundLinksAtTheEnd && i > 0)
-                {
-                    words[i] += "\n\n";
-                    break;
-                }
+                words[i] += "\n\n";
+                break;
             }
             descriptionInputText.text = string.Join(" ", words);
         }
@@ -416,5 +432,11 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
+    }
+
+    private IEnumerator EnableNextFrame(GameObject go, bool shouldEnable)
+    {
+        yield return null;
+        go.SetActive(shouldEnable);
     }
 }
