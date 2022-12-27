@@ -56,6 +56,7 @@ namespace AvatarEditorHUD_Tests
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
+            yield return new WaitForSeconds(0.5f);
         }
 
 
@@ -65,6 +66,7 @@ namespace AvatarEditorHUD_Tests
             Object.Destroy(catalogController.gameObject);
             controller.CleanUp();
             Object.Destroy(userProfile);
+            controller.Dispose();
             yield return base.TearDown();
         }
 

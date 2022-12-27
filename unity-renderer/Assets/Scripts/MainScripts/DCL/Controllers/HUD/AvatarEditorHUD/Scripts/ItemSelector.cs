@@ -132,6 +132,7 @@ public class ItemSelector : MonoBehaviour
 
         for (var itemToggleIndex = 0; itemToggleIndex < maxVisibleWearables; itemToggleIndex++)
         {
+            token.ThrowIfCancellationRequested();
             int wearableIndex = baseIndex + itemToggleIndex;
 
             if (wearableIndex < availableWearables.Count)
@@ -145,6 +146,7 @@ public class ItemSelector : MonoBehaviour
 
     private async UniTask ShowItem(WearableSettings wearableSettings, int itemToggleIndex, CancellationToken token, bool isRefresh)
     {
+        token.ThrowIfCancellationRequested();
         WearableItem item = wearableSettings.Item;
 
         if (currentItemToggles.ContainsKey(item.id))

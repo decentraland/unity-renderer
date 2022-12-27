@@ -48,15 +48,16 @@ namespace UnityGLTF
 
         public bool InitialVisibility
         {
-            get { return initialVisibility; }
+            get
+            {
+                return initialVisibility;
+            }
+
             set
             {
                 initialVisibility = value;
 
-                if (sceneImporter != null)
-                {
-                    sceneImporter.initialVisibility = value;
-                }
+                if (sceneImporter != null) { sceneImporter.initialVisibility = value; }
             }
         }
 
@@ -99,30 +100,49 @@ namespace UnityGLTF
 
         private Settings settings;
 
-        private  CancellationTokenSource ctokenSource;
+        private CancellationTokenSource ctokenSource;
         private bool scheduledToCleanUp;
 
         private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant:enabled";
 
+        public Action OnSuccess
+        {
+            get
+            {
+                return OnFinishedLoadingAsset;
+            }
 
-        public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
+            set
+            {
+                OnFinishedLoadingAsset = value;
+            }
+        }
 
-        public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
+        public Action<Exception> OnFail
+        {
+            get
+            {
+                return OnFailedLoadingAsset;
+            }
 
-        public void Initialize( IWebRequestController webRequestController, IThrottlingCounter throttlingCounter)
+            set
+            {
+                OnFailedLoadingAsset = value;
+            }
+        }
+
+        public void Initialize(IWebRequestController webRequestController, IThrottlingCounter throttlingCounter)
         {
             this.webRequestController = webRequestController;
             this.throttlingCounter = throttlingCounter;
         }
 
-        public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
+        public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null,
+            AssetIdConverter fileToHashConverter = null)
         {
             ctokenSource = new CancellationTokenSource();
 
-            if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
-            {
-                return;
-            }
+            if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded) { return; }
 
             if (!string.IsNullOrEmpty(incomingURI))
                 GLTFUri = incomingURI;
@@ -135,17 +155,14 @@ namespace UnityGLTF
             mainCamera = Camera.main;
             this.baseUrl = baseUrl ?? "";
 
-            if (settings != null)
-            {
-                ApplySettings(settings);
-            }
+            if (settings != null) { ApplySettings(settings); }
 
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
             CancellationToken cancellationToken = ctokenSource.Token;
 
             Internal_LoadAsset(settings, cancellationToken)
-                .Forget();
+               .Forget();
         }
 
         public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
@@ -156,20 +173,11 @@ namespace UnityGLTF
 
         void ApplySettings(Settings settings)
         {
-            if (settings.initialVisibility.HasValue)
-            {
-                this.InitialVisibility = settings.initialVisibility.Value;
-            }
+            if (settings.initialVisibility.HasValue) { this.InitialVisibility = settings.initialVisibility.Value; }
 
-            if (settings.useVisualFeedback.HasValue)
-            {
-                this.UseVisualFeedback = settings.useVisualFeedback.Value;
-            }
+            if (settings.useVisualFeedback.HasValue) { this.UseVisualFeedback = settings.useVisualFeedback.Value; }
 
-            if (settings.shaderOverride != null)
-            {
-                this.shaderOverride = settings.shaderOverride;
-            }
+            if (settings.shaderOverride != null) { this.shaderOverride = settings.shaderOverride; }
 
             this.addMaterialsToPersistentCaching = settings.addMaterialsToPersistentCaching;
         }
@@ -185,10 +193,7 @@ namespace UnityGLTF
 
             if (exception != null)
             {
-                if (exception is IndexOutOfRangeException)
-                {
-                    Destroy(gameObject);
-                }
+                if (exception is IndexOutOfRangeException) { Destroy(gameObject); }
 
                 Debug.Log($"GLTF Failure {exception} ... url = {this.GLTFUri}\n{exception.StackTrace}");
             }
@@ -199,10 +204,7 @@ namespace UnityGLTF
             downloadingCount++;
             OnDownloadingProgressUpdate?.Invoke();
 
-            if (VERBOSE)
-            {
-                Debug.Log($"downloadingCount++ = {downloadingCount}");
-            }
+            if (VERBOSE) { Debug.Log($"downloadingCount++ = {downloadingCount}"); }
         }
 
         private void DecrementDownloadCount()
@@ -213,10 +215,7 @@ namespace UnityGLTF
                 OnDownloadingProgressUpdate?.Invoke();
                 alreadyDecrementedRefCount = true;
 
-                if (VERBOSE)
-                {
-                    Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
-                }
+                if (VERBOSE) { Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}"); }
             }
         }
 
@@ -229,10 +228,7 @@ namespace UnityGLTF
 
             if (!string.IsNullOrEmpty(GLTFUri))
             {
-                if (VERBOSE)
-                {
-                    Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
-                }
+                if (VERBOSE) { Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri); }
 
                 sceneImporter = null;
                 ILoader loader = null;
@@ -248,7 +244,7 @@ namespace UnityGLTF
 
                     EnqueueDownload();
 
-                    await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
+                    await UniTask.WaitUntil(() => downloadQueueHandler.CanDownload(this), cancellationToken: token);
                     token.ThrowIfCancellationRequested();
 
                     DequeueDownload();
@@ -262,10 +258,7 @@ namespace UnityGLTF
                         token.ThrowIfCancellationRequested();
 
                         // Override the shaders on all materials if a shader is provided
-                        if (shaderOverride != null)
-                        {
-                            OverrideShaders();
-                        }
+                        if (shaderOverride != null) { OverrideShaders(); }
                     }
 
                     state = State.COMPLETED;
@@ -285,10 +278,7 @@ namespace UnityGLTF
                 {
                     if (loader != null)
                     {
-                        if (sceneImporter == null)
-                        {
-                            Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
-                        }
+                        if (sceneImporter == null) { Debug.Log("sceneImporter is null, could be due to an invalid URI.", this); }
                         else
                         {
                             loadedAssetRootGameObject = sceneImporter.CreatedObject;
@@ -302,7 +292,7 @@ namespace UnityGLTF
 
                     if (!token.IsCancellationRequested)
                     {
-                        if ( state == State.COMPLETED)
+                        if (state == State.COMPLETED)
                             OnFinishedLoadingAsset?.Invoke();
                         else
                             OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
@@ -313,19 +303,14 @@ namespace UnityGLTF
                     Destroy(this);
                 }
             }
-            else
-            {
-                Debug.Log("couldn't load GLTF because url is empty");
-            }
+            else { Debug.Log("couldn't load GLTF because url is empty"); }
         }
+
         private void OverrideShaders()
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
-            foreach (Renderer renderer in renderers)
-            {
-                renderer.sharedMaterial.shader = shaderOverride;
-            }
+            foreach (Renderer renderer in renderers) { renderer.sharedMaterial.shader = shaderOverride; }
         }
 
         private void SetupSceneImporter(Settings settings, string id, ILoader loader)
@@ -337,10 +322,7 @@ namespace UnityGLTF
                 throttlingCounter
             );
 
-            if (sceneImporter.CreatedObject != null)
-            {
-                Destroy(sceneImporter.CreatedObject);
-            }
+            if (sceneImporter.CreatedObject != null) { Destroy(sceneImporter.CreatedObject); }
 
             sceneImporter.SceneParent = gameObject.transform;
             sceneImporter.Collider = Collider;
@@ -357,11 +339,13 @@ namespace UnityGLTF
             sceneImporter.OnMeshCreated += meshCreatedCallback;
             sceneImporter.OnRendererCreated += rendererCreatedCallback;
         }
+
         private void DequeueDownload()
         {
             queueCount--;
             downloadQueueHandler.Dequeue(this);
         }
+
         private void EnqueueDownload()
         {
             queueCount++;
@@ -369,17 +353,35 @@ namespace UnityGLTF
             downloadQueueHandler.Queue(this);
         }
 
-        public void Load(string url) { throw new NotImplementedException(); }
+        public void Load(string url)
+        {
+            throw new NotImplementedException();
+        }
 
-        public void SetPrioritized() { prioritizeDownload = true; }
+        public void SetPrioritized()
+        {
+            prioritizeDownload = true;
+        }
 
         private long animationsEstimatedSize;
         private long meshesEstimatedSize;
-        public long GetAnimationClipMemorySize() { return animationsEstimatedSize; }
 
-        public long GetMeshesMemorySize() { return meshesEstimatedSize; }
+        public long GetAnimationClipMemorySize()
+        {
+            return animationsEstimatedSize;
+        }
+
+        public long GetMeshesMemorySize()
+        {
+            return meshesEstimatedSize;
+        }
 
         private void OnDestroy()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
@@ -389,33 +391,32 @@ namespace UnityGLTF
 
             if (state != State.COMPLETED)
             {
-                ctokenSource.Cancel();
-                ctokenSource.Dispose();
+                if (ctokenSource != null)
+                {
+                    ctokenSource.Cancel();
+                    ctokenSource?.Dispose();
+                    ctokenSource = null;
+                }
             }
         }
+
         private void CleanUp()
         {
             scheduledToCleanUp = true;
 
-            if (state == State.QUEUED)
-            {
-                DequeueDownload();
-            }
+            if (state == State.QUEUED) { DequeueDownload(); }
 
-            if (state == State.DOWNLOADING)
-            {
-                DecrementDownloadCount();
-            }
+            if (state == State.DOWNLOADING) { DecrementDownloadCount(); }
 
-            if (!alreadyLoadedAsset)
-            {
-                OnFail_Internal(null);
-            }
+            if (!alreadyLoadedAsset) { OnFail_Internal(null); }
 
             state = State.NONE;
         }
 
-        bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
+        bool IDownloadQueueElement.ShouldPrioritizeDownload()
+        {
+            return prioritizeDownload;
+        }
 
         bool IDownloadQueueElement.ShouldForceDownload()
         {

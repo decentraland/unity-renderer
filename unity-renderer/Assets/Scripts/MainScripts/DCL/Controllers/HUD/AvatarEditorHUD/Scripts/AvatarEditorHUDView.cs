@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -82,7 +83,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private readonly Dictionary<string, ToggleComponentModel> loadedCollectionModels = new ();
     private bool isAvatarDirty;
     private AvatarModel avatarModelToUpdate;
-
+    private CancellationTokenSource cancellationTokenSource = new ();
     private bool doAvatarFeedback;
 
     public bool isOpen { get; private set; }
@@ -200,6 +201,12 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     private void Update()
     {
         UpdateAvatarModelWhenNeeded();
+    }
+
+    private void OnDestroy()
+    {
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
     }
 
     public void SetIsWeb3(bool isWeb3User)
@@ -667,9 +674,11 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
     {
         if (isAvatarDirty)
         {
-            async UniTaskVoid UpdateAvatarAsync()
+            async UniTaskVoid UpdateAvatarAsync(CancellationToken cancellationToken)
             {
-                await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await CharacterPreview.TryUpdateModelAsync(avatarModelToUpdate, cancellationToken);
 
                 if (doneButton != null)
                     doneButton.interactable = true;
@@ -684,7 +693,7 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             }
 
-            UpdateAvatarAsync().Forget();
+            UpdateAvatarAsync(cancellationTokenSource.Token).Forget();
             isAvatarDirty = false;
         }
     }

@@ -44,10 +44,14 @@ public class ItemToggleContainer : MonoBehaviour
         {
             await UniTask.Yield(token);
 
+            token.ThrowIfCancellationRequested();
+
             newToggle = Instantiate(itemPrefab, itemContainer);
             items.Add(newToggle);
             newToggle.transform.SetAsLastSibling();
         }
+
+        token.ThrowIfCancellationRequested();
 
         newToggle.Initialize(item, false, wearableSettings.Amount, skinFactory.GetSkinForRarity(wearableSettings.Item.rarity));
         newToggle.SetHideOtherWerablesToastStrategy(wearableSettings.HideOtherWearablesToastStrategy);

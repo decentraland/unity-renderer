@@ -145,7 +145,7 @@ namespace DCL
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             CallAndClearEvents(false, exception);
             Cleanup();
         }

@@ -141,7 +141,10 @@ namespace DCL.Components
 
         void UnloadGLTF()
         {
-            if (gltfPromise != null) { AssetPromiseKeeper_GLTF.i.Forget(gltfPromise); }
+            if (gltfPromise != null)
+            {
+                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+            }
         }
 
         void UnloadGLTFast()

@@ -28,6 +28,7 @@ namespace AvatarSystem
                 loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, CheckGLTFastFeature);
 
                 loaderAssetHelper.settings.forceNewInstance = false;
+
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
                 loaderAssetHelper.settings.initialLocalPosition = Vector3.up * AvatarSystemUtils.AVATAR_Y_OFFSET;
                 loaderAssetHelper.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
@@ -74,9 +75,13 @@ namespace AvatarSystem
                 throw;
             }
         }
+
         private bool CheckGLTFastFeature() =>
             DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
-        public void Dispose() { loaderAssetHelper?.Unload(); }
+        public void Dispose()
+        {
+            loaderAssetHelper?.Unload();
+        }
     }
 }

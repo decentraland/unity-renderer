@@ -20,9 +20,9 @@ namespace DCL
     /// <typeparam name="AssetLibraryType">Asset library type. It must handle the same type as AssetType.</typeparam>
     /// <typeparam name="AssetPromiseType">Asset promise type. It must handle the same type as AssetType.</typeparam>
     public class AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>
-        where AssetType : Asset, new()
-        where AssetLibraryType : AssetLibrary<AssetType>, new()
-        where AssetPromiseType : AssetPromise<AssetType>
+        where AssetType: Asset, new()
+        where AssetLibraryType: AssetLibrary<AssetType>, new()
+        where AssetPromiseType: AssetPromise<AssetType>
     {
         public AssetLibraryType library;
 
@@ -45,7 +45,10 @@ namespace DCL
 
         Coroutine blockedPromiseSolverCoroutine;
 
-        public bool IsBlocked(AssetPromiseType promise) { return blockedPromises.Contains(promise); }
+        public bool IsBlocked(AssetPromiseType promise)
+        {
+            return blockedPromises.Contains(promise);
+        }
 
         public string GetMasterState(AssetPromiseType promise)
         {
@@ -71,10 +74,7 @@ namespace DCL
 
         void EnsureProcessBlockerPromiseQueueCoroutine()
         {
-            if (blockedPromiseSolverCoroutine == null)
-            {
-                blockedPromiseSolverCoroutine = CoroutineStarter.Start(ProcessBlockedPromisesQueue());
-            }
+            if (blockedPromiseSolverCoroutine == null) { blockedPromiseSolverCoroutine = CoroutineStarter.Start(ProcessBlockedPromisesQueue()); }
         }
 
         public AssetPromiseType Keep(AssetPromiseType promise)
@@ -187,10 +187,7 @@ namespace DCL
                 yield return ProcessBlockedPromisesDeferred(promise);
                 CleanPromise(promise);
 
-                if (promise.isForgotten)
-                {
-                    promise.Unload();
-                }
+                if (promise.isForgotten) { promise.Unload(); }
 
                 var enumerator = SkipFrameIfOverBudget();
 
@@ -214,7 +211,6 @@ namespace DCL
                 Debug.LogWarning($"Unexpected issue: masterPromiseById promise isn't the same as loaded promise? id: {loadedPromiseId} (can be harmless)");
                 yield break;
             }
-
 
             //NOTE(Brian): We have to keep checking to support the case in which
             //             new promises are enqueued while this promise ID is being
@@ -265,10 +261,7 @@ namespace DCL
 
                     blockedPromises.Remove(blockedPromise);
 
-                    if (blockedPromise != null && !blockedPromise.isForgotten)
-                    {
-                        blockedPromisesToLoadAux.Add(blockedPromise);
-                    }
+                    if (blockedPromise != null && !blockedPromise.isForgotten) { blockedPromisesToLoadAux.Add(blockedPromise); }
                 }
             }
 
@@ -282,6 +275,7 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 var promise = promises[i];
+
                 if (promise.isForgotten)
                     continue;
 
@@ -303,6 +297,7 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 AssetPromiseType promise = promises[i];
+
                 if (promise.isForgotten)
                     continue;
 
@@ -330,16 +325,10 @@ namespace DCL
 
             if (masterToBlockedPromises.ContainsKey(id))
             {
-                if (masterToBlockedPromises[id].Contains(finalPromise))
-                {
-                    masterToBlockedPromises[id].Remove(finalPromise);
-                }
+                if (masterToBlockedPromises[id].Contains(finalPromise)) { masterToBlockedPromises[id].Remove(finalPromise); }
             }
 
-            if (masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise)
-            {
-                masterPromiseById.Remove(id);
-            }
+            if (masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise) { masterPromiseById.Remove(id); }
 
             if (blockedPromises.Contains(finalPromise))
                 blockedPromises.Remove(finalPromise);
@@ -365,10 +354,7 @@ namespace DCL
                     e.Current?.Cleanup();
             }
 
-            foreach (var kvp in masterPromiseById)
-            {
-                kvp.Value.Cleanup();
-            }
+            foreach (var kvp in masterPromiseById) { kvp.Value.Cleanup(); }
 
             masterPromiseById = new Dictionary<object, AssetPromiseType>();
             waitingPromises = new HashSet<AssetPromiseType>();

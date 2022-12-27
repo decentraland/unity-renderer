@@ -78,6 +78,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void Initialize(CharacterPreviewMode loadingMode, RenderTexture targetTexture)
         {
             avatar?.Dispose();
+
             avatar = loadingMode switch
                      {
                          CharacterPreviewMode.WithHologram => CreateAvatarWithHologram(),
@@ -100,7 +101,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             cancellationToken = cancellationToken == default
                 ? loadingCts.Token
                 : CancellationTokenSource.CreateLinkedTokenSource(loadingCts.Token, cancellationToken).Token;
-
 
             await UpdateModelAsync(newModel, cancellationToken);
         }
@@ -201,10 +201,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         {
             if (cameraTransitionCoroutine != null) { StopCoroutine(cameraTransitionCoroutine); }
 
-            if (useTransition && gameObject.activeInHierarchy)
-            {
-                cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME));
-            }
+            if (useTransition && gameObject.activeInHierarchy) { cameraTransitionCoroutine = StartCoroutine(CameraTransition(camera.transform.position, transform.position, camera.transform.rotation, transform.rotation, CAMERA_TRANSITION_TIME)); }
             else
             {
                 var cameraTransform = camera.transform;

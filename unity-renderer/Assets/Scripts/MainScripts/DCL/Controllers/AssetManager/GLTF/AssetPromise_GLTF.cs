@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityGLTF;
 using UnityGLTF.Scripts;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -18,7 +19,7 @@ namespace DCL
         protected ContentProvider provider = null;
         public string fileName { get; private set; }
 
-        IGLTFComponent gltfComponent = null;
+        GLTFComponent gltfComponent = null;
         IWebRequestController webRequestController = null;
 
         object id = null;
@@ -50,7 +51,7 @@ namespace DCL
             this.fileName = url.Substring(url.LastIndexOf('/') + 1);
             this.id = hash ?? url;
             this.webRequestController = webRequestController;
-            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
+            // We separate the directory path of the GLB and its file name, to be able to use the directory path when
             // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
             assetDirectoryPath = URIHelper.GetDirectoryName(url);
         }
@@ -97,7 +98,7 @@ namespace DCL
                     if (DataStore.i.common.isApplicationQuitting.Get())
                         return;
 #endif
-                    
+
                     if (asset != null)
                     {
                         asset.totalTriangleCount =
@@ -114,7 +115,7 @@ namespace DCL
                 };
 
                 gltfComponent.OnFail += OnFail;
-                
+
                 gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
                     false, tmpSettings, FileToHash);
 
@@ -130,7 +131,7 @@ namespace DCL
         {
             Assert.IsTrue(r != null, "Renderer is null?");
 
-            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation. 
+            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation.
             if ( asset == null )
                 return;
 
@@ -141,7 +142,7 @@ namespace DCL
         {
             Assert.IsTrue(mesh != null, "Mesh is null?");
 
-            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation. 
+            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation.
             if ( asset == null )
                 return;
 
@@ -183,12 +184,20 @@ namespace DCL
             return true;
         }
 
+        internal override void OnForget()
+        {
+            OnCancelLoading();
+
+            base.OnForget();
+        }
+
         protected override void OnCancelLoading()
         {
             if (asset != null)
-            {
                 asset.CancelShow();
-            }
+
+            gltfComponent.Dispose();
+            Object.Destroy(gltfComponent);
         }
 
         protected override Asset_GLTF GetAsset(object id)
