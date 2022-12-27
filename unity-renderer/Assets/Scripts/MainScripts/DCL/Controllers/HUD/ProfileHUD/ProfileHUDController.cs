@@ -144,7 +144,7 @@ public class ProfileHUDController : IHUD
 
     protected virtual GameObject GetViewPrefab()
     {
-        return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD_V2");
+        return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD");
     }
 
 
