@@ -25,12 +25,11 @@ namespace DCL.LoadingScreen
             showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
         }
 
-        public void FadeIn()
+        public void FadeIn(bool instant)
         {
             if (isVisible) return;
 
-            //TODO: The blit to avoid the flash of the empty camera
-            Show(true);
+            Show(instant);
         }
 
         public void FadeOut() =>
