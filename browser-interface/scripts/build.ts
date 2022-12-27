@@ -3,37 +3,11 @@ import { writeFileSync, readFileSync } from "fs"
 import * as path from "path"
 import { copyFile, ensureFileExists } from "./utils"
 
-import { OutputOptions, rollup } from "rollup"
-import typescript from "rollup-plugin-typescript2"
-import resolve from "rollup-plugin-node-resolve"
-import commonjs from "rollup-plugin-commonjs"
-import rollupJson from "@rollup/plugin-json"
 import { generatedFiles } from "../package.json"
 
 const PROD = !!process.env.CI
 
 console.log(`production: ${PROD}`)
-
-const typingsRoot = "./src"
-
-const plugins = [
-  typescript({
-    verbosity: 2,
-    clean: true,
-    useTsconfigDeclarationDir: true,
-  }),
-  resolve({
-    browser: true,
-    preferBuiltins: false,
-  }),
-  commonjs({
-    ignoreGlobal: true,
-    include: [/node_modules/],
-    namedExports: {},
-  }),
-  rollupJson({ preferConst: true }),
-]
-
 process.env.BUILD_PATH = path.resolve(
   process.env.BUILD_PATH || path.resolve(__dirname, "../../unity-renderer/Builds/unity")
 )
@@ -42,7 +16,6 @@ const DIST_PATH = path.resolve(__dirname, "../dist")
 async function main() {
   await copyBuiltFiles()
   await buildRollup()
-  await createTypings()
   await createPackageJson()
 }
 
@@ -64,51 +37,39 @@ async function buildRollup() {
     ensureFileExists(DIST_PATH, file)
   }
 
-  const bundle = await rollup({
-    input: "./src/index.ts",
-    context: "globalThis",
-    plugins,
-  })
+  // const bundle = await rollup({
+  //   input: "./src/index.ts",
+  //   context: "globalThis",
+  //   plugins,
+  // })
 
-  console.log(bundle.watchFiles) // an array of file names this bundle depends on
+  // console.log(bundle.watchFiles) // an array of file names this bundle depends on
 
-  const outputOptions: OutputOptions = {
-    file: "./dist/index.js",
-    format: "iife",
-    name: "DclRenderer",
-    sourcemap: true,
-    banner,
-  }
+  // const outputOptions: OutputOptions = {
+  //   file: "./dist/index.js",
+  //   format: "iife",
+  //   name: "DclRenderer",
+  //   sourcemap: true,
+  //   banner,
+  // }
 
-  // generate output specific code in-memory
-  // you can call this function multiple times on the same bundle object
-  const { output } = await bundle.generate(outputOptions)
+  // // generate output specific code in-memory
+  // // you can call this function multiple times on the same bundle object
+  // const { output } = await bundle.generate(outputOptions)
 
-  for (const chunkOrAsset of output) {
-    if (chunkOrAsset.type === "asset") {
-      console.log("Asset", chunkOrAsset)
-    } else {
-      console.log("Chunk", chunkOrAsset.modules)
-    }
-  }
+  // for (const chunkOrAsset of output) {
+  //   if (chunkOrAsset.type === "asset") {
+  //     console.log("Asset", chunkOrAsset)
+  //   } else {
+  //     console.log("Chunk", chunkOrAsset.modules)
+  //   }
+  // }
 
-  // or write the bundle to disk
-  await bundle.write(outputOptions)
+  // // or write the bundle to disk
+  // await bundle.write(outputOptions)
 
-  // closes the bundle
-  await bundle.close()
-}
-
-async function createTypings() {
-  console.log("> writing index.d.ts")
-  writeFileSync(
-    path.resolve(DIST_PATH, "index.d.ts"),
-    `
-import * as Renderer from '${typingsRoot}/index'
-declare var DclRenderer: typeof Renderer
-    `
-  )
-  ensureFileExists(path.resolve(DIST_PATH, typingsRoot), "index.d.ts")
+  // // closes the bundle
+  // await bundle.close()
 }
 
 async function createPackageJson() {
@@ -126,7 +87,7 @@ async function createPackageJson() {
     path.resolve(DIST_PATH, "package.json"),
     JSON.stringify(
       {
-        name: "@dcl/unity-renderer",
+        name: "@dcl/explorer",
         main: "index.js",
         typings: "index.d.ts",
         version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}-${time}.commit-${shortCommitHash}`,

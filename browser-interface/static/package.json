@@ -1,0 +1,9 @@
+{
+  "name": "@dcl/kernel",
+  "version": "2.0.0",
+  "license": "Apache-2.0",
+  "bundleDependencies": [],
+  "devDependencies": {
+    "@dcl/unity-renderer": "^1.0.56758-20221010052915.commit-ecdab7d"
+  }
+}

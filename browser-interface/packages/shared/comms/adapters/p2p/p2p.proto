@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+enum PacketType {
+  UKNOWN_PACKET_TYPE = 0;
+  MESSAGE = 1;
+  PING = 2;
+  PONG = 3;
+  SUSPEND_RELAY = 4;
+}
+
+message MessageData {
+  string room = 1;
+  repeated bytes dst = 2;
+  bytes payload = 3;
+}
+
+message PingData {
+  uint32 ping_id = 1;
+}
+
+message PongData {
+  uint32 ping_id = 1;
+}
+
+message SuspendRelayData {
+  repeated string relayed_peers = 1;
+  uint32 duration_millis = 2;
+}
+
+message Packet {
+  uint32 sequence_id = 1;
+  uint32 instance_id = 2;
+  uint64 timestamp = 3;
+  string src = 4;
+  string subtype = 5;
+  //If negative, it means it is not set.
+  int32 discard_older_than = 6;
+  bool optimistic = 14;
+  //If negative, it means it is not set.
+  int32 expire_time = 7;
+  uint32 hops = 8;
+  uint32 ttl = 9;
+  repeated string received_by = 10;
+  oneof data {
+    MessageData message_data = 11;
+    PingData ping_data = 12;
+    PongData pong_data = 13;
+    SuspendRelayData suspend_relay_data = 15;
+  }
+}
