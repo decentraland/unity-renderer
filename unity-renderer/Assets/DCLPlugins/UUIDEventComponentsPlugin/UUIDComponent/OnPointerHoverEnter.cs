@@ -11,6 +11,7 @@ namespace DCL.Components
 
         public override void SetHoverState(bool hoverState)
         {
+            base.SetHoverState(hoverState);
             if (hoverState && !isHovering)
             {
                 Model model = this.model as Model;
