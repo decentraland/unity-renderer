@@ -97,5 +97,13 @@ namespace DCL.Social.Friends
 
             observer.Received(1).AddListener(Arg.Any<Action<Texture2D>>());
         }
+
+        [TestCase("hey", "3/140")]
+        [TestCase("whassah", "7/140")]
+        public void ShowBodyMessageLengthWhenInputChanges(string message, string expectedLengthText)
+        {
+            view.messageBodyInput.onValueChanged.Invoke(message);
+            Assert.AreEqual(expectedLengthText, view.messageBodyLengthLabel.text);
+        }
     }
 }

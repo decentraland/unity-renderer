@@ -29,8 +29,5 @@ namespace DCL.Social.Friends
 
         public bool IsPending() =>
             State == FriendRequestState.Pending;
-
-        public bool IsCompleted() =>
-            State != FriendRequestState.Pending;
     }
 }

@@ -288,7 +288,7 @@ namespace DCL.Chat.Notifications
 
             if (request.IsPending())
                 dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
-            else if (request.IsCompleted() && request.State == FriendRequestState.Accepted)
+            else if (request.State == FriendRequestState.Accepted)
                 OpenChat(ExtractPeerId(request));
         }
 

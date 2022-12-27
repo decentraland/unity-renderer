@@ -327,12 +327,13 @@ namespace DCL.Social.Friends
 
             if (friendRequest != null)
             {
-                if (msg.action == FriendshipAction.APPROVED)
-                    friendRequest.State = FriendRequestState.Accepted;
-                else if (msg.action == FriendshipAction.REJECTED)
-                    friendRequest.State = FriendRequestState.Rejected;
-                else if (msg.action == FriendshipAction.CANCELLED)
-                    friendRequest.State = FriendRequestState.Cancelled;
+                friendRequest.State = msg.action switch
+                                      {
+                                          FriendshipAction.APPROVED => FriendRequestState.Accepted,
+                                          FriendshipAction.REJECTED => FriendRequestState.Rejected,
+                                          FriendshipAction.CANCELLED => FriendRequestState.Cancelled,
+                                          _ => friendRequest.State
+                                      };
             }
         }
 

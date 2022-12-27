@@ -12,9 +12,10 @@ namespace DCL.Social.Friends
         private const int MAX_SEARCHED_FRIENDS = 100;
         private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
         private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
+        private const int FRIEND_REQUEST_TIMEOUT = 10;
 
-        private readonly Dictionary<string, FriendEntryModel> friends = new Dictionary<string, FriendEntryModel>();
-        private readonly Dictionary<string, FriendEntryModel> onlineFriends = new Dictionary<string, FriendEntryModel>();
+        private readonly Dictionary<string, FriendEntryModel> friends = new ();
+        private readonly Dictionary<string, FriendEntryModel> onlineFriends = new ();
         private readonly DataStore dataStore;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
@@ -249,7 +250,7 @@ namespace DCL.Social.Friends
                     try
                     {
                         FriendRequest request = await friendsController.RequestFriendshipAsync(userNameOrId, "")
-                                                                       .Timeout(TimeSpan.FromSeconds(10));
+                                                                       .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
                         socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
                             PlayerActionSource.FriendsHUD);
@@ -470,7 +471,8 @@ namespace DCL.Social.Friends
             {
                 try
                 {
-                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId).Timeout(TimeSpan.FromSeconds(10));
+                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId)
+                                                                   .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
                     socialAnalytics.SendFriendRequestRejected(request.From, request.To,
                         PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage);
@@ -542,7 +544,8 @@ namespace DCL.Social.Friends
                 try
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId)
+                                                     .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
                     socialAnalytics.SendFriendRequestApproved(request.From, request.To,
                         PlayerActionSource.FriendsHUD.ToString(),
                         request.HasBodyMessage);
@@ -599,7 +602,7 @@ namespace DCL.Social.Friends
                 var allfriendRequests = await friendsController.GetFriendRequestsAsync(
                                                                     LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
                                                                     LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests)
-                                                               .Timeout(TimeSpan.FromSeconds(10));
+                                                               .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
                 AddFriendRequests(allfriendRequests);
             }
