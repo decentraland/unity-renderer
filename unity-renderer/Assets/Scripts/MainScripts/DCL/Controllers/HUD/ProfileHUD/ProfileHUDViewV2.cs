@@ -247,6 +247,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
             UpdateDescriptionCharLimit(description);
         });
         descriptionInputText.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionInputText.onEndEdit.AddListener(description => descriptionInputText.OnDeselect(null));
         descriptionInputText.onDeselect.AddListener(description =>
         {
             this.description = description;
@@ -394,7 +395,6 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
                 if (string.IsNullOrEmpty(words[i]))
                     continue;
 
-                Debug.Log(areLinks[i]);
                 if (!foundLinksAtTheEnd && !areLinks[i])
                     break;
 
