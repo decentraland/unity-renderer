@@ -28,7 +28,6 @@ namespace DCL.LoadingScreen
             this.worldState = worldState;
             this.loadingScreenDataStore = loadingScreenDataStore;
 
-            //Needed since CameraController is using it to activate its component
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
