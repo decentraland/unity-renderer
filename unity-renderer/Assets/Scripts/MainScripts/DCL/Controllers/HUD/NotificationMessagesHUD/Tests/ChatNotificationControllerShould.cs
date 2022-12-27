@@ -346,5 +346,25 @@ namespace DCL.Chat.Notifications
                 && f.IsAccepted == false
                 && f.FriendRequestId == "friendRequestId"));
         }
+
+        [Test]
+        public void OpenChatWhenClickOnAnApprovedFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", "", FriendRequestState.Accepted));
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<Action<string>>("fr");
+
+            Assert.AreEqual("sender", dataStore.HUDs.openChat.Get());
+        }
+
+        [Test]
+        public void OpenFriendRequestWhenClickOnAnPendingFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", "", FriendRequestState.Pending));
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<Action<string>>("fr");
+
+            Assert.AreEqual("fr", dataStore.HUDs.openReceivedFriendRequestDetail.Get());
+        }
     }
 }
