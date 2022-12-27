@@ -233,7 +233,6 @@ namespace DCL.Camera
 
         private void SetCameraEnabledState(bool enabled)
         {
-            Debug.Log("LA CAMARA ESTA " + enabled);
             camera.enabled = enabled;
         }
 
