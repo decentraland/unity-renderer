@@ -2,7 +2,7 @@ import { exec } from "child_process"
 import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
-import fetch from "node-fetch"
+import { fetch } from "undici"
 import FormData from "form-data"
 
 const DIST_ROOT = resolve(__dirname, "../static")
@@ -74,16 +74,16 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
   body.append("variables[COMMIT]", process.env.CIRCLE_SHA1 as string)
 
   try {
-    // const r = await fetch(GITLAB_STATIC_PIPELINE_URL, {
-    //   body,
-    //   method: "POST",
-    // })
+    const r = await fetch(GITLAB_STATIC_PIPELINE_URL, {
+      body,
+      method: "POST",
+    })
 
-    // if (r.ok) {
-    //   console.info(`Status: ${r.status}`)
-    // } else {
-    //   throw new Error(`Error triggering pipeline. status: ${r.status}`)
-    // }
+    if (r.ok) {
+      console.info(`Status: ${r.status}`)
+    } else {
+      throw new Error(`Error triggering pipeline. status: ${r.status}`)
+    }
   } catch (e) {
     throw new Error(`Error triggering pipeline. Unhandled error.`)
   }
