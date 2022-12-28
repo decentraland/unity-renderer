@@ -12,9 +12,6 @@ CWD = $(shell pwd)
 
 EMPTY_SCENES := public/empty-scenes/xmas
 
-static/default-profile/contents:
-	@node ./static/default-profile/download_all.js
-
 empty-parcels:
 	cd public/empty-scenes/xmas && (node generate_all.js || true)
 	mkdir -p static/loader/empty-scenes || true
@@ -35,7 +32,7 @@ static/index.js:
 # Release
 
 DIST_ENTRYPOINTS := static/index.js
-DIST_STATIC_FILES := static/export.html static/preview.html static/default-profile/contents
+DIST_STATIC_FILES := static/export.html static/preview.html
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) ## Build all the entrypoints needed for a deployment
 

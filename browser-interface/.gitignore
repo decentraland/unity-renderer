@@ -49,7 +49,6 @@ static/dist
 public/systems
 static/systems
 static/loader
-static/default-profile/contents
 static/lifecycle
 static/voice-chat-codec/audioWorkletProcessors.js
 static/voice-chat-codec/worker.js
