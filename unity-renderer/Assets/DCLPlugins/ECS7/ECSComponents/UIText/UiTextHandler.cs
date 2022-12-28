@@ -29,11 +29,18 @@ namespace DCL.ECSComponents
         {
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
 
-            uiElement = new Label() { text = string.Empty };
+            uiElement = new Label()
+            {
+                text = string.Empty
+            };
+
+            UiElementUtils.SetElementDefaultStyle(uiElement.style);
 
             containerModel.rootElement.Add(uiElement);
-            if(containerModel.rootElement[0] != uiElement)
+
+            if (containerModel.rootElement[0] != uiElement)
                 uiElement.PlaceBehind(containerModel.rootElement[0]);
+
             containerModel.components.Add(componentId);
 
             internalUiContainer.PutFor(scene, entity, containerModel);
@@ -42,6 +49,7 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             var containerData = internalUiContainer.GetFor(scene, entity);
+
             if (containerData != null)
             {
                 var containerModel = containerData.model;
@@ -49,6 +57,7 @@ namespace DCL.ECSComponents
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
             }
+
             uiElement = null;
             fontPromiseKeeper.Forget(fontPromise);
         }
@@ -61,16 +70,19 @@ namespace DCL.ECSComponents
             uiElement.style.unityTextAlign = ToUnityTextAlign(model.GetTextAlign());
 
             int fontId = (int)model.GetFont();
+
             if (lastFontId != fontId)
             {
                 lastFontId = fontId;
                 var prevPromise = fontPromise;
 
                 fontPromise = new AssetPromise_Font(model.GetFont().ToFontName());
+
                 fontPromise.OnSuccessEvent += font =>
                 {
                     uiElement.style.unityFont = font.font.sourceFontFile;
                 };
+
                 fontPromiseKeeper.Keep(fontPromise);
                 fontPromiseKeeper.Forget(prevPromise);
             }
@@ -105,6 +117,5 @@ namespace DCL.ECSComponents
                     return TextAnchor.MiddleCenter;
             }
         }
-
     }
 }
