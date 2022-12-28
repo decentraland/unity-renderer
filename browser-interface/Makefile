@@ -57,7 +57,7 @@ test-docker: ## Run all the tests using a docker container
 		circleci/node:10-browsers \
 			make test
 
-test-ci: # Run the tests (for use in the continuous integration environment)
+test-ci: touch-local # Run the tests (for use in the continuous integration environment)
 	@SINGLE_RUN=true NODE_ENV=production $(MAKE) test
 
 npm-link: build-essentials ## Run `npm link` to develop local scenes against this project
