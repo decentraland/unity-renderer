@@ -7,7 +7,18 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.RendererServices {
-public class ClientRpcSceneControllerService
+public interface IClientRpcSceneControllerService
+{
+  UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request);
+
+  UniTask<UnloadSceneResult> UnloadScene(UnloadSceneMessage request);
+
+  UniTask<CRDTSceneMessage> SendCrdt(CRDTSceneMessage request);
+
+  UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request);
+}
+
+public class ClientRpcSceneControllerService : IClientRpcSceneControllerService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +27,7 @@ public class ClientRpcSceneControllerService
       this.module = module;
   }
 
+  
   public UniTask<LoadSceneResult> LoadScene(LoadSceneMessage request)
   {
       return module.CallUnaryProcedure<LoadSceneResult>("LoadScene", request);
@@ -35,5 +47,6 @@ public class ClientRpcSceneControllerService
   {
       return module.CallUnaryProcedure<CRDTSceneCurrentState>("GetCurrentState", request);
   }
+
 }
 }

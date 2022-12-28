@@ -23,7 +23,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "node-fetch": "^2.6.1",
-    "protoc-gen-dclunity": "^1.0.0-20221212212024.commit-ef8b6d6"
+    "protoc-gen-dclunity": "^1.0.0-20221220125058.commit-f88552f"
   },
   "config": {
     "protocVersion": "3.20.1"
