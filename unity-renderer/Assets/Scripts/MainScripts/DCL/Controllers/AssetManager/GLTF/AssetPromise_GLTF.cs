@@ -196,8 +196,7 @@ namespace DCL
             if (asset != null)
                 asset.CancelShow();
 
-            gltfComponent.Dispose();
-            Object.Destroy(gltfComponent);
+            gltfComponent?.Cancel();
         }
 
         protected override Asset_GLTF GetAsset(object id)

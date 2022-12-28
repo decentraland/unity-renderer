@@ -378,11 +378,6 @@ namespace UnityGLTF
 
         private void OnDestroy()
         {
-            Dispose();
-        }
-
-        public void Dispose()
-        {
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
@@ -390,14 +385,15 @@ namespace UnityGLTF
             CleanUp();
 
             if (state != State.COMPLETED)
-            {
-                if (ctokenSource != null)
-                {
-                    ctokenSource.Cancel();
-                    ctokenSource?.Dispose();
-                    ctokenSource = null;
-                }
-            }
+                Cancel();
+        }
+
+        public void Cancel()
+        {
+            if (ctokenSource == null) return;
+            ctokenSource.Cancel();
+            ctokenSource?.Dispose();
+            ctokenSource = null;
         }
 
         private void CleanUp()
