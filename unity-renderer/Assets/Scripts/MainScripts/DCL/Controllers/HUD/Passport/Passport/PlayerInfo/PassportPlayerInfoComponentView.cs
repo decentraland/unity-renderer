@@ -37,9 +37,6 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject alreadyFriendsVariation;
         [SerializeField] private GameObject unfriendVariation;
 
-        [SerializeField] private GameObject alreadyBlockedVariation;
-        [SerializeField] private GameObject unblockVariation;
-
         [SerializeField] private JumpInButton jumpInButton;
         [SerializeField] private ShowHideAnimator copyAddressToast;
         [SerializeField] private ShowHideAnimator copyUsernameToast;
@@ -76,7 +73,6 @@ namespace DCL.Social.Passports
             optionsButton.onClick.AddListener(OpenOptions);
             jumpInButton.OnClick += () => OnJumpInUser?.Invoke();
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
-            blockedFriendButton.onFocused += BlockFriendFocused;
         }
 
         private void OnReport(string Obj)
@@ -137,12 +133,6 @@ namespace DCL.Social.Passports
             unfriendVariation.SetActive(isFocused);
         }
 
-        private void BlockFriendFocused(bool isFocused)
-        {
-            alreadyBlockedVariation.SetActive(!isFocused);
-            unblockVariation.SetActive(isFocused);
-        }
-
         private void SetName(string name)
         {
             if (name.Contains('#'))
@@ -173,7 +163,10 @@ namespace DCL.Social.Passports
         {
             this.isBlocked = isBlocked;
             DisableAllFriendFlowButtons();
-            blockedFriendButton.gameObject.SetActive(true);
+            blockedFriendButton.gameObject.SetActive(isBlocked);
+
+            if(!isBlocked)
+                SetFriendStatus(model.friendshipStatus);
         }
 
         private void SetPresence(PresenceStatus status)
