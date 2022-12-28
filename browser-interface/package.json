@@ -47,7 +47,6 @@
     "uuid": "^3.1.0"
   },
   "dependencies": {
-    "hls.js": "^1.0.7",
     "@dcl/catalyst-peer": "^1.0.14",
     "@dcl/crypto": "^3.2.3",
     "@dcl/ecs-math": "^1.0.1",
@@ -79,6 +78,7 @@
     "fp-future": "^1.0.1",
     "gifuct-js": "^2.0.0",
     "google-protobuf": "3.20.1",
+    "hls.js": "^1.0.7",
     "livekit-client": "^1.5.0",
     "mitt": "^3.0.0",
     "mocha": "^10.1.0",
@@ -90,6 +90,7 @@
     "redux-saga": "^1.2.1",
     "sdp-transform": "^2.14.1",
     "stream-browserify": "^3.0.0",
+    "ts-node": "^10.9.1",
     "typesafe-actions": "^4.4.2",
     "undici": "^5.13.0",
     "util": "^0.12.5"
