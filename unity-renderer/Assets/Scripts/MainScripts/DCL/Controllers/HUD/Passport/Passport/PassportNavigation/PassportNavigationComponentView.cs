@@ -141,6 +141,10 @@ namespace DCL.Social.Passports
 
         private void SetLinks(List<string> links)
         {
+            foreach (Transform child in linksContainer.transform) {
+                Destroy(child.gameObject);
+            }
+
             foreach (string link in links)
             {
                 PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
