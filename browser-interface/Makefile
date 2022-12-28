@@ -78,6 +78,7 @@ lint-fix: ## Fix bad formatting on all .ts and .tsx files
 # touch local creates "stub" files to mock the wasm build of unity and not break the build
 touch-local:
 	touch static/unity.framework.js
+	touch static/unity.loader.js
 	touch static/unity.data
 	touch static/unity.wasm
 
