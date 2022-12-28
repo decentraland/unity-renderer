@@ -56,7 +56,6 @@ namespace AvatarEditorHUD_Tests
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
-            yield return new WaitForSeconds(0.5f);
         }
 
 
