@@ -49,10 +49,13 @@ async function checkFiles() {
   const packageJson = JSON.parse(readFileSync(resolve(DIST_ROOT, "./package.json")).toString())
   console.log("> will publish:\n" + JSON.stringify(packageJson, null, 2))
   console.assert(packageJson.main, "package.json must contain main file")
-  console.assert(packageJson.typings, "package.json must contain typings file")
   ensureFileExists(DIST_ROOT, packageJson.main)
-  ensureFileExists(DIST_ROOT, packageJson.typings)
   ensureFileExists(DIST_ROOT, "unity.loader.js")
+  ensureFileExists(DIST_ROOT, "unity.data")
+  ensureFileExists(DIST_ROOT, "unity.wasm")
+  ensureFileExists(DIST_ROOT, "unity.framework.js")
+  ensureFileExists(DIST_ROOT, "index.html")
+  ensureFileExists(DIST_ROOT, "preview.html")
 }
 
 async function getPackageJson(workingDirectory: string) {

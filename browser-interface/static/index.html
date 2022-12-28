@@ -117,24 +117,6 @@
         containerElement.style.display = 'block'
       }
 
-      async function getRendererBaseUrl() {
-        const qs = new URLSearchParams(document.location.search)
-
-        if (qs.has('renderer')) {
-          return qs.get('renderer')
-        }
-
-        if (qs.has('renderer-branch')) {
-          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('renderer-branch')}`
-        }
-
-        if (qs.has('renderer-version')) {
-          return `https://cdn.decentraland.org/@dcl/unity-renderer/${qs.get('renderer-version')}`
-        }
-
-        return new URL('@/artifacts/unity-renderer', location.toString()).toString()
-      }
-
       async function initKernel() {
         const container = document.getElementById('gameContainer')
 
@@ -142,13 +124,15 @@
 
         if (!DecentralandKernel) throw new Error('DecentralandKernel could not be loaded')
 
+        const baseUrl = await getRendererBaseUrl()
+
         const kernel = await DecentralandKernel.initKernel({
           kernelOptions: {
-            baseUrl: new URL(`.`, location.toString()).toString()
+            baseUrl: baseUrl
           },
           rendererOptions: {
             container,
-            baseUrl: await getRendererBaseUrl()
+            baseUrl: baseUrl
           }
         })
 
