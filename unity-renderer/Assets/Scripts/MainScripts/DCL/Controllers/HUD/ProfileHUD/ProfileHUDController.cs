@@ -93,6 +93,7 @@ public class ProfileHUDController : IHUD
 
     private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
     {
+        OnOpen?.Invoke();
         view.ShowExpanded(isOpenCurrent);
     }
 
