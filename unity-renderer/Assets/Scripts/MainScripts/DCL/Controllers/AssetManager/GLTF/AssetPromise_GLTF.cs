@@ -184,13 +184,6 @@ namespace DCL
             return true;
         }
 
-        internal override void OnForget()
-        {
-            OnCancelLoading();
-
-            base.OnForget();
-        }
-
         protected override void OnCancelLoading()
         {
             if (asset != null)
