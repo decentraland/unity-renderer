@@ -25,7 +25,7 @@ public static class AvatarAssetsTestHelpers
                 .ToArray();
         }
 
-        wid.thumbnail = "";
+        wid.thumbnail = "thumbnail.png";
     }
 
     public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal()
