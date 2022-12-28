@@ -7,14 +7,12 @@ namespace DCL.Social.Passports
         event Action<string> OnClickBuyNft;
         event Action OnClickCollectibles;
         void InitializeView();
-        void SetInitialPage();
         void SetGuestUser(bool isGuest);
         void SetName(string username);
         void SetDescription(string description);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
         void SetCollectibleEmotes(WearableItem[] emotes);
-        void SetCollectiblesView();
         void SetHasBlockedOwnUser(bool isBlocked);
     }
 }

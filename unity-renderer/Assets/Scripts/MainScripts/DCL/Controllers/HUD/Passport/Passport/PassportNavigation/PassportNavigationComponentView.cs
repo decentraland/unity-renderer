@@ -12,7 +12,6 @@ namespace DCL.Social.Passports
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string TEMPLATE_DESCRIPTION_TEXT = "No intro description.";
         private const string linksRegex = @"\[(.*?)\)";
         private const string linkTitleRegex = @"(?<=\[).+?(?=\])";
         private const string linkRegex = @"(?<=\().+?(?=\))";
@@ -25,7 +24,6 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private GameObject hasBlockedPanel;
         [SerializeField] private GameObject wearableView;
-        [SerializeField] private GameObject noWearableView;
         [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI blockedUsernameText;
@@ -273,12 +271,6 @@ namespace DCL.Social.Passports
             }
             nftEmotesCarousel.GenerateDotsSelector();
             nftEmotesCarousel.ResetManualCarousel();
-        }
-
-        public void SetCollectiblesView()
-        {
-            wearableView.SetActive(nftEmotesCarousel.GetItems().Count > 0 || nftWearablesCarousel.GetItems().Count > 0);
-            noWearableView.SetActive(nftEmotesCarousel.GetItems().Count <= 0 && nftWearablesCarousel.GetItems().Count <= 0);
         }
 
         public void SetHasBlockedOwnUser(bool isBlocked)
