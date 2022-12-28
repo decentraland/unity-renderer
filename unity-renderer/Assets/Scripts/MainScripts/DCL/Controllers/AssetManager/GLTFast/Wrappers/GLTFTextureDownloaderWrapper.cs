@@ -14,16 +14,16 @@ namespace DCL.GLTFast.Wrappers
             this.asyncOp = asyncOp;
         }
 
-        public bool success => asyncOp.isSucceded;
-        public string error => asyncOp.webRequest.error;
-        public byte[] data => asyncOp.webRequest.downloadHandler.data;
-        public string text => asyncOp.webRequest.downloadHandler.text;
-        public bool? isBinary => true;
+        public bool Success => asyncOp.isSucceded;
+        public string Error => asyncOp.webRequest.error;
+        public byte[] Data => asyncOp.webRequest.downloadHandler.data;
+        public string Text => asyncOp.webRequest.downloadHandler.text;
+        public bool? IsBinary => true;
 
         public bool MoveNext() =>
             asyncOp.MoveNext();
 
-        public Texture2D texture
+        public Texture2D Texture
         {
             get
             {

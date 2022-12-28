@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
 using DCL;
+using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.InputSenderSystem;
@@ -9,6 +8,8 @@ using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
 using ECSSystems.VisibilitySystem;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ECS7System = System.Action;
@@ -24,6 +25,8 @@ public class ECSSystemsController : IDisposable
     private readonly ECS7System internalComponentWriteSystem;
     private readonly ECSScenesUiSystem uiSystem;
     private readonly ECSBillboardSystem billboardSystem;
+    private readonly ECSCameraEntitySystem cameraEntitySystem;
+    private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -48,7 +51,10 @@ public class ECSSystemsController : IDisposable
             DataStore.i.ecs7.scenes, Environment.i.world.state, DataStore.i.HUDs.loadingHUD.visible);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-        
+
+        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock());
+        playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -73,8 +79,8 @@ public class ECSSystemsController : IDisposable
 
         lateUpdateSystems = new ECS7System[]
         {
-            ECSCameraEntitySystem.CreateSystem(context.componentWriter),
-            ECSPlayerTransformSystem.CreateSystem(context.componentWriter)
+            cameraEntitySystem.Update,
+            playerTransformSystem.Update
         };
     }
 
@@ -83,6 +89,8 @@ public class ECSSystemsController : IDisposable
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         uiSystem.Dispose();
+        cameraEntitySystem.Dispose();
+        playerTransformSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }
@@ -92,6 +100,7 @@ public class ECSSystemsController : IDisposable
         componentWriteSystem.Invoke();
 
         int count = updateSystems.Count;
+
         for (int i = 0; i < count; i++)
         {
             updateSystems[i].Invoke();
@@ -103,6 +112,7 @@ public class ECSSystemsController : IDisposable
     private void LateUpdate()
     {
         int count = lateUpdateSystems.Count;
+
         for (int i = 0; i < count; i++)
         {
             lateUpdateSystems[i].Invoke();

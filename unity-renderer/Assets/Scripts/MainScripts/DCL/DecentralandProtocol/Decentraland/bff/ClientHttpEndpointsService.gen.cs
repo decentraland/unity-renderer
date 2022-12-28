@@ -8,7 +8,12 @@ using rpc_csharp;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Decentraland.Bff {
-public class ClientHttpEndpoints
+public interface IClientHttpEndpoints
+{
+  UniTask<AboutResponse> About(Empty request);
+}
+
+public class ClientHttpEndpoints : IClientHttpEndpoints
 {
   private readonly RpcClientModule module;
 
@@ -17,9 +22,11 @@ public class ClientHttpEndpoints
       this.module = module;
   }
 
+  
   public UniTask<AboutResponse> About(Empty request)
   {
       return module.CallUnaryProcedure<AboutResponse>("About", request);
   }
+
 }
 }

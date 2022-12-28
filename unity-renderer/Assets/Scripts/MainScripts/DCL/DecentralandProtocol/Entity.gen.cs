@@ -26,7 +26,7 @@ namespace Decentraland.Common {
           string.Concat(
             "CiBkZWNlbnRyYWxhbmQvY29tbW9uL2VudGl0eS5wcm90bxITZGVjZW50cmFs",
             "YW5kLmNvbW1vbhopZGVjZW50cmFsYW5kL2NvbW1vbi9jb250ZW50X21hcHBp",
-            "bmcucHJvdG8igQEKBkVudGl0eRIKCgJpZBgBIAMoCRIQCghwb2ludGVycxgC",
+            "bmcucHJvdG8igQEKBkVudGl0eRIKCgJpZBgBIAEoCRIQCghwb2ludGVycxgC",
             "IAMoCRIQCghtZXRhZGF0YRgDIAEoCRIRCgl0aW1lc3RhbXAYBCABKA0SNAoH",
             "Y29udGVudBgFIAMoCzIjLmRlY2VudHJhbGFuZC5jb21tb24uQ29udGVudE1h",
             "cHBpbmdiBnByb3RvMw=="));
@@ -74,7 +74,7 @@ namespace Decentraland.Common {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Entity(Entity other) : this() {
-      id_ = other.id_.Clone();
+      id_ = other.id_;
       pointers_ = other.pointers_.Clone();
       metadata_ = other.metadata_;
       timestamp_ = other.timestamp_;
@@ -90,13 +90,14 @@ namespace Decentraland.Common {
 
     /// <summary>Field number for the "id" field.</summary>
     public const int IdFieldNumber = 1;
-    private static readonly pb::FieldCodec<string> _repeated_id_codec
-        = pb::FieldCodec.ForString(10);
-    private readonly pbc::RepeatedField<string> id_ = new pbc::RepeatedField<string>();
+    private string id_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<string> Id {
+    public string Id {
       get { return id_; }
+      set {
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
 
     /// <summary>Field number for the "pointers" field.</summary>
@@ -160,7 +161,7 @@ namespace Decentraland.Common {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!id_.Equals(other.id_)) return false;
+      if (Id != other.Id) return false;
       if(!pointers_.Equals(other.pointers_)) return false;
       if (Metadata != other.Metadata) return false;
       if (Timestamp != other.Timestamp) return false;
@@ -172,7 +173,7 @@ namespace Decentraland.Common {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= id_.GetHashCode();
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
       hash ^= pointers_.GetHashCode();
       if (Metadata.Length != 0) hash ^= Metadata.GetHashCode();
       if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
@@ -195,7 +196,10 @@ namespace Decentraland.Common {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      id_.WriteTo(output, _repeated_id_codec);
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
       pointers_.WriteTo(output, _repeated_pointers_codec);
       if (Metadata.Length != 0) {
         output.WriteRawTag(26);
@@ -216,7 +220,10 @@ namespace Decentraland.Common {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      id_.WriteTo(ref output, _repeated_id_codec);
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
       pointers_.WriteTo(ref output, _repeated_pointers_codec);
       if (Metadata.Length != 0) {
         output.WriteRawTag(26);
@@ -237,7 +244,9 @@ namespace Decentraland.Common {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      size += id_.CalculateSize(_repeated_id_codec);
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
       size += pointers_.CalculateSize(_repeated_pointers_codec);
       if (Metadata.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Metadata);
@@ -258,7 +267,9 @@ namespace Decentraland.Common {
       if (other == null) {
         return;
       }
-      id_.Add(other.id_);
+      if (other.Id.Length != 0) {
+        Id = other.Id;
+      }
       pointers_.Add(other.pointers_);
       if (other.Metadata.Length != 0) {
         Metadata = other.Metadata;
@@ -283,7 +294,7 @@ namespace Decentraland.Common {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            id_.AddEntriesFrom(input, _repeated_id_codec);
+            Id = input.ReadString();
             break;
           }
           case 18: {
@@ -318,7 +329,7 @@ namespace Decentraland.Common {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            id_.AddEntriesFrom(ref input, _repeated_id_codec);
+            Id = input.ReadString();
             break;
           }
           case 18: {

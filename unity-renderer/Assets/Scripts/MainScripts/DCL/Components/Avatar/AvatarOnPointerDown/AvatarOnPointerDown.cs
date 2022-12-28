@@ -9,7 +9,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class AvatarOnPointerDown : MonoBehaviour, IPointerInputEvent, IPoolLifecycleHandler,
+    public class AvatarOnPointerDown : MonoBehaviour, IAvatarOnPointerDown, IPoolLifecycleHandler,
         IAvatarOnPointerDownCollider
     {
         public new Collider collider;
@@ -78,10 +78,8 @@ namespace DCL.Components
             CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
         }
 
-        public bool IsAtHoverDistance(float distance)
-        {
-            return distance <= model.distance;
-        }
+        public bool IsAtHoverDistance(float distance) =>
+            true;
 
         public bool IsVisible()
         {
@@ -109,6 +107,7 @@ namespace DCL.Components
 
             if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
+                AudioScriptableObjects.buttonClick.Play(true);
                 WebInterface.ReportAvatarClick(
                     playerScene.sceneData.sceneNumber,
                     avatarPlayer.id,

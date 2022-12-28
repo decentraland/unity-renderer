@@ -95,9 +95,9 @@ namespace DCL
 
                 var gltFastSettings = new ImportSettings
                 {
-                    generateMipMaps = false,
-                    anisotropicFilterLevel = 3,
-                    nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
+                    GenerateMipMaps = false,
+                    AnisotropicFilterLevel = 3,
+                    NodeNameMethod = NameImportMethod.OriginalUnique
                 };
 
                 bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken).AsUniTask().AttachExternalCancellation(cancellationSourceToken);
