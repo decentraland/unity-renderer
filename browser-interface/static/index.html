@@ -124,7 +124,7 @@
 
         if (!DecentralandKernel) throw new Error('DecentralandKernel could not be loaded')
 
-        const baseUrl = await getRendererBaseUrl()
+        const baseUrl = new URL('./', location.toString()).toString()
 
         const kernel = await DecentralandKernel.initKernel({
           kernelOptions: {

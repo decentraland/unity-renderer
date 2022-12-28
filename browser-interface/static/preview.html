@@ -575,7 +575,7 @@
             localStorage.setItem(toLocalStorageKey, JSON.stringify(storage))
           }
         }
-        
+
         if (toLocalStorageKey !== ''){
           storage = JSON.parse(localStorage.getItem(toLocalStorageKey) || '{}');
         }
@@ -630,35 +630,17 @@
         if (qs.has('renderer-branch')) {
           return `https://renderer-artifacts.decentraland.org/branch/${qs.get('renderer-branch')}`
         }
-        
+
         if (qs.has('renderer-version')) {
           return `https://cdn.decentraland.org/@dcl/unity-renderer/${qs.get('renderer-version')}`
         }
 
-        return new URL('@/artifacts/unity-renderer', location.toString()).toString()
-      }
-
-      async function getKernelBaseUrl() {
-        const qs = new URLSearchParams(document.location.search)
-        
-        if (qs.has('kernel-branch')) {
-          return `https://sdk-team-cdn.decentraland.org/@dcl/kernel/branch/${qs.get('kernel-branch')}`
-        }
-
-        if (qs.has('kernel-version')) {
-          return `https://cdn.decentraland.org/@dcl/kernel/${qs.get('kernel-version')}`
-        }
-
-        if (qs.has('kernel')) {
-          return qs.get('kernel')
-        }
-
-        return new URL(`@/artifacts`, location.toString()).toString()
+        return new URL('@/explorer', location.toString()).toString()
       }
 
       async function initKernel() {
-        const kernelBaseUrl = await getKernelBaseUrl()
-        const kernelScript = (new URL('index.js', `${kernelBaseUrl}/`)).toString()
+        const baseUrl = await getRendererBaseUrl()
+        const kernelScript = (new URL('index.js', `${baseUrl}/`)).toString()
 
         await injectScript(kernelScript)
 
@@ -669,7 +651,7 @@
 
         const kernel = await DecentralandKernel.initKernel({
           kernelOptions: {
-            baseUrl: kernelBaseUrl,
+            baseUrl,
             previewMode: true,
             persistentStorage: mockStorage({
               toLocalStorageKey: getPlayerSessionKey()
@@ -677,7 +659,7 @@
           },
           rendererOptions: {
             container,
-            baseUrl: await getRendererBaseUrl()
+            baseUrl
           }
         })
 
@@ -756,7 +738,7 @@
         if (!window.electron || !window.electron.ipcRenderer) {
           return
         }
-        
+
         const ipcRenderer = window.electron.ipcRenderer
 
         ipcRenderer.on('downloadState', (event, payload) => {
@@ -778,7 +760,7 @@
 
         ipcRenderer.send('checkVersion')
       }
-      
+
       async function  injectScript(url) {
         return new Promise( (resolve, reject) => {
           const theScript = document.createElement('script')
