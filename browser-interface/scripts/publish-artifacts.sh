@@ -11,6 +11,7 @@ set -u # no unbound variables
 npx @dcl/cdn-uploader@next \
   --bucket "$S3_BUCKET" \
   --local-folder "/tmp/workspace/unity-renderer/browser-interface/static" \
-  --bucket-folder "branch/${CIRCLE_BRANCH}"
+  --bucket-folder "branch/${CIRCLE_BRANCH}" \
+  --concurrency 10
 
 set +u # unbound variables
