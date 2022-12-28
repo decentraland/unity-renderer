@@ -11,12 +11,17 @@ public interface ICatalyst : IDisposable
     /// url for content server
     /// </summary>
     public string contentUrl { get; }
-    
+
     /// <summary>
     /// url for lambdas
     /// </summary>
     public string lambdasUrl { get; }
-    
+
+    /// <summary>
+    /// url for lambdas 2 new APIs
+    /// </summary>
+    public string Lambdas2Url { get; }
+
     /// <summary>
     /// This will get the file from the specified hash
     /// </summary>

@@ -24,7 +24,7 @@ namespace DCL.GLTFast.Wrappers
             this.asyncOp = asyncOp;
         }
 
-        public bool success => asyncOp.isSucceded;
+        public bool success => asyncOp.isSucceeded;
         public string error => asyncOp.webRequest.error;
 
         public byte[] data

@@ -16,6 +16,8 @@ public class Catalyst : ICatalyst
     public string contentUrl => realmContentServerUrl;
     public string lambdasUrl { get; private set; }
 
+    public string Lambdas2Url { get; private set; }
+
     private string realmDomain = "https://peer.decentraland.org";
     private string realmContentServerUrl = "https://peer.decentraland.org/content";
 
@@ -33,6 +35,7 @@ public class Catalyst : ICatalyst
         {
             realmDomain = playerRealm.Get().domain;
             lambdasUrl = $"{realmDomain}/lambdas";
+            Lambdas2Url = $"{realmDomain}/lamb2";
             realmContentServerUrl = playerRealm.Get().contentServerUrl;
         }
         else if (aboutConfiguration.Get() != null)
@@ -41,6 +44,9 @@ public class Catalyst : ICatalyst
             //and we dont want to override the ones that have been set up in playerRealm
             if (!string.IsNullOrEmpty(aboutLambdas.Get().PublicUrl))
                 lambdasUrl = aboutLambdas.Get().PublicUrl;
+
+            if (!string.IsNullOrEmpty(aboutLambdas.Get().PublicUrl2))
+                Lambdas2Url = aboutLambdas.Get().PublicUrl2;
 
             if (!string.IsNullOrEmpty(aboutContent.Get().PublicUrl))
                 realmContentServerUrl = aboutContent.Get().PublicUrl;
@@ -225,9 +231,12 @@ public class Catalyst : ICatalyst
         realmContentServerUrl = current.contentServerUrl;
     }
 
-    private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo Current, AboutResponse.Types.LambdasInfo Previous) =>
-        lambdasUrl = Current.PublicUrl;
+    private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo current, AboutResponse.Types.LambdasInfo previous)
+    {
+        lambdasUrl = current.PublicUrl;
+        Lambdas2Url = current.PublicUrl2;
+    }
 
-    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo Current, AboutResponse.Types.ContentInfo Previous) =>
-        realmContentServerUrl = Current.PublicUrl;
+    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous) =>
+        realmContentServerUrl = current.PublicUrl;
 }

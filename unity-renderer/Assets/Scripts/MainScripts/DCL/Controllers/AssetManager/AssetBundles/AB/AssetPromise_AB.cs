@@ -27,7 +27,7 @@ namespace DCL
 
         public static AssetBundlesLoader assetBundlesLoader = new AssetBundlesLoader();
         private Transform containerTransform;
-        private WebRequestAsyncOperation asyncOp;
+        private IWebRequestAsyncOperation asyncOp;
 
         public AssetPromise_AB(string contentUrl, string hash,
             Transform containerTransform = null) : base(contentUrl,
@@ -125,7 +125,7 @@ namespace DCL
                     yield break;
                 }
 
-                if (!asyncOp.isSucceded)
+                if (!asyncOp.isSucceeded)
                 {
                     if (VERBOSE)
                         Debug.Log($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}");

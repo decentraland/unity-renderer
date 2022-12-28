@@ -25,7 +25,7 @@ namespace Decentraland.Bff {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiVkZWNlbnRyYWxhbmQvYmZmL2h0dHBfZW5kcG9pbnRzLnByb3RvEhBkZWNl",
-            "bnRyYWxhbmQuYmZmGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8ihw0K",
+            "bnRyYWxhbmQuYmZmGhtnb29nbGUvcHJvdG9idWYvZW1wdHkucHJvdG8ing0K",
             "DUFib3V0UmVzcG9uc2USDwoHaGVhbHRoeRgBIAEoCBJKCg5jb25maWd1cmF0",
             "aW9ucxgCIAEoCzIyLmRlY2VudHJhbGFuZC5iZmYuQWJvdXRSZXNwb25zZS5B",
             "Ym91dENvbmZpZ3VyYXRpb24SPAoHY29udGVudBgDIAEoCzIrLmRlY2VudHJh",
@@ -49,23 +49,23 @@ namespace Decentraland.Bff {
             "a3lib3hCHQobX2NpdHlfbG9hZGVyX2NvbnRlbnRfc2VydmVyGn4KC0NvbnRl",
             "bnRJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEB",
             "EhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQESEgoKcHVibGljX3VybBgEIAEo",
-            "CUIKCghfdmVyc2lvbkIOCgxfY29tbWl0X2hhc2gafgoLTGFtYmRhc0luZm8S",
-            "DwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoLY29t",
-            "bWl0X2hhc2gYAyABKAlIAYgBARISCgpwdWJsaWNfdXJsGAQgASgJQgoKCF92",
-            "ZXJzaW9uQg4KDF9jb21taXRfaGFzaBr6AQoJQ29tbXNJbmZvEg8KB2hlYWx0",
-            "aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNo",
-            "GAMgASgJSAGIAQESFwoKcHVibGljX3VybBgEIAEoCUgCiAEBEhAKCHByb3Rv",
-            "Y29sGDIgASgJEhgKC3VzZXJzX2NvdW50GDMgASgFSAOIAQESGgoNZml4ZWRf",
-            "YWRhcHRlchg0IAEoCUgEiAEBQgoKCF92ZXJzaW9uQg4KDF9jb21taXRfaGFz",
-            "aEINCgtfcHVibGljX3VybEIOCgxfdXNlcnNfY291bnRCEAoOX2ZpeGVkX2Fk",
-            "YXB0ZXIa1gEKB0JmZkluZm8SDwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9u",
-            "GAIgASgJSACIAQESGAoLY29tbWl0X2hhc2gYAyABKAlIAYgBARISCgpwdWJs",
-            "aWNfdXJsGAQgASgJEhcKCnVzZXJfY291bnQYMyABKAVIAogBARIdChBwcm90",
-            "b2NvbF92ZXJzaW9uGDQgASgJSAOIAQFCCgoIX3ZlcnNpb25CDgoMX2NvbW1p",
-            "dF9oYXNoQg0KC191c2VyX2NvdW50QhMKEV9wcm90b2NvbF92ZXJzaW9uQgYK",
-            "BF9iZmYyUwoNSHR0cEVuZHBvaW50cxJCCgVBYm91dBIWLmdvb2dsZS5wcm90",
-            "b2J1Zi5FbXB0eRofLmRlY2VudHJhbGFuZC5iZmYuQWJvdXRSZXNwb25zZSIA",
-            "YgZwcm90bzM="));
+            "CUIKCghfdmVyc2lvbkIOCgxfY29tbWl0X2hhc2galAEKC0xhbWJkYXNJbmZv",
+            "Eg8KB2hlYWx0aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEBEhgKC2Nv",
+            "bW1pdF9oYXNoGAMgASgJSAGIAQESEgoKcHVibGljX3VybBgEIAEoCRIUCgxw",
+            "dWJsaWNfdXJsXzIYBSABKAlCCgoIX3ZlcnNpb25CDgoMX2NvbW1pdF9oYXNo",
+            "GvoBCglDb21tc0luZm8SDwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9uGAIg",
+            "ASgJSACIAQESGAoLY29tbWl0X2hhc2gYAyABKAlIAYgBARIXCgpwdWJsaWNf",
+            "dXJsGAQgASgJSAKIAQESEAoIcHJvdG9jb2wYMiABKAkSGAoLdXNlcnNfY291",
+            "bnQYMyABKAVIA4gBARIaCg1maXhlZF9hZGFwdGVyGDQgASgJSASIAQFCCgoI",
+            "X3ZlcnNpb25CDgoMX2NvbW1pdF9oYXNoQg0KC19wdWJsaWNfdXJsQg4KDF91",
+            "c2Vyc19jb3VudEIQCg5fZml4ZWRfYWRhcHRlchrWAQoHQmZmSW5mbxIPCgdo",
+            "ZWFsdGh5GAEgASgIEhQKB3ZlcnNpb24YAiABKAlIAIgBARIYCgtjb21taXRf",
+            "aGFzaBgDIAEoCUgBiAEBEhIKCnB1YmxpY191cmwYBCABKAkSFwoKdXNlcl9j",
+            "b3VudBgzIAEoBUgCiAEBEh0KEHByb3RvY29sX3ZlcnNpb24YNCABKAlIA4gB",
+            "AUIKCghfdmVyc2lvbkIOCgxfY29tbWl0X2hhc2hCDQoLX3VzZXJfY291bnRC",
+            "EwoRX3Byb3RvY29sX3ZlcnNpb25CBgoEX2JmZjJTCg1IdHRwRW5kcG9pbnRz",
+            "EkIKBUFib3V0EhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Gh8uZGVjZW50cmFs",
+            "YW5kLmJmZi5BYm91dFJlc3BvbnNlIgBiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -73,7 +73,7 @@ namespace Decentraland.Bff {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration), global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration.Parser, new[]{ "FixedHour" }, new[]{ "FixedHour" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration), global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration.Parser, new[]{ "RealmName", "NetworkId", "GlobalScenesUrn", "ScenesUrn", "Minimap", "Skybox", "CityLoaderContentServer" }, new[]{ "RealmName", "Minimap", "Skybox", "CityLoaderContentServer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.ContentInfo), global::Decentraland.Bff.AboutResponse.Types.ContentInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.LambdasInfo), global::Decentraland.Bff.AboutResponse.Types.LambdasInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.LambdasInfo), global::Decentraland.Bff.AboutResponse.Types.LambdasInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "PublicUrl2" }, new[]{ "Version", "CommitHash" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.CommsInfo), global::Decentraland.Bff.AboutResponse.Types.CommsInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "Protocol", "UsersCount", "FixedAdapter" }, new[]{ "Version", "CommitHash", "PublicUrl", "UsersCount", "FixedAdapter" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.BffInfo), global::Decentraland.Bff.AboutResponse.Types.BffInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "UserCount", "ProtocolVersion" }, new[]{ "Version", "CommitHash", "UserCount", "ProtocolVersion" }, null, null, null)})
           }));
@@ -1836,6 +1836,7 @@ namespace Decentraland.Bff {
           version_ = other.version_;
           commitHash_ = other.commitHash_;
           publicUrl_ = other.publicUrl_;
+          publicUrl2_ = other.publicUrl2_;
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -1920,6 +1921,18 @@ namespace Decentraland.Bff {
           }
         }
 
+        /// <summary>Field number for the "public_url_2" field.</summary>
+        public const int PublicUrl2FieldNumber = 5;
+        private string publicUrl2_ = "";
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string PublicUrl2 {
+          get { return publicUrl2_; }
+          set {
+            publicUrl2_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
@@ -1939,6 +1952,7 @@ namespace Decentraland.Bff {
           if (Version != other.Version) return false;
           if (CommitHash != other.CommitHash) return false;
           if (PublicUrl != other.PublicUrl) return false;
+          if (PublicUrl2 != other.PublicUrl2) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -1950,6 +1964,7 @@ namespace Decentraland.Bff {
           if (HasVersion) hash ^= Version.GetHashCode();
           if (HasCommitHash) hash ^= CommitHash.GetHashCode();
           if (PublicUrl.Length != 0) hash ^= PublicUrl.GetHashCode();
+          if (PublicUrl2.Length != 0) hash ^= PublicUrl2.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -1984,6 +1999,10 @@ namespace Decentraland.Bff {
             output.WriteRawTag(34);
             output.WriteString(PublicUrl);
           }
+          if (PublicUrl2.Length != 0) {
+            output.WriteRawTag(42);
+            output.WriteString(PublicUrl2);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
@@ -2010,6 +2029,10 @@ namespace Decentraland.Bff {
             output.WriteRawTag(34);
             output.WriteString(PublicUrl);
           }
+          if (PublicUrl2.Length != 0) {
+            output.WriteRawTag(42);
+            output.WriteString(PublicUrl2);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
           }
@@ -2031,6 +2054,9 @@ namespace Decentraland.Bff {
           }
           if (PublicUrl.Length != 0) {
             size += 1 + pb::CodedOutputStream.ComputeStringSize(PublicUrl);
+          }
+          if (PublicUrl2.Length != 0) {
+            size += 1 + pb::CodedOutputStream.ComputeStringSize(PublicUrl2);
           }
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
@@ -2055,6 +2081,9 @@ namespace Decentraland.Bff {
           }
           if (other.PublicUrl.Length != 0) {
             PublicUrl = other.PublicUrl;
+          }
+          if (other.PublicUrl2.Length != 0) {
+            PublicUrl2 = other.PublicUrl2;
           }
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
@@ -2087,6 +2116,10 @@ namespace Decentraland.Bff {
                 PublicUrl = input.ReadString();
                 break;
               }
+              case 42: {
+                PublicUrl2 = input.ReadString();
+                break;
+              }
             }
           }
         #endif
@@ -2116,6 +2149,10 @@ namespace Decentraland.Bff {
               }
               case 34: {
                 PublicUrl = input.ReadString();
+                break;
+              }
+              case 42: {
+                PublicUrl2 = input.ReadString();
                 break;
               }
             }
