@@ -157,7 +157,6 @@ namespace DCL.ECSComponents.Tests
             Assert.AreEqual(50f, result.hit.Position.X);
             Assert.AreEqual(50f, result.hit.Position.Y);
             Assert.AreEqual(0, result.hit.Position.Z);
-            Assert.AreEqual(1, result.analog);
         }
 
         private IEnumerator CreateStretchedElement()

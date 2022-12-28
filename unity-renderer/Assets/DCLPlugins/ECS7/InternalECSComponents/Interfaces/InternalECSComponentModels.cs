@@ -46,7 +46,6 @@ namespace DCL.ECS7.InternalComponents
             public RaycastHit hit;
             public PointerEventType type;
             public int timestamp;
-            public float analog;
         }
 
         public Queue<EventData> events;

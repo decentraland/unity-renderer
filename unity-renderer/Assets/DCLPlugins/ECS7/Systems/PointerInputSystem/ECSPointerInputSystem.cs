@@ -291,7 +291,6 @@ namespace ECSSystems.PointerInputSystem
 
             state.inputResultComponent.AddEvent(scene, new InternalInputEventResults.EventData()
             {
-                analog = 1,
                 button = (InputAction)pointerEvent.buttonId,
                 hit = ProtoConvertUtils.ToPBRaycasHit(entityId, null,
                     ray, raycastHit.distance, raycastHit.point, raycastHit.normal, entityId != -1),

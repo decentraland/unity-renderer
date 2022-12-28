@@ -45,7 +45,6 @@ namespace DCL.ECSComponents
             var eventData = new InternalInputEventResults.EventData
             {
                 button = (InputAction) evt.button,
-                analog = 1,
                 type = pointerEventType,
                 hit = new RaycastHit
                 {
