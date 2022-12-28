@@ -1,11 +1,14 @@
 ﻿using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.Models;
-using System;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIAbstractElements
 {
+    /// <summary>
+    /// Base class to handle common routines such as
+    /// adding and removing UI Components and Visual Elements
+    /// </summary>
     public abstract class UIElementHandlerBase
     {
         protected readonly IInternalECSComponent<InternalUiContainer> internalUiContainer;

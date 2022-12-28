@@ -5,6 +5,13 @@ using System;
 
 namespace DCL.ECSComponents.UIAbstractElements
 {
+    /// <summary>
+    /// Base class to register deserializer and serializer of UI Component,
+    /// and create a builder for handler.
+    /// </summary>
+    /// <typeparam name="T">Type of component</typeparam>
+    /// <typeparam name="THandler">Type of handler</typeparam>
+    /// <typeparam name="TFeedbackResult">Type of feedback component (such as 'text value' for TextField)</typeparam>
     public abstract class UIElementRegisterBase<T, THandler, TFeedbackResult> : UIElementRegisterBase<T, THandler>
         where T: IMessage<T>, new()
         where THandler: class, IECSComponentHandler<T>
@@ -35,6 +42,12 @@ namespace DCL.ECSComponents.UIAbstractElements
         }
     }
 
+    /// <summary>
+    /// Base class to register deserializer and serializer of UI Component,
+    /// and create a builder for handler.
+    /// </summary>
+    /// <typeparam name="T">Type of component</typeparam>
+    /// <typeparam name="THandler">Type of handler</typeparam>
     public abstract class UIElementRegisterBase<T, THandler> : IDisposable
         where T: IMessage<T>, new()
         where THandler: class, IECSComponentHandler<T>
