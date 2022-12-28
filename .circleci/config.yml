@@ -462,7 +462,7 @@ workflows:
       - test-js-interface:
           <<: *all_branches_and_tags
           requires:
-            - build-unity
+            - checkout
       - publish-renderer:
           requires:
             - build-unity
