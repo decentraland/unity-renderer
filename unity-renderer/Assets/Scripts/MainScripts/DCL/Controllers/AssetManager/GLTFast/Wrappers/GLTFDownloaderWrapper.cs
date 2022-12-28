@@ -24,10 +24,10 @@ namespace DCL.GLTFast.Wrappers
             this.asyncOp = asyncOp;
         }
 
-        public bool success => asyncOp.isSucceeded;
-        public string error => asyncOp.webRequest.error;
+        public bool Success => asyncOp.isSucceeded;
+        public string Error => asyncOp.webRequest.error;
 
-        public byte[] data
+        public byte[] Data
         {
             get
             {
@@ -41,8 +41,8 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        public string text => asyncOp.webRequest.downloadHandler.text;
-        public bool? isBinary => IsGltfBinary(data);
+        public string Text => asyncOp.webRequest.downloadHandler.text;
+        public bool? IsBinary => IsGltfBinary(Data);
 
         private static bool IsGltfBinary(byte[] data)
         {

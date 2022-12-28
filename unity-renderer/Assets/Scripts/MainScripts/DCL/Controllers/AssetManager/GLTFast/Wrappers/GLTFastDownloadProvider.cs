@@ -42,7 +42,7 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
+            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
 
             return wrapper;
         }
@@ -63,7 +63,7 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
+            if (!wrapper.Success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
 
             return wrapper;
         }
