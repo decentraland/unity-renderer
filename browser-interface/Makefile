@@ -78,7 +78,13 @@ lint-fix: ## Fix bad formatting on all .ts and .tsx files
 
 # Development
 
-watch: $(SOME_MAPPINGS) build-essentials static/index.js ## Watch the files required for hacking the explorer
+# touch local creates "stub" files to mock the wasm build of unity and not break the build
+touch-local:
+	touch static/unity.framework.js
+	touch static/unity.data
+	touch static/unity.wasm
+
+watch: build-essentials static/index.js touch-local ## Watch the files required for hacking the explorer
 	@NODE_ENV=development ./build.js -watch
 
 update-renderer:  ## Update the renderer

@@ -4,7 +4,7 @@ import { isFriend } from 'shared/friends/selectors'
 import { RootFriendsState } from 'shared/friends/types'
 import { getBannedUsers } from 'shared/meta/selectors'
 import { BannedUsers, RootMetaState } from 'shared/meta/types'
-import { getCurrentUserProfile, getProfile } from 'shared/profiles/selectors'
+import { getProfile } from 'shared/profiles/selectors'
 import { RootProfileState } from 'shared/profiles/types'
 import { RootVoiceChatState, VoicePolicy } from './types'
 import { VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
@@ -12,7 +12,6 @@ import { RootWorldState } from 'shared/world/types'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { RootSessionState } from 'shared/session/types'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
-import { store } from '../store/isolatedStore'
 
 export const hasJoinedVoiceChat = (store: RootVoiceChatState) => store.voiceChat.joined
 

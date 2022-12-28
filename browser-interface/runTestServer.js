@@ -46,7 +46,7 @@ const server = http.createServer(app)
 
   app.use(
     '/@/artifacts/index.js',
-    express.static(resolve(__dirname, '../static/index.js'), {
+    express.static(resolve(__dirname, './static/index.js'), {
       setHeaders: (res) => {
         res.setHeader('Content-Type', 'application/javascript')
       }
@@ -55,11 +55,11 @@ const server = http.createServer(app)
 
   app.use('/@/artifacts/unity-renderer', express.static(path.dirname(require.resolve('@dcl/unity-renderer'))))
 
-  app.use('/default-profile', express.static(resolve(__dirname, '../static/default-profile')))
+  app.use('/default-profile', express.static(resolve(__dirname, './static/default-profile')))
 
   app.use(
     '/preview.html',
-    express.static(resolve(__dirname, '../static/preview.html'), {
+    express.static(resolve(__dirname, './static/preview.html'), {
       setHeaders: (res) => {
         res.setHeader('Content-Type', 'text/html')
       }
@@ -68,17 +68,17 @@ const server = http.createServer(app)
 
   app.use(
     '/index.html',
-    express.static(resolve(__dirname, '../static/index.html'), {
+    express.static(resolve(__dirname, './static/index.html'), {
       setHeaders: (res) => {
         res.setHeader('Content-Type', 'text/html')
       }
     })
   )
 
-  app.use('/test', express.static(resolve(__dirname, '../test')))
-  app.use('/node_modules', express.static(resolve(__dirname, '../node_modules')))
+  app.use('/test', express.static(resolve(__dirname, './test')))
+  app.use('/node_modules', express.static(resolve(__dirname, './node_modules')))
 
-  app.use(express.static(path.resolve(__dirname, '..', 'static')))
+  app.use(express.static(path.resolve(__dirname, 'static')))
 
   server.listen(port, function () {
     console.info('==>     Listening on port %s. Open up http://localhost:%s/test to run tests', port, port)
