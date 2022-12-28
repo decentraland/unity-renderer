@@ -385,10 +385,10 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
         for (int i = 0; i < words.Length; i++)
         {
-            if (words[i].Contains("[") && words[i].Contains("]") && words[i].Contains("(") && words[i].Contains(")"))
+            if (words[i].StartsWith("[") && words[i].Contains("]") && words[i].Contains("(") && words[i].EndsWith(")"))
             {
-                string link = words[i].Substring(words[i].IndexOf("[") + 1, words[i].IndexOf("]") - 1);
-                string id = words[i].Substring(words[i].IndexOf("]") + 1).Replace("(", "").Replace(")", "");
+                string link = words[i].Split("(")[0].Replace("[", "").Replace("]", "");
+                string id = words[i].Split("]")[1].Replace("(", "").Replace(")", "");
                 string[] elements = words[i].Split('.');
                 if (elements.Length >= 2)
                 {
