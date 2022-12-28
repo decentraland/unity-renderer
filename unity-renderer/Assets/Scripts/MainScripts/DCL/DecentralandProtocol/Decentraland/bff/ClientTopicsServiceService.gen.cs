@@ -7,7 +7,16 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Bff {
-public class ClientTopicsService
+public interface IClientTopicsService
+{
+  IUniTaskAsyncEnumerable<PeerTopicSubscriptionResultElem> PeerSubscription(SubscriptionRequest request);
+
+  IUniTaskAsyncEnumerable<SystemTopicSubscriptionResultElem> SystemSubscription(SubscriptionRequest request);
+
+  UniTask<PublishToTopicResult> PublishToTopic(PublishToTopicRequest request);
+}
+
+public class ClientTopicsService : IClientTopicsService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +25,7 @@ public class ClientTopicsService
       this.module = module;
   }
 
+  
   public IUniTaskAsyncEnumerable<PeerTopicSubscriptionResultElem> PeerSubscription(SubscriptionRequest request)
   {
       return module.CallServerStream<PeerTopicSubscriptionResultElem>("PeerSubscription", request);
@@ -30,5 +40,6 @@ public class ClientTopicsService
   {
       return module.CallUnaryProcedure<PublishToTopicResult>("PublishToTopic", request);
   }
+
 }
 }
