@@ -23,7 +23,6 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject guestPanel;
         [SerializeField] private GameObject normalPanel;
         [SerializeField] private GameObject hasBlockedPanel;
-        [SerializeField] private GameObject wearableView;
         [SerializeField] private Transform equippedWearablesContainer;
         [SerializeField] private TextMeshProUGUI usernameText;
         [SerializeField] private TextMeshProUGUI blockedUsernameText;
@@ -85,6 +84,8 @@ namespace DCL.Social.Passports
                 aboutToggleOff.SetActive(true);
                 collectiblesToggleOn.SetActive(true);
                 collectiblesToggleOff.SetActive(false);
+                nftWearablesCarousel.ResetManualCarousel();
+                nftEmotesCarousel.ResetManualCarousel();
             });
         }
 
@@ -225,7 +226,6 @@ namespace DCL.Social.Passports
                 nftWearablesCarousel.AddItem(nftPageView);
             }
             nftWearablesCarousel.GenerateDotsSelector();
-            nftWearablesCarousel.ResetManualCarousel();
         }
 
         public void SetCollectibleEmotes(WearableItem[] wearables)
@@ -270,7 +270,6 @@ namespace DCL.Social.Passports
                 nftEmotesCarousel.AddItem(nftPageView);
             }
             nftEmotesCarousel.GenerateDotsSelector();
-            nftEmotesCarousel.ResetManualCarousel();
         }
 
         public void SetHasBlockedOwnUser(bool isBlocked)
