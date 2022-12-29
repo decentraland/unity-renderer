@@ -24,7 +24,7 @@ public class PassportLinkView : BaseComponentView
 
     public void SetLinkTitle(string passportLinkTitle)
     {
-        buttonText.text = passportLinkTitle;
+        buttonText.text = passportLinkTitle.Length > 17 ? $"{passportLinkTitle.Substring(0, 15)}..." : passportLinkTitle;
     }
 
     public override void RefreshControl()
