@@ -97,7 +97,7 @@ namespace DCL.Social.Passports
         private void AddPlayerAsFriend()
         {
             if (isNewFriendRequestsEnabled)
-                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             else
             {
                 friendsController.RequestFriendship(currentPlayerId);

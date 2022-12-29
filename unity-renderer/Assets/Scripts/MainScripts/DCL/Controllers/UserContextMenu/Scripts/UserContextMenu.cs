@@ -215,7 +215,7 @@ public class UserContextMenu : MonoBehaviour
 
         if (isNewFriendRequestsEnabled)
         {
-            DataStore.i.HUDs.sendFriendRequest.Set(userId);
+            DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
             DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
         }
         else
