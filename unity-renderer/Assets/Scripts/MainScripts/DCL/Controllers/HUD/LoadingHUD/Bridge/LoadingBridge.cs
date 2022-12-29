@@ -24,6 +24,7 @@ public class LoadingBridge : MonoBehaviour
         public string message;
     }
 
+    [Obsolete]
     public void SetLoadingScreen(string jsonMessage)
     {
         if (isDecoupledLoadingScreenEnabled) return;
@@ -42,6 +43,7 @@ public class LoadingBridge : MonoBehaviour
         DataStore.i.loadingScreen.loadingHUD.showTips.Set(payload.showTips);
     }
 
+    [Obsolete]
     public void FadeInLoadingHUD(string jsonMessage)
     {
         if (isDecoupledLoadingScreenEnabled) return;

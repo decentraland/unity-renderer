@@ -12,7 +12,7 @@ namespace SignupHUD
         internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
         private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
-        private DataStore_LoadingScreen loadingScreenDataStore;
+        private readonly DataStore_LoadingScreen loadingScreenDataStore;
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
