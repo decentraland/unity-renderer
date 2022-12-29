@@ -29,7 +29,7 @@ namespace DCL.LoadingScreen
             this.loadingScreenDataStore = loadingScreenDataStore;
 
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-
+            
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
@@ -75,7 +75,6 @@ namespace DCL.LoadingScreen
             if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
-
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
                 view.FadeIn(true);
             }
