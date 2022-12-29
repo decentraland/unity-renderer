@@ -18,6 +18,7 @@ namespace DCL.Configuration
         {
             if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
 
+            #if !UNITY_EDITOR
             SentryUnity.Init(o =>
             {
                 o.Environment = SentryConfiguration.Environment;
@@ -32,6 +33,7 @@ namespace DCL.Configuration
                     o.TracesSampleRate = 1.0f;
                 }
             });
+            #endif
             SentrySdk.CaptureMessage("Sentry is initialized. ");
         }
     }
