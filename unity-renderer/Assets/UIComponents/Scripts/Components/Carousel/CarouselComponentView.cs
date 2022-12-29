@@ -261,7 +261,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         base.OnFocus();
 
-        if ((previousButton == null || nextButton == null) && !showOnFocus)
+        if (previousButton == null || nextButton == null || !showOnFocus)
             return;
 
         int currentNumberOfItems = itemsContainer.childCount;
@@ -273,7 +273,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         base.OnLoseFocus();
 
-        if ((previousButton == null || nextButton == null) && !showOnFocus)
+        if (previousButton == null || nextButton == null || !showOnFocus)
             return;
 
         previousButton.gameObject.SetActive(false);
