@@ -97,7 +97,7 @@ namespace DCL.Social.Friends
             await UniTask.SwitchToMainThread();
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.REQUESTED_TO, userId = friendUserId });
+                { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.To });
 
             return friendRequest;
         }
