@@ -1,4 +1,3 @@
-// unset:none
 using UnityEngine;
 
 namespace DCL.UIElements.Image
