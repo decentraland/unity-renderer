@@ -33,6 +33,8 @@ namespace DCL.Configuration
                     o.TracesSampleRate = 1.0f;
                 }
             });
+
+            Debug.LogError($"DSN: {SentryConfiguration.Dsn} ENV: {SentryConfiguration.Environment} RELEASE: {SentryConfiguration.Release}");
             #endif
             SentrySdk.CaptureMessage("Sentry is initialized. ");
         }
