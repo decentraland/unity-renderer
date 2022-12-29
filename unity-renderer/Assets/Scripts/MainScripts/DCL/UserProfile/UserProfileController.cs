@@ -124,6 +124,10 @@ public class UserProfileController : MonoBehaviour
 
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId)
     {
+        // TODO: the renderer should not alter the userId nor ethAddress
+        // There is a problem in case management of addresses that we cannot handle from renderer only
+        userId = userId?.ToLower();
+
         if (pendingUserProfileTasks.TryGetValue(userId, out var existingTask))
             existingTask.TrySetCanceled();
 
