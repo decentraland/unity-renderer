@@ -63,11 +63,20 @@ namespace DCLServices.Lambdas
 
             urlBuilder.Append(catalyst.Lambdas2Url);
             urlBuilder.Append('/');
-            urlBuilder.Append(endPoint);
+
+            var endPointSpan = endPoint.AsSpan();
+
+            if (endPoint.StartsWith('/') || endPoint.StartsWith('\\'))
+                endPointSpan = endPointSpan[1..];
+
+            if (endPoint.EndsWith('/') || endPoint.EndsWith('\\') || endPoint.EndsWith('?'))
+                endPointSpan = endPointSpan[..^1];
+
+            urlBuilder.Append(endPointSpan);
 
             if (urlEncodedParams.Length > 0)
             {
-                urlBuilder.Append("?");
+                urlBuilder.Append('?');
 
                 for (var i = 0; i < urlEncodedParams.Length; i++)
                 {

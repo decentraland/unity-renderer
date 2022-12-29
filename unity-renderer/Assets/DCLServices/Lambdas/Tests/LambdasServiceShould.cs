@@ -38,17 +38,17 @@ namespace DCLServices.Lambdas.Tests
         }
 
         [Test]
-        public void ConstructUrlWithParams()
+        public void ConstructUrlWithParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
-            var url = lambdasService.GetUrl(END_POINT, new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });
-            Assert.AreEqual($"{TEST_URL}/{END_POINT}?param1=34&param2=value&param3=foo", url);
+            var url = lambdasService.GetUrl(testEndpoint, new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });
+            Assert.AreEqual($"{TEST_URL}/{testEndpoint.Trim('/').TrimEnd('?')}?param1=34&param2=value&param3=foo", url);
         }
 
         [Test]
-        public void ConstructUrlWithoutParams()
+        public void ConstructUrlWithoutParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
-            var url = lambdasService.GetUrl(END_POINT, Array.Empty<(string paramName, string paramValue)>());
-            Assert.AreEqual($"{TEST_URL}/{END_POINT}", url);
+            var url = lambdasService.GetUrl(testEndpoint, Array.Empty<(string paramName, string paramValue)>());
+            Assert.AreEqual($"{TEST_URL}/{testEndpoint.Trim('/').TrimEnd('?')}", url);
         }
 
         [Test]
