@@ -10825,8 +10825,8 @@ Shader "DCL/Toon Shader"
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
-            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
+            #include "GPUSkinning.hlsl"
+            #include "./../ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
             {
@@ -20406,8 +20406,8 @@ Shader "DCL/Toon Shader"
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
 
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
-            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
+            #include "GPUSkinning.hlsl"
+            #include "./../ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
             {
