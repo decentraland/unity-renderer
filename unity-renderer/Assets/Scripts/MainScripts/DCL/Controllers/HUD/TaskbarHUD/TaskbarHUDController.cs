@@ -258,6 +258,7 @@ public class TaskbarHUDController : IHUD
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
     {
+        Debug.Log("CloseWindowTrigger_OnTriggered");
         if (mouseCatcher.isLocked) return;
 
         if (publicChatWindow.View.IsActive ||
