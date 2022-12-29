@@ -30,6 +30,11 @@ namespace DCL.ECSComponents
             colliderGameObject = new GameObject("MeshCollider");
             colliderGameObject.transform.SetParent(entity.gameObject.transform);
             colliderGameObject.transform.ResetLocalTRS();
+
+            if(entity.meshesInfo.meshRootGameObject == null)
+                entity.meshesInfo.meshRootGameObject = colliderGameObject;
+            else
+                entity.meshesInfo.RecalculateBounds();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -61,6 +66,11 @@ namespace DCL.ECSComponents
 
             SetColliderLayer(model);
             SetInternalColliderComponents(scene, entity, model);
+
+            if(entity.meshesInfo.meshRootGameObject == null)
+                entity.meshesInfo.meshRootGameObject = colliderGameObject;
+            else
+                entity.meshesInfo.RecalculateBounds();
         }
 
         private void CreateCollider(PBMeshCollider model)

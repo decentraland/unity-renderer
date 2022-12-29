@@ -9,12 +9,14 @@ namespace DCL.ECSComponents
     public class ECSTransformHandler : IECSComponentHandler<ECSTransform>
     {
         private readonly IWorldState worldState;
+        private readonly ISceneBoundsChecker sceneBoundsChecker;
         private readonly IBaseVariable<Vector3> playerTeleportVariable;
 
-        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
+        public ECSTransformHandler(IWorldState worldState, ISceneBoundsChecker sceneBoundsChecker, IBaseVariable<Vector3> playerTeleportVariable)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.worldState = worldState;
+            this.sceneBoundsChecker = sceneBoundsChecker;
             this.playerTeleportVariable = playerTeleportVariable;
         }
 
@@ -77,9 +79,9 @@ namespace DCL.ECSComponents
             transform.localScale = model.scale;
 
             if (entity.parentId != model.parentId)
-            {
                 ProcessNewParent(scene, entity, model.parentId);
-            }
+
+            sceneBoundsChecker.AddEntityToBeChecked(entity);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)

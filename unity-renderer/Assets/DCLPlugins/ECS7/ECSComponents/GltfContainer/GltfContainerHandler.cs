@@ -81,8 +81,8 @@ namespace DCL.ECSComponents
         private void OnLoadSuccess(IParcelScene scene, IDCLEntity entity, Rendereable rendereable)
         {
             // create physic colliders
-            MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
-            physicColliders = SetUpPhysicColliders(meshFilters);
+            entity.meshesInfo.meshRootGameObject = rendereable.container;
+            physicColliders = SetUpPhysicColliders(entity.meshesInfo.meshFilters);
 
             // create pointer colliders and renderers
             (pointerColliders, renderers) = SetUpPointerCollidersAndRenderers(rendereable.renderers);
@@ -130,6 +130,7 @@ namespace DCL.ECSComponents
             physicColliders = null;
             pointerColliders = null;
             renderers = null;
+            entity.meshesInfo.CleanReferences();
 
             if (!string.IsNullOrEmpty(prevLoadedGltf)) { dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf); }
 

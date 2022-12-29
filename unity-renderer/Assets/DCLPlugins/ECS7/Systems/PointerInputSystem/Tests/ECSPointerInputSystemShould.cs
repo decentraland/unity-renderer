@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -581,7 +582,7 @@ namespace Tests
                 new InternalColliders() { colliders = new List<Collider>() { testEntityCollider } });
 
             // 2. position collider entity inside scene space
-            ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
+            ECSTransformHandler transformHandler = new ECSTransformHandler(worldState, Substitute.For<ISceneBoundsChecker>(),
                 Substitute.For<BaseVariable<UnityEngine.Vector3>>());
 
             var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);

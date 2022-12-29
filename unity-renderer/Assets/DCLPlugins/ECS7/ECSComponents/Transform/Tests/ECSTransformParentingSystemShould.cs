@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
@@ -21,7 +22,7 @@ namespace Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>(),
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<ISceneBoundsChecker>(),
                 Substitute.For<BaseVariable<Vector3>>());
         }
 

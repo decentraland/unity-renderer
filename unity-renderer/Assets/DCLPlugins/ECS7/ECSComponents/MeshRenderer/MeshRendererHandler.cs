@@ -40,6 +40,11 @@ namespace DCL.ECSComponents
             componentMeshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
             texturizableInternalComponent.AddRenderer(scene, entity, componentMeshRenderer);
             renderersInternalComponent.AddRenderer(scene, entity, componentMeshRenderer);
+
+            if(entity.meshesInfo.meshRootGameObject == null)
+                entity.meshesInfo.meshRootGameObject = componentGameObject;
+            else
+                entity.meshesInfo.RecalculateBounds();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -92,6 +97,8 @@ namespace DCL.ECSComponents
             {
                 componentMeshFilter.sharedMesh = shape.mesh;
                 ecs7DataStore.RemovePendingResource(scene.sceneData.sceneNumber, model);
+
+                entity.meshesInfo.UpdateRenderersCollection();
             };
             primitiveMeshPromise.OnFailEvent += (mesh, exception) =>
             {
