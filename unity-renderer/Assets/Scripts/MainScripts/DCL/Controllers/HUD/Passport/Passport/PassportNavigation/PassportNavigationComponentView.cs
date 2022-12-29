@@ -45,6 +45,7 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject collectiblesToggleOff;
         [SerializeField] private TMP_Text aboutText;
         [SerializeField] private TMP_Text collectiblesText;
+        [SerializeField] private OpenUrlView openUrlView;
 
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string> OnClickBuyNft;
@@ -147,9 +148,17 @@ namespace DCL.Social.Passports
             foreach (string link in links)
             {
                 PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
+                newLink.OnClickLink -= ClickedLink;
                 newLink.SetLinkTitle(Regex.Matches(link, linkTitleRegex, RegexOptions.IgnoreCase)[0].Value);
                 newLink.SetLink(Regex.Matches(link, linkRegex, RegexOptions.IgnoreCase)[0].Value);
+                newLink.OnClickLink += ClickedLink;
             }
+        }
+
+        private void ClickedLink(string obj)
+        {
+            openUrlView.SetUrlInfo(obj, obj);
+            openUrlView.SetVisibility(true);
         }
 
         public void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId)
