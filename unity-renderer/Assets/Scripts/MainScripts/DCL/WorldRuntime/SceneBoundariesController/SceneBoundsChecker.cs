@@ -358,7 +358,7 @@ namespace DCL.Controllers
         private void SetMeshesAndComponentsInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
         {
             SetEntityMeshesInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
-            SetEntityCollidersInsideBoundariesState(entity.meshesInfo, isInsideBoundaries);
+            SetEntityCollidersInsideBoundariesState(entity, isInsideBoundaries);
             SetComponentsInsideBoundariesValidState(entity, isInsideBoundaries);
 
             // Should always be set last as entity.isInsideSceneBoundaries is checked to avoid re-running code unnecessarily
@@ -370,12 +370,14 @@ namespace DCL.Controllers
             feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries);
         }
 
-        private void SetEntityCollidersInsideBoundariesState(MeshesInfo meshesInfo, bool isInsideBoundaries)
+        private void SetEntityCollidersInsideBoundariesState(IDCLEntity entity, bool isInsideBoundaries)
         {
-            if (meshesInfo == null || meshesInfo.colliders.Count == 0 || !meshesInfo.currentShape.HasCollisions())
-                return;
+            if (entity.meshesInfo == null
+                || entity.meshesInfo.colliders.Count == 0
+                || (!entity.scene.sceneData.sdk7 && !entity.meshesInfo.currentShape.HasCollisions())
+                ) return;
 
-            foreach (Collider collider in meshesInfo.colliders)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
                 if (collider == null) continue;
 

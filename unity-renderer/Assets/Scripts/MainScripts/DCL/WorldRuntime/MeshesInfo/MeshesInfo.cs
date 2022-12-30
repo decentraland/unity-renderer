@@ -120,9 +120,12 @@ namespace DCL.Models
                 return;
             }
 
-            lastBoundsCalculationPosition = meshRootGameObjectValue.transform.position;
-            lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
-            lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
+            if (meshRootGameObjectValue != null)
+            {
+                lastBoundsCalculationPosition = meshRootGameObjectValue.transform.position;
+                lastBoundsCalculationScale = meshRootGameObjectValue.transform.lossyScale;
+                lastBoundsCalculationRotation = meshRootGameObjectValue.transform.rotation;
+            }
 
             mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers, colliders);
         }

@@ -10,26 +10,29 @@ namespace DCL.Models
         {
             Bounds bounds = new Bounds();
             bool initializedBounds = false;
-            
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                if (renderers[i] == null) continue;
 
-                if (!initializedBounds)
+            if (renderers != null)
+            {
+                for (int i = 0; i < renderers.Length; i++)
                 {
-                    initializedBounds = true;
-                    bounds = GetSafeBounds(renderers[i].bounds, renderers[i].transform.position);
-                }
-                else
-                {
-                    bounds.Encapsulate(GetSafeBounds(renderers[i].bounds, renderers[i].transform.position));
+                    if (renderers[i] == null) continue;
+
+                    if (!initializedBounds)
+                    {
+                        initializedBounds = true;
+                        bounds = GetSafeBounds(renderers[i].bounds, renderers[i].transform.position);
+                    }
+                    else
+                    {
+                        bounds.Encapsulate(GetSafeBounds(renderers[i].bounds, renderers[i].transform.position));
+                    }
                 }
             }
 
             foreach (Collider collider in colliders)
             {
                 if (collider == null) continue;
-                
+
                 if (!initializedBounds)
                 {
                     initializedBounds = true;
@@ -38,7 +41,7 @@ namespace DCL.Models
                 else
                 {
                     bounds.Encapsulate(GetSafeBounds(collider.bounds, collider.transform.position));
-                }   
+                }
             }
 
             return bounds;

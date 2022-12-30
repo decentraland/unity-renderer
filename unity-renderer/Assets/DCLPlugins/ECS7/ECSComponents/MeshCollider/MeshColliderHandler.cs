@@ -33,14 +33,14 @@ namespace DCL.ECSComponents
 
             if(entity.meshesInfo.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = colliderGameObject;
-            else
-                entity.meshesInfo.RecalculateBounds();
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             pointerColliderComponent.RemoveCollider(scene, entity, collider);
             physicColliderComponent.RemoveCollider(scene, entity, collider);
+            entity.meshesInfo.colliders.Remove(collider);
+            entity.meshesInfo.RecalculateBounds();
             AssetPromiseKeeper_PrimitiveMesh.i.Forget(primitiveMeshPromise);
             Object.Destroy(colliderGameObject);
         }
@@ -58,6 +58,7 @@ namespace DCL.ECSComponents
             {
                 pointerColliderComponent.RemoveCollider(scene, entity, collider);
                 physicColliderComponent.RemoveCollider(scene, entity, collider);
+                entity.meshesInfo.colliders.Remove(collider);
                 Object.Destroy(collider);
                 collider = null;
 
@@ -69,8 +70,8 @@ namespace DCL.ECSComponents
 
             if(entity.meshesInfo.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = colliderGameObject;
-            else
-                entity.meshesInfo.RecalculateBounds();
+            entity.meshesInfo.colliders.Add(collider);
+            entity.meshesInfo.RecalculateBounds();
         }
 
         private void CreateCollider(PBMeshCollider model)
