@@ -4,7 +4,7 @@ if(!process.env.CIRCLE_BRANCH) throw new Error('env var CIRCLE_BRANCH not set!')
 if(!process.env.CIRCLE_SHA1) throw new Error('env var CIRCLE_SHA1 not set!')
 if(!process.env.SENTRY_DSN) throw new Error('env var SENTRY_DSN not set!')
 
-const fileToEdit = "unity-renderer/Assets/Scripts/MainScripts/DCL/Configuration/SentryConfiguration.cs"
+const fileToEdit = "unity-renderer/Assets/Resources/Sentry/SentryOptions.asset"
 const fileContents = fs.readFileSync(fileToEdit).toString()
 
 let rendererEnvironment = 'editor'
@@ -18,9 +18,9 @@ if(process.env.CIRCLE_BRANCH == 'main') {
 }
 
 const searchParams = {
-  dsn: '"Dsn"',
-  env: '"editor"',
-  release: '"Release"'
+  dsn: 'https://dsn.dsn/',
+  env: '<ENVIRONMENT>',
+  release: '<RELEASE>'
 }
 
 for (const key in searchParams) {
@@ -28,7 +28,7 @@ for (const key in searchParams) {
 }
 
 fs.writeFileSync(fileToEdit, fileContents
-  .replace(searchParams.dsn, JSON.stringify(process.env.SENTRY_DSN))
-  .replace(searchParams.env, JSON.stringify(rendererEnvironment))
-  .replace(searchParams.release, JSON.stringify(process.env.CIRCLE_SHA1))
+  .replace(searchParams.dsn, process.env.SENTRY_DSN)
+  .replace(searchParams.env, rendererEnvironment)
+  .replace(searchParams.release, process.env.CIRCLE_SHA1)
 )

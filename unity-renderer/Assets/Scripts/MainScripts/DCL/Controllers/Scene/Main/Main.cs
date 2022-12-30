@@ -67,8 +67,6 @@ namespace DCL
             InitializeDataStore();
             SetupPlugins();
             InitializeCommunication();
-
-            SentryConfiguration.Initialize();
         }
 
         protected virtual void InitializeDataStore()

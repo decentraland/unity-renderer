@@ -16,27 +16,7 @@ namespace DCL.Configuration
 
         public static void Initialize()
         {
-            if (SentryConfiguration.Environment == UNKNOWN_BRANCH) return;
-
-            #if !UNITY_EDITOR
-            SentryUnity.Init(o =>
-            {
-                o.Environment = SentryConfiguration.Environment;
-                o.Dsn = SentryConfiguration.Dsn;
-                o.Release = SentryConfiguration.Release;
-                o.StackTraceMode = StackTraceMode.Enhanced;
-                o.EnableLogDebouncing = false;
-
-                // Enable performance trace sampling on development builds only
-                if (SentryConfiguration.Environment == DEVELOPMENT)
-                {
-                    o.TracesSampleRate = 1.0f;
-                }
-            });
-
-            Debug.LogError($"DSN: {SentryConfiguration.Dsn} ENV: {SentryConfiguration.Environment} RELEASE: {SentryConfiguration.Release}");
-            #endif
-            SentrySdk.CaptureMessage("Sentry is initialized. ");
+            // do nothing for now
         }
     }
 }
