@@ -1,5 +1,5 @@
 {
-    "name": "DCL.ECSComponents.Material",
+    "name": "DCL.ECSComponents.VideoPlayer",
     "rootNamespace": "",
     "references": [
         "GUID:37d2c04574c1d480d8c817e2a7c578e7",
@@ -13,7 +13,9 @@
         "GUID:46951180f4d84b25a1619640aa317e5b",
         "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:08b2edf8f14cdd3408988fd7746b749c"
+        "GUID:69fd9bb431ff24c448dfb96a4dd9365f",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -19,7 +19,7 @@ namespace DCL
         private readonly bool storeDefaultTextureInAdvance = false;
         private readonly bool storeTexAsNonReadable = false;
         private readonly int maxTextureSize;
-        
+
         public string url { get; }
 
         WebRequestAsyncOperation webRequestOp = null;
@@ -100,7 +100,7 @@ namespace DCL
                 {
                     OnFail?.Invoke(e);
                 }
-                
+
             }
         }
 
@@ -137,7 +137,7 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
-            
+
             PerformanceAnalytics.PromiseTextureTracker.Track();
 
             asset = library.Get(asset.id);

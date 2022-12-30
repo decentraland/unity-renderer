@@ -11,7 +11,7 @@ namespace ECSSystems.BillboardSystem
         private readonly ECSComponent<PBBillboard> billboardComponent;
         private readonly DataStore_Camera camera;
 
-        public ECSBillboardSystem(ECSComponent<PBBillboard> billboards,  DataStore_Camera camera)
+        public ECSBillboardSystem(ECSComponent<PBBillboard> billboards, DataStore_Camera camera)
         {
             this.billboardComponent = billboards;
             this.camera = camera;
@@ -26,16 +26,16 @@ namespace ECSSystems.BillboardSystem
             {
                 PBBillboard billboard = billboards[i].value.model;
                 IDCLEntity entity = billboards[i].value.entity;
-                UnityEngine.Vector3 lookAtVector = billboard.OppositeDirection ? 
-                    cameraPosition - entity.gameObject.transform.position : 
-                    entity.gameObject.transform.position - cameraPosition; 
+                UnityEngine.Vector3 lookAtVector = billboard.OppositeDirection ?
+                    cameraPosition - entity.gameObject.transform.position :
+                    entity.gameObject.transform.position - cameraPosition;
 
                 if (billboard.BillboardMode == BillboardMode.BmYAxe)
                 {
                     lookAtVector.Normalize();
                     lookAtVector.y = entity.gameObject.transform.forward.y;
                 }
-                
+
                 if (lookAtVector != UnityEngine.Vector3.zero)
                     entity.gameObject.transform.forward = lookAtVector.normalized;
             }

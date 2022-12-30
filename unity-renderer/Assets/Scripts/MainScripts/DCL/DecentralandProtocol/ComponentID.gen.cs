@@ -13,6 +13,7 @@ namespace DCL.ECS7
         public const int NFT_SHAPE = 1040;
         public const int GLTF_CONTAINER = 1041;
         public const int ANIMATOR = 1042;
+        public const int VIDEO_PLAYER = 1043;
         public const int UI_TRANSFORM = 1050;
         public const int UI_TEXT = 1052;
         public const int UI_BACKGROUND = 1053;

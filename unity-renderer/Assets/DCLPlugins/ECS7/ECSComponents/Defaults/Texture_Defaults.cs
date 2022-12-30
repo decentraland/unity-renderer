@@ -11,11 +11,27 @@ namespace DCL.ECSComponents
             {
                 case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetTextureUrl();
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return $"{scene.sceneData.sceneNumber}{self.VideoTexture.VideoPlayerEntity}";
                 case TextureUnion.TexOneofCase.Texture:
                 default:
                     return self.Texture.GetTextureUrl(scene);
             }
         }
+
+        public static long GetVideoTextureId(this TextureUnion self)
+        {
+            switch (self.TexCase)
+            {
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return self.VideoTexture.VideoPlayerEntity;
+                default:
+                    return 0;
+            }
+        }
+
+        public static bool IsVideoTexture(this TextureUnion self) =>
+            self.TexCase == TextureUnion.TexOneofCase.VideoTexture;
 
         public static UnityEngine.TextureWrapMode GetWrapMode(this TextureUnion self)
         {
