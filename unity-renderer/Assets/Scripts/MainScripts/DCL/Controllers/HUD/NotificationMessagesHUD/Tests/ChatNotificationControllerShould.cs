@@ -351,7 +351,7 @@ namespace DCL.Chat.Notifications
                              .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
 
             friendsController.IsFriend("sender").Returns(true);
-            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender");
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", true);
 
             Assert.AreEqual("sender", dataStore.HUDs.openChat.Get());
         }
@@ -362,7 +362,7 @@ namespace DCL.Chat.Notifications
             friendsController.GetAllocatedFriendRequest("fr")
                              .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
             friendsController.IsFriend("sender").Returns(false);
-            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender");
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", false);
 
             Assert.AreEqual("fr", dataStore.HUDs.openReceivedFriendRequestDetail.Get());
         }
