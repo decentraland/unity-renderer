@@ -4,6 +4,7 @@ using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL
 {
@@ -57,6 +58,9 @@ namespace DCL
             if (targetObject == currentHoveredObjectInfo.GameObject)
             {
                 ResolveActiveListeners(hit.distance, colliderInfo, typeToUse);
+
+                if (currentHoveredObjectInfo.ActiveListeners.Count == 0)
+                    ResetHoveredObject();
             }
             else
             {
@@ -78,15 +82,21 @@ namespace DCL
         {
             var inactiveListenersCount = currentHoveredObjectInfo.InactiveListeners.Count;
 
-            foreach (var activeListener in currentHoveredObjectInfo.ActiveListeners)
+            var activeListeners = ListPool<IPointerEvent>.Get();
+            activeListeners.AddRange(currentHoveredObjectInfo.ActiveListeners);
+
+            foreach (var activeListener in activeListeners)
             {
                 if (!EventObjectCanBeHovered(typeToUse, activeListener, colliderInfo, distance))
                 {
                     // Deactivate Listener
                     activeListener.SetHoverState(false);
                     currentHoveredObjectInfo.InactiveListeners.Add(activeListener);
+                    currentHoveredObjectInfo.ActiveListeners.Remove(activeListener);
                 }
             }
+
+            ListPool<IPointerEvent>.Release(activeListeners);
 
             var index = 0;
 
@@ -167,11 +177,9 @@ namespace DCL
 
                 OnPointerHoverEnds?.Invoke();
             }
-            else
-            {
-                if (hoverCanvas != null)
-                    hoverCanvas.SetHoverState(false);
-            }
+
+            if (hoverCanvas != null)
+                hoverCanvas.SetHoverState(false);
         }
     }
 }
