@@ -350,10 +350,10 @@ namespace DCL.Social.Friends
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
-                VerifyRequest(request);
+                Assert.IsNull(request);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
-                VerifyRequest(request);
+                Assert.IsNull(request);
             });
 
         [UnityTest]
@@ -423,10 +423,10 @@ namespace DCL.Social.Friends
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
-                VerifyRequest(request);
+                Assert.IsNull(request);
 
                 request = controller.GetAllocatedFriendRequestByUser("receiverId");
-                VerifyRequest(request);
+                Assert.IsNull(request);
             });
 
         [UnityTest]
@@ -459,10 +459,10 @@ namespace DCL.Social.Friends
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
-                VerifyRequest(request);
+                Assert.IsNull(request);
 
                 request = controller.GetAllocatedFriendRequestByUser("senderId");
-                VerifyRequest(request);
+                Assert.IsNull(request);
             });
 
         [UnityTest]
