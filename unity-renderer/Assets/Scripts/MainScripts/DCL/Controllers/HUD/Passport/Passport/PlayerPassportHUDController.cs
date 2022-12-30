@@ -167,7 +167,6 @@ namespace DCL.Social.Passports
             {
                 WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
                 //TODO: integrate ItemType itemType once new lambdas are active
-                //socialAnalytics.SendNftBuy(ownedCollectible, PlayerActionSource.Passport);
                 socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
             }
             else

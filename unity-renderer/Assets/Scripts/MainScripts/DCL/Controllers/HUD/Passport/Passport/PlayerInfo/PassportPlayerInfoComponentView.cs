@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -145,7 +146,8 @@ namespace DCL.Social.Passports
                 this.name.SetText(name);
                 address.SetText("");
             }
-            LayoutRebuilder.ForceRebuildLayoutImmediate(usernameRect);
+
+            Utils.ForceRebuildLayoutImmediate(usernameRect);
 
             nameInOptionsPanel.text = name;
         }
@@ -165,8 +167,10 @@ namespace DCL.Social.Passports
             DisableAllFriendFlowButtons();
             blockedFriendButton.gameObject.SetActive(isBlocked);
 
-            if(!isBlocked)
+            if (!isBlocked)
+            {
                 SetFriendStatus(model.friendshipStatus);
+            }
         }
 
         private void SetPresence(PresenceStatus status)
@@ -197,7 +201,8 @@ namespace DCL.Social.Passports
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
 
-            if(isBlocked) return;
+            if(isBlocked)
+                return;
 
             switch (friendStatus)
             {

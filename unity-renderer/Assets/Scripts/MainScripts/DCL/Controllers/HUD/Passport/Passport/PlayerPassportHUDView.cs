@@ -93,7 +93,7 @@ namespace DCL.Social.Passports
             }
             catch (OperationCanceledException)
             {
-
+                Debug.LogError("Cancelled show passport animation");
             }
         }
 
@@ -118,7 +118,7 @@ namespace DCL.Social.Passports
             }
             catch (OperationCanceledException)
             {
-
+                Debug.LogError("Cancelled show passport animation");
             }
         }
 

@@ -65,29 +65,33 @@ namespace DCL.Social.Passports
         {
             collectiblesToggle.isOn = false;
             aboutToggle.isOn = true;
-            aboutToggle.onValueChanged.AddListener((isActive) =>
-            {
-                aboutPanel.SetActive(isActive);
-                aboutText.color = Color.white;
-                collectiblesText.color = Color.black;
-                aboutToggleOn.SetActive(true);
-                aboutToggleOff.SetActive(false);
-                collectiblesToggleOn.SetActive(false);
-                collectiblesToggleOff.SetActive(true);
-            });
-            collectiblesToggle.onValueChanged.AddListener((isActive) =>
-            {
-                OnClickCollectibles?.Invoke();
-                wearablesPanel.SetActive(isActive);
-                aboutText.color = Color.black;
-                collectiblesText.color = Color.white;
-                aboutToggleOn.SetActive(false);
-                aboutToggleOff.SetActive(true);
-                collectiblesToggleOn.SetActive(true);
-                collectiblesToggleOff.SetActive(false);
-                nftWearablesCarousel.ResetManualCarousel();
-                nftEmotesCarousel.ResetManualCarousel();
-            });
+            aboutToggle.onValueChanged.AddListener(EnableAboutSection);
+            collectiblesToggle.onValueChanged.AddListener(EnableCollectiblesSection);
+        }
+
+        private void EnableAboutSection(bool isActive)
+        {
+            aboutPanel.SetActive(isActive);
+            aboutText.color = Color.white;
+            collectiblesText.color = Color.black;
+            aboutToggleOn.SetActive(true);
+            aboutToggleOff.SetActive(false);
+            collectiblesToggleOn.SetActive(false);
+            collectiblesToggleOff.SetActive(true);
+        }
+
+        private void EnableCollectiblesSection(bool isActive)
+        {
+            OnClickCollectibles?.Invoke();
+            wearablesPanel.SetActive(isActive);
+            aboutText.color = Color.black;
+            collectiblesText.color = Color.white;
+            aboutToggleOn.SetActive(false);
+            aboutToggleOff.SetActive(true);
+            collectiblesToggleOn.SetActive(true);
+            collectiblesToggleOff.SetActive(false);
+            nftWearablesCarousel.ResetManualCarousel();
+            nftEmotesCarousel.ResetManualCarousel();
         }
 
         public void InitializeView()
@@ -141,7 +145,8 @@ namespace DCL.Social.Passports
 
         private void SetLinks(List<string> links)
         {
-            foreach (Transform child in linksContainer.transform) {
+            foreach (Transform child in linksContainer.transform)
+            {
                 Destroy(child.gameObject);
             }
 

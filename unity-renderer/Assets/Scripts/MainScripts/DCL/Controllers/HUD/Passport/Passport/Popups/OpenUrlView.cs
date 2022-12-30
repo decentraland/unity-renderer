@@ -1,11 +1,11 @@
 using DCL.Helpers;
 using DCL.Interface;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OpenUrlView : MonoBehaviour
+public class OpenUrlView : BaseComponentView
 {
-    [SerializeField] internal ShowHideAnimator showHideAnimator;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button continueButton;
     [SerializeField] internal Button cancelButton;
@@ -18,6 +18,10 @@ public class OpenUrlView : MonoBehaviour
         closeButton.onClick.AddListener(() => SetVisibility(false));
         cancelButton.onClick.AddListener(() => SetVisibility(false));
         continueButton.onClick.AddListener(OpenLink);
+    }
+
+    public override void RefreshControl()
+    {
     }
 
     private void OpenLink()
@@ -42,7 +46,6 @@ public class OpenUrlView : MonoBehaviour
             showHideAnimator.gameObject.SetActive(true);
             showHideAnimator.Show();
         }
-
         else
         {
             showHideAnimator.Hide();
