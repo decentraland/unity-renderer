@@ -5,7 +5,7 @@ namespace DCL.Chat.Notifications
 {
     public interface IMainChatNotificationsComponentView
     {
-        public delegate void ClickedNotificationDelegate(string friendRequestId, string userId);
+        public delegate void ClickedNotificationDelegate(string friendRequestId, string userId, bool isAcceptedFromPeer);
 
         event Action<bool> OnResetFade;
         event Action<bool> OnPanelFocus;

@@ -319,8 +319,8 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
-        private void ClickedOnFriendRequest(string friendRequestId, string userId) =>
-            OnClickedFriendRequest?.Invoke(friendRequestId, userId);
+        private void ClickedOnFriendRequest(string friendRequestId, string userId, bool isAcceptedFromPeer) =>
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
 
         private void FocusedOnNotification(bool isInFocus)
         {

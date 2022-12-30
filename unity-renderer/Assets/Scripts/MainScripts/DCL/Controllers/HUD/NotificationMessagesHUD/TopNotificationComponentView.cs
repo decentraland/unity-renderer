@@ -286,12 +286,12 @@ namespace DCL.Chat.Notifications
             OnClickedChatMessage?.Invoke(targetId);
         }
 
-        private void ClickedOnFriendRequestNotification(string friendRequestId, string userId)
+        private void ClickedOnFriendRequestNotification(string friendRequestId, string userId, bool isAcceptedFromPeer)
         {
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedFriendRequest?.Invoke(friendRequestId, userId);
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
         }
 
         public override void Dispose()

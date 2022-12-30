@@ -280,14 +280,14 @@ namespace DCL.Chat.Notifications
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
 
-        private void HandleClickedFriendRequest(string friendRequestId, string userId)
+        private void HandleClickedFriendRequest(string friendRequestId, string userId, bool isAcceptedFromPeer)
         {
             if (string.IsNullOrEmpty(friendRequestId)) return;
 
             FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
             bool isFriend = friendsController.IsFriend(userId);
 
-            if (request != null && !isFriend)
+            if (request != null && !isFriend && !isAcceptedFromPeer)
                 dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
             else if (isFriend)
                 OpenChat(userId);
