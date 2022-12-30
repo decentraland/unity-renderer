@@ -178,9 +178,6 @@ namespace UnityEditor
 
         void DoAlbedoArea(Material material)
         {
-            if (albedoMap == null)
-                return;
-                
             m_MaterialEditor.TexturePropertySingleLine(Styles.albedoText, albedoMap, albedoColor);
             if (((BlendMode)material.GetFloat("_Mode") == BlendMode.Mask))
             {
