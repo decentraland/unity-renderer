@@ -34,7 +34,7 @@ namespace DCLServices.Lambdas.Tests
 
             Environment.Setup(serviceLocator);
             var catalyst = serviceLocator.Get<IServiceProviders>().catalyst;
-            catalyst.Lambdas2Url.Returns(TEST_URL);
+            catalyst.lambdasUrl.Returns(TEST_URL);
         }
 
         [Test]
