@@ -57,7 +57,7 @@ namespace DCL.ECSComponents
                 texture.IsVideoTexture()
             ) : null;
 
-            if (texture.IsVideoTexture())
+            if (texture != null && texture.IsVideoTexture())
             {
                 videoTextureDatas.Add(
                     new InternalVideoMaterial.VideoTextureData(texture.GetVideoTextureId(), ShaderUtils.BaseMap));
@@ -84,19 +84,19 @@ namespace DCL.ECSComponents
                     model.Pbr.BumpTexture.GetFilterMode()
                 ) : null;
 
-                if (model.Pbr.AlphaTexture.IsVideoTexture())
+                if (model.Pbr.AlphaTexture != null && model.Pbr.AlphaTexture.IsVideoTexture())
                 {
                     videoTextureDatas.Add(
                         new InternalVideoMaterial.VideoTextureData(model.Pbr.AlphaTexture.GetVideoTextureId(), ShaderUtils.AlphaTexture));
                 }
 
-                if (model.Pbr.EmissiveTexture.IsVideoTexture())
+                if (model.Pbr.EmissiveTexture != null && model.Pbr.EmissiveTexture.IsVideoTexture())
                 {
                     videoTextureDatas.Add(
                         new InternalVideoMaterial.VideoTextureData(model.Pbr.EmissiveTexture.GetVideoTextureId(), ShaderUtils.EmissionMap));
                 }
 
-                if (model.Pbr.BumpTexture.IsVideoTexture())
+                if (model.Pbr.BumpTexture != null && model.Pbr.BumpTexture.IsVideoTexture())
                 {
                     videoTextureDatas.Add(
                         new InternalVideoMaterial.VideoTextureData(model.Pbr.BumpTexture.GetVideoTextureId(), ShaderUtils.BumpMap));
