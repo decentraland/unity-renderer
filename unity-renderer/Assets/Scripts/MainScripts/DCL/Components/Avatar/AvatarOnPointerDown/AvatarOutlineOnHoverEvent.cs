@@ -9,7 +9,7 @@ namespace DCL.Components
     /// Complementary class to detect avatar outlining only,
     /// It does not live on its own and should coexist with `AvatarOnPointerDown`
     /// </summary>
-    public class AvatarOutlineOnHoverEvent : MonoBehaviour, IPointerEvent, IPoolLifecycleHandler
+    public class AvatarOutlineOnHoverEvent : MonoBehaviour, IUnlockedCursorInputEvent, IPoolLifecycleHandler
     {
         private IAvatar avatar;
 

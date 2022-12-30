@@ -80,7 +80,7 @@ namespace DCL
                 if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
                     return;
 
-                typeToUse = typeof(IAvatarOnPointerDown);
+                typeToUse = typeof(IUnlockedCursorInputEvent);
             }
 
             IWorldState worldState = Environment.i.world.state;
