@@ -14,6 +14,8 @@ namespace DCL.ECS7
         private readonly InternalECSComponents internalEcsComponents;
         private readonly CrdtExecutorsManager crdtExecutorsManager;
 
+        internal readonly ECSComponentsManager componentsManager;
+
         public ECS7Plugin()
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
@@ -23,7 +25,7 @@ namespace DCL.ECS7
             DataStore.i.rpc.context.crdt.CrdtExecutors = crdtExecutors;
 
             var componentsFactory = new ECSComponentsFactory();
-            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory);
 
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
