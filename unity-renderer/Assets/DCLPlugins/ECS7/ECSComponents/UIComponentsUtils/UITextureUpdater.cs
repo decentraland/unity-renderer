@@ -7,7 +7,8 @@ namespace DCL.ECSComponents.Utils
 {
     public struct UITextureUpdater
     {
-        private Texture lastTexture;
+        private TextureUnion lastTexture;
+
         private AssetPromise_Texture lastPromise;
         private readonly IUITextureConsumer target;
         private readonly AssetPromiseKeeper_Texture texturePromiseKeeper;
@@ -20,7 +21,7 @@ namespace DCL.ECSComponents.Utils
             lastTexture = null;
         }
 
-        public void Update([CanBeNull] Texture texture, IParcelScene parcelScene)
+        public void Update([CanBeNull] TextureUnion texture, IParcelScene parcelScene)
         {
             if (Equals(lastTexture, texture))
                 return;

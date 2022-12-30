@@ -28,16 +28,16 @@ namespace DCL.ECSComponents {
             "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxh",
             "bmQvY29tbW9uL2NvbG9ycy5wcm90bxohZGVjZW50cmFsYW5kL2NvbW1vbi90",
             "ZXh0dXJlLnByb3RvGiVkZWNlbnRyYWxhbmQvY29tbW9uL2JvcmRlcl9yZWN0",
-            "LnByb3RvIrMCCg5QQlVpQmFja2dyb3VuZBIvCgVjb2xvchgBIAEoCzIbLmRl",
-            "Y2VudHJhbGFuZC5jb21tb24uQ29sb3I0SACIAQESMgoHdGV4dHVyZRgCIAEo",
-            "CzIcLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZUgBiAEBEkgKDHRleHR1",
-            "cmVfbW9kZRgDIAEoDjIyLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5C",
-            "YWNrZ3JvdW5kVGV4dHVyZU1vZGUSPAoOdGV4dHVyZV9zbGljZXMYBCABKAsy",
-            "Hy5kZWNlbnRyYWxhbmQuY29tbW9uLkJvcmRlclJlY3RIAogBARILCgN1dnMY",
-            "BSADKAJCCAoGX2NvbG9yQgoKCF90ZXh0dXJlQhEKD190ZXh0dXJlX3NsaWNl",
-            "cypBChVCYWNrZ3JvdW5kVGV4dHVyZU1vZGUSDwoLTklORV9TTElDRVMQABIK",
-            "CgZDRU5URVIQARILCgdTVFJFVENIEAJCFKoCEURDTC5FQ1NDb21wb25lbnRz",
-            "YgZwcm90bzM="));
+            "LnByb3RvIrgCCg5QQlVpQmFja2dyb3VuZBIvCgVjb2xvchgBIAEoCzIbLmRl",
+            "Y2VudHJhbGFuZC5jb21tb24uQ29sb3I0SACIAQESNwoHdGV4dHVyZRgCIAEo",
+            "CzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSAGIAQESSAoM",
+            "dGV4dHVyZV9tb2RlGAMgASgOMjIuZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
+            "bnRzLkJhY2tncm91bmRUZXh0dXJlTW9kZRI8Cg50ZXh0dXJlX3NsaWNlcxgE",
+            "IAEoCzIfLmRlY2VudHJhbGFuZC5jb21tb24uQm9yZGVyUmVjdEgCiAEBEgsK",
+            "A3V2cxgFIAMoAkIICgZfY29sb3JCCgoIX3RleHR1cmVCEQoPX3RleHR1cmVf",
+            "c2xpY2VzKkEKFUJhY2tncm91bmRUZXh0dXJlTW9kZRIPCgtOSU5FX1NMSUNF",
+            "UxAAEgoKBkNFTlRFUhABEgsKB1NUUkVUQ0gQAkIUqgIRRENMLkVDU0NvbXBv",
+            "bmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, global::Decentraland.Common.BorderRectReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.BackgroundTextureMode), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -137,10 +137,10 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "texture" field.</summary>
     public const int TextureFieldNumber = 2;
-    private global::Decentraland.Common.Texture texture_;
+    private global::Decentraland.Common.TextureUnion texture_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Texture Texture {
+    public global::Decentraland.Common.TextureUnion Texture {
       get { return texture_; }
       set {
         texture_ = value;
@@ -325,7 +325,7 @@ namespace DCL.ECSComponents {
       }
       if (other.texture_ != null) {
         if (texture_ == null) {
-          Texture = new global::Decentraland.Common.Texture();
+          Texture = new global::Decentraland.Common.TextureUnion();
         }
         Texture.MergeFrom(other.Texture);
       }
@@ -363,7 +363,7 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (texture_ == null) {
-              Texture = new global::Decentraland.Common.Texture();
+              Texture = new global::Decentraland.Common.TextureUnion();
             }
             input.ReadMessage(Texture);
             break;
@@ -408,7 +408,7 @@ namespace DCL.ECSComponents {
           }
           case 18: {
             if (texture_ == null) {
-              Texture = new global::Decentraland.Common.Texture();
+              Texture = new global::Decentraland.Common.TextureUnion();
             }
             input.ReadMessage(Texture);
             break;
