@@ -83,9 +83,9 @@ Shader "Hidden/DCL/OutlineGPUSkinningMaskPass"
             float4 _AvatarMap12_TexelSize;
             TEXTURE2D(_AvatarMap12);
             SAMPLER(sampler_AvatarMap12);
-
-            #include "Assets/Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
-            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
+            
+            #include "./../../Shaders/Toon/Compiled/GPUSkinning.hlsl"
+            #include "./../../Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             struct Attributes
             {
