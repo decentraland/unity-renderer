@@ -297,7 +297,6 @@ namespace DCL.Social.Friends
             Assert.AreEqual("ownId", request.To);
             Assert.AreEqual(100, request.Timestamp);
             Assert.AreEqual("hey!", request.MessageBody);
-            Assert.AreEqual(FriendRequestState.Pending, request.State);
         }
 
         [Test]
@@ -319,7 +318,6 @@ namespace DCL.Social.Friends
             Assert.AreEqual("ownId", request.To);
             Assert.AreEqual(100, request.Timestamp);
             Assert.AreEqual("hey!", request.MessageBody);
-            Assert.AreEqual(FriendRequestState.Pending, request.State);
         }
 
         [UnityTest]
@@ -333,7 +331,6 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("receiverId", request.To);
                     Assert.AreEqual(100, request.Timestamp);
                     Assert.AreEqual("bleh", request.MessageBody);
-                    Assert.AreEqual(FriendRequestState.Cancelled, request.State);
                 }
 
                 apiBridge.CancelRequestAsync("fr")
@@ -370,7 +367,6 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("receiverId", request.To);
                     Assert.AreEqual(100, request.Timestamp);
                     Assert.AreEqual("bleh", request.MessageBody);
-                    Assert.AreEqual(FriendRequestState.Pending, request.State);
                 }
 
                 apiBridge.RequestFriendshipAsync("receiverId", "bleh")
@@ -408,7 +404,6 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("receiverId", request.To);
                     Assert.AreEqual(100, request.Timestamp);
                     Assert.AreEqual("bleh", request.MessageBody);
-                    Assert.AreEqual(FriendRequestState.Accepted, request.State);
                 }
 
                 apiBridge.AcceptFriendshipAsync("fr")
@@ -445,7 +440,6 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("receiverId", request.To);
                     Assert.AreEqual(100, request.Timestamp);
                     Assert.AreEqual("bleh", request.MessageBody);
-                    Assert.AreEqual(FriendRequestState.Rejected, request.State);
                 }
 
                 apiBridge.RejectFriendshipAsync("fr")
@@ -482,7 +476,6 @@ namespace DCL.Social.Friends
                     Assert.AreEqual(payload.to, request.To);
                     Assert.AreEqual(payload.timestamp, request.Timestamp);
                     Assert.AreEqual(payload.messageBody, request.MessageBody);
-                    Assert.AreEqual(FriendRequestState.Pending, request.State);
                 }
 
                 FriendRequestPayload[] requestedTo = {

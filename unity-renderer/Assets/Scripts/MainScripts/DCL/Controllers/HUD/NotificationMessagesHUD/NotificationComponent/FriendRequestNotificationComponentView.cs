@@ -28,7 +28,8 @@ namespace DCL.Chat.Notifications
         [Header("Configuration")]
         [SerializeField] internal FriendRequestNotificationComponentModel model;
 
-        public event Action<string> OnClickedNotification;
+        public delegate void ClickedNotificationDelegate(string friendRequestId, string userId);
+        public event ClickedNotificationDelegate OnClickedNotification;
         private float startingXPosition;
 
         public void Configure(FriendRequestNotificationComponentModel newModel)
@@ -40,7 +41,7 @@ namespace DCL.Chat.Notifications
         public override void Awake()
         {
             base.Awake();
-            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.FriendRequestId));
+            button?.onClick.AddListener(() => OnClickedNotification?.Invoke(model.FriendRequestId, model.UserId));
 
             startingXPosition = messageContainerTransform.anchoredPosition.x;
             RefreshControl();

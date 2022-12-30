@@ -92,7 +92,7 @@ namespace DCl.Social.Friends
         {
             friendsController.RequestFriendshipAsync(OTHER_USER_NAME, "")
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "", FriendRequestState.Pending)));
+                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
@@ -108,7 +108,7 @@ namespace DCl.Social.Friends
         {
             friendsController.RequestFriendshipAsync(OTHER_USER_ID, "")
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "", FriendRequestState.Pending)));
+                                  new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
@@ -156,7 +156,7 @@ namespace DCl.Social.Friends
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message", FriendRequestState.Pending) }));
+                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
 
@@ -172,7 +172,7 @@ namespace DCl.Social.Friends
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message", FriendRequestState.Pending) }));
+                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
 
@@ -211,7 +211,7 @@ namespace DCl.Social.Friends
         public void UpdateUserStatusWhenRequestSent()
         {
             friendsController.OnFriendRequestReceived +=
-                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test", FriendRequestState.Pending));
+                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
@@ -221,7 +221,7 @@ namespace DCl.Social.Friends
         public void UpdateUserStatusWhenRequestReceived()
         {
             friendsController.OnFriendRequestReceived +=
-                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test", FriendRequestState.Pending));
+                Raise.Event<Action<FriendRequest>>(new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test"));
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
@@ -276,7 +276,7 @@ namespace DCl.Social.Friends
             _ = friendsController.IsInitialized.Returns(true);
             _ = friendsController
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
-                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message", FriendRequestState.Pending) }));
+                .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
 
@@ -549,7 +549,7 @@ namespace DCl.Social.Friends
 
             friendsController.GetAllocatedFriendRequestByUser(OTHER_USER_ID)
                              .Returns(new FriendRequest(FRIEND_REQUEST_ID,
-                                  100, OWN_USER_ID, OTHER_USER_ID, "hey", FriendRequestState.Pending));
+                                  100, OWN_USER_ID, OTHER_USER_ID, "hey"));
 
             view.OnFriendRequestOpened += Raise.Event<Action<string>>(OTHER_USER_ID);
 

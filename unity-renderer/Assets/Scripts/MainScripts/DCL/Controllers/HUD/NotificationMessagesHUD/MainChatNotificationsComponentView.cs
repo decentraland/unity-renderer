@@ -25,7 +25,7 @@ namespace DCL.Chat.Notifications
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
         public event Action<string> OnClickedChatMessage;
-        public event Action<string> OnClickedFriendRequest;
+        public event IMainChatNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
 
@@ -319,8 +319,8 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
-        private void ClickedOnFriendRequest(string friendRequestId) =>
-            OnClickedFriendRequest?.Invoke(friendRequestId);
+        private void ClickedOnFriendRequest(string friendRequestId, string userId) =>
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId);
 
         private void FocusedOnNotification(bool isInFocus)
         {

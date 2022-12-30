@@ -30,7 +30,7 @@ namespace DCL.Social.Friends
 
             friendsController = Substitute.For<IFriendsController>();
             friendsController.GetAllocatedFriendRequest(FRIEND_REQ_ID)
-                             .Returns(new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey", FriendRequestState.Pending));
+                             .Returns(new FriendRequest(FRIEND_REQ_ID, 100, OWN_ID, RECIPIENT_ID, "hey"));
 
             IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
             var recipientProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -94,8 +94,7 @@ namespace DCL.Social.Friends
         {
             friendsController.CancelRequestAsync(FRIEND_REQ_ID)
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah",
-                                      FriendRequestState.Cancelled)));
+                                  new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah")));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 

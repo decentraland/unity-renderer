@@ -22,7 +22,7 @@ public class FriendRequestNotificationComponentViewTest
     {
         // Arrange
         bool isClicked = false;
-        friendRequestNotificationComponent.OnClickedNotification += (_) => isClicked = true;
+        friendRequestNotificationComponent.OnClickedNotification += (_, __) => isClicked = true;
 
         // Act
         friendRequestNotificationComponent.button.onClick.Invoke();

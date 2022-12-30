@@ -5,10 +5,12 @@ namespace DCL.Chat.Notifications
 {
     public interface IMainChatNotificationsComponentView
     {
+        public delegate void ClickedNotificationDelegate(string friendRequestId, string userId);
+
         event Action<bool> OnResetFade;
         event Action<bool> OnPanelFocus;
         event Action<string> OnClickedChatMessage;
-        event Action<string> OnClickedFriendRequest;
+        event ClickedNotificationDelegate OnClickedFriendRequest;
 
         Transform GetPanelTransform();
         void AddNewChatNotification(PrivateChatMessageNotificationModel model);

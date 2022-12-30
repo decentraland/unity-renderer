@@ -89,8 +89,7 @@ namespace DCL.Social.Friends
                 friendRequestPayload.timestamp,
                 friendRequestPayload.from,
                 friendRequestPayload.to,
-                friendRequestPayload.messageBody,
-                FriendRequestState.Pending);
+                friendRequestPayload.messageBody);
 
             friendRequests[friendRequest.FriendRequestId] = friendRequest;
 
@@ -106,14 +105,14 @@ namespace DCL.Social.Friends
             apiBridge.RequestFriendship(friendUserId);
 
         public Dictionary<string, UserStatus> GetAllocatedFriends() =>
-            new Dictionary<string, UserStatus>(friends);
+            new (friends);
 
         public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId)
         {
             AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId);
             FriendRequestPayload requestPayload = payload.FriendRequest;
-            var request = ToFriendRequest(requestPayload, FriendRequestState.Accepted);
-            friendRequests[request.FriendRequestId] = request;
+            var request = ToFriendRequest(requestPayload);
+            friendRequests.Remove(request.FriendRequestId);
 
             await UniTask.SwitchToMainThread();
 
@@ -130,8 +129,8 @@ namespace DCL.Social.Friends
         {
             RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId);
             FriendRequestPayload requestPayload = payload.FriendRequestPayload;
-            var request = ToFriendRequest(requestPayload, FriendRequestState.Rejected);
-            friendRequests[request.FriendRequestId] = request;
+            var request = ToFriendRequest(requestPayload);
+            friendRequests.Remove(request.FriendRequestId);
 
             await UniTask.SwitchToMainThread();
 
@@ -170,8 +169,7 @@ namespace DCL.Social.Friends
 
             foreach (var friendRequest in payload.requestedFrom)
             {
-                // TODO (NEW FRIEND REQUESTS): this may lead to inconsistencies due the lack of support of the state in the backend
-                var request = ToFriendRequest(friendRequest, FriendRequestState.Pending);
+                var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
                 receivedFriendRequestsToAdd.Add(request);
 
@@ -181,8 +179,7 @@ namespace DCL.Social.Friends
 
             foreach (var friendRequest in payload.requestedTo)
             {
-                // TODO (NEW FRIEND REQUESTS): this may lead to inconsistencies due the lack of support of the state in the backend
-                var request = ToFriendRequest(friendRequest, FriendRequestState.Pending);
+                var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
                 receivedFriendRequestsToAdd.Add(request);
 
@@ -202,9 +199,21 @@ namespace DCL.Social.Friends
         public FriendRequest GetAllocatedFriendRequest(string friendRequestId) =>
             friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
 
-        public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
-            friendRequests.Values.FirstOrDefault(request => (request.From == userId || request.To == userId)
-                                                            && request.State == FriendRequestState.Pending);
+        public FriendRequest GetAllocatedFriendRequestByUser(string userId)
+        {
+            long max = long.MinValue;
+            FriendRequest result = null;
+
+            foreach (var request in friendRequests.Values)
+            {
+                if (request.From != userId && request.To != userId) continue;
+                if (request.Timestamp <= max) continue;
+                result = request;
+                max = request.Timestamp;
+            }
+
+            return result;
+        }
 
         public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
         {
@@ -213,7 +222,7 @@ namespace DCL.Social.Friends
             if (request != null)
             {
                 await apiBridge.CancelRequestAsync(request.FriendRequestId);
-                request.State = FriendRequestState.Cancelled;
+                friendRequests.Remove(request.FriendRequestId);
 
                 await UniTask.SwitchToMainThread();
 
@@ -223,14 +232,14 @@ namespace DCL.Social.Friends
                 return request;
             }
 
-            // TODO (FRIEND REQUESTS): this operation should return a valid friend request to be able to return & cache it correctly
+            // TODO (FRIEND REQUESTS): this operation is deprecated and should be removed after the release of improved friend requests
             await apiBridge.CancelRequestByUserIdAsync(friendUserId);
             await UniTask.SwitchToMainThread();
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendUserId });
 
-            return new FriendRequest("", 0, "", friendUserId, "", FriendRequestState.Cancelled);
+            return new FriendRequest("", 0, "", friendUserId, "");
         }
 
         public void CancelRequestByUserId(string friendUserId) =>
@@ -239,9 +248,9 @@ namespace DCL.Social.Friends
         public async UniTask<FriendRequest> CancelRequestAsync(string friendRequestId)
         {
             CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId);
-            var friendRequest = ToFriendRequest(payload.friendRequest, FriendRequestState.Cancelled);
+            var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
-            friendRequests[friendRequestId] = friendRequest;
+            friendRequests.Remove(friendRequestId);
 
             await UniTask.SwitchToMainThread();
 
@@ -312,7 +321,7 @@ namespace DCL.Social.Friends
 
         private void ReceiveFriendRequest(FriendRequestPayload msg)
         {
-            FriendRequest request = ToFriendRequest(msg, FriendRequestState.Pending);
+            FriendRequest request = ToFriendRequest(msg);
             friendRequests[msg.friendRequestId] = request;
             OnFriendRequestReceived?.Invoke(request);
         }
@@ -325,17 +334,6 @@ namespace DCL.Social.Friends
 
             if (msg.action == FriendshipAction.APPROVED)
                 OnSentFriendRequestApproved?.Invoke(friendRequest);
-
-            if (friendRequest != null)
-            {
-                friendRequest.State = msg.action switch
-                                      {
-                                          FriendshipAction.APPROVED => FriendRequestState.Accepted,
-                                          FriendshipAction.REJECTED => FriendRequestState.Rejected,
-                                          FriendshipAction.CANCELLED => FriendRequestState.Cancelled,
-                                          _ => friendRequest.State
-                                      };
-            }
         }
 
         private void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
@@ -398,14 +396,13 @@ namespace DCL.Social.Friends
             }
         }
 
-        private FriendRequest ToFriendRequest(FriendRequestPayload friendRequest, FriendRequestState state) =>
+        private FriendRequest ToFriendRequest(FriendRequestPayload friendRequest) =>
             new FriendRequest(
                 friendRequest.friendRequestId,
                 friendRequest.timestamp,
                 friendRequest.from,
                 friendRequest.to,
-                friendRequest.messageBody,
-                state);
+                friendRequest.messageBody);
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         private void AddFriendRequests(AddFriendRequestsPayload msg)

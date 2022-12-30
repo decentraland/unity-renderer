@@ -15,7 +15,7 @@ namespace DCL.Chat.Notifications
         private const int NEW_NOTIFICATION_DELAY = 5000;
 
         public event Action<string> OnClickedChatMessage;
-        public event Action<string> OnClickedFriendRequest;
+        public event ITopNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
 
         [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
         [SerializeField] private FriendRequestNotificationComponentView friendRequestNotificationComponentView;
@@ -286,12 +286,12 @@ namespace DCL.Chat.Notifications
             OnClickedChatMessage?.Invoke(targetId);
         }
 
-        private void ClickedOnFriendRequestNotification(string friendRequestId)
+        private void ClickedOnFriendRequestNotification(string friendRequestId, string userId)
         {
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedFriendRequest?.Invoke(friendRequestId);
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId);
         }
 
         public override void Dispose()
