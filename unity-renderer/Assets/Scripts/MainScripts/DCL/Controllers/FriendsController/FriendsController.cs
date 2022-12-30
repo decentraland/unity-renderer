@@ -203,7 +203,8 @@ namespace DCL.Social.Friends
             friendRequests.ContainsKey(friendRequestId) ? friendRequests[friendRequestId] : null;
 
         public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
-            friendRequests.Values.FirstOrDefault(request => request.From == userId || request.To == userId);
+            friendRequests.Values.FirstOrDefault(request => (request.From == userId || request.To == userId)
+                                                            && request.State == FriendRequestState.Pending);
 
         public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
         {
