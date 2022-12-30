@@ -4,6 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.ECSComponents;
+using DCL.ECSComponents.UIText;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
