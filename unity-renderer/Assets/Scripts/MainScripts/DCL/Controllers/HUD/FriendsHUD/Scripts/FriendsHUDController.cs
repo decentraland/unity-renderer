@@ -524,7 +524,6 @@ namespace DCL.Social.Friends
 
         private void DisplayFriendsIfAnyIsLoaded()
         {
-            if (View.FriendCount > 0) return;
             if (lastSkipForFriends > 0) return;
             DisplayMoreFriends();
         }
@@ -617,7 +616,6 @@ namespace DCL.Social.Friends
 
         private void DisplayFriendRequestsIfAnyIsLoaded()
         {
-            if (View.FriendRequestCount > 0) return;
             if (lastSkipForFriendRequests > 0) return;
             DisplayMoreFriendRequestsAsync().Forget();
         }
