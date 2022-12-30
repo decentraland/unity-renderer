@@ -19,7 +19,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.6.6"
       },
-      "hash": "daf38ff52e9a685a969c0dd2d890fb6e11e835cf"
+      "hash": "fdbba5350fda2da9708aafbcb9336c59cb2b6a32"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",
@@ -53,10 +53,8 @@
       "version": "https://github.com/decentraland/unity-shared-dependencies.git",
       "depth": 0,
       "source": "git",
-      "dependencies": {
-        "com.atteneder.gltfast": "5.0.0-exp.1"
-      },
-      "hash": "6a549b969fd6d87577b6a8c18a1d776d28194ed2"
+      "dependencies": {},
+      "hash": "5577bd123883e2fa96f51b8d534abd75bad0535f"
     },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",

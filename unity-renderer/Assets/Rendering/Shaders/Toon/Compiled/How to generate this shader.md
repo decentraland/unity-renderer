@@ -122,6 +122,13 @@ Do the same with the following files:
 
 - `ShadowCasterPass.hlsl`
 
+
+## Apply Outliner pass
+Add to both subshaders the outliner pass, you can find it in `OutlinerPass.txt`. 
+This allows the render feature to reuse the Avatar material and avoid copying the huge matrices for GPU Skinning.
+If not present, the outliner will fallback to a compatible material at a performance cost 
+
+
 ---
 ## You're done!.
 

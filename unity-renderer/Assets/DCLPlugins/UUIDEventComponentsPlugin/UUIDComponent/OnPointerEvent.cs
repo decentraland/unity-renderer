@@ -27,7 +27,7 @@ namespace DCL.Components
             this.entity = entity;
             eventColliders.Initialize(entity);
         }
-        
+
         public void UpdateCollidersEnabledBasedOnRenderers(IDCLEntity entity)
         {
             this.entity = entity;
@@ -115,7 +115,7 @@ namespace DCL.Components
 
             entity.OnShapeUpdated -= SetEventColliders;
             entity.OnShapeUpdated += SetEventColliders;
-            
+
             DataStore.i.sceneBoundariesChecker.Add(entity,this);
         }
 
@@ -176,14 +176,14 @@ namespace DCL.Components
                 entity.OnShapeUpdated -= SetEventColliders;
 
             DataStore.i.sceneBoundariesChecker.Remove(entity,this);
-            
+
             pointerEventHandler.Dispose();
         }
 
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
         }
-        
+
         public virtual PointerInputEventType GetEventType()
         {
             return PointerInputEventType.NONE;
