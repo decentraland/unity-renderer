@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 582302131, guid: 7f7ea26e3243148e5ab9a7c58391af93, type: 3}
   m_Name: SentryCliOptions
   m_EditorClassIdentifier: 
-  <UploadSymbols>k__BackingField: 1
+  <UploadSymbols>k__BackingField: 0
   <UploadDevelopmentSymbols>k__BackingField: 0
   <UploadSources>k__BackingField: 0
   <UrlOverride>k__BackingField: 
-  <Auth>k__BackingField: b0c0fd6550a34ce3bae6a40a6d742c6d7bc9ed30215849baa9683a2c7acda1bb
+  <Auth>k__BackingField: 
   <Organization>k__BackingField: decentraland
   <Project>k__BackingField: unity-renderer
