@@ -46,6 +46,7 @@ namespace DCL.ECSComponents
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
+                    assignedMaterials = new List<InternalVideoPlayer.MaterialAssigned>(),
                 });
             }
 
