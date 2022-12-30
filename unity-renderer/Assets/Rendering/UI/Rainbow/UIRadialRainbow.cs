@@ -35,7 +35,7 @@ public class UIRadialRainbow : MonoBehaviour
     {
         if(targetMat)
         {
-            SetValues();
+            // SetValues();
         }
         
     }

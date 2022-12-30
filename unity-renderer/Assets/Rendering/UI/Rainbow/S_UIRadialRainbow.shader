@@ -20,6 +20,7 @@ Shader "Unlit/S_UIRadialRainbow"
         _GradientPositions02("GradientPositions02", Vector) = (0.571, 0.714, 0.857, 1)
         _ColorAmount("ColorAmount", Int) = 4
         _UseTexture("UseTexture", Int) = 0
+        [NoScaleOffset]_MainTex("MainTex", 2D) = "white" {}
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -237,6 +238,7 @@ float4 _GradientPositions01;
 float4 _GradientPositions02;
 float _ColorAmount;
 float _UseTexture;
+float4 _MainTex_TexelSize;
 CBUFFER_END
 
 // Object and Global properties
@@ -245,6 +247,7 @@ TEXTURE2D(_Mask);
 SAMPLER(sampler_Mask);
 TEXTURE2D(_Ramp);
 SAMPLER(sampler_Ramp);
+TEXTURE2D(_MainTex);
 
 // Graph Functions
 
