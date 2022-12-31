@@ -90,7 +90,9 @@ jobs:
       - run:
           name: Update sentry params
           command: |
-            node inject-params.js
+            cd scripts
+            npm install
+            npm run inject-sentry-params
       - save_cache:
           name: Store large files in cache
           key: git-lfs-{{ .Branch }}
