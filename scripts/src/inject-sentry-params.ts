@@ -9,7 +9,7 @@ async function main() {
   // Inject sentry environment parameters
 
   const fileToEdit =
-    'unity-renderer/Assets/Resources/Sentry/SentryOptions.asset'
+    '../unity-renderer/Assets/Resources/Sentry/SentryOptions.asset'
   const fileContents = fs.readFileSync(fileToEdit).toString()
 
   let rendererEnvironment = 'editor'
@@ -50,7 +50,7 @@ async function main() {
   }
 
   const cliFileToEdit =
-    'unity-renderer/Assets/Plugins/Sentry/SentryCliOptions.asset'
+    '../unity-renderer/Assets/Plugins/Sentry/SentryCliOptions.asset'
   const cliFileContents = fs.readFileSync(cliFileToEdit).toString()
 
   for (const key in cliSearchParams) {
