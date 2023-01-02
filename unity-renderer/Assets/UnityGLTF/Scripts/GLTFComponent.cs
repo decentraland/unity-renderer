@@ -33,26 +33,19 @@ namespace UnityGLTF
             public bool forceGPUOnlyMesh = true;
         }
 
-        public string GLTFUri = null;
-        public string idPrefix = null;
+        public string GLTFUri;
+        public string idPrefix;
 
-        public bool UseStream = false;
         public bool UseVisualFeedback = true;
         private bool addMaterialsToPersistentCaching = true;
 
         public int MaximumLod = 300;
-        public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
         private IThrottlingCounter throttlingCounter;
 
         public bool InitialVisibility
         {
-            get
-            {
-                return initialVisibility;
-            }
-
             set
             {
                 initialVisibility = value;
@@ -199,7 +192,7 @@ namespace UnityGLTF
             }
         }
 
-        private void IncrementDownloadCount()
+        private static void IncrementDownloadCount()
         {
             downloadingCount++;
             OnDownloadingProgressUpdate?.Invoke();
@@ -303,7 +296,7 @@ namespace UnityGLTF
                     Destroy(this);
                 }
             }
-            else { Debug.Log("couldn't load GLTF because url is empty"); }
+            else Debug.Log("couldn't load GLTF because url is empty");
         }
 
         private void OverrideShaders()
@@ -353,28 +346,19 @@ namespace UnityGLTF
             downloadQueueHandler.Queue(this);
         }
 
-        public void Load(string url)
-        {
-            throw new NotImplementedException();
-        }
+        public void Load(string url) { throw new NotImplementedException(); }
 
-        public void SetPrioritized()
-        {
+        public void SetPrioritized() =>
             prioritizeDownload = true;
-        }
 
         private long animationsEstimatedSize;
         private long meshesEstimatedSize;
 
-        public long GetAnimationClipMemorySize()
-        {
-            return animationsEstimatedSize;
-        }
+        public long GetAnimationClipMemorySize() =>
+            animationsEstimatedSize;
 
-        public long GetMeshesMemorySize()
-        {
-            return meshesEstimatedSize;
-        }
+        public long GetMeshesMemorySize() =>
+            meshesEstimatedSize;
 
         private void OnDestroy()
         {
@@ -409,10 +393,8 @@ namespace UnityGLTF
             state = State.NONE;
         }
 
-        bool IDownloadQueueElement.ShouldPrioritizeDownload()
-        {
-            return prioritizeDownload;
-        }
+        bool IDownloadQueueElement.ShouldPrioritizeDownload() =>
+            prioritizeDownload;
 
         bool IDownloadQueueElement.ShouldForceDownload()
         {
