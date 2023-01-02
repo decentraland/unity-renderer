@@ -12,9 +12,17 @@ public class ItemToggleContainer : MonoBehaviour
     [SerializeField] private NFTSkinFactory skinFactory;
     [SerializeField] private RectTransform rectTransform;
 
+    [SerializeField] private GridLayoutGroup layout;
+
     private readonly List<ItemToggle> items = new ();
 
     private int maxItems;
+
+    public void SetLayoutConstraint(bool isFlexible)
+    {
+        layout.constraint = isFlexible ? GridLayoutGroup.Constraint.Flexible : GridLayoutGroup.Constraint.FixedRowCount;
+        layout.constraintCount = 3;
+    }
 
     public void Rebuild(int newMaxItems)
     {
@@ -32,7 +40,7 @@ public class ItemToggleContainer : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
-    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings, bool isRefresh, CancellationToken token)
+    public async UniTask<ItemToggle> LoadItemAsync(int index, WearableSettings wearableSettings, CancellationToken token)
     {
         var item = wearableSettings.Item;
 

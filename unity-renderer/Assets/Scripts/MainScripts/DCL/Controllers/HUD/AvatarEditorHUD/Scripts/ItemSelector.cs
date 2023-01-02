@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +16,8 @@ public class ItemSelector : MonoBehaviour
     private const int MIN_SCREEN_SIZE = 200;
     private const int TOTAL_ROWS_OF_ITEMS = 3;
     private const int MIN_AMOUNT_OF_COLUMNS = 3;
+    private const int CELL_SIZE = 130;
+    private const float LAYOUT_X_SPACE = 32f;
 
     [SerializeField] internal UIPageSelector pageSelector;
     [SerializeField] internal ItemToggleContainer itemToggleContainer;
@@ -92,16 +93,16 @@ public class ItemSelector : MonoBehaviour
     private static int CalculateColumnsAmount(Rect rect)
     {
         float width = Mathf.Max(rect.width, MIN_SCREEN_SIZE);
-        float itemAndSpaceSize = 130 + 32f;
 
-        return Mathf.Max(Mathf.CeilToInt(width / itemAndSpaceSize), MIN_AMOUNT_OF_COLUMNS);
+        return Mathf.Max(Mathf.CeilToInt(width / (CELL_SIZE + LAYOUT_X_SPACE)), MIN_AMOUNT_OF_COLUMNS);
     }
 
-    private async UniTask SetupWearablePagination(CancellationToken token, bool isRefresh = false, bool forceRebuild = false)
+    private async UniTask SetupWearablePagination(CancellationToken token, bool forceRebuild = false)
     {
         if (isActiveAndEnabled || forceRebuild || EnvironmentSettings.RUNNING_TESTS)
         {
-            await UpdateWearableListAsync(lastPage, token, isRefresh);
+            itemToggleContainer.SetLayoutConstraint(availableWearables.Count < (lastPage + 1) * maxVisibleWearables);
+            await UpdateWearableListAsync(lastPage, token);
             itemToggleContainer.Rebuild(maxVisibleWearables);
 
             if (pageSelector != null)
@@ -121,7 +122,7 @@ public class ItemSelector : MonoBehaviour
         UpdateWearableListAsync(page, cancellationTokenSource.Token).Forget();
     }
 
-    private async UniTask UpdateWearableListAsync(int page, CancellationToken token, bool isRefresh = false)
+    private async UniTask UpdateWearableListAsync(int page, CancellationToken token)
     {
         lastPage = page;
 
@@ -136,7 +137,7 @@ public class ItemSelector : MonoBehaviour
             int wearableIndex = baseIndex + itemToggleIndex;
 
             if (wearableIndex < availableWearables.Count)
-                await ShowItem(availableWearables[wearableIndex], itemToggleIndex, token, isRefresh);
+                await ShowItem(availableWearables[wearableIndex], itemToggleIndex, token);
             else
                 itemToggleContainer.HideItem(itemToggleIndex);
         }
@@ -144,7 +145,7 @@ public class ItemSelector : MonoBehaviour
         currentItemToggles = new Dictionary<string, ItemToggle>(newItemToggles);
     }
 
-    private async UniTask ShowItem(WearableSettings wearableSettings, int itemToggleIndex, CancellationToken token, bool isRefresh)
+    private async UniTask ShowItem(WearableSettings wearableSettings, int itemToggleIndex, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
         WearableItem item = wearableSettings.Item;
@@ -153,7 +154,7 @@ public class ItemSelector : MonoBehaviour
             newItemToggles[item.id] = currentItemToggles[item.id];
         else
         {
-            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings, isRefresh, token);
+            ItemToggle itemToggle = await itemToggleContainer.LoadItemAsync(itemToggleIndex, wearableSettings, token);
 
             itemToggle.SetCallbacks(ToggleClicked, SellClicked);
             itemToggle.SetLoadingSpinner(wearableSettings.isLoading);
@@ -217,7 +218,7 @@ public class ItemSelector : MonoBehaviour
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.ToList();
-        SetupWearablePagination(cancellationTokenSource.Token, isRefresh: true);
+        SetupWearablePagination(cancellationTokenSource.Token);
     }
 
     public void Select(string itemID)
