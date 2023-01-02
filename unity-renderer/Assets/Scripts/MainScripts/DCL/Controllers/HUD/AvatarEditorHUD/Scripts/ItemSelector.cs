@@ -212,8 +212,10 @@ public class ItemSelector : MonoBehaviour
         RefreshAvailableWearables();
     }
 
-    public void UpdateSelectorLayout() =>
+    public void UpdateSelectorLayout()
+    {
         SetupWearablePagination(cancellationTokenSource.Token).Forget();
+    }
 
     private void RefreshAvailableWearables()
     {

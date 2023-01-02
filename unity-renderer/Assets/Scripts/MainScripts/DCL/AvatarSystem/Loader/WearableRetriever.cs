@@ -11,12 +11,11 @@ namespace AvatarSystem
     public class WearableRetriever : IWearableRetriever
     {
         private const string FEATURE_GLTFAST = "gltfast";
-
-        private RendereableAssetLoadHelper loaderAssetHelper;
         public Rendereable rendereable { get; private set; }
 
-        public void Dispose() =>
-            loaderAssetHelper?.Unload();
+        private RendereableAssetLoadHelper loaderAssetHelper;
+
+
 
         public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default)
         {
@@ -79,5 +78,10 @@ namespace AvatarSystem
 
         private bool CheckGLTFastFeature() =>
             DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
+
+        public void Dispose()
+        {
+            loaderAssetHelper?.Unload();
+        }
     }
 }
