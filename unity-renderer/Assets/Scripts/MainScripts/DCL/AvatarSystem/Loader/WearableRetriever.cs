@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
 using DCL.Helpers;
+using System;
+using System.Threading;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -11,11 +11,12 @@ namespace AvatarSystem
     public class WearableRetriever : IWearableRetriever
     {
         private const string FEATURE_GLTFAST = "gltfast";
-        public Rendereable rendereable { get; private set; }
 
         private RendereableAssetLoadHelper loaderAssetHelper;
+        public Rendereable rendereable { get; private set; }
 
-
+        public void Dispose() =>
+            loaderAssetHelper?.Unload();
 
         public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default)
         {
@@ -36,7 +37,7 @@ namespace AvatarSystem
                 loaderAssetHelper.settings.parent = container.transform;
                 loaderAssetHelper.settings.layer = container.layer;
 
-                bool done = false;
+                var done = false;
                 Exception exception = null;
 
                 void OnSuccessWrapper(Rendereable rendereable)
@@ -78,10 +79,5 @@ namespace AvatarSystem
 
         private bool CheckGLTFastFeature() =>
             DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
-
-        public void Dispose()
-        {
-            loaderAssetHelper?.Unload();
-        }
     }
 }

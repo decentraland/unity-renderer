@@ -107,15 +107,9 @@ namespace UnityGLTF
 
         public Action OnSuccess
         {
-            get
-            {
-                return OnFinishedLoadingAsset;
-            }
+            get => OnFinishedLoadingAsset;
 
-            set
-            {
-                OnFinishedLoadingAsset = value;
-            }
+            set => OnFinishedLoadingAsset = value;
         }
 
         public Action<Exception> OnFail
@@ -353,28 +347,20 @@ namespace UnityGLTF
             downloadQueueHandler.Queue(this);
         }
 
-        public void Load(string url)
-        {
+        public void Load(string url) =>
             throw new NotImplementedException();
-        }
 
-        public void SetPrioritized()
-        {
+        public void SetPrioritized() =>
             prioritizeDownload = true;
-        }
 
         private long animationsEstimatedSize;
         private long meshesEstimatedSize;
 
-        public long GetAnimationClipMemorySize()
-        {
-            return animationsEstimatedSize;
-        }
+        public long GetAnimationClipMemorySize() =>
+            animationsEstimatedSize;
 
-        public long GetMeshesMemorySize()
-        {
-            return meshesEstimatedSize;
-        }
+        public long GetMeshesMemorySize() =>
+            meshesEstimatedSize;
 
         private void OnDestroy()
         {
@@ -409,10 +395,8 @@ namespace UnityGLTF
             state = State.NONE;
         }
 
-        bool IDownloadQueueElement.ShouldPrioritizeDownload()
-        {
-            return prioritizeDownload;
-        }
+        bool IDownloadQueueElement.ShouldPrioritizeDownload() =>
+            prioritizeDownload;
 
         bool IDownloadQueueElement.ShouldForceDownload()
         {
