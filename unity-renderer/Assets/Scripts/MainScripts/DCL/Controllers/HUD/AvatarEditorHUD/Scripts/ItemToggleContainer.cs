@@ -12,7 +12,9 @@ public class ItemToggleContainer : MonoBehaviour
     [SerializeField] private NFTSkinFactory skinFactory;
     [SerializeField] private RectTransform rectTransform;
 
-    [SerializeField] private GridLayoutGroup layout;
+    [SerializeField] private GridLayoutGroup layoutGroup;
+
+    private GridLayoutGroup layout => layoutGroup ??= GetComponent<GridLayoutGroup>();
 
     private readonly List<ItemToggle> items = new ();
 

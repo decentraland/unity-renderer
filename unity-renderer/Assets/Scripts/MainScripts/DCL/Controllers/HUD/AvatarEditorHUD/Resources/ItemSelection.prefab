@@ -198,6 +198,7 @@ MonoBehaviour:
     type: 3}
   skinFactory: {fileID: 11400000, guid: 7083ed082c0f14ddfbc1bd87a56460f7, type: 2}
   rectTransform: {fileID: 6308102166413182034}
+  layoutGroup: {fileID: 6308102166413182035}
 --- !u!1001 &1078167938463918079
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -233,12 +234,12 @@ PrefabInstance:
     - target: {fileID: 3576930520628333720, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3576930520628333720, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3576930520628333720, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
@@ -253,7 +254,7 @@ PrefabInstance:
     - target: {fileID: 3576930520628333720, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -21
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3587570585946778653, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
