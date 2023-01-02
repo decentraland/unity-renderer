@@ -13,10 +13,10 @@ namespace DCL.ECS7
         private readonly ECS7ComponentsComposer componentsComposer;
         private readonly ECSSystemsController systemsController;
         private readonly ECSComponentsFactory componentsFactory;
-        private readonly ECSComponentsManager componentsManager;
         private readonly InternalECSComponents internalEcsComponents;
         private readonly CrdtExecutorsManager crdtExecutorsManager;
 
+        internal readonly ECSComponentsManager componentsManager;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly ISceneController sceneController;
 
