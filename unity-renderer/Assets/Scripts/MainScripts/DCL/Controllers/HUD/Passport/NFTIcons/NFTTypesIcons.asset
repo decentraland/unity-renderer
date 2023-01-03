@@ -49,6 +49,10 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
   - key: emote
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
+  - key: name
+    value: {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
+  - key: land
+    value: {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   nftColors:
   - key: rare
     value: {r: 0.23529412, g: 0.89411765, b: 0.5176471, a: 1}

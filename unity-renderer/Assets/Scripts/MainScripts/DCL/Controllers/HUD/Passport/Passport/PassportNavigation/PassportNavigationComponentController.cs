@@ -74,6 +74,8 @@ namespace DCL.Social.Passports
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile);
+                    LoadAndShowOwnedNames(userProfile);
+                    LoadAndShowOwnedLands(userProfile);
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;
@@ -104,6 +106,30 @@ namespace DCL.Social.Passports
                                       WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
                                       view.SetCollectibleEmotes(emoteItems);
                                   })
+                                 .Catch(Debug.LogError);
+        }
+
+        private void LoadAndShowOwnedNames(UserProfile userProfile)
+        {
+            // TODO: This is fake data
+            emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
+                                 .Then(emotes =>
+                                 {
+                                     WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
+                                     view.SetCollectibleNames(emoteItems);
+                                 })
+                                 .Catch(Debug.LogError);
+        }
+
+        private void LoadAndShowOwnedLands(UserProfile userProfile)
+        {
+            // TODO: This is fake data
+            emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
+                                 .Then(emotes =>
+                                 {
+                                     WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
+                                     view.SetCollectibleLands(emoteItems);
+                                 })
                                  .Catch(Debug.LogError);
         }
 
