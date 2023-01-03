@@ -17,6 +17,7 @@ namespace DCL.LoadingScreen
         private readonly IWorldState worldState;
 
         private Vector2Int currentDestination;
+        private readonly LoadingScreenTipsController tipsController;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
             IWorldState worldState)
@@ -29,7 +30,11 @@ namespace DCL.LoadingScreen
             this.loadingScreenDataStore = loadingScreenDataStore;
 
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-            
+
+            tipsController = new LoadingScreenTipsController();
+            tipsController.LoadDefaults();
+            view.SetLoadingTipsController(tipsController);
+
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
@@ -62,6 +67,7 @@ namespace DCL.LoadingScreen
             if (current)
                 FadeOutView();
             else
+
                 //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
                 view.FadeIn(false);
         }
@@ -75,6 +81,7 @@ namespace DCL.LoadingScreen
             if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
+
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
                 view.FadeIn(true);
             }
