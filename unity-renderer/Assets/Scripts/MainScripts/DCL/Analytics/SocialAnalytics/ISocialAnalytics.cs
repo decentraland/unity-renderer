@@ -20,9 +20,9 @@ namespace SocialFeaturesAnalytics
         void SendJumpInToPlayer(PlayerActionSource source);
         void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source);
-        void SendFriendRequestApproved(string fromUserId, string toUserId, PlayerActionSource source);
-        void SendFriendRequestRejected(string fromUserId, string toUserId, PlayerActionSource source);
-        void SendFriendRequestCancelled(string fromUserId, string toUserId, PlayerActionSource source);
+        void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage);
+        void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage);
+        void SendFriendRequestCancelled(string fromUserId, string toUserId, string source);
         void SendFriendDeleted(string fromUserId, string toUserId, PlayerActionSource source);
         void SendPassportOpen();
         void SendPassportClose(double timeSpent);
@@ -36,5 +36,6 @@ namespace SocialFeaturesAnalytics
         void SendLeaveChannel(string channelId, ChannelLeaveSource source);
         void SendChannelSearch(string text);
         void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source);
+        void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription);
     }
 }

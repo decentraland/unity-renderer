@@ -21,7 +21,6 @@ namespace DCL
 
         public PoolableComponentFactory componentFactory;
 
-        private NewFriendRequestsApiBridgeMock newFriendRequestsApiBridgeMock;
         private PerformanceMetricsController performanceMetricsController;
         protected IKernelCommunication kernelCommunication;
 
@@ -43,13 +42,6 @@ namespace DCL
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
             // TODO: migrate chat controller singleton into a service in the service locator
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
-            // FriendsController.CreateSharedInstance(GetComponent<WebInterfaceFriendsApiBridge>());
-            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-            WebInterfaceFriendsApiBridge newFriendRequestsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
-            newFriendRequestsApiBridgeMock = new NewFriendRequestsApiBridgeMock(newFriendRequestsApiBridge, new UserProfileWebInterfaceBridge());
-            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
-                RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), newFriendRequestsApiBridge),
-                newFriendRequestsApiBridgeMock, DataStore.i));
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -58,6 +50,13 @@ namespace DCL
 
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
+
+            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+            WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
+            FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
+                webInterfaceFriendsApiBridge,
+                RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), webInterfaceFriendsApiBridge),
+                DataStore.i));
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             Application.quitting += () => DataStore.i.common.isApplicationQuitting.Set(true);
@@ -155,9 +154,6 @@ namespace DCL
                 Environment.Dispose();
 
             kernelCommunication?.Dispose();
-
-            // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-            newFriendRequestsApiBridgeMock.Dispose();
         }
 
         protected virtual void InitializeSceneDependencies()

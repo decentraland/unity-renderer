@@ -111,7 +111,7 @@ namespace DCL.Social.Passports
         private void AddPlayerAsFriend()
         {
             if (isNewFriendRequestsEnabled)
-                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+                dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             else
             {
                 friendsController.RequestFriendship(currentPlayerId);
@@ -133,16 +133,22 @@ namespace DCL.Social.Passports
             if (isNewFriendRequestsEnabled)
             {
                 try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                        "modal",
+                        e is FriendshipException fe
+                            ? fe.ErrorCode.ToString()
+                            : FriendRequestErrorCodes.Unknown.ToString());
                     throw;
                 }
             }
             else
                 friendsController.CancelRequestByUserId(currentPlayerId);
 
-            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId,
+                PlayerActionSource.Passport.ToString());
         }
 
         private void AcceptFriendRequest() =>
@@ -156,15 +162,26 @@ namespace DCL.Social.Passports
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
                     await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),
+                        request.HasBodyMessage);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // TODO FRIEND REQUESTS (#3807): track error to analytics
+                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                        "modal",
+                        e is FriendshipException fe
+                            ? fe.ErrorCode.ToString()
+                            : FriendRequestErrorCodes.Unknown.ToString());
                     throw;
                 }
             }
             else
+            {
                 friendsController.AcceptFriendship(currentPlayerId);
+                socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    false);
+            }
         }
 
         private void BlockUser()
