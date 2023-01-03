@@ -8,6 +8,7 @@ namespace DCL
     public class DebugConfigComponent : MonoBehaviour
     {
         private static DebugConfigComponent sharedInstance;
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
         public static DebugConfigComponent i
         {
@@ -81,6 +82,7 @@ namespace DCL
         public bool runPerformanceMeterToolDuringLoading = false;
         private PerformanceMeterController performanceMeterController;
 
+
         private void Awake()
         {
             if (sharedInstance == null)
@@ -134,16 +136,16 @@ namespace DCL
                 CommonScriptableObjects.forcePerformanceMeter.Set(true);
                 performanceMeterController = new PerformanceMeterController();
 
-                DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange += StartSampling;
-                DataStore.i.loadingScreen.loadingHUD.visible.OnChange += StartSampling;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += StartSampling;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += StartSampling;
                 CommonScriptableObjects.rendererState.OnChange += EndSampling;
             }
         }
 
         private void StartSampling(bool current, bool previous)
         {
-            DataStore.i.loadingScreen.decoupledLoadingHUD.visible.OnChange -= StartSampling;
-            DataStore.i.loadingScreen.loadingHUD.visible.OnChange -= StartSampling;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= StartSampling;
+            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= StartSampling;
             performanceMeterController.StartSampling(999);
         }
         private void EndSampling(bool current, bool previous)

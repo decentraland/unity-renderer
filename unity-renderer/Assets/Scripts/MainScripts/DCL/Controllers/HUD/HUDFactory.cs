@@ -18,6 +18,8 @@ using UnityEngine;
 
 public class HUDFactory : IHUDFactory
 {
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+
     public virtual IHUD CreateHUD(HUDElementID hudElementId)
     {
         IHUD hudElement = null;
@@ -210,7 +212,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.SIGNUP:
                 var analytics = Environment.i.platform.serviceProviders.analytics;
-                hudElement = new SignupHUDController(analytics, DataStore.i.loadingScreen);
+                hudElement = new SignupHUDController(analytics, dataStoreLoadingScreen.Ref);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;

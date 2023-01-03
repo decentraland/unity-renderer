@@ -16,11 +16,6 @@ namespace SignupHUD
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
-        public SignupHUDController()
-        {
-
-        }
-
         public SignupHUDController(IAnalytics analytics, DataStore_LoadingScreen loadingScreenDataStore)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);

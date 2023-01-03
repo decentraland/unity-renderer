@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class LoadingBridge : MonoBehaviour
 {
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
     private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
 
     [Serializable]
@@ -31,16 +32,16 @@ public class LoadingBridge : MonoBehaviour
 
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
 
-        if (payload.isVisible && !DataStore.i.loadingScreen.loadingHUD.fadeIn.Get() && !DataStore.i.loadingScreen.loadingHUD.visible.Get())
-            DataStore.i.loadingScreen.loadingHUD.fadeIn.Set(true);
+        if (payload.isVisible && !dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Get() && !dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
+            dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(true);
 
-        if (!payload.isVisible && !DataStore.i.loadingScreen.loadingHUD.fadeOut.Get())
-            DataStore.i.loadingScreen.loadingHUD.fadeOut.Set(true);
+        if (!payload.isVisible && !dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Get())
+            dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Set(true);
 
         if (!string.IsNullOrEmpty(payload.message))
-            DataStore.i.loadingScreen.loadingHUD.message.Set(payload.message);
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set(payload.message);
 
-        DataStore.i.loadingScreen.loadingHUD.showTips.Set(payload.showTips);
+        dataStoreLoadingScreen.Ref.loadingHUD.showTips.Set(payload.showTips);
     }
 
     [Obsolete]
@@ -60,14 +61,14 @@ public class LoadingBridge : MonoBehaviour
         PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
 
         if (!string.IsNullOrEmpty(payload.message))
-            DataStore.i.loadingScreen.loadingHUD.message.Set(payload.message);
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set(payload.message);
         else
-            DataStore.i.loadingScreen.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
 
-        DataStore.i.loadingScreen.loadingHUD.percentage.Set(0);
-        DataStore.i.loadingScreen.loadingHUD.fadeIn.Set(true);
+        dataStoreLoadingScreen.Ref.loadingHUD.percentage.Set(0);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(true);
 
-        while (!DataStore.i.loadingScreen.loadingHUD.visible.Get())
+        while (!dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
             yield return null;
 
         WebInterface.LoadingHUDReadyForTeleport(payload.xCoord, payload.yCoord);

@@ -26,6 +26,8 @@ public class ECSSystemsController : IDisposable
     private readonly ECSBillboardSystem billboardSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+
 
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
@@ -46,9 +48,9 @@ public class ECSSystemsController : IDisposable
         BaseVariable<bool> loadingScreenVisible;
 
         if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-            loadingScreenVisible = DataStore.i.loadingScreen.decoupledLoadingHUD.visible;
+            loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
         else
-            loadingScreenVisible = DataStore.i.loadingScreen.loadingHUD.visible;
+            loadingScreenVisible = dataStoreLoadingScreen.Ref.loadingHUD.visible;
 
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
