@@ -5,7 +5,7 @@ namespace DCL
     /// <summary>
     /// Our custom implementation of the UnityWebRequestTexture.
     /// </summary>
-    public class WebRequestTexture : IWebRequestTexture
+    public class WebRequestTextureFactory : IWebRequestTextureFactory
     {
         public bool isReadable { get; set; }
 

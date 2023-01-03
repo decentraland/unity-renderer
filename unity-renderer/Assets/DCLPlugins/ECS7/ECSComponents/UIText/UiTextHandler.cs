@@ -25,6 +25,7 @@ namespace DCL.ECSComponents.UIText
         {
             uiElement = new Label { text = string.Empty };
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
+            UiElementUtils.SetElementDefaultStyle(uiElement.style);
             AddElementToRoot(scene, entity, uiElement);
         }
 

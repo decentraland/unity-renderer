@@ -2,7 +2,7 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
-    public interface IWebRequest
+    public interface IWebRequestFactory
     {
         /// <summary>
         /// Create a UnityWebRequest from a given url.
