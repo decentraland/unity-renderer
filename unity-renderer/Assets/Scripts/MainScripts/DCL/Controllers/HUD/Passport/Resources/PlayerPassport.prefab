@@ -7824,6 +7824,7 @@ GameObject:
   - component: {fileID: 2409498177965509360}
   - component: {fileID: 7005725262049020976}
   - component: {fileID: 2680816018652178411}
+  - component: {fileID: 2502329414978551533}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -7921,6 +7922,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2502329414978551533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5803619126353560446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85da332798fc458595ca5a677f1bf18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5978081948720676561
 GameObject:
   m_ObjectHideFlags: 0
@@ -9703,9 +9716,9 @@ RectTransform:
   m_Father: {fileID: 4548993562544301670}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 931, y: -96}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 931, y: 0}
   m_SizeDelta: {x: 839, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &529896173261396989
