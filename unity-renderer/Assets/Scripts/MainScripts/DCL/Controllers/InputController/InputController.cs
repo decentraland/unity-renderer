@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DCL.Configuration;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Mapping for Trigger actions
@@ -215,7 +216,7 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Trigger.CameraChange:
-                    if (CommonScriptableObjects.cameraModeInputLocked.Get()) 
+                    if (CommonScriptableObjects.cameraModeInputLocked.Get())
                         break;
 
                     //Disable until the fine-tuning is ready
@@ -468,10 +469,10 @@ public class InputController : MonoBehaviour
         for (var i = 0; i < holdActions.Length; i++)
         {
             var action = holdActions[i];
-            
+
             if (action.isHoldBlocked != null && action.isHoldBlocked.Get())
                 continue;
-            
+
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
@@ -556,14 +557,14 @@ public class InputController : MonoBehaviour
         for (var i = 0; i < measurableActions.Length; i++)
         {
             var action = measurableActions[i];
-            
+
             if (action.isMeasurableBlocked != null && action.isMeasurableBlocked.Get())
                 continue;
-            
+
             switch (action.GetDCLAction())
             {
                 case DCLAction_Measurable.CharacterXAxis:
-                    InputProcessor.FromAxis(action, "Horizontal", 
+                    InputProcessor.FromAxis(action, "Horizontal",
                         InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Measurable.CharacterYAxis:
@@ -650,10 +651,10 @@ public static class InputProcessor
             return false;
 
         var isInputFieldFocused = FocusIsInInputField();
-        
+
         if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && isInputFieldFocused)
             return false;
-        
+
         if (IsModifierSet(modifiers, Modifier.OnlyWithInputFocused) && !isInputFieldFocused)
             return false;
 
@@ -700,7 +701,7 @@ public static class InputProcessor
         if (Input.GetMouseButton(mouseButtonIdx))
             action.RaiseOnTriggered();
     }
-    
+
     public static void FromMouseButtonUp(InputAction_Trigger action, int mouseButtonIdx,
         Modifier modifiers = Modifier.None)
     {
@@ -798,11 +799,18 @@ public static class InputProcessor
 
         if (EventSystem.current.currentSelectedGameObject != null &&
             (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null ||
-             EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))
+             EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null ||
+             FocusIsInTextField(EventSystem.current.currentSelectedGameObject)))
         {
             return true;
         }
 
         return false;
     }
+
+    /// <summary>
+    /// Checks VisualElement from UI Toolkit
+    /// </summary>
+    private static bool FocusIsInTextField(GameObject currentSelectedObject) =>
+        currentSelectedObject.GetComponent<PanelEventHandler>()?.panel?.focusController?.focusedElement is TextField;
 }
