@@ -15,7 +15,7 @@ namespace DCL.LoadingScreen.Test
         {
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
-            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, new DataStore_Player(), new DataStore_Common(), null);
+            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, new DataStore_Player(), new DataStore_Common(), new DataStore_LoadingScreen(), null);
         }
 
         [Test]

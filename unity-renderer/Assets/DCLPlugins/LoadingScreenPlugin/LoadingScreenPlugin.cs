@@ -9,10 +9,12 @@ namespace DCLPlugins.LoadingScreenPlugin
     public class LoadingScreenPlugin : IPlugin
     {
         private readonly LoadingScreenController loadingScreenController;
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
         public LoadingScreenPlugin()
         {
-            loadingScreenController = new LoadingScreenController(LoadingScreenView.Create(), Environment.i.world.sceneController, DataStore.i.player, DataStore.i.common, Environment.i.world.state);
+            loadingScreenController = new LoadingScreenController(LoadingScreenView.Create(), Environment.i.world.sceneController, DataStore.i.player,
+                DataStore.i.common, dataStoreLoadingScreen.Ref,Environment.i.world.state);
         }
 
         public void Dispose() =>
