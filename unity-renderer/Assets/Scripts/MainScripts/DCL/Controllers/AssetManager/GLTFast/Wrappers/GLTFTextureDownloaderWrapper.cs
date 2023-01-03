@@ -7,14 +7,14 @@ namespace DCL.GLTFast.Wrappers
 {
     internal class GltfTextureDownloaderWrapper : ITextureDownload
     {
-        private readonly WebRequestAsyncOperation asyncOp;
+        private readonly IWebRequestAsyncOperation asyncOp;
 
-        public GltfTextureDownloaderWrapper(WebRequestAsyncOperation asyncOp)
+        public GltfTextureDownloaderWrapper(IWebRequestAsyncOperation asyncOp)
         {
             this.asyncOp = asyncOp;
         }
 
-        public bool Success => asyncOp.isSucceded;
+        public bool Success => asyncOp.isSucceeded;
         public string Error => asyncOp.webRequest.error;
         public byte[] Data => asyncOp.webRequest.downloadHandler.data;
         public string Text => asyncOp.webRequest.downloadHandler.text;

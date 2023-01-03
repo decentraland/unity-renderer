@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/UiDropdown.gen.cs.meta
+guid: 0a34d4ac09674bf40a387b28ae8097c1
+========
+guid: 91c24427cdec4480b87881b350647402
+>>>>>>>> dev:unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/PointerHoverFeedback.gen.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

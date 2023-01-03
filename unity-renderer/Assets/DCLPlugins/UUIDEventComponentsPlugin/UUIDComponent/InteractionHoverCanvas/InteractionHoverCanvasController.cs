@@ -1,9 +1,5 @@
-using System;
-using DCL.Models;
-using DCL.Components;
 using UnityEngine;
 using TMPro;
-using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 

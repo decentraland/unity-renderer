@@ -5,6 +5,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Rendering;
 using DCL.Services;
+using DCLServices.Lambdas;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
@@ -25,6 +26,7 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IWebRequestController>(WebRequestController.Create);
             result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<ILambdasService>(() => new LambdasService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
 
