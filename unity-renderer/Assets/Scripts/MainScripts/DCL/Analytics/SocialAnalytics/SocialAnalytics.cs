@@ -1,4 +1,5 @@
 using DCL;
+using System;
 using System.Collections.Generic;
 using static DCL.SettingsCommon.GeneralSettings;
 
@@ -21,6 +22,13 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPENED = "passport_opened";
         private const string PASSPORT_CLOSED = "passport_closed";
+        private const string PASSPORT_CLICKED_ON_COLLECTIONS = "passport_collections_click";
+        private const string PASSPORT_STARTED_CONVERSATION = "passport_started_conversation";
+        private const string PASSPORT_INSPECT_AVATAR = "passport_inspect_avatar";
+        private const string PASSPORT_CLICK_LINK = "passport_clicked_link";
+        private const string PASSPORT_WALLET_COPY = "passport_wallet_copy";
+        private const string PASSPORT_JUMP_IN = "passport_jump_in";
+        private const string PASSPORT_BUY_NFT = "passport_buy_nft";
         private const string PLAYER_BLOCKED = "user_blocked";
         private const string PLAYER_UNBLOCKED = "user_unblocked";
         private const string PLAYER_REPORT = "player_report";
@@ -96,6 +104,59 @@ namespace SocialFeaturesAnalytics
         }
 
         public void SendVoiceChannelDisconnection() { analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>()); }
+
+        public void SendClickedOnCollectibles()
+        {
+            analytics.SendAnalytic(PASSPORT_CLICKED_ON_COLLECTIONS, new Dictionary<string, string>());
+        }
+
+        public void SendStartedConversation(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_STARTED_CONVERSATION, data);
+        }
+
+        public void SendNftBuy(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_BUY_NFT, data);
+        }
+
+        public void SendInspectAvatar(double timeSpent)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("timeSpent", timeSpent.ToString());
+
+            analytics.SendAnalytic(PASSPORT_INSPECT_AVATAR, data);
+        }
+
+        public void SendLinkClick(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
+        }
+
+        public void SendWalletCopy(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
+        }
+
+        public void SendJumpInToPlayer(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
+        }
 
         public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)
         {

@@ -11,6 +11,13 @@ namespace SocialFeaturesAnalytics
         void SendVoiceMessage(double messageLength, VoiceMessageSource source, string fromUserId);
         void SendVoiceChannelConnection(int numberOfPeers);
         void SendVoiceChannelDisconnection();
+        void SendClickedOnCollectibles();
+        void SendStartedConversation(PlayerActionSource source);
+        void SendNftBuy(PlayerActionSource source);
+        void SendInspectAvatar(double timeSpent);
+        void SendLinkClick(PlayerActionSource source);
+        void SendWalletCopy(PlayerActionSource source);
+        void SendJumpInToPlayer(PlayerActionSource source);
         void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source);
         void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage);
