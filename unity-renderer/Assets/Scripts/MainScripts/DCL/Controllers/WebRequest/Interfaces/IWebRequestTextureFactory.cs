@@ -1,6 +1,6 @@
 ﻿namespace DCL
 {
-    public interface IWebRequestTexture : IWebRequest
+    public interface IWebRequestTextureFactory : IWebRequestFactory
     {
         public bool isReadable { get; set; }
     }

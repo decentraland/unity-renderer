@@ -5,7 +5,7 @@ namespace DCL
     /// <summary>
     /// Our custom implementation of the UnityWebRequestMultimedia (Audio Clip).
     /// </summary>
-    public interface IWebRequestAudio : IWebRequest
+    public interface IWebRequestAudioFactory : IWebRequestFactory
     {
         /// <summary>
         /// Configure the type of the audio that will be requested.
