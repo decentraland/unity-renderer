@@ -207,13 +207,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
 
-        foreach (var visibilityVar in sectionsByVisiblityVar.Keys)
-            visibilityVar.Set(currentOpenSection == sectionsByVisiblityVar[visibilityVar]);
+        ChangeVisibilityVarForSwitchedSections();
 
         profileCardIsOpen.Set(false);
     }
 
-    internal void SetVisibilityOnOpenChanged(bool open, bool _ = false) => SetVisibility_Internal(open);
+    private void ChangeVisibilityVarForSwitchedSections()
+    {
+        foreach (BaseVariable<bool> visibilityVar in sectionsByVisiblityVar.Keys)
+            if (visibilityVar.Get() != (currentOpenSection == sectionsByVisiblityVar[visibilityVar]))
+                visibilityVar.Set(currentOpenSection == sectionsByVisiblityVar[visibilityVar]);
+    }
+
+    internal void SetVisibilityOnOpenChanged(bool open, bool _ = false) =>
+        SetVisibility_Internal(open);
 
     internal void CurrentSectionIndexChanged(int current, int previous)
     {
@@ -266,9 +273,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             if (currentSectionIndex.Get() != (int)section)
                 currentSectionIndex.Set((int)section);
+            // else
+            //     view.GoToSection(section);
 
             SetSectionTargetVisibility(section, toVisible: true);
-            view.GoToSection(section);
         }
         else if (currentOpenSection == section)
         {
