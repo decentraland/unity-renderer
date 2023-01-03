@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using JetBrains.Annotations;
 
 namespace SignupHUD
 {
@@ -15,6 +16,9 @@ namespace SignupHUD
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
+
+        [UsedImplicitly]
+        public SignupHUDController() { }
 
         public SignupHUDController(IAnalytics analytics, DataStore_LoadingScreen loadingScreenDataStore)
         {
