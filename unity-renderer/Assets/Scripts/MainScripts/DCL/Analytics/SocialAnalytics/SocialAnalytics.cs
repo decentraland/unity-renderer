@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using DCL;
 using System;
+using System.Collections.Generic;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -18,6 +18,7 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
         private const string FRIEND_REQUEST_CANCELLED = "friend_request_cancelled";
+        private const string FRIEND_REQUEST_ERROR = "friend_request_error";
         private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPENED = "passport_opened";
         private const string PASSPORT_CLOSED = "passport_closed";
@@ -165,6 +166,18 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(VOICE_CHAT_PREFERENCES_CHANGED, data);
         }
 
+        public void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source,
+                ["from"] = senderId,
+                ["to"] = recipientId,
+                ["description"] = errorDescription,
+            };
+            analytics.SendAnalytic(FRIEND_REQUEST_ERROR, data);
+        }
+
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
@@ -176,13 +189,16 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
+            // TODO (FRIEND REQUESTS): retro-compatibility, remove this param in the future
             data.Add("text_length", messageLength.ToString());
+            data.Add("attached_message_length", messageLength.ToString());
+            data.Add("attached_message", messageLength > 0 ? "true" : "false");
             data.Add("source", source.ToString());
 
             analytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
-        public void SendFriendRequestApproved(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -193,12 +209,13 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
+            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
 
             analytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
-        public void SendFriendRequestRejected(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -209,12 +226,13 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
+            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
 
             analytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
-        public void SendFriendRequestCancelled(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestCancelled(string fromUserId, string toUserId, string source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -225,7 +243,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
 
             analytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }
