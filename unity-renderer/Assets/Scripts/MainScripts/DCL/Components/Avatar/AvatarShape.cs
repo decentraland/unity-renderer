@@ -34,6 +34,7 @@ namespace DCL
         [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
@@ -231,6 +232,8 @@ namespace DCL
                 entity, player
             );
 
+            outlineOnHover.Initialize(entity, player.avatar);
+
             avatarCollider.gameObject.SetActive(true);
 
             everythingIsLoaded = true;
@@ -256,20 +259,11 @@ namespace DCL
 
         private void PlayerPointerExit()
         {
-            DataStore.i.outliner.avatarOutlined.Set((null, -1, -1));
             playerName?.SetForceShow(false);
         }
 
         private void PlayerPointerEnter()
         {
-            if (avatar.status == IAvatar.Status.Loaded)
-            {
-                var renderer = avatar.GetMainRenderer();
-
-                if (renderer != null)
-                    DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
-            }
-
             playerName?.SetForceShow(true);
         }
 

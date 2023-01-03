@@ -7,6 +7,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VisibilitySystem;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
     private readonly ECSPlayerTransformSystem playerTransformSystem;
+    private readonly ECSUIInputSenderSystem uiInputSenderSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -55,6 +57,8 @@ public class ECSSystemsController : IDisposable
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock());
         playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter);
 
+        uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -65,6 +69,7 @@ public class ECSSystemsController : IDisposable
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
+            uiSystem.Update,
             ECSPointerInputSystem.CreateSystem(
                 context.internalEcsComponents.onPointerColliderComponent,
                 context.internalEcsComponents.inputEventResultsComponent,
@@ -73,7 +78,7 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            uiSystem.Update,
+            uiInputSenderSystem.Update,
             billboardSystem.Update
         };
 

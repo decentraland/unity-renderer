@@ -25,17 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CitkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYmlsbGJvYXJkLnByb3Rv",
-            "EhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMioQEKC1BCQmlsbGJvYXJk",
-            "EkcKDmJpbGxib2FyZF9tb2RlGAEgASgOMiouZGVjZW50cmFsYW5kLnNkay5j",
-            "b21wb25lbnRzLkJpbGxib2FyZE1vZGVIAIgBARIfChJvcHBvc2l0ZV9kaXJl",
-            "Y3Rpb24YAiABKAhIAYgBAUIRCg9fYmlsbGJvYXJkX21vZGVCFQoTX29wcG9z",
-            "aXRlX2RpcmVjdGlvbiouCg1CaWxsYm9hcmRNb2RlEg8KC0JNX0FMTF9BWEVT",
-            "EAASDAoIQk1fWV9BWEUQAUIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3Rv",
-            "Mw=="));
+            "EhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiaQoLUEJCaWxsYm9hcmQS",
+            "RwoOYmlsbGJvYXJkX21vZGUYASABKA4yKi5kZWNlbnRyYWxhbmQuc2RrLmNv",
+            "bXBvbmVudHMuQmlsbGJvYXJkTW9kZUgAiAEBQhEKD19iaWxsYm9hcmRfbW9k",
+            "ZSpGCg1CaWxsYm9hcmRNb2RlEgsKB0JNX05PTkUQABIICgRCTV9YEAESCAoE",
+            "Qk1fWRACEggKBEJNX1oQBBIKCgZCTV9BTEwQB0IUqgIRRENMLkVDU0NvbXBv",
+            "bmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.BillboardMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBBillboard), global::DCL.ECSComponents.PBBillboard.Parser, new[]{ "BillboardMode", "OppositeDirection" }, new[]{ "BillboardMode", "OppositeDirection" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBBillboard), global::DCL.ECSComponents.PBBillboard.Parser, new[]{ "BillboardMode" }, new[]{ "BillboardMode" }, null, null, null)
           }));
     }
     #endregion
@@ -43,8 +42,11 @@ namespace DCL.ECSComponents {
   }
   #region Enums
   public enum BillboardMode {
-    [pbr::OriginalName("BM_ALL_AXES")] BmAllAxes = 0,
-    [pbr::OriginalName("BM_Y_AXE")] BmYAxe = 1,
+    [pbr::OriginalName("BM_NONE")] BmNone = 0,
+    [pbr::OriginalName("BM_X")] BmX = 1,
+    [pbr::OriginalName("BM_Y")] BmY = 2,
+    [pbr::OriginalName("BM_Z")] BmZ = 4,
+    [pbr::OriginalName("BM_ALL")] BmAll = 7,
   }
 
   #endregion
@@ -87,7 +89,6 @@ namespace DCL.ECSComponents {
     public PBBillboard(PBBillboard other) : this() {
       _hasBits0 = other._hasBits0;
       billboardMode_ = other.billboardMode_;
-      oppositeDirection_ = other.oppositeDirection_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -101,12 +102,12 @@ namespace DCL.ECSComponents {
     public const int BillboardModeFieldNumber = 1;
     private global::DCL.ECSComponents.BillboardMode billboardMode_;
     /// <summary>
-    /// default=BM_ALL_AXES
+    /// default=BM_ALL
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.BillboardMode BillboardMode {
-      get { if ((_hasBits0 & 1) != 0) { return billboardMode_; } else { return global::DCL.ECSComponents.BillboardMode.BmAllAxes; } }
+      get { if ((_hasBits0 & 1) != 0) { return billboardMode_; } else { return global::DCL.ECSComponents.BillboardMode.BmNone; } }
       set {
         _hasBits0 |= 1;
         billboardMode_ = value;
@@ -125,34 +126,6 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~1;
     }
 
-    /// <summary>Field number for the "opposite_direction" field.</summary>
-    public const int OppositeDirectionFieldNumber = 2;
-    private bool oppositeDirection_;
-    /// <summary>
-    /// default=false
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool OppositeDirection {
-      get { if ((_hasBits0 & 2) != 0) { return oppositeDirection_; } else { return false; } }
-      set {
-        _hasBits0 |= 2;
-        oppositeDirection_ = value;
-      }
-    }
-    /// <summary>Gets whether the "opposite_direction" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasOppositeDirection {
-      get { return (_hasBits0 & 2) != 0; }
-    }
-    /// <summary>Clears the value of the "opposite_direction" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearOppositeDirection() {
-      _hasBits0 &= ~2;
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -169,7 +142,6 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (BillboardMode != other.BillboardMode) return false;
-      if (OppositeDirection != other.OppositeDirection) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -178,7 +150,6 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (HasBillboardMode) hash ^= BillboardMode.GetHashCode();
-      if (HasOppositeDirection) hash ^= OppositeDirection.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -201,10 +172,6 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteEnum((int) BillboardMode);
       }
-      if (HasOppositeDirection) {
-        output.WriteRawTag(16);
-        output.WriteBool(OppositeDirection);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -219,10 +186,6 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteEnum((int) BillboardMode);
       }
-      if (HasOppositeDirection) {
-        output.WriteRawTag(16);
-        output.WriteBool(OppositeDirection);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -235,9 +198,6 @@ namespace DCL.ECSComponents {
       int size = 0;
       if (HasBillboardMode) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) BillboardMode);
-      }
-      if (HasOppositeDirection) {
-        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -253,9 +213,6 @@ namespace DCL.ECSComponents {
       }
       if (other.HasBillboardMode) {
         BillboardMode = other.BillboardMode;
-      }
-      if (other.HasOppositeDirection) {
-        OppositeDirection = other.OppositeDirection;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -276,10 +233,6 @@ namespace DCL.ECSComponents {
             BillboardMode = (global::DCL.ECSComponents.BillboardMode) input.ReadEnum();
             break;
           }
-          case 16: {
-            OppositeDirection = input.ReadBool();
-            break;
-          }
         }
       }
     #endif
@@ -297,10 +250,6 @@ namespace DCL.ECSComponents {
             break;
           case 8: {
             BillboardMode = (global::DCL.ECSComponents.BillboardMode) input.ReadEnum();
-            break;
-          }
-          case 16: {
-            OppositeDirection = input.ReadBool();
             break;
           }
         }
