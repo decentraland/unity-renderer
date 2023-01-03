@@ -213,12 +213,12 @@ public class ItemSelector : MonoBehaviour
     }
 
     public void UpdateSelectorLayout() =>
-        SetupWearablePagination(cancellationTokenSource.Token).Forget();
+        SetupPaginationWithColumnsAsync(cancellationTokenSource.Token).Forget();
 
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.ToList();
-        SetupWearablePagination(cancellationTokenSource.Token);
+        SetupPaginationWithColumnsAsync(cancellationTokenSource.Token).Forget();
     }
 
     public void Select(string itemID)
