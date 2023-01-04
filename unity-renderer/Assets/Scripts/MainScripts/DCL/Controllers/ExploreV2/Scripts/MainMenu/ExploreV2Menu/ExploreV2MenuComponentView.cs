@@ -223,32 +223,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             sectionSelector.GetSection(sectionId)?.onSelect.RemoveAllListeners();
     }
 
-    public void ShowRealmSelectorModal() =>
-        realmSelectorModal.Show();
-
-    /// <summary>
-    /// Instantiates (if does not already exists) a realm selector modal from the given prefab.
-    /// </summary>
-    /// <returns>An instance of a realm modal modal.</returns>
-    internal RealmSelectorComponentView ConfigureRealmSelectorModal()
-    {
-        RealmSelectorComponentView realmSelectorView;
-
-        var existingModal = GameObject.Find(REALM_SELECTOR_MODAL_ID);
-
-        if (existingModal != null)
-            realmSelectorView = existingModal.GetComponent<RealmSelectorComponentView>();
-        else
-        {
-            realmSelectorView = Instantiate(realmSelectorModalPrefab);
-            realmSelectorView.name = REALM_SELECTOR_MODAL_ID;
-        }
-
-        realmSelectorView.Hide(true);
-
-        return realmSelectorView;
-    }
-
     private void IsSomeModalOpen_OnChange(bool current, bool previous)
     {
         closeAction.OnTriggered -= OnCloseActionTriggered;
@@ -279,4 +253,30 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private void OnCloseActionTriggered(DCLAction_Trigger action) =>
         OnCloseButtonPressed?.Invoke(true);
+
+    public void ShowRealmSelectorModal() =>
+        realmSelectorModal.Show();
+
+    /// <summary>
+    /// Instantiates (if does not already exists) a realm selector modal from the given prefab.
+    /// </summary>
+    /// <returns>An instance of a realm modal modal.</returns>
+    internal RealmSelectorComponentView ConfigureRealmSelectorModal()
+    {
+        RealmSelectorComponentView realmSelectorView;
+
+        var existingModal = GameObject.Find(REALM_SELECTOR_MODAL_ID);
+
+        if (existingModal != null)
+            realmSelectorView = existingModal.GetComponent<RealmSelectorComponentView>();
+        else
+        {
+            realmSelectorView = Instantiate(realmSelectorModalPrefab);
+            realmSelectorView.name = REALM_SELECTOR_MODAL_ID;
+        }
+
+        realmSelectorView.Hide(true);
+
+        return realmSelectorView;
+    }
 }
