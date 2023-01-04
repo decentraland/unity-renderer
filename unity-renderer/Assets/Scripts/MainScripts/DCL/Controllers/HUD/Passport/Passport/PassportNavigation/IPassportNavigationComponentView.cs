@@ -1,3 +1,5 @@
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
 using System;
 
 namespace DCL.Social.Passports
@@ -13,8 +15,8 @@ namespace DCL.Social.Passports
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
         void SetCollectibleEmotes(WearableItem[] emotes);
-        void SetCollectibleNames(WearableItem[] names);
-        void SetCollectibleLands(WearableItem[] lands);
+        void SetCollectibleNames(NamesResponse.NameEntry[] names);
+        void SetCollectibleLands(LandsResponse.LandEntry[] lands);
         void SetHasBlockedOwnUser(bool isBlocked);
     }
 }

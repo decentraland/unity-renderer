@@ -1,9 +1,11 @@
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
@@ -294,7 +296,7 @@ namespace DCL.Social.Passports
             nftEmotesCarousel.GenerateDotsSelector();
         }
 
-        public void SetCollectibleNames(WearableItem[] names)
+        public void SetCollectibleNames(NamesResponse.NameEntry[] names)
         {
             nftNamesCarousel.gameObject.SetActive(names.Length > 0);
             nftNamesCarousel.CleanInstantiatedItems();
@@ -318,12 +320,12 @@ namespace DCL.Social.Passports
                             showType = true,
                             type = "name",
                             marketplaceURI = "",
-                            name = names[i + j].GetName(),
-                            rarity = names[i + j].rarity,
-                            imageURI = names[i + j].ComposeThumbnailUrl()
+                            name = names[i + j].Name,
+                            rarity = "legendary",
+                            imageURI = ""
                         };
 
-                        nftIds[j] = names[i + j].id;
+                        nftIds[j] = names[i + j].ContractAddress;
                     }
                     else
                     {
@@ -338,7 +340,7 @@ namespace DCL.Social.Passports
             nftNamesCarousel.GenerateDotsSelector();
         }
 
-        public void SetCollectibleLands(WearableItem[] lands)
+        public void SetCollectibleLands(LandsResponse.LandEntry[] lands)
         {
             nftLandsCarousel.gameObject.SetActive(lands.Length > 0);
             nftLandsCarousel.CleanInstantiatedItems();
@@ -360,14 +362,14 @@ namespace DCL.Social.Passports
                         {
                             showMarketplaceButton = true,
                             showType = true,
-                            type = "land",
+                            type = lands[i + j].Category,
                             marketplaceURI = "",
-                            name = lands[i + j].GetName(),
-                            rarity = lands[i + j].rarity,
-                            imageURI = lands[i + j].ComposeThumbnailUrl()
+                            name = lands[i + j].Name,
+                            rarity = "",
+                            imageURI = lands[i + j].Image
                         };
 
-                        nftIds[j] = lands[i + j].id;
+                        nftIds[j] = lands[i + j].ContractAddress;
                     }
                     else
                     {

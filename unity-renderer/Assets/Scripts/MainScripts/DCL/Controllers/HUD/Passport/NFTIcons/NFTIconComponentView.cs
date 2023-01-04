@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IComponentModelConfig<NFTIconComponentModel>
 {
@@ -14,6 +11,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     [SerializeField] internal GameObject marketplaceSection;
     [SerializeField] internal GameObject outline;
     [SerializeField] internal ImageComponentView nftImage;
+    [SerializeField] internal TMP_Text nftTextInsteadOfImage;
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
     [SerializeField] internal Image rarityBackgroundImage;
@@ -66,7 +64,17 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         model.imageURI = imageURI;
 
-        nftImage.SetImage(imageURI);
+        if (nftImage != null)
+        {
+            nftImage.SetImage(imageURI);
+            nftImage.gameObject.SetActive(!string.IsNullOrEmpty(imageURI));
+        }
+
+        if (nftTextInsteadOfImage != null)
+        {
+            nftTextInsteadOfImage.text = model.name;
+            nftTextInsteadOfImage.gameObject.SetActive(string.IsNullOrEmpty(imageURI));
+        }
     }
 
     public void SetShowType(bool showType)
