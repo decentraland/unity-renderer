@@ -297,7 +297,7 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Settings)]
     public void GoToSectionCorrectly(ExploreSection section)
     {
-        // Arrange 
+        // Arrange
         if (section == ExploreSection.Backpack)
             DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
 
@@ -325,7 +325,7 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         Assert.AreEqual(sectionId, exploreV2MenuController.currentOpenSection);
 
-        foreach (KeyValuePair<BaseVariable<bool>, ExploreSection> sectionVisiblityVar in exploreV2MenuController.sectionsByVisiblityVar)
+        foreach (KeyValuePair<BaseVariable<bool>, ExploreSection> sectionVisiblityVar in exploreV2MenuController.sectionsByVisibilityVar)
             Assert.IsTrue(sectionVisiblityVar.Key.Get() == (sectionId == sectionVisiblityVar.Value));
 
         // would be nice to implement: exploreV2MenuView.ReceivedWithAnyArgs(1).GoToSection(default); exploreV2MenuView.Received(1).GoToSection(sectionId);
