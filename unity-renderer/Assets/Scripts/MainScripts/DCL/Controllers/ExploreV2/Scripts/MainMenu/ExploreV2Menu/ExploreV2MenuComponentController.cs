@@ -151,10 +151,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    internal IExploreV2MenuComponentView CreateView() =>
+    protected internal virtual IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentView.Create();
 
-    internal IExploreV2Analytics CreateAnalyticsController() =>
+    internal virtual IExploreV2Analytics CreateAnalyticsController() =>
         new ExploreV2Analytics.ExploreV2Analytics();
 
     internal void InitializePlacesAndEventsSection()
