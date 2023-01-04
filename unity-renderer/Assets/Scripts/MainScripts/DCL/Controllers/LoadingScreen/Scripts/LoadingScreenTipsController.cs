@@ -5,6 +5,9 @@ using Random = UnityEngine.Random;
 
 namespace DCL.LoadingScreen
 {
+    /// <summary>
+    /// Loading screen tips provider. The responsibility of this class is to create the loading tips and provide them as needed
+    /// </summary>
     public class LoadingScreenTipsController
     {
 
@@ -20,6 +23,18 @@ namespace DCL.LoadingScreen
             LoadingTip dao = new LoadingTip("Decentraland is the first fully decentralized virtual world. By voting through the DAO  ('Decentralized Autonomous Organization'), you are in control of the policies created to determine how the world behaves.", "TipsImages/DAOImg");
             LoadingTip genesis = new LoadingTip("Genesis Plaza is built and maintained by the Decentraland Foundation but is still in many ways a community project. Around here you'll find several teleports that can take you directly to special scenes marked as points of interest.", "TipsImages/GenesisPlazaImg");
             currentLoadingTips = new List<LoadingTip>() { mana, marketplace, land, wearable, dao, genesis };
+            currentRandomIndex = Random.Range(0, currentLoadingTips.Count);
+        }
+
+        //TODO: We will use this method when the WORLDs loads downloaded images and tips. This will come with the
+        // AboutResponse var on the RealmPlugin change
+        public void LoadCustomTips(List<Tuple<string, Sprite>> customList)
+        {
+            currentLoadingTips = new List<LoadingTip>();
+            foreach (var tipsTuple in customList)
+            {
+                currentLoadingTips.Add(new LoadingTip(tipsTuple.Item1, tipsTuple.Item2));
+            }
             currentRandomIndex = Random.Range(0, currentLoadingTips.Count);
         }
 

@@ -6,6 +6,7 @@ namespace DCL.LoadingScreen
 {
     /// <summary>
     /// Controls the state of the loading screen. It's responsibility is to update the view depending on the SceneController state
+    /// Creates and provides the controllers associated to the LoadingScreen: TipsController and PercentageController
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
@@ -18,6 +19,7 @@ namespace DCL.LoadingScreen
 
         private Vector2Int currentDestination;
         private readonly LoadingScreenTipsController tipsController;
+        //TODO: LoadingScreenPercentageController
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
             IWorldState worldState)

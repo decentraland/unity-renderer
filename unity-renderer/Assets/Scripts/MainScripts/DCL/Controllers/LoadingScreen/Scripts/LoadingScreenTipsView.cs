@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
 {
+    /// <summary>
+    /// View responsible of showing the corresponding provided tip by LoadingScreenTipsController
+    /// </summary>
     public class LoadingScreenTipsView : MonoBehaviour
     {
         private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(2);
