@@ -4,12 +4,12 @@ using UnityEngine;
 public class NftPageView : BaseComponentView
 {
 
-    public event Action<string> OnClickBuyNft;
+    public event Action<string, string> OnClickBuyNft;
 
     [SerializeField] private NFTIconComponentView[] nftElements;
-    private string[] nftIds = new string[4];
+    private (string, string)[] nftIds = new (string, string)[4];
 
-    public void SetPageElementsContent(NFTIconComponentModel[] nftModels, string[] ids)
+    public void SetPageElementsContent(NFTIconComponentModel[] nftModels, (string, string)[] ids)
     {
         nftIds = ids;
         for (int i = 0; i < nftModels.Length; i++)
@@ -31,7 +31,7 @@ public class NftPageView : BaseComponentView
 
     private void ClickOnBuyWearable(int index)
     {
-        OnClickBuyNft?.Invoke(nftIds[index]);
+        OnClickBuyNft?.Invoke(nftIds[index].Item1, nftIds[index].Item2);
     }
 
     public override void RefreshControl()

@@ -19,6 +19,8 @@ namespace DCL.Social.Passports
 
         internal UserProfile currentUserProfile;
 
+        private const string URL_COLLECTIBLE_NAME = "https://market.decentraland.org/accounts/{userId}?section=ens";
+        private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
         private readonly InputAction_Trigger closeWindowTrigger;
@@ -157,11 +159,18 @@ namespace DCL.Social.Passports
             ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsMatic(userId);
         }
 
-        private void ClickedBuyNft(string wearableId)
+        private void ClickedBuyNft(string id, string wearableType)
         {
-            var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == wearableId);
+            if (wearableType is "name" or "parcel" or "estate")
+            {
+                WebInterface.OpenURL((wearableType is "name" ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
+                socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
+                return;
+            }
+
+            var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == id);
             if (ownedCollectible == null)
-                ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == wearableId);
+                ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == id);
 
             if (ownedCollectible != null)
             {

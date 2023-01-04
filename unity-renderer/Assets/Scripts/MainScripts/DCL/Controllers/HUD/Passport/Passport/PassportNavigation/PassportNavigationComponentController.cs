@@ -13,8 +13,6 @@ namespace DCL.Social.Passports
     public class PassportNavigationComponentController
     {
         private const int MAX_NFT_COUNT = 40;
-        private const int NAMES_PAGE_SIZE = 4;
-        private const int LANDS_PAGE_SIZE = 4;
 
         private readonly IProfanityFilter profanityFilter;
         private readonly IWearableItemResolver wearableItemResolver;
@@ -24,12 +22,13 @@ namespace DCL.Social.Passports
         private readonly ILandsService landsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
+        private string currentUserId;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
         private readonly List<string> loadedWearables = new List<string>();
-        public event Action<string> OnClickBuyNft;
+        public event Action<string, string> OnClickBuyNft;
         public event Action OnClickCollectibles;
 
         public PassportNavigationComponentController(
@@ -52,7 +51,7 @@ namespace DCL.Social.Passports
             this.landsService = landsService;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
-            view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
+            view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
@@ -60,6 +59,7 @@ namespace DCL.Social.Passports
 
         private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
+            currentUserId = userProfile.userId;
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             string filteredName = await FilterContentAsync(userProfile.userName);
             view.SetGuestUser(userProfile.isGuest);
@@ -122,7 +122,7 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile)
         {
             var ct = new CancellationTokenSource().Token;
-            var pagePointer = namesService.GetPaginationPointer(userProfile.userId, NAMES_PAGE_SIZE, ct);
+            var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
             var namesResult = new NamesResponse.NameEntry[] { };
 
@@ -137,7 +137,8 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile)
         {
             var ct = new CancellationTokenSource().Token;
-            var pagePointer = landsService.GetPaginationPointer(userProfile.userId, LANDS_PAGE_SIZE, ct);
+            // TODO (Santi): Use userProfile.userId here!!
+            var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
             var landsResult = new LandsResponse.LandEntry[] { };
 
