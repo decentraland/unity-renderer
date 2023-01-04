@@ -215,7 +215,7 @@ public class UserContextMenu : MonoBehaviour
 
         if (isNewFriendRequestsEnabled)
         {
-            DataStore.i.HUDs.sendFriendRequest.Set(userId);
+            DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
             DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
         }
         else
@@ -235,17 +235,29 @@ public class UserContextMenu : MonoBehaviour
     {
         if (isNewFriendRequestsEnabled)
         {
-            try { await FriendsController.i.CancelRequestByUserIdAsync(userId).Timeout(TimeSpan.FromSeconds(10)); }
-            catch (Exception)
+            try
             {
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
+                FriendRequest request = await FriendsController.i.CancelRequestByUserIdAsync(userId).Timeout(TimeSpan.FromSeconds(10));
+                GetSocialAnalytics().SendFriendRequestCancelled(request.From, request.To,
+                    PlayerActionSource.ProfileContextMenu.ToString());
+            }
+            catch (Exception e)
+            {
+                FriendRequest request = FriendsController.i.GetAllocatedFriendRequestByUser(userId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    PlayerActionSource.ProfileContextMenu.ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
                 throw;
             }
         }
         else
+        {
             FriendsController.i.CancelRequestByUserId(userId);
-
-        GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
+                PlayerActionSource.ProfileContextMenu.ToString());
+        }
     }
 
     private void OnMessageButtonPressed()
@@ -327,14 +339,8 @@ public class UserContextMenu : MonoBehaviour
         }
         if ((configFlags & usesFriendsApiFlags) != 0)
         {
-            if (FriendsController.i.friends.TryGetValue(userId, out UserStatus status))
-            {
-                SetupFriendship(status.friendshipStatus);
-            }
-            else
-            {
-                SetupFriendship(FriendshipStatus.NOT_FRIEND);
-            }
+            UserStatus status = FriendsController.i.GetUserStatus(userId);
+            SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
             FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
             FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
         }
