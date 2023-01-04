@@ -14,8 +14,8 @@ namespace DCL.Chat.Notifications
         private const float NORMAL_HEADER_X_POS = 70;
         private const int NEW_NOTIFICATION_DELAY = 5000;
 
-        public event Action<string> OnClickedNotification;
-        public event Action<string> OnClickedFriendRequest;
+        public event Action<string> OnClickedChatMessage;
+        public event ITopNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
 
         [SerializeField] private ChatNotificationMessageComponentView chatNotificationComponentView;
         [SerializeField] private FriendRequestNotificationComponentView friendRequestNotificationComponentView;
@@ -157,7 +157,7 @@ namespace DCL.Chat.Notifications
 
             AddNewChatNotification(model);
         }
-    
+
         private async UniTaskVoid WaitBeforeShowingNewNotification(PrivateChatMessageNotificationModel model, CancellationToken cancellationToken)
         {
             while (isShowingNotification)
@@ -283,15 +283,15 @@ namespace DCL.Chat.Notifications
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedNotification?.Invoke(targetId);
+            OnClickedChatMessage?.Invoke(targetId);
         }
 
-        private void ClickedOnFriendRequestNotification(string friendRequestId)
+        private void ClickedOnFriendRequestNotification(string friendRequestId, string userId, bool isAcceptedFromPeer)
         {
             HideNotification();
             isShowingNotification = false;
             stackedNotifications = 0;
-            OnClickedFriendRequest?.Invoke(friendRequestId);
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
         }
 
         public override void Dispose()
