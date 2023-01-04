@@ -19,8 +19,7 @@ namespace DCL.LoadingScreen
 
         private Vector2Int currentDestination;
         private readonly LoadingScreenTipsController tipsController;
-
-        //TODO: LoadingScreenPercentageController
+        private readonly LoadingScreenPercentageController percentageController;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
             IWorldState worldState)
@@ -33,6 +32,7 @@ namespace DCL.LoadingScreen
             this.loadingScreenDataStore = loadingScreenDataStore;
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
+            percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView());
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
@@ -40,12 +40,15 @@ namespace DCL.LoadingScreen
             view.OnFadeInFinish += FadeInFinished;
 
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-            FadeInView(true);
+            view.FadeIn(true);
+
+            tipsController.StartTips();
         }
 
         public void Dispose()
         {
             view.Dispose();
+            percentageController.Dispose();
             playerDataStore.lastTeleportPosition.OnChange -= TeleportRequested;
             commonDataStore.isSignUpFlow.OnChange -= OnSignupFlow;
             sceneController.OnReadyScene -= ReadyScene;
@@ -71,7 +74,7 @@ namespace DCL.LoadingScreen
             else
 
                 //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
-                FadeInView(false);
+                view.FadeIn(false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -85,21 +88,19 @@ namespace DCL.LoadingScreen
                 currentDestination = currentDestinationCandidate;
 
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
-                FadeInView(true);
+                view.FadeIn(true);
+
+                //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
+                //This is probably going to change with the integration of WORLDS loading screen
+                tipsController.StopTips();
+                percentageController.StartLoading(currentDestination);
             }
         }
 
         private void FadeOutView()
         {
             view.FadeOut();
-            tipsController.StopTips();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
-        }
-
-        private void FadeInView(bool instant)
-        {
-            view.FadeIn(instant);
-            tipsController.StartTips();
         }
     }
 }

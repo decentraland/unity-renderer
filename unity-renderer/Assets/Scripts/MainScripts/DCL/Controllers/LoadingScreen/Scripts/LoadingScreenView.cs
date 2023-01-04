@@ -11,6 +11,8 @@ namespace DCL.LoadingScreen
         private static readonly string PATH = "_LoadingScreen";
 
         [SerializeField] private LoadingScreenTipsView tipsView;
+        [SerializeField] private LoadingScreenPercentageView percentageView;
+
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
         public static LoadingScreenView Create() =>
@@ -33,6 +35,9 @@ namespace DCL.LoadingScreen
         public LoadingScreenTipsView GetTipsView() =>
             tipsView;
 
+        public LoadingScreenPercentageView GetPercentageView() =>
+            percentageView;
+
         public void FadeIn(bool instant)
         {
             if (isVisible) return;
@@ -44,8 +49,6 @@ namespace DCL.LoadingScreen
         {
             Hide();
         }
-
-        public void UpdateLoadingMessage() { }
 
         public override void RefreshControl() { }
     }
