@@ -12,6 +12,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     [SerializeField] internal TMP_Text nftName;
     [SerializeField] internal TMP_Text nftNameMarketPlace;
     [SerializeField] internal GameObject marketplaceSection;
+    [SerializeField] internal GameObject outline;
     [SerializeField] internal ImageComponentView nftImage;
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
@@ -86,8 +87,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     public void SetRarity(string rarity)
     {
         model.rarity = rarity;
-        backgroundImage.color = nftTypesIcons.GetColor(rarity);
-        rarityBackgroundImage.color = nftTypesIcons.GetColor(rarity);
+        Color rarityColor = nftTypesIcons.GetColor(rarity);
+        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
+        rarityBackgroundImage.color = rarityColor;
     }
 
     public void SetShowMarketplaceButton(bool showMarketplaceButton)
@@ -103,6 +105,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
             return;
 
         marketplaceSection.SetActive(true);
+        outline.SetActive(true);
     }
 
     public override void OnLoseFocus()
@@ -113,6 +116,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
             return;
 
         marketplaceSection.SetActive(false);
+        outline.SetActive(false);
     }
 
 }

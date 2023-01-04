@@ -205,6 +205,8 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
+            await UniTask.SwitchToMainThread();
+
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.APPROVED,
@@ -217,6 +219,8 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
+            await UniTask.SwitchToMainThread();
+
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REJECTED,
@@ -229,6 +233,8 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
+            await UniTask.SwitchToMainThread();
+
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.CANCELLED,
@@ -241,6 +247,8 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
+            await UniTask.SwitchToMainThread();
+
             OnFriendRequestReceived?.Invoke(ToFriendRequestPayload(request.FriendRequest));
 
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage

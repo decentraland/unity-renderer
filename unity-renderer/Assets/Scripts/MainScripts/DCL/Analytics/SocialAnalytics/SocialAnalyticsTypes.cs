@@ -14,6 +14,14 @@ namespace SocialFeaturesAnalytics
         Conversation
     }
 
+    public enum ItemType
+    {
+        Wearable,
+        Emote,
+        Land,
+        Name
+    }
+
     public enum PlayerReportIssueType
     {
         None
