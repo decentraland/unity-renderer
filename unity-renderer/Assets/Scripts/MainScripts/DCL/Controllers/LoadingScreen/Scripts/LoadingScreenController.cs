@@ -19,6 +19,7 @@ namespace DCL.LoadingScreen
 
         private Vector2Int currentDestination;
         private readonly LoadingScreenTipsController tipsController;
+
         //TODO: LoadingScreenPercentageController
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
