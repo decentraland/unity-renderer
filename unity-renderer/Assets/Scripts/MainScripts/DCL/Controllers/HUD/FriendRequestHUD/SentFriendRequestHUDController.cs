@@ -144,6 +144,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.To);
+            Hide();
         }
     }
 }

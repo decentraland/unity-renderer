@@ -105,6 +105,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.From);
+            Hide();
         }
 
         private void Reject() =>
