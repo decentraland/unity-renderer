@@ -6,6 +6,7 @@ using DCL.Emotes;
 using DCL.Rendering;
 using DCL.Services;
 using DCLServices.Lambdas;
+using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace DCL
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
+            result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
 

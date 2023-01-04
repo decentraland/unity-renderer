@@ -22,5 +22,9 @@ namespace DCLServices.Lambdas.LandsService
                 ATTEMPTS_NUMBER,
                 cancellationToken,
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize), LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
+
+        public void Dispose() { }
+
+        public void Initialize() { }
     }
 }

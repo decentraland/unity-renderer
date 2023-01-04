@@ -1,8 +1,9 @@
-﻿using System.Threading;
+﻿using DCL;
+using System.Threading;
 
 namespace DCLServices.Lambdas.LandsService
 {
-    public interface ILandsService
+    public interface ILandsService : IService
     {
         LambdaResponsePagePointer<LandsResponse> GetPaginationPointer(string address, int pageSize, CancellationToken ct);
     }
