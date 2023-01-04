@@ -63,6 +63,9 @@ namespace DCL.LoadingScreen
 
         public void StopTips()
         {
+            if (!tipsView.gameObject.activeSelf) return;
+
+            tipsView.gameObject.SetActive(false);
             disposeCts.Cancel();
             disposeCts?.Dispose();
             disposeCts = null;
