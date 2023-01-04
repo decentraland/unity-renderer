@@ -39,8 +39,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
+
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
+
     public RectTransform currentTopMenuTooltipReference => sectionSelector.GetSection((int)ExploreSection.Explore).pivot;
     public RectTransform currentPlacesAndEventsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Explore).pivot;
     public RectTransform currentBackpackTooltipReference => sectionSelector.GetSection((int)ExploreSection.Backpack).pivot;
@@ -151,9 +153,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             }
         };
 
-    public void SetVisible(bool isActive)
+    public void SetVisible(bool visible)
     {
-        if (isActive)
+        if (visible)
         {
             DataStore.i.exploreV2.isInShowAnimationTransiton.Set(true);
             Show();

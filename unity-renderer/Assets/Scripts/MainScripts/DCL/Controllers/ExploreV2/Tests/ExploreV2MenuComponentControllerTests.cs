@@ -335,36 +335,42 @@ public class ExploreV2MenuComponentControllerTests
     public void UpdateRealmInfoCorrectly()
     {
         // Arrange
-        string testRealmName = "TestName";
+        ExploreV2ComponentRealmsController realmsController = new ExploreV2ComponentRealmsController(DataStore.i.realm, exploreV2MenuView);
+
+        const string TEST_REALM_NAME = "TestName";
         DataStore.i.realm.playerRealm.Set(new CurrentRealmModel
         {
-            serverName = testRealmName,
-            layer = null
+            serverName = TEST_REALM_NAME,
+            layer = null,
         });
 
-        List<RealmModel> testRealmList = new List<RealmModel>();
-        int testUsersCount = 100;
-        testRealmList.Add(new RealmModel
+        const int TEST_USERS_COUNT = 100;
+        List<RealmModel> testRealmList = new List<RealmModel>
         {
-            serverName = testRealmName,
-            layer = null,
-            usersCount = testUsersCount
-        });
+            new()
+            {
+                serverName = TEST_REALM_NAME,
+                layer = null,
+                usersCount = TEST_USERS_COUNT,
+            },
+        };
         DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
 
         // Act
-        exploreV2MenuController.UpdateRealmInfo(testRealmName);
+        realmsController.UpdateRealmInfo(TEST_REALM_NAME);
 
         // Assert
-        exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);
-        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(testRealmName);
-        exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
+        exploreV2MenuView.currentRealmViewer.Received().SetRealm(TEST_REALM_NAME);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(TEST_REALM_NAME);
+        exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(TEST_USERS_COUNT);
     }
 
     [Test]
     public void UpdateAvailableRealmsInfoCorrectly()
     {
         // Arrange
+        ExploreV2ComponentRealmsController realmsController = new ExploreV2ComponentRealmsController(DataStore.i.realm, exploreV2MenuView);
+
         RealmModel[] testRealms =
         {
             new RealmModel
@@ -385,11 +391,11 @@ public class ExploreV2MenuComponentControllerTests
         };
 
         // Act
-        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms);
+        realmsController.UpdateAvailableRealmsInfo(testRealms);
 
         // Assert
-        Assert.AreEqual(3, exploreV2MenuController.currentAvailableRealms.Count);
-        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(exploreV2MenuController.currentAvailableRealms);
+        Assert.AreEqual(3, realmsController.currentAvailableRealms.Count);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(realmsController.currentAvailableRealms);
     }
 
     [Test]

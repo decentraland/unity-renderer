@@ -11,14 +11,13 @@ using Variables.RealmsInfo;
 /// Controls different sections: Maps, Backpack, Settings
 /// their initialization and switching between them
 /// </summary>
-public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentController
+public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
-    internal readonly List<RealmRowComponentModel> currentAvailableRealms = new ();
-
     internal IExploreV2MenuComponentView view;
     internal IExploreV2Analytics exploreV2Analytics;
+    private ExploreV2ComponentRealmsController realmController;
 
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
 
@@ -75,11 +74,8 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
         view = CreateView();
         SetVisibility(false);
 
-        DataStore.i.realm.realmName.OnChange += UpdateRealmInfo;
-        UpdateRealmInfo(DataStore.i.realm.realmName.Get());
-
-        DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
-        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
+        realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
+        realmController.Initialize();
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -117,7 +113,6 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
 
         currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
-        //view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
@@ -125,8 +120,7 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
 
     public void Dispose()
     {
-        DataStore.i.realm.realmName.OnChange -= UpdateRealmInfo;
-        DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
+        realmController.Dispose();
 
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
@@ -195,9 +189,6 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
         {
             if (currentSectionIndex.Get() != (int)section)
                 currentSectionIndex.Set((int)section);
-
-            // else
-            //     view.GoToSection(section);
 
             SetSectionTargetVisibility(section, toVisible: true);
         }
@@ -298,15 +289,50 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
     private static void OnAfterShowAnimation() =>
         CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
-    private void UpdateRealmInfo(string current, string previous)
+    internal void UpdateProfileInfo(UserProfile profile)
     {
-        if (string.IsNullOrEmpty(current))
-            return;
-
-        UpdateRealmInfo(current);
+        view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
+        view.currentProfileCard.SetProfileName(profile.userName);
+        view.currentProfileCard.SetProfileAddress(profile.ethAddress);
+        view.currentProfileCard.SetProfilePicture(profile.face256SnapshotURL);
     }
 
-    internal void UpdateRealmInfo(string realmName)
+    internal void OnCloseButtonPressed(bool fromShortcut)
+    {
+        SetVisibility(false);
+        exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+    }
+}
+
+public class ExploreV2ComponentRealmsController: IDisposable
+{
+    private readonly DataStore_Realm realmModel;
+    private readonly IExploreV2MenuComponentView view;
+
+    internal readonly List<RealmRowComponentModel> currentAvailableRealms = new ();
+
+    public ExploreV2ComponentRealmsController(DataStore_Realm realmModel, IExploreV2MenuComponentView view)
+    {
+        this.realmModel = realmModel;
+        this.view = view;
+    }
+
+    public void Initialize()
+    {
+        realmModel.realmName.OnChange += UpdateRealmInfo;
+        realmModel.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
+
+        UpdateRealmInfo(realmModel.realmName.Get());
+        UpdateAvailableRealmsInfo(realmModel.realmsInfo.Get());
+    }
+
+    public void Dispose()
+    {
+        realmModel.realmName.OnChange -= UpdateRealmInfo;
+        realmModel.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
+    }
+
+    internal void UpdateRealmInfo(string realmName, string _ = "")
     {
         if (string.IsNullOrEmpty(realmName))
             return;
@@ -351,17 +377,6 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
         view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
     }
 
-    private static string ServerNameForCurrentRealm()
-    {
-        if (DataStore.i.realm.playerRealm.Get() != null)
-            return DataStore.i.realm.playerRealm.Get().serverName;
-
-        if (DataStore.i.realm.playerRealmAboutConfiguration.Get() != null)
-            return DataStore.i.realm.playerRealmAboutConfiguration.Get().RealmName;
-
-        return "";
-    }
-
     private bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)
     {
         if (newRealmList == null)
@@ -384,17 +399,14 @@ public sealed class ExploreV2MenuComponentController : IExploreV2MenuComponentCo
         return needToRefresh;
     }
 
-    internal void UpdateProfileInfo(UserProfile profile)
+    private static string ServerNameForCurrentRealm()
     {
-        view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
-        view.currentProfileCard.SetProfileName(profile.userName);
-        view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetProfilePicture(profile.face256SnapshotURL);
-    }
+        if (DataStore.i.realm.playerRealm.Get() != null)
+            return DataStore.i.realm.playerRealm.Get().serverName;
 
-    internal void OnCloseButtonPressed(bool fromShortcut)
-    {
-        SetVisibility(false);
-        exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+        if (DataStore.i.realm.playerRealmAboutConfiguration.Get() != null)
+            return DataStore.i.realm.playerRealmAboutConfiguration.Get().RealmName;
+
+        return "";
     }
 }

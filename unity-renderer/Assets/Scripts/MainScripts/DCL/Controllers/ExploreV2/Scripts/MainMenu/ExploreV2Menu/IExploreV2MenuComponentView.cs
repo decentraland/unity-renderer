@@ -80,8 +80,8 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// Shows/Hides the game object of the explore menu.
     /// </summary>
-    /// <param name="isActive">True to show it.</param>
-    void SetVisible(bool isActive);
+    /// <param name="visible">True to show it.</param>
+    void SetVisible(bool visible);
 
     /// <summary>
     /// Open a section.
