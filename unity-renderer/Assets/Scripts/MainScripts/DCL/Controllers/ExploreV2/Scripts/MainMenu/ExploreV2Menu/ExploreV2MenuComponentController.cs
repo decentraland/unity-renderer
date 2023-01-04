@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Variables.RealmsInfo;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -17,12 +16,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
     internal IExploreV2Analytics exploreV2Analytics;
-    private ExploreV2ComponentRealmsController realmController;
 
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
 
     internal ExploreSection currentOpenSection;
     internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisibilityVar;
+    private ExploreV2ComponentRealmsController realmController;
 
     private MouseCatcher mouseCatcher;
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
@@ -42,8 +41,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
 
+    internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     private BaseVariable<bool> isPlacesAndEventsSectionInitialized => DataStore.i.exploreV2.isPlacesAndEventsSectionInitialized;
     private BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
@@ -65,6 +64,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
         };
+
         sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
         sectionsByVisibilityVar = sectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
 
@@ -76,11 +76,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
         realmController.Initialize();
+        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
-        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
+
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
 

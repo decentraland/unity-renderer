@@ -36,6 +36,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private RectTransform profileCardRectTransform;
     private RealmSelectorComponentView realmSelectorModal;
+    private bool isOpeningSectionThisFrame;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
@@ -139,11 +140,18 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
             if (isOn)
             {
+                if (isOpeningSectionThisFrame)
+                    return;
+
+                isOpeningSectionThisFrame = true;
+                StartCoroutine(ResetSectionOpenLock());
+
                 // If not an explorer Section, because we do not Show/Hide it
                 if (sectionView != null)
                     sectionView.Show();
 
                 OnSectionOpen?.Invoke(sectionId);
+
                 Debug.Log($"VV: OnSectionOpened SHOW {sectionId}");
             }
             else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
@@ -152,6 +160,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                 Debug.Log($"VV: OnSectionOpened HIDE {sectionId}");
             }
         };
+
+    private IEnumerator ResetSectionOpenLock()
+    {
+        yield return null;
+        isOpeningSectionThisFrame = false;
+    }
 
     public void SetVisible(bool visible)
     {
@@ -165,16 +179,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             if (sectionToGo != null && sectionToGo.IsActive())
                 GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
             else
-            {
-                List<ISectionToggle> allSections = sectionSelector.GetAllSections();
-
-                foreach (ISectionToggle section in allSections)
-                    if (section != null && section.IsActive())
-                    {
-                        section.SelectToggle(reselectIfAlreadyOn: true);
-                        break;
-                    }
-            }
+                GoToFirstActiveSection();
         }
         else
         {
@@ -183,8 +188,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
+    private void GoToFirstActiveSection()
+    {
+        foreach (ISectionToggle section in sectionSelector.GetAllSections())
+            if (section != null && section.IsActive())
+            {
+                section.SelectToggle(reselectIfAlreadyOn: true);
+                break;
+            }
+    }
+
     public void GoToSection(ExploreSection section)
     {
+        Debug.Log($"Go to {section}");
         sectionSelector.GetSection((int)section)?.SelectToggle(reselectIfAlreadyOn: true);
 
         AudioScriptableObjects.dialogOpen.Play(true);
