@@ -20,7 +20,6 @@ namespace DCL.LoadingScreen
         {
             base.Start();
             showHideAnimator.OnWillFinishStart += OnFadeInFinish;
-            showHideAnimator.OnWillFinishHide += OnFadeOutFinish;
 
             FadeIn(true);
         }
@@ -29,15 +28,16 @@ namespace DCL.LoadingScreen
         {
             base.Dispose();
             showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
-            showHideAnimator.OnWillFinishHide -= OnFadeOutFinish;
         }
+
+        public LoadingScreenTipsView GetTipsView() =>
+            tipsView;
 
         public void FadeIn(bool instant)
         {
             if (isVisible) return;
 
             Show(instant);
-            tipsView.ShowTips();
         }
 
         public void FadeOut()
@@ -45,16 +45,8 @@ namespace DCL.LoadingScreen
             Hide();
         }
 
-        public void SetLoadingTipsController(LoadingScreenTipsController tipsController)
-        {
-            tipsView.SetLoadingTipsController(tipsController);
-        }
-
         public void UpdateLoadingMessage() { }
 
         public override void RefreshControl() { }
-
-        private void OnFadeOutFinish(ShowHideAnimator obj) =>
-            tipsView.HideTips();
     }
 }

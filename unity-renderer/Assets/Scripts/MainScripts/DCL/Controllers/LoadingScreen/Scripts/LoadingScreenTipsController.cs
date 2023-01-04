@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,21 +12,19 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenTipsController
     {
+        private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(2);
+
         private List<LoadingTip> currentLoadingTips;
         private int currentRandomIndex;
 
-        public void LoadDefaults()
+        private readonly LoadingScreenTipsView tipsView;
+        private CancellationTokenSource disposeCts;
+
+        public LoadingScreenTipsController(LoadingScreenTipsView tipsView)
         {
-            var mana = new LoadingTip("MANA is Decentraland’s virtual currency. Use it to buy LAND and other premium items, vote on key policies and pay platform fees.", "TipsImages/ManaImg");
-            var marketplace = new LoadingTip("Buy and sell LAND, Estates, Avatar wearables and names in the Decentraland Marketplace: stocking the very best digital goods and paraphernalia backed by the ethereum blockchain.", "TipsImages/MarketplaceImg");
-            var land = new LoadingTip("Decentraland is made up of over 90,000 LANDs: virtual spaces backed by cryptographic tokens. Only LAND owners can determine the content that sits on their LAND.", "TipsImages/LandImg");
-            var wearable = new LoadingTip("Except for the default set of wearables you get when you start out, each wearable model has a limited supply. The rarest ones can get to be super valuable. You can buy and sell them in the Marketplace.", "TipsImages/WearablesImg");
-            var dao = new LoadingTip("Decentraland is the first fully decentralized virtual world. By voting through the DAO  ('Decentralized Autonomous Organization'), you are in control of the policies created to determine how the world behaves.", "TipsImages/DAOImg");
-            var genesis = new LoadingTip("Genesis Plaza is built and maintained by the Decentraland Foundation but is still in many ways a community project. Around here you'll find several teleports that can take you directly to special scenes marked as points of interest.", "TipsImages/GenesisPlazaImg");
+            this.tipsView = tipsView;
 
-            currentLoadingTips = new List<LoadingTip>
-                { mana, marketplace, land, wearable, dao, genesis };
-
+            currentLoadingTips = tipsView.defaultTips;
             currentRandomIndex = Random.Range(0, currentLoadingTips.Count);
         }
 
@@ -42,27 +42,57 @@ namespace DCL.LoadingScreen
 
         public LoadingTip GetNextLoadingTip()
         {
-            currentRandomIndex = (currentRandomIndex + 1) % currentLoadingTips.Count;
+            //We select a random value that is not the current one
+            int randomIndexCandidate = Random.Range(0, currentLoadingTips.Count);
+
+            if (randomIndexCandidate.Equals(currentRandomIndex))
+                randomIndexCandidate = (currentRandomIndex + 1) % currentLoadingTips.Count;
+
+            currentRandomIndex = randomIndexCandidate;
             return currentLoadingTips[currentRandomIndex];
         }
 
-        [Serializable]
-        public class LoadingTip
+        private async UniTask IterateTipsAsync()
         {
-            public string text;
-            public Sprite sprite;
-
-            public LoadingTip(string text, string spriteURL)
+            while (true)
             {
-                this.text = text;
-                sprite = Resources.Load<Sprite>(spriteURL);
+                tipsView.ShowTip(GetNextLoadingTip());
+                await UniTask.Delay(SHOWING_TIME_TIPS, cancellationToken: disposeCts.Token);
             }
+        }
 
-            public LoadingTip(string text, Sprite sprite)
-            {
-                this.text = text;
-                this.sprite = sprite;
-            }
+        public void StopTips()
+        {
+            disposeCts.Cancel();
+            disposeCts?.Dispose();
+            disposeCts = null;
+        }
+
+        public void StartTips()
+        {
+            if (disposeCts != null) return;
+
+            disposeCts = new CancellationTokenSource();
+            IterateTipsAsync();
+        }
+    }
+
+    [Serializable]
+    public class LoadingTip
+    {
+        public string text;
+        public Sprite sprite;
+
+        public LoadingTip(string text, string spriteURL)
+        {
+            this.text = text;
+            sprite = Resources.Load<Sprite>(spriteURL);
+        }
+
+        public LoadingTip(string text, Sprite sprite)
+        {
+            this.text = text;
+            this.sprite = sprite;
         }
     }
 }

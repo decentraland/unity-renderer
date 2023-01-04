@@ -32,16 +32,15 @@ namespace DCL.LoadingScreen
             this.worldState = worldState;
             this.loadingScreenDataStore = loadingScreenDataStore;
 
-            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-
-            tipsController = new LoadingScreenTipsController();
-            tipsController.LoadDefaults();
-            view.SetLoadingTipsController(tipsController);
+            tipsController = new LoadingScreenTipsController(view.GetTipsView());
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
+            FadeInView(true);
         }
 
         public void Dispose()
@@ -72,7 +71,7 @@ namespace DCL.LoadingScreen
             else
 
                 //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
-                view.FadeIn(false);
+                FadeInView(false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -86,14 +85,21 @@ namespace DCL.LoadingScreen
                 currentDestination = currentDestinationCandidate;
 
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
-                view.FadeIn(true);
+                FadeInView(true);
             }
         }
 
         private void FadeOutView()
         {
             view.FadeOut();
+            tipsController.StopTips();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+        }
+
+        private void FadeInView(bool instant)
+        {
+            view.FadeIn(instant);
+            tipsController.StartTips();
         }
     }
 }
