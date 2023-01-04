@@ -7,7 +7,14 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.RendererServices {
-public class ClientCRDTService
+public interface IClientCRDTService
+{
+  UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request);
+
+  UniTask<CRDTManyMessages> PullCrdt(PullCRDTRequest request);
+}
+
+public class ClientCRDTService : IClientCRDTService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +23,7 @@ public class ClientCRDTService
       this.module = module;
   }
 
+  
   public UniTask<CRDTResponse> SendCrdt(CRDTManyMessages request)
   {
       return module.CallUnaryProcedure<CRDTResponse>("SendCrdt", request);
@@ -25,5 +33,6 @@ public class ClientCRDTService
   {
       return module.CallUnaryProcedure<CRDTManyMessages>("PullCrdt", request);
   }
+
 }
 }

@@ -1,0 +1,37 @@
+{
+    "name": "DCL.ECSComponents.UIInput.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f3eba44237ea4969b29674e332426425",
+        "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:9b110c16a6b8f4d54ae0f56af2163334",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:a3f19928bfc54c8ca5660ce7ba0c4d75",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:d8d40e815f1e74d4f821388b7c13bf78",
+        "GUID:4cbefd453333a0b4dbf7e4045dacb0bd",
+        "GUID:1fa4d2c8ae751fb46a83e1fdc59823dc",
+        "GUID:3c7b57a14671040bd8c549056adc04f5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

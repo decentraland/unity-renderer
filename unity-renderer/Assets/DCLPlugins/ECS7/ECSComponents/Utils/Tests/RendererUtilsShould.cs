@@ -11,7 +11,7 @@ using UnityEngine;
 public class RendererUtilsShould
 {
     private GameObject gameObject;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -46,7 +46,7 @@ public class RendererUtilsShould
         Assert.IsNotNull(rendereable);
         Assert.AreNotEqual(sceneDataMeshesCount, DataStore.i.sceneWorldObjects.sceneData[sceneNumber].meshes.Count());
     }
-    
+
     [Test]
     public void RemoveRendereableCorrectly()
     {
@@ -60,7 +60,7 @@ public class RendererUtilsShould
         var renderers = gameObject.GetComponentsInChildren<Renderer>(true);
         var rendereable = ECSComponentsUtils.AddRendereableToDataStore(sceneNumber, componentId, mesh, gameObject,renderers);
         int sceneDataMeshesCount = sceneData.meshes.Count();
-        
+
         // Act
         ECSComponentsUtils.RemoveRendereableFromDataStore(sceneNumber, rendereable);
 

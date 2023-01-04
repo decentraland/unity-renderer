@@ -42,7 +42,7 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
+            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
 
             return wrapper;
         }
@@ -52,7 +52,7 @@ namespace DCL.GLTFast.Wrappers
             string fileName = uri.AbsolutePath.Substring(uri.AbsolutePath.LastIndexOf('/') + 1);
             fileToUrl(fileName, out string url);
 
-            WebRequestAsyncOperation asyncOp = webRequestController.GetTexture(
+            var asyncOp = webRequestController.GetTexture(
                 url: url,
                 timeout: 30,
                 disposeOnCompleted: false,
@@ -63,7 +63,7 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
+            if (!wrapper.Success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
 
             return wrapper;
         }

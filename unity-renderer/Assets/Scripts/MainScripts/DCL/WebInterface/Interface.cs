@@ -845,6 +845,12 @@ namespace DCL.Interface
             public string userName;
         }
 
+        [Serializable]
+        private class ErrorPayload
+        {
+            public string error;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -1697,7 +1703,11 @@ namespace DCL.Interface
             SendMessage("RequestUserProfile", stringPayload);
         }
 
-        public static void ReportAvatarFatalError(string payload) { SendJson("ReportAvatarFatalError", payload); }
+        public static void ReportAvatarFatalError(string payload)
+        {
+            ErrorPayload errorPayload = new ErrorPayload() { error = payload };
+            SendMessage("ReportAvatarFatalError", errorPayload);
+        }
 
         public static void UnpublishScene(Vector2Int sceneCoordinates)
         {

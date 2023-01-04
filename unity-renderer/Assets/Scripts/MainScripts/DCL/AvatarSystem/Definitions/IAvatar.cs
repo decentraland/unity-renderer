@@ -27,6 +27,8 @@ namespace AvatarSystem
         void SetImpostorTexture(Texture2D impostorTexture);
         void SetImpostorTint(Color color);
         Transform[] GetBones();
+
+        Renderer GetMainRenderer();
     }
 
 }
