@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 

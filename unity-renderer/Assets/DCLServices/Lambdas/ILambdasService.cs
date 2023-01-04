@@ -11,8 +11,8 @@ namespace DCLServices.Lambdas
     /// </summary>
     public interface ILambdasService : IService
     {
-        protected const int DEFAULT_TIMEOUT = 30;
-        protected const int DEFAULT_ATTEMPTS_NUMBER = 3;
+        public const int DEFAULT_TIMEOUT = 30;
+        public const int DEFAULT_ATTEMPTS_NUMBER = 3;
 
         /// <summary>
         /// Make a Post request to Lambdas2.
