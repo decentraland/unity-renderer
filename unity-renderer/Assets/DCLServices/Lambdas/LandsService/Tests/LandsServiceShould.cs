@@ -4,18 +4,17 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DCLServices.Lambdas.NamesService.Tests
+namespace DCLServices.Lambdas.LandsService.Tests
 {
-    [TestFixture]
-    public class NameServiceShould
+    public class LandsServiceShould
     {
-        private NamesService namesService;
+        private LandsService namesService;
         private ILambdasService lambdasService;
 
         [SetUp]
         public void SetUp()
         {
-            namesService = new NamesService();
+            namesService = new LandsService();
 
             var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             serviceLocator.Register<ILambdasService>(() => lambdasService = Substitute.For<ILambdasService>());
@@ -31,15 +30,15 @@ namespace DCLServices.Lambdas.NamesService.Tests
 
             var ct = new CancellationTokenSource().Token;
             var pagePointer = namesService.GetPaginationPointer(ADDRESS, PAGE_SIZE, ct);
-            await pagePointer.GetPageAsync(3, CancellationToken.None);
+            await pagePointer.GetPageAsync(12, CancellationToken.None);
 
             lambdasService.Received(1)
-                          .Get<NamesResponse>(
-                               NamesService.END_POINT + ADDRESS,
-                               NamesService.TIMEOUT,
-                               NamesService.ATTEMPTS_NUMBER,
+                          .Get<LandsResponse>(
+                               LandsService.END_POINT + ADDRESS,
+                               LandsService.TIMEOUT,
+                               LandsService.ATTEMPTS_NUMBER,
                                ct,
-                               ("pageSize", "30"), ("pageNum", "3"));
+                               ("pageSize", PAGE_SIZE.ToString()), ("pageNum", "12"));
         }
     }
 }

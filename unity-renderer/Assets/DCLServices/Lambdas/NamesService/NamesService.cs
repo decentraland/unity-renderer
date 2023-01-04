@@ -7,6 +7,8 @@ namespace DCLServices.Lambdas.NamesService
     public class NamesService : INamesService, ILambdaServiceConsumer<NamesResponse>
     {
         internal const string END_POINT = "nfts/names/";
+        internal const int TIMEOUT = ILambdasService.DEFAULT_TIMEOUT;
+        internal const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
 
         private Service<ILambdasService> lambdasService;
 
@@ -16,8 +18,8 @@ namespace DCLServices.Lambdas.NamesService
         UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<NamesResponse>(endPoint,
-                ILambdasService.DEFAULT_TIMEOUT,
-                ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+                TIMEOUT,
+                ATTEMPTS_NUMBER,
                 cancellationToken,
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize), LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
