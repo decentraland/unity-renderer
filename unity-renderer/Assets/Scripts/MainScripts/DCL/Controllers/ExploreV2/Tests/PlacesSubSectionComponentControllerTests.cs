@@ -42,10 +42,10 @@ public class PlacesSubSectionComponentControllerTests
     public void DoFirstLoadingCorrectly()
     {
         // Arrange
-        placesSubSectionComponentController.reloadPlaces = true;
+        placesSubSectionComponentController.firstLoading = true;
 
         // Act
-        placesSubSectionComponentController.FirstLoading();
+        placesSubSectionComponentController.RequestAllPlaces();
 
         // Assert
         placesSubSectionComponentView.Received().RestartScrollViewPosition();

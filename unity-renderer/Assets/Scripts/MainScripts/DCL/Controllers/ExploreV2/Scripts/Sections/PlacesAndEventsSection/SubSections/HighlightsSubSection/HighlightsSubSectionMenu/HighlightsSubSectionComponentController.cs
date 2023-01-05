@@ -72,6 +72,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+
         // view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
         // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
 
@@ -115,7 +116,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         reloadHighlights = true;
     }
 
-    private bool firstLoading = true;
+    internal bool firstLoading = true;
 
     public void RequestAllPlacesAndEvents()
     {
@@ -125,13 +126,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             reloadHighlights = true;
             lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         }
-        else if (!reloadHighlights)
+        else if (!reloadHighlights || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
             return;
 
         view.RestartScrollViewPosition();
-
-        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return;
 
         view.SetTrendingPlacesAndEventsAsLoading(true);
         view.SetFeaturedPlacesAsLoading(true);
@@ -158,6 +156,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             (placeList) =>
             {
                 placesFromAPI = placeList;
+
                 eventsAPIApiController.GetAllEvents(
                     (eventList) =>
                     {
@@ -185,9 +184,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         // Places
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
+
         List<HotSceneInfo> placesFiltered = placesFromAPI
-                                            .Take(DEFAULT_NUMBER_OF_TRENDING_PLACES)
-                                            .ToList();
+                                           .Take(DEFAULT_NUMBER_OF_TRENDING_PLACES)
+                                           .ToList();
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -197,10 +197,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         // Events
         List<EventCardComponentModel> events = new List<EventCardComponentModel>();
+
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI
-            .Where(e => e.highlighted)
-            .Take(placesFiltered.Count)
-            .ToList();
+                                                .Where(e => e.highlighted)
+                                                .Take(placesFiltered.Count)
+                                                .ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
@@ -215,6 +216,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered;
+
         if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
         {
             int numberOfPlaces = placesFromAPI.Count >= (DEFAULT_NUMBER_OF_TRENDING_PLACES + DEFAULT_NUMBER_OF_FEATURED_PLACES)
@@ -222,17 +224,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                 : placesFromAPI.Count - DEFAULT_NUMBER_OF_TRENDING_PLACES;
 
             placesFiltered = placesFromAPI
-                             .GetRange(DEFAULT_NUMBER_OF_TRENDING_PLACES, numberOfPlaces)
-                             .ToList();
+                            .GetRange(DEFAULT_NUMBER_OF_TRENDING_PLACES, numberOfPlaces)
+                            .ToList();
         }
-        else if (placesFromAPI.Count > 0)
-        {
-            placesFiltered = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
-        }
-        else
-        {
-            placesFiltered = new List<HotSceneInfo>();
-        }
+        else if (placesFromAPI.Count > 0) { placesFiltered = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList(); }
+        else { placesFiltered = new List<HotSceneInfo>(); }
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -246,9 +242,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void LoadLiveEvents()
     {
         List<EventCardComponentModel> events = new List<EventCardComponentModel>();
+
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(x => x.live)
                                                               .Take(DEFAULT_NUMBER_OF_LIVE_EVENTS)
                                                               .ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
@@ -290,7 +288,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
-    internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
+    internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler)
+    {
+        friendsTrackerController.AddHandler(friendsHandler);
+    }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
@@ -346,7 +347,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //    });
     }
 
-    internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
+    internal void GoToEventsSubSection()
+    {
+        OnGoToEventsSubSection?.Invoke();
+    }
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {

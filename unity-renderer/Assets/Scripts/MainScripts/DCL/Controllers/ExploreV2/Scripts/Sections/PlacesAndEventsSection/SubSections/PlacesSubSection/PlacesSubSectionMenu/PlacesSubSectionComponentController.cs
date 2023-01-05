@@ -94,7 +94,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = true;
     }
 
-    private bool firstLoading = true;
+    internal bool firstLoading = true;
 
     public void RequestAllPlaces()
     {
@@ -104,13 +104,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             reloadPlaces = true;
             lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         }
-        else if (!reloadPlaces)
+        else if (!reloadPlaces || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
             return;
 
         view.RestartScrollViewPosition();
-
-        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return;
 
         currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.SetPlacesAsLoading(true);
