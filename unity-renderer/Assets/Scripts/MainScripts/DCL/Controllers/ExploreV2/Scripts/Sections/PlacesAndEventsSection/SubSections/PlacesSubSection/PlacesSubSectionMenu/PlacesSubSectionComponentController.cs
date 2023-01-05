@@ -36,29 +36,25 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 5;
-    internal const int SHOW_MORE_ROWS_INCREMENT = 3;
-    internal IPlacesSubSectionComponentView view;
-    internal IPlacesAPIController placesAPIApiController;
-    internal FriendTrackerController friendsTrackerController;
-    internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
-    internal int currentPlacesShowed = 0;
-    internal bool reloadPlaces = false;
-    internal IExploreV2Analytics exploreV2Analytics;
-    internal float lastTimeAPIChecked = 0;
-    private DataStore dataStore;
+    private const int SHOW_MORE_ROWS_INCREMENT = 3;
 
-    public PlacesSubSectionComponentController(
-        IPlacesSubSectionComponentView view,
-        IPlacesAPIController placesAPI,
-        IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics,
-        DataStore dataStore)
+    internal readonly IPlacesSubSectionComponentView view;
+    internal readonly IPlacesAPIController placesAPIApiController;
+    internal readonly FriendTrackerController friendsTrackerController;
+    private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly DataStore dataStore;
+
+    private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
+
+    internal List<HotSceneInfo> placesFromAPI = new ();
+
+    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        this.view = view;
-        this.view.OnReady += FirstLoading;
-        // view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, INITIAL_NUMBER_OF_ROWS, RequestAllPlacesFromAPI);
 
+        this.view = view;
+
+        this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -76,58 +72,28 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.ConfigurePools();
     }
 
-    internal void FirstLoading()
+    public void Dispose()
     {
-        // reloadPlaces = true;
-        // lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        // RequestAllPlaces();
+        view.OnReady -= FirstLoading;
+        view.OnInfoClicked -= ShowPlaceDetailedInfo;
+        view.OnJumpInClicked -= JumpInToPlace;
+        view.OnPlacesSubSectionEnable -= RequestAllPlaces;
+        view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
+        view.OnShowMorePlacesClicked -= ShowMorePlaces;
 
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+
+        cardsRequestHandler.Dispose();
+    }
+
+    private void FirstLoading()
+    {
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        cardsRequestHandler.Initialize();
     }
 
-    internal void OnExploreV2Open(bool current, bool previous)
-    {
-        if (current)
-            return;
-
-        reloadPlaces = true;
-    }
-
-    internal bool firstLoading = true;
-
-    public void RequestAllPlaces()
-    {
-        if (firstLoading)
-        {
-            firstLoading = false;
-            reloadPlaces = true;
-            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        }
-        else if (!reloadPlaces || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
-            return;
-
-
-        currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
-
-        view.RestartScrollViewPosition();
-        view.SetPlacesAsLoading(true);
-        view.SetShowMorePlacesButtonActive(false);
-
-        reloadPlaces = false;
-        lastTimeAPIChecked = Time.realtimeSinceStartup;
-
-        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
-            RequestAllPlacesFromAPI();
-        else
-            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += DelayedRequestAllPlacesFromAPI;
-    }
-
-    private void DelayedRequestAllPlacesFromAPI(bool current, bool previous)
-    {
-        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= DelayedRequestAllPlacesFromAPI;
-        RequestAllPlacesFromAPI();
-    }
+    public void RequestAllPlaces() =>
+        cardsRequestHandler.RequestAll();
 
     internal void RequestAllPlacesFromAPI()
     {
@@ -140,7 +106,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentPlacesShowed).ToList();
+        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(cardsRequestHandler.CurrentCardsShown).ToList();
+
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
@@ -148,21 +115,19 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         view.SetPlaces(places);
-        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(cardsRequestHandler.CurrentCardsShown < placesFromAPI.Count);
     }
 
     public void ShowMorePlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
 
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentPlacesShowed / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentPlacesShowed;
-        int numberOfItemsToAdd = view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT + numberOfExtraItemsToAdd;
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)cardsRequestHandler.CurrentCardsShown / view.currentPlacesPerRow) * view.currentPlacesPerRow) - cardsRequestHandler.CurrentCardsShown;
+        int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        if (currentPlacesShowed + numberOfItemsToAdd <= placesFromAPI.Count)
-            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, numberOfItemsToAdd);
-        else
-            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, placesFromAPI.Count - currentPlacesShowed);
+        List<HotSceneInfo> placesFiltered = cardsRequestHandler.CurrentCardsShown + numberOfItemsToAdd <= placesFromAPI.Count
+            ? placesFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, numberOfItemsToAdd)
+            : placesFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, placesFromAPI.Count - cardsRequestHandler.CurrentCardsShown);
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -172,23 +137,12 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         view.AddPlaces(places);
 
-        currentPlacesShowed += numberOfItemsToAdd;
-        if (currentPlacesShowed > placesFromAPI.Count)
-            currentPlacesShowed = placesFromAPI.Count;
+        cardsRequestHandler.CurrentCardsShown += numberOfItemsToAdd;
 
-        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
-    }
+        if (cardsRequestHandler.CurrentCardsShown > placesFromAPI.Count)
+            cardsRequestHandler.CurrentCardsShown = placesFromAPI.Count;
 
-    public void Dispose()
-    {
-        // view.OnReady -= FirstLoading;
-        view.OnInfoClicked -= ShowPlaceDetailedInfo;
-        view.OnJumpInClicked -= JumpInToPlace;
-        view.OnPlacesSubSectionEnable -= RequestAllPlaces;
-        view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
-        view.OnShowMorePlacesClicked -= ShowMorePlaces;
-        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+        view.SetShowMorePlacesButtonActive(cardsRequestHandler.CurrentCardsShown < placesFromAPI.Count);
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
@@ -207,7 +161,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
-    internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
+    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
+        friendsTrackerController.AddHandler(friendsHandler);
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {
