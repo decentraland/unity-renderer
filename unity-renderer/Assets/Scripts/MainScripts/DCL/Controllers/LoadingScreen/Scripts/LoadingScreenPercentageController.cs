@@ -46,7 +46,6 @@ namespace DCL.LoadingScreen
                 Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(currentScene.sceneData.sceneNumber))
             {
                 loadingScreenPercentageView.SetLoadingPercentage(0);
-                loadingScreenPercentageView.SetLoadingMessage($"Downloading Assets...0%");
                 currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.OnResourcesStatusUpdate += ResourcesStatusUpdate;
                 currentScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
             }
@@ -66,9 +65,7 @@ namespace DCL.LoadingScreen
 
         private void ResourcesStatusUpdate()
         {
-            int downloadPercentage = (int)currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.loadingProgress;
-            loadingScreenPercentageView.SetLoadingPercentage(downloadPercentage/100f);
-            loadingScreenPercentageView.SetLoadingMessage($"Downloading Assets...{downloadPercentage}%");
+            loadingScreenPercentageView.SetLoadingPercentage((int)currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.loadingProgress);
         }
 
         public void StartLoading(Vector2Int newDestination)
@@ -76,7 +73,6 @@ namespace DCL.LoadingScreen
             loadingScreenPercentageView.gameObject.SetActive(true);
             currentDestination = newDestination;
             loadingScreenPercentageView.SetLoadingPercentage(0);
-            loadingScreenPercentageView.SetLoadingMessage("Fetching scene...");
         }
 
     }

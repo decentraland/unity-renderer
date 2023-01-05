@@ -13,15 +13,10 @@ namespace DCL.LoadingScreen
         [SerializeField] private TMP_Text loadingMessage;
         [SerializeField] private Image loadingPercentage;
 
-
-        public void SetLoadingMessage(string message)
+        public void SetLoadingPercentage(int percentage)
         {
-            loadingMessage.text = message;
-        }
-
-        public void SetLoadingPercentage(float percentage)
-        {
-            loadingPercentage.fillAmount = percentage;
+            loadingMessage.text = $"Loading scenes, 3D models, and sounds... {percentage}% complete";
+            loadingPercentage.fillAmount = percentage/100f;
         }
 
     }
