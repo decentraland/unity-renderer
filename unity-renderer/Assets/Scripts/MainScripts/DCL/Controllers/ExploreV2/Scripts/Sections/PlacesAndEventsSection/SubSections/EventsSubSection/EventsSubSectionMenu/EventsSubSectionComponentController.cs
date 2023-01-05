@@ -70,6 +70,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+
         // view.OnEventsSubSectionEnable += RequestAllEvents;
         // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
 
@@ -107,7 +108,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         reloadEvents = true;
     }
 
-    private bool firstLoading = true;
+    internal bool firstLoading = true;
 
     public void RequestAllEvents()
     {
@@ -117,13 +118,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             reloadEvents = true;
             lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         }
-        else if (!reloadEvents)
+        else if (!reloadEvents || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
             return;
 
         view.RestartScrollViewPosition();
-
-        if (Time.realtimeSinceStartup < lastTimeAPIChecked + PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return;
 
         currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
 
@@ -153,10 +151,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                 eventsFromAPI = eventList;
                 OnEventsFromAPIUpdated?.Invoke();
             },
-            (error) =>
-            {
-                Debug.LogError($"Error receiving events from the API: {error}");
-            });
+            (error) => { Debug.LogError($"Error receiving events from the API: {error}"); });
     }
 
     internal void OnRequestedEventsUpdated()
@@ -234,6 +229,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.AddUpcomingEvents(upcomingEvents);
 
         currentUpcomingEventsShowed += numberOfItemsToAdd;
+
         if (currentUpcomingEventsShowed > eventsFromAPI.Count)
             currentUpcomingEventsShowed = eventsFromAPI.Count;
 

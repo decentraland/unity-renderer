@@ -51,17 +51,18 @@ public class HighlightsSubSectionComponentControllerTests
     public void DoFirstLoadingCorrectly()
     {
         // Arrange
-        highlightsSubSectionComponentController.reloadHighlights = true;
+        highlightsSubSectionComponentController.firstLoading = true;
 
         // Act
-        highlightsSubSectionComponentController.FirstLoading();
+        highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
 
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
         highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
         highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
-        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
         Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
+
+        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
     }
 
     [Test]

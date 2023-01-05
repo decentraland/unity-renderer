@@ -19,7 +19,7 @@ public class EventsSubSectionComponentControllerTests
         // This is need to sue the TeleportController
         ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
         DCL.Environment.Setup(serviceLocator);
-        
+
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
@@ -41,10 +41,10 @@ public class EventsSubSectionComponentControllerTests
     public void DoFirstLoadingCorrectly()
     {
         // Arrange
-        eventsSubSectionComponentController.reloadEvents = true;
+        eventsSubSectionComponentController.firstLoading = true;
 
         // Act
-        eventsSubSectionComponentController.FirstLoading();
+        eventsSubSectionComponentController.RequestAllEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
@@ -111,7 +111,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated();
-        
+
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
