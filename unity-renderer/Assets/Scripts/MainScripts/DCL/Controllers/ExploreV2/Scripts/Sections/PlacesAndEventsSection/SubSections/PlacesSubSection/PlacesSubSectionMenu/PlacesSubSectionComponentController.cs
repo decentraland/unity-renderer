@@ -55,9 +55,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore dataStore)
     {
         this.view = view;
-        // this.view.OnReady += FirstLoading;
-        view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        this.view.OnReady += FirstLoading;
+        // view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
 
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += JumpInToPlace;
@@ -78,12 +78,12 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void FirstLoading()
     {
-        reloadPlaces = true;
-        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        RequestAllPlaces();
+        // reloadPlaces = true;
+        // lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        // RequestAllPlaces();
 
-        // view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)

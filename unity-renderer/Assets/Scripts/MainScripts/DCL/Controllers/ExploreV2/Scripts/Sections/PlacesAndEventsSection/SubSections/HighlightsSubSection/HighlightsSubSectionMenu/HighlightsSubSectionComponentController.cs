@@ -71,9 +71,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         DataStore dataStore)
     {
         this.view = view;
-        // this.view.OnReady += FirstLoading;
-        view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        this.view.OnReady += FirstLoading;
+        // view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
 
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnEventInfoClicked += ShowEventDetailedInfo;
@@ -99,12 +99,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void FirstLoading()
     {
-        reloadHighlights = true;
-        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        RequestAllPlacesAndEvents();
+        // reloadHighlights = true;
+        // lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        // RequestAllPlacesAndEvents();
 
-        // view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
