@@ -197,7 +197,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void GoToSection(ExploreSection section)
     {
-        Debug.Log($"Go to {section}");
         sectionSelector.GetSection((int)section)?.SelectToggle(reselectIfAlreadyOn: true);
 
         AudioScriptableObjects.dialogOpen.Play(true);
