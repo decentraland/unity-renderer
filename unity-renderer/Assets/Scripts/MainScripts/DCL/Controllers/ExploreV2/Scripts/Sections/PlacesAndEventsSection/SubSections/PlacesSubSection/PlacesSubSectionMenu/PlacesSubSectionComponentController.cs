@@ -55,7 +55,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore dataStore)
     {
         this.view = view;
-        this.view.OnReady += FirstLoading;
+        // this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -172,7 +172,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void Dispose()
     {
-        view.OnReady -= FirstLoading;
+        // view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= JumpInToPlace;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
