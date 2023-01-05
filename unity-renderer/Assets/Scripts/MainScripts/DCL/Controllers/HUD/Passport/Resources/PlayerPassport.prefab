@@ -2742,6 +2742,7 @@ GameObject:
   - component: {fileID: 2430757307956334240}
   - component: {fileID: 64611024393635981}
   - component: {fileID: 5859791573939736682}
+  - component: {fileID: 7707693723800093903}
   m_Layer: 5
   m_Name: CloseNormal
   m_TagString: Untagged
@@ -2867,6 +2868,22 @@ MonoBehaviour:
   targetRectTransform: {fileID: 4404188314049681348}
   hoverScale: 1.02
   normalScale: 1
+--- !u!114 &7707693723800093903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2268621067551708692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &2288540463993646061
 GameObject:
   m_ObjectHideFlags: 0
@@ -4299,6 +4316,7 @@ GameObject:
   - component: {fileID: 2491561070721691164}
   - component: {fileID: 1956254589760939267}
   - component: {fileID: 8371671624581896299}
+  - component: {fileID: 4490888240686030696}
   m_Layer: 5
   m_Name: BackgroundCatcher
   m_TagString: Untagged
@@ -4409,6 +4427,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4490888240686030696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3030056927873182877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &3079273083417089002
 GameObject:
   m_ObjectHideFlags: 0
