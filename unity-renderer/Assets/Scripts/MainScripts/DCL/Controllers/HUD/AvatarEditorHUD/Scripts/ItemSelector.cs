@@ -76,18 +76,21 @@ public class ItemSelector : MonoBehaviour
     {
         try
         {
-            var rt = (RectTransform)transform;
-            LayoutRebuilder.MarkLayoutForRebuild(rt);
-
-            await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, cancellationToken);
-
             cancellationToken.ThrowIfCancellationRequested();
 
-            maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * CalculateColumnsAmount(rt.rect);
-
+            RecalculateMaxWearables();
+            await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate, cancellationToken);
             await SetupWearablePagination(cancellationToken);
         }
         catch (OperationCanceledException) { }
+    }
+
+    private void RecalculateMaxWearables()
+    {
+        var rt = (RectTransform)transform;
+        LayoutRebuilder.MarkLayoutForRebuild(rt);
+        if (rt != null)
+            maxVisibleWearables = TOTAL_ROWS_OF_ITEMS * CalculateColumnsAmount(rt.rect);
     }
 
     private static int CalculateColumnsAmount(Rect rect)
@@ -212,13 +215,15 @@ public class ItemSelector : MonoBehaviour
         RefreshAvailableWearables();
     }
 
-    public void UpdateSelectorLayout() =>
+    public void UpdateSelectorLayout()
+    {
         SetupPaginationWithColumnsAsync(cancellationTokenSource.Token).Forget();
+    }
 
     private void RefreshAvailableWearables()
     {
         availableWearables = totalWearables.Values.ToList();
-        SetupPaginationWithColumnsAsync(cancellationTokenSource.Token).Forget();
+        SetupPaginationWithColumnsAsync(cancellationTokenSource.Token);
     }
 
     public void Select(string itemID)

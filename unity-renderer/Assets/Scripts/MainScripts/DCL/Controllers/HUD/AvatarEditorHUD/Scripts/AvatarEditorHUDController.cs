@@ -124,6 +124,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.emotes,
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
+
         //Initialize with embedded emotes
         emotesCustomizationComponentController.SetEmotes(EmbeddedEmotesSO.Provide().emotes.ToArray());
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
@@ -148,7 +149,7 @@ public class AvatarEditorHUDController : IHUD
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
 
-    public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
+    private void SetCatalog(BaseDictionary<string, WearableItem> catalog)
     {
         if (this.catalog != null)
         {
@@ -194,7 +195,7 @@ public class AvatarEditorHUDController : IHUD
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
 
         loadingWearables = true;
-        CatalogController.RequestOwnedWearables(userProfile.userId)
+        CatalogController.RequestOwnedWearables("0x0FAc2F8df694335ebCb29f871Be72DFCff431b6C".ToLower())
                          .Then((ownedWearables) =>
                          {
                              ownedWearablesAlreadyLoaded = true;
@@ -316,18 +317,11 @@ public class AvatarEditorHUDController : IHUD
 
         Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
            .Then((nfts) => ownedNftCollectionsL1 = nfts)
-           .Catch((error) => Debug.LogError(error));
+           .Catch(Debug.LogError);
 
         Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
            .Then((nfts) => ownedNftCollectionsL2 = nfts)
-           .Catch((error) => Debug.LogError(error));
-    }
-
-    public void ReloadOwnedWearablesOnRefocus()
-    {
-        ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
-        LoadOwnedWereables(userProfile);
-        LoadOwnedEmotes();
+           .Catch(Debug.LogError);
     }
 
     private void PlayerRendererLoaded(bool current, bool previous)
@@ -359,13 +353,7 @@ public class AvatarEditorHUDController : IHUD
         bool avatarEditorNotVisible = renderingEnabled && !view.isOpen;
         bool isPlaying = !Application.isBatchMode;
 
-        if (!forceLoading)
-        {
-            if (isPlaying && avatarEditorNotVisible)
-                return;
-        }
-
-        if (userProfile == null)
+        if ((!forceLoading && isPlaying && avatarEditorNotVisible) || userProfile == null)
             return;
 
         if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
@@ -638,10 +626,11 @@ public class AvatarEditorHUDController : IHUD
     {
         wearablesByCategory.Clear();
         view.RemoveAllWearables();
-        bool hasSkin = false;
-        bool hasCollectible = false;
+
+        var hasSkin = false;
+        var hasCollectible = false;
+
         using (var iterator = catalog.Get().GetEnumerator())
-        {
             while (iterator.MoveNext())
             {
                 if (iterator.Current.Value.IsEmote())
@@ -655,7 +644,7 @@ public class AvatarEditorHUDController : IHUD
                 hasSkin = iterator.Current.Value.IsSkin() || hasSkin;
                 hasCollectible = iterator.Current.Value.IsCollectible() || hasCollectible;
             }
-        }
+
         view.ShowSkinPopulatedList(hasSkin);
         view.ShowCollectiblesPopulatedList(hasCollectible);
         view.RefreshSelectorsSize();
@@ -803,10 +792,12 @@ public class AvatarEditorHUDController : IHUD
             }
 
             LoadOwnedWereables(userProfile);
+
             if (!isSignUpFlow)
                 LoadOwnedEmotes();
 
             LoadCollections();
+
             Environment.i.messaging.manager.paused = isSignUpFlow;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
 
@@ -914,14 +905,9 @@ public class AvatarEditorHUDController : IHUD
 
     public void SellCollectible(string collectibleId)
     {
-        var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == collectibleId);
-        if (ownedCollectible == null)
-            ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == collectibleId);
+        var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == collectibleId) ?? ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == collectibleId);
 
-        if (ownedCollectible != null)
-            WebInterface.OpenURL(URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
-        else
-            WebInterface.OpenURL(URL_SELL_COLLECTIBLE_GENERIC);
+        WebInterface.OpenURL(ownedCollectible != null ? URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId) : URL_SELL_COLLECTIBLE_GENERIC);
     }
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
@@ -952,7 +938,7 @@ public class AvatarEditorHUDController : IHUD
                 collectionsAlreadyLoaded = true;
                 LoadUserThirdPartyWearables();
             })
-            .Catch((error) => Debug.LogError(error));
+            .Catch(Debug.LogError);
     }
 
     private void LoadUserThirdPartyWearables()
@@ -962,7 +948,7 @@ public class AvatarEditorHUDController : IHUD
         {
             CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
 
-            if (wearable != null && wearable.IsFromThirdPartyCollection)
+            if (wearable is { IsFromThirdPartyCollection: true })
             {
                 if (!collectionIdsToLoad.Contains(wearable.ThirdPartyCollectionId))
                     collectionIdsToLoad.Add(wearable.ThirdPartyCollectionId);
