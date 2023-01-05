@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IEventsSubSectionComponentView
+public interface IEventsSubSectionComponentView: ISubSectionComponentView
 {
     /// <summary>
     /// Number of events per row that fit with the current upcoming events grid configuration.
     /// </summary>
     int currentUpcomingEventsPerRow { get; }
-    
+
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>

@@ -107,9 +107,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         else if (!reloadPlaces || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
             return;
 
-        view.RestartScrollViewPosition();
 
         currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
+
+        view.RestartScrollViewPosition();
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
 
