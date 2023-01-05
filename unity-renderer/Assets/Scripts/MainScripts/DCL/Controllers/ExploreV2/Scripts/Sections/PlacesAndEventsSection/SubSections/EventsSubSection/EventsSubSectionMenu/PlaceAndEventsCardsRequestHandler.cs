@@ -20,7 +20,7 @@ public interface ISubSectionComponentView
     int CurrentTilesPerRow { get; }
 }
 
-public class PlaceAndEventsRequestHandler : IDisposable
+public class PlaceAndEventsCardsRequestHandler : IDisposable
 {
     private readonly ISubSectionComponentView view;
     private readonly DataStore_ExploreV2 exploreV2Menu;
@@ -34,9 +34,9 @@ public class PlaceAndEventsRequestHandler : IDisposable
 
     private float lastTimeAPIChecked;
 
-    public int CurrentTilesShowed { get; set; }
+    public int CurrentCardsShown { get; set; }
 
-    public PlaceAndEventsRequestHandler(ISubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, int initialNumberOfRows, Action requestAllFromAPI)
+    public PlaceAndEventsCardsRequestHandler(ISubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, int initialNumberOfRows, Action requestAllFromAPI)
     {
         this.view = view;
         this.exploreV2Menu = exploreV2Menu;
@@ -79,7 +79,7 @@ public class PlaceAndEventsRequestHandler : IDisposable
 
         view.RestartScrollViewPosition();
 
-        CurrentTilesShowed = view.CurrentTilesPerRow * initialNumberOfRows;
+        CurrentCardsShown = view.CurrentTilesPerRow * initialNumberOfRows;
         view.SetAllAsLoading();
         view.SetShowMoreButtonActive(false);
 

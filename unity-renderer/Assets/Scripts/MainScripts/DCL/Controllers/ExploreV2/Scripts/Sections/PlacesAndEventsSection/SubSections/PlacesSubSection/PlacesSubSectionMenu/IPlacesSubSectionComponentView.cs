@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlacesSubSectionComponentView
+public interface IPlacesSubSectionComponentView:ISubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -13,7 +13,7 @@ public interface IPlacesSubSectionComponentView
     /// Number of places per row that fit with the current places grid configuration.
     /// </summary>
     int currentPlacesPerRow { get; }
-    
+
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
