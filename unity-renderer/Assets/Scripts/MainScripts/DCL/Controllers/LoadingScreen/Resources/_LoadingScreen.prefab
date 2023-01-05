@@ -665,14 +665,14 @@ GameObject:
   m_Component:
   - component: {fileID: 2067836730521956693}
   - component: {fileID: 5542032460435993454}
-  - component: {fileID: 6861090640000904092}
+  - component: {fileID: 6676472641915727631}
   m_Layer: 5
   m_Name: RenderTexture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2067836730521956693
 RectTransform:
   m_ObjectHideFlags: 0
@@ -682,7 +682,7 @@ RectTransform:
   m_GameObject: {fileID: 5903567694913666820}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: -1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5696763185950597558}
@@ -701,7 +701,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5903567694913666820}
   m_CullTransparentMesh: 1
---- !u!114 &6861090640000904092
+--- !u!114 &6676472641915727631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -721,7 +721,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 92eb422bc37fe534694370e72d71b629, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1231,8 +1231,8 @@ MonoBehaviour:
   showHideAnimator: {fileID: 2481086363144932030}
   tipsView: {fileID: 5229806016901196130}
   percentageView: {fileID: 804295394028792594}
-  blitRenderTexture: {fileID: 8400000, guid: 92eb422bc37fe534694370e72d71b629, type: 2}
-  renderTextureContainer: {fileID: 6861090640000904092}
+  renderTexture: {fileID: 8400000, guid: 567ae8061abf7407bb2d772d2dba1851, type: 2}
+  rawImage: {fileID: 6676472641915727631}
 --- !u!225 &1054737520794358197
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
@@ -15,8 +16,10 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenPercentageView percentageView;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
-        public RenderTexture blitRenderTexture;
-        public RawImage renderTextureContainer;
+        // Declare a render texture and a material that uses the render texture
+        public RenderTexture renderTexture;
+        public RawImage rawImage;
+
 
         public static LoadingScreenView Create() =>
             Create<LoadingScreenView>(PATH);
@@ -25,9 +28,28 @@ namespace DCL.LoadingScreen
         {
             base.Start();
             showHideAnimator.OnWillFinishStart += OnFadeInFinish;
+            //showHideAnimator.OnWillFinishStart += (e) => renderTextureContainer.gameObject.SetActive(false);
 
             FadeIn(true);
-            renderTextureContainer.gameObject.SetActive(false);
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                if (renderTexture == null)
+                {
+                    renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+                    rawImage.texture = renderTexture;
+                }
+                // Call Graphics.Blit with the material as the argument. This will blit the screen into the render texture
+                Graphics.Blit(null, renderTexture);
+            }
+
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                GetComponent<CanvasGroup>().alpha = GetComponent<CanvasGroup>().alpha.Equals(0) ? 1 : 0;
+            }
         }
 
         public override void Dispose()
@@ -44,7 +66,7 @@ namespace DCL.LoadingScreen
 
         public void FadeIn(bool instant)
         {
-            renderTextureContainer.gameObject.SetActive(true);
+            //renderTextureContainer.gameObject.SetActive(true);
             if (isVisible) return;
 
             Show(instant);
@@ -57,9 +79,5 @@ namespace DCL.LoadingScreen
 
         public override void RefreshControl() { }
 
-        public void SetRenderTexture()
-        {
-            renderTextureContainer.texture = blitRenderTexture;
-        }
     }
 }

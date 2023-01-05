@@ -67,7 +67,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 #if UNITY_WEBGL
         fatalErrorReporter = new WebFatalErrorReporter();
 #else
-        fatalErrorReporter = new DefaultFatalErrorReporter(DataStore.i);
+        fatalErrorReporter = new DefaultFatalErrorReporter();
 #endif
 
         mainCamera = Camera.main;
