@@ -94,6 +94,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         reloadEvents = true;
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllEvents();
+
+        // view.OnEventsSubSectionEnable += RequestAllEvents;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -104,9 +107,17 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         reloadEvents = true;
     }
 
+    private bool firstLoading = true;
+
     public void RequestAllEvents()
     {
-        if (!reloadEvents)
+        if (firstLoading)
+        {
+            firstLoading = false;
+            reloadEvents = true;
+            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        }
+        else if (!reloadEvents)
             return;
 
         view.RestartScrollViewPosition();

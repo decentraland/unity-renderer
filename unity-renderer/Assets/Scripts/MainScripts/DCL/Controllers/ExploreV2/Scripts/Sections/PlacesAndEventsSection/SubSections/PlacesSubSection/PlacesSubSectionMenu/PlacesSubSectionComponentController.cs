@@ -81,6 +81,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = true;
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlaces();
+
+        // view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -91,9 +94,17 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = true;
     }
 
+    private bool firstLoading = true;
+
     public void RequestAllPlaces()
     {
-        if (!reloadPlaces)
+        if (firstLoading)
+        {
+            firstLoading = false;
+            reloadPlaces = true;
+            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        }
+        else if (!reloadPlaces)
             return;
 
         view.RestartScrollViewPosition();
