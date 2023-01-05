@@ -56,6 +56,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         this.view = view;
         // this.view.OnReady += FirstLoading;
+        view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -78,9 +81,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         reloadPlaces = true;
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlaces();
-
-        view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
