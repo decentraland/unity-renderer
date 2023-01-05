@@ -44,12 +44,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
     [SerializeField] private Canvas canvas;
-    
+
     internal Pool featuredEventCardsPool;
     internal Pool trendingEventCardsPool;
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
-    
+
     internal EventCardComponentView eventModal;
 
     private Canvas trendingEventsCanvas;
@@ -57,9 +57,16 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private Canvas goingEventsCanvas;
 
     private bool isUpdatingCardsVisual;
-    
+
     public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-    
+
+
+    public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
+
+    public void SetShowMoreButtonActive(bool isActive) => SetShowMoreUpcomingEventsButtonActive(isActive);
+
+    public int CurrentTilesPerRow => currentUpcomingEventsPerRow;
+
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
@@ -100,7 +107,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         base.Dispose();
         cancellationTokenSource.Cancel();
-        
+
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
 
         featuredEvents.Dispose();
@@ -124,7 +131,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         else
             OnDisable();
     }
-    
+
     public void ConfigurePools()
     {
         ExploreEventsUtils.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
@@ -140,11 +147,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEvents.RefreshControl();
         goingEvents.RefreshControl();
     }
-    
+
     public void SetAllEventGroupsAsLoading()
     {
         SetFeaturedEventsGroupAsLoading();
-        
+
         SetEventsGroupAsLoading(isVisible: true, goingEventsCanvas, goingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, trendingEventsCanvas, trendingEventsLoading);
         SetEventsGroupAsLoading(isVisible: true, upcomingEventsCanvas, upcomingEventsLoading);
@@ -153,7 +160,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEventsNoDataText.gameObject.SetActive(false);
         upcomingEventsNoDataText.gameObject.SetActive(false);
     }
-    
+
     internal void SetFeaturedEventsGroupAsLoading()
     {
         featuredEvents.gameObject.SetActive(false);
@@ -181,9 +188,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             eventModal.Hide();
     }
 
-    public void RestartScrollViewPosition() => 
+    public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
-    
+
+
     public void SetTrendingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 
@@ -235,11 +243,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEventCardsPool.ReleaseAll();
 
         featuredEvents.ExtractItems();
-        
+
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
-    
+
     private async UniTask SetFeaturedEventsAsync(List<EventCardComponentModel> events, CancellationToken cancellationToken)
     {
         foreach (EventCardComponentModel eventInfo in events)
@@ -252,15 +260,15 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEvents.SetManualControlsActive();
         featuredEvents.GenerateDotsSelector();
-        
+
         poolsPrewarmAsyncsBuffer.Enqueue(() => featuredEventCardsPool.PrewarmAsync(events.Count, cancellationToken));
     }
-    
+
     private void UpdateCardsVisual()
     {
         if (!isUpdatingCardsVisual)
             ShowCardsProcess().Forget();
-        
+
         async UniTask ShowCardsProcess()
         {
             isUpdatingCardsVisual = true;
