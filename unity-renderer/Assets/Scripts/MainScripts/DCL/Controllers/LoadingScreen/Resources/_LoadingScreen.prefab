@@ -457,7 +457,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -15.833349}
+  m_AnchoredPosition: {x: 0, y: -15.833374}
   m_SizeDelta: {x: 320.0852, y: 179.99994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5229806016901196130
@@ -475,34 +475,33 @@ MonoBehaviour:
   tipsText: {fileID: 8432273451817263002}
   tipsImage: {fileID: 1519202232515467586}
   defaultTips:
-  - text: "MANA is Decentraland\u2019s virtual currency. Use it to buy LAND and other
-      premium items, vote on key policies and pay platform fees."
+  - text: "MANA is Decentraland\u2019s virtual currency, and can be used to buy LAND,
+      Wearables for your avatar, and vote on the governance of the project."
     sprite: {fileID: 21300000, guid: c6536212dc1f24674904faa55732f64c, type: 3}
-  - text: 'Buy and sell LAND, Estates, Avatar wearables and names in the Decentraland
-      Marketplace: stocking the very best digital goods and paraphernalia backed
-      by the ethereum blockchain.'
+  - text: You can use the Decentraland Marketplace to buy and sell Decentraland NFTs,
+      such as a NAME, LAND, Emotes or Wearables for your avatar.
     sprite: {fileID: 21300000, guid: dfb614ec29ae64410a9cb17a66431d03, type: 3}
-  - text: 'Create scenes, artworks, challenges and more, using the simple Builder:
-      an easy drag and drop tool. For more experienced creators, the SDK provides
-      the tools to fill the world with social games and applications.'
+  - text: "In the Decentraland Builder, you can manage the scenes on LAND you own,
+      create new Wearables, and manage your Avatar\u2019s NAME."
     sprite: {fileID: 21300000, guid: 8955cba7efb204195bf48ea239760527, type: 3}
-  - text: 'Decentraland is made up of over 90,000 LANDs: virtual spaces backed by
-      cryptographic tokens. Only LAND owners can determine the content that sits
-      on their LAND.'
-    sprite: {fileID: 21300000, guid: 7d674afaaca5844098399b4413b743fa, type: 3}
-  - text: Except for the default set of wearables you get when you start out, each
-      wearable model has a limited supply. The rarest ones can get to be super valuable.
-      You can buy and sell them in the Marketplace.
-    sprite: {fileID: 21300000, guid: c1e81be26094f46b4b00b853ca617eca, type: 3}
-  - text: Decentraland is the first fully decentralized virtual world. By voting
-      through the DAO  ('Decentralized Autonomous Organization'), you are in control
-      of the policies created to determine how the world behaves.
-    sprite: {fileID: 21300000, guid: 7a23dbd753bf44e2fa14e2860cd16083, type: 3}
-  - text: Genesis Plaza is built and maintained by the Decentraland Foundation but
-      is still in many ways a community project. Around here you'll find several
-      teleports that can take you directly to special scenes marked as points of
-      interest.
+  - text: Do you know the basics of programming? Use the accessible Decentraland
+      SDK to create interactive scenes and upload them to the decentralized Catalyst
+      Network!
     sprite: {fileID: 21300000, guid: 9932402d6a77c484999857fc085618a0, type: 3}
+  - text: 'Decentraland is made up of over 90,000 LANDs: virtual spaces backed by
+      NFTs. All the content in this virtual world is created by its users!'
+    sprite: {fileID: 21300000, guid: 7d674afaaca5844098399b4413b743fa, type: 3}
+  - text: Decentraland is the first virtual world owned by its users. Its network
+      of decentralized servers run by the community host the content (such as 3D
+      models and sounds) required to render the world.
+    sprite: {fileID: 21300000, guid: 7a23dbd753bf44e2fa14e2860cd16083, type: 3}
+  - text: Expand the universe of clothing your avatar can use by getting new Wearable
+      NFTs on the Decentraland Marketplace.
+    sprite: {fileID: 21300000, guid: c1e81be26094f46b4b00b853ca617eca, type: 3}
+  - text: The Decentraland DAO (Decentralized Autonomous Organization) is a blockchain-based
+      governance mechanism that the community uses to find agreement on the present
+      and future of this virtual platform.
+    sprite: {fileID: 21300000, guid: 7a23dbd753bf44e2fa14e2860cd16083, type: 3}
 --- !u!1 &2561194068439323888
 GameObject:
   m_ObjectHideFlags: 0
