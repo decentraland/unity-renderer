@@ -103,8 +103,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         RequestAllPlacesAndEvents();
 
-        view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        // view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
@@ -115,9 +115,17 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         reloadHighlights = true;
     }
 
+    private bool firstLoading = true;
+
     public void RequestAllPlacesAndEvents()
     {
-        if (!reloadHighlights)
+        if (firstLoading)
+        {
+            firstLoading = false;
+            reloadHighlights = true;
+            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        }
+        else if (!reloadHighlights)
             return;
 
         view.RestartScrollViewPosition();
