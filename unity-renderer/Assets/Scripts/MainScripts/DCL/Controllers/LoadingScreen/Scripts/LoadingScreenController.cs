@@ -83,7 +83,9 @@ namespace DCL.LoadingScreen
 
             //The teleport is request both on the POSITION_SETTLED and POSITION_UNSETTLED events from kernel. So, if the positions are not the same, then it means we are calling to a POSITION_UNSETTLED event and we are indeed teleporting
             //Also, we need to check that the scene that has just been unsettled is not loaded. Only then, we show the loading screen
-            if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
+            //If we just entered a world, we need to show the loading screen
+            if (commonDataStore.isWorld.Get() ||
+                (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1)))
             {
                 currentDestination = currentDestinationCandidate;
 
