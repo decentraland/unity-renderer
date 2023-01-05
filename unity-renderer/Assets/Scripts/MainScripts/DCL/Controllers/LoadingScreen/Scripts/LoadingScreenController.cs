@@ -6,6 +6,7 @@ namespace DCL.LoadingScreen
 {
     /// <summary>
     /// Controls the state of the loading screen. It's responsibility is to update the view depending on the SceneController state
+    /// Creates and provides the controllers associated to the LoadingScreen: TipsController and PercentageController
     /// </summary>
     public class LoadingScreenController : IDisposable
     {
@@ -17,6 +18,9 @@ namespace DCL.LoadingScreen
         private readonly IWorldState worldState;
 
         private Vector2Int currentDestination;
+        private readonly LoadingScreenTipsController tipsController;
+
+        //TODO: LoadingScreenPercentageController
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
             IWorldState worldState)
@@ -28,12 +32,15 @@ namespace DCL.LoadingScreen
             this.worldState = worldState;
             this.loadingScreenDataStore = loadingScreenDataStore;
 
-            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-            
+            tipsController = new LoadingScreenTipsController(view.GetTipsView());
+
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
+            FadeInView(true);
         }
 
         public void Dispose()
@@ -62,8 +69,9 @@ namespace DCL.LoadingScreen
             if (current)
                 FadeOutView();
             else
+
                 //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
-                view.FadeIn(false);
+                FadeInView(false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -75,15 +83,23 @@ namespace DCL.LoadingScreen
             if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
+
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
-                view.FadeIn(true);
+                FadeInView(true);
             }
         }
 
         private void FadeOutView()
         {
             view.FadeOut();
+            tipsController.StopTips();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+        }
+
+        private void FadeInView(bool instant)
+        {
+            view.FadeIn(instant);
+            tipsController.StartTips();
         }
     }
 }

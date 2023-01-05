@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace DCL.LoadingScreen
 {
@@ -8,6 +9,8 @@ namespace DCL.LoadingScreen
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
         private static readonly string PATH = "_LoadingScreen";
+
+        [SerializeField] private LoadingScreenTipsView tipsView;
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
         public static LoadingScreenView Create() =>
@@ -17,6 +20,8 @@ namespace DCL.LoadingScreen
         {
             base.Start();
             showHideAnimator.OnWillFinishStart += OnFadeInFinish;
+
+            FadeIn(true);
         }
 
         public override void Dispose()
@@ -25,6 +30,9 @@ namespace DCL.LoadingScreen
             showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
         }
 
+        public LoadingScreenTipsView GetTipsView() =>
+            tipsView;
+
         public void FadeIn(bool instant)
         {
             if (isVisible) return;
@@ -32,8 +40,10 @@ namespace DCL.LoadingScreen
             Show(instant);
         }
 
-        public void FadeOut() =>
+        public void FadeOut()
+        {
             Hide();
+        }
 
         public void UpdateLoadingMessage() { }
 

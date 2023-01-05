@@ -11,5 +11,7 @@ namespace DCL.LoadingScreen
         void FadeIn(bool instant);
 
         event Action<ShowHideAnimator> OnFadeInFinish;
+
+        LoadingScreenTipsView GetTipsView();
     }
 }
