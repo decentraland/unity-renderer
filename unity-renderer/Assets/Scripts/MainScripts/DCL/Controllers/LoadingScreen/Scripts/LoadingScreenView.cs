@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
 {
@@ -14,6 +15,8 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenPercentageView percentageView;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
+        public RenderTexture blitRenderTexture;
+        public RawImage renderTextureContainer;
 
         public static LoadingScreenView Create() =>
             Create<LoadingScreenView>(PATH);
@@ -24,6 +27,7 @@ namespace DCL.LoadingScreen
             showHideAnimator.OnWillFinishStart += OnFadeInFinish;
 
             FadeIn(true);
+            renderTextureContainer.gameObject.SetActive(false);
         }
 
         public override void Dispose()
@@ -40,6 +44,7 @@ namespace DCL.LoadingScreen
 
         public void FadeIn(bool instant)
         {
+            renderTextureContainer.gameObject.SetActive(true);
             if (isVisible) return;
 
             Show(instant);
@@ -51,5 +56,10 @@ namespace DCL.LoadingScreen
         }
 
         public override void RefreshControl() { }
+
+        public void SetRenderTexture()
+        {
+            renderTextureContainer.texture = blitRenderTexture;
+        }
     }
 }

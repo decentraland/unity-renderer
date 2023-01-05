@@ -23,7 +23,7 @@ public class DCLCharacterController : MonoBehaviour
 
     [Header("Collisions")]
     public LayerMask groundLayers;
-    
+
     [Header("Additional Camera Layers")]
     public LayerMask cameraLayers;
 
@@ -103,7 +103,7 @@ public class DCLCharacterController : MonoBehaviour
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
-    
+
     void Awake()
     {
         if (i != null)
@@ -143,8 +143,6 @@ public class DCLCharacterController : MonoBehaviour
         var worldData = DataStore.i.Get<DataStore_World>();
         worldData.avatarTransform.Set(avatarGameObject.transform);
         worldData.fpsTransform.Set(firstPersonCameraGameObject.transform);
-
-        dataStorePlayer.lastTeleportPosition.OnChange += Teleport;
     }
 
     private void SubscribeToInput()
@@ -172,7 +170,6 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnStarted -= walkStartedDelegate;
         sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
-        dataStorePlayer.lastTeleportPosition.OnChange -= Teleport;
         i = null;
     }
 
@@ -227,10 +224,12 @@ public class DCLCharacterController : MonoBehaviour
     {
         var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
         dataStorePlayer.lastTeleportPosition.Set(payload, notifyEvent: true);
+        Teleport(payload, Vector3.zero);
     }
-    
-    private void Teleport(Vector3 newPosition, Vector3 prevPosition)
+
+    private void Teleport(Vector3 newPosition, Vector3 _)
     {
+        Debug.Log("LLAMANDO A TELEPORT");
         ResetGround();
 
         SetPosition(newPosition);

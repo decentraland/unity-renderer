@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace DCL.LoadingScreen
@@ -85,16 +86,53 @@ namespace DCL.LoadingScreen
             //Also, we need to check that the scene that has just been unsettled is not loaded. Only then, we show the loading screen
             if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
+                Debug.Log("TELEPORT REQUESTED");
                 currentDestination = currentDestinationCandidate;
+
+                Camera mCamera = Camera.main;
+                if (Camera.main != null)
+                {
+                    ((LoadingScreenView)view).blitRenderTexture = new RenderTexture(mCamera.pixelWidth, mCamera.pixelHeight, 24);
+                    ((LoadingScreenView)view).SetRenderTexture();
+
+                    File.WriteAllBytes(Path.Combine(Application.persistentDataPath + "Img1.png"), GetTextureFromCamera(mCamera).EncodeToPNG());
+                    Debug.Log(Application.persistentDataPath);
+
+                    ScreenCapture.CaptureScreenshot(Path.Combine(Application.persistentDataPath + "Img2.png"));
+
+                    Graphics.Blit(GetTextureFromCamera(mCamera),((LoadingScreenView)view).blitRenderTexture);
+                }
+
 
                 //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
                 view.FadeIn(true);
+
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
                 tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
             }
+        }
+
+        private static Texture2D GetTextureFromCamera(Camera mCamera)
+        {
+            Rect rect = new Rect(0, 0, mCamera.pixelWidth, mCamera.pixelHeight);
+            RenderTexture renderTexture = new RenderTexture(mCamera.pixelWidth, mCamera.pixelHeight, 24);
+            Texture2D screenShot = new Texture2D(mCamera.pixelWidth, mCamera.pixelHeight, TextureFormat.RGBA32, false);
+
+            mCamera.targetTexture = renderTexture;
+            mCamera.Render();
+
+            RenderTexture.active = renderTexture;
+
+            screenShot.ReadPixels(rect, 0, 0);
+            screenShot.Apply();
+
+
+            mCamera.targetTexture = null;
+            RenderTexture.active = null;
+            return screenShot;
         }
 
         private void FadeOutView()
