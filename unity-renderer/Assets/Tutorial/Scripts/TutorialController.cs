@@ -167,7 +167,6 @@ namespace DCL.Tutorial
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
 
             hudController?.settingsPanelHud?.SetTutorialButtonEnabled(false);
-            hudController?.profileHud?.HideProfileMenu();
 
             NotificationsController.disableWelcomeNotification = true;
 

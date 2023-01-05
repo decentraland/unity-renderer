@@ -14,9 +14,10 @@ public class FriendsController_Mock : IFriendsController
     public event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
     public event Action<int, int> OnTotalFriendRequestUpdated;
     public event Action<int> OnTotalFriendsUpdated;
-    public event Action<FriendRequest> OnAddFriendRequest;
+    public event Action<FriendRequest> OnFriendRequestReceived;
+    public event Action<FriendRequest> OnSentFriendRequestApproved;
 
-    private readonly Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
+    private readonly Dictionary<string, UserStatus> friends = new ();
 
     public int AllocatedFriendCount => friends.Count;
 
@@ -33,11 +34,17 @@ public class FriendsController_Mock : IFriendsController
 
     public Dictionary<string, UserStatus> GetAllocatedFriends() { return friends; }
 
+    public UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId) =>
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
+
     public void RejectFriendship(string friendUserId)
     {
         friends.Remove(friendUserId);
         OnUpdateFriendship?.Invoke(friendUserId, FriendshipAction.NONE);
     }
+
+    public UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId) =>
+        UniTask.FromResult(new FriendRequest(friendRequestId, 0, "", "", ""));
 
     public bool IsFriend(string userId) => friends.ContainsKey(userId);
 

@@ -7,7 +7,12 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.RendererServices {
-public class ClientTransportService
+public interface IClientTransportService
+{
+  IUniTaskAsyncEnumerable<Payload> OpenTransportStream(IUniTaskAsyncEnumerable<Payload> streamRequest);
+}
+
+public class ClientTransportService : IClientTransportService
 {
   private readonly RpcClientModule module;
 
@@ -16,9 +21,11 @@ public class ClientTransportService
       this.module = module;
   }
 
+  
   public IUniTaskAsyncEnumerable<Payload> OpenTransportStream(IUniTaskAsyncEnumerable<Payload> streamRequest)
   {
       return module.CallBidirectionalStream<Payload>("OpenTransportStream", streamRequest);
   }
+
 }
 }

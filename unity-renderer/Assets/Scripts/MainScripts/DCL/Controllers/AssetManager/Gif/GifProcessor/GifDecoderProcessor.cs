@@ -147,9 +147,9 @@ namespace DCL
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
             var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
-            await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceded, cancellationToken: token);
+            await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceeded, cancellationToken: token);
 
-            if (!operation.isSucceded)
+            if (!operation.isSucceeded)
             {
                 throw new GifWebRequestException(url);
             }

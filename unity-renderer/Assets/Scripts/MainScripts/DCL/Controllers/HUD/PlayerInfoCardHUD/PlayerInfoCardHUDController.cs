@@ -2,13 +2,14 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCl.Social.Friends;
-using DCL.Social.Friends;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 public class PlayerInfoCardHUDController : IHUD
 {
@@ -89,7 +90,7 @@ public class PlayerInfoCardHUDController : IHUD
     {
         if (isNewFriendRequestsEnabled)
         {
-            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId);
+            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
             dataStore.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.Passport);
         }
         else
@@ -99,26 +100,101 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void CancelInvitation()
+    private void CancelInvitation() =>
+        CancelInvitationAsync().Forget();
+
+    private async UniTaskVoid CancelInvitationAsync()
     {
         if (isNewFriendRequestsEnabled)
-            friendsController.CancelRequestByUserIdAsync(currentPlayerId).Forget();
+        {
+            try
+            {
+                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10));
+                socialAnalytics.SendFriendRequestCancelled(request.From, request.To, PlayerActionSource.Passport.ToString());
+            }
+            catch (Exception e)
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    PlayerActionSource.Passport.ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+                throw;
+            }
+        }
         else
+        {
             friendsController.CancelRequestByUserId(currentPlayerId);
-
-        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString());
+        }
     }
 
-    private void AcceptFriendRequest()
+    private void AcceptFriendRequest() =>
+        AcceptFriendRequestAsync().Forget();
+
+    private async UniTaskVoid AcceptFriendRequestAsync()
     {
-        friendsController.AcceptFriendship(currentPlayerId);
-        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+        if (isNewFriendRequestsEnabled)
+        {
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                socialAnalytics.SendFriendRequestApproved(request.From, request.To, PlayerActionSource.Passport.ToString(),
+                    request.HasBodyMessage);
+            }
+            catch (Exception e)
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    PlayerActionSource.Passport.ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+                throw;
+            }
+        }
+        else
+        {
+            friendsController.AcceptFriendship(currentPlayerId);
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId,
+                PlayerActionSource.Passport.ToString(),
+                false);
+        }
     }
 
-    private void RejectFriendRequest()
+    private void RejectFriendRequest() =>
+        RejectFriendRequestAsync().Forget();
+
+    private async UniTaskVoid RejectFriendRequestAsync()
     {
-        friendsController.RejectFriendship(currentPlayerId);
-        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+        if (isNewFriendRequestsEnabled)
+        {
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                request = await friendsController.RejectFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                socialAnalytics.SendFriendRequestRejected(request.From, request.To,
+                    PlayerActionSource.Passport.ToString(), request.HasBodyMessage);
+            }
+            catch (Exception e)
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    PlayerActionSource.Passport.ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+                throw;
+            }
+        }
+        else
+        {
+            friendsController.RejectFriendship(currentPlayerId);
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId,
+                PlayerActionSource.Passport.ToString(), false);
+        }
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)

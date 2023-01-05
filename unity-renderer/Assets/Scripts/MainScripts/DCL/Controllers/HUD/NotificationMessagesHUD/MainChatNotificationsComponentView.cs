@@ -24,8 +24,8 @@ namespace DCL.Chat.Notifications
         private const string FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX = "FriendRequestNotificationEntriesPool_";
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
-        public event Action<string> OnClickedNotification;
-        public event Action<string> OnClickedFriendRequest;
+        public event Action<string> OnClickedChatMessage;
+        public event IMainChatNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
 
@@ -305,25 +305,22 @@ namespace DCL.Chat.Notifications
 
         private void ClickedOnNotification(string targetId)
         {
-            OnClickedNotification?.Invoke(targetId);
+            OnClickedChatMessage?.Invoke(targetId);
         }
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationComponentView friendRequestNotificationComponentView,
             FriendRequestNotificationModel model)
         {
+            friendRequestNotificationComponentView.SetFriendRequestId(model.FriendRequestId);
             friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
             friendRequestNotificationComponentView.SetHeader(model.Header);
             friendRequestNotificationComponentView.SetMessage(model.Message);
             friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
-            if (!string.IsNullOrEmpty(model.ProfilePicture))
-                friendRequestNotificationComponentView.SetImage(model.ProfilePicture);
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
-        private void ClickedOnFriendRequest(string fromUserId)
-        {
-            OnClickedFriendRequest?.Invoke(fromUserId);
-        }
+        private void ClickedOnFriendRequest(string friendRequestId, string userId, bool isAcceptedFromPeer) =>
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
 
         private void FocusedOnNotification(bool isInFocus)
         {

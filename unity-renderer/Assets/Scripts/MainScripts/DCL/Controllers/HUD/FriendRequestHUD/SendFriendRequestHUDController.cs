@@ -1,13 +1,16 @@
-using System;
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using SocialFeaturesAnalytics;
-using UnityEngine;
+using System;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
     public class SendFriendRequestHUDController
     {
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+        private const int AUTOMATIC_CLOSE_DELAY = 2000;
+        private const int SEND_TIMEOUT = 10;
+
         private readonly ISendFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -16,6 +19,8 @@ namespace DCL.Social.Friends
 
         private string messageBody;
         private string recipientId;
+        private CancellationTokenSource hideCancellationToken = new ();
+        private bool sendInProgress;
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -75,28 +80,51 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid SendAsync()
         {
+            hideCancellationToken?.Cancel();
+            hideCancellationToken = new CancellationTokenSource();
+
             view.ShowPendingToSend();
 
             try
             {
+                sendInProgress = true;
+
                 await friendsController.RequestFriendshipAsync(recipientId, messageBody)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                                       .Timeout(TimeSpan.FromSeconds(SEND_TIMEOUT));
 
                 socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, recipientId, messageBody.Length,
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
 
                 view.ShowSendSuccess();
+                sendInProgress = false;
+
+                await UniTask.Delay(AUTOMATIC_CLOSE_DELAY, cancellationToken: hideCancellationToken.Token);
+
+                if (!hideCancellationToken.IsCancellationRequested)
+                    view.Close();
             }
             catch (Exception e)
             {
-                // TODO: track error to analytics
-                Debug.LogException(e);
-                view.ShowSendFailed();
+                await UniTask.SwitchToMainThread();
+
+                if (!sendInProgress)
+                    return;
+
+                socialAnalytics.SendFriendRequestError(userProfileBridge.GetOwn().userId, recipientId,
+                    dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+
+                view.Show();
+                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                throw;
             }
         }
 
         private void Hide()
         {
+            hideCancellationToken?.Cancel();
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             view.Close();
         }

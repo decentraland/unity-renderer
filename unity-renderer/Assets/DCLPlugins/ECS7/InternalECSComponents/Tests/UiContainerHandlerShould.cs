@@ -25,7 +25,7 @@ namespace Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(111);
 
-            var initialModel = new InternalUiContainer();
+            var initialModel = new InternalUiContainer(entity.entityId);
             initialModel.rootElement.Add(new VisualElement());
             initialModel.components.Add(0);
 
