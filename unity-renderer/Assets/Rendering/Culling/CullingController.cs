@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
+using System;
 
 namespace DCL.Rendering
 {
@@ -18,16 +19,19 @@ namespace DCL.Rendering
     {
         private const string ANIMATION_CULLING_STATUS_FEATURE_FLAG = "animation_culling_status";
         private const bool DRAW_GIZMOS = false;
-        internal List<CullingControllerProfile> profiles = null;
+        
+        // Cache to avoid allocations when getting names
+        private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
+        private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
 
-        private CullingControllerSettings settings;
+        public UniversalRenderPipelineAsset urpAsset;
+        
+        internal List<CullingControllerProfile> profiles = null;
 
         private HashSet<Renderer> hiddenRenderers = new HashSet<Renderer>();
         private HashSet<Renderer> shadowlessRenderers = new HashSet<Renderer>();
-
-        public UniversalRenderPipelineAsset urpAsset;
-
-        public ICullingObjectsTracker objectsTracker { get; private set; }
+        
+        private CullingControllerSettings settings;
         private Coroutine updateCoroutine;
         private float timeBudgetCount = 0;
         private bool resetObjectsNextFrame = false;
@@ -35,13 +39,13 @@ namespace DCL.Rendering
         private bool objectPositionsDirty;
         private bool running = false;
 
-        // Cache to avoid allocations when getting names
-        private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
-        private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
+        public event ICullingController.DataReport OnDataReport;
+        public EventHandler FinishedCulling;
+
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
+        public ICullingObjectsTracker objectsTracker { get; private set; }
 
-        public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
         {
@@ -50,6 +54,7 @@ namespace DCL.Rendering
                 new CullingControllerSettings()
             );
         }
+        
 
         private CullingController() { }
 
@@ -89,6 +94,17 @@ namespace DCL.Rendering
             MeshesInfo.OnAnyUpdated += MarkDirty;
             objectsTracker?.MarkDirty();
             StartInternal();
+        }
+
+        /// <summary>
+        /// Starts culling update coroutine, if it was already running it restarts.
+        /// The coroutine will keep running until Stop() is called or this class is disposed.
+        /// </summary>
+        public void Restart()
+        {
+            if (running)
+                Stop();
+            Start();
         }
 
         private void StartInternal()
@@ -290,7 +306,7 @@ namespace DCL.Rendering
         /// <summary>
         /// Main culling loop. Controlled by Start() and Stop() methods.
         /// </summary>
-        IEnumerator UpdateCoroutine()
+        private IEnumerator UpdateCoroutine()
         {
             while (true)
             {
@@ -332,6 +348,8 @@ namespace DCL.Rendering
                 RaiseDataReport();
                 timeBudgetCount = 0;
                 yield return null;
+
+                FinishedCulling?.Invoke(this, EventArgs.Empty);
             }
         }
 
