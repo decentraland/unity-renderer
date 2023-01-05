@@ -55,8 +55,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal IPlacesAPIController placesAPIApiController;
     internal IEventsAPIController eventsAPIApiController;
     internal FriendTrackerController friendsTrackerController;
-    internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
-    internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
+    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal List<EventFromAPIModel> eventsFromAPI = new ();
     internal bool reloadHighlights = false;
     internal IExploreV2Analytics exploreV2Analytics;
     internal float lastTimeAPIChecked = 0;
