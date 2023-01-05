@@ -151,13 +151,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                     sectionView.Show();
 
                 OnSectionOpen?.Invoke(sectionId);
-
-                Debug.Log($"VV: OnSectionOpened SHOW {sectionId}");
             }
             else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
             {
                 sectionView.Hide();
-                Debug.Log($"VV: OnSectionOpened HIDE {sectionId}");
             }
         };
 
