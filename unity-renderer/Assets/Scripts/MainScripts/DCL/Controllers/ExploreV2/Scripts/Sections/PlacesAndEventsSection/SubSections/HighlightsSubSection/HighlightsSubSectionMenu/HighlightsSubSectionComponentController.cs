@@ -71,7 +71,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         DataStore dataStore)
     {
         this.view = view;
-        this.view.OnReady += FirstLoading;
+        // this.view.OnReady += FirstLoading;
+        view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnPlaceJumpInClicked += JumpInToPlace;
