@@ -69,9 +69,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         DataStore dataStore)
     {
         this.view = view;
-        // this.view.OnReady += FirstLoading;
-        view.OnEventsSubSectionEnable += RequestAllEvents;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        this.view.OnReady += FirstLoading;
+        // view.OnEventsSubSectionEnable += RequestAllEvents;
+        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
 
         this.view.OnInfoClicked += ShowEventDetailedInfo;
         this.view.OnJumpInClicked += JumpInToEvent;
@@ -91,12 +91,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void FirstLoading()
     {
-        reloadEvents = true;
-        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        RequestAllEvents();
+        // reloadEvents = true;
+        // lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        // RequestAllEvents();
 
-        // view.OnEventsSubSectionEnable += RequestAllEvents;
-        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        view.OnEventsSubSectionEnable += RequestAllEvents;
+        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
     internal void OnExploreV2Open(bool current, bool previous)
