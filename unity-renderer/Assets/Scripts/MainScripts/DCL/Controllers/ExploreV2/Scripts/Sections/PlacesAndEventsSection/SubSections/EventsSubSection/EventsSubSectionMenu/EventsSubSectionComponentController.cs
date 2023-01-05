@@ -69,7 +69,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         DataStore dataStore)
     {
         this.view = view;
-        this.view.OnReady += FirstLoading;
+        // this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowEventDetailedInfo;
         this.view.OnJumpInClicked += JumpInToEvent;
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
@@ -115,7 +115,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             return;
 
         currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
-        
+
         view.SetAllEventGroupsAsLoading();
         view.SetShowMoreUpcomingEventsButtonActive(false);
 
@@ -245,7 +245,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void Dispose()
     {
-        view.OnReady -= FirstLoading;
+        // view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowEventDetailedInfo;
         view.OnJumpInClicked -= JumpInToEvent;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
