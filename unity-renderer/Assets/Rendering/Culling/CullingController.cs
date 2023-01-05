@@ -311,7 +311,6 @@ namespace DCL.Rendering
             while (true)
             {
                 bool shouldCheck = objectPositionsDirty || playerPositionDirty;
-
                 playerPositionDirty = false;
                 objectPositionsDirty = false;
 
