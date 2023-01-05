@@ -10,13 +10,11 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenPercentageController : IDisposable
     {
-
         private readonly LoadingScreenPercentageView loadingScreenPercentageView;
         private readonly ISceneController sceneController;
 
         private Vector2Int currentDestination;
-        private ParcelScene currentScene;
-
+        private IParcelScene currentSceneBeingLoaded;
 
         public LoadingScreenPercentageController(ISceneController sceneController, LoadingScreenPercentageView loadingScreenPercentageView)
         {
@@ -31,41 +29,31 @@ namespace DCL.LoadingScreen
         public void Dispose()
         {
             sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
-            if (currentScene)
-            {
-                currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.OnResourcesStatusUpdate -= ResourcesStatusUpdate;
-                currentScene.sceneLifecycleHandler.OnStateRefreshed -= Scene_OnStateRefreshed;
-            }
+
+            if (currentSceneBeingLoaded != null)
+                currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
         }
 
         private void SceneController_OnNewSceneAdded(IParcelScene scene)
         {
-            currentScene = scene as ParcelScene;
             //We will only update the percentage of the current destination scene. It may be the only one we care about
-            if (currentScene != null &&
-                Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(currentScene.sceneData.sceneNumber))
+            if (scene != null &&
+                Environment.i.world.state.GetSceneNumberByCoords(currentDestination).Equals(scene.sceneData.sceneNumber))
             {
-                loadingScreenPercentageView.SetLoadingPercentage(0);
-                currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.OnResourcesStatusUpdate += ResourcesStatusUpdate;
-                currentScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
+                currentSceneBeingLoaded = scene;
+                currentSceneBeingLoaded.OnLoadingStateUpdated += StatusUpdate;
             }
         }
 
-        private void Scene_OnStateRefreshed(ParcelScene scene)
+        private void StatusUpdate(float percentage)
         {
-            switch (scene.sceneLifecycleHandler.state)
-            {
-                case SceneLifecycleHandler.State.READY:
-                    currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.OnResourcesStatusUpdate -= ResourcesStatusUpdate;
-                    currentScene.sceneLifecycleHandler.OnStateRefreshed -= Scene_OnStateRefreshed;
-                    currentScene = null;
-                    break;
-            }
-        }
+            loadingScreenPercentageView.SetLoadingPercentage((int)percentage);
 
-        private void ResourcesStatusUpdate()
-        {
-            loadingScreenPercentageView.SetLoadingPercentage((int)currentScene.sceneLifecycleHandler.sceneResourcesLoadTracker.loadingProgress);
+            if (percentage >= 100)
+            {
+                currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
+                currentSceneBeingLoaded = null;
+            }
         }
 
         public void StartLoading(Vector2Int newDestination)
@@ -74,6 +62,5 @@ namespace DCL.LoadingScreen
             currentDestination = newDestination;
             loadingScreenPercentageView.SetLoadingPercentage(0);
         }
-
     }
 }
