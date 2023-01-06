@@ -2,7 +2,6 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using UnityEngine;
 using static HotScenesController;
 
 public interface IPlacesAPIController
@@ -17,22 +16,25 @@ public interface IPlacesAPIController
 [ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
+    private readonly HotScenesController hotScenesController = HotScenesController.i;
+
     internal event Action<List<HotSceneInfo>> OnGetOperationCompleted;
+
 
     public void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted)
     {
         OnGetOperationCompleted += OnCompleted;
         WebInterface.FetchHotScenes();
 
-        HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
-        HotScenesController.i.OnHotSceneListFinishUpdating += OnFetchHotScenes;
+        hotScenesController.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
+        hotScenesController.OnHotSceneListFinishUpdating += OnFetchHotScenes;
     }
 
     private void OnFetchHotScenes()
     {
-        HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
+        hotScenesController.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
 
-        OnGetOperationCompleted?.Invoke(HotScenesController.i.hotScenesList);
+        OnGetOperationCompleted?.Invoke(hotScenesController.hotScenesList);
         OnGetOperationCompleted = null;
     }
 }
