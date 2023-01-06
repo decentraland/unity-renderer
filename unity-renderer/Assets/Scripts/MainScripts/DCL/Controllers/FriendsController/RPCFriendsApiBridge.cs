@@ -277,7 +277,11 @@ namespace DCl.Social.Friends
 
         public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId)
         {
-            GetFriendshipStatusResponse response = await rpc.Friends()
+            ClientFriendsKernelService friends = rpc.Friends();
+            // TODO: remove this check when the kernel service is implemented
+            if (friends == null) return FriendshipStatus.NOT_FRIEND;
+
+            GetFriendshipStatusResponse response = await friends
                                                             .GetFriendshipStatus(new GetFriendshipStatusRequest
                                                              {
                                                                  UserId = userId
