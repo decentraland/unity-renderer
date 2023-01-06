@@ -93,6 +93,8 @@ namespace DCL.Components
             {
                 DetachFrom(attachedEntitiesArray[i]);
             }
+
+            updateHandler = null;
         }
 
         public virtual void Dispose()
