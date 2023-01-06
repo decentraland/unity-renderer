@@ -17,7 +17,7 @@ public interface IPlacesAPIController
 [ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
-    internal Action<List<HotSceneInfo>> OnGetOperationCompleted;
+    internal event Action<List<HotSceneInfo>> OnGetOperationCompleted;
 
     public void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted)
     {
@@ -28,10 +28,10 @@ public class PlacesAPIController : IPlacesAPIController
         HotScenesController.i.OnHotSceneListFinishUpdating += OnFetchHotScenes;
     }
 
-    internal void OnFetchHotScenes()
+    private void OnFetchHotScenes()
     {
         HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
-        
+
         OnGetOperationCompleted?.Invoke(HotScenesController.i.hotScenesList);
         OnGetOperationCompleted = null;
     }

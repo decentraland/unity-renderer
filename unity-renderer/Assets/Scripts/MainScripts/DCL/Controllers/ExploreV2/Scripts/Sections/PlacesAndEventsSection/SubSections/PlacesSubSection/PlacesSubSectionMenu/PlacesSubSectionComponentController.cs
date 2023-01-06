@@ -46,11 +46,12 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
 
-    internal List<HotSceneInfo> placesFromAPI = new ();
+    private List<HotSceneInfo> placesFromAPI = new ();
+    private int currentCardsShown;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, INITIAL_NUMBER_OF_ROWS, RequestAllPlacesFromAPI);
+        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllPlacesFromAPI);
 
         this.view = view;
 
@@ -92,8 +93,16 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         cardsRequestHandler.Initialize();
     }
 
-    public void RequestAllPlaces() =>
-        cardsRequestHandler.RequestAll();
+    public void RequestAllPlaces()
+    {
+        if (cardsRequestHandler.CanReload())
+        {
+            currentCardsShown = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
+            view.SetShowMoreButtonActive(false);
+
+            cardsRequestHandler.RequestAll();
+        }
+    }
 
     internal void RequestAllPlacesFromAPI()
     {
@@ -106,7 +115,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(cardsRequestHandler.CurrentCardsShown).ToList();
+        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentCardsShown).ToList();
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -115,19 +124,19 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         view.SetPlaces(places);
-        view.SetShowMorePlacesButtonActive(cardsRequestHandler.CurrentCardsShown < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(currentCardsShown < placesFromAPI.Count);
     }
 
     public void ShowMorePlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
 
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)cardsRequestHandler.CurrentCardsShown / view.currentPlacesPerRow) * view.currentPlacesPerRow) - cardsRequestHandler.CurrentCardsShown;
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentCardsShown / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentCardsShown;
         int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<HotSceneInfo> placesFiltered = cardsRequestHandler.CurrentCardsShown + numberOfItemsToAdd <= placesFromAPI.Count
-            ? placesFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, numberOfItemsToAdd)
-            : placesFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, placesFromAPI.Count - cardsRequestHandler.CurrentCardsShown);
+        List<HotSceneInfo> placesFiltered = currentCardsShown + numberOfItemsToAdd <= placesFromAPI.Count
+            ? placesFromAPI.GetRange(currentCardsShown, numberOfItemsToAdd)
+            : placesFromAPI.GetRange(currentCardsShown, placesFromAPI.Count - currentCardsShown);
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -137,12 +146,12 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         view.AddPlaces(places);
 
-        cardsRequestHandler.CurrentCardsShown += numberOfItemsToAdd;
+        currentCardsShown += numberOfItemsToAdd;
 
-        if (cardsRequestHandler.CurrentCardsShown > placesFromAPI.Count)
-            cardsRequestHandler.CurrentCardsShown = placesFromAPI.Count;
+        if (currentCardsShown > placesFromAPI.Count)
+            currentCardsShown = placesFromAPI.Count;
 
-        view.SetShowMorePlacesButtonActive(cardsRequestHandler.CurrentCardsShown < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(currentCardsShown < placesFromAPI.Count);
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)

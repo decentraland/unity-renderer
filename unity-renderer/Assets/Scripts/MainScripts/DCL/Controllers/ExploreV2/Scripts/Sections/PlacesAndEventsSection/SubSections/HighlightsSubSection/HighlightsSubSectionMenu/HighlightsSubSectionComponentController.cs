@@ -47,43 +47,42 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public event Action OnGoToEventsSubSection;
 
     internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
-    internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
-    internal const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
-    internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
+    private const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
+    private const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
+    private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
-    internal IHighlightsSubSectionComponentView view;
-    internal IPlacesAPIController placesAPIApiController;
-    internal IEventsAPIController eventsAPIApiController;
-    internal FriendTrackerController friendsTrackerController;
+    internal readonly IHighlightsSubSectionComponentView view;
+    internal readonly IPlacesAPIController placesAPIApiController;
+    internal readonly IEventsAPIController eventsAPIApiController;
+    internal readonly FriendTrackerController friendsTrackerController;
+    private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly DataStore dataStore;
+
+    private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
+
     internal List<HotSceneInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
-    internal bool reloadHighlights = false;
-    internal IExploreV2Analytics exploreV2Analytics;
-    internal float lastTimeAPIChecked = 0;
-    private DataStore dataStore;
 
-    public HighlightsSubSectionComponentController(
-        IHighlightsSubSectionComponentView view,
-        IPlacesAPIController placesAPI,
-        IEventsAPIController eventsAPI,
-        IFriendsController friendsController,
-        IExploreV2Analytics exploreV2Analytics,
-        DataStore dataStore)
+    public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
+        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllPlacesAndEventsFromAPI);
+
         this.view = view;
+
         this.view.OnReady += FirstLoading;
 
-        // view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        // dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
-
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
-        this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnPlaceJumpInClicked += JumpInToPlace;
+
+        this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnEventJumpInClicked += JumpInToEvent;
+
         this.view.OnEventSubscribeEventClicked += SubscribeToEvent;
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
-        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+
         this.view.OnViewAllEventsClicked += GoToEventsSubSection;
+
+        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -98,72 +97,50 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.ConfigurePools();
     }
 
-    internal void FirstLoading()
+    public void Dispose()
     {
-        // reloadHighlights = true;
-        // lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        // RequestAllPlacesAndEvents();
+        view.OnReady -= FirstLoading;
 
+        view.OnPlaceInfoClicked -= ShowPlaceDetailedInfo;
+        view.OnEventInfoClicked -= ShowEventDetailedInfo;
+        view.OnPlaceJumpInClicked -= JumpInToPlace;
+        view.OnEventJumpInClicked -= JumpInToEvent;
+        view.OnEventSubscribeEventClicked -= SubscribeToEvent;
+        view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
+        view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
+        view.OnViewAllEventsClicked -= GoToEventsSubSection;
+
+        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+
+        cardsRequestHandler.Dispose();
+    }
+
+    private void FirstLoading()
+    {
         view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        dataStore.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        cardsRequestHandler.Initialize();
     }
-
-    internal void OnExploreV2Open(bool current, bool previous)
-    {
-        if (current)
-            return;
-
-        reloadHighlights = true;
-    }
-
-    internal bool firstLoading = true;
 
     public void RequestAllPlacesAndEvents()
     {
-        if (firstLoading)
-        {
-            firstLoading = false;
-            reloadHighlights = true;
-            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-        }
-        else if (!reloadHighlights || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API )
-            return;
-
-        view.RestartScrollViewPosition();
-
-        view.SetTrendingPlacesAndEventsAsLoading(true);
-        view.SetFeaturedPlacesAsLoading(true);
-        view.SetLiveAsLoading(true);
-
-        reloadHighlights = false;
-        lastTimeAPIChecked = Time.realtimeSinceStartup;
-
-        if (!dataStore.exploreV2.isInShowAnimationTransiton.Get())
-            RequestAllPlacesAndEventsFromAPI();
-        else
-            dataStore.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
-    }
-
-    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
-    {
-        dataStore.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
-        RequestAllPlacesAndEventsFromAPI();
+        if (cardsRequestHandler.CanReload())
+            cardsRequestHandler.RequestAll();
     }
 
     internal void RequestAllPlacesAndEventsFromAPI()
     {
         placesAPIApiController.GetAllPlaces(
-            (placeList) =>
+            OnCompleted: placeList =>
             {
                 placesFromAPI = placeList;
 
                 eventsAPIApiController.GetAllEvents(
-                    (eventList) =>
+                    OnSuccess: eventList =>
                     {
                         eventsFromAPI = eventList;
                         OnRequestedPlacesAndEventsUpdated();
                     },
-                    (error) =>
+                    OnFail: error =>
                     {
                         OnRequestedPlacesAndEventsUpdated();
                         Debug.LogError($"Error receiving events from the API: {error}");
@@ -254,22 +231,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetLiveEvents(events);
-    }
-
-    public void Dispose()
-    {
-        view.OnReady -= FirstLoading;
-        view.OnPlaceInfoClicked -= ShowPlaceDetailedInfo;
-        view.OnEventInfoClicked -= ShowEventDetailedInfo;
-        view.OnPlaceJumpInClicked -= JumpInToPlace;
-        view.OnEventJumpInClicked -= JumpInToEvent;
-        view.OnEventSubscribeEventClicked -= SubscribeToEvent;
-        view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
-        view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
-        view.OnViewAllEventsClicked -= GoToEventsSubSection;
-
-        dataStore.exploreV2.isOpen.OnChange -= OnExploreV2Open;
-        dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)

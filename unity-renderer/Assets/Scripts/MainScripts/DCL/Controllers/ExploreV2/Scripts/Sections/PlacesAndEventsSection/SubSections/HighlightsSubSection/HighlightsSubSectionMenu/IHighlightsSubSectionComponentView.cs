@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IHighlightsSubSectionComponentView
+public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.

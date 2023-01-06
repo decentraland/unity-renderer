@@ -18,9 +18,9 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     private const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     private const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
-    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
-    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new Queue<Func<UniTask>>();
-    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new ();
+    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
+    private readonly CancellationTokenSource cancellationTokenSource = new ();
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
@@ -44,17 +44,26 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     [SerializeField] internal Color[] friendColors = null;
 
     [SerializeField] private Canvas canvas;
-    
+
     internal PlaceCardComponentView placeModal;
     internal EventCardComponentView eventModal;
     internal Pool trendingPlaceCardsPool;
     internal Pool trendingEventCardsPool;
     internal Pool featuredPlaceCardsPool;
     internal Pool liveEventCardsPool;
-    
+
     private bool isUpdatingCardsVisual;
 
     public Color[] currentFriendColors => friendColors;
+
+    public void SetAllAsLoading()
+    {
+        SetTrendingPlacesAndEventsAsLoading(true);
+        SetFeaturedPlacesAsLoading(true);
+        SetLiveAsLoading(true);
+    }
+
+    public int CurrentTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
@@ -110,7 +119,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         viewAllEventsButton.onClick.RemoveAllListeners();
     }
-    
+
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
@@ -188,7 +197,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             eventModal.Hide();
     }
 
-    public void RestartScrollViewPosition() => 
+    public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
 
     public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
@@ -292,12 +301,12 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         poolsPrewarmAsyncsBuffer.Enqueue(() => trendingPlaceCardsPool.PrewarmAsync(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES, cancellationToken));
     }
-    
+
     private void UpdateCardsVisual()
     {
         if (!isUpdatingCardsVisual)
             UpdateCardsVisualProcess().Forget();
-        
+
         async UniTask UpdateCardsVisualProcess()
         {
             isUpdatingCardsVisual = true;

@@ -9,23 +9,20 @@ public enum SubSectionType
     Places,
 }
 
-public interface ISubSectionComponentView
+public interface IPlacesAndEventsSubSectionComponentView
 {
     void RestartScrollViewPosition();
 
     void SetAllAsLoading();
-
-    void SetShowMoreButtonActive(bool isActive);
 
     int CurrentTilesPerRow { get; }
 }
 
 public class PlaceAndEventsCardsRequestHandler : IDisposable
 {
-    private readonly ISubSectionComponentView view;
+    private readonly IPlacesAndEventsSubSectionComponentView view;
     private readonly DataStore_ExploreV2 exploreV2Menu;
 
-    private readonly int initialNumberOfRows;
     private readonly Action requestAllFromAPI;
 
     private bool firstLoading;
@@ -34,14 +31,11 @@ public class PlaceAndEventsCardsRequestHandler : IDisposable
 
     private float lastTimeAPIChecked;
 
-    public int CurrentCardsShown { get; set; }
-
-    public PlaceAndEventsCardsRequestHandler(ISubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, int initialNumberOfRows, Action requestAllFromAPI)
+    public PlaceAndEventsCardsRequestHandler(IPlacesAndEventsSubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, Action requestAllFromAPI)
     {
         this.view = view;
         this.exploreV2Menu = exploreV2Menu;
 
-        this.initialNumberOfRows = initialNumberOfRows;
         this.requestAllFromAPI = requestAllFromAPI;
 
         firstLoading = true;
@@ -66,7 +60,7 @@ public class PlaceAndEventsCardsRequestHandler : IDisposable
             reloadSubSection = true;
     }
 
-    public void RequestAll()
+    public bool CanReload()
     {
         if (firstLoading)
         {
@@ -75,13 +69,15 @@ public class PlaceAndEventsCardsRequestHandler : IDisposable
             lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         }
         else if (!reloadSubSection || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return;
+            return false;
 
+        return true;
+    }
+
+    public void RequestAll()
+    {
         view.RestartScrollViewPosition();
-
-        CurrentCardsShown = view.CurrentTilesPerRow * initialNumberOfRows;
         view.SetAllAsLoading();
-        view.SetShowMoreButtonActive(false);
 
         reloadSubSection = false;
         lastTimeAPIChecked = Time.realtimeSinceStartup;
