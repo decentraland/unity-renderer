@@ -84,8 +84,8 @@ namespace DCL.Social.Passports
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile);
-                    await LoadAndShowOwnedNamesAsync(userProfile);
-                    await LoadAndShowOwnedLandsAsync(userProfile);
+                    LoadAndShowOwnedNamesAsync(userProfile).Forget();
+                    LoadAndShowOwnedLandsAsync(userProfile).Forget();
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;

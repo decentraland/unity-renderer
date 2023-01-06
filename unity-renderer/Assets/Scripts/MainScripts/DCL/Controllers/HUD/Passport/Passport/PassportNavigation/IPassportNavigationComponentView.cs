@@ -18,5 +18,6 @@ namespace DCL.Social.Passports
         void SetCollectibleNames(NamesResponse.NameEntry[] names);
         void SetCollectibleLands(LandsResponse.LandEntry[] lands);
         void SetHasBlockedOwnUser(bool isBlocked);
+        void CloseAllNFTItemInfos();
     }
 }
