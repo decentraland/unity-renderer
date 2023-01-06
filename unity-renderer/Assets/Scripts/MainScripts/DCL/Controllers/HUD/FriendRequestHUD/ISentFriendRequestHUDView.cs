@@ -12,11 +12,10 @@ namespace DCL.Social.Friends
         void SetRecipientName(string userName);
         void SetRecipientProfilePicture(ILazyTextureObserver textureObserver);
         void SetSenderProfilePicture(ILazyTextureObserver textureObserver);
-        void Show();
+        void Show(bool instant = false);
         void Close();
         void Dispose();
         void ShowPendingToCancel();
-        void ShowCancelFailed();
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime date);
     }

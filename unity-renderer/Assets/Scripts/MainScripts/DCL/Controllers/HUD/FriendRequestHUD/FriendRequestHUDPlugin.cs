@@ -22,7 +22,8 @@ namespace DCL.Social.Friends
                 ReceivedFriendRequestHUDComponentView.Create(),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable);
+                openPassportVariable,
+                socialAnalytics);
 
             sendFriendRequestHUDController = new SendFriendRequestHUDController(SendFriendRequestHUDComponentView.Create(),
                 dataStore, userProfileBridge, friendsController,

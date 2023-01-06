@@ -9,12 +9,12 @@ namespace DCL.Social.Friends
     {
         private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
 
-        private readonly IFriendsApiBridge apiBridge;
-        private readonly IFriendsApiBridge apiBridgeMock;
+        private readonly IFriendsApiBridge fallbackApiBridge;
+        private readonly IFriendsApiBridge newFriendsApiBridge;
         private readonly DataStore dataStore;
 
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG);
-        private IFriendsApiBridge apiBridgeInUse => isNewFriendRequestsEnabled ? apiBridgeMock : apiBridge;
+        private IFriendsApiBridge apiBridgeInUse => isNewFriendRequestsEnabled ? newFriendsApiBridge : fallbackApiBridge;
 
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
@@ -27,41 +27,41 @@ namespace DCL.Social.Friends
         public event Action<FriendRequestPayload> OnFriendRequestReceived;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
 
-        public WebInterfaceFriendsApiBridgeProxy(IFriendsApiBridge apiBridge, IFriendsApiBridge apiBridgeMock, DataStore dataStore)
+        public WebInterfaceFriendsApiBridgeProxy(IFriendsApiBridge fallbackApiBridge, IFriendsApiBridge newFriendsApiBridge, DataStore dataStore)
         {
-            this.apiBridge = apiBridge;
-            this.apiBridgeMock = apiBridgeMock;
+            this.fallbackApiBridge = fallbackApiBridge;
+            this.newFriendsApiBridge = newFriendsApiBridge;
             this.dataStore = dataStore;
 
-            this.apiBridge.OnInitialized += x => OnInitialized?.Invoke(x);
-            this.apiBridgeMock.OnInitialized += x => OnInitialized?.Invoke(x);
+            this.fallbackApiBridge.OnInitialized += x => OnInitialized?.Invoke(x);
+            this.newFriendsApiBridge.OnInitialized += x => OnInitialized?.Invoke(x);
 
-            this.apiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
-            this.apiBridgeMock.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
+            this.fallbackApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
 
-            this.apiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
-            this.apiBridgeMock.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
+            this.fallbackApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
 
-            this.apiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
-            this.apiBridgeMock.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
+            this.fallbackApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
 
-            this.apiBridge.OnUserPresenceUpdated += x => OnUserPresenceUpdated?.Invoke(x);
-            this.apiBridgeMock.OnUserPresenceUpdated += x => OnUserPresenceUpdated?.Invoke(x);
+            this.fallbackApiBridge.OnUserPresenceUpdated += x => OnUserPresenceUpdated?.Invoke(x);
+            this.newFriendsApiBridge.OnUserPresenceUpdated += x => OnUserPresenceUpdated?.Invoke(x);
 
-            this.apiBridge.OnFriendshipStatusUpdated += x => OnFriendshipStatusUpdated?.Invoke(x);
-            this.apiBridgeMock.OnFriendshipStatusUpdated += x => OnFriendshipStatusUpdated?.Invoke(x);
+            this.fallbackApiBridge.OnFriendshipStatusUpdated += x => OnFriendshipStatusUpdated?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendshipStatusUpdated += x => OnFriendshipStatusUpdated?.Invoke(x);
 
-            this.apiBridge.OnTotalFriendRequestCountUpdated += x => OnTotalFriendRequestCountUpdated?.Invoke(x);
-            this.apiBridgeMock.OnTotalFriendRequestCountUpdated += x => OnTotalFriendRequestCountUpdated?.Invoke(x);
+            this.fallbackApiBridge.OnTotalFriendRequestCountUpdated += x => OnTotalFriendRequestCountUpdated?.Invoke(x);
+            this.newFriendsApiBridge.OnTotalFriendRequestCountUpdated += x => OnTotalFriendRequestCountUpdated?.Invoke(x);
 
-            this.apiBridge.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
-            this.apiBridgeMock.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
+            this.fallbackApiBridge.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
+            this.newFriendsApiBridge.OnTotalFriendCountUpdated += x => OnTotalFriendCountUpdated?.Invoke(x);
 
-            this.apiBridge.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
-            this.apiBridgeMock.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
+            this.fallbackApiBridge.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendRequestsAdded += x => OnFriendRequestsAdded?.Invoke(x);
 
-            this.apiBridge.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
-            this.apiBridgeMock.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
+            this.fallbackApiBridge.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
+            this.newFriendsApiBridge.OnFriendRequestReceived += x => OnFriendRequestReceived?.Invoke(x);
         }
 
         public void RejectFriendship(string userId) =>

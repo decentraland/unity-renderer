@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -70,7 +71,7 @@ public class FriendRequestEntry : FriendEntryBase
         if (requestDate == null)
             return;
 
-        requestDate.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd").ToUpper();
+        requestDate.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
     }
 
     private void SetReceived(bool value)

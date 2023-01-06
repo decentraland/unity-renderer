@@ -1,10 +1,7 @@
-using System;
-using DCL.Models;
-using DCL.Components;
 using UnityEngine;
 using TMPro;
-using System.Collections.Generic;
 using DCL;
+using DCL.Helpers;
 
 public class InteractionHoverCanvasController : MonoBehaviour
 {
@@ -12,10 +9,12 @@ public class InteractionHoverCanvasController : MonoBehaviour
     public RectTransform backgroundTransform;
     public TextMeshProUGUI text;
     public GameObject[] icons;
+    public RectTransform anchor;
+    private Vector2 defaultAnchorOffset;
 
     bool isHovered = false;
     GameObject hoverIcon;
-    Vector3 meshCenteredPos;
+    private Vector3 meshCenteredPos;
 
     const string ACTION_BUTTON_POINTER = "POINTER";
     const string ACTION_BUTTON_PRIMARY = "PRIMARY";
@@ -25,6 +24,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void Awake()
     {
+        defaultAnchorOffset = anchor.anchoredPosition;
         dataStore = DataStore.i.Get<DataStore_Cursor>();
         backgroundTransform.gameObject.SetActive(false);
 
@@ -121,5 +121,22 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
         if (canvas.enabled != newValue)
             canvas.enabled = newValue;
+    }
+
+    private void Update()
+    {
+        if (Utils.IsCursorLocked)
+        {
+            anchor.anchoredPosition = defaultAnchorOffset;
+            return;
+        }
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            (RectTransform)canvas.transform,
+            Input.mousePosition, canvas.worldCamera,
+            out Vector2 movePos);
+
+        anchor.position = canvas.transform.TransformPoint(movePos);
+        anchor.anchoredPosition += defaultAnchorOffset;
     }
 }

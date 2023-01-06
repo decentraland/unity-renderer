@@ -3,7 +3,7 @@ using DCL.Helpers;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Threading;
-using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace DCL.Social.Passports
 {
@@ -51,6 +51,7 @@ namespace DCL.Social.Passports
 
             PlayerPrefsUtils.SetBool(TUTORIAL_ENABLED_KEY, false);
             PlayerPrefsUtils.Save();
+            view.HideTutorial();
 
             view.SetModel(new (false));
         }
@@ -64,6 +65,7 @@ namespace DCL.Social.Passports
 
         public void Dispose()
         {
+            view.PreviewCameraRotation.OnHorizontalRotation -= RotateCharacterPreview;
             cancellationTokenSource?.Cancel();
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = null;

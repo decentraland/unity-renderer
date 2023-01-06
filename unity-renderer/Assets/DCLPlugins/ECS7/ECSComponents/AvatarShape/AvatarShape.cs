@@ -21,15 +21,15 @@ namespace DCL.ECSComponents
     public interface IAvatarShape
     {
         /// <summary>
-        /// This will initialize the AvatarShape and set 
+        /// This will initialize the AvatarShape and set
         /// </summary>
         void Init();
-        
+
         /// <summary>
         /// Clean up the avatar shape so we can reutilizate it using the pool
         /// </summary>
         void Cleanup();
-        
+
         /// <summary>
         /// Apply the model of the avatar, it will reload if necessary
         /// </summary>
@@ -43,7 +43,7 @@ namespace DCL.ECSComponents
         /// </summary>
         Transform transform { get; }
     }
-    
+
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
     {
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
@@ -57,8 +57,9 @@ namespace DCL.ECSComponents
         [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
-        
+
         internal IAvatarMovementController avatarMovementController;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
@@ -69,7 +70,7 @@ namespace DCL.ECSComponents
 
         internal Player player = null;
         internal BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        
+
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
         internal IAvatar avatar;
         internal CancellationTokenSource loadingCts;
@@ -79,15 +80,15 @@ namespace DCL.ECSComponents
         public IPoolableObject poolableObject { get; set; }
         internal PBAvatarShape model;
         internal IDCLEntity entity;
-        
+
         private void Awake()
         {
             avatarMovementController = GetComponent<IAvatarMovementController>();
-            
+
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
             avatarMovementController.SetAvatarTransform(transform);
-            
+
             // Right now the avatars that are not part of the global scene of avatar are not using LOD since
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
@@ -106,7 +107,7 @@ namespace DCL.ECSComponents
 
             if (avatarReporterController == null)
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            
+
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
@@ -126,7 +127,7 @@ namespace DCL.ECSComponents
             playerName = GetComponentInChildren<IPlayerName>();
             playerName?.Hide(true);
         }
-        
+
         private void PlayerClicked()
         {
             if (model == null)
@@ -145,11 +146,11 @@ namespace DCL.ECSComponents
         public async void ApplyModel(IParcelScene scene, IDCLEntity entity, PBAvatarShape newModel)
         {
             this.entity = entity;
-            
+
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
             DisablePassport();
-            
+
             bool needsLoading = !AvatarUtils.HaveSameWearablesAndColors(model,newModel);
             model = newModel;
 
@@ -189,11 +190,11 @@ namespace DCL.ECSComponents
                 }
                 catch (Exception e)
                 {
-                    // If the load of the avatar fails, we do it silently so the scene continue to operate. 
+                    // If the load of the avatar fails, we do it silently so the scene continue to operate.
                     // The LoadAvatar function will show the error in console already so in order to avoid noise, we just capture the exception
                 }
             }
-            
+
             // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
             if(model.HasExpressionTriggerId)
                 avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
@@ -209,6 +210,8 @@ namespace DCL.ECSComponents
                 },
                 entity, player
             );
+
+            outlineOnHover.Initialize(entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -275,7 +278,7 @@ namespace DCL.ECSComponents
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
-        
+
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
         internal void UpdatePlayerStatus(IDCLEntity entity, PBAvatarShape model)
@@ -290,7 +293,7 @@ namespace DCL.ECSComponents
             bool isNew = player == null;
             if (isNew)
                 player = new Player();
-            
+
             bool isNameDirty = player.name != model.GetName();
 
             player.id = model.Id;
@@ -309,7 +312,7 @@ namespace DCL.ECSComponents
                 if (isGlobalSceneAvatar)
                 {
                     // TODO: Note: This is having a problem, sometimes the users has been detected as new 2 times and it shouldn't happen
-                    // we should investigate this 
+                    // we should investigate this
                     if (otherPlayers.ContainsKey(player.id))
                         otherPlayers.Remove(player.id);
                     otherPlayers.Add(player.id, player);
@@ -365,7 +368,7 @@ namespace DCL.ECSComponents
         {
             if (entity == null)
                 return;
-            
+
             if (isGlobalSceneAvatar)
             {
                 avatarMovementController.OnTransformChanged(position, rotation, inmediate);
@@ -382,7 +385,7 @@ namespace DCL.ECSComponents
         {
             Cleanup();
         }
-        
+
         public void OnPoolGet()
         {
             initializedPosition = false;
@@ -413,11 +416,11 @@ namespace DCL.ECSComponents
                 otherPlayers.Remove(player.id);
                 player = null;
             }
-            
+
             loadingCts?.Cancel();
             loadingCts?.Dispose();
             loadingCts = null;
-            
+
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 

@@ -1,4 +1,3 @@
-using Castle.Components.DictionaryAdapter;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

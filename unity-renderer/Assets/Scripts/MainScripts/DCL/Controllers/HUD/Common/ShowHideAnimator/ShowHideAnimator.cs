@@ -33,6 +33,8 @@ public class ShowHideAnimator : MonoBehaviour
 
     public void Show(bool instant = false)
     {
+        if (canvasGroup == null)
+            Debug.LogError($"Show Hide Animator in GameObject: {gameObject.name} has no canvasgroup assigned");
         canvasGroup.blocksRaycasts = true;
 
         //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
@@ -48,6 +50,8 @@ public class ShowHideAnimator : MonoBehaviour
 
     public void Hide(bool instant = false)
     {
+        if (canvasGroup == null)
+            Debug.LogError($"Show Hide Animator in GameObject: {gameObject.name} has no canvasgroup assigned");
         canvasGroup.blocksRaycasts = false;
 
         //When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.

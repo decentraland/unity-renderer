@@ -7,7 +7,14 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Bff {
-public class ClientBffAuthenticationService
+public interface IClientBffAuthenticationService
+{
+  UniTask<GetChallengeResponse> GetChallenge(GetChallengeRequest request);
+
+  UniTask<WelcomePeerInformation> Authenticate(SignedChallenge request);
+}
+
+public class ClientBffAuthenticationService : IClientBffAuthenticationService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +23,7 @@ public class ClientBffAuthenticationService
       this.module = module;
   }
 
+  
   public UniTask<GetChallengeResponse> GetChallenge(GetChallengeRequest request)
   {
       return module.CallUnaryProcedure<GetChallengeResponse>("GetChallenge", request);
@@ -25,5 +33,6 @@ public class ClientBffAuthenticationService
   {
       return module.CallUnaryProcedure<WelcomePeerInformation>("Authenticate", request);
   }
+
 }
 }

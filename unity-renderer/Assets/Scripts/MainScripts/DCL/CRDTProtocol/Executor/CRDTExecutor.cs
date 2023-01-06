@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -11,9 +10,7 @@ namespace DCL.CRDT
         private readonly IParcelScene ownerScene;
         private readonly ECSComponentsManager ecsManager;
 
-        private bool sceneAdded = false;
         private bool disposed = false;
-        private readonly IList<IParcelScene> loadedScenes;
 
         public CRDTProtocol crdtProtocol { get; }
 
@@ -22,7 +19,6 @@ namespace DCL.CRDT
             ownerScene = scene;
             crdtProtocol = new CRDTProtocol();
             ecsManager = componentsManager;
-            loadedScenes = DataStore.i.ecs7.scenes;
         }
 
         public void Dispose()
@@ -36,7 +32,7 @@ namespace DCL.CRDT
                 return;
 
             disposed = true;
-            loadedScenes.Remove(ownerScene);
+
             using (var entities = ownerScene.entities.Values.GetEnumerator())
             {
                 while (entities.MoveNext())
@@ -54,11 +50,6 @@ namespace DCL.CRDT
             if (disposed)
                 Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
 #endif
-            if (!sceneAdded)
-            {
-                sceneAdded = true;
-                loadedScenes.Add(ownerScene);
-            }
 
             CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
             CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
@@ -68,7 +59,6 @@ namespace DCL.CRDT
             {
                 return;
             }
-
 
             ExecuteWithoutStoringState(crdtMessage.key1, crdtMessage.key2, crdtMessage.data);
         }
