@@ -42,7 +42,7 @@ namespace DCL.ECSComponents {
             "ZRgFIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSASI",
             "AQESPAoMYnVtcF90ZXh0dXJlGAYgASgLMiEuZGVjZW50cmFsYW5kLmNvbW1v",
             "bi5UZXh0dXJlVW5pb25IBYgBARI2CgxhbGJlZG9fY29sb3IYByABKAsyGy5k",
-            "ZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gGiAEBEjgKDmVtaXNzaXZlX2Nv",
+            "ZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yNEgGiAEBEjgKDmVtaXNzaXZlX2Nv",
             "bG9yGAggASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIB4gBARI8",
             "ChJyZWZsZWN0aXZpdHlfY29sb3IYCSABKAsyGy5kZWNlbnRyYWxhbmQuY29t",
             "bW9uLkNvbG9yM0gIiAEBElUKEXRyYW5zcGFyZW5jeV9tb2RlGAogASgOMjUu",
@@ -860,13 +860,13 @@ namespace DCL.ECSComponents {
 
         /// <summary>Field number for the "albedo_color" field.</summary>
         public const int AlbedoColorFieldNumber = 7;
-        private global::Decentraland.Common.Color3 albedoColor_;
+        private global::Decentraland.Common.Color4 albedoColor_;
         /// <summary>
         /// default = white;
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::Decentraland.Common.Color3 AlbedoColor {
+        public global::Decentraland.Common.Color4 AlbedoColor {
           get { return albedoColor_; }
           set {
             albedoColor_ = value;
@@ -1411,7 +1411,7 @@ namespace DCL.ECSComponents {
           }
           if (other.albedoColor_ != null) {
             if (albedoColor_ == null) {
-              AlbedoColor = new global::Decentraland.Common.Color3();
+              AlbedoColor = new global::Decentraland.Common.Color4();
             }
             AlbedoColor.MergeFrom(other.AlbedoColor);
           }
@@ -1501,7 +1501,7 @@ namespace DCL.ECSComponents {
               }
               case 58: {
                 if (albedoColor_ == null) {
-                  AlbedoColor = new global::Decentraland.Common.Color3();
+                  AlbedoColor = new global::Decentraland.Common.Color4();
                 }
                 input.ReadMessage(AlbedoColor);
                 break;
@@ -1601,7 +1601,7 @@ namespace DCL.ECSComponents {
               }
               case 58: {
                 if (albedoColor_ == null) {
-                  AlbedoColor = new global::Decentraland.Common.Color3();
+                  AlbedoColor = new global::Decentraland.Common.Color4();
                 }
                 input.ReadMessage(AlbedoColor);
                 break;

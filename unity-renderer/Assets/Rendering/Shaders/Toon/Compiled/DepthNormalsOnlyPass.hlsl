@@ -6,7 +6,11 @@ PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
     #ifdef _GPU_SKINNING
-    ApplyGPUSkinning(input, input.tangentOS, input.uv1);
+    float3 gpuSkinnedPositionOS;
+    float3 gpuSkinnedNormalOS;
+    ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS, input.tangentOS, input.uv1);
+    input.positionOS = gpuSkinnedPositionOS; 
+    input.normalOS = gpuSkinnedNormalOS;
     #endif
     output = BuildVaryings(input);
     // TODO(Brian): ApplyGPUSkinning sets the final world space normal and this ends up

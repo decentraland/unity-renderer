@@ -56,8 +56,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         string sceneGameObjectNamePrefix = "Global Scene - ";
         int sceneNumber = 56;
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber }));
-        
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber });
+
         GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneNumber);
 
         GlobalScene globalScene = Environment.i.world.state.GetScene(sceneNumber) as GlobalScene;
@@ -72,7 +72,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
             "IsInsideSceneBoundaries() should always return true.");
         Assert.IsTrue(globalScene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
             "IsInsideSceneBoundaries() should always return true.");
-        
+
         yield return null;
 
         // Position character inside parcel (0,0)
@@ -92,7 +92,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     {
         int sceneNumber = 56;
 
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber }));
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumber });
 
         Assert.IsTrue(Environment.i.world.state.ContainsScene(sceneNumber), "Scene not in loaded dictionary!");
 
@@ -115,8 +115,8 @@ public class SceneTests : IntegrationTestSuite_Legacy
         DataStore.i.experiencesViewer.isInitialized.Set(experiencesViewerMockedGo.transform);
 
         // Ensure its added to DataStore when created
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
-            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = true}));
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage()
+            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = true});
         Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
 
         // Ensure its removed from DataStore when unloaded
@@ -124,14 +124,14 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
 
         // If re-added when isPortableExperience is false, then it shouldn't be in the data store
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
-            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = false}));
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage()
+            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = false});
         Assert.IsFalse(worldData.portableExperienceIds.Contains(sceneId));
 
         // Whe re-added with isPortableExperience as true, it should work again
         sceneController.UnloadParcelSceneExecute(sceneNumber);
-        sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage()
-            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = true}));
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage()
+            {id = sceneId, sceneNumber = sceneNumber, isPortableExperience = true});
         Assert.IsTrue(worldData.portableExperienceIds.Contains(sceneId));
 
         Object.Destroy(experiencesViewerMockedGo);
@@ -383,7 +383,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }
-    
+
     [UnityTest]
     public IEnumerator EntityComponentShouldBeRemovedCorreclty()
     {
@@ -397,7 +397,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         {
             if (ignoreIds.Contains(classId))
                 continue;
- 
+
             IEntityComponent component = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entity.entityId, classId, "{}");
             yield return null;
 
@@ -435,7 +435,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
             Assert.IsFalse(scene.componentsManagerLegacy.HasComponent(entity, classId), $"component {component.componentName} id {classId} was not removed from entity components dictionary");
         }
     }
-    
+
     // Test scenario when a scene is unloaded
     // and loaded again before `ParcelScenesCleaner` finishes unloading of the scene
     // leaving `ParcelScene` `GameObject` instantiated forever
@@ -446,10 +446,10 @@ public class SceneTests : IntegrationTestSuite_Legacy
         string sceneJson = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
         sceneController.LoadParcelScenes(sceneJson);
         yield return new WaitForAllMessagesProcessed();
-        
+
         var loadedScene = Environment.i.world.state.GetScene(loadedSceneNumber) as ParcelScene;
         TestUtils.CreateSceneEntity(loadedScene, 6);
-        
+
         sceneController.UnloadScene(loadedSceneNumber);
         yield return new WaitForAllMessagesProcessed();
 
@@ -458,17 +458,17 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         // Force ParcelScenesCleaner clean
         Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
-        
+
         // Wait a frame for Object.Destroy scene
         yield return null;
-        
+
         var loadedScenes = Object.FindObjectsOfType<ParcelScene>(true);
-        
+
         // Disregard global scene created on SetUp
         var loadedScenesCount = loadedScenes.Count(s => s != scene);
-        
+
         Assert.AreEqual(1, loadedScenesCount);
-    }    
+    }
 
     class DestroyGameObjectCallback : MonoBehaviour
     {
@@ -477,5 +477,5 @@ public class SceneTests : IntegrationTestSuite_Legacy
         {
             OnDestroyed?.Invoke();
         }
-    }    
+    }
 }

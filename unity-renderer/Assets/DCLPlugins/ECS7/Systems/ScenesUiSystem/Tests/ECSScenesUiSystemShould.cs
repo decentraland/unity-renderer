@@ -3,6 +3,8 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.ECSComponents;
+using DCL.ECSComponents.UIText;
 using ECSSystems.ScenesUiSystem;
 using NSubstitute;
 using NUnit.Framework;
@@ -62,7 +64,7 @@ namespace Tests
         public void ClearUICorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
-            var model = new InternalUiContainer();
+            var model = new InternalUiContainer(0);
 
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
             uiDocument.rootVisualElement.Add(model.rootElement);
@@ -87,7 +89,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -124,13 +126,13 @@ namespace Tests
             Assert.IsFalse(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
 
             // but should be applied when component exist
-            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer());
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
             Assert.IsTrue(ECSScenesUiSystem.ApplySceneUI(uiContainerComponent, uiDocument, scene));
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
         }
 
         [Test]
-        public void CreateSceneRootUIContainer()
+        public void CreateSceneRootUIContainerCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
 
@@ -139,7 +141,7 @@ namespace Tests
 
             // add ui element to scene
             const int entityId = 111;
-            var model = new InternalUiContainer();
+            var model = new InternalUiContainer(0);
             model.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, model);
 
@@ -152,6 +154,23 @@ namespace Tests
             var rootSceneModel = uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
             var entityModel = uiContainerComponent.GetFor(scene, entityId).model;
             Assert.IsTrue(rootSceneModel.rootElement.Contains(entityModel.rootElement));
+
+            // check if it was initialized correctly
+            var style = rootSceneModel.rootElement.style;
+            Assert.AreEqual(PickingMode.Ignore, rootSceneModel.rootElement.pickingMode);
+            Assert.AreEqual(LengthUnit.Percent, style.width.value.unit);
+            Assert.AreEqual(100, style.width.value.value);
+            Assert.AreEqual(LengthUnit.Percent, style.height.value.unit);
+            Assert.AreEqual(100, style.height.value.value);
+            Assert.AreEqual(FlexDirection.Row, style.flexDirection.value);
+            Assert.AreEqual(StyleKeyword.Auto, style.flexBasis.keyword);
+            Assert.AreEqual(0, style.flexGrow.value);
+            Assert.AreEqual(1, style.flexShrink.value);
+            Assert.AreEqual(Justify.FlexStart, style.justifyContent.value);
+            Assert.AreEqual(Wrap.NoWrap, style.flexWrap.value);
+            Assert.AreEqual(Align.Stretch, style.alignItems.value);
+            Assert.AreEqual(Align.Auto, style.alignSelf.value);
+            Assert.AreEqual(Align.Stretch, style.alignContent.value);
         }
 
         [Test]
@@ -162,7 +181,7 @@ namespace Tests
             const int childEntityId = 111;
             const int parentEntityId = 112;
 
-            var childModel = new InternalUiContainer() { parentId = parentEntityId };
+            var childModel = new InternalUiContainer(childEntityId) { parentId = parentEntityId };
             childModel.components.Add(1);
 
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
@@ -174,7 +193,7 @@ namespace Tests
             Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
 
             // create parent container
-            var parentModel = new InternalUiContainer();
+            var parentModel = new InternalUiContainer(parentEntityId);
             parentModel.components.Add(1);
             uiContainerComponent.PutFor(scene, parentEntityId, parentModel);
 
@@ -204,7 +223,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -231,7 +250,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -274,8 +293,8 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scenes
-            InternalUiContainer rootScene1Container = new InternalUiContainer();
-            InternalUiContainer rootScene2Container = new InternalUiContainer();
+            InternalUiContainer rootScene1Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
+            InternalUiContainer rootScene2Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene1Container);
             uiContainerComponent.PutFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY, rootScene2Container);
 
@@ -353,7 +372,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for scene
-            InternalUiContainer rootSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, rootSceneContainer);
 
             // do system update
@@ -383,7 +402,7 @@ namespace Tests
                 new BaseVariable<bool>(true));
 
             // create root ui for global scene
-            InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(globalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootGlobalSceneContainer);
 
             // do system update
@@ -393,7 +412,7 @@ namespace Tests
             Assert.IsTrue(uiDocument.rootVisualElement.Contains(rootGlobalSceneContainer.rootElement));
 
             // create root ui for non global scene
-            InternalUiContainer rootNonGlobalSceneContainer = new InternalUiContainer();
+            InternalUiContainer rootNonGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
             uiContainerComponent.PutFor(nonGlobalScene, SpecialEntityId.SCENE_ROOT_ENTITY, rootNonGlobalSceneContainer);
 
             // do system update
@@ -427,12 +446,12 @@ namespace Tests
             ECS7TestEntity entity2 = scene.CreateEntity(112);
             ECS7TestEntity entity3 = scene.CreateEntity(113);
 
-            InternalUiContainer modelEntity0 = new InternalUiContainer();
-            InternalUiContainer modelEntity1 = new InternalUiContainer();
-            InternalUiContainer modelEntity2 = new InternalUiContainer();
-            InternalUiContainer modelEntity3 = new InternalUiContainer();
+            InternalUiContainer modelEntity0 = new InternalUiContainer(entity0.entityId);
+            InternalUiContainer modelEntity1 = new InternalUiContainer(entity1.entityId);
+            InternalUiContainer modelEntity2 = new InternalUiContainer(entity2.entityId);
+            InternalUiContainer modelEntity3 = new InternalUiContainer(entity3.entityId);
 
-            InternalUiContainer sceneModel = new InternalUiContainer();
+            InternalUiContainer sceneModel = new InternalUiContainer(0);
             sceneModel.rootElement.Add(modelEntity0.rootElement);
             sceneModel.rootElement.Add(modelEntity1.rootElement);
             sceneModel.rootElement.Add(modelEntity2.rootElement);
@@ -495,6 +514,64 @@ namespace Tests
         }
 
         [Test]
+        public void AvoidMovingNonUiContainerElementsWhenSorting()
+        {
+            ECS7TestScene scene = sceneTestHelper.CreateScene(666);
+
+            ECS7TestEntity baseParentEntity = scene.CreateEntity(110);
+            ECS7TestEntity baseParentChildEntity = scene.CreateEntity(111);
+            ECS7TestEntity baseParentGrandChildEntity1 = scene.CreateEntity(112);
+            ECS7TestEntity baseParentGrandChildEntity2 = scene.CreateEntity(113);
+            ECS7TestEntity baseParentGrandChildEntity3 = scene.CreateEntity(114);
+
+            UITransformHandler uiTransformHandler = new UITransformHandler(uiContainerComponent, 35);
+
+            // Set scene root as baseParentEntity parent
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentEntity, new PBUiTransform() { Parent = 0 });
+
+            // Set baseParentEntity as baseParentChildEntity parent
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentChildEntity, new PBUiTransform() { Parent = (int)baseParentEntity.entityId });
+            InternalUiContainer baseParentChildEntityModel = uiContainerComponent.GetFor(scene, baseParentChildEntity).model;
+
+            // Add UiText to baseParentChildEntity
+            UiTextHandler uiTextHandler = new UiTextHandler(uiContainerComponent, AssetPromiseKeeper_Font.i, 34);
+            uiTextHandler.OnComponentCreated(scene, baseParentChildEntity);
+            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity1 parent
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity1, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = 0
+            });
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity2 parent
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity2, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = (int)baseParentGrandChildEntity1.entityId
+            });
+
+            // Set baseParentChildEntity as baseParentGrandChildEntity3 parent
+            uiTransformHandler.OnComponentModelUpdated(scene, baseParentGrandChildEntity3, new PBUiTransform()
+            {
+                Parent = (int)baseParentChildEntity.entityId,
+                RightOf = (int)baseParentGrandChildEntity2.entityId
+            });
+
+            // Sort
+            ECSScenesUiSystem.ApplyParenting(uiDocument, uiContainerComponent, -1);
+            ECSScenesUiSystem.SortSceneUiTree(uiContainerComponent, new List<IParcelScene>() { scene });
+
+            // Check the Label Ui Element keeps being the first child of baseParentChildEntity root element
+            Assert.IsTrue(baseParentChildEntityModel.rootElement.ElementAt(0) is Label);
+
+            uiTransformHandler.OnComponentRemoved(scene, baseParentChildEntity);
+            uiTextHandler.OnComponentRemoved(scene, baseParentChildEntity);
+            AssetPromiseKeeper_Font.i.Cleanup();
+        }
+
+        [Test]
         public void GetSceneToSortUI()
         {
             const int sceneNumber = 666;
@@ -502,7 +579,7 @@ namespace Tests
 
             const int entityId = 111;
 
-            var entityModel = new InternalUiContainer() { shouldSort = false };
+            var entityModel = new InternalUiContainer(entityId) { shouldSort = false };
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 
@@ -542,6 +619,13 @@ namespace Tests
             loadingHudVisibleVariable.Set(false);
 
             Assert.AreEqual(DisplayStyle.Flex, uiDocument.rootVisualElement.style.display.value);
+        }
+
+        [Test]
+        public void HaveCorrectConfiguration()
+        {
+            Assert.AreEqual(0, uiDocument.panelSettings.sortingOrder);
+            Assert.AreEqual(PanelScaleMode.ConstantPixelSize, uiDocument.panelSettings.scaleMode);
         }
     }
 }
