@@ -66,6 +66,8 @@ namespace DCL
         public DataStore_Rpc rpc => i.Get<DataStore_Rpc>();
         public DataStore_Channels channels => i.Get<DataStore_Channels>();
         public DataStore_WorldBlockers worldBlockers => i.Get<DataStore_WorldBlockers>();
+        public DataStore_Notifications notifications => i.Get<DataStore_Notifications>();
+        public DataStore_Outliner outliner => i.Get<DataStore_Outliner>();
     }
 
     public struct DataStoreRef<T> where T: class, new()
@@ -76,5 +78,6 @@ namespace DCL
     }
 
 }
+
 
 

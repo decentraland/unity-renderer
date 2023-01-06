@@ -143,10 +143,7 @@ public class HUDController : IHUDController
 
     private void ToggleUIVisibility_OnTriggered(DCLAction_Trigger action)
     {
-        bool anyInputFieldIsSelected = EventSystem.current != null &&
-                                       EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject
-                                           .GetComponent<TMPro.TMP_InputField>() != null;
+        bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
             DataStore.i.exploreV2.isOpen.Get() ||
@@ -200,7 +197,7 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement(configuration, hudElementId);
-                NotificationsController.i?.Initialize(notificationHud);
+                NotificationsController.i?.Initialize(notificationHud, DataStore.i.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 CreateHudElement(configuration, hudElementId);

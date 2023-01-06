@@ -1,4 +1,4 @@
-using DCl.Social.Friends;
+using DCL.Helpers;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -12,9 +12,14 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
+        private const float COPY_TOAST_VISIBLE_TIME = 3;
+
         [SerializeField] private TextMeshProUGUI name;
+        [SerializeField] private TextMeshProUGUI address;
         [SerializeField] private TextMeshProUGUI nameInOptionsPanel;
         [SerializeField] private Button walletCopyButton;
+        [SerializeField] private Button usernameCopyButton;
+        [SerializeField] private RectTransform usernameRect;
         [SerializeField] private TextMeshProUGUI wallet;
         [SerializeField] private ButtonComponentView optionsButton;
         [SerializeField] private ButtonComponentView addFriendButton;
@@ -23,7 +28,7 @@ namespace DCL.Social.Passports
         [SerializeField] private ButtonComponentView acceptFriendButton;
         [SerializeField] private ButtonComponentView blockedFriendButton;
         [SerializeField] private Button whisperButton;
-        [SerializeField] private GameObject whisperNonFriendsPopup;
+        [SerializeField] private TooltipComponentView whisperNonFriendsPopup;
         [SerializeField] private GameObject onlineStatus;
         [SerializeField] private GameObject offlineStatus;
         [SerializeField] private GameObject normalUserPanel;
@@ -33,10 +38,9 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject alreadyFriendsVariation;
         [SerializeField] private GameObject unfriendVariation;
 
-        [SerializeField] private GameObject alreadyBlockedVariation;
-        [SerializeField] private GameObject unblockVariation;
-
         [SerializeField] private JumpInButton jumpInButton;
+        [SerializeField] private ShowHideAnimator copyAddressToast;
+        [SerializeField] private ShowHideAnimator copyUsernameToast;
 
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
@@ -46,14 +50,19 @@ namespace DCL.Social.Passports
         public event Action OnUnblockUser;
         public event Action OnReportUser;
         public event Action<string> OnWhisperUser;
+        public event Action OnJumpInUser;
+        public event Action OnWalletCopy;
 
         private string fullWalletAddress;
         private bool areFriends;
         private bool isBlocked = false;
+        private Coroutine copyAddressRoutine = null;
+        private Coroutine copyNameRoutine = null;
 
         public override void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
+            usernameCopyButton.onClick.AddListener(CopyUsernameToClipboard);
             addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
             alreadyFriendsButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
             cancelFriendRequestButton.onClick.AddListener(()=>OnCancelFriendRequest?.Invoke());
@@ -63,9 +72,8 @@ namespace DCL.Social.Passports
             userContextMenu.OnReport += OnReport;
             whisperButton.onClick.AddListener(WhisperActionFlow);
             optionsButton.onClick.AddListener(OpenOptions);
-
+            jumpInButton.OnClick += () => OnJumpInUser?.Invoke();
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
-            blockedFriendButton.onFocused += BlockFriendFocused;
         }
 
         private void OnReport(string Obj)
@@ -101,10 +109,23 @@ namespace DCL.Social.Passports
             addFriendButton.onClick.RemoveAllListeners();
         }
 
+        public void ResetPanelOnClose()
+        {
+            copyAddressToast.Hide(true);
+            copyUsernameToast.Hide(true);
+        }
+
         public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
         {
-            jumpInButton.gameObject.SetActive(true);
-            jumpInButton.Initialize(friendsController, userId, socialAnalytics);
+            if (friendsController.IsFriend(userId))
+            {
+                jumpInButton.gameObject.SetActive(true);
+                jumpInButton.Initialize(friendsController, userId, socialAnalytics);
+            }
+            else
+            {
+                jumpInButton.gameObject.SetActive(false);
+            }
         }
 
         private void RemoveFriendsFocused(bool isFocused)
@@ -113,20 +134,29 @@ namespace DCL.Social.Passports
             unfriendVariation.SetActive(isFocused);
         }
 
-        private void BlockFriendFocused(bool isFocused)
-        {
-            alreadyBlockedVariation.SetActive(!isFocused);
-            unblockVariation.SetActive(isFocused);
-        }
-
         private void SetName(string name)
         {
-            this.name.text = name;
+            if (name.Contains('#'))
+            {
+                this.name.SetText(name.Split('#')[0]);
+                address.SetText($"#{name.Split('#')[1]}");
+            }
+            else
+            {
+                this.name.SetText(name);
+                address.SetText("");
+            }
+
+            Utils.ForceRebuildLayoutImmediate(usernameRect);
+
             nameInOptionsPanel.text = name;
         }
 
         private void SetWallet(string wallet)
         {
+            if (string.IsNullOrEmpty(wallet))
+                return;
+
             fullWalletAddress = wallet;
             this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
         }
@@ -135,7 +165,12 @@ namespace DCL.Social.Passports
         {
             this.isBlocked = isBlocked;
             DisableAllFriendFlowButtons();
-            blockedFriendButton.gameObject.SetActive(true);
+            blockedFriendButton.gameObject.SetActive(isBlocked);
+
+            if (!isBlocked)
+            {
+                SetFriendStatus(model.friendshipStatus);
+            }
         }
 
         private void SetPresence(PresenceStatus status)
@@ -166,7 +201,8 @@ namespace DCL.Social.Passports
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
 
-            if(isBlocked) return;
+            if(isBlocked)
+                return;
 
             switch (friendStatus)
             {
@@ -189,7 +225,7 @@ namespace DCL.Social.Passports
                 default:
                 break;
             }
-            whisperNonFriendsPopup.SetActive(false);
+            whisperNonFriendsPopup.Hide(true);
         }
 
         private void DisableAllFriendFlowButtons()
@@ -206,7 +242,40 @@ namespace DCL.Social.Passports
             if(fullWalletAddress == null)
                 return;
 
-            GUIUtility.systemCopyBuffer = fullWalletAddress;
+            OnWalletCopy?.Invoke();
+            Environment.i.platform.clipboard.WriteText(fullWalletAddress);
+            if (copyAddressRoutine != null)
+            {
+                StopCoroutine(copyAddressRoutine);
+            }
+
+            copyAddressRoutine = StartCoroutine(ShowCopyToast(copyAddressToast));
+        }
+
+        private void CopyUsernameToClipboard()
+        {
+            if(string.IsNullOrEmpty(model.name))
+                return;
+
+            Environment.i.platform.clipboard.WriteText(model.name.Split('#')[0]);
+            if (copyNameRoutine != null)
+            {
+                StopCoroutine(copyNameRoutine);
+            }
+
+            copyNameRoutine = StartCoroutine(ShowCopyToast(copyUsernameToast));
+        }
+
+        private IEnumerator ShowCopyToast(ShowHideAnimator toast)
+        {
+            if (!toast.gameObject.activeSelf)
+            {
+                toast.gameObject.SetActive(true);
+            }
+
+            toast.Show();
+            yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
+            toast.Hide();
         }
 
         private void WhisperActionFlow()
@@ -217,20 +286,20 @@ namespace DCL.Social.Passports
             }
             else
             {
-                whisperNonFriendsPopup.SetActive(!areFriends);
-                StartCoroutine(WaitAndClosePopup());
+                if (areFriends)
+                {
+                    whisperNonFriendsPopup.Hide();
+                }
+                else
+                {
+                    whisperNonFriendsPopup.Show();
+                }
             }
         }
 
         private void OpenOptions()
         {
             userContextMenu.Show(model.userId);
-        }
-
-        private IEnumerator WaitAndClosePopup()
-        {
-            yield return new WaitForSeconds(3);
-            whisperNonFriendsPopup.SetActive(false);
         }
     }
 }

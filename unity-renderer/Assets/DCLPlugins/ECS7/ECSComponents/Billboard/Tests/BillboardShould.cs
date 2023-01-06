@@ -23,7 +23,7 @@ namespace DCL.ECSComponents.Test
         private IDCLEntity testEntity;
         private GameObject testGameObject;
         private GameObject cameraGameObject;
-        
+
         private IList<IParcelScene> scenes;
         private BillboardRegister billboardRegister;
         private ECSBillboardSystem systemUpdate;
@@ -43,14 +43,14 @@ namespace DCL.ECSComponents.Test
 
             cameraGameObject = new GameObject("GO");
             cameraGameObject.transform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
-            
+
             CommonScriptableObjects.rendererState.Set(true);
             CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
-            
+
             testGameObject = new GameObject();
             testEntity = Substitute.For<IDCLEntity>();
 
-            testEntity.entityId.Returns(1); 
+            testEntity.entityId.Returns(1);
             testEntity.gameObject.Returns(testGameObject);
 
             ECSComponentsFactory componentFactory = new ECSComponentsFactory();
@@ -58,12 +58,12 @@ namespace DCL.ECSComponents.Test
             var internalComponents = new InternalECSComponents(componentsManager, componentFactory);
             var componentsComposer = new ECS7ComponentsComposer(componentFactory,
                 Substitute.For<IECSComponentWriter>(), internalComponents);
-            
+
             billboards = (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD);
-            
+
             dataStoreCamera = new DataStore_Camera();
             dataStoreCamera.transform.Set(cameraGameObject.transform);
-            
+
             systemUpdate = new ECSBillboardSystem(
                 billboards,
                 dataStoreCamera);
@@ -82,11 +82,11 @@ namespace DCL.ECSComponents.Test
         {
             billboards.Create(scenes[0], testEntity);
             billboards.SetModel(scenes[0], testEntity, CreateModel());
-            
+
             var currentRotation = testGameObject.transform.rotation;
             cameraGameObject.transform.position = new UnityEngine.Vector3(30, 2, 15);
             systemUpdate.Update();
-            
+
             // Assert
             Assert.AreNotEqual(currentRotation,  testGameObject.transform.rotation);
         }
@@ -102,7 +102,7 @@ namespace DCL.ECSComponents.Test
 
             // Assert
             Assert.AreEqual(model.BillboardMode, newModel.BillboardMode);
-            Assert.AreEqual(model.OppositeDirection, newModel.OppositeDirection);
+            // Assert.AreEqual(model.OppositeDirection, newModel.OppositeDirection);
         }
 
         private PBBillboard SerializaAndDeserialize(PBBillboard pb)
@@ -114,8 +114,8 @@ namespace DCL.ECSComponents.Test
         private PBBillboard CreateModel()
         {
             PBBillboard model = new PBBillboard();
-            model.BillboardMode = BillboardMode.BmYAxe;
-            model.OppositeDirection = true;
+            model.BillboardMode = BillboardMode.BmY;
+            // model.OppositeDirection = true;
             return model;
         }
     }

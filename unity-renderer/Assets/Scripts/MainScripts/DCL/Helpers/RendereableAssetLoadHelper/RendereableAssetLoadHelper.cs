@@ -195,7 +195,8 @@ namespace DCL.Components
                     meshDataSize = x.meshDataSize
                 };
 
-                foreach (var someRenderer in r.renderers) { someRenderer.tag = FROM_ASSET_BUNDLE_TAG; }
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_ASSET_BUNDLE_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
@@ -243,7 +244,8 @@ namespace DCL.Components
                     animationClips = x.animationClips
                 };
 
-                foreach (var someRenderer in r.renderers) { someRenderer.tag = FROM_RAW_GLTF_TAG; }
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_RAW_GLTF_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
@@ -277,6 +279,8 @@ namespace DCL.Components
                 x.container.name = GLTFAST_GO_NAME_PREFIX + x.container.name;
 #endif
                 Rendereable r = x.ToRendereable();
+                foreach (var someRenderer in r.renderers)
+                    someRenderer.tag = FROM_RAW_GLTF_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };

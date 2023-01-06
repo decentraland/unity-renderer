@@ -58,6 +58,7 @@ namespace DCL.Social.Passports
                                 wearableItemResolver,
                                 Substitute.For<IWearableCatalogBridge>(),
                                 Substitute.For<IEmotesCatalogService>(),
+                                Substitute.For<IUserProfileBridge>(),
                                 dataStore);
 
             controller = new PlayerPassportHUDController(
@@ -68,7 +69,8 @@ namespace DCL.Social.Passports
                 currentPlayerInfoCardId,
                 userProfileBridge,
                 passportApiBridge,
-                socialAnalytics
+                socialAnalytics,
+                dataStore
             );
         }
 

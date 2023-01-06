@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
         event Action<int, int> OnTotalFriendRequestUpdated;
         event Action<int> OnTotalFriendsUpdated;
         event Action<SocialFriendRequest> OnFriendRequestReceived;
-        event Action<string> OnSentFriendRequestApproved;
+        event Action<SocialFriendRequest> OnSentFriendRequestApproved;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }

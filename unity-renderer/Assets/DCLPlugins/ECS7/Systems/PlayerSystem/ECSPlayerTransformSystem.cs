@@ -1,63 +1,63 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCL.Models;
 using ECSSystems.Helpers;
+using System;
 using UnityEngine;
 
 namespace ECSSystems.PlayerSystem
 {
-    public static class ECSPlayerTransformSystem
+    public class ECSPlayerTransformSystem : IDisposable
     {
-        private class State
+        private readonly BaseVariable<Transform> avatarTransform;
+        private readonly RendererState rendererState;
+        private readonly Vector3Variable worldOffset;
+        private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly IECSComponentWriter componentsWriter;
+
+        private Vector3 lastAvatarPosition = Vector3.zero;
+        private Quaternion lastAvatarRotation = Quaternion.identity;
+        private long timeStamp = 0;
+        private bool newSceneAdded = false;
+
+        public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter)
         {
-            public BaseVariable<Transform> avatarTransform;
-            public RendererState rendererState;
-            public Vector3Variable worldOffset;
-            public IReadOnlyList<IParcelScene> loadedScenes;
-            public IECSComponentWriter componentsWriter;
-            public UnityEngine.Vector3 lastAvatarPosition = UnityEngine.Vector3.zero;
-            public Quaternion lastAvatarRotation = Quaternion.identity;
-            public long timeStamp = 0;
+            avatarTransform = DataStore.i.world.avatarTransform;
+            rendererState = CommonScriptableObjects.rendererState;
+            worldOffset = CommonScriptableObjects.worldOffset;
+            loadedScenes = DataStore.i.ecs7.scenes;
+            this.componentsWriter = componentsWriter;
+
+            loadedScenes.OnAdded += OnSceneLoaded;
         }
 
-        public static Action CreateSystem(IECSComponentWriter componentsWriter)
+        public void Dispose()
         {
-            var state = new State()
-            {
-                avatarTransform = DataStore.i.world.avatarTransform,
-                rendererState = CommonScriptableObjects.rendererState,
-                worldOffset = CommonScriptableObjects.worldOffset,
-                loadedScenes = DataStore.i.ecs7.scenes,
-                componentsWriter = componentsWriter
-            };
-            return () => Update(state);
+            loadedScenes.OnAdded -= OnSceneLoaded;
         }
 
-        private static void Update(State state)
+        public void Update()
         {
-            if (!state.rendererState.Get())
+            if (!rendererState.Get())
                 return;
 
-            Transform avatarT = state.avatarTransform.Get();
+            Transform avatarT = avatarTransform.Get();
 
-            UnityEngine.Vector3 avatarPosition = avatarT.position;
+            Vector3 avatarPosition = avatarT.position;
             Quaternion avatarRotation = avatarT.rotation;
 
-            if (state.lastAvatarPosition == avatarPosition && state.lastAvatarRotation == avatarRotation)
+            if (!newSceneAdded && lastAvatarPosition == avatarPosition && lastAvatarRotation == avatarRotation)
             {
                 return;
             }
 
-            state.lastAvatarPosition = avatarPosition;
-            state.lastAvatarRotation = avatarRotation;
-            UnityEngine.Vector3 worldOffset = state.worldOffset.Get();
+            newSceneAdded = false;
 
-            var loadedScenes = state.loadedScenes;
-            var componentsWriter = state.componentsWriter;
+            lastAvatarPosition = avatarPosition;
+            lastAvatarRotation = avatarRotation;
+            Vector3 worldOffset = this.worldOffset.Get();
 
             IParcelScene scene;
             for (int i = 0; i < loadedScenes.Count; i++)
@@ -67,12 +67,18 @@ namespace ECSSystems.PlayerSystem
                 var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
-                    transform, state.timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
+                    transform, timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION, ComponentID.TRANSFORM,
                     transform, ECSComponentWriteType.EXECUTE_LOCALLY);
             }
-            state.timeStamp++;
+
+            timeStamp++;
+        }
+
+        private void OnSceneLoaded(IParcelScene obj)
+        {
+            newSceneAdded = true;
         }
     }
 }

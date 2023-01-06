@@ -11,9 +11,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
-using GPUSkinning;
 using UnityEngine;
-using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
 
 namespace DCL
@@ -36,6 +34,7 @@ namespace DCL
         [SerializeField] private GameObject armatureContainer;
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
         [SerializeField] internal GameObject playerNameContainer;
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
@@ -233,6 +232,8 @@ namespace DCL
                 entity, player
             );
 
+            outlineOnHover.Initialize(entity, player.avatar);
+
             avatarCollider.gameObject.SetActive(true);
 
             everythingIsLoaded = true;
@@ -256,8 +257,15 @@ namespace DCL
             currentLazyObserver.AddListener(avatar.SetImpostorTexture);
         }
 
-        private void PlayerPointerExit() { playerName?.SetForceShow(false); }
-        private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
+        private void PlayerPointerExit()
+        {
+            playerName?.SetForceShow(false);
+        }
+
+        private void PlayerPointerEnter()
+        {
+            playerName?.SetForceShow(true);
+        }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
