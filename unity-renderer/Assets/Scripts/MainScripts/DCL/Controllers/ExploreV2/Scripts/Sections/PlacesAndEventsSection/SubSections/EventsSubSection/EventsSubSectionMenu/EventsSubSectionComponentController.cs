@@ -95,79 +95,40 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         eventsFromAPI = eventList;
 
-        LoadFeaturedEvents();
-        LoadTrendingEvents();
-        LoadUpcomingEvents();
-        LoadGoingEvents();
+        view.SetFeaturedEvents(LoadEvents(FeaturedEventsFilter()));
+        view.SetTrendingEvents(LoadEvents(TrendingEventsFilter()));
+        view.SetUpcomingEvents(LoadEvents(UpcomingEventsFilter()));
+        view.SetGoingEvents(LoadEvents(LoadGoingEvents()));
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
-    public void LoadFeaturedEvents()
+    private static List<EventCardComponentModel> LoadEvents(List<EventFromAPIModel> filteredEvents)
     {
-        List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
+        List<EventCardComponentModel> cardModels = new List<EventCardComponentModel>();
 
+        foreach (EventFromAPIModel eventData in filteredEvents)
+            cardModels.Add(ExploreEventsUtils.CreateEventCardModelFromAPIEvent(eventData));
+
+        return cardModels;
+    }
+
+    public List<EventFromAPIModel> FeaturedEventsFilter()
+    {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
         if (eventsFiltered.Count == 0)
             eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
 
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            featuredEvents.Add(eventCardModel);
-        }
-
-        view.SetFeaturedEvents(featuredEvents);
+        return eventsFiltered;
     }
 
-    public void LoadTrendingEvents()
-    {
-        List<EventCardComponentModel> trendingEvents = new List<EventCardComponentModel>();
-
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            trendingEvents.Add(eventCardModel);
-        }
-
-        view.SetTrendingEvents(trendingEvents);
-    }
-
-    public void LoadUpcomingEvents()
-    {
-        List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(availableUISlots).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            upcomingEvents.Add(eventCardModel);
-        }
-
-        view.SetUpcomingEvents(upcomingEvents);
-    }
-
-    public void LoadGoingEvents()
-    {
-        List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.attending).ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            goingEvents.Add(eventCardModel);
-        }
-
-        view.SetGoingEvents(goingEvents);
-    }
+    public List<EventFromAPIModel> TrendingEventsFilter() => eventsFromAPI.Where(e => e.trending).ToList();
+    private List<EventFromAPIModel> UpcomingEventsFilter() => eventsFromAPI.Take(availableUISlots).ToList();
+    public List<EventFromAPIModel> LoadGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
 
     public void ShowMoreUpcomingEvents()
     {
-        List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
@@ -175,16 +136,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : eventsFromAPI.GetRange(availableUISlots, eventsFromAPI.Count - availableUISlots);
 
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel placeCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            upcomingEvents.Add(placeCardModel);
-        }
-
-        view.AddUpcomingEvents(upcomingEvents);
+        view.AddUpcomingEvents(LoadEvents(eventsFiltered));
 
         availableUISlots += numberOfItemsToAdd;
-
         if (availableUISlots > eventsFromAPI.Count)
             availableUISlots = eventsFromAPI.Count;
 
