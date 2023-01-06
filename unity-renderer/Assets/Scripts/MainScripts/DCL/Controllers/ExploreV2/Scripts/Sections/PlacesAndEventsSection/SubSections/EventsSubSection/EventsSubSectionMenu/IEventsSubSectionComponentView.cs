@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IEventsSubSectionComponentView: ISubSectionComponentView
+public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Number of events per row that fit with the current upcoming events grid configuration.
@@ -103,4 +103,6 @@ public interface IEventsSubSectionComponentView: ISubSectionComponentView
     /// Show loading bar for all events groups
     /// </summary>
     void SetAllEventGroupsAsLoading();
+
+    void SetShowMoreButtonActive(bool isActive);
 }

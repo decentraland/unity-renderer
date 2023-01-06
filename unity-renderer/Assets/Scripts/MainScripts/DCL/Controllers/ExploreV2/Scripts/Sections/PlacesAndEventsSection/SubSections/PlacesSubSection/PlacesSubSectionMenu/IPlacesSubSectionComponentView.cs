@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlacesSubSectionComponentView:ISubSectionComponentView
+public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -88,4 +88,6 @@ public interface IPlacesSubSectionComponentView:ISubSectionComponentView
     /// Configure the needed pools for the places instantiation.
     /// </summary>
     void ConfigurePools();
+
+    void SetShowMoreButtonActive(bool isActive);
 }

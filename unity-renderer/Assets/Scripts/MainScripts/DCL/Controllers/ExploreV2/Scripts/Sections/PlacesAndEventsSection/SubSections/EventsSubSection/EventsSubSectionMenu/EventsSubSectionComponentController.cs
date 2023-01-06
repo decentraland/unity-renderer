@@ -61,10 +61,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
+    private int currentCardsShown;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, INITIAL_NUMBER_OF_UPCOMING_ROWS, RequestAllEventsFromAPI);
+        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllEventsFromAPI);
 
         this.view = view;
 
@@ -110,8 +111,16 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         cardsRequestHandler.Initialize();
     }
 
-    public void RequestAllEvents() =>
-        cardsRequestHandler.RequestAll();
+    public void RequestAllEvents()
+    {
+        if (cardsRequestHandler.CanReload())
+        {
+            currentCardsShown = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            view.SetShowMoreButtonActive(false);
+
+            cardsRequestHandler.RequestAll();
+        }
+    }
 
     internal void RequestAllEventsFromAPI()
     {
@@ -166,7 +175,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void LoadUpcomingEvents()
     {
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(cardsRequestHandler.CurrentCardsShown).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentCardsShown).ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
@@ -175,7 +184,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetUpcomingEvents(upcomingEvents);
-        view.SetShowMoreUpcomingEventsButtonActive(cardsRequestHandler.CurrentCardsShown < eventsFromAPI.Count);
+        view.SetShowMoreUpcomingEventsButtonActive(currentCardsShown < eventsFromAPI.Count);
     }
 
     public void LoadGoingEvents()
@@ -195,12 +204,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void ShowMoreUpcomingEvents()
     {
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)cardsRequestHandler.CurrentCardsShown / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - cardsRequestHandler.CurrentCardsShown;
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentCardsShown / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - currentCardsShown;
         int numberOfItemsToAdd = (view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<EventFromAPIModel> eventsFiltered = cardsRequestHandler.CurrentCardsShown + numberOfItemsToAdd <= eventsFromAPI.Count
-            ? eventsFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, numberOfItemsToAdd)
-            : eventsFromAPI.GetRange(cardsRequestHandler.CurrentCardsShown, eventsFromAPI.Count - cardsRequestHandler.CurrentCardsShown);
+        List<EventFromAPIModel> eventsFiltered = currentCardsShown + numberOfItemsToAdd <= eventsFromAPI.Count
+            ? eventsFromAPI.GetRange(currentCardsShown, numberOfItemsToAdd)
+            : eventsFromAPI.GetRange(currentCardsShown, eventsFromAPI.Count - currentCardsShown);
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
@@ -210,12 +219,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.AddUpcomingEvents(upcomingEvents);
 
-        cardsRequestHandler.CurrentCardsShown += numberOfItemsToAdd;
+        currentCardsShown += numberOfItemsToAdd;
 
-        if (cardsRequestHandler.CurrentCardsShown > eventsFromAPI.Count)
-            cardsRequestHandler.CurrentCardsShown = eventsFromAPI.Count;
+        if (currentCardsShown > eventsFromAPI.Count)
+            currentCardsShown = eventsFromAPI.Count;
 
-        view.SetShowMoreUpcomingEventsButtonActive(cardsRequestHandler.CurrentCardsShown < eventsFromAPI.Count);
+        view.SetShowMoreUpcomingEventsButtonActive(currentCardsShown < eventsFromAPI.Count);
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
