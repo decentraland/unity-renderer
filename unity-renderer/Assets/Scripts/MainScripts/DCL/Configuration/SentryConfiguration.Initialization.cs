@@ -21,6 +21,9 @@ namespace DCL.Configuration
             if (EnvironmentSettings.RUNNING_TESTS) return;
 
             #if !UNITY_EDITOR
+
+            Debug.LogError($"DSN: {SentryConfiguration.Dsn} ENV: {SentryConfiguration.Environment} RELEASE: {SentryConfiguration.Release}");
+
             SentryUnity.Init(o =>
             {
                 o.Environment = SentryConfiguration.Environment;
@@ -35,8 +38,6 @@ namespace DCL.Configuration
                     o.TracesSampleRate = 1.0f;
                 }
             });
-
-            Debug.LogError($"DSN: {SentryConfiguration.Dsn} ENV: {SentryConfiguration.Environment} RELEASE: {SentryConfiguration.Release}");
             SentrySdk.CaptureMessage("Sentry is initialized. ");
             #endif
         }
