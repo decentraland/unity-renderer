@@ -93,12 +93,12 @@ namespace DCL.Rendering
             StartInternal();
         }
 
-        public void Restart()
-        {
-            if (running)
-                Stop();
-            Start();
-        }
+        //public void Restart()
+        //{
+        //    if (running)
+        //        Stop();
+        //    Start();
+        //}
 
         private void StartInternal()
         {
