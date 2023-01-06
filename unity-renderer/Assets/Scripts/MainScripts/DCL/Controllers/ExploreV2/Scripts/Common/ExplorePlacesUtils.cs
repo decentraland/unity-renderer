@@ -85,8 +85,8 @@ public static class ExplorePlacesUtils
 
         return instantiatedPlaces;
     }
-    
-    public static BaseComponentView InstantiateConfiguredPlaceCard(PlaceCardComponentModel placeInfo, Pool pool, 
+
+    public static BaseComponentView InstantiateConfiguredPlaceCard(PlaceCardComponentModel placeInfo, Pool pool,
         Action<FriendsHandler> OnFriendHandlerAdded, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<HotSceneInfo> OnPlaceJumpInClicked)
     {
         PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();

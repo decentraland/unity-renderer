@@ -15,12 +15,6 @@ public interface IPlacesSubSectionComponentController : IDisposable
     void RequestAllPlaces();
 
     /// <summary>
-    /// Load the places with the last requested ones.
-    /// </summary>
-    /// <param name="placeList"></param>
-    void LoadPlaces(List<HotScenesController.HotSceneInfo> placeList);
-
-    /// <summary>
     /// Increment the number of places loaded.
     /// </summary>
     void ShowMorePlaces();

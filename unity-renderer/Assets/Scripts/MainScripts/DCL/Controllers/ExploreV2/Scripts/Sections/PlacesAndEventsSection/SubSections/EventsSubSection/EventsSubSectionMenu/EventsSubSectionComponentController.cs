@@ -23,7 +23,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
-    private int currentCardsShown;
+    private int availableUISlots;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -77,7 +77,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         if (cardsRequestHandler.CanReload())
         {
-            currentCardsShown = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
             view.SetShowMoreButtonActive(false);
 
             cardsRequestHandler.RequestAll();
@@ -99,11 +99,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         LoadTrendingEvents();
         LoadUpcomingEvents();
         LoadGoingEvents();
+
+        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
     public void LoadFeaturedEvents()
     {
         List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
+
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
         if (eventsFiltered.Count == 0)
@@ -121,6 +124,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void LoadTrendingEvents()
     {
         List<EventCardComponentModel> trendingEvents = new List<EventCardComponentModel>();
+
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
@@ -135,7 +139,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void LoadUpcomingEvents()
     {
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentCardsShown).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(availableUISlots).ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
@@ -144,7 +148,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetUpcomingEvents(upcomingEvents);
-        view.SetShowMoreUpcomingEventsButtonActive(currentCardsShown < eventsFromAPI.Count);
     }
 
     public void LoadGoingEvents()
@@ -164,12 +167,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void ShowMoreUpcomingEvents()
     {
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentCardsShown / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - currentCardsShown;
+
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<EventFromAPIModel> eventsFiltered = currentCardsShown + numberOfItemsToAdd <= eventsFromAPI.Count
-            ? eventsFromAPI.GetRange(currentCardsShown, numberOfItemsToAdd)
-            : eventsFromAPI.GetRange(currentCardsShown, eventsFromAPI.Count - currentCardsShown);
+        List<EventFromAPIModel> eventsFiltered = availableUISlots + numberOfItemsToAdd <= eventsFromAPI.Count
+            ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
+            : eventsFromAPI.GetRange(availableUISlots, eventsFromAPI.Count - availableUISlots);
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
@@ -179,12 +183,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.AddUpcomingEvents(upcomingEvents);
 
-        currentCardsShown += numberOfItemsToAdd;
+        availableUISlots += numberOfItemsToAdd;
 
-        if (currentCardsShown > eventsFromAPI.Count)
-            currentCardsShown = eventsFromAPI.Count;
+        if (availableUISlots > eventsFromAPI.Count)
+            availableUISlots = eventsFromAPI.Count;
 
-        view.SetShowMoreUpcomingEventsButtonActive(currentCardsShown < eventsFromAPI.Count);
+        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
@@ -197,6 +201,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
+
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }

@@ -7,11 +7,26 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
+public class CardsLoader<TModel, TInfo> where TModel: BaseComponentModel
+{
+    public List<TModel> LoadModelsFromInfo(List<TInfo> cardsInfoFromAPI, int amountToLoad, Func<TInfo, TModel> factoryCreateMethod)
+    {
+        List<TInfo> filteredCardsInfosToLoad = cardsInfoFromAPI.Take(amountToLoad).ToList();
+
+        List<TModel> loadedCards = new List<TModel>();
+
+        foreach (TInfo filteredCardInfo in filteredCardsInfosToLoad)
+            loadedCards.Add(factoryCreateMethod(filteredCardInfo));
+
+        return loadedCards;
+    }
+}
+
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 5;
+    private const int INITIAL_NUMBER_OF_ROWS = 5;
     private const int SHOW_MORE_ROWS_INCREMENT = 3;
 
     internal readonly IPlacesSubSectionComponentView view;
@@ -21,13 +36,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly DataStore dataStore;
 
     private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
+    private readonly CardsLoader<PlaceCardComponentModel, HotSceneInfo> cardsLoader;
 
     private List<HotSceneInfo> placesFromAPI = new ();
-    private int currentCardsShown;
-
+    private int availableUISlots;
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
         cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllPlacesFromAPI);
+        cardsLoader = new CardsLoader<PlaceCardComponentModel, HotSceneInfo>();
 
         this.view = view;
 
@@ -76,7 +92,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         if (cardsRequestHandler.CanReload())
         {
-            currentCardsShown = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
+            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
             view.SetShowMoreButtonActive(false);
 
             cardsRequestHandler.RequestAll();
@@ -86,37 +102,32 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal void RequestAllPlacesFromAPI()
     {
         placesAPIApiController.GetAllPlaces(
-            OnCompleted: LoadPlaces);
+            OnCompleted: OnRequestedEventsUpdated);
     }
 
-    public void LoadPlaces(List<HotSceneInfo> placeList)
+    private void OnRequestedEventsUpdated(List<HotSceneInfo> placeList)
     {
-        placesFromAPI = placeList;
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentCardsShown).ToList();
+        placesFromAPI = placeList;
 
-        foreach (HotSceneInfo receivedPlace in placesFiltered)
-        {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
-            places.Add(placeCardModel);
-        }
+        view.SetPlaces(
+            cardsLoader.LoadModelsFromInfo(placesFromAPI, availableUISlots, ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace)
+            );
 
-        view.SetPlaces(places);
-        view.SetShowMorePlacesButtonActive(currentCardsShown < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
 
     public void ShowMorePlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
 
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentCardsShown / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentCardsShown;
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentPlacesPerRow) * view.currentPlacesPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
-        List<HotSceneInfo> placesFiltered = currentCardsShown + numberOfItemsToAdd <= placesFromAPI.Count
-            ? placesFromAPI.GetRange(currentCardsShown, numberOfItemsToAdd)
-            : placesFromAPI.GetRange(currentCardsShown, placesFromAPI.Count - currentCardsShown);
+        List<HotSceneInfo> placesFiltered = availableUISlots + numberOfItemsToAdd <= placesFromAPI.Count
+            ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
+            : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
@@ -126,18 +137,19 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         view.AddPlaces(places);
 
-        currentCardsShown += numberOfItemsToAdd;
+        availableUISlots += numberOfItemsToAdd;
 
-        if (currentCardsShown > placesFromAPI.Count)
-            currentCardsShown = placesFromAPI.Count;
+        if (availableUISlots > placesFromAPI.Count)
+            availableUISlots = placesFromAPI.Count;
 
-        view.SetShowMorePlacesButtonActive(currentCardsShown < placesFromAPI.Count);
+        view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
@@ -145,7 +157,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
+
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
+
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
