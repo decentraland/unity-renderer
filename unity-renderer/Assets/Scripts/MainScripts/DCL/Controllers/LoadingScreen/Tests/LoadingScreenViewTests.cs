@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
 {
@@ -13,9 +14,42 @@ namespace DCL.LoadingScreen.Test
         }
 
         [Test]
-        public void MessageUpdatedCorrectly()
+        public void LoadingPercentageCorrectly()
         {
-            Assert.True(true);
+            //Arrange
+            LoadingScreenPercentageView loadingScreenPercentageView = loadingScreenView.GetPercentageView();
+
+            //Act
+            int currentLoadingValue = 0;
+            loadingScreenPercentageView.SetLoadingPercentage(currentLoadingValue);
+
+            //Assert
+            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetLoadingStringText(currentLoadingValue));
+            Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
+
+            //Act
+            currentLoadingValue = 50;
+            loadingScreenPercentageView.SetLoadingPercentage(currentLoadingValue);
+
+            //Assert
+            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetLoadingStringText(currentLoadingValue));
+            Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
+        }
+
+        [Test]
+        public void LoadingTipsUpdatedCorrectly()
+        {
+            //Arrange
+            LoadingScreenTipsView loadingScreenTipsView = loadingScreenView.GetTipsView();
+            Sprite testSprite = Resources.Load<Sprite>("TipsImgs/BuilderImg");
+            LoadingTip newLoadingTip = new LoadingTip("LoadingTest", testSprite);
+
+            //Act
+            loadingScreenTipsView.ShowTip(newLoadingTip);
+
+            //Assert
+            Assert.AreEqual(loadingScreenTipsView.tipsImage.sprite, testSprite);
+            Assert.AreEqual(loadingScreenTipsView.tipsText.text, "LoadingTest");
         }
     }
 }
