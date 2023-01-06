@@ -15,22 +15,35 @@ namespace DCL.Social.Passports
         private readonly IWearableItemResolver wearableItemResolver;
         private readonly IWearableCatalogBridge wearableCatalogBridge;
         private readonly IEmotesCatalogService emotesCatalogService;
+        private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
 
+        private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string> OnClickBuyNft;
+        public event Action OnClickCollectibles;
+        private UserProfile previousUserProfile;
 
-        public PassportNavigationComponentController(IPassportNavigationComponentView view, IProfanityFilter profanityFilter, IWearableItemResolver wearableItemResolver, IWearableCatalogBridge wearableCatalogBridge, IEmotesCatalogService emotesCatalogService, DataStore dataStore)
+        public PassportNavigationComponentController(
+            IPassportNavigationComponentView view,
+            IProfanityFilter profanityFilter,
+            IWearableItemResolver wearableItemResolver,
+            IWearableCatalogBridge wearableCatalogBridge,
+            IEmotesCatalogService emotesCatalogService,
+            IUserProfileBridge userProfileBridge,
+            DataStore dataStore)
         {
             this.view = view;
             this.profanityFilter = profanityFilter;
             this.wearableItemResolver = wearableItemResolver;
             this.wearableCatalogBridge = wearableCatalogBridge;
             this.emotesCatalogService = emotesCatalogService;
+            this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
             view.OnClickBuyNft += (wearableId) => OnClickBuyNft?.Invoke(wearableId);
+            view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
@@ -45,9 +58,11 @@ namespace DCL.Social.Passports
             {
                 string filteredDescription = await FilterContentAsync(userProfile.description);
                 view.SetDescription(filteredDescription);
+                view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
                 await LoadAndDisplayEquippedWearablesAsync(userProfile);
             }
         }
+
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
         {
             CancellationToken ct = new CancellationToken();

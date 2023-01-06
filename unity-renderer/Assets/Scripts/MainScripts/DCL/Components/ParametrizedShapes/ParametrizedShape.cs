@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +10,8 @@ namespace DCL.Components
     public abstract class ParametrizedShape<T> : BaseShape
         where T : BaseShape.Model, new()
     {
+        private const string PARAMETRIZED_SHAPE_TAG = "FromParametrized";
+
         public Dictionary<IDCLEntity, Rendereable> attachedRendereables = new Dictionary<IDCLEntity, Rendereable>();
         bool visibilityDirty = false;
         bool collisionsDirty = false;
@@ -69,8 +71,8 @@ namespace DCL.Components
             {
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
-         
-            DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
+
+            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
@@ -95,6 +97,7 @@ namespace DCL.Components
             entity.meshesInfo.currentShape = this;
 
             meshFilter.sharedMesh = currentMesh;
+            meshFilter.gameObject.tag = PARAMETRIZED_SHAPE_TAG;
 
             if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {

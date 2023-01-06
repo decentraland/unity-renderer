@@ -13,6 +13,7 @@ namespace DCL.Guests.HUD.ConnectWallet
         private readonly DataStore dataStore;
 
         private BaseVariable<bool> connectWalletModalVisible => dataStore.HUDs.connectWalletModalVisible;
+        private BaseVariable<bool> closedWalletModal => dataStore.HUDs.closedWalletModal;
 
         public ConnectWalletComponentController(
             IConnectWalletComponentView connectWalletView,
@@ -43,6 +44,7 @@ namespace DCL.Guests.HUD.ConnectWallet
         {
             connectWalletView.Hide();
             connectWalletModalVisible.Set(newValue: false, notifyEvent: false);
+            closedWalletModal.Set(true);
         }
 
         private void OnConfirmWalletConnection()

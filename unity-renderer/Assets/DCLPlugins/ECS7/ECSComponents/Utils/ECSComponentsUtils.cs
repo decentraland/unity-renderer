@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
+using DCL.Controllers;
 using DCL.ECSComponents;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public static class ECSComponentsUtils
 {
@@ -18,7 +20,7 @@ public static class ECSComponentsUtils
             GameObject.Destroy(materialTransitionControllers[i]);
         }
     }
-    
+
     public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         foreach (Renderer renderer in meshesInfo.renderers)
@@ -32,16 +34,16 @@ public static class ECSComponentsUtils
     public static void UpdateMeshInfoColliders(bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         int colliderLayer = isPointerBlocker ? PhysicsLayers.onPointerEventLayer : PhysicsLayers.defaultLayer;
-        
+
         foreach (Collider collider in meshesInfo.colliders)
         {
             if (collider == null) continue;
-            
+
             collider.enabled = withCollisions;
             collider.gameObject.layer = colliderLayer;
         }
     }
-    
+
     public static void RemoveRendereableFromDataStore(int sceneNumber, Rendereable rendereable)
     {
         DataStore.i.sceneWorldObjects.RemoveRendereable(sceneNumber, rendereable);
@@ -60,13 +62,13 @@ public static class ECSComponentsUtils
                 meshToTriangleCount = new Dictionary<Mesh, int>() { { mesh, triangleCount } }
             };
 
-        newRendereable.renderers = new HashSet<Renderer>(renderers); 
+        newRendereable.renderers = new HashSet<Renderer>(renderers);
         newRendereable.ownerId = entityId;
 
         DataStore.i.sceneWorldObjects.AddRendereable(sceneNumber, newRendereable);
         return newRendereable;
     }
-    
+
     public static void DisposeMeshInfo(MeshesInfo meshesInfo)
     {
         // Dispose renderer
@@ -75,24 +77,24 @@ public static class ECSComponentsUtils
             Utils.CleanMaterials(renderer);
             GameObject.Destroy(renderer);
         }
-        
+
         // Dispose Mesh filter
         foreach (MeshFilter meshFilter in meshesInfo.meshFilters)
         {
             GameObject.Destroy(meshFilter);
         }
-        
+
         // Dispose collider
         foreach (Collider collider in meshesInfo.colliders)
         {
             if (collider == null) continue;
-            
+
             GameObject.Destroy(collider);
         }
-        
+
         meshesInfo.CleanReferences();
     }
-    
+
     public static int CalculateNFTCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         // We can't enable this layer changer logic until we redeploy all the builder and street scenes with the corrected 'withCollision' default in true...
@@ -104,7 +106,7 @@ public static class ECSComponentsUtils
 
         return PhysicsLayers.defaultLayer;
     }
-    
+
     private static int CalculateCollidersLayer(bool withCollisions, bool isPointerBlocker)
     {
         if (isPointerBlocker)

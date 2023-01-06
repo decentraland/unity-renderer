@@ -8,7 +8,14 @@ using rpc_csharp;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Decentraland.Bff {
-public class ClientCommsDirectorService
+public interface IClientCommsDirectorService
+{
+  UniTask<Empty> SendHeartbeat(Heartbeat request);
+
+  IUniTaskAsyncEnumerable<WorldCommand> GetCommsCommands(Empty request);
+}
+
+public class ClientCommsDirectorService : IClientCommsDirectorService
 {
   private readonly RpcClientModule module;
 
@@ -17,6 +24,7 @@ public class ClientCommsDirectorService
       this.module = module;
   }
 
+  
   public UniTask<Empty> SendHeartbeat(Heartbeat request)
   {
       return module.CallUnaryProcedure<Empty>("SendHeartbeat", request);
@@ -26,5 +34,6 @@ public class ClientCommsDirectorService
   {
       return module.CallServerStream<WorldCommand>("GetCommsCommands", request);
   }
+
 }
 }

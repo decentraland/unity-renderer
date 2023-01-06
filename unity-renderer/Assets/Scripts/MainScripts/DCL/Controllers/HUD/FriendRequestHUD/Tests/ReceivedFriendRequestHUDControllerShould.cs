@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -66,7 +67,8 @@ namespace DCL.Social.Friends
                 view,
                 friendsController,
                 userProfileBridge,
-                openPassportVariable);
+                openPassportVariable,
+                Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();
         }
@@ -122,6 +124,7 @@ namespace DCL.Social.Friends
         [UnityTest]
         public IEnumerator RejectFriendRequest()
         {
+            WhenShow();
             friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
@@ -155,7 +158,7 @@ namespace DCL.Social.Friends
             Received.InOrder(() =>
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
             });
         }
 
@@ -197,7 +200,7 @@ namespace DCL.Social.Friends
             Received.InOrder(() =>
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
             });
         }
 
