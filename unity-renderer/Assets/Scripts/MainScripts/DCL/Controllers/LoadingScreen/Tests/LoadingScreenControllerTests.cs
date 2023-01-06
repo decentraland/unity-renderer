@@ -48,7 +48,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.OnFadeInFinish += Raise.Event<Action<ShowHideAnimator>>(Arg.Any<ShowHideAnimator>());
 
             //Assert
-            loadingScreenView.Received().FadeIn(Arg.Any<bool>());
+            loadingScreenView.Received().FadeIn(Arg.Any<bool>(), Arg.Any<bool>());
             Assert.True(loadingScreenDataStore.decoupledLoadingHUD.visible.Get());
 
             //Act
@@ -77,7 +77,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView.OnFadeInFinish += Raise.Event<Action<ShowHideAnimator>>(Arg.Any<ShowHideAnimator>());
 
             //Assert
-            loadingScreenView.Received().FadeIn(Arg.Any<bool>());
+            loadingScreenView.Received().FadeIn(Arg.Any<bool>(), Arg.Any<bool>());
             Assert.True(loadingScreenDataStore.decoupledLoadingHUD.visible.Get());
 
         }

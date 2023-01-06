@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
 {
@@ -12,6 +13,8 @@ namespace DCL.LoadingScreen
 
         [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
+        [SerializeField] private RawImage rawImage;
+        private RenderTexture renderTexture;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
@@ -21,15 +24,16 @@ namespace DCL.LoadingScreen
         public override void Start()
         {
             base.Start();
-            showHideAnimator.OnWillFinishStart += OnFadeInFinish;
+            showHideAnimator.OnWillFinishStart += FadeInFinish;
 
-            FadeIn(true);
+            SetupBlitTexture();
+            rawImage.gameObject.SetActive(false);
+            FadeIn(true, false);
         }
-
         public override void Dispose()
         {
             base.Dispose();
-            showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
+            showHideAnimator.OnWillFinishStart -= FadeInFinish;
         }
 
         public LoadingScreenTipsView GetTipsView() =>
@@ -38,16 +42,40 @@ namespace DCL.LoadingScreen
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;
 
-        public void FadeIn(bool instant)
+        public void FadeIn(bool instant, bool blitTexture)
         {
             if (isVisible) return;
 
+            //We blit the texture in case we need a static image when teleport starts
+            if(blitTexture)
+                BlitTexture();
             Show(instant);
         }
 
         public void FadeOut()
         {
             Hide();
+        }
+
+        private void FadeInFinish(ShowHideAnimator obj)
+        {
+            OnFadeInFinish?.Invoke(obj);
+            rawImage.gameObject.SetActive(false);
+        }
+
+        private void BlitTexture()
+        {
+            //We need to add this check just in case that the resolution has changed
+            if (renderTexture.width != Screen.width || renderTexture.height != Screen.height)
+                SetupBlitTexture();
+            Graphics.Blit(null, renderTexture);
+            rawImage.gameObject.SetActive(true);
+        }
+
+        private void SetupBlitTexture()
+        {
+            renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+            rawImage.texture = renderTexture;
         }
 
         public override void RefreshControl() { }
