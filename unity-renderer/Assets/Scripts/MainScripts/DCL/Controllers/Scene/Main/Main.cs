@@ -29,6 +29,8 @@ namespace DCL
 
         protected virtual void Awake()
         {
+            SentryConfiguration.Initialize();
+
             if (i != null)
             {
                 Utils.SafeDestroy(this);

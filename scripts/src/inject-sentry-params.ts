@@ -19,7 +19,7 @@ async function main() {
   } else if (process.env.CIRCLE_BRANCH == 'dev') {
     rendererEnvironment = 'development'
   } else {
-    rendererEnvironment = `branch`
+    rendererEnvironment = `branch/${process.env.CIRCLE_BRANCH || 'unknown'}`
   }
 
   const searchParams = {
