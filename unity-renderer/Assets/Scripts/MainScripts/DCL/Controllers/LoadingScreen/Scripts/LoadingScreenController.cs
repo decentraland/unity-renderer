@@ -18,6 +18,7 @@ namespace DCL.LoadingScreen
         private readonly IWorldState worldState;
 
         private Vector2Int currentDestination;
+        private string currentRealm;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
 
@@ -81,11 +82,9 @@ namespace DCL.LoadingScreen
         {
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
-            //The teleport is request both on the POSITION_SETTLED and POSITION_UNSETTLED events from kernel. So, if the positions are not the same, then it means we are calling to a POSITION_UNSETTLED event and we are indeed teleporting
-            //Also, we need to check that the scene that has just been unsettled is not loaded. Only then, we show the loading screen
-            //If we just entered a world, we need to show the loading screen
-            if (commonDataStore.isWorld.Get() ||
-                (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1)))
+            //If the destination scene is not loaded, we show the teleport screen
+            //This is going to be called on the POSITION_SETTLED event; but since the scene will already be loaded, the loading screen wont be shown
+            if (worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
 
