@@ -1,37 +1,34 @@
+using Cysharp.Threading.Tasks;
+using DCL.Interface;
+using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL.Interface;
-using SocialFeaturesAnalytics;
-using System.Threading.Tasks;
-using System;
 
 namespace DCL.Social.Passports
 {
     public class PlayerPassportHUDController : IHUD
     {
-        internal readonly IPlayerPassportHUDView view;
-        internal readonly StringVariable currentPlayerId;
-        internal readonly IUserProfileBridge userProfileBridge;
-        private readonly IPassportApiBridge passportApiBridge;
-        private readonly ISocialAnalytics socialAnalytics;
-        private readonly DataStore dataStore;
-
-        internal UserProfile currentUserProfile;
-
         private const string URL_COLLECTIBLE_NAME = "https://market.decentraland.org/accounts/{userId}?section=ens";
         private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
+
+        private readonly IPlayerPassportHUDView view;
+        private readonly StringVariable currentPlayerId;
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly IPassportApiBridge passportApiBridge;
+        private readonly ISocialAnalytics socialAnalytics;
+        private readonly DataStore dataStore;
         private readonly InputAction_Trigger closeWindowTrigger;
+        private readonly PassportPlayerInfoComponentController playerInfoController;
+        private readonly PassportPlayerPreviewComponentController playerPreviewController;
+        private readonly PassportNavigationComponentController passportNavigationController;
 
-        private PassportPlayerInfoComponentController playerInfoController;
-        private PassportPlayerPreviewComponentController playerPreviewController;
-        private PassportNavigationComponentController passportNavigationController;
-
-        private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
-        private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
-        private double passportOpenStartTime = 0;
+        private UserProfile currentUserProfile;
+        private List<Nft> ownedNftCollectionsL1 = new ();
+        private List<Nft> ownedNftCollectionsL2 = new ();
+        private double passportOpenStartTime;
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -106,6 +103,7 @@ namespace DCL.Social.Passports
             playerInfoController.OnClosePassport -= ClosePassport;
             dataStore.HUDs.closedWalletModal.OnChange -= ClosedGuestWalletPanel;
 
+            playerInfoController.Dispose();
             playerPreviewController.Dispose();
 
             if (view != null)
@@ -133,7 +131,7 @@ namespace DCL.Social.Passports
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
                 socialAnalytics.SendPassportOpen();
-                QueryNftCollectionsAsync(currentUserProfile.userId);
+                QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
                 UpdateUserProfileInSubpanels(currentUserProfile);
@@ -150,7 +148,7 @@ namespace DCL.Social.Passports
             playerPreviewController.SetPassportPanelVisibility(visible);
         }
 
-        private async Task QueryNftCollectionsAsync(string userId)
+        private async UniTask QueryNftCollectionsAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))
                 return;
