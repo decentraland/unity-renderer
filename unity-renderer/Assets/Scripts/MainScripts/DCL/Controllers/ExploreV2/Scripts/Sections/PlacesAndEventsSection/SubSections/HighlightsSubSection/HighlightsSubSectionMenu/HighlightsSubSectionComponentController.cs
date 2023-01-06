@@ -8,39 +8,6 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
-public interface IHighlightsSubSectionComponentController : IDisposable
-{
-    /// <summary>
-    /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
-    /// </summary>
-    event Action OnCloseExploreV2;
-
-    /// <summary>
-    /// It will be triggered when the sub-section want to request to go to the Events sub-section.
-    /// </summary>
-    event Action OnGoToEventsSubSection;
-
-    /// <summary>
-    /// Request all places and events from the API.
-    /// </summary>
-    void RequestAllPlacesAndEvents();
-
-    /// <summary>
-    /// Load the trending places and events with the last requested ones.
-    /// </summary>
-    void LoadTrendingPlacesAndEvents();
-
-    /// <summary>
-    /// Load the featured places with the last requested ones.
-    /// </summary>
-    void LoadFeaturedPlaces();
-
-    /// <summary>
-    /// Load the live events with the last requested ones.
-    /// </summary>
-    void LoadLiveEvents();
-}
-
 public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
@@ -103,11 +70,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         view.OnPlaceInfoClicked -= ShowPlaceDetailedInfo;
         view.OnEventInfoClicked -= ShowEventDetailedInfo;
+
         view.OnPlaceJumpInClicked -= JumpInToPlace;
         view.OnEventJumpInClicked -= JumpInToEvent;
+
         view.OnEventSubscribeEventClicked -= SubscribeToEvent;
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
+
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
+
         view.OnViewAllEventsClicked -= GoToEventsSubSection;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
@@ -249,10 +220,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
-    internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler)
-    {
+    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
         friendsTrackerController.AddHandler(friendsHandler);
-    }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
@@ -270,7 +239,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    internal void SubscribeToEvent(string eventId)
+    private static void SubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
@@ -288,8 +257,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
     }
-
-    internal void UnsubscribeToEvent(string eventId)
+    private static void UnsubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
