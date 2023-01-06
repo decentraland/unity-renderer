@@ -40,8 +40,6 @@ namespace DCL.LoadingScreen
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
 
-            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-
             tipsController.StartTips();
         }
 

@@ -1,25 +1,44 @@
+using DCL;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
 using UnityEngine;
 
 public class RenderingController : MonoBehaviour
 {
     public static float firstActivationTime { get; private set; }
-    private bool firstActivationTimeHasBeenSet = false;
-    private bool VERBOSE = false;
+    private bool firstActivationTimeHasBeenSet;
+    private readonly bool VERBOSE = false;
 
-    public CompositeLock renderingActivatedAckLock = new CompositeLock();
+    public CompositeLock renderingActivatedAckLock = new ();
 
-    private bool activatedRenderingBefore { get; set; } = false;
+    private bool activatedRenderingBefore { get; set; }
+    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+    private bool isSignUpFlow => DataStore.i.common.isSignUpFlow.Get();
 
-    void Awake()
+    private DataStoreRef<DataStore_LoadingScreen> dataStore_LoadingScreenRef;
+
+    private void Awake()
     {
         CommonScriptableObjects.rendererState.OnLockAdded += AddLock;
         CommonScriptableObjects.rendererState.OnLockRemoved += RemoveLock;
         CommonScriptableObjects.rendererState.Set(false);
+
+        dataStore_LoadingScreenRef.Ref.decoupledLoadingHUD.visible.OnChange += DecoupleLoadingScreenVisibilityChange;
+        DecoupleLoadingScreenVisibilityChange(true, true);
     }
 
-    void OnDestroy()
+    private void DecoupleLoadingScreenVisibilityChange(bool visible, bool _)
+    {
+        if (visible)
+            DeactivateRendering_Internal();
+        else
+            //Coming-from-kernel condition. If we are on signup flow, then we must force the ActivateRendering
+            ActivateRendering_Internal(isSignUpFlow);
+    }
+
+    private void OnDestroy()
     {
         CommonScriptableObjects.rendererState.OnLockAdded -= AddLock;
         CommonScriptableObjects.rendererState.OnLockRemoved -= RemoveLock;
@@ -28,34 +47,54 @@ public class RenderingController : MonoBehaviour
     [ContextMenu("Disable Rendering")]
     public void DeactivateRendering()
     {
-        if (!CommonScriptableObjects.rendererState.Get())
-            return;
+        if (isDecoupledLoadingScreenEnabled) return;
 
         DeactivateRendering_Internal();
     }
 
-    void DeactivateRendering_Internal()
+    private void DeactivateRendering_Internal()
     {
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+        if (!CommonScriptableObjects.rendererState.Get()) return;
+
+        ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(false);
-        WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
+
+        if (!isDecoupledLoadingScreenEnabled)
+            WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
     }
 
     [ContextMenu("Enable Rendering")]
     public void ActivateRendering()
     {
-        ActivateRendering(forceActivate: false);
+        //Have to add this check since flags are not initialized when this is called first time by kernel
+        if (DataStore.i.featureFlags.flags.Get().flags.Count.Equals(0))
+        {
+            DataStore.i.featureFlags.flags.OnChange += FlagsSet;
+            return;
+        }
+
+
+        if (isDecoupledLoadingScreenEnabled) return;
+
+        ActivateRendering_Internal(forceActivate: false);
+    }
+
+    private void FlagsSet(FeatureFlag current, FeatureFlag previous)
+    {
+        ActivateRendering();
+        DataStore.i.featureFlags.flags.OnChange -= FlagsSet;
     }
 
     public void ForceActivateRendering()
     {
-        ActivateRendering(forceActivate: true);
+        if (isDecoupledLoadingScreenEnabled) return;
+
+        ActivateRendering_Internal(forceActivate: true);
     }
 
-    public void ActivateRendering(bool forceActivate)
+    public void ActivateRendering_Internal(bool forceActivate)
     {
-        if (CommonScriptableObjects.rendererState.Get())
-            return;
+        if (CommonScriptableObjects.rendererState.Get()) return;
 
         if (!firstActivationTimeHasBeenSet)
         {
@@ -83,10 +122,11 @@ public class RenderingController : MonoBehaviour
             activatedRenderingBefore = true;
         }
 
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;
+        ParcelSettings.VISUAL_LOADING_ENABLED = true;
         CommonScriptableObjects.rendererState.Set(true);
 
-        WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
+        if (!isDecoupledLoadingScreenEnabled)
+            WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }
 
     private void AddLock(object id)
