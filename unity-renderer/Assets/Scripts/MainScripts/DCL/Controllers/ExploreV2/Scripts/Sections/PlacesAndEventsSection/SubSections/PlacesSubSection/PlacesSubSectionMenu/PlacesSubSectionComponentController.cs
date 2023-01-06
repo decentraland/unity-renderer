@@ -7,30 +7,6 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
-public interface IPlacesSubSectionComponentController : IDisposable
-{
-    /// <summary>
-    /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
-    /// </summary>
-    event Action OnCloseExploreV2;
-
-    /// <summary>
-    /// Request all places from the API.
-    /// </summary>
-    void RequestAllPlaces();
-
-    /// <summary>
-    /// Load the places with the last requested ones.
-    /// </summary>
-    /// <param name="placeList"></param>
-    void LoadPlaces(List<HotSceneInfo> placeList);
-
-    /// <summary>
-    /// Increment the number of places loaded.
-    /// </summary>
-    void ShowMorePlaces();
-}
-
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
@@ -56,10 +32,13 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view = view;
 
         this.view.OnReady += FirstLoading;
+
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += JumpInToPlace;
-        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
+
+        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
@@ -106,7 +85,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void RequestAllPlacesFromAPI()
     {
-        placesAPIApiController.GetAllPlaces(OnCompleted: LoadPlaces);
+        placesAPIApiController.GetAllPlaces(
+            OnCompleted: LoadPlaces);
     }
 
     public void LoadPlaces(List<HotSceneInfo> placeList)
