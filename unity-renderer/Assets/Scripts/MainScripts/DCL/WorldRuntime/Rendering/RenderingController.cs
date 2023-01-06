@@ -73,7 +73,6 @@ public class RenderingController : MonoBehaviour
             return;
         }
 
-
         if (isDecoupledLoadingScreenEnabled) return;
 
         ActivateRendering_Internal(forceActivate: false);
