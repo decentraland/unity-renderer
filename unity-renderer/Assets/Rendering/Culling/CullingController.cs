@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
+using System;
 
 namespace DCL.Rendering
 {
@@ -41,6 +42,7 @@ namespace DCL.Rendering
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
 
+        public EventHandler CycleFinished; 
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -89,6 +91,13 @@ namespace DCL.Rendering
             MeshesInfo.OnAnyUpdated += MarkDirty;
             objectsTracker?.MarkDirty();
             StartInternal();
+        }
+
+        public void Restart()
+        {
+            if (running)
+                Stop();
+            Start();
         }
 
         private void StartInternal()
@@ -332,6 +341,8 @@ namespace DCL.Rendering
                 RaiseDataReport();
                 timeBudgetCount = 0;
                 yield return null;
+
+                CycleFinished?.Invoke(this, EventArgs.Empty);
             }
         }
 
