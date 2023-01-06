@@ -41,7 +41,6 @@ namespace DCL.LoadingScreen
             view.OnFadeInFinish += FadeInFinished;
 
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-            view.FadeIn(true);
 
             tipsController.StartTips();
         }
@@ -73,9 +72,7 @@ namespace DCL.LoadingScreen
             if (current)
                 FadeOutView();
             else
-
-                //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
-                view.FadeIn(false);
+                view.FadeIn(false, false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -87,27 +84,7 @@ namespace DCL.LoadingScreen
             if (!current.Equals(previous) && worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
-
-                //if (Camera.main != null)
-                //{
-                    BlitTexture();
-                    /*
-                    ((LoadingScreenView)view).blitRenderTexture = new RenderTexture(mCamera.pixelWidth, mCamera.pixelHeight, 24);
-                    ((LoadingScreenView)view).SetRenderTexture();
-                    Graphics.Blit(GetTextureFromCamera(mCamera), ((LoadingScreenView)view).blitRenderTexture);
-
-                    Debug.Log("AAAA " + mCamera.pixelWidth);
-                    Debug.Log("BBBB " + mCamera.pixelHeight);
-
-                    Screen
-                    ScreenCapture.CaptureScreenshotIntoRenderTexture(((LoadingScreenView)view).blitRenderTexture);
-                    */
-                //}
-
-
-                //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
-                view.FadeIn(true);
-
+                view.FadeIn(false, true);
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
@@ -116,32 +93,7 @@ namespace DCL.LoadingScreen
             }
         }
 
-        private void BlitTexture()
-        {
-            //Graphics.Blit(null, ((LoadingScreenView)view).blitRenderTexture);
-        }
 
-        /*
-        private static Texture2D GetTextureFromCamera(Camera mCamera)
-        {
-            Rect rect = new Rect(0, 0, mCamera.pixelWidth, mCamera.pixelHeight);
-            RenderTexture renderTexture = new RenderTexture(mCamera.pixelWidth, mCamera.pixelHeight, 24);
-            Texture2D screenShot = new Texture2D(mCamera.pixelWidth, mCamera.pixelHeight, TextureFormat.RGBA32, false);
-
-            mCamera.targetTexture = renderTexture;
-            mCamera.Render();
-
-            RenderTexture.active = renderTexture;
-
-            screenShot.ReadPixels(rect, 0, 0);
-            screenShot.Apply();
-
-
-            mCamera.targetTexture = null;
-            RenderTexture.active = null;
-            return screenShot;
-        }
-*/
         private void FadeOutView()
         {
             view.FadeOut();

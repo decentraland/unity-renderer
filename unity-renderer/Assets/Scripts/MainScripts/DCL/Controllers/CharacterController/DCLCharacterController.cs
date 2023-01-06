@@ -226,15 +226,8 @@ public class DCLCharacterController : MonoBehaviour
     {
         var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
         dataStorePlayer.lastTeleportPosition.Set(payload, notifyEvent: true);
-        StartCoroutine(DelayTeleport(payload));
-    }
-
-    private IEnumerator DelayTeleport(Vector3 payload)
-    {
-        yield return new WaitForEndOfFrame();
         Teleport(payload, Vector3.zero);
     }
-
 
     private void Teleport(Vector3 newPosition, Vector3 _)
     {

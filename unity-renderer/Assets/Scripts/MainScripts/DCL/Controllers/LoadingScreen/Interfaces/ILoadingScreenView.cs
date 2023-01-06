@@ -6,12 +6,13 @@ namespace DCL.LoadingScreen
     {
         void FadeOut();
 
-        void FadeIn(bool instant);
+        void FadeIn(bool instant, bool blitTexture);
 
         event Action<ShowHideAnimator> OnFadeInFinish;
 
         LoadingScreenTipsView GetTipsView();
 
         LoadingScreenPercentageView GetPercentageView();
+
     }
 }

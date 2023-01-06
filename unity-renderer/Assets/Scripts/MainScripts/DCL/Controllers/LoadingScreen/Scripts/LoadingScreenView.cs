@@ -14,12 +14,10 @@ namespace DCL.LoadingScreen
 
         [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
+        private RenderTexture renderTexture;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
-        // Declare a render texture and a material that uses the render texture
-        public RenderTexture renderTexture;
         public RawImage rawImage;
-
 
         public static LoadingScreenView Create() =>
             Create<LoadingScreenView>(PATH);
@@ -27,35 +25,24 @@ namespace DCL.LoadingScreen
         public override void Start()
         {
             base.Start();
-            showHideAnimator.OnWillFinishStart += OnFadeInFinish;
-            //showHideAnimator.OnWillFinishStart += (e) => renderTextureContainer.gameObject.SetActive(false);
+            showHideAnimator.OnWillFinishStart += FadeInFinish;
 
-            FadeIn(true);
+            renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+            rawImage.texture = renderTexture;
+            rawImage.gameObject.SetActive(false);
+            FadeIn(true, false);
         }
 
-        void Update()
+        private void FadeInFinish(ShowHideAnimator obj)
         {
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                if (renderTexture == null)
-                {
-                    renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-                    rawImage.texture = renderTexture;
-                }
-                // Call Graphics.Blit with the material as the argument. This will blit the screen into the render texture
-                Graphics.Blit(null, renderTexture);
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                GetComponent<CanvasGroup>().alpha = GetComponent<CanvasGroup>().alpha.Equals(0) ? 1 : 0;
-            }
+            OnFadeInFinish?.Invoke(obj);
+            rawImage.gameObject.SetActive(false);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            showHideAnimator.OnWillFinishStart -= OnFadeInFinish;
+            showHideAnimator.OnWillFinishStart -= FadeInFinish;
         }
 
         public LoadingScreenTipsView GetTipsView() =>
@@ -64,17 +51,25 @@ namespace DCL.LoadingScreen
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;
 
-        public void FadeIn(bool instant)
+        public void FadeIn(bool instant, bool blitTexture)
         {
-            //renderTextureContainer.gameObject.SetActive(true);
             if (isVisible) return;
 
+            if(blitTexture)
+                BlitTexture();
             Show(instant);
         }
 
         public void FadeOut()
         {
             Hide();
+        }
+
+        public void BlitTexture()
+        {
+            // Call Graphics.Blit with the material as the argument. This will blit the screen into the render texture
+            Graphics.Blit(null, renderTexture);
+            rawImage.gameObject.SetActive(true);
         }
 
         public override void RefreshControl() { }

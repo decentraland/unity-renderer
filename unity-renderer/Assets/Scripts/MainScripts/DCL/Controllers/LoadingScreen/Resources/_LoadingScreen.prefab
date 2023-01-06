@@ -170,7 +170,7 @@ RectTransform:
   - {fileID: 102198957}
   - {fileID: 1858120786}
   m_Father: {fileID: 5696763185950597558}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -453,7 +453,7 @@ RectTransform:
   - {fileID: 6322710159802854320}
   - {fileID: 7423075662883644013}
   m_Father: {fileID: 5696763185950597558}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -534,7 +534,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5696763185950597558}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -666,8 +666,10 @@ GameObject:
   - component: {fileID: 2067836730521956693}
   - component: {fileID: 5542032460435993454}
   - component: {fileID: 6676472641915727631}
+  - component: {fileID: 3548926952995940042}
+  - component: {fileID: 8862749818389912797}
   m_Layer: 5
-  m_Name: RenderTexture
+  m_Name: BlitRenderTexture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -682,11 +684,11 @@ RectTransform:
   m_GameObject: {fileID: 5903567694913666820}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: -1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5696763185950597558}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -728,6 +730,39 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!225 &3548926952995940042
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5903567694913666820}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
+--- !u!223 &8862749818389912797
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5903567694913666820}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &5913862510973815328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1063,7 +1098,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5696763185950597558}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1142,11 +1177,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2067836730521956693}
   - {fileID: 2715615957650274084}
   - {fileID: 1244904327}
   - {fileID: 5570195312150058620}
   - {fileID: 4296387108997757867}
-  - {fileID: 2067836730521956693}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1231,7 +1266,6 @@ MonoBehaviour:
   showHideAnimator: {fileID: 2481086363144932030}
   tipsView: {fileID: 5229806016901196130}
   percentageView: {fileID: 804295394028792594}
-  renderTexture: {fileID: 8400000, guid: 567ae8061abf7407bb2d772d2dba1851, type: 2}
   rawImage: {fileID: 6676472641915727631}
 --- !u!225 &1054737520794358197
 CanvasGroup:
