@@ -12,5 +12,9 @@ namespace RPC.Context
         public IWorldState WorldState;
         public ISceneController SceneController;
         public Action<int, CRDTMessage> CrdtMessageReceived;
+
+        // TODO: we actually just want `CRDTProtocol` for this propose.
+        // but we should first refactor `CRDTExecutor` so it receive it's `CRDTProtocol` using dependency injection
+        public Dictionary<int, ICRDTExecutor> CrdtExecutors;
     }
 }

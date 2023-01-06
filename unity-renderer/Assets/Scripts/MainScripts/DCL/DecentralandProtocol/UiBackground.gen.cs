@@ -26,19 +26,51 @@ namespace DCL.ECSComponents {
           string.Concat(
             "Ci9kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfYmFja2dyb3VuZC5w",
             "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxh",
-            "bmQvY29tbW9uL2NvbG9ycy5wcm90byJhCg5QQlVpQmFja2dyb3VuZBI6ChBi",
-            "YWNrZ3JvdW5kX2NvbG9yGAEgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5D",
-            "b2xvcjRIAIgBAUITChFfYmFja2dyb3VuZF9jb2xvckIUqgIRRENMLkVDU0Nv",
-            "bXBvbmVudHNiBnByb3RvMw=="));
+            "bmQvY29tbW9uL2NvbG9ycy5wcm90bxohZGVjZW50cmFsYW5kL2NvbW1vbi90",
+            "ZXh0dXJlLnByb3RvGiVkZWNlbnRyYWxhbmQvY29tbW9uL2JvcmRlcl9yZWN0",
+            "LnByb3RvIrgCCg5QQlVpQmFja2dyb3VuZBIvCgVjb2xvchgBIAEoCzIbLmRl",
+            "Y2VudHJhbGFuZC5jb21tb24uQ29sb3I0SACIAQESNwoHdGV4dHVyZRgCIAEo",
+            "CzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSAGIAQESSAoM",
+            "dGV4dHVyZV9tb2RlGAMgASgOMjIuZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
+            "bnRzLkJhY2tncm91bmRUZXh0dXJlTW9kZRI8Cg50ZXh0dXJlX3NsaWNlcxgE",
+            "IAEoCzIfLmRlY2VudHJhbGFuZC5jb21tb24uQm9yZGVyUmVjdEgCiAEBEgsK",
+            "A3V2cxgFIAMoAkIICgZfY29sb3JCCgoIX3RleHR1cmVCEQoPX3RleHR1cmVf",
+            "c2xpY2VzKkEKFUJhY2tncm91bmRUZXh0dXJlTW9kZRIPCgtOSU5FX1NMSUNF",
+            "UxAAEgoKBkNFTlRFUhABEgsKB1NUUkVUQ0gQAkIUqgIRRENMLkVDU0NvbXBv",
+            "bmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiBackground), global::DCL.ECSComponents.PBUiBackground.Parser, new[]{ "BackgroundColor" }, new[]{ "BackgroundColor" }, null, null, null)
+          new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, global::Decentraland.Common.BorderRectReflection.Descriptor, },
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.BackgroundTextureMode), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiBackground), global::DCL.ECSComponents.PBUiBackground.Parser, new[]{ "Color", "Texture", "TextureMode", "TextureSlices", "Uvs" }, new[]{ "Color", "Texture", "TextureSlices" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum BackgroundTextureMode {
+    /// <summary>
+    /// https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html (Slicing section)
+    /// https://forum.unity.com/threads/how-does-slicing-in-ui-tookkit-works.1235863/
+    /// https://docs.unity3d.com/Manual/9SliceSprites.html
+    /// https://developer.mozilla.org/en-US/docs/Web/CSS/border-image-slice
+    /// </summary>
+    [pbr::OriginalName("NINE_SLICES")] NineSlices = 0,
+    /// <summary>
+    /// CENTER enables the texture to be rendered centered in relation to the
+    /// element. If the element is smaller than the texture then the background
+    /// should use the element as stencil to cut off the out-of-bounds area
+    /// </summary>
+    [pbr::OriginalName("CENTER")] Center = 1,
+    /// <summary>
+    /// STRETCH enables the texture to cover all the area of the container,
+    /// adopting its aspect ratio.
+    /// </summary>
+    [pbr::OriginalName("STRETCH")] Stretch = 2,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBUiBackground : pb::IMessage<PBUiBackground>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -74,7 +106,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiBackground(PBUiBackground other) : this() {
-      backgroundColor_ = other.backgroundColor_ != null ? other.backgroundColor_.Clone() : null;
+      color_ = other.color_ != null ? other.color_.Clone() : null;
+      texture_ = other.texture_ != null ? other.texture_.Clone() : null;
+      textureMode_ = other.textureMode_;
+      textureSlices_ = other.textureSlices_ != null ? other.textureSlices_.Clone() : null;
+      uvs_ = other.uvs_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -84,19 +120,72 @@ namespace DCL.ECSComponents {
       return new PBUiBackground(this);
     }
 
-    /// <summary>Field number for the "background_color" field.</summary>
-    public const int BackgroundColorFieldNumber = 1;
-    private global::Decentraland.Common.Color4 backgroundColor_;
+    /// <summary>Field number for the "color" field.</summary>
+    public const int ColorFieldNumber = 1;
+    private global::Decentraland.Common.Color4 color_;
     /// <summary>
-    /// default=(0.0, 0.0, 0.0, 0.0)
+    /// default=(1.0, 1.0, 1.0, 1.0), pixel = color * sample2D(texture, uv)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Decentraland.Common.Color4 BackgroundColor {
-      get { return backgroundColor_; }
+    public global::Decentraland.Common.Color4 Color {
+      get { return color_; }
       set {
-        backgroundColor_ = value;
+        color_ = value;
       }
+    }
+
+    /// <summary>Field number for the "texture" field.</summary>
+    public const int TextureFieldNumber = 2;
+    private global::Decentraland.Common.TextureUnion texture_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.TextureUnion Texture {
+      get { return texture_; }
+      set {
+        texture_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "texture_mode" field.</summary>
+    public const int TextureModeFieldNumber = 3;
+    private global::DCL.ECSComponents.BackgroundTextureMode textureMode_ = global::DCL.ECSComponents.BackgroundTextureMode.NineSlices;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.BackgroundTextureMode TextureMode {
+      get { return textureMode_; }
+      set {
+        textureMode_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "texture_slices" field.</summary>
+    public const int TextureSlicesFieldNumber = 4;
+    private global::Decentraland.Common.BorderRect textureSlices_;
+    /// <summary>
+    /// default=(1/3, 1/3, 1/3, 1/3)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.BorderRect TextureSlices {
+      get { return textureSlices_; }
+      set {
+        textureSlices_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "uvs" field.</summary>
+    public const int UvsFieldNumber = 5;
+    private static readonly pb::FieldCodec<float> _repeated_uvs_codec
+        = pb::FieldCodec.ForFloat(42);
+    private readonly pbc::RepeatedField<float> uvs_ = new pbc::RepeatedField<float>();
+    /// <summary>
+    /// default=[0,0,0,1,1,0,1,0]: starting from bottom-left vertex clock-wise
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<float> Uvs {
+      get { return uvs_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -114,7 +203,11 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(BackgroundColor, other.BackgroundColor)) return false;
+      if (!object.Equals(Color, other.Color)) return false;
+      if (!object.Equals(Texture, other.Texture)) return false;
+      if (TextureMode != other.TextureMode) return false;
+      if (!object.Equals(TextureSlices, other.TextureSlices)) return false;
+      if(!uvs_.Equals(other.uvs_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -122,7 +215,11 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (backgroundColor_ != null) hash ^= BackgroundColor.GetHashCode();
+      if (color_ != null) hash ^= Color.GetHashCode();
+      if (texture_ != null) hash ^= Texture.GetHashCode();
+      if (TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) hash ^= TextureMode.GetHashCode();
+      if (textureSlices_ != null) hash ^= TextureSlices.GetHashCode();
+      hash ^= uvs_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -141,10 +238,23 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (backgroundColor_ != null) {
+      if (color_ != null) {
         output.WriteRawTag(10);
-        output.WriteMessage(BackgroundColor);
+        output.WriteMessage(Color);
       }
+      if (texture_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Texture);
+      }
+      if (TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) TextureMode);
+      }
+      if (textureSlices_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(TextureSlices);
+      }
+      uvs_.WriteTo(output, _repeated_uvs_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -155,10 +265,23 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (backgroundColor_ != null) {
+      if (color_ != null) {
         output.WriteRawTag(10);
-        output.WriteMessage(BackgroundColor);
+        output.WriteMessage(Color);
       }
+      if (texture_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Texture);
+      }
+      if (TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) TextureMode);
+      }
+      if (textureSlices_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(TextureSlices);
+      }
+      uvs_.WriteTo(ref output, _repeated_uvs_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -169,9 +292,19 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (backgroundColor_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(BackgroundColor);
+      if (color_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Color);
       }
+      if (texture_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Texture);
+      }
+      if (TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TextureMode);
+      }
+      if (textureSlices_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TextureSlices);
+      }
+      size += uvs_.CalculateSize(_repeated_uvs_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -184,12 +317,28 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.backgroundColor_ != null) {
-        if (backgroundColor_ == null) {
-          BackgroundColor = new global::Decentraland.Common.Color4();
+      if (other.color_ != null) {
+        if (color_ == null) {
+          Color = new global::Decentraland.Common.Color4();
         }
-        BackgroundColor.MergeFrom(other.BackgroundColor);
+        Color.MergeFrom(other.Color);
       }
+      if (other.texture_ != null) {
+        if (texture_ == null) {
+          Texture = new global::Decentraland.Common.TextureUnion();
+        }
+        Texture.MergeFrom(other.Texture);
+      }
+      if (other.TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) {
+        TextureMode = other.TextureMode;
+      }
+      if (other.textureSlices_ != null) {
+        if (textureSlices_ == null) {
+          TextureSlices = new global::Decentraland.Common.BorderRect();
+        }
+        TextureSlices.MergeFrom(other.TextureSlices);
+      }
+      uvs_.Add(other.uvs_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -206,10 +355,33 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (backgroundColor_ == null) {
-              BackgroundColor = new global::Decentraland.Common.Color4();
+            if (color_ == null) {
+              Color = new global::Decentraland.Common.Color4();
             }
-            input.ReadMessage(BackgroundColor);
+            input.ReadMessage(Color);
+            break;
+          }
+          case 18: {
+            if (texture_ == null) {
+              Texture = new global::Decentraland.Common.TextureUnion();
+            }
+            input.ReadMessage(Texture);
+            break;
+          }
+          case 24: {
+            TextureMode = (global::DCL.ECSComponents.BackgroundTextureMode) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            if (textureSlices_ == null) {
+              TextureSlices = new global::Decentraland.Common.BorderRect();
+            }
+            input.ReadMessage(TextureSlices);
+            break;
+          }
+          case 42:
+          case 45: {
+            uvs_.AddEntriesFrom(input, _repeated_uvs_codec);
             break;
           }
         }
@@ -228,10 +400,33 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (backgroundColor_ == null) {
-              BackgroundColor = new global::Decentraland.Common.Color4();
+            if (color_ == null) {
+              Color = new global::Decentraland.Common.Color4();
             }
-            input.ReadMessage(BackgroundColor);
+            input.ReadMessage(Color);
+            break;
+          }
+          case 18: {
+            if (texture_ == null) {
+              Texture = new global::Decentraland.Common.TextureUnion();
+            }
+            input.ReadMessage(Texture);
+            break;
+          }
+          case 24: {
+            TextureMode = (global::DCL.ECSComponents.BackgroundTextureMode) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            if (textureSlices_ == null) {
+              TextureSlices = new global::Decentraland.Common.BorderRect();
+            }
+            input.ReadMessage(TextureSlices);
+            break;
+          }
+          case 42:
+          case 45: {
+            uvs_.AddEntriesFrom(ref input, _repeated_uvs_codec);
             break;
           }
         }

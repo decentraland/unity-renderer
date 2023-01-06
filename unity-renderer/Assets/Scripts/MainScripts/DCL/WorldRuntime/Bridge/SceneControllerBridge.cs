@@ -1,5 +1,8 @@
+using DCL.Helpers;
+using DCL.Models;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Environment = DCL.Environment;
 
 public class SceneControllerBridge : MonoBehaviour
@@ -20,7 +23,11 @@ public class SceneControllerBridge : MonoBehaviour
         Environment.i.world.sceneController.UnloadScene(targetSceneNumber);
     }
 
-    public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
+    public void CreateGlobalScene(string payload)
+    {
+        CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(payload);
+        Environment.i.world.sceneController.CreateGlobalScene(globalScene);
+    }
 
     public void UpdateParcelScenes(string payload) { Environment.i.world.sceneController.UpdateParcelScenes(payload); }
     

@@ -62,17 +62,6 @@ dotnet_naming_rule.interfaces_should_be_pascal_case_with_i_prefix.symbols = inte
 dotnet_naming_rule.interfaces_should_be_pascal_case_with_i_prefix.style = i_prefix_pascal_case_style
 dotnet_naming_rule.interfaces_should_be_pascal_case_with_i_prefix.severity = warning
 
-# Asynchronous methods end with "Async"
-dotnet_naming_style.async_postfix_pascal_case_style.capitalization = pascal_case
-dotnet_naming_style.async_postfix_pascal_case_style.required_suffix = Async
-
-dotnet_naming_symbols.async_methods.applicable_kinds = method
-dotnet_naming_symbols.async_methods.required_modifiers = async
-
-dotnet_naming_rule.async_methods_should_be_pascal_case_with_async_suffix.symbols = async_methods
-dotnet_naming_rule.async_methods_should_be_pascal_case_with_async_suffix.style = async_postfix_pascal_case_style
-dotnet_naming_rule.async_methods_should_be_pascal_case_with_async_suffix.severity = warning
-
 
 #### CAPITALS_SNAKE_CASE ####
 dotnet_naming_style.capital_snake_case_style.capitalization = all_upper

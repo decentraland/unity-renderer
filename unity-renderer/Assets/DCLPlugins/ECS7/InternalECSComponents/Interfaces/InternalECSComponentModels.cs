@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -46,7 +47,6 @@ namespace DCL.ECS7.InternalComponents
             public RaycastHit hit;
             public PointerEventType type;
             public int timestamp;
-            public float analog;
         }
 
         public Queue<EventData> events;
@@ -61,5 +61,10 @@ namespace DCL.ECS7.InternalComponents
         public long parentId;
         public long rigthOf;
         public bool shouldSort;
+
+        public InternalUiContainer(long entityId)
+        {
+            rootElement.name += $"(Id: {entityId})";
+        }
     }
 }

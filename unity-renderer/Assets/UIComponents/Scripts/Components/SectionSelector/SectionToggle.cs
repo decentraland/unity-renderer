@@ -153,7 +153,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
         if (reselectIfAlreadyOn)
             toggle.isOn = false;
 
-        toggle.isOn = true;
+        if(!toggle.isOn)
+            toggle.isOn = true;
     }
 
     public void SetSelectedVisuals()

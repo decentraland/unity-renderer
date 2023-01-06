@@ -27,6 +27,7 @@ namespace RPC
                    .RegisterService(TransportServiceImpl.RegisterService)
                    .RegisterService(EmotesRendererServiceImpl.RegisterService)
                    .RegisterService(RPCFriendsApiBridge.RegisterService)
+                   .RegisterService(SceneControllerServiceImpl.RegisterService)
                    .Build();
         }
 
