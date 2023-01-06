@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using static DCL.Rendering.CullingControllerUtils;
-using System;
+//using System;
 
 namespace DCL.Rendering
 {
@@ -42,7 +42,7 @@ namespace DCL.Rendering
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
 
-        public EventHandler CycleFinished; 
+        //public EventHandler CycleFinished; 
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -342,7 +342,7 @@ namespace DCL.Rendering
                 timeBudgetCount = 0;
                 yield return null;
 
-                CycleFinished?.Invoke(this, EventArgs.Empty);
+                //CycleFinished?.Invoke(this, EventArgs.Empty);
             }
         }
 
