@@ -87,12 +87,6 @@ jobs:
             cd protocol-gen
             npm install
             npm run build
-      - run:
-          name: Update sentry params
-          command: |
-            cd scripts
-            npm install
-            npm run inject-sentry-params
       - save_cache:
           name: Store large files in cache
           key: git-lfs-{{ .Branch }}
@@ -317,6 +311,12 @@ jobs:
           keys:
             - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Update sentry params
+          command: |
+            cd scripts
+            npm install
+            npm run inject-sentry-params
       - run:
           name: Build Unity Project
           no_output_timeout: 30m
