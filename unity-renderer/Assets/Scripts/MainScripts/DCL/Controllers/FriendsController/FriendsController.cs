@@ -219,6 +219,8 @@ namespace DCL.Social.Friends
         {
             FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId);
 
+            await UniTask.SwitchToMainThread();
+
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 action = ToFriendshipAction(status),
