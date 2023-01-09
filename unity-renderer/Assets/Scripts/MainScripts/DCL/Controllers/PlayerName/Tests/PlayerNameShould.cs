@@ -60,7 +60,7 @@ public class PlayerNameShould : MonoBehaviour
     public void SetNameCorrectly(string name)
     {
         playerName.SetName(name, false, false);
-        Assert.AreEqual(name, playerName.nameText.text);
+        Assert.AreEqual($"<color=#CFCDD4>{name}</color>", playerName.nameText.text);
         Assert.AreEqual(new Vector2(playerName.nameText.GetPreferredValues().x + PlayerName.BACKGROUND_EXTRA_WIDTH, PlayerName.BACKGROUND_HEIGHT), playerName.background.rectTransform.sizeDelta);
     }
 
@@ -120,9 +120,29 @@ public class PlayerNameShould : MonoBehaviour
     public void ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
     {
         DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
-        var defaultName = playerName.nameText.text;
         playerName.SetName(originalName, false, false);
-        Assert.IsTrue(displayedName.Equals(playerName.nameText.text) || defaultName.Equals(playerName.nameText.text));
+        Assert.AreEqual($"<color=#CFCDD4>{displayedName}</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetGuestColor()
+    {
+        playerName.SetName("hey#83df", false, true);
+        Assert.AreEqual("<color=#A09BA8>hey</color><color=#716B7C>#83df</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetWeb3Color()
+    {
+        playerName.SetName("hey#83df", false, false);
+        Assert.AreEqual("<color=#CFCDD4>hey</color><color=#A09BA8>#83df</color>", playerName.nameText.text);
+    }
+
+    [Test]
+    public void SetClaimedColor()
+    {
+        playerName.SetName("hey", true, false);
+        Assert.AreEqual("<color=#FFFFFF>hey</color>", playerName.nameText.text);
     }
 
     [TearDown]
