@@ -476,7 +476,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
             DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;
-            configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            if(configuration != null) configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             DataStore.i.skyboxConfig.mode.OnChange -= UseDynamicSkybox_OnChange;

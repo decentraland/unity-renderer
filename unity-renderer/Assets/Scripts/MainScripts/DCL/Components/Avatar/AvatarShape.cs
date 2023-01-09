@@ -55,6 +55,7 @@ namespace DCL
         private ILazyTextureObserver currentLazyObserver;
         private bool isGlobalSceneAvatar = true;
         private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
+        private IUserProfileBridge userProfileBridge;
 
         public override string componentName => "avatarShape";
 
@@ -62,6 +63,8 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            // TODO: user profile bridge should be retrieved from the service locator
+            userProfileBridge = new UserProfileWebInterfaceBridge();
 
             if (DataStore.i.avatarConfig.useHologramAvatar.Get())
                 avatar = GetAvatarWithHologram();
@@ -194,7 +197,8 @@ namespace DCL
                 loadingCts = new CancellationTokenSource();
                 if (DataStore.i.avatarConfig.useHologramAvatar.Get())
                 {
-                    playerName.SetName(model.name);
+                    UserProfile profile = userProfileBridge.Get(model.id);
+                    playerName.SetName(model.name, profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
                     playerName.Show(true);
                 }
 
@@ -316,8 +320,12 @@ namespace DCL
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+
             if (isNameDirty)
-                player.playerName.SetName(model.name);
+            {
+                UserProfile profile = userProfileBridge.Get(model.id);
+                player.playerName.SetName(model.name, profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
+            }
         }
 
         private void Update()
