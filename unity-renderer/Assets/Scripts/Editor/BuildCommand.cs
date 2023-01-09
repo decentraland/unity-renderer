@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
@@ -150,6 +151,11 @@ static class BuildCommand
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
+
+
+        string[] commandLineArgs = Environment.GetCommandLineArgs();
+
+        if (commandLineArgs.Contains("+testing")) { PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "TESTING"); }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");

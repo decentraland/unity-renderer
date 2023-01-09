@@ -9,6 +9,8 @@ public class SentryRuntimeOptionsConfiguration : Sentry.Unity.ScriptableOptionsC
     /// Learn more at https://docs.sentry.io/platforms/unity/configuration/options/#programmatic-configuration
     public override void Configure(SentryUnityOptions options)
     {
-        if (EnvironmentSettings.RUNNING_TESTS) { options.Environment = "test-" + options.Environment; }
+        #if TESTING
+        options.Environment = "test-" + options.Environment; }
+        #endif
     }
 }
