@@ -85,7 +85,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void Start()
     {
-        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.ConfigureEventCardModal(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();

@@ -137,8 +137,8 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        List<PlaceCardComponentModel> trendingPlaces = PlacesSubSectionComponentController.LoadPlaces(highlightsSubSectionComponentController.FilterTrendingPlaces());
-        List<EventCardComponentModel> trendingEvents = EventsSubSectionComponentController.LoadEvents(highlightsSubSectionComponentController.FilterTrendingEvents(trendingPlaces.Count));
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(highlightsSubSectionComponentController.FilterTrendingPlaces());
+        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(highlightsSubSectionComponentController.FilterTrendingEvents(trendingPlaces.Count));
         highlightsSubSectionComponentController.view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
         // Assert
@@ -167,8 +167,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        highlightsSubSectionComponentController.view.SetLiveEvents(EventsSubSectionComponentController.LoadEvents(
-            highlightsSubSectionComponentController.FilterLiveEvents()));
+        highlightsSubSectionComponentController.view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(highlightsSubSectionComponentController.FilterLiveEvents()));
 
         // Assert
         highlightsSubSectionComponentView.Received().SetLiveEvents(Arg.Any<List<EventCardComponentModel>>());

@@ -7,20 +7,6 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
-public static class CardsLoader
-{
-    public static List<TModel> CreateModelsListFromAPI<TModel,TInfo>(List<TInfo> filteredAPIModels, Func<TInfo, TModel> factoryCreateMethod)
-        where TModel: BaseComponentModel
-    {
-        List<TModel> loadedCards = new List<TModel>();
-
-        foreach (TInfo filteredCardInfo in filteredAPIModels)
-            loadedCards.Add(factoryCreateMethod(filteredCardInfo));
-
-        return loadedCards;
-    }
-}
-
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
@@ -109,13 +95,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         placesFromAPI = placeList;
 
-        view.SetPlaces(LoadPlaces(TakeAllForAvailableSlots(placeList)));
+        view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards((TakeAllForAvailableSlots(placeList))));
 
         view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
-
-    public static List<PlaceCardComponentModel> LoadPlaces(List<HotSceneInfo> filteredPlaces) =>
-        CardsLoader.CreateModelsListFromAPI(filteredPlaces, ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace);
 
     private List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
         modelsFromAPI.Take(availableUISlots).ToList();
@@ -129,7 +112,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
 
-        view.AddPlaces(LoadPlaces(placesFiltered));
+        view.AddPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 
@@ -153,7 +136,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
-
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }

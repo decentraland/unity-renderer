@@ -49,11 +49,11 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.eventModal = null;
 
         // Act
-        eventsSubSectionComponent.eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
+        eventsSubSectionComponent.eventModal = PlacesAndEventsCardsFactory.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(eventsSubSectionComponent.eventModal);
-        Assert.AreEqual(ExploreEventsUtils.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
     }
 
     [Test]
@@ -94,20 +94,20 @@ public class ExploreEventsCommonTests
         EventFromAPIModel testEventFromAPI = CreateTestEventFromAPI("1");
 
         // Act
-        EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(testEventFromAPI);
+        EventCardComponentModel eventCardModel = PlacesAndEventsCardsFactory.CreateEventCardModelFromAPIEvent(testEventFromAPI);
 
         // Assert
         Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
         Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
         Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
-        Assert.AreEqual(ExploreEventsUtils.LIVE_TAG_TEXT, eventCardModel.liveTagText);
-        Assert.AreEqual(ExploreEventsUtils.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.LIVE_TAG_TEXT, eventCardModel.liveTagText);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
         Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
         Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);
-        Assert.AreEqual(ExploreEventsUtils.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
-        Assert.AreEqual(ExploreEventsUtils.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
-        Assert.AreEqual(ExploreEventsUtils.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
-        Assert.AreEqual(ExploreEventsUtils.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
         Assert.AreEqual(testEventFromAPI.total_attendees, eventCardModel.subscribedUsers);
         Assert.AreEqual(false, eventCardModel.isSubscribed);
         Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);
@@ -132,11 +132,12 @@ public class ExploreEventsCommonTests
             isSubscribed = false,
             liveTagText = "Test Live Text",
             subscribedUsers = 100,
+
             eventFromAPIInfo = new EventFromAPIModel
             {
                 id = id,
                 attending = false,
-                coordinates = new int[] { 10, 10 },
+                coordinates = new[] { 10, 10 },
                 description = "Test Description",
                 finish_at = "Test Date",
                 highlighted = false,
