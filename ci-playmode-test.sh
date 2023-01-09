@@ -4,7 +4,7 @@ source ci-setup.sh
 
 echo "Running playmode tests for $PROJECT_PATH"
 
-sed -i 's/m_Enabled: 1/m_Enabled: 0/' unity-renderer/Assets/Resources/Sentry/SentryOptions.asset
+sed -i 's/<Enabled>k__BackingField: 1/<Enabled>k__BackingField: 0/' unity-renderer/Assets/Resources/Sentry/SentryOptions.asset
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
