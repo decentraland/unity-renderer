@@ -78,8 +78,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void Start()
     {
-        placeModal = PlacesAndEventsCardsFactory.GetOrCreatePlaceCardTemplateHidden(placeCardModalPrefab);
-        eventModal = PlacesAndEventsCardsFactory.GetOrCreateEventCardTemplateHidden(eventCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();
@@ -132,10 +132,10 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public void ConfigurePools()
     {
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -176,7 +176,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesAndEventsCardsFactory.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
 
     public void HidePlaceModal()
@@ -188,7 +188,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        PlacesAndEventsCardsFactory.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
     public void HideEventModal()

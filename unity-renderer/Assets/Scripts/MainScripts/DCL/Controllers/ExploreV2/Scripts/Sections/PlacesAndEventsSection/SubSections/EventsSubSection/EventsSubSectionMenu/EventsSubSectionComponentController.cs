@@ -142,7 +142,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        ExploreEventsUtils.JumpInToEvent(eventFromAPI);
+        EventsCardsConfigurator.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
 
         OnCloseExploreV2?.Invoke();

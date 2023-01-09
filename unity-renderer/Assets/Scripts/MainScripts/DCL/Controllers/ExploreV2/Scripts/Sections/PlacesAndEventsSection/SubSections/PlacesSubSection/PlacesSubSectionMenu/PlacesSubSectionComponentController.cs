@@ -132,7 +132,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
+        PlacesCardsConfigurator.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);

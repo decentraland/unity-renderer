@@ -44,7 +44,7 @@ public class ExplorePlacesCommonTests
         placesSubSectionComponent.placeModal = null;
 
         // Act
-        placesSubSectionComponent.placeModal = PlacesAndEventsCardsFactory.GetOrCreatePlaceCardTemplateHidden(placesSubSectionComponent.placeCardModalPrefab);
+        placesSubSectionComponent.placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placesSubSectionComponent.placeCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(placesSubSectionComponent.placeModal);
@@ -58,7 +58,7 @@ public class ExplorePlacesCommonTests
         placesSubSectionComponent.placeCardsPool = null;
 
         // Act
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(
             out placesSubSectionComponent.placeCardsPool,
             PlacesSubSectionComponentView.PLACE_CARDS_POOL_NAME,
             placesSubSectionComponent.placeCardPrefab,
@@ -76,7 +76,7 @@ public class ExplorePlacesCommonTests
         PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
 
         // Act
-        PlacesAndEventsCardsFactory.ConfigurePlaceCard(testPlaceCard, testPlaceInfo, null, null);
+        PlacesCardsConfigurator.Configure(testPlaceCard, testPlaceInfo, null, null);
 
         // Assert
         Assert.AreEqual(testPlaceInfo, testPlaceCard.model, "The place card model does not match.");
@@ -89,13 +89,14 @@ public class ExplorePlacesCommonTests
         HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
 
         // Act
-        PlaceCardComponentModel placeCardModel = PlacesAndEventsCardsFactory.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
+        PlaceCardComponentModel placeCardModel = new PlaceCardComponentModel();
+        PlacesCardsConfigurator.ConfigureFromAPIData(placeCardModel, testPlaceFromAPI);
 
         // Assert
         Assert.AreEqual(testPlaceFromAPI.thumbnail, placeCardModel.placePictureUri);
         Assert.AreEqual(testPlaceFromAPI.name, placeCardModel.placeName);
-        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
-        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
+        Assert.AreEqual(PlacesCardsConfigurator.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
+        Assert.AreEqual(PlacesCardsConfigurator.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
         Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
         Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
         Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);
