@@ -2,15 +2,6 @@
 using System;
 using UnityEngine;
 
-public interface IPlacesAndEventsSubSectionComponentView
-{
-    void RestartScrollViewPosition();
-
-    void SetAllAsLoading();
-
-    int CurrentTilesPerRow { get; }
-}
-
 public class PlaceAndEventsCardsReloader : IDisposable
 {
     private readonly IPlacesAndEventsSubSectionComponentView view;
