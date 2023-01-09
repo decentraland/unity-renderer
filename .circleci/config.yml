@@ -314,7 +314,7 @@ jobs:
       - run:
           name: Update sentry params
           command: |
-            apt-get update && apt-get install -y nodejs
+            apt-get update && apt-get install -y nodejs npm
             cd scripts
             npm install
             npm run inject-sentry-params
