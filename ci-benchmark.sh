@@ -4,6 +4,8 @@ source ci-setup.sh
 
 echo "Running benchmark tests for $PROJECT_PATH"
 
+sed -i 's/m_Enabled: 1/m_Enabled: 0/' unity-renderer/Assets/Resources/Sentry/SentryOptions.asset
+
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
