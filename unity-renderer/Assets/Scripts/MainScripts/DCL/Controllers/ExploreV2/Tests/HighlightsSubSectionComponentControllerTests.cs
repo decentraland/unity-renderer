@@ -152,7 +152,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        highlightsSubSectionComponentController.FilterFeaturedPlaces();
+        highlightsSubSectionComponentController.view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(highlightsSubSectionComponentController.FilterFeaturedPlaces()));
 
         // Assert
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());

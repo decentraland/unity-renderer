@@ -74,10 +74,13 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void RequestAllPlaces()
     {
+        Debug.Log(0);
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
             view.SetShowMoreButtonActive(false);
+
+            Debug.Log(1);
 
             cardsReloader.RequestAll();
         }
