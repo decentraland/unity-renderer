@@ -1,6 +1,8 @@
 using DCL.Helpers;
 using System;
 using UnityEngine;
+using DCL.NotificationModel;
+using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
 {
@@ -82,8 +84,8 @@ namespace DCL.LoadingScreen
         {
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
-            //If the destination scene is not loaded, we show the teleport screen
-            //This is going to be called on the POSITION_SETTLED event; but since the scene will already be loaded, the loading screen wont be shown
+            //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
+            //On the other hand, when the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
             if (worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
             {
                 currentDestination = currentDestinationCandidate;
@@ -95,6 +97,27 @@ namespace DCL.LoadingScreen
                 //This is probably going to change with the integration of WORLDS loading screen
                 tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+            }
+
+            //We are going to check if the scene has timeout using the POSITION_SETTLED event.
+            CheckSceneTimeout(currentDestinationCandidate);
+        }
+
+        private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
+        {
+            //If we are settling on the same position, but loading is not complete, this means that kernel is calling for a timeout.
+            //For now, we hide the loading screen and add a notification
+            if (currentDestinationCandidate.Equals(currentDestination) &&
+                worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination))?.loadingProgress < 100)
+            {
+                NotificationsController.i.ShowNotification(new Model
+                {
+                    message = "Loading scene timeout",
+                    type = Type.GENERIC,
+                    timer = 10f,
+                    destroyOnFinish = true
+                });
+                FadeOutView();
             }
         }
 

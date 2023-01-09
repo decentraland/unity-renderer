@@ -47,6 +47,8 @@ namespace DCL.LoadingScreen
 
         public void FadeOut()
         {
+            if (!isVisible) return;
+
             Hide();
         }
 
