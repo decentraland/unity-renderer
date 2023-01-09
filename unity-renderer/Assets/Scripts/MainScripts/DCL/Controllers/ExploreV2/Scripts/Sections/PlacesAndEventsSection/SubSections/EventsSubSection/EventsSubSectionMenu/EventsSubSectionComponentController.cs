@@ -20,14 +20,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private readonly DataStore dataStore;
     private readonly IExploreV2Analytics exploreV2Analytics;
 
-    private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
+    private readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
     private int availableUISlots;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllEventsFromAPI);
+        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllEventsFromAPI);
 
         this.view = view;
 
@@ -64,23 +64,23 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
-        cardsRequestHandler.Dispose();
+        cardsReloader.Dispose();
     }
 
     private void FirstLoading()
     {
         view.OnEventsSubSectionEnable += RequestAllEvents;
-        cardsRequestHandler.Initialize();
+        cardsReloader.Initialize();
     }
 
     public void RequestAllEvents()
     {
-        if (cardsRequestHandler.CanReload())
+        if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
             view.SetShowMoreButtonActive(false);
 
-            cardsRequestHandler.RequestAll();
+            cardsReloader.RequestAll();
         }
     }
 
@@ -95,25 +95,18 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         eventsFromAPI = eventList;
 
-        view.SetFeaturedEvents(LoadEvents(FeaturedEventsFilter()));
-        view.SetTrendingEvents(LoadEvents(TrendingEventsFilter()));
-        view.SetUpcomingEvents(LoadEvents(UpcomingEventsFilter()));
-        view.SetGoingEvents(LoadEvents(LoadGoingEvents()));
+        view.SetFeaturedEvents(LoadEvents(FilterFeaturedEvents()));
+        view.SetTrendingEvents(LoadEvents(FilterTrendingEvents()));
+        view.SetUpcomingEvents(LoadEvents(FilterUpcomingEvents()));
+        view.SetGoingEvents(LoadEvents(FilterGoingEvents()));
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
-    private static List<EventCardComponentModel> LoadEvents(List<EventFromAPIModel> filteredEvents)
-    {
-        List<EventCardComponentModel> cardModels = new List<EventCardComponentModel>();
+    public static List<EventCardComponentModel> LoadEvents(List<EventFromAPIModel> filteredEvents) =>
+        CardsLoader.CreateModelsListFromAPI(filteredEvents, ExploreEventsUtils.CreateEventCardModelFromAPIEvent);
 
-        foreach (EventFromAPIModel eventData in filteredEvents)
-            cardModels.Add(ExploreEventsUtils.CreateEventCardModelFromAPIEvent(eventData));
-
-        return cardModels;
-    }
-
-    public List<EventFromAPIModel> FeaturedEventsFilter()
+    public List<EventFromAPIModel> FilterFeaturedEvents()
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
@@ -122,10 +115,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         return eventsFiltered;
     }
-
-    public List<EventFromAPIModel> TrendingEventsFilter() => eventsFromAPI.Where(e => e.trending).ToList();
-    private List<EventFromAPIModel> UpcomingEventsFilter() => eventsFromAPI.Take(availableUISlots).ToList();
-    public List<EventFromAPIModel> LoadGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
+    public List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
+    private List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
+    public List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
 
     public void ShowMoreUpcomingEvents()
     {

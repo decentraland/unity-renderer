@@ -25,14 +25,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
-    private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
+    private readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<HotSceneInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
 
-    public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
+        DataStore dataStore)
     {
-        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllPlacesAndEventsFromAPI);
+        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllPlacesAndEventsFromAPI);
 
         this.view = view;
 
@@ -83,19 +84,19 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
-        cardsRequestHandler.Dispose();
+        cardsReloader.Dispose();
     }
 
     private void FirstLoading()
     {
         view.OnHighlightsSubSectionEnable += RequestAllPlacesAndEvents;
-        cardsRequestHandler.Initialize();
+        cardsReloader.Initialize();
     }
 
-    public void RequestAllPlacesAndEvents()
+    private void RequestAllPlacesAndEvents()
     {
-        if (cardsRequestHandler.CanReload())
-            cardsRequestHandler.RequestAll();
+        if (cardsReloader.CanReload())
+            cardsReloader.RequestAll();
     }
 
     internal void RequestAllPlacesAndEventsFromAPI()
@@ -123,47 +124,20 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        LoadTrendingPlacesAndEvents();
-        LoadFeaturedPlaces();
-        LoadLiveEvents();
+        List<PlaceCardComponentModel> trendingPlaces = PlacesSubSectionComponentController.LoadPlaces(FilterTrendingPlaces());
+        List<EventCardComponentModel> trendingEvents = EventsSubSectionComponentController.LoadEvents(FilterTrendingEvents(trendingPlaces.Count));
+        view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
+
+        view.SetFeaturedPlaces(PlacesSubSectionComponentController.LoadPlaces(FilterFeaturedPlaces()));
+        view.SetLiveEvents(EventsSubSectionComponentController.LoadEvents(FilterLiveEvents()));
     }
 
-    public void LoadTrendingPlacesAndEvents()
+    internal List<HotSceneInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
+    internal List<EventFromAPIModel> FilterLiveEvents() => eventsFromAPI.Where(x => x.live).Take(DEFAULT_NUMBER_OF_LIVE_EVENTS).ToList();
+    internal List<EventFromAPIModel> FilterTrendingEvents(int amount) => eventsFromAPI.Where(e => e.highlighted).Take(amount).ToList();
+    internal List<HotSceneInfo> FilterFeaturedPlaces()
     {
-        // Places
-        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-
-        List<HotSceneInfo> placesFiltered = placesFromAPI
-                                           .Take(DEFAULT_NUMBER_OF_TRENDING_PLACES)
-                                           .ToList();
-
-        foreach (HotSceneInfo receivedPlace in placesFiltered)
-        {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
-            places.Add(placeCardModel);
-        }
-
-        // Events
-        List<EventCardComponentModel> events = new List<EventCardComponentModel>();
-
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI
-                                                .Where(e => e.highlighted)
-                                                .Take(placesFiltered.Count)
-                                                .ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            events.Add(eventCardModel);
-        }
-
-        view.SetTrendingPlacesAndEvents(places, events);
-    }
-
-    public void LoadFeaturedPlaces()
-    {
-        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered;
+        List<HotSceneInfo> featuredPlaces;
 
         if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
         {
@@ -171,37 +145,16 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
                 ? DEFAULT_NUMBER_OF_FEATURED_PLACES
                 : placesFromAPI.Count - DEFAULT_NUMBER_OF_TRENDING_PLACES;
 
-            placesFiltered = placesFromAPI
+            featuredPlaces = placesFromAPI
                             .GetRange(DEFAULT_NUMBER_OF_TRENDING_PLACES, numberOfPlaces)
                             .ToList();
         }
-        else if (placesFromAPI.Count > 0) { placesFiltered = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList(); }
-        else { placesFiltered = new List<HotSceneInfo>(); }
+        else if (placesFromAPI.Count > 0)
+            featuredPlaces = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
+        else
+            featuredPlaces = new List<HotSceneInfo>();
 
-        foreach (HotSceneInfo receivedPlace in placesFiltered)
-        {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
-            places.Add(placeCardModel);
-        }
-
-        view.SetFeaturedPlaces(places);
-    }
-
-    public void LoadLiveEvents()
-    {
-        List<EventCardComponentModel> events = new List<EventCardComponentModel>();
-
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(x => x.live)
-                                                              .Take(DEFAULT_NUMBER_OF_LIVE_EVENTS)
-                                                              .ToList();
-
-        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
-        {
-            EventCardComponentModel eventCardModel = ExploreEventsUtils.CreateEventCardModelFromAPIEvent(receivedEvent);
-            events.Add(eventCardModel);
-        }
-
-        view.SetLiveEvents(events);
+        return featuredPlaces;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
@@ -257,6 +210,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
     }
+
     private static void UnsubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
@@ -276,10 +230,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //    });
     }
 
-    internal void GoToEventsSubSection()
-    {
+    internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();
-    }
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {

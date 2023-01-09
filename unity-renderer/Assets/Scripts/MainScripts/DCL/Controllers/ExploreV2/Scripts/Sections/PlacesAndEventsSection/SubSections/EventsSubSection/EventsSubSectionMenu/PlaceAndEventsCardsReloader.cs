@@ -2,13 +2,6 @@
 using System;
 using UnityEngine;
 
-public enum SubSectionType
-{
-    Highlights,
-    Events,
-    Places,
-}
-
 public interface IPlacesAndEventsSubSectionComponentView
 {
     void RestartScrollViewPosition();
@@ -18,7 +11,7 @@ public interface IPlacesAndEventsSubSectionComponentView
     int CurrentTilesPerRow { get; }
 }
 
-public class PlaceAndEventsCardsRequestHandler : IDisposable
+public class PlaceAndEventsCardsReloader : IDisposable
 {
     private readonly IPlacesAndEventsSubSectionComponentView view;
     private readonly DataStore_ExploreV2 exploreV2Menu;
@@ -31,7 +24,7 @@ public class PlaceAndEventsCardsRequestHandler : IDisposable
 
     private float lastTimeAPIChecked;
 
-    public PlaceAndEventsCardsRequestHandler(IPlacesAndEventsSubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, Action requestAllFromAPI)
+    public PlaceAndEventsCardsReloader(IPlacesAndEventsSubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, Action requestAllFromAPI)
     {
         this.view = view;
         this.exploreV2Menu = exploreV2Menu;
