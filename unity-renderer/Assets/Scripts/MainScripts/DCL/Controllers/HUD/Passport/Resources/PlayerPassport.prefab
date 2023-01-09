@@ -9957,7 +9957,8 @@ MonoBehaviour:
   backgroundButton: {fileID: 1977337224525190038}
   container: {fileID: 4864289571610039596}
   passportMask: {fileID: 7017478933621568434}
-  passportCanvas: {fileID: 5415272932879589750}
+  passportCanvas: {fileID: 7882713882581435087}
+  passportCanvasGroup: {fileID: 5415272932879589750}
 --- !u!222 &7671956882880208467
 CanvasRenderer:
   m_ObjectHideFlags: 0

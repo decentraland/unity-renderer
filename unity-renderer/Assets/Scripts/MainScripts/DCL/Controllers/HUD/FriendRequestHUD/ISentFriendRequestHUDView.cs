@@ -18,5 +18,6 @@ namespace DCL.Social.Friends
         void ShowPendingToCancel();
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime date);
+        void SetSortingOrder(int sortingOrder);
     }
 }

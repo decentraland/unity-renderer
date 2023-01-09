@@ -19,5 +19,6 @@ namespace DCL.Social.Friends
         void SetState(LayoutState state);
         void Show(bool instant = false);
         void Close();
+        void SetSortingOrder(int sortingOrder);
     }
 }

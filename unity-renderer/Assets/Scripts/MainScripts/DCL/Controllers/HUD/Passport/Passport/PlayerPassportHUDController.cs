@@ -66,6 +66,7 @@ namespace DCL.Social.Passports
 
             playerInfoController.OnClosePassport += ClosePassport;
             dataStore.HUDs.closedWalletModal.OnChange += ClosedGuestWalletPanel;
+            dataStore.HUDs.currentPassportSortingOrder.Set(view.PassportCurrentSortingOrder);
         }
 
         private void ClosedGuestWalletPanel(bool current, bool previous)

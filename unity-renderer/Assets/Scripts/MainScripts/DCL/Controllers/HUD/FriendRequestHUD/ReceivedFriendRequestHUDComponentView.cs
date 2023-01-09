@@ -29,6 +29,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button[] buttonsToDisableOnPendingState;
         [SerializeField] internal TMP_Text rejectSuccessLabel;
         [SerializeField] internal TMP_Text confirmSuccessLabel;
+        [SerializeField] internal Canvas currentCanvas;
 
         public event Action OnClose;
         public event Action OnOpenProfile;
@@ -158,6 +159,8 @@ namespace DCL.Social.Friends
         }
 
         public void Close() => base.Hide();
+
+        public void SetSortingOrder(int sortingOrder) => currentCanvas.sortingOrder = sortingOrder;
 
         private void SetDefaultState()
         {
