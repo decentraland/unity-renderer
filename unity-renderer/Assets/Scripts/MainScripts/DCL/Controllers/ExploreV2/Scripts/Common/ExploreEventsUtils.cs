@@ -1,6 +1,3 @@
-using DCL;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -9,64 +6,36 @@ using Environment = DCL.Environment;
 /// </summary>
 public static class ExploreEventsUtils
 {
-    /// <summary>
-    /// Creates and configures a pool for event cards.
-    /// </summary>
-    /// <param name="pool">Pool to configure.</param>
-    /// <param name="poolName">Name of the pool.</param>
-    /// <param name="eventCardPrefab">Event card prefab to use by the pool.</param>
-    /// <param name="maxPrewarmCount">Max number of pre-created cards.</param>
-    public static void ConfigureEventCardsPool(out Pool pool, string poolName, EventCardComponentView eventCardPrefab, int maxPrewarmCount)
-    {
-        pool = PoolManager.i.GetPool(poolName);
-        if (pool == null)
-        {
-            pool = PoolManager.i.AddPool(
-                poolName,
-                GameObject.Instantiate(eventCardPrefab).gameObject,
-                maxPrewarmCount: maxPrewarmCount,
-                isPersistent: true);
-
-            pool.ForcePrewarm();
-        }
-    }
-
-    public static EventCardComponentView InstantiateConfiguredEventCard(EventCardComponentModel eventInfo, Pool pool, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked)
-    {
-        EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
-        ConfigureEventCard(eventGO, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
-        return eventGO;
-    }
-
-    /// <summary>
-    /// Configure a event card with the given model.
-    /// </summary>
-    /// <param name="eventCard">Event card to configure.</param>
-    /// <param name="eventInfo">Model to apply.</param>
-    /// <param name="OnEventInfoClicked">Action to inform when the Info button has been clicked.</param>
-    /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
-    /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
-    /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
-    public static void ConfigureEventCard(
-        EventCardComponentView eventCard,
-        EventCardComponentModel eventInfo,
-        Action<EventCardComponentModel> OnEventInfoClicked,
-        Action<EventFromAPIModel> OnEventJumpInClicked,
-        Action<string> OnEventSubscribeEventClicked,
-        Action<string> OnEventUnsubscribeEventClicked)
-    {
-        eventCard.Configure(eventInfo);
-        eventCard.onInfoClick?.RemoveAllListeners();
-        eventCard.onInfoClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
-        eventCard.onJumpInClick?.RemoveAllListeners();
-        eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
-        eventCard.onJumpInForNotLiveClick?.RemoveAllListeners();
-        eventCard.onJumpInForNotLiveClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
-        eventCard.onSubscribeClick?.RemoveAllListeners();
-        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
-        eventCard.onUnsubscribeClick?.RemoveAllListeners();
-        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
-    }
+    // /// <summary>
+    // /// Configure a event card with the given model.
+    // /// </summary>
+    // /// <param name="eventCard">Event card to configure.</param>
+    // /// <param name="eventInfo">Model to apply.</param>
+    // /// <param name="OnEventInfoClicked">Action to inform when the Info button has been clicked.</param>
+    // /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
+    // /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
+    // /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
+    // public static void ConfigureEventCard(
+    //     EventCardComponentView eventCard,
+    //     EventCardComponentModel eventInfo,
+    //     Action<EventCardComponentModel> OnEventInfoClicked,
+    //     Action<EventFromAPIModel> OnEventJumpInClicked,
+    //     Action<string> OnEventSubscribeEventClicked,
+    //     Action<string> OnEventUnsubscribeEventClicked)
+    // {
+    //     eventCard.Configure(eventInfo);
+    //
+    //     eventCard.onInfoClick?.RemoveAllListeners();
+    //     eventCard.onInfoClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
+    //     eventCard.onJumpInClick?.RemoveAllListeners();
+    //     eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
+    //     eventCard.onJumpInForNotLiveClick?.RemoveAllListeners();
+    //     eventCard.onJumpInForNotLiveClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
+    //     eventCard.onSubscribeClick?.RemoveAllListeners();
+    //     eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
+    //     eventCard.onUnsubscribeClick?.RemoveAllListeners();
+    //     eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
+    // }
 
     /// <summary>
     /// Makes a jump in to the event defined by the given place data from API.

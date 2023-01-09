@@ -56,7 +56,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void Start()
     {
-        placeModal = PlacesAndEventsCardsFactory.ConfigurePlaceCardModal(placeCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetOrCreatePlaceCardTemplateHidden(placeCardModalPrefab);
 
         places.RemoveItems();
 
@@ -88,7 +88,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     }
 
     public void ConfigurePools() =>
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
 
     public override void RefreshControl() =>
         places.RefreshControl();
@@ -123,8 +123,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            this.places.AddItem(
-                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked);
+            OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
+
+            this.places.AddItem(placeCard);
+
             await UniTask.NextFrame(cancellationToken);
         }
 
@@ -148,7 +151,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        PlacesAndEventsCardsFactory.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal()

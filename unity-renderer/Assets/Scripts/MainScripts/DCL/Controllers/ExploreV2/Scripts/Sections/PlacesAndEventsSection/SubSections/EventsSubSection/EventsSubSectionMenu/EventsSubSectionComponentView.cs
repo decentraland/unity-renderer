@@ -85,7 +85,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void Start()
     {
-        eventModal = PlacesAndEventsCardsFactory.ConfigureEventCardModal(eventCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.GetOrCreateEventCardTemplateHidden(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();
@@ -134,10 +134,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void ConfigurePools()
     {
-        ExploreEventsUtils.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -179,7 +179,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        PlacesAndEventsCardsFactory.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
     public void HideEventModal()
@@ -226,8 +226,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
-                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
-                    OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+                PlacesAndEventsCardsFactory.CreateConfiguredEventCard(pool, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+
             await UniTask.NextFrame(cancellationToken);
         }
 
@@ -253,8 +253,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         foreach (EventCardComponentModel eventInfo in events)
         {
             featuredEvents.AddItem(
-                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, featuredEventCardsPool,
-                    OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+                PlacesAndEventsCardsFactory.CreateConfiguredEventCard(featuredEventCardsPool, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked));
+
             await UniTask.NextFrame(cancellationToken);
         }
 

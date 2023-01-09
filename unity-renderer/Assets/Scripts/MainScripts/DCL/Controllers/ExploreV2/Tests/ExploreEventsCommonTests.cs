@@ -49,7 +49,7 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.eventModal = null;
 
         // Act
-        eventsSubSectionComponent.eventModal = PlacesAndEventsCardsFactory.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
+        eventsSubSectionComponent.eventModal = PlacesAndEventsCardsFactory.GetOrCreateEventCardTemplateHidden(eventsSubSectionComponent.eventCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(eventsSubSectionComponent.eventModal);
@@ -63,7 +63,7 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.featuredEventCardsPool = null;
 
         // Act
-        ExploreEventsUtils.ConfigureEventCardsPool(
+        PlacesAndEventsCardsFactory.ConfigureCardsPool(
             out eventsSubSectionComponent.featuredEventCardsPool,
             EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME,
             eventsSubSectionComponent.eventCardLongPrefab,
@@ -81,7 +81,7 @@ public class ExploreEventsCommonTests
         EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
-        ExploreEventsUtils.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
+        PlacesAndEventsCardsFactory.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
 
         // Assert
         Assert.AreEqual(testEventInfo, testEventCard.model, "The event card model does not match.");
