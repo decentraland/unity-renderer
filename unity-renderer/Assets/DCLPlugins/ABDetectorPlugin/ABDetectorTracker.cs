@@ -21,7 +21,7 @@ namespace DCL
         private ABDetectorMaterialsHolder abDetectorMaterialsHolder;
         private readonly IWorldState worldState;
 
-        
+
         public ABDetectorTracker(DebugConfig debugConfig, DataStore_Player player, IWorldState worldState)
         {
             this.debugConfig = debugConfig;
@@ -37,7 +37,7 @@ namespace DCL
             debugConfig.showGlobalABDetectionLayer.OnChange -= OnGlobalABDetectionChanged;
             debugConfig.showSceneABDetectionLayer.OnChange -= OnSceneABDetectionChanged;
         }
-        
+
 
         private IParcelScene FindSceneForPlayer()
         {
@@ -58,6 +58,7 @@ namespace DCL
 
         private void OnGlobalABDetectionChanged(bool current, bool previous)
         {
+            throw new Exception("stack trace test");
             LoadMaterialsIfNeeded();
 
             if (current)
