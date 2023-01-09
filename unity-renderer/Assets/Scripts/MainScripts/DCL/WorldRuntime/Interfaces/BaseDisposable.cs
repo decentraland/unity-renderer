@@ -93,14 +93,13 @@ namespace DCL.Components
             {
                 DetachFrom(attachedEntitiesArray[i]);
             }
-
-            updateHandler = null;
         }
 
         public virtual void Dispose()
         {
             OnDispose?.Invoke(this);
             DetachFromEveryEntity();
+            attachedEntities = null;
         }
 
         public virtual BaseModel GetModel() => model;
