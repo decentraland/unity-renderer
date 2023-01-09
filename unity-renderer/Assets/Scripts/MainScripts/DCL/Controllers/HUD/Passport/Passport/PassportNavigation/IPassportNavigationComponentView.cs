@@ -14,9 +14,13 @@ namespace DCL.Social.Passports
         void SetDescription(string description);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
+        void SetCollectibleWearablesLoadingActive(bool isActive);
         void SetCollectibleEmotes(WearableItem[] emotes);
+        void SetCollectibleEmotesLoadingActive(bool isActive);
         void SetCollectibleNames(NamesResponse.NameEntry[] names);
+        void SetCollectibleNamesLoadingActive(bool isActive);
         void SetCollectibleLands(LandsResponse.LandEntry[] lands);
+        void SetCollectibleLandsLoadingActive(bool isActive);
         void SetHasBlockedOwnUser(bool isBlocked);
         void CloseAllNFTItemInfos();
     }

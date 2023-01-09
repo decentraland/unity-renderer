@@ -97,6 +97,7 @@ namespace DCL.Social.Passports
 
         private void LoadAndShowOwnedWearables(UserProfile userProfile)
         {
+            view.SetCollectibleWearablesLoadingActive(true);
             wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
                                  .Then(wearables =>
                                   {
@@ -106,23 +107,27 @@ namespace DCL.Social.Passports
                                       var containedWearables = wearables.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT)
                                          .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
                                       view.SetCollectibleWearables(containedWearables.ToArray());
+                                      view.SetCollectibleWearablesLoadingActive(false);
                                   })
                                  .Catch(Debug.LogError);
         }
 
         private void LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
+            view.SetCollectibleEmotesLoadingActive(true);
             emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
                                  .Then(emotes =>
                                   {
                                       WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
                                       view.SetCollectibleEmotes(emoteItems);
+                                      view.SetCollectibleEmotesLoadingActive(false);
                                   })
                                  .Catch(Debug.LogError);
         }
 
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile)
         {
+            view.SetCollectibleNamesLoadingActive(true);
             var ct = new CancellationTokenSource().Token;
             var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
@@ -134,10 +139,12 @@ namespace DCL.Social.Passports
                 Debug.LogError("Error requesting names lambdas!");
 
             view.SetCollectibleNames(namesResult);
+            view.SetCollectibleNamesLoadingActive(false);
         }
 
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile)
         {
+            view.SetCollectibleLandsLoadingActive(true);
             var ct = new CancellationTokenSource().Token;
             // TODO (Santi): Use userProfile.userId here!!
             var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
@@ -150,6 +157,7 @@ namespace DCL.Social.Passports
                 Debug.LogError("Error requesting lands lambdas!");
 
             view.SetCollectibleLands(landsResult);
+            view.SetCollectibleLandsLoadingActive(false);
         }
 
         private async UniTask<string> FilterContentAsync(string filterContent) =>

@@ -32,12 +32,16 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject emptyDescriptionGO;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
         [SerializeField] private GameObject emptyWearablesText;
+        [SerializeField] private GameObject nftWearablesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
         [SerializeField] private GameObject emptyEmotesText;
+        [SerializeField] private GameObject nftEmotesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftNamesCarousel;
         [SerializeField] private GameObject emptyNamesText;
+        [SerializeField] private GameObject nftNamesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftLandsCarousel;
         [SerializeField] private GameObject emptyLandsText;
+        [SerializeField] private GameObject nftLandsLoadingSpinner;
         [SerializeField] private Transform nftWearablesCarouselContent;
         [SerializeField] private Transform nftEmotesCarouselContent;
         [SerializeField] private Transform nftNamesCarouselContent;
@@ -519,5 +523,48 @@ namespace DCL.Social.Passports
         {
         }
 
+        public void SetCollectibleWearablesLoadingActive(bool isActive)
+        {
+            if (isActive)
+            {
+                nftWearablesCarousel.gameObject.SetActive(false);
+                emptyWearablesText.SetActive(false);
+            }
+
+            nftWearablesLoadingSpinner.SetActive(isActive);
+        }
+
+        public void SetCollectibleEmotesLoadingActive(bool isActive)
+        {
+            if (isActive)
+            {
+                nftEmotesCarousel.gameObject.SetActive(false);
+                emptyEmotesText.SetActive(false);
+            }
+
+            nftEmotesLoadingSpinner.SetActive(isActive);
+        }
+
+        public void SetCollectibleNamesLoadingActive(bool isActive)
+        {
+            if (isActive)
+            {
+                nftNamesCarousel.gameObject.SetActive(false);
+                emptyNamesText.SetActive(false);
+            }
+
+            nftNamesLoadingSpinner.SetActive(isActive);
+        }
+
+        public void SetCollectibleLandsLoadingActive(bool isActive)
+        {
+            if (isActive)
+            {
+                nftLandsCarousel.gameObject.SetActive(false);
+                emptyLandsText.SetActive(false);
+            }
+
+            nftLandsLoadingSpinner.SetActive(isActive);
+        }
     }
 }

@@ -135,7 +135,7 @@ namespace DCL.Social.Passports
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
-                UpdateUserProfileInSubpanels(currentUserProfile);
+                UpdateUserProfileInSubpanelsAsync(currentUserProfile, true).Forget();
             }
         }
 
@@ -188,13 +188,20 @@ namespace DCL.Social.Passports
             socialAnalytics.SendClickedOnCollectibles();
         }
 
-        private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanels(userProfile);
+        private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanelsAsync(userProfile, false).Forget();
 
-        private void UpdateUserProfileInSubpanels(UserProfile userProfile)
+        private async UniTask UpdateUserProfileInSubpanelsAsync(UserProfile userProfile, bool activateLoading)
         {
             playerInfoController.UpdateWithUserProfile(userProfile);
             passportNavigationController.UpdateWithUserProfile(userProfile);
-            playerPreviewController.UpdateWithUserProfile(userProfile);
+
+            if (activateLoading)
+                playerPreviewController.SetAsLoading(true);
+
+            await playerPreviewController.UpdateWithUserProfileAsync(userProfile);
+
+            if (activateLoading)
+                playerPreviewController.SetAsLoading(false);
         }
 
         private void RemoveCurrentPlayer()
