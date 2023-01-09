@@ -56,7 +56,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void Start()
     {
-        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.ConfigurePlaceCardModal(placeCardModalPrefab);
 
         places.RemoveItems();
 

@@ -78,8 +78,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void Start()
     {
-        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
-        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.ConfigurePlaceCardModal(placeCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.ConfigureEventCardModal(eventCardModalPrefab);
 
         trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();

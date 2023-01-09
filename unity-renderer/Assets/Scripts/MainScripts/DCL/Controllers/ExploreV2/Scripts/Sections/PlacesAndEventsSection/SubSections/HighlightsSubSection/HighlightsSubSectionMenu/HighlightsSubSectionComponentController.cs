@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Interface;
 using DCL.Social.Friends;
 using ExploreV2Analytics;
 using System;
@@ -16,7 +15,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
     private const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 9;
     private const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
-    private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
     internal readonly IHighlightsSubSectionComponentView view;
     internal readonly IPlacesAPIController placesAPIApiController;
@@ -124,12 +122,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> trendingPlaces = PlacesSubSectionComponentController.LoadPlaces(FilterTrendingPlaces());
-        List<EventCardComponentModel> trendingEvents = EventsSubSectionComponentController.LoadEvents(FilterTrendingEvents(trendingPlaces.Count));
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.CreatePlacesCards(FilterTrendingPlaces());
+        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents(trendingPlaces.Count));
         view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
-        view.SetFeaturedPlaces(PlacesSubSectionComponentController.LoadPlaces(FilterFeaturedPlaces()));
-        view.SetLiveEvents(EventsSubSectionComponentController.LoadEvents(FilterLiveEvents()));
+        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(FilterFeaturedPlaces()));
+        view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterLiveEvents()));
     }
 
     internal List<HotSceneInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
@@ -157,24 +155,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         return featuredPlaces;
     }
 
+    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
+        friendsTrackerController.AddHandler(friendsHandler);
+
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
-
-    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
-    {
-        ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
-        view.HidePlaceModal();
-        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
-        OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
-    }
-
-    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
-        friendsTrackerController.AddHandler(friendsHandler);
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
@@ -183,52 +172,31 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Events);
     }
 
+    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
+    {
+        ExplorePlacesUtils.JumpInToPlace(placeFromAPI);
+        view.HidePlaceModal();
+
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
+        OnCloseExploreV2?.Invoke();
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+    }
+
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         ExploreEventsUtils.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
+
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private static void SubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+    private static void SubscribeToEvent(string eventId) =>
+        EventsSubSectionComponentController.SubscribeToEvent(eventId);
 
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    true,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
-
-    private static void UnsubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    false,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
+    private static void UnsubscribeToEvent(string eventId) =>
+        EventsSubSectionComponentController.UnsubscribeToEvent(eventId);
 
     internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();

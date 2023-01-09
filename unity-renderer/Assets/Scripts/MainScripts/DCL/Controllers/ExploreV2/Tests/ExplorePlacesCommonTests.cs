@@ -44,11 +44,11 @@ public class ExplorePlacesCommonTests
         placesSubSectionComponent.placeModal = null;
 
         // Act
-        placesSubSectionComponent.placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placesSubSectionComponent.placeCardModalPrefab);
+        placesSubSectionComponent.placeModal = PlacesAndEventsCardsFactory.ConfigurePlaceCardModal(placesSubSectionComponent.placeCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(placesSubSectionComponent.placeModal);
-        Assert.AreEqual(ExplorePlacesUtils.PLACE_CARD_MODAL_ID, placesSubSectionComponent.placeModal.gameObject.name);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.PLACE_CARD_MODAL_ID, placesSubSectionComponent.placeModal.gameObject.name);
     }
 
     [Test]
@@ -89,13 +89,13 @@ public class ExplorePlacesCommonTests
         HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
 
         // Act
-        PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
+        PlaceCardComponentModel placeCardModel = PlacesAndEventsCardsFactory.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
 
         // Assert
         Assert.AreEqual(testPlaceFromAPI.thumbnail, placeCardModel.placePictureUri);
         Assert.AreEqual(testPlaceFromAPI.name, placeCardModel.placeName);
-        Assert.AreEqual(ExplorePlacesUtils.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
-        Assert.AreEqual(ExplorePlacesUtils.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
+        Assert.AreEqual(PlacesAndEventsCardsFactory.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
         Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
         Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
         Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);

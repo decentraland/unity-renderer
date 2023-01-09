@@ -73,7 +73,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         cardsReloader.Initialize();
     }
 
-    public void RequestAllEvents()
+    private void RequestAllEvents()
     {
         if (cardsReloader.CanReload())
         {
@@ -95,18 +95,15 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         eventsFromAPI = eventList;
 
-        view.SetFeaturedEvents(LoadEvents(FilterFeaturedEvents()));
-        view.SetTrendingEvents(LoadEvents(FilterTrendingEvents()));
-        view.SetUpcomingEvents(LoadEvents(FilterUpcomingEvents()));
-        view.SetGoingEvents(LoadEvents(FilterGoingEvents()));
+        view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
+        view.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents()));
+        view.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
+        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
 
         view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
-    public static List<EventCardComponentModel> LoadEvents(List<EventFromAPIModel> filteredEvents) =>
-        CardsLoader.CreateModelsListFromAPI(filteredEvents, ExploreEventsUtils.CreateEventCardModelFromAPIEvent);
-
-    public List<EventFromAPIModel> FilterFeaturedEvents()
+    internal List<EventFromAPIModel> FilterFeaturedEvents()
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
@@ -115,9 +112,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         return eventsFiltered;
     }
-    public List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
+    internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
     private List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
-    public List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
+    internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
 
     public void ShowMoreUpcomingEvents()
     {
@@ -128,7 +125,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : eventsFromAPI.GetRange(availableUISlots, eventsFromAPI.Count - availableUISlots);
 
-        view.AddUpcomingEvents(LoadEvents(eventsFiltered));
+        view.AddUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
 
         availableUISlots += numberOfItemsToAdd;
         if (availableUISlots > eventsFromAPI.Count)
@@ -152,7 +149,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private static void SubscribeToEvent(string eventId)
+    public static void SubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
@@ -171,7 +168,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    });
     }
 
-    private static void UnsubscribeToEvent(string eventId)
+    public static void UnsubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
         WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
