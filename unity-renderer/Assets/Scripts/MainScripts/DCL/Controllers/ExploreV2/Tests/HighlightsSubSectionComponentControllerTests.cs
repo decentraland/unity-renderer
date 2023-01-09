@@ -47,61 +47,60 @@ public class HighlightsSubSectionComponentControllerTests
         Assert.IsNotNull(highlightsSubSectionComponentController.friendsTrackerController);
     }
 
-    // [Test]
-    // public void DoFirstLoadingCorrectly()
-    // {
-    //     // Arrange
-    //     highlightsSubSectionComponentController.firstLoading = true;
-    //
-    //     // Act
-    //     highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
-    //
-    //     // Assert
-    //     highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-    //     highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
-    //     highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
-    //     Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
-    //
-    //     highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
-    // }
+    [Test]
+    public void DoFirstLoadingCorrectly()
+    {
+        // Arrange
+        highlightsSubSectionComponentController.cardsReloader.firstLoading = true;
 
-    // [Test]
-    // [TestCase(true)]
-    // [TestCase(false)]
-    // public void RaiseOnExploreV2OpenCorrectly(bool isOpen)
-    // {
-    //     // Arrange
-    //     highlightsSubSectionComponentController.reloadHighlights = false;
-    //
-    //     // Act
-    //     highlightsSubSectionComponentController.OnExploreV2Open(isOpen, false);
-    //
-    //     // Assert
-    //     if (isOpen)
-    //         Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
-    //     else
-    //         Assert.IsTrue(highlightsSubSectionComponentController.reloadHighlights);
-    // }
+        // Act
+        highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
 
-    // [Test]
-    // public void RequestAllPlacesCorrectly()
-    // {
-    //     // Arrange
-    //     highlightsSubSectionComponentController.reloadHighlights = true;
-    //     highlightsSubSectionComponentController.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
-    //     DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
-    //
-    //     // Act
-    //     highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
-    //
-    //     // Assert
-    //     highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-    //     highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
-    //     highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
-    //     highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
-    //     placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
-    //     Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
-    // }
+        // Assert
+        highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
+        Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
+
+        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaiseOnExploreV2OpenCorrectly(bool isOpen)
+    {
+        // Arrange
+        highlightsSubSectionComponentController.cardsReloader.reloadSubSection = false;
+
+        // Act
+        highlightsSubSectionComponentController.cardsReloader.OnExploreV2Open(isOpen, false);
+
+        // Assert
+        if (isOpen)
+            Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
+        else
+            Assert.IsTrue(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
+    }
+
+    [Test]
+    public void RequestAllPlacesCorrectly()
+    {
+        // Arrange
+        highlightsSubSectionComponentController.cardsReloader.reloadSubSection = true;
+        highlightsSubSectionComponentController.cardsReloader.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
+
+        // Act
+        highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
+
+        // Assert
+        highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
+        placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
+        Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
+    }
 
     [Test]
     public void RequestAllPlacesAndEventsFromAPICorrectly()

@@ -11,7 +11,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
 
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
-    private const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
+    internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
     private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
     private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
@@ -20,10 +20,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private readonly DataStore dataStore;
     private readonly IExploreV2Analytics exploreV2Analytics;
 
-    private readonly PlaceAndEventsCardsReloader cardsReloader;
+    internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
-    private int availableUISlots;
+    internal int availableUISlots;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -73,7 +73,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         cardsReloader.Initialize();
     }
 
-    private void RequestAllEvents()
+    internal void RequestAllEvents()
     {
         if (cardsReloader.CanReload())
         {
@@ -91,7 +91,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             OnFail: error => { Debug.LogError($"Error receiving events from the API: {error}"); });
     }
 
-    private void OnRequestedEventsUpdated(List<EventFromAPIModel> eventList)
+    internal void OnRequestedEventsUpdated(List<EventFromAPIModel> eventList)
     {
         eventsFromAPI = eventList;
 
@@ -113,7 +113,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         return eventsFiltered;
     }
     internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
-    private List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
+    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
     internal List<EventFromAPIModel> FilterGoingEvents() => eventsFromAPI.Where(e => e.attending).ToList();
 
     public void ShowMoreUpcomingEvents()

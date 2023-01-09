@@ -57,6 +57,12 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     void AddPlaces(List<PlaceCardComponentModel> places);
 
     /// <summary>
+    /// Set the places component in loading mode.
+    /// </summary>
+    /// <param name="isVisible">True for activating the loading mode.</param>
+    void SetPlacesAsLoading(bool isVisible);
+
+    /// <summary>
     /// Activates/Deactivates the "Show More" button.
     /// </summary>
     /// <param name="isActive">True for activating it.</param>
