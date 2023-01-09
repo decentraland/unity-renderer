@@ -56,7 +56,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void Start()
     {
-        placeModal = PlacesAndEventsCardsFactory.GetOrCreatePlaceCardTemplateHidden(placeCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 
         places.RemoveItems();
 
@@ -88,7 +88,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     }
 
     public void ConfigurePools() =>
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
 
     public override void RefreshControl() =>
         places.RefreshControl();
@@ -151,7 +151,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesAndEventsCardsFactory.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal()

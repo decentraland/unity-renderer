@@ -85,7 +85,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void Start()
     {
-        eventModal = PlacesAndEventsCardsFactory.GetOrCreateEventCardTemplateHidden(eventCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();
@@ -134,10 +134,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void ConfigurePools()
     {
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.ConfigureCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -179,7 +179,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        PlacesAndEventsCardsFactory.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
     public void HideEventModal()
