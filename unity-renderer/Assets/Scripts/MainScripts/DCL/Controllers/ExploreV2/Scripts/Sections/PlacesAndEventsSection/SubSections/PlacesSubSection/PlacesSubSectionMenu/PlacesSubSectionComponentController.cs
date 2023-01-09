@@ -11,7 +11,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 {
     public event Action OnCloseExploreV2;
 
-    private const int INITIAL_NUMBER_OF_ROWS = 5;
+    internal const int INITIAL_NUMBER_OF_ROWS = 5;
     private const int SHOW_MORE_ROWS_INCREMENT = 3;
 
     internal readonly IPlacesSubSectionComponentView view;
@@ -20,10 +20,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
-    private readonly PlaceAndEventsCardsReloader cardsReloader;
+    internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    private List<HotSceneInfo> placesFromAPI = new ();
-    private int availableUISlots;
+    internal List<HotSceneInfo> placesFromAPI = new ();
+    internal int availableUISlots;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
@@ -72,7 +72,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         cardsReloader.Initialize();
     }
 
-    private void RequestAllPlaces()
+    internal void RequestAllPlaces()
     {
         if (cardsReloader.CanReload())
         {
@@ -100,7 +100,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
 
-    private List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
+    internal List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
         modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMorePlaces()

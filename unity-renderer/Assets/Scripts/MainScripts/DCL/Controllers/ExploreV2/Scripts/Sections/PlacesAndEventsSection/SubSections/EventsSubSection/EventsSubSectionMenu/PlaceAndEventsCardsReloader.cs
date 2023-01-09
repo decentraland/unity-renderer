@@ -9,11 +9,11 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     private readonly Action requestAllFromAPI;
 
-    private bool firstLoading;
-    private bool reloadSubSection;
+    internal bool firstLoading;
+    internal bool reloadSubSection;
     private bool isWaitingAnimTransition;
 
-    private float lastTimeAPIChecked;
+    internal float lastTimeAPIChecked;
 
     public PlaceAndEventsCardsReloader(IPlacesAndEventsSubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, Action requestAllFromAPI)
     {
@@ -38,7 +38,7 @@ public class PlaceAndEventsCardsReloader : IDisposable
             exploreV2Menu.isInShowAnimationTransiton.OnChange -= OnAnimationTransitionFinished;
     }
 
-    private void OnExploreV2Open(bool current, bool _)
+    internal void OnExploreV2Open(bool current, bool _)
     {
         if (!current)
             reloadSubSection = true;

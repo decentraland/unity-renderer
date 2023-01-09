@@ -23,7 +23,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
-    private readonly PlaceAndEventsCardsReloader cardsReloader;
+    internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<HotSceneInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
@@ -91,7 +91,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         cardsReloader.Initialize();
     }
 
-    private void RequestAllPlacesAndEvents()
+    internal void RequestAllPlacesAndEvents()
     {
         if (cardsReloader.CanReload())
             cardsReloader.RequestAll();
