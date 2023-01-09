@@ -128,7 +128,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.FeaturedEventsFilter();
+        eventsSubSectionComponentController.FilterFeaturedEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
@@ -142,7 +142,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.TrendingEventsFilter();
+        eventsSubSectionComponentController.FilterTrendingEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
@@ -183,7 +183,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.LoadGoingEvents();
+        eventsSubSectionComponentController.FilterGoingEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());

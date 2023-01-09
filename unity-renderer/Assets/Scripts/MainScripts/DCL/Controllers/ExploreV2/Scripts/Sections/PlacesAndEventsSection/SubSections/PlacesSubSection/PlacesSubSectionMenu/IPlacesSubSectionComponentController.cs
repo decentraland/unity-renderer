@@ -8,14 +8,4 @@ public interface IPlacesSubSectionComponentController : IDisposable
     /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
     /// </summary>
     event Action OnCloseExploreV2;
-
-    /// <summary>
-    /// Request all places from the API.
-    /// </summary>
-    void RequestAllPlaces();
-
-    /// <summary>
-    /// Increment the number of places loaded.
-    /// </summary>
-    void ShowMorePlaces();
 }

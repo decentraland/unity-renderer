@@ -137,7 +137,9 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        highlightsSubSectionComponentController.LoadTrendingPlacesAndEvents();
+        List<PlaceCardComponentModel> trendingPlaces = PlacesSubSectionComponentController.LoadPlaces(highlightsSubSectionComponentController.FilterTrendingPlaces());
+        List<EventCardComponentModel> trendingEvents = EventsSubSectionComponentController.LoadEvents(highlightsSubSectionComponentController.FilterTrendingEvents(trendingPlaces.Count));
+        highlightsSubSectionComponentController.view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
         // Assert
         highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEvents(Arg.Any<List<PlaceCardComponentModel>>(), Arg.Any<List<EventCardComponentModel>>());
@@ -151,7 +153,7 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
-        highlightsSubSectionComponentController.LoadFeaturedPlaces();
+        highlightsSubSectionComponentController.FilterFeaturedPlaces();
 
         // Assert
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
@@ -165,7 +167,8 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        highlightsSubSectionComponentController.LoadLiveEvents();
+        highlightsSubSectionComponentController.view.SetLiveEvents(EventsSubSectionComponentController.LoadEvents(
+            highlightsSubSectionComponentController.FilterLiveEvents()));
 
         // Assert
         highlightsSubSectionComponentView.Received().SetLiveEvents(Arg.Any<List<EventCardComponentModel>>());

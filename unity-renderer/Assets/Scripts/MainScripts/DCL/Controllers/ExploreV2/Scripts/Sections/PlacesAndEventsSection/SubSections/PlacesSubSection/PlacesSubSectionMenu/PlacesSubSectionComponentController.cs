@@ -7,15 +7,14 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
-public class CardsLoader<TModel, TInfo> where TModel: BaseComponentModel
+public static class CardsLoader
 {
-    public List<TModel> LoadModelsFromInfo(List<TInfo> cardsInfoFromAPI, int amountToLoad, Func<TInfo, TModel> factoryCreateMethod)
+    public static List<TModel> CreateModelsListFromAPI<TModel,TInfo>(List<TInfo> filteredAPIModels, Func<TInfo, TModel> factoryCreateMethod)
+        where TModel: BaseComponentModel
     {
-        List<TInfo> filteredCardsInfosToLoad = cardsInfoFromAPI.Take(amountToLoad).ToList();
-
         List<TModel> loadedCards = new List<TModel>();
 
-        foreach (TInfo filteredCardInfo in filteredCardsInfosToLoad)
+        foreach (TInfo filteredCardInfo in filteredAPIModels)
             loadedCards.Add(factoryCreateMethod(filteredCardInfo));
 
         return loadedCards;
@@ -35,15 +34,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
-    private readonly PlaceAndEventsCardsRequestHandler cardsRequestHandler;
-    private readonly CardsLoader<PlaceCardComponentModel, HotSceneInfo> cardsLoader;
+    private readonly PlaceAndEventsCardsReloader cardsReloader;
 
     private List<HotSceneInfo> placesFromAPI = new ();
     private int availableUISlots;
+
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsRequestHandler = new PlaceAndEventsCardsRequestHandler(view, dataStore.exploreV2, RequestAllPlacesFromAPI);
-        cardsLoader = new CardsLoader<PlaceCardComponentModel, HotSceneInfo>();
+        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllPlacesFromAPI);
 
         this.view = view;
 
@@ -79,23 +77,23 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
-        cardsRequestHandler.Dispose();
+        cardsReloader.Dispose();
     }
 
     private void FirstLoading()
     {
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        cardsRequestHandler.Initialize();
+        cardsReloader.Initialize();
     }
 
-    public void RequestAllPlaces()
+    private void RequestAllPlaces()
     {
-        if (cardsRequestHandler.CanReload())
+        if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
             view.SetShowMoreButtonActive(false);
 
-            cardsRequestHandler.RequestAll();
+            cardsReloader.RequestAll();
         }
     }
 
@@ -111,17 +109,19 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         placesFromAPI = placeList;
 
-        view.SetPlaces(
-            cardsLoader.LoadModelsFromInfo(placesFromAPI, availableUISlots, ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace)
-            );
+        view.SetPlaces(LoadPlaces(TakeAllForAvailableSlots(placeList)));
 
         view.SetShowMorePlacesButtonActive(availableUISlots < placesFromAPI.Count);
     }
 
-    public void ShowMorePlaces()
-    {
-        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
+    public static List<PlaceCardComponentModel> LoadPlaces(List<HotSceneInfo> filteredPlaces) =>
+        CardsLoader.CreateModelsListFromAPI(filteredPlaces, ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace);
 
+    private List<HotSceneInfo> TakeAllForAvailableSlots(List<HotSceneInfo> modelsFromAPI) =>
+        modelsFromAPI.Take(availableUISlots).ToList();
+
+    internal void ShowMorePlaces()
+    {
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentPlacesPerRow) * view.currentPlacesPerRow) - availableUISlots;
         int numberOfItemsToAdd = (view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
@@ -129,13 +129,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             ? placesFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : placesFromAPI.GetRange(availableUISlots, placesFromAPI.Count - availableUISlots);
 
-        foreach (HotSceneInfo receivedPlace in placesFiltered)
-        {
-            PlaceCardComponentModel placeCardModel = ExplorePlacesUtils.CreatePlaceCardModelFromAPIPlace(receivedPlace);
-            places.Add(placeCardModel);
-        }
-
-        view.AddPlaces(places);
+        view.AddPlaces(LoadPlaces(placesFiltered));
 
         availableUISlots += numberOfItemsToAdd;
 
