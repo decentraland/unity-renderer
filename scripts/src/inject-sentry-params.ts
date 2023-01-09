@@ -26,7 +26,6 @@ async function main() {
     dsn: 'https://dsn.dsn/',
     env: '<ENVIRONMENT>',
     release: '<RELEASE>',
-    enable: 'm_Enabled: 0' // change sentry from disable to enable
   }
 
   for (const key in searchParams) {
@@ -43,7 +42,6 @@ async function main() {
       .replace(searchParams.dsn, process.env.SENTRY_DSN)
       .replace(searchParams.env, rendererEnvironment)
       .replace(searchParams.release, process.env.CIRCLE_SHA1)
-      .replace(searchParams.enable, 'm_Enabled: 1'),
   )
 
   // Inject CLI parameters for sources/symbols
