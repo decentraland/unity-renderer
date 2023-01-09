@@ -5,6 +5,7 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ECSSystems.ScenesUiSystem
@@ -230,7 +231,7 @@ namespace ECSSystems.ScenesUiSystem
             // create root entity ui container if needed
             if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
-                parentDataModel = new InternalUiContainer();
+                parentDataModel = new InternalUiContainer(parentId);
                 var style = parentDataModel.rootElement.style;
 
                 // Initialize with default values

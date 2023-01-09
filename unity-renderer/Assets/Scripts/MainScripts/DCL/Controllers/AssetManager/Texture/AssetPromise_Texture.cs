@@ -22,7 +22,7 @@ namespace DCL
 
         public string url { get; }
 
-        WebRequestAsyncOperation webRequestOp = null;
+        IWebRequestAsyncOperation webRequestOp;
 
         public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true, int? overrideMaxTextureSize = null)
         {

@@ -14,4 +14,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     IInternalECSComponent<InternalInputEventResults> inputEventResultsComponent { get; }
     IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
+    IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
 }

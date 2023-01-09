@@ -52,7 +52,7 @@ namespace DCL.GLTFast.Wrappers
             string fileName = uri.AbsolutePath.Substring(uri.AbsolutePath.LastIndexOf('/') + 1);
             fileToUrl(fileName, out string url);
 
-            WebRequestAsyncOperation asyncOp = webRequestController.GetTexture(
+            var asyncOp = webRequestController.GetTexture(
                 url: url,
                 timeout: 30,
                 disposeOnCompleted: false,

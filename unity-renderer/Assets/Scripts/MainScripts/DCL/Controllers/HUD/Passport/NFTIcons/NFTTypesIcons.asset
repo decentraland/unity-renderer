@@ -51,16 +51,16 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
   nftColors:
   - key: rare
-    value: {r: 0, g: 1, b: 0.018231153, a: 1}
+    value: {r: 0.23529412, g: 0.89411765, b: 0.5176471, a: 1}
   - key: epic
-    value: {r: 0, g: 0.44239235, b: 1, a: 1}
+    value: {r: 0.2627451, g: 0.56078434, b: 1, a: 1}
   - key: uncommon
-    value: {r: 1, g: 0.48871702, b: 0, a: 1}
+    value: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
   - key: legendary
-    value: {r: 0.68245983, g: 0, b: 1, a: 1}
+    value: {r: 0.6313726, g: 0.29411766, b: 0.9529412, a: 1}
   - key: unique
-    value: {r: 1, g: 0.95396614, b: 0, a: 1}
+    value: {r: 0.99607843, g: 0.63529414, b: 0.09019608, a: 1}
   - key: common
-    value: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+    value: {r: 0.4509804, g: 0.827451, b: 0.827451, a: 1}
   - key: mythic
-    value: {r: 1, g: 0, b: 0.9878478, a: 1}
+    value: {r: 1, g: 0.29411766, b: 0.92941177, a: 1}

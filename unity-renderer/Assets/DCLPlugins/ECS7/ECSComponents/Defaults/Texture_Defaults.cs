@@ -57,7 +57,7 @@ namespace DCL.ECSComponents
             }
         }
 
-        public static string GetTextureUrl(this Decentraland.Common.Texture self, IParcelScene scene)
+        public static string GetTextureUrl(this Texture self, IParcelScene scene)
         {
             if (string.IsNullOrEmpty(self.Src))
                 return self.Src;
@@ -72,7 +72,7 @@ namespace DCL.ECSComponents
             return KernelConfig.i.Get().avatarTextureAPIBaseUrl + self.UserId;
         }
 
-        public static UnityEngine.TextureWrapMode GetWrapMode(this Decentraland.Common.Texture self)
+        public static UnityEngine.TextureWrapMode GetWrapMode(this Texture self)
         {
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
@@ -82,7 +82,7 @@ namespace DCL.ECSComponents
             return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this Decentraland.Common.Texture self)
+        public static UnityEngine.FilterMode GetFilterMode(this Texture self)
         {
             return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
         }
