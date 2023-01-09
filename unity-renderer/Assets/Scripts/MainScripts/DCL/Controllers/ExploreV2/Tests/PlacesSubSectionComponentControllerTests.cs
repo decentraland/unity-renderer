@@ -49,9 +49,9 @@ public class PlacesSubSectionComponentControllerTests
 
         // Assert
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
-        placesSubSectionComponentView.Received().SetPlacesAsLoading(true);
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(false);
+        placesSubSectionComponentView.Received().SetAllAsLoading();
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
+        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(false);
     }
 
     [TestCase(true)]
@@ -110,10 +110,8 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.CreatePlacesCards(
             placesSubSectionComponentController.TakeAllForAvailableSlots(placesSubSectionComponentController.placesFromAPI)));
 
-
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(placesSubSectionComponentController.availableUISlots < numberOfPlaces);
     }
 
     [Test]

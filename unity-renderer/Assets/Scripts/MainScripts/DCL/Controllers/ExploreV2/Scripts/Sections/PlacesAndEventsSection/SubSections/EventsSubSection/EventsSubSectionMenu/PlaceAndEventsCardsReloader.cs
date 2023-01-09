@@ -51,8 +51,11 @@ public class PlaceAndEventsCardsReloader : IDisposable
             firstLoading = false;
             reloadSubSection = true;
             lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+
+            return true;
         }
-        else if (!reloadSubSection || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
+
+        if (!reloadSubSection || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
             return false;
 
         return true;
@@ -60,6 +63,8 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     public void RequestAll()
     {
+        Debug.Log(2);
+
         view.RestartScrollViewPosition();
         view.SetAllAsLoading();
 
