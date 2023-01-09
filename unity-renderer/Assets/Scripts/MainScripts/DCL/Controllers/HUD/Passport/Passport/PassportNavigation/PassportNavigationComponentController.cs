@@ -57,6 +57,8 @@ namespace DCL.Social.Passports
 
         public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
 
+        public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
+
         private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
         {
             currentUserId = userProfile.userId;

@@ -199,6 +199,7 @@ namespace DCL.Social.Passports
 
         private void RemoveCurrentPlayer()
         {
+            passportNavigationController.CloseAllNFTItemInfos();
             currentPlayerId.Set(null);
         }
 
