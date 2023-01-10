@@ -77,7 +77,7 @@ namespace DCL.LoadingScreen
         private void SetupBlitTexture()
         {
             if(renderTexture) renderTexture.Release();
-            renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+            renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
             rawImage.texture = renderTexture;
         }
 
