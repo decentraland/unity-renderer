@@ -1,4 +1,4 @@
-﻿using AvatarSystem;
+using AvatarSystem;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
@@ -22,6 +22,14 @@ namespace DCL.Components
         {
             this.entity = entity;
             this.avatar = avatar;
+
+            CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
+        }
+
+        private void AllUIHiddenChanged(bool isAllUIHidden, bool _)
+        {
+            if (isAllUIHidden)
+                ResetAvatarOutlined();
         }
 
         private void ResetAvatarOutlined()
@@ -35,9 +43,14 @@ namespace DCL.Components
             {
                 var renderer = avatar.GetMainRenderer();
 
-                if (renderer != null)
+                if (renderer != null && !CommonScriptableObjects.allUIHidden.Get())
                     DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
             }
+        }
+
+        private void OnDestroy()
+        {
+            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
 
         public Transform GetTransform() =>
