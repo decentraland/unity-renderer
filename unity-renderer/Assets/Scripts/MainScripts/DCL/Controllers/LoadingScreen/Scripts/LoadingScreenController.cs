@@ -48,7 +48,6 @@ namespace DCL.LoadingScreen
             view.OnFadeInFinish += FadeInFinished;
 
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-            view.FadeIn(true);
 
             tipsController.StartTips();
         }
@@ -80,9 +79,8 @@ namespace DCL.LoadingScreen
             if (current)
                 FadeOutView();
             else
+                view.FadeIn(false, false);
 
-                //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
-                view.FadeIn(false);
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
@@ -93,8 +91,7 @@ namespace DCL.LoadingScreen
             {
                 currentDestination = currentDestinationCandidate;
 
-                //TODO: The blit to avoid the flash of the empty camera/the unloaded scene
-                view.FadeIn(true);
+                view.FadeIn(false, true);
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
