@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
@@ -34,7 +35,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnReady += FirstLoading;
 
         this.view.OnInfoClicked += ShowEventDetailedInfo;
-        this.view.OnJumpInClicked += JumpInToEvent;
+        this.view.OnJumpInClicked += OnJumpInToEvent;
 
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
@@ -56,7 +57,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnReady -= FirstLoading;
 
         view.OnInfoClicked -= ShowEventDetailedInfo;
-        view.OnJumpInClicked -= JumpInToEvent;
+        view.OnJumpInClicked -= OnJumpInToEvent;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
@@ -140,9 +141,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
     }
 
-    internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    internal void OnJumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        EventsCardsConfigurator.JumpInToEvent(eventFromAPI);
+        JumpInToEvent(eventFromAPI);
         view.HideEventModal();
 
         OnCloseExploreV2?.Invoke();
@@ -194,5 +195,22 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+    }
+
+    /// <summary>
+    /// Makes a jump in to the event defined by the given place data from API.
+    /// </summary>
+    /// <param name="eventFromAPI">Event data from API.</param>
+    public static void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    {
+        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new[] { "", "" } : eventFromAPI.realm.Split('-');
+        string serverName = realmFromAPI[0];
+        string layerName = realmFromAPI[1];
+
+        if (string.IsNullOrEmpty(serverName))
+            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
+        else
+            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 }

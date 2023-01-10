@@ -11,23 +11,6 @@ public static class EventsCardsConfigurator
     internal const string LIVE_TAG_TEXT = "LIVE";
 
     /// <summary>
-    /// Makes a jump in to the event defined by the given place data from API.
-    /// </summary>
-    /// <param name="eventFromAPI">Event data from API.</param>
-    public static void JumpInToEvent(EventFromAPIModel eventFromAPI)
-    {
-        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
-        string serverName = realmFromAPI[0];
-        string layerName = realmFromAPI[1];
-
-        if (string.IsNullOrEmpty(serverName))
-            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
-        else
-            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
-    }
-
-    /// <summary>
     /// Configure a event card with the given model.
     /// </summary>
     /// <param name="eventCard">Event card to configure.</param>

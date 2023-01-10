@@ -207,7 +207,7 @@ public class EventsSubSectionComponentControllerTests
         EventFromAPIModel testEventFromAPI = ExploreEventsTestHelpers.CreateTestEvent("1");
 
         // Act
-        eventsSubSectionComponentController.JumpInToEvent(testEventFromAPI);
+        eventsSubSectionComponentController.OnJumpInToEvent(testEventFromAPI);
 
         // Assert
         eventsSubSectionComponentView.Received().HideEventModal();

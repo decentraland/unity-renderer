@@ -150,7 +150,7 @@ public class PlacesSubSectionComponentControllerTests
         HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
-        placesSubSectionComponentController.JumpInToPlace(testPlaceFromAPI);
+        placesSubSectionComponentController.OnJumpInToPlace(testPlaceFromAPI);
 
         // Assert
         placesSubSectionComponentView.Received().HidePlaceModal();

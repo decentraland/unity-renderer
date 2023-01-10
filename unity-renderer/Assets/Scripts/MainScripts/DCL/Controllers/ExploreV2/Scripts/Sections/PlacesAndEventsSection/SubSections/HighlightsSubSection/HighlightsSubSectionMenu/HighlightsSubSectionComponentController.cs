@@ -174,7 +174,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        PlacesCardsConfigurator.JumpInToPlace(placeFromAPI);
+        PlacesSubSectionComponentController.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
@@ -184,7 +184,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        EventsCardsConfigurator.JumpInToEvent(eventFromAPI);
+        EventsSubSectionComponentController.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
