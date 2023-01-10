@@ -55,7 +55,7 @@ namespace AvatarSystem
 
         public static void CopyBones(Transform rootBone, Transform[] bones, SkinnedMeshRenderer skinnedMeshRenderer)
         {
-            if (rootBone == null || bones == null)
+            if (rootBone == null || bones == null || skinnedMeshRenderer == null)
                 return;
 
             skinnedMeshRenderer.rootBone = rootBone;
