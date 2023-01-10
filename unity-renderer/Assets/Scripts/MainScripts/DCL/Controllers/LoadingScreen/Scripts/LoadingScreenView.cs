@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace DCL.LoadingScreen
 {
     /// <summary>
-    /// Display the current state of the Loading Screen Controller
+    ///     Display the current state of the Loading Screen Controller
     /// </summary>
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
@@ -30,6 +30,7 @@ namespace DCL.LoadingScreen
             rawImage.gameObject.SetActive(false);
             FadeIn(true, false);
         }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -47,8 +48,9 @@ namespace DCL.LoadingScreen
             if (isVisible) return;
 
             //We blit the texture in case we need a static image when teleport starts
-            if(blitTexture)
+            if (blitTexture)
                 BlitTexture();
+
             Show(instant);
         }
 
@@ -58,6 +60,8 @@ namespace DCL.LoadingScreen
 
             Hide();
         }
+
+        public override void RefreshControl() { }
 
         private void FadeInFinish(ShowHideAnimator obj)
         {
@@ -70,17 +74,16 @@ namespace DCL.LoadingScreen
             //We need to add this check just in case that the resolution has changed
             if (renderTexture.width != Screen.width || renderTexture.height != Screen.height)
                 SetupBlitTexture();
+
             Graphics.Blit(null, renderTexture);
             rawImage.gameObject.SetActive(true);
         }
 
         private void SetupBlitTexture()
         {
-            if(renderTexture) renderTexture.Release();
+            if (renderTexture) renderTexture.Release();
             renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
             rawImage.texture = renderTexture;
         }
-
-        public override void RefreshControl() { }
     }
 }
