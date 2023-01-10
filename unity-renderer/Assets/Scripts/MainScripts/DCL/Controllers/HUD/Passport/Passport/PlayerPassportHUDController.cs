@@ -192,13 +192,12 @@ namespace DCL.Social.Passports
 
         private async UniTask UpdateUserProfileInSubpanelsAsync(UserProfile userProfile, bool activateLoading)
         {
-            playerInfoController.UpdateWithUserProfile(userProfile);
-            passportNavigationController.UpdateWithUserProfile(userProfile);
-
             if (activateLoading)
                 playerPreviewController.SetAsLoading(true);
 
             await playerPreviewController.UpdateWithUserProfileAsync(userProfile);
+            playerInfoController.UpdateWithUserProfile(userProfile);
+            passportNavigationController.UpdateWithUserProfile(userProfile);
 
             if (activateLoading)
                 playerPreviewController.SetAsLoading(false);
