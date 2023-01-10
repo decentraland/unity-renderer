@@ -8,7 +8,6 @@ namespace DCL.Rendering
     {
         void Start();
         void Stop();
-        void AddRenderers(ICollection<Renderer> inRenderers);
         void MarkDirty();
         void SetSettings(CullingControllerSettings settings);
         CullingControllerSettings GetSettingsCopy();

@@ -78,7 +78,6 @@ namespace DCL.Components
             rendereable = Rendereable.CreateFromGameObject(entity.meshRootGameObject);
             rendereable.ownerId = entity.entityId;
             DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, rendereable);
-            Environment.i.platform.cullingController.AddRenderers(rendereable.renderers);
 
             entity.OnShapeUpdated?.Invoke(entity);
             entity.OnShapeLoaded?.Invoke(entity);

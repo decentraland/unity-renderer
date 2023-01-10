@@ -13,10 +13,11 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
+        private List<Rendereable> rendereables = new List<Rendereable>();
         private ICollection<Renderer> detectedRenderers = new List<Renderer>();
-        private ICollection<Renderer> usingRenderers;
+        private ICollection<Renderer> usingRenderers = new List<Renderer>();
         private ICollection<SkinnedMeshRenderer> detectedSkinnedRenderers;
-        private ICollection<SkinnedMeshRenderer> usingSkinnedRenderers;
+        private ICollection<SkinnedMeshRenderer> usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
         private Animation[] usingAnimations;
 
         private int ignoredLayersMask;
@@ -27,26 +28,52 @@ namespace DCL.Rendering
         {
             PoolManager.i.OnGet -= MarkDirty;
             PoolManager.i.OnGet += MarkDirty;
+
+            Rendereable.OnRendereableAdded -= OnRendereableAdded;
+            Rendereable.OnRendereableAdded += OnRendereableAdded;
         }
 
-        public void AddRenderers(ICollection<Renderer> inRenderers)
-        {
-            foreach (Renderer renderer in inRenderers)
-            {
-                if (renderer is not SkinnedMeshRenderer and not ParticleSystemRenderer)
-                    detectedRenderers.Add(renderer);
-            }
-        }
+        private void OnRendereableAdded(object sender, Rendereable rendereable) => rendereables.Add(rendereable);
 
         /// <summary>
         /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
         /// </summary>
         public IEnumerator PopulateRenderersList()
         {
-            if (!dirty)
-                yield break;
+            List<Rendereable> rendereablesToRemove = new List<Rendereable>();
+            detectedRenderers.Clear();
+            foreach (Rendereable rendereable in rendereables)
+            {
+                if (rendereable == null)
+                {
+                    Debug.Log("Rendereable is null");
+                    rendereablesToRemove.Add(rendereable);
+                    continue;
+                }
+                foreach (Renderer renderer in rendereable.renderers)
+                {
+                    if (renderer is not SkinnedMeshRenderer and not ParticleSystemRenderer)
+                        detectedRenderers.Add(renderer);
+                }
+            }
+            for (int i = rendereablesToRemove.Count - 1; i >= 0; i--)
+                rendereables.Remove(rendereablesToRemove[i]);
 
             detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
+
+
+            Debug.Log("----------------------------------");
+            Debug.Log(detectedRenderers.Count);
+            Renderer[] rends = Object.FindObjectsOfType<Renderer>();
+            List<Renderer> test = new List<Renderer>();
+            foreach (Renderer renderer in rends)
+            {
+                if (renderer is not SkinnedMeshRenderer and not ParticleSystemRenderer)
+                    test.Add(renderer);
+            }
+            Debug.Log(test.Count);
+
+            
             yield return null;
             yield return CalculateRenderers();
             yield return null;
@@ -77,16 +104,12 @@ namespace DCL.Rendering
         private IEnumerator CalculateRenderers()
         {
             int amount = 0;
-            List<Renderer> renderersToRemove = new List<Renderer>();
             List<Renderer> checkingRenderers = new List<Renderer>(detectedRenderers);
             usingRenderers.Clear();
             foreach (Renderer renderer in checkingRenderers)
             {
                 if (renderer == null)
-                {
-                    renderersToRemove.Add(renderer);
                     continue;
-                }
 
                 if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
                 {
@@ -98,23 +121,17 @@ namespace DCL.Rendering
                 if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
                     usingRenderers.Add(renderer);
             }
-            for (int i = renderersToRemove.Count - 1; i >= 0; i--)
-                renderersToRemove.Remove(renderersToRemove[i]);
         }
 
         private IEnumerator CalculateSkinnedRenderers()
         {
             int amount = 0;
-            List<SkinnedMeshRenderer> skinnedRenderersToRemove = new List<SkinnedMeshRenderer>();
-            List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(skinnedRenderersToRemove);
+            List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
             usingSkinnedRenderers.Clear();
             foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
             {
                 if (skinnedRenderer == null)
-                {
-                    skinnedRenderersToRemove.Add(skinnedRenderer);
                     continue;
-                }
 
                 if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
                 {
@@ -126,46 +143,32 @@ namespace DCL.Rendering
                 if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
                     usingSkinnedRenderers.Add(skinnedRenderer);
             }
-            for (int i = skinnedRenderersToRemove.Count - 1; i >= 0; i--)
-                skinnedRenderersToRemove.Remove(skinnedRenderersToRemove[i]);
         }
 
         private void ForceCalculateRenderers()
         {
-            List<Renderer> renderersToRemove = new List<Renderer>();
             usingRenderers.Clear();
             foreach (Renderer renderer in detectedRenderers)
             {
                 if (renderer == null)
-                {
-                    renderersToRemove.Add(renderer);
                     continue;
-                }
 
                 if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
                     usingRenderers.Add(renderer);
             }
-            for (int i = renderersToRemove.Count - 1; i >= 0; i--)
-                renderersToRemove.Remove(renderersToRemove[i]);
         }
 
         private void ForceCalculateSkinnedRenderers()
         {
-            List<SkinnedMeshRenderer> skinnedRenderersToRemove = new List<SkinnedMeshRenderer>();
             usingSkinnedRenderers.Clear();
             foreach (SkinnedMeshRenderer skinnedRenderer in detectedSkinnedRenderers)
             {
                 if (skinnedRenderer == null)
-                {
-                    skinnedRenderersToRemove.Add(skinnedRenderer);
                     continue;
-                }
 
                 if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
                     usingSkinnedRenderers.Add(skinnedRenderer);
             }
-            for (int i = skinnedRenderersToRemove.Count - 1; i >= 0; i--)
-                skinnedRenderersToRemove.Remove(skinnedRenderersToRemove[i]);
         }
 
 
@@ -209,6 +212,7 @@ namespace DCL.Rendering
             detectedSkinnedRenderers = null;
             usingAnimations = null;
             PoolManager.i.OnGet -= MarkDirty;
+            Rendereable.OnRendereableAdded -= OnRendereableAdded;
         }
     }
 }
