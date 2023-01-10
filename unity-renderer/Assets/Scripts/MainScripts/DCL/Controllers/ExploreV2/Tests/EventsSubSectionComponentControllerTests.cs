@@ -48,7 +48,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetAllEventGroupsAsLoading();
+        eventsSubSectionComponentView.Received().SetAllAsLoading();
         Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);
         eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
     }
@@ -82,7 +82,7 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         Assert.AreEqual(eventsSubSectionComponentView.currentUpcomingEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.availableUISlots);
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetAllEventGroupsAsLoading();
+        eventsSubSectionComponentView.Received().SetAllAsLoading();
         eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
         Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);

@@ -191,7 +191,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
 
-
     public void SetTrendingEvents(List<EventCardComponentModel> events) =>
         SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
 

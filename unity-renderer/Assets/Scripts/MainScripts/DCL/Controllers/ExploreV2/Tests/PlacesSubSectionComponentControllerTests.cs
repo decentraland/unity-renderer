@@ -123,7 +123,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.ShowMorePlaces();
 
         // Assert
-        placesSubSectionComponentView.Received().SetShowMoreButtonActive(Arg.Any<bool>());
+        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(Arg.Any<bool>());
     }
 
     [Test]

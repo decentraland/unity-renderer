@@ -58,11 +58,8 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
-        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetAllAsLoading();
         Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
-
-        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
     }
 
     [TestCase(true)]
@@ -95,9 +92,7 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
-        highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
-        highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetAllAsLoading();
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
         Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
     }

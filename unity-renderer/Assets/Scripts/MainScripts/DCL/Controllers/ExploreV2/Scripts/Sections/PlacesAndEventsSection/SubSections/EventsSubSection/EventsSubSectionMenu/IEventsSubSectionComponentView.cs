@@ -90,11 +90,6 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     void HideEventModal();
 
     /// <summary>
-    /// Set the current scroll view position to 1.
-    /// </summary>
-    void RestartScrollViewPosition();
-
-    /// <summary>
     /// Configure the needed pools for the events instantiation.
     /// </summary>
     void ConfigurePools();
