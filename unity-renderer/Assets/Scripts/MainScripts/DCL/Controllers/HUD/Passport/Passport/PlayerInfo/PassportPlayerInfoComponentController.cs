@@ -248,14 +248,14 @@ namespace DCL.Social.Passports
                 case FriendshipAction.DELETED:
                 case FriendshipAction.REJECTED:
                 case FriendshipAction.CANCELLED:
-                default:
-                    return FriendshipStatus.NOT_FRIEND;
                 case FriendshipAction.APPROVED:
                     return FriendshipStatus.FRIEND;
                 case FriendshipAction.REQUESTED_TO:
                     return FriendshipStatus.REQUESTED_TO;
                 case FriendshipAction.REQUESTED_FROM:
                     return FriendshipStatus.REQUESTED_FROM;
+                default:
+                    return FriendshipStatus.NOT_FRIEND;
             }
         }
     }
