@@ -15,6 +15,9 @@ namespace DCL.Components
 
         private bool isHovered;
 
+        public event System.Action OnPointerEnterReport;
+        public event System.Action OnPointerExitReport;
+
         public void Initialize(IDCLEntity entity, IAvatar avatar)
         {
             this.entity = entity;
@@ -44,14 +47,20 @@ namespace DCL.Components
 
         public void SetHoverState(bool state)
         {
-            if (isHovered != state)
-            {
-                isHovered = state;
+            if (isHovered == state)
+                return;
 
-                if (isHovered)
-                    SetAvatarOutlined();
-                else
-                    ResetAvatarOutlined();
+            isHovered = state;
+
+            if (isHovered)
+            {
+                SetAvatarOutlined();
+                OnPointerEnterReport?.Invoke();
+            }
+            else
+            {
+                ResetAvatarOutlined();
+                OnPointerExitReport?.Invoke();
             }
         }
 

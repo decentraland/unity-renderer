@@ -36,6 +36,8 @@ namespace DCL
         private readonly InputController_Legacy inputControllerLegacy;
 
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
+        private DataStore_HUDs dataStoreHuds = DataStore.i.HUDs;
+        private DataStore_ExploreV2 dataStoreExploreV2 = DataStore.i.exploreV2;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
             InteractionHoverCanvasController hoverCanvas)
@@ -77,7 +79,7 @@ namespace DCL
             if (!Utils.IsCursorLocked)
             {
                 //New interaction model
-                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
                     return;
 
                 typeToUse = typeof(IUnlockedCursorInputEvent);
@@ -242,7 +244,7 @@ namespace DCL
                 if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
                 {
                     //New interaction model
-                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
                         return;
                 }
             }
@@ -563,6 +565,14 @@ namespace DCL
         private void SetNormalCursor()
         {
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
+        }
+
+        private bool CanRaycastWhileUnlocked()
+        {
+            return !dataStoreExploreV2.isOpen.Get() // ExploreV2 is not visible
+                   && !dataStoreHuds.emotesVisible.Get() // Emotes hud is not visible
+                   && dataStoreHuds.sendFriendRequest.Get() == null && dataStoreHuds.openSentFriendRequestDetail.Get() == null && dataStoreHuds.openReceivedFriendRequestDetail.Get() == null // Friend requests not on screen
+                   && !CommonScriptableObjects.playerInfoCardVisibleState.Get(); // Passport not visible
         }
     }
 }
