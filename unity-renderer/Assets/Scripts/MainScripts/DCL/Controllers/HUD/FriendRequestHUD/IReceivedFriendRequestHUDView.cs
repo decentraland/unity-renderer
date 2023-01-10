@@ -17,7 +17,6 @@ namespace DCL.Social.Friends
         void SetSenderProfilePicture(string uri);
         void SetOwnProfilePicture(string uri);
         void SetState(LayoutState state);
-        void Show(bool instant = false);
         void Close();
     }
 }
