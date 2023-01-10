@@ -150,11 +150,13 @@ namespace DCL.Social.Passports
         {
             MatchCollection matchCollection = Regex.Matches(description, linksRegex, RegexOptions.IgnoreCase);
             List<string> links = new List<string>();
+
             foreach (Match link in matchCollection)
             {
                 description = description.Replace(link.Value, "");
                 links.Add(link.Value);
             }
+
             linksTitle.SetActive(links.Count > 0);
             linksContainer.SetActive(links.Count > 0);
 
@@ -175,10 +177,7 @@ namespace DCL.Social.Passports
 
         private void SetLinks(List<string> links)
         {
-            foreach (Transform child in linksContainer.transform)
-            {
-                Destroy(child.gameObject);
-            }
+            foreach (Transform child in linksContainer.transform) { Destroy(child.gameObject); }
 
             foreach (string link in links)
             {
@@ -201,6 +200,7 @@ namespace DCL.Social.Passports
             HashSet<string> hidesList = WearableItem.ComposeHiddenCategories(bodyShapeId, wearables.ToList());
 
             equippedNftWearableViews.Clear();
+
             foreach (var wearable in wearables)
             {
                 if (!hidesList.Contains(wearable.data.category))
@@ -241,50 +241,14 @@ namespace DCL.Social.Passports
             nftWearablesCarousel.CleanInstantiatedItems();
             emptyWearablesText.SetActive(wearables.Length <= 0);
             ownedNftWearablePageViews.Clear();
+
             for (int i = 0; i < wearables.Length; i += 4)
             {
-                PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-                nftPagesPoolableQueue.Add(nftPagePoolElement);
-                nftPagePoolElement.gameObject.transform.SetParent(nftWearablesCarouselContent, false);
-                NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
-                nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-                NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-                (string, string)[] nftIds = new (string, string)[4];
-                WearableItem[] wearableItemsForThisPage = new WearableItem[4];
-                for (int j = 0; j < 4; j++)
-                {
-                    if (wearables.Length > i + j && wearables[i + j] != null)
-                    {
-                        pageElements[j] = new ()
-                        {
-                            showMarketplaceButton = true,
-                            showType = true,
-                            type = wearables[i+j].data.category,
-                            marketplaceURI = "",
-                            name = wearables[i+j].GetName(),
-                            rarity = wearables[i+j].rarity,
-                            imageURI = wearables[i+j].ComposeThumbnailUrl()
-                        };
-
-                        nftIds[j] = (wearables[i + j].id, wearables[i + j].data.category);
-                        wearableItemsForThisPage[j] = wearables[i + j];
-                    }
-                    else
-                    {
-                        pageElements[j] = null;
-                        nftIds[j] = ("", "");
-                        wearableItemsForThisPage[j] = null;
-                    }
-                }
-                nftPageView.SetPageElementsContent(pageElements, nftIds);
-                nftPageView.IsNftInfoActived = true;
-                nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, true);
-                nftPageView.OnClickBuyNft += ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+                NftPageView nftPageView = CreateWearablePageView(wearables, i);
                 ownedNftWearablePageViews.Add(nftPageView);
                 nftWearablesCarousel.AddItem(nftPageView);
             }
+
             nftWearablesCarousel.SetManualControlsActive();
             nftWearablesCarousel.GenerateDotsSelector();
         }
@@ -294,50 +258,14 @@ namespace DCL.Social.Passports
             nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
             nftEmotesCarousel.CleanInstantiatedItems();
             emptyEmotesText.SetActive(wearables.Length <= 0);
+
             for (int i = 0; i < wearables.Length; i += 4)
             {
-                PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-                nftPagesPoolableQueue.Add(nftPagePoolElement);
-                nftPagePoolElement.gameObject.transform.SetParent(nftEmotesCarouselContent, false);
-                NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
-                nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-                NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-                (string, string)[] nftIds = new (string, string)[4];
-                WearableItem[] wearableItemsForThisPage = new WearableItem[4];
-                for (int j = 0; j < 4; j++)
-                {
-                    if (wearables.Length > i + j && wearables[i + j] != null)
-                    {
-                        pageElements[j] = new ()
-                        {
-                            showMarketplaceButton = true,
-                            showType = true,
-                            type = "emote",
-                            marketplaceURI = "",
-                            name = wearables[i+j].GetName(),
-                            rarity = wearables[i+j].rarity,
-                            imageURI = wearables[i+j].ComposeThumbnailUrl()
-                        };
-
-                        nftIds[j] = (wearables[i + j].id, "emote");
-                        wearableItemsForThisPage[j] = wearables[i + j];
-                    }
-                    else
-                    {
-                        pageElements[j] = null;
-                        nftIds[j] = ("", "");
-                        wearableItemsForThisPage[j] = null;
-                    }
-                }
-                nftPageView.SetPageElementsContent(pageElements, nftIds);
-                nftPageView.IsNftInfoActived = true;
-                nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, false);
-                nftPageView.OnClickBuyNft += ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+                NftPageView nftPageView = CreateEmotePageView(wearables, i);
                 ownedNftEmotePageViews.Add(nftPageView);
                 nftEmotesCarousel.AddItem(nftPageView);
             }
+
             nftEmotesCarousel.SetManualControlsActive();
             nftEmotesCarousel.GenerateDotsSelector();
         }
@@ -347,45 +275,16 @@ namespace DCL.Social.Passports
             nftNamesCarousel.gameObject.SetActive(names.Length > 0);
             nftNamesCarousel.CleanInstantiatedItems();
             emptyNamesText.SetActive(names.Length <= 0);
+
             for (int i = 0; i < names.Length; i += 4)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
                 nftPagesPoolableQueue.Add(nftPagePoolElement);
                 nftPagePoolElement.gameObject.transform.SetParent(nftNamesCarouselContent, false);
-                NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
-                nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-                NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-                (string, string)[] nftIds = new (string, string)[4];
-                for (int j = 0; j < 4; j++)
-                {
-                    if (names.Length > i + j && names[i + j] != null)
-                    {
-                        pageElements[j] = new()
-                        {
-                            showMarketplaceButton = true,
-                            showType = true,
-                            type = "name",
-                            marketplaceURI = "",
-                            name = names[i + j].Name,
-                            rarity = "legendary",
-                            imageURI = ""
-                        };
-
-                        nftIds[j] = (names[i + j].ContractAddress, "name");
-                    }
-                    else
-                    {
-                        pageElements[j] = null;
-                        nftIds[j] = ("", "");
-                    }
-                }
-                nftPageView.SetPageElementsContent(pageElements, nftIds);
-                nftPageView.IsNftInfoActived = false;
-                nftPageView.OnClickBuyNft += ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+                NftPageView nftPageView = CreateNamePageView(names, nftPagePoolElement, i);
                 nftNamesCarousel.AddItem(nftPageView);
             }
+
             nftNamesCarousel.SetManualControlsActive();
             nftNamesCarousel.GenerateDotsSelector();
         }
@@ -395,45 +294,13 @@ namespace DCL.Social.Passports
             nftLandsCarousel.gameObject.SetActive(lands.Length > 0);
             nftLandsCarousel.CleanInstantiatedItems();
             emptyLandsText.SetActive(lands.Length <= 0);
+
             for (int i = 0; i < lands.Length; i += 4)
             {
-                PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
-                nftPagesPoolableQueue.Add(nftPagePoolElement);
-                nftPagePoolElement.gameObject.transform.SetParent(nftLandsCarouselContent, false);
-                NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
-                nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-                NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-                (string, string)[] nftIds = new (string, string)[4];
-                for (int j = 0; j < 4; j++)
-                {
-                    if (lands.Length > i + j && lands[i + j] != null)
-                    {
-                        pageElements[j] = new()
-                        {
-                            showMarketplaceButton = true,
-                            showType = true,
-                            type = lands[i + j].Category,
-                            marketplaceURI = "",
-                            name = !string.IsNullOrEmpty(lands[i + j].Name) ? lands[i + j].Name : lands[i + j].Category,
-                            rarity = "land",
-                            imageURI = lands[i + j].Image
-                        };
-
-                        nftIds[j] = (lands[i + j].ContractAddress, lands[i + j].Category);
-                    }
-                    else
-                    {
-                        pageElements[j] = null;
-                        nftIds[j] = ("", "");
-                    }
-                }
-                nftPageView.SetPageElementsContent(pageElements, nftIds);
-                nftPageView.IsNftInfoActived = false;
-                nftPageView.OnClickBuyNft += ClickOnBuyWearable;
-                nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+                NftPageView nftPageView = CreateLandPageView(lands, i);
                 nftLandsCarousel.AddItem(nftPageView);
             }
+
             nftLandsCarousel.SetManualControlsActive();
             nftLandsCarousel.GenerateDotsSelector();
         }
@@ -473,23 +340,20 @@ namespace DCL.Social.Passports
             FocusAnyNtfItem();
         }
 
-        private void FocusAnyNtfItem() => CloseAllNFTItemInfos();
+        private void FocusAnyNtfItem() =>
+            CloseAllNFTItemInfos();
 
         private void CleanEquippedWearables()
         {
-            foreach (var poolObject in nftIconPoolableQueue)
-            {
-                nftIconsEntryPool.Release(poolObject);
-            }
+            foreach (var poolObject in nftIconPoolableQueue) { nftIconsEntryPool.Release(poolObject); }
+
             nftIconPoolableQueue = new List<PoolableObject>();
         }
 
         private void CleanWearables()
         {
-            foreach (var poolObject in nftPagesPoolableQueue)
-            {
-                nftPagesEntryPool.Release(poolObject);
-            }
+            foreach (var poolObject in nftPagesPoolableQueue) { nftPagesEntryPool.Release(poolObject); }
+
             nftPagesPoolableQueue = new List<PoolableObject>();
         }
 
@@ -503,6 +367,7 @@ namespace DCL.Social.Passports
                 Instantiate(wearableUIReferenceObject).gameObject,
                 maxPrewarmCount: MAX_NFT_ICON_ENTRIES,
                 isPersistent: true);
+
             pool.ForcePrewarm();
 
             return pool;
@@ -518,14 +383,13 @@ namespace DCL.Social.Passports
                 Instantiate(nftPageUIReferenceObject).gameObject,
                 maxPrewarmCount: MAX_NFT_PAGES_ENTRIES,
                 isPersistent: true);
+
             pool.ForcePrewarm();
 
             return pool;
         }
 
-        public override void RefreshControl()
-        {
-        }
+        public override void RefreshControl() { }
 
         public void SetCollectibleWearablesLoadingActive(bool isActive) =>
             SetCollectibleSectionLoadingActive(isActive, nftWearablesCarousel, emptyWearablesText, nftWearablesLoadingSpinner);
@@ -552,6 +416,185 @@ namespace DCL.Social.Passports
             }
 
             loadingSpinner.SetActive(isActive);
+        }
+
+        private NftPageView CreateNamePageView(NamesResponse.NameEntry[] names, PoolableObject nftPagePoolElement, int i)
+        {
+            NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
+            nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
+            NFTIconComponentModel[] pageElements = CreateNamePageElements(names, i, out (string, string)[] nftIds);
+            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.IsNftInfoActived = false;
+            nftPageView.OnClickBuyNft += ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+            return nftPageView;
+        }
+
+        private static NFTIconComponentModel[] CreateNamePageElements(NamesResponse.NameEntry[] names, int i, out (string, string)[] nftIds)
+        {
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
+            nftIds = new (string, string)[4];
+
+            for (var j = 0; j < 4; j++)
+            {
+                if (names.Length > i + j && names[i + j] != null)
+                {
+                    pageElements[j] = new NFTIconComponentModel
+                    {
+                        showMarketplaceButton = true,
+                        showType = true,
+                        type = "name",
+                        marketplaceURI = "",
+                        name = names[i + j].Name,
+                        rarity = "legendary",
+                        imageURI = ""
+                    };
+
+                    nftIds[j] = (names[i + j].ContractAddress, "name");
+                }
+                else
+                {
+                    pageElements[j] = null;
+                    nftIds[j] = ("", "");
+                }
+            }
+
+            return pageElements;
+        }
+
+        private NftPageView CreateWearablePageView(WearableItem[] wearables, int i)
+        {
+            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
+            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            nftPagePoolElement.gameObject.transform.SetParent(nftWearablesCarouselContent, false);
+            NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
+            nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
+            (string, string)[] nftIds = new (string, string)[4];
+            WearableItem[] wearableItemsForThisPage = new WearableItem[4];
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (wearables.Length > i + j && wearables[i + j] != null)
+                {
+                    pageElements[j] = new()
+                    {
+                        showMarketplaceButton = true,
+                        showType = true,
+                        type = wearables[i + j].data.category,
+                        marketplaceURI = "",
+                        name = wearables[i + j].GetName(),
+                        rarity = wearables[i + j].rarity,
+                        imageURI = wearables[i + j].ComposeThumbnailUrl()
+                    };
+
+                    nftIds[j] = (wearables[i + j].id, wearables[i + j].data.category);
+                    wearableItemsForThisPage[j] = wearables[i + j];
+                }
+                else
+                {
+                    pageElements[j] = null;
+                    nftIds[j] = ("", "");
+                    wearableItemsForThisPage[j] = null;
+                }
+            }
+
+            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.IsNftInfoActived = true;
+            nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, true);
+            nftPageView.OnClickBuyNft += ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+            return nftPageView;
+        }
+
+        private NftPageView CreateEmotePageView(WearableItem[] wearables, int i)
+        {
+            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
+            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            nftPagePoolElement.gameObject.transform.SetParent(nftEmotesCarouselContent, false);
+            NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
+            nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
+            (string, string)[] nftIds = new (string, string)[4];
+            WearableItem[] wearableItemsForThisPage = new WearableItem[4];
+
+            for (var j = 0; j < 4; j++)
+            {
+                if (wearables.Length > i + j && wearables[i + j] != null)
+                {
+                    pageElements[j] = new NFTIconComponentModel
+                    {
+                        showMarketplaceButton = true,
+                        showType = true,
+                        type = "emote",
+                        marketplaceURI = "",
+                        name = wearables[i + j].GetName(),
+                        rarity = wearables[i + j].rarity,
+                        imageURI = wearables[i + j].ComposeThumbnailUrl()
+                    };
+
+                    nftIds[j] = (wearables[i + j].id, "emote");
+                    wearableItemsForThisPage[j] = wearables[i + j];
+                }
+                else
+                {
+                    pageElements[j] = null;
+                    nftIds[j] = ("", "");
+                    wearableItemsForThisPage[j] = null;
+                }
+            }
+
+            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.IsNftInfoActived = true;
+            nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, false);
+            nftPageView.OnClickBuyNft += ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+            return nftPageView;
+        }
+
+        private NftPageView CreateLandPageView(LandsResponse.LandEntry[] lands, int i)
+        {
+            PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
+            nftPagesPoolableQueue.Add(nftPagePoolElement);
+            nftPagePoolElement.gameObject.transform.SetParent(nftLandsCarouselContent, false);
+            NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
+            nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
+            (string, string)[] nftIds = new (string, string)[4];
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (lands.Length > i + j && lands[i + j] != null)
+                {
+                    pageElements[j] = new()
+                    {
+                        showMarketplaceButton = true,
+                        showType = true,
+                        type = lands[i + j].Category,
+                        marketplaceURI = "",
+                        name = !string.IsNullOrEmpty(lands[i + j].Name) ? lands[i + j].Name : lands[i + j].Category,
+                        rarity = "land",
+                        imageURI = lands[i + j].Image
+                    };
+
+                    nftIds[j] = (lands[i + j].ContractAddress, lands[i + j].Category);
+                }
+                else
+                {
+                    pageElements[j] = null;
+                    nftIds[j] = ("", "");
+                }
+            }
+
+            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.IsNftInfoActived = false;
+            nftPageView.OnClickBuyNft += ClickOnBuyWearable;
+            nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
+            return nftPageView;
         }
     }
 }
