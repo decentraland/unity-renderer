@@ -69,7 +69,25 @@ namespace DCL.LoadingScreen
         {
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
+            {
+                //We have to check if the player is loaded
+                if(commonDataStore.isPlayerRendererLoaded.Get())
+                    FadeOutView();
+                else
+                {
+                    percentageController.SetAvatarLoadingMessage();
+                    commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
+                }
+            }
+        }
+
+        //We have to add one more check not to show the loadingScreen unless the player is loaded
+        private void PlayerLoaded(bool loaded, bool _)
+        {
+            if(loaded)
                 FadeOutView();
+
+            commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
 
         private void OnSignupFlow(bool current, bool previous)

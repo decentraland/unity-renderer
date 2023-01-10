@@ -18,6 +18,9 @@ namespace DCL.LoadingScreen
             loadingPercentage.fillAmount = percentage / 100f;
         }
 
+        public void SetPlayerLoadingMessage() =>
+            loadingMessage.text = "Loading avatar...";
+
         internal string GetLoadingStringText(int percentage) =>
             $"Loading scenes, 3D models, and sounds... {percentage}% complete";
     }

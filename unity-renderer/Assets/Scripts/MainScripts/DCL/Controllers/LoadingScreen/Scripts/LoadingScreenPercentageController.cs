@@ -62,5 +62,8 @@ namespace DCL.LoadingScreen
             currentDestination = newDestination;
             loadingScreenPercentageView.SetLoadingPercentage(0);
         }
+
+        public void SetAvatarLoadingMessage() =>
+            loadingScreenPercentageView.SetPlayerLoadingMessage();
     }
 }
