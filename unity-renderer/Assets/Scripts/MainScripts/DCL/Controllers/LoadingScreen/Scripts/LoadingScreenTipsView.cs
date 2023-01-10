@@ -10,8 +10,8 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenTipsView : MonoBehaviour
     {
-        [SerializeField] private TMP_Text tipsText;
-        [SerializeField] private Image tipsImage;
+        [SerializeField] internal TMP_Text tipsText;
+        [SerializeField] internal Image tipsImage;
 
         [SerializeField] internal List<LoadingTip> defaultTips;
 

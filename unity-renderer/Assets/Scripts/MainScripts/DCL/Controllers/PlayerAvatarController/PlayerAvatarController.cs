@@ -64,12 +64,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
         CommonScriptableObjects.rendererState.AddLock(this);
 
-#if UNITY_WEBGL
-        fatalErrorReporter = new WebFatalErrorReporter();
-#else
-        fatalErrorReporter = new DefaultFatalErrorReporter(DataStore.i);
-#endif
-
         mainCamera = Camera.main;
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }

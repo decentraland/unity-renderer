@@ -63,8 +63,12 @@ namespace DCL.LoadingScreen
 
         public void StopTips()
         {
+            //This means that tips have been already stopped once. We only show them once, so we return and ignore this function
+            if (disposeCts ==  null) return;
+
+            tipsView.gameObject.SetActive(false);
             disposeCts.Cancel();
-            disposeCts?.Dispose();
+            disposeCts.Dispose();
             disposeCts = null;
         }
 
