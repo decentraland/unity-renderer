@@ -1,6 +1,8 @@
 using DCL.Helpers;
 using System;
 using UnityEngine;
+using DCL.NotificationModel;
+using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
 {
@@ -15,15 +17,18 @@ namespace DCL.LoadingScreen
         private readonly DataStore_Player playerDataStore;
         private readonly DataStore_Common commonDataStore;
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
+        private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
+        private readonly NotificationsController notificationsController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
+        private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore,
-            IWorldState worldState)
+        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
+            DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
         {
             this.view = view;
             this.sceneController = sceneController;
@@ -31,6 +36,8 @@ namespace DCL.LoadingScreen
             this.commonDataStore = commonDataStore;
             this.worldState = worldState;
             this.loadingScreenDataStore = loadingScreenDataStore;
+            this.realmDataStore = realmDataStore;
+            this.notificationsController = notificationsController;
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView());
@@ -78,9 +85,7 @@ namespace DCL.LoadingScreen
         {
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
-            //If the destination scene is not loaded, we show the teleport screen
-            //This is going to be called also on the POSITION_SETTLED event; but since the scene will already be loaded, the loading screen wont be shown
-            if (worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1))
+            if (IsNewRealm() || IsSceneLoaded(currentDestinationCandidate))
             {
                 currentDestination = currentDestinationCandidate;
 
@@ -90,6 +95,48 @@ namespace DCL.LoadingScreen
                 //This is probably going to change with the integration of WORLDS loading screen
                 tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+            }
+
+            //We are going to check if the scene has timeout using the POSITION_SETTLED event.
+            CheckSceneTimeout(currentDestinationCandidate);
+        }
+
+        //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
+        //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
+        private bool IsNewRealm()
+        {
+            bool realmChangeRequiresLoadingScreen;
+
+            if (commonDataStore.isWorld.Get())
+                realmChangeRequiresLoadingScreen = !currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName);
+            else
+                realmChangeRequiresLoadingScreen = currentRealmIsWorld;
+
+            currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
+            currentRealmIsWorld = commonDataStore.isWorld.Get();
+            return realmChangeRequiresLoadingScreen;
+        }
+
+        //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
+        //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
+        private bool IsSceneLoaded(Vector2Int currentDestinationCandidate) =>
+             worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
+
+        private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
+        {
+            //If we are settling on the destination position, but loading is not complete, this means that kernel is calling for a timeout.
+            //For now, we hide the loading screen and add a notification
+            if (currentDestinationCandidate.Equals(currentDestination) &&
+                worldState.GetScene(worldState.GetSceneNumberByCoords(currentDestination))?.loadingProgress < 100)
+            {
+                notificationsController.ShowNotification(new Model
+                {
+                    message = "Loading scene timeout",
+                    type = Type.GENERIC,
+                    timer = 10f,
+                    destroyOnFinish = true
+                });
+                FadeOutView();
             }
         }
 
