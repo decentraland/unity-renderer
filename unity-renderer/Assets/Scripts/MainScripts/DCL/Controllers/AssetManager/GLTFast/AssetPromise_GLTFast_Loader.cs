@@ -41,7 +41,8 @@ namespace DCL
                 staticDeferAgent = agentObject.AddComponent<GltFastDeferAgent>();
             }
 
-            gltFastDownloadProvider = new GltFastDownloadProvider(requestController, FileToUrl);
+            string baseUrl = contentProvider is null ? string.Empty : contentProvider.baseUrl;
+            gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
