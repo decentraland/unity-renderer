@@ -127,6 +127,11 @@ namespace DCL.Rendering
             updateCoroutine = null;
         }
 
+        public void AddRenderers(ICollection<Renderer> renderers)
+        {
+            objectsTracker.Add(renderers);
+        }
+
         /// <summary>
         /// Process all sceneObject renderers with the parameters set by the given profile.
         /// </summary>

@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.Rendering
 {
@@ -6,6 +8,7 @@ namespace DCL.Rendering
     {
         void Start();
         void Stop();
+        void AddRenderers(ICollection<Renderer> inRenderers);
         void MarkDirty();
         void SetSettings(CullingControllerSettings settings);
         CullingControllerSettings GetSettingsCopy();
