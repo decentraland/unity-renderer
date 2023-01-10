@@ -30,17 +30,22 @@ namespace DCL
         RaycastHit hitInfo;
         PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
         List<RaycastResult> uiGraphicRaycastResults = new List<RaycastResult>();
+        private readonly List<RaycastResult> dclHUDsRaycastResults = new List<RaycastResult>();
         GraphicRaycaster uiGraphicRaycaster;
 
         private IRaycastPointerClickHandler clickHandler;
         private readonly InputController_Legacy inputControllerLegacy;
+        private readonly MouseCatcher mouseCatcher;
 
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
+        private DataStore_HUDs dataStoreHuds = DataStore.i.HUDs;
+        private DataStore_ExploreV2 dataStoreExploreV2 = DataStore.i.exploreV2;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
-            InteractionHoverCanvasController hoverCanvas)
+            InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
         {
             this.inputControllerLegacy = inputControllerLegacy;
+            this.mouseCatcher = mouseCatcher;
             pointerHoverController = new PointerHoverController(inputControllerLegacy, hoverCanvas);
 
             pointerHoverController.OnPointerHoverStarts += SetHoverCursor;
@@ -74,11 +79,15 @@ namespace DCL
 
             Type typeToUse = typeof(IPointerEvent);
 
+            uiGraphicRaycastPointerEventData.position = Utils.IsCursorLocked ? new Vector2(Screen.width / 2, Screen.height / 2) : Input.mousePosition;
             if (!Utils.IsCursorLocked)
             {
                 //New interaction model
-                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
+                {
+                    UnhoverLastHoveredObject();
                     return;
+                }
 
                 typeToUse = typeof(IUnlockedCursorInputEvent);
             }
@@ -242,8 +251,11 @@ namespace DCL
                 if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
                 {
                     //New interaction model
-                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner"))
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
+                    {
+                        UnhoverLastHoveredObject();
                         return;
+                    }
                 }
             }
 
@@ -563,6 +575,22 @@ namespace DCL
         private void SetNormalCursor()
         {
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
+        }
+
+        private bool CanRaycastWhileUnlocked()
+        {
+            dclHUDsRaycastResults.Clear();
+            EventSystem.current.RaycastAll(uiGraphicRaycastPointerEventData, dclHUDsRaycastResults);
+
+            for (var i = 0; i < dclHUDsRaycastResults.Count; i++)
+            {
+                if (mouseCatcher.IsEqualsToRaycastTarget(dclHUDsRaycastResults[i].gameObject))
+                    continue;
+
+                return false;
+            }
+
+            return true;
         }
     }
 }
