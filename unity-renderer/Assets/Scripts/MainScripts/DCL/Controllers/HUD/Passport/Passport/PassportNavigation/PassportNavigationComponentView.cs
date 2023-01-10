@@ -285,6 +285,7 @@ namespace DCL.Social.Passports
                 ownedNftWearablePageViews.Add(nftPageView);
                 nftWearablesCarousel.AddItem(nftPageView);
             }
+            nftWearablesCarousel.SetManualControlsActive();
             nftWearablesCarousel.GenerateDotsSelector();
         }
 
@@ -337,6 +338,7 @@ namespace DCL.Social.Passports
                 ownedNftEmotePageViews.Add(nftPageView);
                 nftEmotesCarousel.AddItem(nftPageView);
             }
+            nftEmotesCarousel.SetManualControlsActive();
             nftEmotesCarousel.GenerateDotsSelector();
         }
 
@@ -384,6 +386,7 @@ namespace DCL.Social.Passports
                 nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
                 nftNamesCarousel.AddItem(nftPageView);
             }
+            nftNamesCarousel.SetManualControlsActive();
             nftNamesCarousel.GenerateDotsSelector();
         }
 
@@ -431,6 +434,7 @@ namespace DCL.Social.Passports
                 nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
                 nftLandsCarousel.AddItem(nftPageView);
             }
+            nftLandsCarousel.SetManualControlsActive();
             nftLandsCarousel.GenerateDotsSelector();
         }
 
