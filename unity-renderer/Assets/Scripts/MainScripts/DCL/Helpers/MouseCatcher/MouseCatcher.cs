@@ -72,9 +72,12 @@ namespace DCL
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                LockCursor();
                 DataStore.i.camera.panning.Set(true);
+            }
+
             OnMouseDown?.Invoke();
-            LockCursor();
         }
 
         public void OnPointerUp(PointerEventData eventData)
