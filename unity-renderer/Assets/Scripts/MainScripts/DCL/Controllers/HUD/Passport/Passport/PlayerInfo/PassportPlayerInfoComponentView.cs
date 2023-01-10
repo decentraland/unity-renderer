@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using System.Collections.Generic;
 using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
@@ -58,7 +59,8 @@ namespace DCL.Social.Passports
         private bool isBlocked = false;
         private Coroutine copyAddressRoutine = null;
         private Coroutine copyNameRoutine = null;
-
+        private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
+        
         public override void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
@@ -74,6 +76,14 @@ namespace DCL.Social.Passports
             optionsButton.onClick.AddListener(OpenOptions);
             jumpInButton.OnClick += () => OnJumpInUser?.Invoke();
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
+
+            friendStatusButtonsMapping = new Dictionary<FriendshipStatus, GameObject>()
+            {
+                {FriendshipStatus.NOT_FRIEND, addFriendButton.gameObject},
+                {FriendshipStatus.FRIEND, alreadyFriendsButton.gameObject},
+                {FriendshipStatus.REQUESTED_FROM, acceptFriendButton.gameObject},
+                {FriendshipStatus.REQUESTED_TO, cancelFriendRequestButton.gameObject}
+            };
         }
 
         private void OnReport(string Obj)
@@ -135,27 +145,8 @@ namespace DCL.Social.Passports
             if(isBlocked)
                 return;
 
-            switch (friendStatus)
-            {
-                case FriendshipStatus.NOT_FRIEND:
-                    DisableAllFriendFlowButtons();
-                    addFriendButton.gameObject.SetActive(true);
-                    break;
-                case FriendshipStatus.FRIEND:
-                    DisableAllFriendFlowButtons();
-                    alreadyFriendsButton.gameObject.SetActive(true);
-                    break;
-                case FriendshipStatus.REQUESTED_FROM:
-                    DisableAllFriendFlowButtons();
-                    acceptFriendButton.gameObject.SetActive(true);
-                    break;
-                case FriendshipStatus.REQUESTED_TO:
-                    DisableAllFriendFlowButtons();
-                    cancelFriendRequestButton.gameObject.SetActive(true);
-                    break;
-                default:
-                    break;
-            }
+            DisableAllFriendFlowButtons();
+            friendStatusButtonsMapping[friendStatus].SetActive(true);
             whisperNonFriendsPopup.Hide(true);
         }
 
