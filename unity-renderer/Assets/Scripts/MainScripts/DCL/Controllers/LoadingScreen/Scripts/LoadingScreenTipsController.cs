@@ -12,7 +12,7 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenTipsController
     {
-        private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(2);
+        private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(5);
 
         private List<LoadingTip> currentLoadingTips;
         private int currentRandomIndex;

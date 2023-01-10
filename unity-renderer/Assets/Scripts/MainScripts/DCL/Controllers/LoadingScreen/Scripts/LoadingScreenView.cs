@@ -30,7 +30,6 @@ namespace DCL.LoadingScreen
             rawImage.gameObject.SetActive(false);
             FadeIn(true, false);
         }
-
         public override void Dispose()
         {
             base.Dispose();
@@ -48,7 +47,7 @@ namespace DCL.LoadingScreen
             if (isVisible) return;
 
             //We blit the texture in case we need a static image when teleport starts
-            if (blitTexture)
+            if(blitTexture)
                 BlitTexture();
 
             Show(instant);

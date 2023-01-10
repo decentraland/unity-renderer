@@ -47,8 +47,6 @@ namespace DCL.LoadingScreen
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
 
-            loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
-
             tipsController.StartTips();
         }
 
@@ -80,7 +78,6 @@ namespace DCL.LoadingScreen
                 FadeOutView();
             else
                 view.FadeIn(false, false);
-
         }
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
