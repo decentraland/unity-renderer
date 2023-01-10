@@ -66,7 +66,7 @@ namespace DCLServices.Lambdas
 
             //urlBuilder.Append(catalyst.lambdasUrl);
             // TODO (Santi): This is temporal until they fix the problems with lambdas routing
-            urlBuilder.Append("https://peer-testing-4.decentraland.org/lambdas");
+            urlBuilder.Append("http://peer-eu1.decentraland.org/lambdas/");
             urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
