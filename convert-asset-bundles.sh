@@ -10,7 +10,7 @@ mkdir -p "$OUTPUT_DIR"
 echo "Running AB conversor for sceneId $SCENE_ID at $CONTENT_URL > $OUTPUT_DIR"
 echo "Project path: $PROJECT_PATH"
 
-sed -i 's/<Enabled>k__BackingField: 1/<Enabled>k__BackingField: 0/' unity-renderer/Assets/Resources/Sentry/SentryOptions.asset
+disable_sentry
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' "$UNITY_PATH/Editor/Unity" \
   -batchmode \
