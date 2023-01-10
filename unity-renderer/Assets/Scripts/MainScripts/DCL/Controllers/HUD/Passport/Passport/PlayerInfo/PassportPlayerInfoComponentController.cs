@@ -102,6 +102,7 @@ namespace DCL.Social.Passports
 
             view.SetModel(playerPassportModel);
             view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
+            view.SetActionsActive(userProfile.userId != ownUserProfile.userId);
         }
 
         private async UniTask<string> FilterName(UserProfile userProfile)

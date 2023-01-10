@@ -42,6 +42,7 @@ namespace DCL.Social.Passports
         [SerializeField] private JumpInButton jumpInButton;
         [SerializeField] private ShowHideAnimator copyAddressToast;
         [SerializeField] private ShowHideAnimator copyUsernameToast;
+        [SerializeField] private GameObject actionsContainer;
 
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
@@ -194,6 +195,8 @@ namespace DCL.Social.Passports
                 SetFriendStatus(model.friendshipStatus);
             }
         }
+
+        public void SetActionsActive(bool isActive) => actionsContainer.SetActive(isActive);
 
         private void SetPresence(PresenceStatus status)
         {
