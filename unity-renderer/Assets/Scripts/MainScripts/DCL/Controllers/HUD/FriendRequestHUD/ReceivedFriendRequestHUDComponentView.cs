@@ -85,7 +85,7 @@ namespace DCL.Social.Friends
             SetTimestamp(model.RequestDate);
             SetSenderName(model.UserName);
             SetSenderProfilePicture(model.UserProfilePictureUri);
-            SetOwnProfilePicture(model.OwnProfilePictureUri);
+            SetRecipientProfilePicture(model.OwnProfilePictureUri);
             SetState(model.State);
         }
 
@@ -123,7 +123,7 @@ namespace DCL.Social.Friends
             otherProfileImageInConfirmRejectState.SetImage(uri);
         }
 
-        public void SetOwnProfilePicture(string uri)
+        public void SetRecipientProfilePicture(string uri)
         {
             model.OwnProfilePictureUri = uri;
             ownProfileImageInConfirmSuccessState.SetImage(uri);

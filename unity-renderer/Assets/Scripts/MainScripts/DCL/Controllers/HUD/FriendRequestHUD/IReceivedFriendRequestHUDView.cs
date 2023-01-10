@@ -15,7 +15,7 @@ namespace DCL.Social.Friends
         void SetTimestamp(DateTime timestamp);
         void SetSenderName(string userName);
         void SetSenderProfilePicture(string uri);
-        void SetOwnProfilePicture(string uri);
+        void SetRecipientProfilePicture(string uri);
         void SetState(LayoutState state);
         void Close();
     }
