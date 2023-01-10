@@ -77,7 +77,6 @@ namespace DCL.LoadingScreen
             if (current)
                 FadeOutView();
             else
-                //Blit not necessary since we wont be hiding the Terms&Condition menu until full fade in
                 view.FadeIn(false, false);
         }
 
