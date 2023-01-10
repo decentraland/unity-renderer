@@ -51,7 +51,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(false);
+        placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
     }
 
     [TestCase(true)]
@@ -83,8 +83,8 @@ public class PlacesSubSectionComponentControllerTests
         // Assert
         Assert.AreEqual(placesSubSectionComponentView.currentPlacesPerRow * PlacesSubSectionComponentController.INITIAL_NUMBER_OF_ROWS, placesSubSectionComponentController.availableUISlots);
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
-        placesSubSectionComponentView.Received().SetPlacesAsLoading(true);
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(false);
+        placesSubSectionComponentView.Received().SetAllAsLoading();
+        placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
@@ -117,13 +117,13 @@ public class PlacesSubSectionComponentControllerTests
     [Test]
     [TestCase(2)]
     [TestCase(10)]
-    public void LoaShowMorePlacesCorrectly(int numberOfPlaces)
+    public void LoadShowMorePlacesCorrectly(int numberOfPlaces)
     {
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
 
         // Assert
-        placesSubSectionComponentView.Received().SetShowMorePlacesButtonActive(Arg.Any<bool>());
+        placesSubSectionComponentView.Received().SetShowMoreButtonActive(Arg.Any<bool>());
     }
 
     [Test]

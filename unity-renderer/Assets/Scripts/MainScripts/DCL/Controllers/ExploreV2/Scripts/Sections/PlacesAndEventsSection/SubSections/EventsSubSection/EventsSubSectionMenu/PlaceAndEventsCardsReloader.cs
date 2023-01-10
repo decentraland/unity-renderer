@@ -63,8 +63,6 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     public void RequestAll()
     {
-        Debug.Log(2);
-
         view.RestartScrollViewPosition();
         view.SetAllAsLoading();
 
