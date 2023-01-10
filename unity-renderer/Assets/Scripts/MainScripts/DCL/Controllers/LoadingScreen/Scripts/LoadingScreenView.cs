@@ -59,7 +59,7 @@ namespace DCL.LoadingScreen
 
             Hide();
         }
-        
+
         public override void RefreshControl() { }
 
         private void FadeInFinish(ShowHideAnimator obj)
