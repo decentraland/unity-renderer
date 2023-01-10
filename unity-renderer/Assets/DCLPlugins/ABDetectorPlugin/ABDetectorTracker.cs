@@ -58,7 +58,6 @@ namespace DCL
 
         private void OnGlobalABDetectionChanged(bool current, bool previous)
         {
-            throw new Exception("stack trace test");
             LoadMaterialsIfNeeded();
 
             if (current)
