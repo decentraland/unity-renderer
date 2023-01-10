@@ -2,7 +2,9 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using DCL.Helpers;
+using Decentraland.Bff;
 using System;
+using UnityEngine.Playables;
 
 namespace DCL.LoadingScreen.Test
 {
@@ -32,6 +34,7 @@ namespace DCL.LoadingScreen.Test
             commonDataStore = new DataStore_Common();
             loadingScreenDataStore = new DataStore_LoadingScreen();
             realmDataStore = new DataStore_Realm();
+            realmDataStore.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration());
 
 
             LoadingScreenView auxiliaryViews = LoadingScreenView.Create();
@@ -40,7 +43,10 @@ namespace DCL.LoadingScreen.Test
 
             worldState.GetSceneNumberByCoords(destination).Returns(-1);
 
-            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, playerDataStore, commonDataStore, loadingScreenDataStore,realmDataStore );
+            NotificationsController notificationsController = auxiliaryViews.gameObject.AddComponent<NotificationsController>();
+            notificationsController.allowNotifications = false;
+
+            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController,playerDataStore, commonDataStore, loadingScreenDataStore,realmDataStore );
         }
 
         [Test]
