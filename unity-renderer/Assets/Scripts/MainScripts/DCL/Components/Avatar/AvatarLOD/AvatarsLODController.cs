@@ -24,6 +24,8 @@ namespace DCL
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         private UnityEngine.Camera mainCamera;
 
+        private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
+
         public AvatarsLODController()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
@@ -84,10 +86,8 @@ namespace DCL
 
             overlappingTracker.Reset();
 
-            (IAvatarLODController lodController, float distance)[] lodControllersByDistance =
-                ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
-
-            foreach (var controllerDistancePair in lodControllersByDistance)
+            foreach (var controllerDistancePair in
+                     ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition))
             {
                 (IAvatarLODController lodController, float distance) = controllerDistancePair;
 
@@ -135,18 +135,14 @@ namespace DCL
             return firstPersonCamera ? distance < AVATARS_INVISIBILITY_DISTANCE : distance < 0f; // < 0 is behind camera
         }
 
-        private (IAvatarLODController lodController, float distance)[] ComposeLODControllersSortedByDistance(Dictionary<string, IAvatarLODController>.ValueCollection lodControllers, Vector3 ownPlayerPosition)
+        private List<(IAvatarLODController lodController, float distance)> ComposeLODControllersSortedByDistance(Dictionary<string, IAvatarLODController>.ValueCollection lodControllers, Vector3 ownPlayerPosition)
         {
-            (IAvatarLODController lodController, float distance)[] lodControllersWithDistance = new (IAvatarLODController x, float)[lodControllers.Count];
+            lodControllersWithDistance.Clear();
 
-            var i = 0;
             foreach (IAvatarLODController x in lodControllers)
-            {
-                lodControllersWithDistance[i] = (x, DistanceToOwnPlayer(x.player, ownPlayerPosition));
-                i++;
-            }
+                lodControllersWithDistance.Add((x, DistanceToOwnPlayer(x.player, ownPlayerPosition)));
 
-            Array.Sort(lodControllersWithDistance, CompareByDistance());
+            lodControllersWithDistance.Sort(CompareByDistance());
 
             return lodControllersWithDistance;
 
