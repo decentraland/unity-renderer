@@ -257,7 +257,7 @@ namespace DCL.Social.Passports
             if(string.IsNullOrEmpty(model.name))
                 return;
 
-            Environment.i.platform.clipboard.WriteText(model.name.Split('#')[0]);
+            Environment.i.platform.clipboard.WriteText(model.name);
             if (copyNameRoutine != null)
             {
                 StopCoroutine(copyNameRoutine);
