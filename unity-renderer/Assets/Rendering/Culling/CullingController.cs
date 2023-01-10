@@ -129,7 +129,7 @@ namespace DCL.Rendering
 
         public void AddRenderers(ICollection<Renderer> renderers)
         {
-            objectsTracker.Add(renderers);
+            objectsTracker.AddRenderers(renderers);
         }
 
         /// <summary>
