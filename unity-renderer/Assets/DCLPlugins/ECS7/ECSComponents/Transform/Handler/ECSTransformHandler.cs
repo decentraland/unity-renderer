@@ -64,7 +64,9 @@ namespace DCL.ECSComponents
             }
 
             // Clean SBC internal component
-            UpdateSceneBoundsCheckComponent(scene, entity, Vector3.zero, false);
+            sbcInternalComponent.SetPosition(scene, entity, Vector3.zero, false);
+
+            // TODO: Affect child SBCComponent???
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -87,25 +89,9 @@ namespace DCL.ECSComponents
                 ProcessNewParent(scene, entity, model.parentId);
             }
 
-            UpdateSceneBoundsCheckComponent(scene, entity, transform.position);
-        }
+            sbcInternalComponent.SetPosition(scene, entity, transform.position);
 
-        // TODO: Move into extension method
-        private void UpdateSceneBoundsCheckComponent(IParcelScene scene, IDCLEntity entity, Vector3 newPosition, bool createIfDoesntExist = true)
-        {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
-
-            if (model == null)
-            {
-                if (!createIfDoesntExist)
-                    return;
-
-                model = new InternalSceneBoundsCheck();
-            }
-
-            model.entityPosition = newPosition;
-
-            sbcInternalComponent.PutFor(scene, entity, model);
+            // TODO: Affect child SBCComponent...
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)

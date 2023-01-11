@@ -38,7 +38,8 @@ namespace DCL.ECS7.InternalComponents
     {
         public Vector3 entityPosition = Vector3.zero;
         public IList<Renderer> renderers;
-        public IList<Collider> colliders;
+        public IList<Collider> physicsColliders;
+        public IList<Collider> pointerColliders;
         public Bounds entityMeshBounds = new Bounds();
     }
 
