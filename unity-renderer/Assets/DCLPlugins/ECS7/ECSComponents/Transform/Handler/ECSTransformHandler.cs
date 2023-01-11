@@ -11,14 +11,16 @@ namespace DCL.ECSComponents
     {
         private readonly IWorldState worldState;
         private readonly IBaseVariable<Vector3> playerTeleportVariable;
-        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
+
+        private static IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
         public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
+            ECSTransformHandler.sbcInternalComponent = sbcInternalComponent;
+
             this.worldState = worldState;
             this.playerTeleportVariable = playerTeleportVariable;
-            this.sbcInternalComponent = sbcInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -64,9 +66,8 @@ namespace DCL.ECSComponents
             }
 
             // Clean SBC internal component
-            sbcInternalComponent.SetPosition(scene, entity, Vector3.zero, false);
-
-            // TODO: Affect child SBCComponent???
+            // TODO: Is it OK that this cleanup updates the entity children???
+            UpdateSBCComponentEntityPosition(scene, entity, Vector3.zero, false);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -89,9 +90,21 @@ namespace DCL.ECSComponents
                 ProcessNewParent(scene, entity, model.parentId);
             }
 
-            sbcInternalComponent.SetPosition(scene, entity, transform.position);
+            UpdateSBCComponentEntityPosition(scene, entity, transform.position);
+        }
 
-            // TODO: Affect child SBCComponent...
+        public static void UpdateSBCComponentEntityPosition(IParcelScene scene, IDCLEntity entity, Vector3 position, bool createComponentIfMissing = true)
+        {
+            sbcInternalComponent.SetPosition(scene, entity, position, createComponentIfMissing);
+
+            // Update children position in their SBCComponent
+            foreach (long entityId in entity.childrenId)
+            {
+                if (scene.entities.TryGetValue(entityId, out IDCLEntity childEntity))
+                {
+                    UpdateSBCComponentEntityPosition(scene, childEntity, childEntity.gameObject.transform.position, createComponentIfMissing);
+                }
+            }
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
