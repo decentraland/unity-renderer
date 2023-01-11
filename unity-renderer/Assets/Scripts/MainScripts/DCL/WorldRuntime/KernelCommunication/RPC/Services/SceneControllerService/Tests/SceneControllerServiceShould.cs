@@ -2,9 +2,9 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
-using Decentraland.Renderer.RendererServices;
-using Decentraland.Common;
 using DCL.ECSRuntime;
+using Decentraland.Common;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using KernelCommunication;
 using NUnit.Framework;
@@ -50,7 +50,7 @@ namespace Tests
             testCancellationSource = new CancellationTokenSource();
 
             var serviceLocator = ServiceLocatorFactory.CreateDefault();
-            DCL.Environment.Setup(serviceLocator);
+            Environment.Setup(serviceLocator);
         }
 
         [TearDown]
@@ -130,6 +130,7 @@ namespace Tests
             testRpcServer.AttachTransport(serverTransport, context);
 
             RpcServerPort<RPCContext> currentServerPort = null;
+
             testRpcServer.SetHandler((port, t, c) =>
             {
                 currentServerPort = port;
@@ -194,9 +195,9 @@ namespace Tests
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(1);
                 crdtExecutors.Add(TEST_SCENE_NUMBER, new CRDTExecutor(testScene, componentsManager));
-                CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController,
-                    Environment.i.world.state, DataStore.i.rpc.context.crdt);
 
+                CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
+                    sceneController, DataStore.i.rpc.context.crdt);
 
                 // Prepare entity creation CRDT message
                 CRDTMessage crdtMessage = new CRDTMessage()
@@ -207,6 +208,7 @@ namespace Tests
                 };
 
                 bool messageReceived = false;
+
                 void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
                 {
                     Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
@@ -214,6 +216,7 @@ namespace Tests
                     Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
                 }
+
                 context.crdt.CrdtMessageReceived += OnCrdtMessageReceived;
 
                 // Send entity creation CRDT message
