@@ -46,7 +46,6 @@ namespace DCL.Rendering
             {
                 if (rendereable == null)
                 {
-                    Debug.Log("Rendereable is null");
                     rendereablesToRemove.Add(rendereable);
                     continue;
                 }
