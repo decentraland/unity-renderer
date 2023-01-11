@@ -25,7 +25,7 @@ namespace DCL
             DataStore.i.HUDs.navmapVisible.OnChange -= OnOpeningNavMap;
             DataStore.i.exploreV2.isOpen.OnChange -= OnExploreUiVisibilityChange;
 
-            MapRenderer.i.MapVisibilityChanged -= OnNavMapLoaded;
+            if (MapRenderer.i != null) { MapRenderer.i.MapVisibilityChanged -= OnNavMapLoaded; }
         }
 
         private void SubscribeToMapRenderer(bool current, bool previous)

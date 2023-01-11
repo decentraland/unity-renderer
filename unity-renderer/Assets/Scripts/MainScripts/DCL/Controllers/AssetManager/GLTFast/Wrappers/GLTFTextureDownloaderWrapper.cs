@@ -35,6 +35,7 @@ namespace DCL.GLTFast.Wrappers
 #if UNITY_WEBGL
                 texture2D.Compress(false);
 #endif
+                texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), true);
 
                 return texture2D;
             }
