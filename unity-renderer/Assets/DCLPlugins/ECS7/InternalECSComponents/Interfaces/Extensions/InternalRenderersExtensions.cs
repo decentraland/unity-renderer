@@ -21,7 +21,7 @@ namespace DCL.ECS7.InternalComponents
 
             if (model.renderers.Count == 0)
             {
-                renderersInternalComponent.RemoveFor(scene, entity);
+                renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers());
                 return;
             }
 

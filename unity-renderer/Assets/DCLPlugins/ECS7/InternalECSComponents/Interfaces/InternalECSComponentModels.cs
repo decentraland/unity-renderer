@@ -34,6 +34,14 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers = new List<Renderer>();
     }
 
+    public class InternalSceneBoundsCheck : InternalComponent
+    {
+        public Vector3 entityPosition = Vector3.zero;
+        public IList<Renderer> renderers;
+        public IList<Collider> colliders;
+        public Bounds entityMeshBounds = new Bounds();
+    }
+
     public class InternalVisibility : InternalComponent
     {
         public bool visible = true;

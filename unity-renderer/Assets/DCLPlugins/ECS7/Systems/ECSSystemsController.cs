@@ -2,6 +2,7 @@ using DCL;
 using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
+using ECSSystems.ECSSceneBoundsCheckerSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
@@ -29,6 +30,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSCameraEntitySystem cameraEntitySystem;
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSUIInputSenderSystem uiInputSenderSystem;
+    private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
@@ -51,13 +53,15 @@ public class ECSSystemsController : IDisposable
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
             DataStore.i.ecs7.scenes, Environment.i.world.state, DataStore.i.HUDs.loadingHUD.visible);
-
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
-
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock());
         playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter);
-
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+        sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
+            context.internalEcsComponents.sceneBoundsCheckComponent,
+            context.internalEcsComponents.renderersComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.physicColliderComponent);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -79,7 +83,8 @@ public class ECSSystemsController : IDisposable
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             uiInputSenderSystem.Update,
-            billboardSystem.Update
+            billboardSystem.Update,
+            sceneBoundsCheckerSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]

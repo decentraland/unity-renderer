@@ -16,6 +16,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     public IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
     public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
+    public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -81,6 +82,14 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
         uiInputResultsComponent = new InternalECSComponent<InternalUIInputResults>(
             InternalECSComponentsId.UI_INPUT_EVENTS_RESULT,
+            componentsManager,
+            componentsFactory,
+            null,
+            scheduledWrite
+        );
+
+        sceneBoundsCheckComponent = new InternalECSComponent<InternalSceneBoundsCheck>(
+            InternalECSComponentsId.SCENE_BOUNDS_CHECK,
             componentsManager,
             componentsFactory,
             null,

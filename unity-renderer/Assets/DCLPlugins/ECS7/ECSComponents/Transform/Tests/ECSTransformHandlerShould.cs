@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using DCL;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
@@ -27,7 +28,7 @@ namespace Tests
 
             worldState = Substitute.For<IWorldState>();
             playerTeleportPosition = Substitute.For<IBaseVariable<Vector3>>();
-            handler = new ECSTransformHandler(worldState, playerTeleportPosition);
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition, Substitute.For<InternalECSComponent<InternalSceneBoundsCheck>>());
         }
 
         [TearDown]
@@ -138,7 +139,7 @@ namespace Tests
 
             Vector3 position = new Vector3(8, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)), 
+            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)),
                 true);
         }
 

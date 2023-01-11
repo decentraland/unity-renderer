@@ -48,7 +48,7 @@ namespace DCL.ECS7.InternalComponents
             bool ret = compData.model.colliders.Remove(collider);
             if (ret && compData.model.colliders.Count == 0)
             {
-                colliderInternalComponent.RemoveFor(scene, entity);
+                colliderInternalComponent.RemoveFor(scene, entity, new InternalColliders());
             }
 
             return ret;

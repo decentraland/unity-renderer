@@ -1,4 +1,5 @@
 using DCL;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
@@ -22,7 +23,7 @@ namespace Tests
             entity = scene.CreateEntity(42);
 
             handler = new ECSTransformHandler(Substitute.For<IWorldState>(),
-                Substitute.For<BaseVariable<Vector3>>());
+                Substitute.For<BaseVariable<Vector3>>(), Substitute.For<InternalECSComponent<InternalSceneBoundsCheck>>());
         }
 
         [TearDown]

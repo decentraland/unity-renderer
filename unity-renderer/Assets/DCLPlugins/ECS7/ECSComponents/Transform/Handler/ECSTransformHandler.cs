@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -10,12 +11,14 @@ namespace DCL.ECSComponents
     {
         private readonly IWorldState worldState;
         private readonly IBaseVariable<Vector3> playerTeleportVariable;
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
-        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
+        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
             this.worldState = worldState;
             this.playerTeleportVariable = playerTeleportVariable;
+            this.sbcInternalComponent = sbcInternalComponent;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -59,6 +62,9 @@ namespace DCL.ECSComponents
                 }
                 entity.childrenId.Clear();
             }
+
+            // Clean SBC internal component
+            UpdateSceneBoundsCheckComponent(scene, entity, Vector3.zero, false);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -80,6 +86,26 @@ namespace DCL.ECSComponents
             {
                 ProcessNewParent(scene, entity, model.parentId);
             }
+
+            UpdateSceneBoundsCheckComponent(scene, entity, transform.position);
+        }
+
+        // TODO: Move into extension method
+        private void UpdateSceneBoundsCheckComponent(IParcelScene scene, IDCLEntity entity, Vector3 newPosition, bool createIfDoesntExist = true)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
+            if (model == null)
+            {
+                if (!createIfDoesntExist)
+                    return;
+
+                model = new InternalSceneBoundsCheck();
+            }
+
+            model.entityPosition = newPosition;
+
+            sbcInternalComponent.PutFor(scene, entity, model);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
