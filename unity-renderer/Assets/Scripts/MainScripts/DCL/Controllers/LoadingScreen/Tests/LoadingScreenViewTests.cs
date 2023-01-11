@@ -21,18 +21,20 @@ namespace DCL.LoadingScreen.Test
 
             //Act
             int currentLoadingValue = 0;
+            loadingScreenPercentageView.SetSceneLoadingMessage();
             loadingScreenPercentageView.SetLoadingPercentage(currentLoadingValue);
 
             //Assert
-            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetLoadingStringText(currentLoadingValue));
+            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetCurrentLoadingMessage(currentLoadingValue));
             Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
 
             //Act
             currentLoadingValue = 50;
+            loadingScreenPercentageView.SetSceneLoadingMessage();
             loadingScreenPercentageView.SetLoadingPercentage(currentLoadingValue);
 
             //Assert
-            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetLoadingStringText(currentLoadingValue));
+            Assert.AreEqual(loadingScreenPercentageView.loadingMessage.text, loadingScreenPercentageView.GetCurrentLoadingMessage(currentLoadingValue));
             Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
         }
 

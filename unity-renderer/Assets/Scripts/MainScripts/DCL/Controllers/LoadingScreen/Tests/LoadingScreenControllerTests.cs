@@ -61,6 +61,7 @@ namespace DCL.LoadingScreen.Test
             Assert.True(loadingScreenDataStore.decoupledLoadingHUD.visible.Get());
 
             //Act
+            commonDataStore.isPlayerRendererLoaded.Set(true);
             worldState.GetSceneNumberByCoords(destination).Returns(5);
             sceneController.OnReadyScene += Raise.Event<Action<int>>(5);
 

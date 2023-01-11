@@ -60,6 +60,7 @@ namespace DCL.LoadingScreen
         {
             loadingScreenPercentageView.gameObject.SetActive(true);
             currentDestination = newDestination;
+            loadingScreenPercentageView.SetSceneLoadingMessage();
             loadingScreenPercentageView.SetLoadingPercentage(0);
         }
 

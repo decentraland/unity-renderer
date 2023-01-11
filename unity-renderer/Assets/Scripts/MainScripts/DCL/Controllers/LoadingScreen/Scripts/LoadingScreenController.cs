@@ -113,9 +113,11 @@ namespace DCL.LoadingScreen
                 tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
             }
-
-            //We are going to check if the scene has timeout using the POSITION_SETTLED event.
-            CheckSceneTimeout(currentDestinationCandidate);
+            else
+            {
+                //We are going to check if the scene has timeout using the POSITION_SETTLED event.
+                CheckSceneTimeout(currentDestinationCandidate);
+            }
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,
