@@ -298,9 +298,6 @@ namespace DCL.Social.Friends
         private void UpdateUserPresence(UserStatus newUserStatus)
         {
             if (!friends.ContainsKey(newUserStatus.userId)) return;
-
-            // Kernel doesn't send the friendship status on this call, we have to keep it or it gets defaulted
-            newUserStatus.friendshipStatus = friends[newUserStatus.userId].friendshipStatus;
             UpdateUserStatus(newUserStatus);
         }
 
