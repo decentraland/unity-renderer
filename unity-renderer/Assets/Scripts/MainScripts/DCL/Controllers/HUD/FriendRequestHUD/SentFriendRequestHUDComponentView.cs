@@ -23,6 +23,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal GameObject bodyMessageContainer;
         [SerializeField] internal ShowHideAnimator confirmationToast;
         [SerializeField] internal Button rejectOperationButton;
+        [SerializeField] internal Canvas currentCanvas;
 
         private readonly Model model = new Model();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
@@ -143,6 +144,8 @@ namespace DCL.Social.Friends
         {
             dateLabel.text = date.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
+
+        public void SetSortingOrder(int sortingOrder) => currentCanvas.sortingOrder = sortingOrder;
 
         private void ShowConfirmationToast()
         {

@@ -20,7 +20,7 @@ namespace DCL.SettingsCommon
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,
             voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-            namesOpacity = 0.5f,
+            namesOpacity = 1f,
             profanityChatFiltering = true,
             nightMode = false,
             hideUI = false,

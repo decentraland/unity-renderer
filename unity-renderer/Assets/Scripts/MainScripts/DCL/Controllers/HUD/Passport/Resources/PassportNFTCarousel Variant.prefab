@@ -448,7 +448,6 @@ GameObject:
   - component: {fileID: 7991538823191963495}
   - component: {fileID: 5317783086333382432}
   - component: {fileID: 125258108544936433}
-  - component: {fileID: 7133590291539420148}
   m_Layer: 0
   m_Name: Arrow
   m_TagString: Untagged
@@ -514,22 +513,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7133590291539420148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4418820597067173533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playHover: 1
-  playClick: 1
-  playRelease: 1
-  extraClickEvent: {fileID: 0}
 --- !u!1 &4481483010493250862
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,7 +819,6 @@ GameObject:
   - component: {fileID: 6496717335447629847}
   - component: {fileID: 6231361263642503961}
   - component: {fileID: 6391454013801528814}
-  - component: {fileID: 2047528363890777844}
   m_Layer: 0
   m_Name: Arrow
   m_TagString: Untagged
@@ -902,22 +884,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2047528363890777844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5700423655723179788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playHover: 1
-  playClick: 1
-  playRelease: 1
-  extraClickEvent: {fileID: 0}
 --- !u!1 &6077283005478351656
 GameObject:
   m_ObjectHideFlags: 0

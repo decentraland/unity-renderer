@@ -114,7 +114,7 @@ namespace DCL.Emotes
                 else
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, emote.emoteDataV0);
 
-                dataStore.animations[(bodyShapeId, emoteId)] = emoteClipData;
+                dataStore.animations.Add((bodyShapeId, emoteId), emoteClipData);
 
                 if (animationLoader.loadedAnimationClip == null)
                 {

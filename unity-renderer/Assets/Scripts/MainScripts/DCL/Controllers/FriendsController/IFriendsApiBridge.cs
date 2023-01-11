@@ -38,5 +38,6 @@ namespace DCl.Social.Friends
         void CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
         UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId);
+        UniTask<FriendshipStatus> GetFriendshipStatus(string userId);
     }
 }
