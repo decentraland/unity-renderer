@@ -17,11 +17,14 @@ namespace DCL.Social.Passports
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal GameObject container;
         [SerializeField] internal RectTransform passportMask;
-        [SerializeField] internal CanvasGroup passportCanvas;
+        [SerializeField] internal Canvas passportCanvas;
+        [SerializeField] internal CanvasGroup passportCanvasGroup;
 
         public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
         public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
         public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
+        public int PassportCurrentSortingOrder => passportCanvas.sortingOrder;
+
         public event Action OnClose;
 
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
@@ -77,8 +80,8 @@ namespace DCL.Social.Passports
         {
             cancellationToken.ThrowIfCancellationRequested();
             passportMask.anchoredPosition = new Vector2(0, -180);
-            passportCanvas.alpha = 0;
-            passportCanvas.DOFade(1, 0.3f)
+            passportCanvasGroup.alpha = 0;
+            passportCanvasGroup.DOFade(1, 0.3f)
                           .SetEase(Ease.Linear);
             try
             {
@@ -101,8 +104,8 @@ namespace DCL.Social.Passports
         {
             cancellationToken.ThrowIfCancellationRequested();
             passportMask.anchoredPosition = new Vector2(0, 0);
-            passportCanvas.alpha = 1;
-            passportCanvas.DOFade(0, 0.3f)
+            passportCanvasGroup.alpha = 1;
+            passportCanvasGroup.DOFade(0, 0.3f)
                           .SetEase(Ease.Linear);
             try
             {

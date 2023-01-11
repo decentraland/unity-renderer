@@ -114,6 +114,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport += PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport += PlayerPointerExit;
         }
 
         public void Init()
@@ -440,6 +442,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

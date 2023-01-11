@@ -215,6 +215,21 @@ namespace DCL.Social.Friends
             return result;
         }
 
+        public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId)
+        {
+            FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId);
+
+            await UniTask.SwitchToMainThread();
+
+            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+            {
+                action = ToFriendshipAction(status),
+                userId = userId,
+            });
+
+            return status;
+        }
+
         public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
         {
             FriendRequest request = GetAllocatedFriendRequestByUser(friendUserId);
@@ -421,6 +436,22 @@ namespace DCL.Social.Friends
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.REQUESTED_TO, userId = userId });
+            }
+        }
+
+        private FriendshipAction ToFriendshipAction(FriendshipStatus status)
+        {
+            switch (status)
+            {
+                case FriendshipStatus.FRIEND:
+                    return FriendshipAction.APPROVED;
+                case FriendshipStatus.NOT_FRIEND:
+                default:
+                    return FriendshipAction.NONE;
+                case FriendshipStatus.REQUESTED_TO:
+                    return FriendshipAction.REQUESTED_TO;
+                case FriendshipStatus.REQUESTED_FROM:
+                    return FriendshipAction.REQUESTED_FROM;
             }
         }
     }

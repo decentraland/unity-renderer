@@ -15,6 +15,8 @@ using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using DCLServices.Lambdas.NamesService;
+using DCLServices.Lambdas.LandsService;
 
 public class HUDFactory : IHUDFactory
 {
@@ -66,6 +68,8 @@ public class HUDFactory : IHUDFactory
                             new WearableItemResolver(),
                             new WearablesCatalogControllerBridge(),
                             Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                            Environment.i.serviceLocator.Get<INamesService>(),
+                            Environment.i.serviceLocator.Get<ILandsService>(),
                             new UserProfileWebInterfaceBridge(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
