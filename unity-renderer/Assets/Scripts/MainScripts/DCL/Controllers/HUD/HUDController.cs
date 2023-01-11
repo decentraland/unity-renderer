@@ -90,10 +90,10 @@ public class HUDController : IHUDController
 
     private ChatChannelHUDController chatChannelHud =>
         GetHUDElement(HUDElementID.CHANNELS_CHAT) as ChatChannelHUDController;
-    
+
     private SearchChannelsWindowController channelSearchHud =>
         GetHUDElement(HUDElementID.CHANNELS_SEARCH) as SearchChannelsWindowController;
-    
+
     private CreateChannelWindowController channelCreateHud =>
         GetHUDElement(HUDElementID.CHANNELS_CREATE) as CreateChannelWindowController;
 
@@ -141,10 +141,7 @@ public class HUDController : IHUDController
 
     private void ToggleUIVisibility_OnTriggered(DCLAction_Trigger action)
     {
-        bool anyInputFieldIsSelected = EventSystem.current != null &&
-                                       EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject
-                                           .GetComponent<TMPro.TMP_InputField>() != null;
+        bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
             DataStore.i.exploreV2.isOpen.Get() ||
@@ -198,7 +195,7 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement(configuration, hudElementId);
-                NotificationsController.i?.Initialize(notificationHud);
+                NotificationsController.i?.Initialize(notificationHud, DataStore.i.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 CreateHudElement(configuration, hudElementId);
@@ -277,7 +274,7 @@ public class HUDController : IHUDController
                 if (chatChannelHud == null)
                 {
                     CreateHudElement(configuration, HUDElementID.CHANNELS_CHAT);
-                    
+
                     chatChannelHud.Initialize();
                     chatChannelHud.SetVisibility(false);
                     chatChannelHud.OnPressBack -= HandleChannelBacked;
@@ -442,7 +439,7 @@ public class HUDController : IHUDController
     {
         taskbarHud?.OpenPublicChat(channelId, true);
     }
-    
+
     private void OpenChannelChatWindow(string channelId)
     {
         taskbarHud?.OpenChannelChat(channelId);

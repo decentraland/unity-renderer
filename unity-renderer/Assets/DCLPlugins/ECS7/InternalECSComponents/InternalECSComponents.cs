@@ -15,6 +15,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalRenderers> renderersComponent { get; }
     public IInternalECSComponent<InternalVisibility> visibilityComponent { get; }
     public IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
+    public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -77,6 +78,14 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new UiContainerHandler(() => uiContainerComponent),
             scheduledWrite);
+
+        uiInputResultsComponent = new InternalECSComponent<InternalUIInputResults>(
+            InternalECSComponentsId.UI_INPUT_EVENTS_RESULT,
+            componentsManager,
+            componentsFactory,
+            null,
+            scheduledWrite
+        );
     }
 
     public void Dispose()

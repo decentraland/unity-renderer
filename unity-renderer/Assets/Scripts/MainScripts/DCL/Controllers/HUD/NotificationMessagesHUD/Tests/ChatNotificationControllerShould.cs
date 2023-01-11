@@ -300,7 +300,8 @@ namespace DCL.Chat.Notifications
             GivenProfile("friendId", "friendName");
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
-            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<string>>("friendId");
+            friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
+                new FriendRequest("friendRequestId", 0, "ownId", "friendId", "hey"));
 
             mainNotificationsView.Received(1).AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
                 f.UserId == "friendId"
@@ -341,6 +342,29 @@ namespace DCL.Chat.Notifications
                 && f.Message == "wants to be your friend."
                 && f.IsAccepted == false
                 && f.FriendRequestId == "friendRequestId"));
+        }
+
+        [Test]
+        public void OpenChatWhenClickOnAnApprovedFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
+
+            friendsController.IsFriend("sender").Returns(true);
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", true);
+
+            Assert.AreEqual("sender", dataStore.HUDs.openChat.Get());
+        }
+
+        [Test]
+        public void OpenFriendRequestWhenClickOnAnPendingFriendRequest()
+        {
+            friendsController.GetAllocatedFriendRequest("fr")
+                             .Returns(new FriendRequest("fr", 100, "sender", "receiver", ""));
+            friendsController.IsFriend("sender").Returns(false);
+            mainNotificationsView.OnClickedFriendRequest += Raise.Event<IMainChatNotificationsComponentView.ClickedNotificationDelegate>("fr", "sender", false);
+
+            Assert.AreEqual("fr", dataStore.HUDs.openReceivedFriendRequestDetail.Get());
         }
     }
 }

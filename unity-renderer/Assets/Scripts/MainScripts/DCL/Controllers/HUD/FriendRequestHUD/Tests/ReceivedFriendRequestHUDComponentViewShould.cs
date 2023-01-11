@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Globalization;
 
 namespace DCL.Social.Friends
 {
@@ -22,7 +23,6 @@ namespace DCL.Social.Friends
         [Test]
         [TestCase(0)]
         [TestCase(1)]
-        [TestCase(2)]
         public void ClickOnCloseButtonsCorrectly(int closeButtonIndex)
         {
             // Arrange
@@ -79,32 +79,6 @@ namespace DCL.Social.Friends
         }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ClickOnRetryButtonCorrectly(bool lastTryWasConfirm)
-        {
-            // Arrange
-            if (lastTryWasConfirm)
-                view.confirmButton.onClick.Invoke();
-            else
-                view.rejectButton.onClick.Invoke();
-
-            bool confirmFriendRequestTriggered = false;
-            view.OnConfirmFriendRequest += () => confirmFriendRequestTriggered = true;
-            bool rejectFriendRequestTriggered = false;
-            view.OnRejectFriendRequest += () => rejectFriendRequestTriggered = true;
-
-            // Act
-            view.retryButton.onClick.Invoke();
-
-            // Assert
-            if (lastTryWasConfirm)
-                Assert.IsTrue(confirmFriendRequestTriggered);
-            else
-                Assert.IsTrue(rejectFriendRequestTriggered);
-        }
-
-        [Test]
         public void SetBodyMessageCorrectly()
         {
             // Arrange
@@ -114,7 +88,7 @@ namespace DCL.Social.Friends
             view.SetBodyMessage(testMessage);
 
             // Assert
-            Assert.AreEqual(testMessage, view.bodyMessageInput.text);
+            Assert.IsTrue(view.bodyMessageInput.text.Contains(testMessage));
 
             if (!string.IsNullOrEmpty(testMessage))
                 Assert.IsTrue(view.bodyMessageContainer.activeSelf);
@@ -132,7 +106,7 @@ namespace DCL.Social.Friends
             view.SetTimestamp(testTimestamp);
 
             // Assert
-            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd").ToUpper(), view.dateLabel.text);
+            Assert.AreEqual(testTimestamp.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper(), view.dateLabel.text);
         }
 
         [Test]
@@ -153,7 +127,6 @@ namespace DCL.Social.Friends
         [Test]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Default)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Pending)]
-        [TestCase(ReceivedFriendRequestHUDModel.LayoutState.Failed)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess)]
         [TestCase(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess)]
         public void SetStateCorrectly(ReceivedFriendRequestHUDModel.LayoutState state)
@@ -168,40 +141,28 @@ namespace DCL.Social.Friends
             switch (state)
             {
                 case ReceivedFriendRequestHUDModel.LayoutState.Default:
-                    Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     foreach (var button in view.buttonsToDisableOnPendingState)
                         Assert.IsTrue(button.interactable);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.Pending:
-                    Assert.IsTrue(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     foreach (var button in view.buttonsToDisableOnPendingState)
                         Assert.IsFalse(button.interactable);
                     break;
-                case ReceivedFriendRequestHUDModel.LayoutState.Failed:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsTrue(view.failedContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
-                    foreach (var button in view.buttonsToDisableOnPendingState)
-                        Assert.IsTrue(button.interactable);
-                    break;
                 case ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
-                    Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsTrue(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsTrue(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     break;
                 case ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess:
-                    Assert.IsFalse(view.defaultContainer.activeSelf);
-                    Assert.IsFalse(view.failedContainer.activeSelf);
-                    Assert.IsTrue(view.rejectSuccessContainer.activeSelf);
-                    Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+                    Assert.IsFalse(view.showHideAnimatorForDefaultState.isVisible);
+                    Assert.IsTrue(view.showHideAnimatorForRejectSuccessState.isVisible);
+                    Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
                     break;
             }
         }
@@ -213,23 +174,11 @@ namespace DCL.Social.Friends
             view.Show();
 
             // Assert
-            Assert.IsTrue(view.defaultContainer.activeSelf);
-            Assert.IsFalse(view.failedContainer.activeSelf);
-            Assert.IsFalse(view.rejectSuccessContainer.activeSelf);
-            Assert.IsFalse(view.confirmSuccessContainer.activeSelf);
+            Assert.IsTrue(view.showHideAnimatorForDefaultState.isVisible);
+            Assert.IsFalse(view.showHideAnimatorForRejectSuccessState.isVisible);
+            Assert.IsFalse(view.showHideAnimatorForConfirmSuccessState.isVisible);
             foreach (var button in view.buttonsToDisableOnPendingState)
                 Assert.IsTrue(button.interactable);
-            Assert.IsTrue(view.gameObject.activeSelf);
-        }
-
-        [Test]
-        public void CloseCorrectly()
-        {
-            // Act
-            view.Close();
-
-            // Assert
-            Assert.IsFalse(view.gameObject.activeSelf);
         }
     }
 }

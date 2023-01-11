@@ -8,6 +8,7 @@ namespace DCL
     public class DataStore_HUDs
     {
         public readonly BaseVariable<bool> connectWalletModalVisible = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> closedWalletModal = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
@@ -35,10 +36,12 @@ namespace DCL
         public readonly BaseVariable<HashSet<string>> autoJoinChannelList = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseVariable<string> openedChat = new BaseVariable<string>("");
         public readonly BaseVariable<string> openPrivateChat = new BaseVariable<string>("");
+        public readonly BaseVariable<string> openChat = new BaseVariable<string>("");
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
         public readonly BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<int, Queue<IUIRefreshable>>>(new Dictionary<int, Queue<IUIRefreshable>>());
         public readonly BaseVariable<bool> enableNewPassport = new BaseVariable<bool>(false);
+        public readonly BaseVariable<int> currentPassportSortingOrder = new BaseVariable<int>();
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
         public readonly BaseVariable<string> sendFriendRequest = new BaseVariable<string>();
         public readonly BaseVariable<int> sendFriendRequestSource = new BaseVariable<int>();

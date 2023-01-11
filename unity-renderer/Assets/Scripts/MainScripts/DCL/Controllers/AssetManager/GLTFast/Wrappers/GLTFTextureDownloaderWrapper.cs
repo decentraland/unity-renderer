@@ -7,14 +7,14 @@ namespace DCL.GLTFast.Wrappers
 {
     internal class GltfTextureDownloaderWrapper : ITextureDownload
     {
-        private readonly WebRequestAsyncOperation asyncOp;
+        private readonly IWebRequestAsyncOperation asyncOp;
 
-        public GltfTextureDownloaderWrapper(WebRequestAsyncOperation asyncOp)
+        public GltfTextureDownloaderWrapper(IWebRequestAsyncOperation asyncOp)
         {
             this.asyncOp = asyncOp;
         }
 
-        public bool Success => asyncOp.isSucceded;
+        public bool Success => asyncOp.isSucceeded;
         public string Error => asyncOp.webRequest.error;
         public byte[] Data => asyncOp.webRequest.downloadHandler.data;
         public string Text => asyncOp.webRequest.downloadHandler.text;
@@ -35,6 +35,7 @@ namespace DCL.GLTFast.Wrappers
 #if UNITY_WEBGL
                 texture2D.Compress(false);
 #endif
+                texture2D = TextureHelpers.ClampSize(texture2D, DataStore.i.textureConfig.gltfMaxSize.Get(), true);
 
                 return texture2D;
             }

@@ -91,6 +91,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a3837a59671b94a699e1f72ece4c8d8d, type: 3}
   - {fileID: 21300000, guid: d4ee93e9eb8464972b0fd5598a452f50, type: 3}
   - {fileID: 21300000, guid: 2a24a45ae661148d2af4bc9f390fdd66, type: 3}
+  - {fileID: 21300000, guid: e1221c1b1e9a444d88ea67e0d34c071c, type: 3}
   - {fileID: 21300000, guid: c7f41b8bc4324443a82a0e197610125d, type: 3}
   - {fileID: 21300000, guid: 59b6b5bb7ec0348ef9f9d2890faa3efe, type: 3}
   - {fileID: 21300000, guid: 84c790cbe3a484378906dc785b6c5995, type: 3}
@@ -143,6 +144,7 @@ SpriteAtlas:
   - StarIcon
   - BottomIcon
   - CellGradient
+  - NoCollectiblesIcon
   - InfoIcon
   - ColorSelected
   - EyebrowIcon

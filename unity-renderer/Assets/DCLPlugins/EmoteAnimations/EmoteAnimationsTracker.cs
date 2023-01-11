@@ -103,11 +103,11 @@ namespace DCL.Emotes
             try
             {
                 var emote = await(emotesCatalogService.RequestEmoteAsync(emoteId, ct));
-                
+
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
                 await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, ct);
-                
+
                 EmoteClipData emoteClipData;
                 if(emote is EmoteItem newEmoteItem)
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, newEmoteItem.data.loop);

@@ -32,10 +32,12 @@ namespace DCl.Social.Friends
         void RequestFriendship(string friendUserId);
         UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody);
         UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId);
+        [Obsolete("Will be removed in the future")]
         UniTask CancelRequestByUserIdAsync(string userId);
-        [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
+        [Obsolete("Will be removed in the future")]
         void CancelRequestByUserId(string userId);
         void AcceptFriendship(string userId);
         UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId);
+        UniTask<FriendshipStatus> GetFriendshipStatus(string userId);
     }
 }

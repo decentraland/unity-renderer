@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -20,17 +20,14 @@ namespace Tests
         public void SetUp()
         {
             IParcelScene scene = Substitute.For<IParcelScene>();
-            WorldState worldState = new WorldState();
 
             crdtExecutor = Substitute.For<ICRDTExecutor>();
             crdtExecutor.crdtProtocol.Returns(new CRDTProtocol());
 
-            scene.crdtExecutor.Returns(crdtExecutor);
             scene.GetParcels().Returns(new HashSet<Vector2Int>());
             scene.sceneData.sceneNumber = SCENE_NUMBER;
-            worldState.AddScene(scene);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(worldState,
+            crdtWriteSystem = new ComponentCrdtWriteSystem(new Dictionary<int, ICRDTExecutor>() { { SCENE_NUMBER, crdtExecutor } },
                 Substitute.For<ISceneController>(), DataStore.i.rpc.context);
         }
 
@@ -51,13 +48,13 @@ namespace Tests
 
             crdtExecutor.WhenForAnyArgs(x => x.Execute(Arg.Any<CRDTMessage>()))
                         .Do(info =>
-                        {
-                            CRDTMessage crdtMessage = (CRDTMessage)info.Args()[0];
-                            Assert.AreEqual(ENTITY_ID, crdtMessage.key1);
-                            Assert.AreEqual(COMPONENT_ID, crdtMessage.key2);
-                            Assert.AreEqual(timeStamp, crdtMessage.timestamp);
-                            Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
-                        });
+                         {
+                             CRDTMessage crdtMessage = (CRDTMessage)info.Args()[0];
+                             Assert.AreEqual(ENTITY_ID, crdtMessage.key1);
+                             Assert.AreEqual(COMPONENT_ID, crdtMessage.key2);
+                             Assert.AreEqual(timeStamp, crdtMessage.timestamp);
+                             Assert.IsTrue(AreEqual(componentData, (byte[])crdtMessage.data));
+                         });
 
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
