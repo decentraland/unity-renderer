@@ -24,7 +24,6 @@ namespace ECSSystems.PlayerSystem
         private long timeStamp = 0;
         private bool newSceneAdded = false;
 
-        // TODO: dependency injection, camera syste refactor like this one
         public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter,
             BaseList<IParcelScene> sdk7Scenes, BaseVariable<Transform> avatarTransform, Vector3Variable worldOffset)
         {
