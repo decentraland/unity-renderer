@@ -1,4 +1,3 @@
-using DCL;
 using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.ECS7;
@@ -18,7 +17,6 @@ namespace ECSSystems.CameraSystem
         private readonly PBCameraMode reusableCameraMode;
         private readonly PBPointerLock reusablePointerLock;
         private readonly BaseVariable<Transform> cameraTransform;
-        private readonly RendererState rendererState;
         private readonly Vector3Variable worldOffset;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly IECSComponentWriter componentsWriter;
@@ -28,31 +26,46 @@ namespace ECSSystems.CameraSystem
         private Quaternion lastCameraRotation = Quaternion.identity;
         private bool newSceneAdded = false;
 
-        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter,  PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock)
+        private Transform currentCameraTransform;
+        private Vector3 currentWorldOffset;
+        private CameraMode.ModeId currentCameraMode;
+
+        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter, PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock,
+            BaseList<IParcelScene> loadedScenes, BaseVariable<Transform> cameraTransform, Vector3Variable worldOffset,
+            BaseVariableAsset<CameraMode.ModeId> cameraMode)
         {
-            cameraTransform = DataStore.i.camera.transform;
-            rendererState = CommonScriptableObjects.rendererState;
-            worldOffset = CommonScriptableObjects.worldOffset;
-            loadedScenes = DataStore.i.ecs7.scenes;
+            this.cameraTransform = cameraTransform;
+            this.worldOffset = worldOffset;
+            this.loadedScenes = loadedScenes;
             this.componentsWriter = componentsWriter;
-            cameraMode = CommonScriptableObjects.cameraMode;
+            this.cameraMode = cameraMode;
             this.reusableCameraMode = reusableCameraMode;
             this.reusablePointerLock = reusablePointerLock;
 
             loadedScenes.OnAdded += LoadedScenesOnOnAdded;
+            cameraTransform.OnChange += OnCameraTransformChanged;
+            worldOffset.OnChange += OnWorldOffsetChanged;
+            cameraMode.OnChange += OnCameraModeChanged;
+
+            OnCameraTransformChanged(cameraTransform.Get(), null);
+            OnWorldOffsetChanged(worldOffset.Get(), Vector3.zero);
+            OnCameraModeChanged(cameraMode.Get(), CameraMode.ModeId.ThirdPerson);
         }
 
         public void Dispose()
         {
             loadedScenes.OnAdded -= LoadedScenesOnOnAdded;
+            cameraTransform.OnChange -= OnCameraTransformChanged;
+            worldOffset.OnChange -= OnWorldOffsetChanged;
+            cameraMode.OnChange -= OnCameraModeChanged;
         }
 
         public void Update()
         {
-            if (!rendererState.Get())
+            if (currentCameraTransform == null)
                 return;
 
-            Transform cameraT = cameraTransform.Get();
+            Transform cameraT = currentCameraTransform;
 
             Vector3 cameraPosition = cameraT.position;
             Quaternion cameraRotation = cameraT.rotation;
@@ -63,10 +76,10 @@ namespace ECSSystems.CameraSystem
             lastCameraPosition = cameraPosition;
             lastCameraRotation = cameraRotation;
 
-            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(cameraMode.Get());
+            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
             reusablePointerLock.IsPointerLocked = Utils.IsCursorLocked;
 
-            Vector3 worldOffset = this.worldOffset.Get();
+            Vector3 worldOffset = currentWorldOffset;
             IReadOnlyList<IParcelScene> loadedScenes = this.loadedScenes;
 
             IParcelScene scene;
@@ -94,6 +107,21 @@ namespace ECSSystems.CameraSystem
         private void LoadedScenesOnOnAdded(IParcelScene obj)
         {
             newSceneAdded = true;
+        }
+
+        private void OnCameraModeChanged(CameraMode.ModeId current, CameraMode.ModeId previous)
+        {
+            currentCameraMode = current;
+        }
+
+        private void OnWorldOffsetChanged(Vector3 current, Vector3 previous)
+        {
+            currentWorldOffset = current;
+        }
+
+        private void OnCameraTransformChanged(Transform current, Transform previous)
+        {
+            currentCameraTransform = current;
         }
     }
 }
