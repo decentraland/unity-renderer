@@ -1,8 +1,15 @@
+using UnityEngine;
+
 public class GraphicCardWarningHUDController : IHUD
 {
     private const string GRAPHIC_CARD_MESSAGE = "Your machine is not using a dedicated graphics card to run Decentraland. This might lead to performance issues. Check your browser and OS configuration.";
+    private readonly string restartMessage;
 
-    public GraphicCardWarningHUDController() { }
+    public GraphicCardWarningHUDController()
+    {
+        restartMessage = GRAPHIC_CARD_MESSAGE + "and restart ";
+        restartMessage += Application.platform == RuntimePlatform.WebGLPlayer ? "your browser." : "the experience.";
+    }
 
     public void SetVisibility(bool visible)
     {
@@ -12,19 +19,14 @@ public class GraphicCardWarningHUDController : IHUD
         if (!visible)
             return;
 
-        if (!CommonScriptableObjects.tutorialActive.Get() && CommonScriptableObjects.rendererState)
-        {
-            TryShowNotification();
-        }
+        if (!CommonScriptableObjects.tutorialActive.Get() && CommonScriptableObjects.rendererState) { TryShowNotification(); }
         else
         {
             if (CommonScriptableObjects.tutorialActive)
                 CommonScriptableObjects.tutorialActive.OnChange += TutorialActiveChanged;
             else
                 CommonScriptableObjects.rendererState.OnChange += RendererStateChanged;
-
         }
-
     }
 
     private void TutorialActiveChanged(bool newState, bool oldState)
@@ -54,14 +56,15 @@ public class GraphicCardWarningHUDController : IHUD
                 buttonMessage = "Dismiss",
                 destroyOnFinish = true,
                 groupID = "GraphicCard",
-                message = GRAPHIC_CARD_MESSAGE,
+                message = restartMessage,
                 timer = 0,
                 type = DCL.NotificationModel.Type.GRAPHIC_CARD_WARNING
             });
         }
     }
 
-    private bool IsIntegratedGraphicCard() => DCL.Interface.WebInterface.GetGraphicCard().ToLower().Contains("intel");
+    private bool IsIntegratedGraphicCard() =>
+        DCL.Interface.WebInterface.GetGraphicCard().ToLower().Contains("intel");
 
     public void Dispose() { }
 }
