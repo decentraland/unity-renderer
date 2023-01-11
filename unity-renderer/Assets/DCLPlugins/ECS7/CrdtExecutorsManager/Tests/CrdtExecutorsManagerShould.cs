@@ -63,6 +63,16 @@ namespace Tests
         }
 
         [Test]
+        public void CreateCrdtExecutorOnSceneLoad()
+        {
+            const int sceneNumber = 666;
+            IParcelScene scene = testUtils.CreateScene(sceneNumber);
+
+            sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
+            Assert.AreEqual(1, crdtExecutors.Count);
+        }
+
+        [Test]
         public void IgnoreCrdtMessageWhenSceneNotLoaded()
         {
             const int sceneNumber = 666;
