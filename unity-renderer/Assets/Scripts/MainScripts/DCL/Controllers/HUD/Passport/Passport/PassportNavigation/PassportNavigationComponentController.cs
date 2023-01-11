@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace DCL.Social.Passports
 {
-    public class PassportNavigationComponentController
+    public class PassportNavigationComponentController : IDisposable
     {
         private const int MAX_NFT_COUNT = 40;
 
@@ -56,31 +56,44 @@ namespace DCL.Social.Passports
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
-        public UniTask UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile, cts.Token);
+        public void UpdateWithUserProfile(UserProfile userProfile)
+        {
+            async UniTaskVoid UpdateWithUserProfileAsync()
+            {
+                var ct = cts.Token;
+                currentUserId = userProfile.userId;
+                wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
+                string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
+                view.SetGuestUser(userProfile.isGuest);
+                view.SetName(filteredName);
+
+                if (!userProfile.isGuest)
+                {
+                    string filteredDescription = await FilterContentAsync(userProfile.description).AttachExternalCancellation(ct);
+                    view.SetDescription(filteredDescription);
+                    view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
+                    LoadAndShowOwnedNamesAsync(userProfile).Forget();
+                    LoadAndShowOwnedLandsAsync(userProfile).Forget();
+                    LoadAndDisplayEquippedWearablesAsync(userProfile, ct).Forget();
+                }
+            }
+
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+            UpdateWithUserProfileAsync().Forget();
+        }
 
         public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
 
-        public void Close()
+        public void Dispose()
         {
-            cts.Dispose();
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
         }
 
-        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile, CancellationToken ct)
-        {
-            ct.ThrowIfCancellationRequested();
-            currentUserId = userProfile.userId;
-            wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
-            string filteredName = await FilterContentAsync(userProfile.userName);
-            view.SetGuestUser(userProfile.isGuest);
-            view.SetName(filteredName);
-            if (!userProfile.isGuest)
-            {
-                string filteredDescription = await FilterContentAsync(userProfile.description);
-                view.SetDescription(filteredDescription);
-                view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                await LoadAndDisplayEquippedWearablesAsync(userProfile, ct);
-            }
-        }
+
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
         {
@@ -92,8 +105,7 @@ namespace DCL.Social.Passports
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile);
-                    LoadAndShowOwnedNamesAsync(userProfile).Forget();
-                    LoadAndShowOwnedLandsAsync(userProfile).Forget();
+
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;

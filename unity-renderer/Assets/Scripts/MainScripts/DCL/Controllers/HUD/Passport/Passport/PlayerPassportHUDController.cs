@@ -81,7 +81,6 @@ namespace DCL.Social.Passports
         private void ClosePassport()
         {
             RemoveCurrentPlayer();
-            passportNavigationController.Close();
         }
 
         /// <summary>
@@ -107,6 +106,7 @@ namespace DCL.Social.Passports
 
             playerInfoController.Dispose();
             playerPreviewController.Dispose();
+            passportNavigationController.Dispose();
 
             if (view != null)
                 view.Dispose();
@@ -136,7 +136,7 @@ namespace DCL.Social.Passports
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
-                UpdateUserProfileInSubpanelsAsync(currentUserProfile, true).Forget();
+                UpdateUserProfile(currentUserProfile, true);
             }
         }
 
@@ -189,19 +189,16 @@ namespace DCL.Social.Passports
             socialAnalytics.SendClickedOnCollectibles();
         }
 
-        private void UpdateUserProfile(UserProfile userProfile) => UpdateUserProfileInSubpanelsAsync(userProfile, false).Forget();
-
-        private async UniTask UpdateUserProfileInSubpanelsAsync(UserProfile userProfile, bool activateLoading)
+        private void UpdateUserProfile(UserProfile userProfile)
         {
-            if (activateLoading)
-                playerPreviewController.SetAsLoading(true);
+            UpdateUserProfile(userProfile, false);
+        }
 
-            await playerPreviewController.UpdateWithUserProfileAsync(userProfile);
+        private void UpdateUserProfile(UserProfile userProfile, bool activateLoading)
+        {
+            playerPreviewController.UpdateWithUserProfile(userProfile, activateLoading);
             playerInfoController.UpdateWithUserProfile(userProfile);
-            await passportNavigationController.UpdateWithUserProfile(userProfile);
-
-            if (activateLoading)
-                playerPreviewController.SetAsLoading(false);
+            passportNavigationController.UpdateWithUserProfile(userProfile);
         }
 
         private void RemoveCurrentPlayer()
