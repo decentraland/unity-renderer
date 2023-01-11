@@ -12,6 +12,7 @@ namespace DCl.Social.Friends
         [Obsolete("Old API. Use GetFriendRequestsAsync instead")]
         event Action<AddFriendRequestsPayload> OnFriendRequestsAdded;
         event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
+        // TODO: friendship status should not be in the user presence. Make a different payload instead
         event Action<UserStatus> OnUserPresenceUpdated;
         event Action<FriendshipUpdateStatusMessage> OnFriendshipStatusUpdated;
         event Action<UpdateTotalFriendRequestsPayload> OnTotalFriendRequestCountUpdated;
