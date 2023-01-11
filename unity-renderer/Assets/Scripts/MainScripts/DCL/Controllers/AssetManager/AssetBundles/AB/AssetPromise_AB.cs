@@ -16,9 +16,9 @@ namespace DCL
         public static event Action OnDownloadingProgressUpdate;
         public static int queueCount => AssetPromiseKeeper_AB.i.waitingPromisesCount;
 
-        static HashSet<string> failedRequestUrls = new HashSet<string>();
+        static HashSet<string> failedRequestUrls = new ();
 
-        List<AssetPromise_AB> dependencyPromises = new List<AssetPromise_AB>();
+        List<AssetPromise_AB> dependencyPromises = new ();
 
         public static AssetBundlesLoader assetBundlesLoader = new ();
 

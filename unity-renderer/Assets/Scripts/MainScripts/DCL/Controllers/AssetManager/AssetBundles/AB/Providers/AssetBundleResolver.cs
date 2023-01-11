@@ -39,7 +39,7 @@ namespace DCL.Providers
                     if (assetBundle)
                     {
                         Debug.Log($"Asset Bundle {hash} loaded from {provider}");
-                        break;
+                        return assetBundle;
                     }
                 }
 
