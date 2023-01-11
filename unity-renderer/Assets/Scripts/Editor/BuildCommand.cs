@@ -95,13 +95,7 @@ static class BuildCommand
     }
 
     static BuildOptions GetBuildOptions()
-    {
-        // string buildOptions = GetArgument("customBuildOptions");
-
-        // return buildOptions == "AcceptExternalModificationsToPlayer"
-        //     ? BuildOptions.AcceptExternalModificationsToPlayer
-        //     : BuildOptions.None;
-        
+    {        
         return BuildOptions.Development;
     }
 
