@@ -76,6 +76,7 @@ namespace Tests
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage = new CRDTMessage()
             {
@@ -96,6 +97,7 @@ namespace Tests
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage1 = new CRDTMessage()
             {
