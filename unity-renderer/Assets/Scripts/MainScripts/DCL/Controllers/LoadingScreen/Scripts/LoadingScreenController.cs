@@ -161,8 +161,17 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
+            Environment.i.platform.cullingController.Restart();
+            Environment.i.platform.cullingController.CycleFinished += CullingCycleFinished;
+        }
+
+        private void CullingCycleFinished()
+        {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+            Environment.i.platform.cullingController.CycleFinished -= CullingCycleFinished;
         }
+
+
     }
 }

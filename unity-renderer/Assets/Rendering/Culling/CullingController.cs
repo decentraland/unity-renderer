@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Models;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
@@ -42,7 +43,7 @@ namespace DCL.Rendering
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
 
-        //public EventHandler CycleFinished; 
+        public event Action CycleFinished;
         public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
@@ -93,12 +94,12 @@ namespace DCL.Rendering
             StartInternal();
         }
 
-        //public void Restart()
-        //{
-        //    if (running)
-        //        Stop();
-        //    Start();
-        //}
+        public void Restart()
+        {
+            if (running)
+                Stop();
+            Start();
+        }
 
         private void StartInternal()
         {
@@ -342,7 +343,7 @@ namespace DCL.Rendering
                 timeBudgetCount = 0;
                 yield return null;
 
-                //CycleFinished?.Invoke(this, EventArgs.Empty);
+                CycleFinished?.Invoke();
             }
         }
 

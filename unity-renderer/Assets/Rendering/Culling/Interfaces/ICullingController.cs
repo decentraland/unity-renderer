@@ -15,10 +15,14 @@ namespace DCL.Rendering
         bool IsRunning();
 
         bool IsDirty();
+
+        void Restart();
         ICullingObjectsTracker objectsTracker { get; }
 
         delegate void DataReport(int rendererCount, int hiddenRendererCount, int hiddenShadowCount);
 
         event ICullingController.DataReport OnDataReport;
+
+        event Action CycleFinished;
     }
 }
