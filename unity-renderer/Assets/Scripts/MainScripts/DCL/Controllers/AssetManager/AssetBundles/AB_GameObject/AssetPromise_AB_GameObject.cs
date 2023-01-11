@@ -132,7 +132,7 @@ namespace DCL
             }
         }
 
-        public IEnumerator InstantiateABGameObjects()
+        private IEnumerator InstantiateABGameObjects()
         {
             var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
 
@@ -190,7 +190,7 @@ namespace DCL
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
             var uploadToGPU = featureFlags.Get().IsFeatureEnabled(GPU_ONLY_MESHES);
-            
+
             foreach ( Mesh mesh in meshesList )
             {
                 if ( !mesh.isReadable )
@@ -198,7 +198,7 @@ namespace DCL
 
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
-                
+
                 if (uploadToGPU)
                 {
                     Physics.BakeMesh(mesh.GetInstanceID(), false);
