@@ -64,18 +64,23 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 internalSceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
-            // TODO: Traverse inversed to check if model is totally default and remove component in that case...
             var sbcComponents = internalSceneBoundsCheckComponent.GetForAll();
-            for (int i = 0; i < sbcComponents.Count; i++)
+            for (int i = sbcComponents.Count-1; i >= 0 ; i--)
             {
                 var componentData = sbcComponents[i].value;
+
+                if (internalSceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
+                {
+                    // Since no other component is using the internal SBC component, we remove it.
+                    internalSceneBoundsCheckComponent.RemoveFor(componentData.scene, componentData.entity);
+                    continue;
+                }
 
                 // TODO: Avoid recalculating when not needed... (based on dirty state of the other 3 internal components ???)
                 internalSceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
 
                 if(!componentData.model.dirty) continue;
 
-                // Debug.Log($"entity pos: {model.entityPosition}, dirty? {model.dirty}");
                 //TODO: add cpu time budget managing here
 
                 RunEntityEvaluation(componentData);

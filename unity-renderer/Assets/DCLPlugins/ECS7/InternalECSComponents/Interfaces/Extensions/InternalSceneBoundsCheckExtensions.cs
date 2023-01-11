@@ -89,5 +89,18 @@ namespace DCL.ECS7.InternalComponents
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
+
+        public static bool IsFullyDefaulted(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+
+            return model == null || (
+                model.entityPosition == Vector3.zero
+                && (model.renderers == null || model.renderers.Count == 0)
+                && (model.physicsColliders == null || model.physicsColliders.Count == 0)
+                && (model.pointerColliders == null || model.pointerColliders.Count == 0)
+            );
+        }
     }
 }
