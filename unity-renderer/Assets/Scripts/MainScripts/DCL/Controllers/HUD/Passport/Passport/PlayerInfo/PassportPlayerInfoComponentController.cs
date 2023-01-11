@@ -8,7 +8,7 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerInfoComponentController
     {
-        private IPassportPlayerInfoComponentView view;
+        private readonly IPassportPlayerInfoComponentView view;
         private readonly DataStore dataStore;
         private readonly IProfanityFilter profanityFilter;
         private readonly IFriendsController friendsController;
@@ -48,6 +48,14 @@ namespace DCL.Social.Passports
             view.OnWhisperUser += WhisperUser;
             view.OnJumpInUser += JumpInUser;
             view.OnWalletCopy += WalletCopy;
+
+            friendsController.OnUpdateFriendship += UpdateFriendshipStatus;
+        }
+
+        public void Dispose()
+        {
+            view.Dispose();
+            friendsController.OnUpdateFriendship -= UpdateFriendshipStatus;
         }
 
         private void WalletCopy()
@@ -62,7 +70,7 @@ namespace DCL.Social.Passports
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile) =>
-            UpdateWithUserProfileAsync(userProfile);
+            UpdateWithUserProfileAsync(userProfile).Forget();
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
@@ -88,12 +96,13 @@ namespace DCL.Social.Passports
                     isGuest = userProfile.isGuest,
                     isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
                     hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
-                    friendshipStatus = friendsController.GetUserStatus(userProfile.userId).friendshipStatus
+                    friendshipStatus = await friendsController.GetFriendshipStatus(userProfile.userId),
                 };
             }
 
             view.SetModel(playerPassportModel);
             view.InitializeJumpInButton(friendsController, userProfile.userId, socialAnalytics);
+            view.SetActionsActive(userProfile.userId != ownUserProfile.userId);
         }
 
         private async UniTask<string> FilterName(UserProfile userProfile)
@@ -132,15 +141,21 @@ namespace DCL.Social.Passports
         {
             if (isNewFriendRequestsEnabled)
             {
-                try { await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10)); }
+                try
+                {
+                    await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10));
+                    dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
+                }
                 catch (Exception e)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+
                     socialAnalytics.SendFriendRequestError(request?.From, request?.To,
                         "modal",
                         e is FriendshipException fe
                             ? fe.ErrorCode.ToString()
                             : FriendRequestErrorCodes.Unknown.ToString());
+
                     throw;
                 }
             }
@@ -162,23 +177,28 @@ namespace DCL.Social.Passports
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
                     await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
+
                     socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),
                         request.HasBodyMessage);
                 }
                 catch (Exception e)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
+
                     socialAnalytics.SendFriendRequestError(request?.From, request?.To,
                         "modal",
                         e is FriendshipException fe
                             ? fe.ErrorCode.ToString()
                             : FriendRequestErrorCodes.Unknown.ToString());
+
                     throw;
                 }
             }
             else
             {
                 friendsController.AcceptFriendship(currentPlayerId);
+
                 socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),
                     false);
             }
@@ -213,6 +233,31 @@ namespace DCL.Social.Passports
             dataStore.HUDs.openPrivateChat.Set(userId);
             socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
             OnClosePassport?.Invoke();
+        }
+
+        private void UpdateFriendshipStatus(string userId, FriendshipAction action)
+        {
+            if (userId != currentPlayerId) return;
+            view.SetFriendStatus(ToFriendshipStatus(action));
+        }
+
+        private FriendshipStatus ToFriendshipStatus(FriendshipAction action)
+        {
+            switch (action)
+            {
+                case FriendshipAction.APPROVED:
+                    return FriendshipStatus.FRIEND;
+                case FriendshipAction.REQUESTED_TO:
+                    return FriendshipStatus.REQUESTED_TO;
+                case FriendshipAction.REQUESTED_FROM:
+                    return FriendshipStatus.REQUESTED_FROM;
+                case FriendshipAction.NONE:
+                case FriendshipAction.DELETED:
+                case FriendshipAction.REJECTED:
+                case FriendshipAction.CANCELLED:
+                default:
+                    return FriendshipStatus.NOT_FRIEND;
+            }
         }
     }
 }

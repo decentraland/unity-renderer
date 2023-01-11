@@ -1,5 +1,7 @@
 using AvatarSystem;
 using DCL.Social.Friends;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
@@ -58,6 +60,8 @@ namespace DCL.Social.Passports
                                 wearableItemResolver,
                                 Substitute.For<IWearableCatalogBridge>(),
                                 Substitute.For<IEmotesCatalogService>(),
+                                Substitute.For<INamesService>(),
+                                Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
                                 dataStore);
 

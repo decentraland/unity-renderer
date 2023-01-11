@@ -224,6 +224,11 @@ namespace DCL
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerEnterReport += PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerExitReport += PlayerPointerExit;
+
             UpdatePlayerStatus(model);
 
             onPointerDown.Initialize(
@@ -453,6 +458,8 @@ namespace DCL
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

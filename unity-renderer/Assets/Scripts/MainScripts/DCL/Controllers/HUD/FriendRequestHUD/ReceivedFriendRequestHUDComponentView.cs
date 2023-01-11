@@ -29,6 +29,7 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button[] buttonsToDisableOnPendingState;
         [SerializeField] internal TMP_Text rejectSuccessLabel;
         [SerializeField] internal TMP_Text confirmSuccessLabel;
+        [SerializeField] internal Canvas currentCanvas;
 
         public event Action OnClose;
         public event Action OnOpenProfile;
@@ -84,7 +85,7 @@ namespace DCL.Social.Friends
             SetTimestamp(model.RequestDate);
             SetSenderName(model.UserName);
             SetSenderProfilePicture(model.UserProfilePictureUri);
-            SetOwnProfilePicture(model.OwnProfilePictureUri);
+            SetRecipientProfilePicture(model.OwnProfilePictureUri);
             SetState(model.State);
         }
 
@@ -122,7 +123,7 @@ namespace DCL.Social.Friends
             otherProfileImageInConfirmRejectState.SetImage(uri);
         }
 
-        public void SetOwnProfilePicture(string uri)
+        public void SetRecipientProfilePicture(string uri)
         {
             model.OwnProfilePictureUri = uri;
             ownProfileImageInConfirmSuccessState.SetImage(uri);
@@ -158,6 +159,8 @@ namespace DCL.Social.Friends
         }
 
         public void Close() => base.Hide();
+
+        public void SetSortingOrder(int sortingOrder) => currentCanvas.sortingOrder = sortingOrder;
 
         private void SetDefaultState()
         {

@@ -86,6 +86,9 @@ public class FriendsController_Mock : IFriendsController
     public FriendRequest GetAllocatedFriendRequestByUser(string userId) =>
         null;
 
+    public UniTask<FriendshipStatus> GetFriendshipStatus(string userId) =>
+        UniTask.FromResult(FriendshipStatus.NOT_FRIEND);
+
     public UserStatus GetUserStatus(string userId)
     {
         return friends.ContainsKey(userId) ? friends[userId] : default;

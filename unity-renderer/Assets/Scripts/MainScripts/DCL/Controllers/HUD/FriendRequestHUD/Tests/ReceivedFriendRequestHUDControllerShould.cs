@@ -88,7 +88,7 @@ namespace DCL.Social.Friends
             view.Received(1).SetTimestamp(Arg.Is<DateTime>(d => d.Ticks == 621355968001000000));
             view.Received(1).SetSenderName("senderName");
             view.Received(1).SetSenderProfilePicture("senderFaceUrl");
-            view.Received(1).SetOwnProfilePicture("ownFaceUrl");
+            view.Received(1).SetRecipientProfilePicture("ownFaceUrl");
             view.Received(1).Show();
         }
 

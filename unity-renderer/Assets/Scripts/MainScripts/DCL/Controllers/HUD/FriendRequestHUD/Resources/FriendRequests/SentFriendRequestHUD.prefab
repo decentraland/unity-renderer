@@ -3641,6 +3641,7 @@ MonoBehaviour:
   bodyMessageContainer: {fileID: 1006705377543043626}
   confirmationToast: {fileID: 5127468622566984551}
   rejectOperationButton: {fileID: 6234569260242100845}
+  currentCanvas: {fileID: 732256080388820253}
 --- !u!1 &8186984181458661364
 GameObject:
   m_ObjectHideFlags: 0
