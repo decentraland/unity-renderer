@@ -3,6 +3,7 @@
 #endif
 
 using DCL.Helpers;
+using NSubstitute.Core;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,16 @@ namespace DCL
         {
             hudCanvasCameraModeController?.Dispose();
             unlockInputAction.OnTriggered -= HandleUnlockInput;
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (DataStore.i.camera.leftMouseButtonCursorLock.Get()) return;
+
+            if (Input.GetMouseButton(1))
+                LockCursor();
+            else
+                UnlockCursor();
         }
 
         public void LockCursor()
