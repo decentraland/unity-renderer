@@ -1,3 +1,4 @@
+using DCL;
 using DCL.NotificationModel;
 using UnityEngine;
 
@@ -10,15 +11,26 @@ public class NotificationsController : MonoBehaviour
 
     void Awake() { i = this; }
 
-    INotificationHUDController controller;
+    private INotificationHUDController controller;
+    private DataStore_Notifications notificationsDataStore;
 
-    public void Initialize(INotificationHUDController controller)
+    // TODO: refactor into a bridge->service architecture so this dependencies are properly injected
+    public void Initialize(
+        INotificationHUDController controller,
+        DataStore_Notifications notificationsDataStore)
     {
         this.controller = controller;
+        this.notificationsDataStore = notificationsDataStore;
         allowNotifications = true;
+
+        this.notificationsDataStore.DefaultErrorNotification.OnChange += ShowDefaultErrorNotification;
     }
 
-    public void Dispose() { controller.Dispose(); }
+    public void Dispose()
+    {
+        notificationsDataStore.DefaultErrorNotification.OnChange -= ShowDefaultErrorNotification;
+        controller.Dispose();
+    }
 
     public void ShowNotificationFromJson(string notificationJson)
     {
@@ -54,5 +66,16 @@ public class NotificationsController : MonoBehaviour
 
         //TODO(Brian): This should be triggered entirely by kernel
         controller?.ShowWelcomeNotification();
+    }
+
+    private void ShowDefaultErrorNotification(string errorText, string _)
+    {
+        ShowNotification(new Model
+        {
+            message = errorText,
+            type = Type.ERROR,
+            timer = 5f,
+            destroyOnFinish = true
+        });
     }
 }

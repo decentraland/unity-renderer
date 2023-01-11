@@ -68,13 +68,15 @@ public class HUDFactory : IHUDFactory
                             new WearableItemResolver(),
                             new WearablesCatalogControllerBridge(),
                             Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                            new UserProfileWebInterfaceBridge(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
-                            new UserProfileWebInterfaceBridge()));
+                            new UserProfileWebInterfaceBridge()),
+                        DataStore.i);
                 }
                 else
                 {

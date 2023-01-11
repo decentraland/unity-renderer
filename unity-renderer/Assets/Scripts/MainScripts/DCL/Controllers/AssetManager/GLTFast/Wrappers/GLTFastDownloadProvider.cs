@@ -15,20 +15,18 @@ namespace DCL.GLTFast.Wrappers
         private readonly IWebRequestController webRequestController;
         private readonly AssetIdConverter fileToUrl;
         private List<IDisposable> disposables = new ();
+        private string baseUrl;
 
-        public GltFastDownloadProvider(IWebRequestController webRequestController, AssetIdConverter fileToUrl)
+        public GltFastDownloadProvider(string baseUrl, IWebRequestController webRequestController, AssetIdConverter fileToUrl)
         {
+            this.baseUrl = baseUrl;
             this.webRequestController = webRequestController;
             this.fileToUrl = fileToUrl;
         }
 
         public async Task<IDownload> Request(Uri uri)
         {
-            string finalUrl = uri.OriginalString;
-
-            string fileName = uri.AbsolutePath.Substring(uri.AbsolutePath.LastIndexOf('/') + 1);
-
-            if (fileToUrl(fileName, out string url)) { finalUrl = url; }
+            string finalUrl = GetFinalUrl(uri);
 
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
@@ -42,18 +40,26 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
+            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
 
             return wrapper;
         }
 
+        private string GetFinalUrl(Uri uri)
+        {
+            var finalUrl = uri.OriginalString;
+
+            finalUrl = finalUrl.Replace(baseUrl, "");
+
+            return fileToUrl(finalUrl, out string url) ? url : uri.OriginalString;
+        }
+
         public async Task<ITextureDownload> RequestTexture(Uri uri, bool nonReadable)
         {
-            string fileName = uri.AbsolutePath.Substring(uri.AbsolutePath.LastIndexOf('/') + 1);
-            fileToUrl(fileName, out string url);
+            string finalUrl = GetFinalUrl(uri);
 
-            WebRequestAsyncOperation asyncOp = webRequestController.GetTexture(
-                url: url,
+            var asyncOp = webRequestController.GetTexture(
+                url: finalUrl,
                 timeout: 30,
                 disposeOnCompleted: false,
                 requestAttemps: 3);
@@ -63,7 +69,7 @@ namespace DCL.GLTFast.Wrappers
 
             while (wrapper.MoveNext()) { await Task.Yield(); }
 
-            if (!wrapper.success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
+            if (!wrapper.Success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
 
             return wrapper;
         }

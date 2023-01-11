@@ -12,7 +12,7 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenTipsController
     {
-        private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(2);
+        private readonly TimeSpan SHOWING_TIME_TIPS = TimeSpan.FromSeconds(5);
 
         private List<LoadingTip> currentLoadingTips;
         private int currentRandomIndex;
@@ -63,8 +63,12 @@ namespace DCL.LoadingScreen
 
         public void StopTips()
         {
+            //This means that tips have been already stopped once. We only show them once, so we return and ignore this function
+            if (disposeCts ==  null) return;
+
+            tipsView.gameObject.SetActive(false);
             disposeCts.Cancel();
-            disposeCts?.Dispose();
+            disposeCts.Dispose();
             disposeCts = null;
         }
 

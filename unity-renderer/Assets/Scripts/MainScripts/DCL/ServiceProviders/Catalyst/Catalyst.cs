@@ -225,9 +225,11 @@ public class Catalyst : ICatalyst
         realmContentServerUrl = current.contentServerUrl;
     }
 
-    private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo Current, AboutResponse.Types.LambdasInfo Previous) =>
-        lambdasUrl = Current.PublicUrl;
+    private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo current, AboutResponse.Types.LambdasInfo previous)
+    {
+        lambdasUrl = current.PublicUrl;
+    }
 
-    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo Current, AboutResponse.Types.ContentInfo Previous) =>
-        realmContentServerUrl = Current.PublicUrl;
+    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous) =>
+        realmContentServerUrl = current.PublicUrl;
 }

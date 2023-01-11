@@ -15,7 +15,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@dcl/protocol": "^1.0.0-3695908652.commit-2552b6c",
+    "@dcl/protocol": "^1.0.0-3840796783.commit-1c7238d",
     "@protobuf-ts/protoc": "^2.8.1",
     "@types/fs-extra": "^9.0.8",
     "@types/glob": "^8.0.0",
@@ -23,7 +23,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "node-fetch": "^2.6.1",
-    "protoc-gen-dclunity": "^1.0.0-20221212212024.commit-ef8b6d6"
+    "protoc-gen-dclunity": "^1.0.0-20221220125058.commit-f88552f"
   },
   "config": {
     "protocVersion": "3.20.1"

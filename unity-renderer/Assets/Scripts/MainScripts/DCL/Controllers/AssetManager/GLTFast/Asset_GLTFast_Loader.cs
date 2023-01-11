@@ -21,8 +21,8 @@ namespace DCL
 
         public async UniTask InstantiateAsync(Transform containerTransform)
         {
-            if (GltfImport.sceneCount > 1)
-                for (int i = 0; i < GltfImport.sceneCount; i++)
+            if (GltfImport.SceneCount > 1)
+                for (int i = 0; i < GltfImport.SceneCount; i++)
                 {
                     var targetTransform = containerTransform;
                     if (i != 0)

@@ -9,6 +9,7 @@ TagManager:
   - Voxel
   - FromAssetBundle
   - FromRawGLTF
+  - FromParametrized
   layers:
   - Default
   - TransparentFX
