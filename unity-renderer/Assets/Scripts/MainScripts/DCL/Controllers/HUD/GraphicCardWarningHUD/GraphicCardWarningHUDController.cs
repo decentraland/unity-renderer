@@ -1,3 +1,5 @@
+using DCL.Interface;
+using DCL.NotificationModel;
 using UnityEngine;
 
 public class GraphicCardWarningHUDController : IHUD
@@ -11,6 +13,8 @@ public class GraphicCardWarningHUDController : IHUD
         restartMessage += Application.platform == RuntimePlatform.WebGLPlayer ? "your browser." : "the experience.";
     }
 
+    public void Dispose() { }
+
     public void SetVisibility(bool visible)
     {
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActiveChanged;
@@ -19,7 +23,8 @@ public class GraphicCardWarningHUDController : IHUD
         if (!visible)
             return;
 
-        if (!CommonScriptableObjects.tutorialActive.Get() && CommonScriptableObjects.rendererState) { TryShowNotification(); }
+        if (!CommonScriptableObjects.tutorialActive.Get() && CommonScriptableObjects.rendererState)
+            TryShowNotification();
         else
         {
             if (CommonScriptableObjects.tutorialActive)
@@ -29,7 +34,7 @@ public class GraphicCardWarningHUDController : IHUD
         }
     }
 
-    private void TutorialActiveChanged(bool newState, bool oldState)
+    private void TutorialActiveChanged(bool newState, bool _)
     {
         if (newState)
             return;
@@ -38,7 +43,7 @@ public class GraphicCardWarningHUDController : IHUD
         TryShowNotification();
     }
 
-    private void RendererStateChanged(bool newState, bool oldState)
+    private void RendererStateChanged(bool newState, bool _)
     {
         if (!newState)
             return;
@@ -50,21 +55,18 @@ public class GraphicCardWarningHUDController : IHUD
     private void TryShowNotification()
     {
         if (GraphicCardNotification.CanShowGraphicCardPopup() && IsIntegratedGraphicCard())
-        {
-            NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
-            {
-                buttonMessage = "Dismiss",
-                destroyOnFinish = true,
-                groupID = "GraphicCard",
-                message = restartMessage,
-                timer = 0,
-                type = DCL.NotificationModel.Type.GRAPHIC_CARD_WARNING
-            });
-        }
+            NotificationsController.i.ShowNotification(
+                new Model
+                {
+                    buttonMessage = "Dismiss",
+                    destroyOnFinish = true,
+                    groupID = "GraphicCard",
+                    message = restartMessage,
+                    timer = 0,
+                    type = Type.GRAPHIC_CARD_WARNING,
+                });
+
+        bool IsIntegratedGraphicCard() =>
+            WebInterface.GetGraphicCard().ToLower().Contains("intel");
     }
-
-    private bool IsIntegratedGraphicCard() =>
-        DCL.Interface.WebInterface.GetGraphicCard().ToLower().Contains("intel");
-
-    public void Dispose() { }
 }
