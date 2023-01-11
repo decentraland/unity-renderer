@@ -57,10 +57,23 @@ namespace DCL.Social.Passports
             view.SetModel(new (false));
         }
 
-        public async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
+        public void UpdateWithUserProfile(UserProfile userProfile, bool activateLoading)
         {
-            await previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
-                .SuppressCancellationThrow();
+            async UniTask UpdateWithUserProfileAsync()
+            {
+                if (activateLoading)
+                    SetAsLoading(true);
+
+                await previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
+                                       .SuppressCancellationThrow();
+
+                SetAsLoading(false);
+            }
+
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            UpdateWithUserProfileAsync().Forget();
         }
 
         public void Dispose()

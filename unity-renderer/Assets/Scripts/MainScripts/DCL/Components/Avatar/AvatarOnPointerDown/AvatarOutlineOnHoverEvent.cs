@@ -1,4 +1,5 @@
 using AvatarSystem;
+using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
@@ -17,11 +18,13 @@ namespace DCL.Components
 
         public event System.Action OnPointerEnterReport;
         public event System.Action OnPointerExitReport;
+        private OnPointerEvent.Model model;
 
-        public void Initialize(IDCLEntity entity, IAvatar avatar)
+        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
             this.entity = entity;
             this.avatar = avatar;
+            this.model = model;
 
             CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
         }
@@ -78,7 +81,7 @@ namespace DCL.Components
         }
 
         public bool IsAtHoverDistance(float distance) =>
-            true;
+            !Utils.IsCursorLocked || distance <= model.distance;
 
         public bool IsVisible() =>
             true;

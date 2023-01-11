@@ -216,7 +216,7 @@ namespace DCL.ECSComponents
                 entity, player
             );
 
-            outlineOnHover.Initialize(entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
