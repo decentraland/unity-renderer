@@ -3,7 +3,6 @@
 #endif
 
 using DCL.Helpers;
-using NSubstitute.Core;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
