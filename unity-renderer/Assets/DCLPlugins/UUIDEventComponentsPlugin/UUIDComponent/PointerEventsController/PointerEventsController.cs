@@ -277,9 +277,16 @@ namespace DCL
 
             if (dataStoreEcs7.isEcs7Enabled)
             {
-                dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
-                dataStoreEcs7.lastPointerInputEvent.isButtonDown = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
-                dataStoreEcs7.lastPointerInputEvent.hasValue = evt == InputController_Legacy.EVENT.BUTTON_DOWN || evt == InputController_Legacy.EVENT.BUTTON_UP;
+                dataStoreEcs7.pointerInputEventReceived.Add(
+                    new DataStore_ECS7.PointerEvent()
+                    {
+                        buttonId = (int)buttonId,
+                        isButtonDown = evt == InputController_Legacy.EVENT.BUTTON_DOWN,
+                        hasValue = evt == InputController_Legacy.EVENT.BUTTON_DOWN || evt == InputController_Legacy.EVENT.BUTTON_UP
+                    });
+                // dataStoreEcs7.lastPointerInputEvent.buttonId = (int)buttonId;
+                // dataStoreEcs7.lastPointerInputEvent.isButtonDown = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
+                // dataStoreEcs7.lastPointerInputEvent.hasValue = evt == InputController_Legacy.EVENT.BUTTON_DOWN || evt == InputController_Legacy.EVENT.BUTTON_UP;
             }
         }
 

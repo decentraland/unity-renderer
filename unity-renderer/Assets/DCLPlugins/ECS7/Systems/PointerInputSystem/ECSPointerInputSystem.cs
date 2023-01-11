@@ -69,6 +69,24 @@ namespace ECSSystems.PointerInputSystem
 
         private static void Update(State state)
         {
+            if (state.dataStoreEcs7.pointerInputEventReceived.Count > 0)
+            {
+                for (int i = 0; i < state.dataStoreEcs7.pointerInputEventReceived.Count; i++)
+                {
+                    state.dataStoreEcs7.lastPointerInputEvent = state.dataStoreEcs7.pointerInputEventReceived[i];
+                    Debug.Log("Command is " + state.dataStoreEcs7.lastPointerInputEvent.buttonId.ToString() + " down? " + state.dataStoreEcs7.lastPointerInputEvent.isButtonDown);
+                    processLastPointerInput(state);
+                }
+                state.dataStoreEcs7.pointerInputEventReceived.Clear();
+            }
+            else
+            {
+                processLastPointerInput(state);
+            }
+        }
+
+        private static void processLastPointerInput(State state)
+        {
             DataStore_ECS7.PointerEvent currentPointerInput = state.dataStoreEcs7.lastPointerInputEvent;
 
             bool isHit = state.dataStoreEcs7.lastPointerRayHit.hasValue && state.dataStoreEcs7.lastPointerRayHit.didHit;
@@ -147,16 +165,29 @@ namespace ECSSystems.PointerInputSystem
                             raycastHit,
                             PointerEventType.PetDown
                         );
+
+                        BroadcastInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            -1,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetDown,
+                            colliderData.scene
+                        );
+
                         break;
 
                     case InputHitType.PointerUp:
                         bool validInputDownExist = state.lastInputDown.hasValue;
                         EntityInput lastInputDownData = state.lastInputDown;
+                        IParcelScene skipScene = null;
 
                         // did it hit same entity as pointer down hit?
                         if (validInputDownExist && colliderData.entity.entityId == lastInputDownData.entity.entityId
                                                 && colliderData.scene.sceneData.sceneNumber == lastInputDownData.sceneNumber)
                         {
+                            skipScene = colliderData.scene;
                             AddInputResultEvent(
                                 state,
                                 currentPointerInput,
@@ -174,6 +205,7 @@ namespace ECSSystems.PointerInputSystem
 
                             if (isValidScene)
                             {
+                                skipScene = lastInputDownData.scene;
                                 AddInputResultEvent(
                                     state,
                                     currentPointerInput,
@@ -185,6 +217,17 @@ namespace ECSSystems.PointerInputSystem
                                 );
                             }
                         }
+
+                        BroadcastInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            -1,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetUp,
+                            skipScene
+                        );
+
                         state.lastInputDown.hasValue = false;
                         break;
 
@@ -276,11 +319,56 @@ namespace ECSSystems.PointerInputSystem
                     }
                     state.lastInputHover.hasValue = false;
                 }
+
+                InputHitType inputHitType = isPointerDown ? InputHitType.PointerDown
+                    : isPointerUp ? InputHitType.PointerUp
+                    : InputHitType.None;
+
+                switch (inputHitType)
+                {
+                    case InputHitType.PointerDown:
+                        BroadcastInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            -1,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetDown
+                        );
+
+                        break;
+
+                    case InputHitType.PointerUp:
+                        BroadcastInputResultEvent(
+                            state,
+                            currentPointerInput,
+                            -1,
+                            raycastRay,
+                            raycastHit,
+                            PointerEventType.PetUp
+                        );
+
+                        break;
+                }
             }
+
 
             state.dataStoreEcs7.lastPointerInputEvent.hasValue = false;
             state.dataStoreEcs7.lastPointerRayHit.hasValue = false;
             state.isLastInputPointerDown = isPointerDown || (!isPointerUp && state.isLastInputPointerDown);
+        }
+
+        private static void BroadcastInputResultEvent(State state, DataStore_ECS7.PointerEvent pointerEvent,
+            long entityId, Ray ray, DataStore_ECS7.RaycastEvent.Hit raycastHit, PointerEventType pointerEventType, IParcelScene skipScene = null)
+        {
+            IReadOnlyList<IParcelScene> loadedScenes = state.dataStoreEcs7.scenes;
+            for (int i = 0; i < loadedScenes.Count; i++)
+            {
+                if (loadedScenes[i] != skipScene)
+                {
+                    AddInputResultEvent(state, pointerEvent, loadedScenes[i], entityId, ray, raycastHit, pointerEventType);
+                }
+            }
         }
 
         private static void AddInputResultEvent(State state, DataStore_ECS7.PointerEvent pointerEvent, IParcelScene scene,

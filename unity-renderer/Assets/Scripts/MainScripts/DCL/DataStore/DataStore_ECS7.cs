@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -34,5 +35,8 @@ namespace DCL
         public bool isEcs7Enabled = false;
         public PointerEvent lastPointerInputEvent = new PointerEvent();
         public RaycastEvent lastPointerRayHit = new RaycastEvent();
+
+        // Accumulate every pointer input event, then when it's processed, it'll be cleaned
+        public List<PointerEvent> pointerInputEventReceived = new List<PointerEvent>();
     }
 }
