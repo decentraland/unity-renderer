@@ -11,42 +11,50 @@ namespace ECSSystems.PlayerSystem
 {
     public class ECSPlayerTransformSystem : IDisposable
     {
-        private readonly BaseVariable<Transform> avatarTransform;
-        private readonly RendererState rendererState;
-        private readonly Vector3Variable worldOffset;
         private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly BaseVariable<Transform> avatarTransform;
+        private readonly Vector3Variable worldOffset;
         private readonly IECSComponentWriter componentsWriter;
+
+        private Transform currentAvatarTransform = null;
+        private Vector3 currentWorldOffset = Vector3.zero;
 
         private Vector3 lastAvatarPosition = Vector3.zero;
         private Quaternion lastAvatarRotation = Quaternion.identity;
         private long timeStamp = 0;
         private bool newSceneAdded = false;
 
-        public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter)
+        // TODO: dependency injection, camera syste refactor like this one
+        public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter,
+            BaseList<IParcelScene> sdk7Scenes, BaseVariable<Transform> avatarTransform, Vector3Variable worldOffset)
         {
-            avatarTransform = DataStore.i.world.avatarTransform;
-            rendererState = CommonScriptableObjects.rendererState;
-            worldOffset = CommonScriptableObjects.worldOffset;
-            loadedScenes = DataStore.i.ecs7.scenes;
+            loadedScenes = sdk7Scenes;
+            this.avatarTransform = avatarTransform;
+            this.worldOffset = worldOffset;
             this.componentsWriter = componentsWriter;
 
             loadedScenes.OnAdded += OnSceneLoaded;
+            avatarTransform.OnChange += OnAvatarTransformChanged;
+            worldOffset.OnChange += OnWorldOffsetChanged;
+
+            OnAvatarTransformChanged(DataStore.i.world.avatarTransform.Get(), null);
+            OnWorldOffsetChanged(CommonScriptableObjects.worldOffset.Get(), Vector3.zero);
         }
 
         public void Dispose()
         {
             loadedScenes.OnAdded -= OnSceneLoaded;
+            avatarTransform.OnChange -= OnAvatarTransformChanged;
+            worldOffset.OnChange -= OnWorldOffsetChanged;
         }
 
         public void Update()
         {
-            if (!rendererState.Get())
+            if (currentAvatarTransform == null)
                 return;
 
-            Transform avatarT = avatarTransform.Get();
-
-            Vector3 avatarPosition = avatarT.position;
-            Quaternion avatarRotation = avatarT.rotation;
+            Vector3 avatarPosition = currentAvatarTransform.position;
+            Quaternion avatarRotation = currentAvatarTransform.rotation;
 
             if (!newSceneAdded && lastAvatarPosition == avatarPosition && lastAvatarRotation == avatarRotation)
             {
@@ -57,9 +65,10 @@ namespace ECSSystems.PlayerSystem
 
             lastAvatarPosition = avatarPosition;
             lastAvatarRotation = avatarRotation;
-            Vector3 worldOffset = this.worldOffset.Get();
+            Vector3 worldOffset = currentWorldOffset;
 
             IParcelScene scene;
+
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 scene = loadedScenes[i];
@@ -79,6 +88,16 @@ namespace ECSSystems.PlayerSystem
         private void OnSceneLoaded(IParcelScene obj)
         {
             newSceneAdded = true;
+        }
+
+        private void OnAvatarTransformChanged(Transform current, Transform previous)
+        {
+            currentAvatarTransform = current;
+        }
+
+        private void OnWorldOffsetChanged(Vector3 current, Vector3 previous)
+        {
+            currentWorldOffset = current;
         }
     }
 }
