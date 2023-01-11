@@ -30,6 +30,7 @@ namespace DCL.Social.Passports
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickCollectibles;
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public PassportNavigationComponentController(
             IPassportNavigationComponentView view,
@@ -55,12 +56,18 @@ namespace DCL.Social.Passports
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
+        public UniTask UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile, cts.Token);
 
         public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
 
-        private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
+        public void Close()
         {
+            cts.Dispose();
+        }
+
+        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
             currentUserId = userProfile.userId;
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             string filteredName = await FilterContentAsync(userProfile.userName);
@@ -71,13 +78,12 @@ namespace DCL.Social.Passports
                 string filteredDescription = await FilterContentAsync(userProfile.description);
                 view.SetDescription(filteredDescription);
                 view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                await LoadAndDisplayEquippedWearablesAsync(userProfile);
+                await LoadAndDisplayEquippedWearablesAsync(userProfile, ct);
             }
         }
 
-        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
+        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
         {
-            CancellationToken ct = new CancellationToken();
             foreach (var t in userProfile.avatar.wearables)
             {
                 if (!cachedAvatarEquippedWearables.Contains(t))

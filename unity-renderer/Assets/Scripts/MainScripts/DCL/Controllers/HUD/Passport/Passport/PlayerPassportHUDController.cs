@@ -81,6 +81,7 @@ namespace DCL.Social.Passports
         private void ClosePassport()
         {
             RemoveCurrentPlayer();
+            passportNavigationController.Close();
         }
 
         /// <summary>
@@ -197,7 +198,7 @@ namespace DCL.Social.Passports
 
             await playerPreviewController.UpdateWithUserProfileAsync(userProfile);
             playerInfoController.UpdateWithUserProfile(userProfile);
-            passportNavigationController.UpdateWithUserProfile(userProfile);
+            await passportNavigationController.UpdateWithUserProfile(userProfile);
 
             if (activateLoading)
                 playerPreviewController.SetAsLoading(false);
