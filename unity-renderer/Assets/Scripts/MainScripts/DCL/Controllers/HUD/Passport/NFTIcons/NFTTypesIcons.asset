@@ -49,18 +49,26 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
   - key: emote
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
+  - key: name
+    value: {fileID: 21300000, guid: dd2c2092a9ae16c49a268766674e5b2b, type: 3}
+  - key: parcel
+    value: {fileID: 21300000, guid: 48839cbe5b4274e8699c1d592a48d375, type: 3}
+  - key: estate
+    value: {fileID: 21300000, guid: 48839cbe5b4274e8699c1d592a48d375, type: 3}
   nftColors:
   - key: rare
-    value: {r: 0, g: 1, b: 0.018231153, a: 1}
+    value: {r: 0.23529412, g: 0.89411765, b: 0.5176471, a: 1}
   - key: epic
-    value: {r: 0, g: 0.44239235, b: 1, a: 1}
+    value: {r: 0.2627451, g: 0.56078434, b: 1, a: 1}
   - key: uncommon
-    value: {r: 1, g: 0.48871702, b: 0, a: 1}
+    value: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
   - key: legendary
-    value: {r: 0.68245983, g: 0, b: 1, a: 1}
+    value: {r: 0.6313726, g: 0.29411766, b: 0.9529412, a: 1}
   - key: unique
-    value: {r: 1, g: 0.95396614, b: 0, a: 1}
+    value: {r: 0.99607843, g: 0.63529414, b: 0.09019608, a: 1}
   - key: common
-    value: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+    value: {r: 0.4509804, g: 0.827451, b: 0.827451, a: 1}
   - key: mythic
-    value: {r: 1, g: 0, b: 0.9878478, a: 1}
+    value: {r: 1, g: 0.29411766, b: 0.92941177, a: 1}
+  - key: land
+    value: {r: 0, g: 0, b: 0, a: 0.7058824}

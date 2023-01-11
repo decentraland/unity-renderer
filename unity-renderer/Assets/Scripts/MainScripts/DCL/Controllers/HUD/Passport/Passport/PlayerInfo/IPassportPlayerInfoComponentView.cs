@@ -16,7 +16,13 @@ namespace DCL.Social.Passports
         event Action OnUnblockUser;
         event Action OnReportUser;
         event Action<string> OnWhisperUser;
+        event Action OnJumpInUser;
+        event Action OnWalletCopy;
 
         void SetIsBlocked(bool isBlocked);
+        void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
+        void ResetPanelOnClose();
+        void SetFriendStatus(FriendshipStatus status);
+        void SetActionsActive(bool isActive);
     }
 }

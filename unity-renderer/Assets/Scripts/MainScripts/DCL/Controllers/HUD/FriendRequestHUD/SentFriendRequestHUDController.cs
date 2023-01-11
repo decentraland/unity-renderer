@@ -8,6 +8,8 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDController
     {
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+
         private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -84,6 +86,7 @@ namespace DCL.Social.Friends
             var ownProfile = userProfileBridge.GetOwn();
             view.SetSenderProfilePicture(ownProfile.snapshotObserver);
 
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
             view.Show();
         }
 
@@ -100,19 +103,27 @@ namespace DCL.Social.Friends
 
             try
             {
-                await friendsController.CancelRequestAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
+                FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId)
+                                                                     .Timeout(TimeSpan.FromSeconds(10));
+
                 if (cancellationToken.IsCancellationRequested) return;
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
 
                 view.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                await UniTask.SwitchToMainThread(cancellationToken);
                 if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.ShowCancelFailed();
+                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
+                    "modal",
+                    e is FriendshipException fe
+                        ? fe.ErrorCode.ToString()
+                        : FriendRequestErrorCodes.Unknown.ToString());
+                view.Show();
+                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 throw;
             }
         }
@@ -134,6 +145,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.To);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }
 }
