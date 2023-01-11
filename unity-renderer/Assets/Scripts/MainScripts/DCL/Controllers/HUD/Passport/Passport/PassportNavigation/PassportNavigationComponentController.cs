@@ -128,10 +128,9 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile)
         {
             view.SetCollectibleNamesLoadingActive(true);
-            var ct = new CancellationTokenSource().Token;
-            var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
+            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
-            var namesResult = new NamesResponse.NameEntry[] { };
+            var namesResult = Array.Empty<NamesResponse.NameEntry>();
 
             if (response.success)
                 namesResult = response.response.Names.ToArray();
@@ -145,11 +144,10 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile)
         {
             view.SetCollectibleLandsLoadingActive(true);
-            var ct = new CancellationTokenSource().Token;
             // TODO (Santi): Use userProfile.userId here!!
-            var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
+            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
-            var landsResult = new LandsResponse.LandEntry[] { };
+            var landsResult = Array.Empty<LandsResponse.LandEntry>();
 
             if (response.success)
                 landsResult = response.response.Lands.ToArray();
