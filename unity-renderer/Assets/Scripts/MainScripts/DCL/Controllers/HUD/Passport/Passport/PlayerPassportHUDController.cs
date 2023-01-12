@@ -3,6 +3,7 @@ using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Passports
@@ -29,6 +30,7 @@ namespace DCL.Social.Passports
         private List<Nft> ownedNftCollectionsL1 = new ();
         private List<Nft> ownedNftCollectionsL2 = new ();
         private double passportOpenStartTime;
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -99,6 +101,10 @@ namespace DCL.Social.Passports
 
         public void Dispose()
         {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             playerInfoController.OnClosePassport -= ClosePassport;
@@ -161,6 +167,27 @@ namespace DCL.Social.Passports
 
         private void ClickedBuyNft(string id, string wearableType)
         {
+            async UniTaskVoid QueryNftCollectionByUrnAsync(string urn)
+            {
+                var ct = cts.Token;
+
+                var nft = await passportApiBridge
+                    .QueryNftCollectionMatic(currentUserProfile.userId, urn)
+                    .AttachExternalCancellation(ct);
+
+                if (nft == null)
+                {
+                    nft = await passportApiBridge
+                        .QueryNftCollectionEthereum(currentUserProfile.userId, urn)
+                        .AttachExternalCancellation(ct);
+                }
+
+                if (nft != null)
+                    OpenNftMarketUrl(nft);
+                else
+                    WebInterface.OpenURL(URL_COLLECTIBLE_GENERIC);
+            }
+
             if (wearableType is "name" or "parcel" or "estate")
             {
                 WebInterface.OpenURL((wearableType is "name" ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
@@ -173,15 +200,24 @@ namespace DCL.Social.Passports
                 ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == id);
 
             if (ownedCollectible != null)
-            {
-                WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
-                //TODO: integrate ItemType itemType once new lambdas are active
-                socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
-            }
+                OpenNftMarketUrl(ownedCollectible);
             else
             {
-                WebInterface.OpenURL(URL_COLLECTIBLE_GENERIC);
+                cts?.Cancel();
+                cts?.Dispose();
+                cts = new CancellationTokenSource();
+
+                // In case the NFT's information is not found neither on ownedNftCollectionsL1 nor or ownedNftCollectionsL2 (it could happen due
+                // to the TheGraph queries only return a maximum of 100 entries by default), we request the information of this specific NFT.
+                QueryNftCollectionByUrnAsync(id).Forget();
             }
+        }
+
+        private void OpenNftMarketUrl(Nft nft)
+        {
+            WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{tokenId}", nft.tokenId));
+            //TODO: integrate ItemType itemType once new lambdas are active
+            socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
         }
 
         private void ClickedCollectibles()

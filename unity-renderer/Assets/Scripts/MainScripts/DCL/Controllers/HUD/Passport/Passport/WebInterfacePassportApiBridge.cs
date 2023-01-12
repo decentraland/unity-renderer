@@ -1,8 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Social.Passports;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCl.Social.Passports
 {
@@ -21,6 +19,15 @@ namespace DCl.Social.Passports
             return nftList;
         }
 
+        public async UniTask<Nft> QueryNftCollectionEthereum(string userId, string urn)
+        {
+            List<Nft> nftList = new List<Nft>();
+            await DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, NftCollectionsLayer.ETHEREUM)
+                     .Then((nfts) => nftList = nfts);
+
+            return nftList.Count > 0 ? nftList[0] : null;
+        }
+
         public async UniTask<List<Nft>> QueryNftCollectionsMatic(string userId)
         {
             List<Nft> nftList = new List<Nft>();
@@ -28,6 +35,15 @@ namespace DCl.Social.Passports
                      .Then((nfts) => nftList = nfts);
 
             return nftList;
+        }
+
+        public async UniTask<Nft> QueryNftCollectionMatic(string userId, string urn)
+        {
+            List<Nft> nftList = new List<Nft>();
+            await DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, NftCollectionsLayer.MATIC)
+                     .Then((nfts) => nftList = nfts);
+
+            return nftList.Count > 0 ? nftList[0] : null;
         }
     }
 }
