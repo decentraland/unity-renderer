@@ -73,12 +73,12 @@ namespace DCL
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
-            }, editorBundleProvider));
+            }, editorBundleProvider, DataStore.i.featureFlags));
 
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
                 { AssetSource.WEB, new AssetTextureWebLoader() }
-            }));
+            }, DataStore.i.featureFlags));
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());

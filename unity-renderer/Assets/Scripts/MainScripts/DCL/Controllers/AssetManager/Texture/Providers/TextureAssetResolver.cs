@@ -15,9 +15,10 @@ namespace DCL
     {
         private const string PLAIN_BASE64_PROTOCOL = "data:text/plain;base64,";
 
-        private IReadOnlyDictionary<AssetSource, ITextureAssetProvider> providers;
+        private readonly IReadOnlyDictionary<AssetSource, ITextureAssetProvider> providers;
+        private readonly BaseVariable<bool> isDebugMode;
 
-        public TextureAssetResolver(IReadOnlyDictionary<AssetSource, ITextureAssetProvider> providers)
+        public TextureAssetResolver(IReadOnlyDictionary<AssetSource, ITextureAssetProvider> providers, DataStore_FeatureFlag featureFlags) : base(featureFlags)
         {
             this.providers = providers;
         }
@@ -47,13 +48,15 @@ namespace DCL
                             }
 
                             // The valid texture is retrieved
-                            Debug.Log($"Texture {url} loaded from {provider}");
+                            LogVerbose(LogType.Log, $"Texture {url} loaded from {provider}");
                             break;
                         }
                     }
                     catch (Exception e)
                     {
                         lastException = e;
+
+                        LogVerbose(e);
 
                         // Propagate `OperationCanceledException` further as there is no reason to iterate
                         if (e is OperationCanceledException)
