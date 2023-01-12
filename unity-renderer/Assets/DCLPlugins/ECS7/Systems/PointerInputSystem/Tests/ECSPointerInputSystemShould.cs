@@ -275,8 +275,6 @@ namespace Tests
         [Test]
         public void ShowPointerDownHoverTooltip()
         {
-            dataStoreEcs7.buttonState[0] = true;
-
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
