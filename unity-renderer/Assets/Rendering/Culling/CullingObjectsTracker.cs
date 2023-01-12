@@ -14,7 +14,6 @@ namespace DCL.Rendering
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
         private readonly List<Rendereable> rendereables = new List<Rendereable>();
-        private ICollection<Renderer> detectedRenderers = new List<Renderer>();
         private ICollection<Renderer> usingRenderers = new List<Renderer>();
         private ICollection<SkinnedMeshRenderer> detectedSkinnedRenderers;
         private ICollection<SkinnedMeshRenderer> usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
@@ -33,7 +32,10 @@ namespace DCL.Rendering
             Rendereable.OnRendereableAdded += OnRendereableAdded;
         }
 
-        private void OnRendereableAdded(object sender, Rendereable rendereable) => rendereables.Add(rendereable);
+        public void OnRendereableAdded(object sender, Rendereable rendereable)
+        {
+            rendereables.Add(rendereable);
+        }
 
         /// <summary>
         /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
@@ -42,7 +44,7 @@ namespace DCL.Rendering
         {
             if (!dirty)
                 yield break;
-            
+
             detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
 
             yield return null;
@@ -52,22 +54,21 @@ namespace DCL.Rendering
             yield return null;
             usingAnimations = Object.FindObjectsOfType<Animation>();
             yield return null;
-            
+
             dirty = false;
         }
 
         /// <summary>
-        ///  This will re-populate all the tracked objects in a sync way.
+        ///  This will re-populate all the tracked objects synchronously
         /// </summary>
-        /// <param name="includeInactives">True for add inactive objects to the tracked list.</param>
-        public void ForcePopulateRenderersList(bool includeInactives)
+        public void ForcePopulateRenderersList()
         {
             detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
 
             ForceCalculateRenderers();
             ForceCalculateSkinnedRenderers();
             usingAnimations = Object.FindObjectsOfType<Animation>();
-            
+
             dirty = false;
         }
 
@@ -75,25 +76,31 @@ namespace DCL.Rendering
         private IEnumerator CalculateRenderers()
         {
             int amount = 0;
-            List<Renderer> checkingRenderers = new List<Renderer>(detectedRenderers);
+            List<Rendereable> checkingRendereables = new List<Rendereable>(rendereables);
             usingRenderers.Clear();
-            foreach (Renderer renderer in checkingRenderers)
+            foreach (Rendereable rendereable in checkingRendereables)
             {
-                if (renderer == null || !renderer.gameObject.activeInHierarchy)
-                {
-                    amount++;
+                if (rendereable == null || !rendereable.container.activeInHierarchy)
                     continue;
-                }
 
-                if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
+                foreach (Renderer renderer in rendereable.renderers)
                 {
-                    yield return null;
-                    amount = 0;
-                }
-                amount++;
+                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                    {
+                        amount++;
+                        continue;
+                    }
 
-                if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
-                    usingRenderers.Add(renderer);
+                    if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
+                    {
+                        yield return null;
+                        amount = 0;
+                    }
+                    amount++;
+
+                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                        usingRenderers.Add(renderer);
+                }
             }
         }
 
@@ -101,7 +108,7 @@ namespace DCL.Rendering
         {
             int amount = 0;
             List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
-            usingSkinnedRenderers.Clear();
+            usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
             foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
             {
                 if (skinnedRenderer == null)
@@ -124,20 +131,26 @@ namespace DCL.Rendering
 
         private void ForceCalculateRenderers()
         {
-            usingRenderers.Clear();
-            foreach (Renderer renderer in detectedRenderers)
+            usingRenderers = new List<Renderer>();
+            foreach (Rendereable rendereable in rendereables)
             {
-                if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                if (rendereable == null || !rendereable.container.activeInHierarchy)
                     continue;
 
-                if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
-                    usingRenderers.Add(renderer);
+                foreach (Renderer renderer in rendereable.renderers)
+                {
+                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                        continue;
+
+                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                        usingRenderers.Add(renderer);
+                }
             }
         }
 
         private void ForceCalculateSkinnedRenderers()
         {
-            usingSkinnedRenderers.Clear();
+            usingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
             foreach (SkinnedMeshRenderer skinnedRenderer in detectedSkinnedRenderers)
             {
                 if (skinnedRenderer == null)
@@ -184,7 +197,6 @@ namespace DCL.Rendering
         {
             dirty = true;
             usingRenderers = null;
-            detectedRenderers = null;
             usingSkinnedRenderers = null;
             detectedSkinnedRenderers = null;
             usingAnimations = null;

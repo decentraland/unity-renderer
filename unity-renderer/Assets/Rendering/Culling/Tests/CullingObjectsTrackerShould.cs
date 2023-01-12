@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Rendering;
 using NUnit.Framework;
 using System.Collections;
@@ -14,6 +15,10 @@ namespace CullingControllerTests
         public IEnumerator FilterIgnoredLayerMasksCorrectly()
         {
             // Arrange
+            GameObject container = new GameObject();
+            Rendereable rendereable = new Rendereable();
+            rendereable.container = container;
+            
             int layer = 5;
             int layerMask = 1 << layer;
             var tracker = new CullingObjectsTracker();
@@ -21,31 +26,37 @@ namespace CullingControllerTests
 
             var testGameObjectA = new GameObject();
             var originalRendererA = testGameObjectA.AddComponent<MeshRenderer>();
+            rendereable.renderers.Add(originalRendererA);
             testGameObjectA.layer = layer;
 
             var testGameObjectB = new GameObject();
             var originalRendererB = testGameObjectB.AddComponent<MeshRenderer>();
+            rendereable.renderers.Add(originalRendererB);
             testGameObjectB.layer = 0;
 
             var testGameObjectC = new GameObject();
             var originalRendererC = testGameObjectC.AddComponent<SkinnedMeshRenderer>();
+            rendereable.renderers.Add(originalRendererC);
             testGameObjectC.layer = layer;
 
             var testGameObjectD = new GameObject();
             var originalRendererD = testGameObjectD.AddComponent<SkinnedMeshRenderer>();
+            rendereable.renderers.Add(originalRendererD);
             testGameObjectD.layer = 0;
 
             ICollection<Renderer> renderers = null;
             Renderer obtainedRendererA = null, obtainedRendererB = null, obtainedRendererC = null, obtainedRendererD = null;
 
+            tracker.OnRendereableAdded(null, rendereable);
+
             // Act
             yield return tracker.PopulateRenderersList();
 
             renderers = tracker.GetRenderers();
-            obtainedRendererA = renderers.FirstOrDefault( x => x == originalRendererA );
-            obtainedRendererB = renderers.FirstOrDefault( x => x == originalRendererB );
-            obtainedRendererC = tracker.GetSkinnedRenderers().FirstOrDefault( x => x == originalRendererC );
-            obtainedRendererD = tracker.GetSkinnedRenderers().FirstOrDefault( x => x == originalRendererD );
+            obtainedRendererA = renderers.FirstOrDefault(x => x == originalRendererA);
+            obtainedRendererB = renderers.FirstOrDefault(x => x == originalRendererB);
+            obtainedRendererC = tracker.GetSkinnedRenderers().FirstOrDefault(x => x == originalRendererC);
+            obtainedRendererD = tracker.GetSkinnedRenderers().FirstOrDefault(x => x == originalRendererD);
 
             // Assert
             Assert.IsTrue(originalRendererA != null);
@@ -63,36 +74,9 @@ namespace CullingControllerTests
             Object.Destroy(testGameObjectB);
             Object.Destroy(testGameObjectC);
             Object.Destroy(testGameObjectD);
+            Object.Destroy(container);
 
             yield return null;
-        }
-
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ForcePopulateRenderersListCorrectly(bool includeInactives)
-        {
-            // Arrange
-            var tracker = new CullingObjectsTracker();
-            var testGameObject = new GameObject();
-            var originalRenderer = testGameObject.AddComponent<MeshRenderer>();
-            testGameObject.SetActive(false);
-
-            // Act
-            tracker.ForcePopulateRenderersList(includeInactives);
-
-            Renderer obtainedRenderer = tracker.GetRenderers().FirstOrDefault(x => x == originalRenderer);
-
-            // Assert
-            Assert.IsTrue(originalRenderer != null);
-
-            if (includeInactives)
-                Assert.IsTrue(obtainedRenderer != null, "Renderer should not be null because it is taking on account the inactives objects");
-            else
-                Assert.IsTrue(obtainedRenderer == null, "Renderer should be null because it is not taking on account the inactives objects");
-
-            // Cleanup
-            Object.Destroy(testGameObject);
         }
     }
 }

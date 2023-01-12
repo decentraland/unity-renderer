@@ -91,6 +91,12 @@ namespace DCL.Rendering
             StartInternal();
         }
 
+        public void Restart()
+        {
+            Stop();
+            Start();
+        }
+
         private void StartInternal()
         {
             if (updateCoroutine != null)
@@ -114,7 +120,7 @@ namespace DCL.Rendering
             CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerUnityPositionChange;
             MeshesInfo.OnAnyUpdated -= MarkDirty;
             StopInternal();
-            objectsTracker?.ForcePopulateRenderersList(true);
+            objectsTracker?.ForcePopulateRenderersList();
             ResetObjects();
         }
 

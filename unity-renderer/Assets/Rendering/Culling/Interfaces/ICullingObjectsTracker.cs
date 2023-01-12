@@ -14,6 +14,6 @@ namespace DCL.Rendering
         ICollection<SkinnedMeshRenderer> GetSkinnedRenderers();
         Animation[] GetAnimations();
         IEnumerator PopulateRenderersList();
-        void ForcePopulateRenderersList(bool includeInactives);
+        void ForcePopulateRenderersList();
     }
 }

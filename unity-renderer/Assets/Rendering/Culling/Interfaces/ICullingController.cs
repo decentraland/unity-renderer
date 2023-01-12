@@ -7,6 +7,7 @@ namespace DCL.Rendering
     public interface ICullingController : IService
     {
         void Start();
+        void Restart();
         void Stop();
         void MarkDirty();
         void SetSettings(CullingControllerSettings settings);
