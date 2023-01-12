@@ -655,16 +655,16 @@ MonoBehaviour:
   descriptionText: {fileID: 6923076726137345805}
   emptyDescriptionGO: {fileID: 2764797890477592732}
   nftWearablesCarousel: {fileID: 9093451756851664167}
-  emptyWearablesText: {fileID: 5340855592548266180}
+  emptyWearablesText: {fileID: 446208256931190699}
   nftWearablesLoadingSpinner: {fileID: 4144502768742226792}
   nftEmotesCarousel: {fileID: 4357714727063457047}
-  emptyEmotesText: {fileID: 5921234581786149950}
+  emptyEmotesText: {fileID: 1673775194202849691}
   nftEmotesLoadingSpinner: {fileID: 6505748003474752749}
   nftNamesCarousel: {fileID: 4672155976222663924}
-  emptyNamesText: {fileID: 1223533085651379293}
+  emptyNamesText: {fileID: 1529535706152726646}
   nftNamesLoadingSpinner: {fileID: 3522678526249717033}
   nftLandsCarousel: {fileID: 5182280393486087061}
-  emptyLandsText: {fileID: 2389729319916860799}
+  emptyLandsText: {fileID: 479627611820863133}
   nftLandsLoadingSpinner: {fileID: 1802397738862217917}
   nftWearablesCarouselContent: {fileID: 3525355726901429864}
   nftEmotesCarouselContent: {fileID: 8261655734619070040}
