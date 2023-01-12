@@ -89,10 +89,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddFriendWindowProperly()
     {
-        // TODO: FD:: this is a workaround test for to not hang this test when CI is running all the tests
-        controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>());
-        controller.Initialize(null);
-
         friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
             socialAnalytics, chatController,
             Substitute.For<IMouseCatcher>());
