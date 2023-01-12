@@ -32,7 +32,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
             worldState = Substitute.For<IWorldState>();
-            cullingController = Substitute.For<IWorldState>();
+            cullingController = Substitute.For<ICullingController>();
             playerDataStore = new DataStore_Player();
             commonDataStore = new DataStore_Common();
             loadingScreenDataStore = new DataStore_LoadingScreen();
