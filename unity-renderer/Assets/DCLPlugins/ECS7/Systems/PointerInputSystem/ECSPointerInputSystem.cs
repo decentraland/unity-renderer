@@ -3,11 +3,10 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
-using DCL.Models;
+using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Ray = UnityEngine.Ray;
 
 namespace ECSSystems.PointerInputSystem
 {
@@ -22,6 +21,7 @@ namespace ECSSystems.PointerInputSystem
             public EntityInput lastHoverFeedback;
             public IWorldState worldState;
             public IECSInteractionHoverCanvas interactionHoverCanvas;
+            public bool[] inputActionState;
         }
 
         private class EntityInput
@@ -51,6 +51,7 @@ namespace ECSSystems.PointerInputSystem
                 interactionHoverCanvas = interactionHoverCanvas,
                 dataStoreEcs7 = dataStoreEcs,
                 lastHoverFeedback = new EntityInput() { hasValue = false },
+                inputActionState = new bool[Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length]
             };
             return () => Update(state);
         }
@@ -73,17 +74,19 @@ namespace ECSSystems.PointerInputSystem
             bool hasAnyButtonChangedItsState = false;
             bool hasHoverEventEmitted = false;
 
+            var inputActionEnum = (WebInterface.ACTION_BUTTON[]) Enum.GetValues(typeof(WebInterface.ACTION_BUTTON));
+
             // Emit command for button states
-            var curState = state.dataStoreEcs7.buttonState;
-            var prevState = state.dataStoreEcs7.lastButtonState;
-            for (int i = 0; i < state.dataStoreEcs7.buttonState.Length; i++)
+            var curState = state.dataStoreEcs7.inputActionState;
+            var prevState = state.inputActionState;
+            for (int i = 0; i < state.dataStoreEcs7.inputActionState.Length; i++)
             {
                 isAnyButtonDown |= curState[i];
 
                 if (curState[i] != prevState[i])
                 {
                     PointerEventType pointerEventType = curState[i] ? PointerEventType.PetDown : PointerEventType.PetUp;
-                    InputAction inputAction = (InputAction)i;
+                    InputAction inputAction = (InputAction)inputActionEnum[i];
 
                     if (colliderData != null)
                     {
@@ -116,9 +119,11 @@ namespace ECSSystems.PointerInputSystem
             // Check if the hovered entity has changed with three options:
 
             // 1) We were hitting a collider A and now we're hitting a collider B
-            if (colliderData != null && state.lastHoverFeedback.hasValue &&
+            if (
+                colliderData != null && // current collider
+                state.lastHoverFeedback.hasValue && // previous collider
                 (state.lastHoverFeedback.entityId != colliderData.entity.entityId ||
-                 state.lastHoverFeedback.sceneNumber != colliderData.scene.sceneData.sceneNumber))
+                    state.lastHoverFeedback.sceneNumber != colliderData.scene.sceneData.sceneNumber))
             {
                 if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
                 {
@@ -150,8 +155,7 @@ namespace ECSSystems.PointerInputSystem
                 state.lastHoverFeedback.scene = colliderData.scene;
                 state.lastHoverFeedback.entityId = colliderData.entity.entityId;
                 // 2) We were hitting a collider A and now we're not hitting anything
-            } else if (colliderData == null && state.lastHoverFeedback.hasValue)
-            {
+            } else if (colliderData == null && state.lastHoverFeedback.hasValue) {
                 if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
                 {
                     AddInputResultEvent(
@@ -169,8 +173,7 @@ namespace ECSSystems.PointerInputSystem
                 state.lastHoverFeedback.hasValue = false;
 
                 // 3) We were not hitting anything and now we're hitting collider A
-            } else if (colliderData != null && !state.lastHoverFeedback.hasValue)
-            {
+            } else if (colliderData != null && !state.lastHoverFeedback.hasValue) {
                 AddInputResultEvent(
                     state,
                     InputAction.IaAny,
@@ -185,10 +188,6 @@ namespace ECSSystems.PointerInputSystem
                 state.lastHoverFeedback.sceneNumber = colliderScene.sceneData.sceneNumber;
                 state.lastHoverFeedback.scene = colliderData.scene;
                 state.lastHoverFeedback.entityId = colliderData.entity.entityId;
-
-                // Nothing to do here, we were not hitting anything, and we still are hitting nothing
-            } else {
-
             }
 
             if (colliderData != null)
