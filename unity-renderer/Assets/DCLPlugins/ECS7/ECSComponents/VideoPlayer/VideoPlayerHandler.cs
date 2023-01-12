@@ -54,7 +54,7 @@ namespace DCL.ECSComponents
             // detect change of the state
             if (lastModel == null || lastModel.IsPlaying() != model.IsPlaying())
             {
-                if (!model.IsPlaying()) { videoPlayer.Play(); }
+                if (model.IsPlaying()) { videoPlayer.Play(); }
                 else { videoPlayer.Pause(); }
             }
 
