@@ -93,7 +93,7 @@ namespace Tests
         [Test]
         public void DetectPointerDown()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -111,7 +111,7 @@ namespace Tests
         [Test]
         public void DetectPointerUpOnSameEntityAsPointerDown()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -119,7 +119,7 @@ namespace Tests
 
             systemUpdate();
 
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -142,7 +142,7 @@ namespace Tests
         [Test]
         public void DetectPointerUpOnOtherEntityAsPointerDown()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -150,7 +150,7 @@ namespace Tests
 
             systemUpdate();
 
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity2;
@@ -173,7 +173,7 @@ namespace Tests
         [Test]
         public void DetectPointerUpWhenInputReleaseWithoutHit()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -181,7 +181,7 @@ namespace Tests
 
             systemUpdate();
 
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = false;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity2;
@@ -204,7 +204,7 @@ namespace Tests
         [Test]
         public void DetectHoverEnter()
         {
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -222,7 +222,7 @@ namespace Tests
         [Test]
         public void DetectHoverExitWhenNewHover()
         {
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -250,7 +250,7 @@ namespace Tests
         [Test]
         public void DetectHoverExit()
         {
-            dataStoreEcs7.buttonState[0] = false;
+            dataStoreEcs7.inputActionState[0] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -312,7 +312,7 @@ namespace Tests
         [Test]
         public void NotShowPointerDownHoverTooltipWhenMoreThanMaxDistance()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -373,7 +373,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.buttonState[(int)InputAction.IaPointer] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPointer] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -420,7 +420,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.buttonState[(int)InputAction.IaPointer] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPointer] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -467,7 +467,7 @@ namespace Tests
 
             componentsManager.DeserializeComponent(ComponentID.POINTER_EVENTS, scene, entity1, ProtoSerialization.Serialize(pointerEvents));
 
-            dataStoreEcs7.buttonState[(int)InputAction.IaPointer] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPointer] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -491,7 +491,7 @@ namespace Tests
         [Test]
         public void HandleSeveralHoverTooltip()
         {
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -565,7 +565,7 @@ namespace Tests
             var transformModel = new ECSTransform() { position = entityLocalPosition };
             transformHandler.OnComponentModelUpdated(newTestScene, testEntity, transformModel);
 
-            dataStoreEcs7.buttonState[0] = true;
+            dataStoreEcs7.inputActionState[0] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
@@ -607,8 +607,8 @@ namespace Tests
         [Test]
         public void DetectTwoInputDown()
         {
-            dataStoreEcs7.buttonState[(int)InputAction.IaPrimary] = true;
-            dataStoreEcs7.buttonState[(int)InputAction.IaAction3] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaAction3] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -634,8 +634,8 @@ namespace Tests
         [Test]
         public void DetectGlobalInputDown()
         {
-            dataStoreEcs7.buttonState[(int)InputAction.IaPrimary] = true;
-            dataStoreEcs7.buttonState[(int)InputAction.IaAction3] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaAction3] = true;
 
             dataStoreEcs7.lastPointerRayHit.didHit = false;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;

@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,10 +36,8 @@ namespace DCL
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public bool isEcs7Enabled = false;
         public RaycastEvent lastPointerRayHit = new RaycastEvent();
-
-        // Should the max buttonId be defined by WebInterface?
-        private const int MAX_BUTTON = (int)WebInterface.ACTION_BUTTON.ACTION_6;
-        public bool[] buttonState = new bool[MAX_BUTTON];
-        public bool[] lastButtonState = new bool[MAX_BUTTON];
+        
+        // Input action state: true = pressing - false = released
+        public readonly bool[] inputActionState = new bool[Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length];
     }
 }

@@ -277,9 +277,9 @@ namespace DCL
 
             if (dataStoreEcs7.isEcs7Enabled)
             {
-                if (buttonId >= 0 && (int)buttonId < dataStoreEcs7.buttonState.Length)
+                if (buttonId >= 0 && (int)buttonId < dataStoreEcs7.inputActionState.Length)
                 {
-                    dataStoreEcs7.buttonState[(int)buttonId] = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
+                    dataStoreEcs7.inputActionState[(int)buttonId] = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
                 }
             }
         }
