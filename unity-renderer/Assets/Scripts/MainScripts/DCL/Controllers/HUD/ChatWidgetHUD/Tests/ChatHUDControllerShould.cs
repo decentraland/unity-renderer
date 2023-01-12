@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ProfanityFiltering;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;

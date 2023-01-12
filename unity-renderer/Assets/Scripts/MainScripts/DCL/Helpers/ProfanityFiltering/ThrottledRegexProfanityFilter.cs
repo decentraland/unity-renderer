@@ -5,68 +5,85 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using System;
 
-public class ThrottledRegexProfanityFilter : IProfanityFilter
+namespace DCL.ProfanityFiltering
 {
-    private readonly List<Regex> regexSteps = new List<Regex>();
-
-    public ThrottledRegexProfanityFilter(IProfanityWordProvider wordProvider, int partitionSize = 1)
+    public class ThrottledRegexProfanityFilter : IProfanityFilter
     {
-        List<string> explicitWords = wordProvider.GetExplicitWords().ToList();
-        List<string> nonExplicitWords = wordProvider.GetNonExplicitWords().ToList();
+        private readonly IProfanityWordProvider wordProvider;
+        private readonly int partitionSize;
+        private readonly List<Regex> regexSteps = new ();
 
-        var explicitWordsChunks = ToChunks(explicitWords, partitionSize);
-        var nonExplicitWordsChunks = ToChunks(nonExplicitWords, partitionSize);
-
-        for (int i = 0; i < explicitWordsChunks.Count; i++)
+        public ThrottledRegexProfanityFilter(IProfanityWordProvider wordProvider, int partitionSize = 1)
         {
-            var explicitWordsRegex = ToRegex(explicitWordsChunks[i]);
-            var regex = new Regex(@$"\b({explicitWordsRegex})\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            regexSteps.Add(regex);
+            this.wordProvider = wordProvider;
+            this.partitionSize = partitionSize;
         }
 
-        for (int i = 0; i < nonExplicitWordsChunks.Count; i++)
+        public void Dispose()
         {
-            var nonExplicitWordsRegex = ToRegex(nonExplicitWordsChunks[i]);
-            var regex = new Regex(@$"\\b|({nonExplicitWordsRegex})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            regexSteps.Add(regex);
+            throw new NotImplementedException();
         }
-    }
 
-    public async UniTask<string> Filter(string message)
-    {
-        if (string.IsNullOrEmpty(message))
+        public void Initialize()
+        {
+            List<string> explicitWords = wordProvider.GetExplicitWords().ToList();
+            List<string> nonExplicitWords = wordProvider.GetNonExplicitWords().ToList();
+
+            var explicitWordsChunks = ToChunks(explicitWords, partitionSize);
+            var nonExplicitWordsChunks = ToChunks(nonExplicitWords, partitionSize);
+
+            for (var i = 0; i < explicitWordsChunks.Count; i++)
+            {
+                var explicitWordsRegex = ToRegex(explicitWordsChunks[i]);
+                var regex = new Regex(@$"\b({explicitWordsRegex})\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                regexSteps.Add(regex);
+            }
+
+            for (var i = 0; i < nonExplicitWordsChunks.Count; i++)
+            {
+                var nonExplicitWordsRegex = ToRegex(nonExplicitWordsChunks[i]);
+                var regex = new Regex(@$"\\b|({nonExplicitWordsRegex})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                regexSteps.Add(regex);
+            }
+        }
+
+        public async UniTask<string> Filter(string message)
+        {
+            if (string.IsNullOrEmpty(message))
+                return message;
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            foreach (Regex regexStep in regexSteps)
+            {
+                await CheckTimerAndSkipFrame(stopwatch);
+                message = regexStep.Replace(message, match => new StringBuilder().Append('*', match.Value.Length).ToString());
+            }
+
             return message;
-
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-
-        foreach (Regex regexStep in regexSteps)
-        {
-            await CheckTimerAndSkipFrame(stopwatch);
-            message = regexStep.Replace(message, match => new StringBuilder().Append('*', match.Value.Length).ToString());
         }
 
-        return message;
-    }
-
-    private async Task CheckTimerAndSkipFrame(Stopwatch stopwatch)
-    {
-        if (stopwatch.ElapsedMilliseconds > 1)
+        private async Task CheckTimerAndSkipFrame(Stopwatch stopwatch)
         {
-            await UniTask.WaitForEndOfFrame();
-            stopwatch.Restart();
+            if (stopwatch.ElapsedMilliseconds > 1)
+            {
+                await UniTask.WaitForEndOfFrame();
+                stopwatch.Restart();
+            }
         }
-    }
 
-    private string ToRegex(IEnumerable<string> words) => string.Join("|", words);
+        private string ToRegex(IEnumerable<string> words) => string.Join("|", words);
 
-    private List<List<T>> ToChunks<T>(List<T> source, int chunkSize)
-    {
-        return source
-               .Select((value, index) => (index, value))
-               .GroupBy(x => x.index / chunkSize)
-               .Select(x => x.Select(v => v.value).ToList())
-               .ToList();
+        private List<List<T>> ToChunks<T>(List<T> source, int chunkSize)
+        {
+            return source
+                  .Select((value, index) => (index, value))
+                  .GroupBy(x => x.index / chunkSize)
+                  .Select(x => x.Select(v => v.value).ToList())
+                  .ToList();
+        }
     }
 }

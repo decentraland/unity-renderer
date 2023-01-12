@@ -1,5 +1,6 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL.ProfanityFiltering;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;

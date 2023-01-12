@@ -3,6 +3,7 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.Services;
 using DCLServices.Lambdas;
@@ -51,6 +52,10 @@ namespace DCL
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                // Check https://github.com/decentraland/unity-renderer/issues/2201 for more info about partitionSize
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

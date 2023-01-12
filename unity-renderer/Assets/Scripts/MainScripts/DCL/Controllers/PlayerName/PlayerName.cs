@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ProfanityFiltering;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
@@ -186,7 +188,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     private async UniTask<string> FilterName(string name) =>
         IsProfanityFilteringEnabled()
-            ? await ProfanityFilterSharedInstances.regexFilter.Filter(name)
+            ? await Environment.i.serviceLocator.Get<IProfanityFilter>().Filter(name)
             : name;
 
     private bool IsProfanityFilteringEnabled() =>
