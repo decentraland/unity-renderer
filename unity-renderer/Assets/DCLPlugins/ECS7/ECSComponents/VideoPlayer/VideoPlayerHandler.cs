@@ -8,12 +8,15 @@ using DCL.ECSRuntime;
 using DCL.Models;
 using Decentraland.Common;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.ECSComponents
 {
     public class VideoPlayerHandler : IECSComponentHandler<PBVideoPlayer>
     {
+        private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
+
         private PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
@@ -43,7 +46,8 @@ namespace DCL.ECSComponents
                 videoPlayer?.Dispose();
 
                 var id = entity.entityId.ToString();
-                videoPlayer = new WebVideoPlayer(id, model.Src, true, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+                bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
+                videoPlayer = new WebVideoPlayer(id, model.Src, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
