@@ -63,6 +63,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.physicColliderComponent);
 
+        ECSTransformParentingSystem.internalSceneBoundsCheckComponent = context.internalEcsComponents.sceneBoundsCheckComponent;
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 

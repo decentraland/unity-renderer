@@ -96,15 +96,16 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             // TODO: To solve recursive entity evaluation of children: every time a transform is affected (parenting, position), the entity children should have its sbc component entity position updated.
 
-            // If it has a mesh we don't evaluate its position due to artists "pivot point sloppiness", we evaluate its mesh merged bounds
-            // if (sbcComponentData.model.entityMeshBounds.size.sqrMagnitude > 0) // has a mesh/collider
-            // {
-            //     // EvaluateMeshBounds();
-            // }
-            // else
-            // {
+            // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
+            if (sbcComponentData.model.entityMeshBounds.size.sqrMagnitude > 0) // has a mesh/collider
+            {
+                // EvaluateMeshBounds();
                 EvaluateEntityPosition(sbcComponentData);
-            // }
+            }
+            else
+            {
+                EvaluateEntityPosition(sbcComponentData);
+            }
             // TODO: case for AvatarShape evaluation...
         }
 

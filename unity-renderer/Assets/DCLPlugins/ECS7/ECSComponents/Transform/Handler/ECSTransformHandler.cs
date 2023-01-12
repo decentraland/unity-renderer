@@ -67,7 +67,7 @@ namespace DCL.ECSComponents
 
             // Clean SBC internal component
             // TODO: Is it OK that this cleanup updates the entity children???
-            UpdateSBCComponentEntityPosition(scene, entity, Vector3.zero, false);
+            sbcInternalComponent.SetPosition(scene, entity, Vector3.zero, false);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -90,21 +90,7 @@ namespace DCL.ECSComponents
                 ProcessNewParent(scene, entity, model.parentId);
             }
 
-            UpdateSBCComponentEntityPosition(scene, entity, transform.position);
-        }
-
-        public static void UpdateSBCComponentEntityPosition(IParcelScene scene, IDCLEntity entity, Vector3 position, bool createComponentIfMissing = true)
-        {
-            sbcInternalComponent.SetPosition(scene, entity, position, createComponentIfMissing);
-
-            // Update children position in their SBCComponent
-            foreach (long entityId in entity.childrenId)
-            {
-                if (scene.entities.TryGetValue(entityId, out IDCLEntity childEntity))
-                {
-                    UpdateSBCComponentEntityPosition(scene, childEntity, childEntity.gameObject.transform.position, createComponentIfMissing);
-                }
-            }
+            sbcInternalComponent.SetPosition(scene, entity, transform.position);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
