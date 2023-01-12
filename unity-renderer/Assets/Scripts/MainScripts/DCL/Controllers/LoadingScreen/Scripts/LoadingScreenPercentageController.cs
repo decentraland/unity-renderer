@@ -12,23 +12,28 @@ namespace DCL.LoadingScreen
     {
         private readonly LoadingScreenPercentageView loadingScreenPercentageView;
         private readonly ISceneController sceneController;
+        private readonly DataStore_Common commonDataStore;
 
         private Vector2Int currentDestination;
         private IParcelScene currentSceneBeingLoaded;
 
-        public LoadingScreenPercentageController(ISceneController sceneController, LoadingScreenPercentageView loadingScreenPercentageView)
+        public LoadingScreenPercentageController(ISceneController sceneController, LoadingScreenPercentageView loadingScreenPercentageView, DataStore_Common commonDataStore)
         {
             this.loadingScreenPercentageView = loadingScreenPercentageView;
             this.sceneController = sceneController;
+            this.commonDataStore = commonDataStore;
 
-            loadingScreenPercentageView.gameObject.SetActive(false);
+            loadingScreenPercentageView.SetSceneLoadingMessage();
+            loadingScreenPercentageView.SetLoadingPercentage(0);
 
             sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
+            commonDataStore.isSignUpFlow.OnChange += StartedSignUpFlow;
         }
 
         public void Dispose()
         {
             sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
+            commonDataStore.isSignUpFlow.OnChange -= StartedSignUpFlow;
 
             if (currentSceneBeingLoaded != null)
                 currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
@@ -45,11 +50,19 @@ namespace DCL.LoadingScreen
             }
         }
 
+        private void StartedSignUpFlow(bool current, bool previous)
+        {
+            if (current)
+                StatusUpdate(100);
+            else
+                StatusUpdate(0);
+        }
+
         private void StatusUpdate(float percentage)
         {
             loadingScreenPercentageView.SetLoadingPercentage((int)percentage);
 
-            if (percentage >= 100)
+            if (currentSceneBeingLoaded != null && percentage >= 100)
             {
                 currentSceneBeingLoaded.OnLoadingStateUpdated -= StatusUpdate;
                 currentSceneBeingLoaded = null;

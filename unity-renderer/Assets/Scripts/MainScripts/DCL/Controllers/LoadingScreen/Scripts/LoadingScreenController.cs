@@ -40,14 +40,12 @@ namespace DCL.LoadingScreen
             this.notificationsController = notificationsController;
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
-            percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView());
+            percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
-
-            tipsController.StartTips();
         }
 
         public void Dispose()
@@ -106,12 +104,13 @@ namespace DCL.LoadingScreen
             {
                 currentDestination = currentDestinationCandidate;
 
-                view.FadeIn(false, true);
-
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
-                tipsController.StopTips();
+                //Temporarily removing tips until V2
+                //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+
+                view.FadeIn(false, true);
             }
             else
             {
