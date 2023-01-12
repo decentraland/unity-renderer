@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using BinaryWriter = KernelCommunication.BinaryWriter;
@@ -246,124 +247,118 @@ namespace Tests
             });
         }
 
-        [UnityTest]
-        public IEnumerator CallGetCurrentStateWithoutStoredState()
+        [Test]
+        public async Task CallGetCurrentStateWithoutStoredState()
         {
-            yield return UniTask.ToCoroutine(async () =>
+            const int TEST_SCENE_NUMBER = 666;
+            const int ENTITY_ID = 1;
+            const int COMPONENT_ID = 1;
+            byte[] outgoingCrdt = new byte[] { 0, 0, 0, 0 };
+
+            ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
+            await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+
+            bool sceneHasStateStored = true;
+            bool getCurrentStateFinished = false;
+            ByteString responsePayload = null;
+
+            rpcClient.GetCurrentState(new GetCurrentStateMessage() { })
+                     .ContinueWith(crdtState =>
+                      {
+                          sceneHasStateStored = crdtState.HasOwnEntities;
+                          responsePayload = crdtState.Payload;
+                          getCurrentStateFinished = true;
+                      });
+
+            var protocol = new CRDTProtocol() { };
+            protocol.ProcessMessage(protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdt));
+            context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, protocol);
+            await new WaitUntil(() => getCurrentStateFinished, 1);
+
+            Assert.IsTrue(getCurrentStateFinished);
+            Assert.IsFalse(sceneHasStateStored);
+            Assert.IsFalse(responsePayload.IsEmpty);
+
+            using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
             {
-                const int TEST_SCENE_NUMBER = 666;
-                const int ENTITY_ID = 1;
-                const int COMPONENT_ID = 1;
-                byte[] outgoingCrdt = new byte[] { 0, 0, 0, 0 };
-
-                ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
-                await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
-
-                bool sceneHasStateStored = true;
-                bool getCurrentStateFinished = false;
-                ByteString responsePayload = null;
-
-                rpcClient.GetCurrentState(new GetCurrentStateMessage() { })
-                         .ContinueWith(crdtState =>
-                          {
-                              sceneHasStateStored = crdtState.HasOwnEntities;
-                              responsePayload = crdtState.Payload;
-                              getCurrentStateFinished = true;
-                          });
-
-                var protocol = new CRDTProtocol() { };
-                protocol.ProcessMessage(protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdt));
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, protocol);
-                await new WaitUntil(() => getCurrentStateFinished, 1);
-
-                Assert.IsTrue(getCurrentStateFinished);
-                Assert.IsFalse(sceneHasStateStored);
-                Assert.IsFalse(responsePayload.IsEmpty);
-
-                using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
+                while (iterator.MoveNext())
                 {
-                    while (iterator.MoveNext())
-                    {
-                        var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, ENTITY_ID);
-                        Assert.AreEqual(responseCrdt.key2, COMPONENT_ID);
-                        Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
-                    }
+                    var responseCrdt = (CRDTMessage)iterator.Current;
+                    Assert.AreEqual(responseCrdt.key1, ENTITY_ID);
+                    Assert.AreEqual(responseCrdt.key2, COMPONENT_ID);
+                    Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
                 }
-            });
+            }
         }
 
-        [UnityTest]
-        public IEnumerator CallGetCurrentStateWithStoredState()
+        [Test]
+        public async Task CallGetCurrentStateWithStoredState()
         {
-            yield return UniTask.ToCoroutine(async () =>
+            const int TEST_SCENE_NUMBER = 666;
+
+            CRDTMessage[] crdts = new CRDTMessage[]
             {
-                const int TEST_SCENE_NUMBER = 666;
-
-                CRDTMessage[] crdts = new CRDTMessage[]
+                // outgoing crdt
+                new CRDTMessage()
                 {
-                    // outgoing crdt
-                    new CRDTMessage()
-                    {
-                        key1 = 1,
-                        key2 = 1,
-                        data = new byte[] { 0, 0, 0, 0 },
-                    },
+                    key1 = 1,
+                    key2 = 1,
+                    data = new byte[] { 0, 0, 0, 0 },
+                },
 
-                    // stored crdt
-                    new CRDTMessage()
-                    {
-                        key1 = 1,
-                        key2 = 2,
-                        data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
-                    }
-                };
-
-                var storedCrdtExecutor = new CRDTExecutor(Substitute.For<IParcelScene>(), new ECSComponentsManager(null));
-                storedCrdtExecutor.crdtProtocol.ProcessMessage(crdts[1]);
-                context.crdt.CrdtExecutors = new Dictionary<int, ICRDTExecutor>();
-                context.crdt.CrdtExecutors.Add(TEST_SCENE_NUMBER, storedCrdtExecutor);
-
-                ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
-                await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
-
-                bool sceneHasStateStored = false;
-                bool getCurrentStateFinished = false;
-                ByteString responsePayload = null;
-
-                rpcClient.GetCurrentState(new GetCurrentStateMessage() { })
-                         .ContinueWith(crdtState =>
-                          {
-                              sceneHasStateStored = crdtState.HasOwnEntities;
-                              responsePayload = crdtState.Payload;
-                              getCurrentStateFinished = true;
-                          });
-
-                var outgoingCrdtProtocol = new CRDTProtocol() { };
-                outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, outgoingCrdtProtocol);
-                await new WaitUntil(() => getCurrentStateFinished, 1);
-
-                Assert.IsTrue(getCurrentStateFinished);
-                Assert.IsTrue(sceneHasStateStored);
-                Assert.IsFalse(responsePayload.IsEmpty);
-
-                int index = 0;
-
-                using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
+                // stored crdt
+                new CRDTMessage()
                 {
-                    while (iterator.MoveNext())
-                    {
-                        var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, crdts[index].key1);
-                        Assert.AreEqual(responseCrdt.key2, crdts[index].key2);
-                        Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
-                        index++;
-                    }
+                    key1 = 1,
+                    key2 = 2,
+                    data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
                 }
+            };
 
-                Assert.AreEqual(crdts.Length, index);
-            });
+            var storedCrdtExecutor = new CRDTExecutor(Substitute.For<IParcelScene>(), new ECSComponentsManager(null));
+            storedCrdtExecutor.crdtProtocol.ProcessMessage(crdts[1]);
+            context.crdt.CrdtExecutors = new Dictionary<int, ICRDTExecutor>();
+            context.crdt.CrdtExecutors.Add(TEST_SCENE_NUMBER, storedCrdtExecutor);
+
+            ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
+            await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+
+            bool sceneHasStateStored = false;
+            bool getCurrentStateFinished = false;
+            ByteString responsePayload = null;
+
+            rpcClient.GetCurrentState(new GetCurrentStateMessage() { })
+                     .ContinueWith(crdtState =>
+                      {
+                          sceneHasStateStored = crdtState.HasOwnEntities;
+                          responsePayload = crdtState.Payload;
+                          getCurrentStateFinished = true;
+                      });
+
+            var outgoingCrdtProtocol = new CRDTProtocol() { };
+            outgoingCrdtProtocol.ProcessMessage(crdts[0]);
+            context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, outgoingCrdtProtocol);
+            await new WaitUntil(() => getCurrentStateFinished, 1);
+
+            Assert.IsTrue(getCurrentStateFinished);
+            Assert.IsTrue(sceneHasStateStored);
+            Assert.IsFalse(responsePayload.IsEmpty);
+
+            int index = 0;
+
+            using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
+            {
+                while (iterator.MoveNext())
+                {
+                    var responseCrdt = (CRDTMessage)iterator.Current;
+                    Assert.AreEqual(responseCrdt.key1, crdts[index].key1);
+                    Assert.AreEqual(responseCrdt.key2, crdts[index].key2);
+                    Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
+                    index++;
+                }
+            }
+
+            Assert.AreEqual(crdts.Length, index);
         }
 
         byte[] CreateCRDTMessage(CRDTMessage message)
