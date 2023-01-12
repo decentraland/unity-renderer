@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,10 +34,11 @@ namespace DCL
         public readonly BaseDictionary<int, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<int, BaseRefCountedCollection<object>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public bool isEcs7Enabled = false;
-        public PointerEvent lastPointerInputEvent = new PointerEvent();
         public RaycastEvent lastPointerRayHit = new RaycastEvent();
 
-        // Accumulate every pointer input event, then when it's processed, it'll be cleaned
-        public List<PointerEvent> pointerInputEventReceived = new List<PointerEvent>();
+        // Should the max buttonId be defined by WebInterface?
+        private const int MAX_BUTTON = (int)WebInterface.ACTION_BUTTON.ACTION_6;
+        public bool[] buttonState = new bool[MAX_BUTTON];
+        public bool[] lastButtonState = new bool[MAX_BUTTON];
     }
 }
