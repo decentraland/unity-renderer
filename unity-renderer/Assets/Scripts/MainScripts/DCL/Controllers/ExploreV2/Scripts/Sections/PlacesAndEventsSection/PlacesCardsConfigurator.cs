@@ -21,10 +21,10 @@ public static class PlacesCardsConfigurator
     {
         placeCard.Configure(placeInfo);
 
-        placeCard.onInfoClick?.RemoveAllListeners();
-        placeCard.onInfoClick?.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
-        placeCard.onJumpInClick?.RemoveAllListeners();
-        placeCard.onJumpInClick?.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
+        placeCard.onInfoClick.RemoveAllListeners();
+        placeCard.onInfoClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
+        placeCard.onJumpInClick.RemoveAllListeners();
+        placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
 
         return placeCard;
     }
