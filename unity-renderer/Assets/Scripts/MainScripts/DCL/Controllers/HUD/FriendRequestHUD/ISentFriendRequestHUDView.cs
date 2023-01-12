@@ -3,7 +3,7 @@ using System;
 
 namespace DCL.Social.Friends
 {
-    public interface ISentFriendRequestHUDView
+    public interface ISentFriendRequestHUDView : ISortingOrderUpdatable, IDisposable
     {
         event Action OnCancel;
         event Action OnClose;
@@ -14,7 +14,6 @@ namespace DCL.Social.Friends
         void SetSenderProfilePicture(ILazyTextureObserver textureObserver);
         void Show(bool instant = false);
         void Close();
-        void Dispose();
         void ShowPendingToCancel();
         void SetBodyMessage(string messageBody);
         void SetTimestamp(DateTime date);

@@ -75,6 +75,7 @@ namespace DCL.ECSComponents
         internal IAvatar avatar;
         internal CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
+        private IUserProfileBridge userProfileBridge;
         private bool isGlobalSceneAvatar = true;
 
         public IPoolableObject poolableObject { get; set; }
@@ -84,6 +85,8 @@ namespace DCL.ECSComponents
         private void Awake()
         {
             avatarMovementController = GetComponent<IAvatarMovementController>();
+            // TODO: avoid instantiation, user profile bridge should be retrieved from the service locator
+            userProfileBridge = new UserProfileWebInterfaceBridge();
 
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             Visibility visibility = new Visibility();
@@ -111,6 +114,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport += PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport += PlayerPointerExit;
         }
 
         public void Init()
@@ -211,7 +216,7 @@ namespace DCL.ECSComponents
                 entity, player
             );
 
-            outlineOnHover.Initialize(entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -231,7 +236,8 @@ namespace DCL.ECSComponents
                 avatarCollider.gameObject.SetActive(false);
 
                 SetImpostor(model.Id);
-                playerName.SetName(model.GetName());
+                UserProfile profile = userProfileBridge.Get(model.Id);
+                playerName.SetName(model.GetName(), profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
                 playerName.Show(true);
                 await avatar.Load(wearableItems, emotes.ToList(),new AvatarSettings
                 {
@@ -328,8 +334,12 @@ namespace DCL.ECSComponents
 
             player.playerName.SetIsTalking(model.Talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
+
             if (isNameDirty)
-                player.playerName.SetName(model.GetName());
+            {
+                UserProfile profile = userProfileBridge.Get(model.Id);
+                player.playerName.SetName(model.GetName(), profile?.hasClaimedName ?? false, profile?.isGuest ?? false);
+            }
         }
 
         private void Update()
@@ -432,6 +442,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

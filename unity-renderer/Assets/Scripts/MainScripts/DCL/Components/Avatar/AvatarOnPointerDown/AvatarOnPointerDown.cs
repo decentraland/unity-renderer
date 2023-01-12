@@ -9,7 +9,7 @@ using Ray = UnityEngine.Ray;
 namespace DCL.Components
 {
     public class AvatarOnPointerDown : MonoBehaviour, IAvatarOnPointerDown, IPoolLifecycleHandler,
-        IAvatarOnPointerDownCollider
+        IAvatarOnPointerDownCollider, IUnlockedCursorInputEvent
     {
         public new Collider collider;
         private OnPointerEvent.Model model;
@@ -81,18 +81,15 @@ namespace DCL.Components
         }
 
         public bool IsAtHoverDistance(float distance) =>
-            distance <= model.distance;
+            !Utils.IsCursorLocked || distance <= model.distance;
 
         public bool IsVisible()
         {
             return true;
         }
 
-        public bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
-        {
-            return IsAtHoverDistance(hit.distance) &&
-                   (model.button == "ANY" || buttonId.ToString() == model.button);
-        }
+        private bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit) =>
+            isHovering && (model.button == "ANY" || buttonId.ToString() == model.button);
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {

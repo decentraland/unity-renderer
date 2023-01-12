@@ -11,8 +11,9 @@ namespace DCL
     {
         private ClientEmotesKernelService emotes;
         private ClientFriendRequestKernelService friendRequests;
+        private ClientFriendsKernelService friends;
 
-        private readonly UniTaskCompletionSource modulesLoaded = new UniTaskCompletionSource();
+        private readonly UniTaskCompletionSource modulesLoaded = new ();
 
         private RpcServer<RPCContext> rpcServer;
 
@@ -21,6 +22,9 @@ namespace DCL
 
         public ClientFriendRequestKernelService FriendRequests() =>
             friendRequests;
+
+        public ClientFriendsKernelService Friends() =>
+            friends;
 
         public UniTask EnsureRpc() =>
             modulesLoaded.Task;
@@ -32,6 +36,9 @@ namespace DCL
 
             friendRequests = await SafeLoadModule(FriendRequestKernelServiceCodeGen.ServiceName, port,
                 module => new ClientFriendRequestKernelService(module));
+
+            friends = await SafeLoadModule(FriendsKernelServiceCodeGen.ServiceName, port,
+                module => new ClientFriendsKernelService(module));
 
             modulesLoaded.TrySetResult();
         }
