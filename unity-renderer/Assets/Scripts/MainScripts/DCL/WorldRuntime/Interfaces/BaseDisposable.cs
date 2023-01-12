@@ -85,6 +85,9 @@ namespace DCL.Components
 
         public void DetachFromEveryEntity()
         {
+            if (attachedEntities == null)
+                return;
+
             IDCLEntity[] attachedEntitiesArray = new IDCLEntity[attachedEntities.Count];
 
             attachedEntities.CopyTo(attachedEntitiesArray);
@@ -99,7 +102,6 @@ namespace DCL.Components
         {
             OnDispose?.Invoke(this);
             DetachFromEveryEntity();
-            attachedEntities = null;
         }
 
         public virtual BaseModel GetModel() => model;
