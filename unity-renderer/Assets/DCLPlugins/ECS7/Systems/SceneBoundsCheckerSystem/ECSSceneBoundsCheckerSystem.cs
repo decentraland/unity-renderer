@@ -29,7 +29,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             // TODO: merged bounds should adjust to MeshCollider or MeshRenderer being removed while the other still exists for the entity...
             // TODO: When will merged bounds be cleaned up ???
 
-            // RENDERERS
+            // Update renderers
             var rendererComponents = internalRenderersComponent.GetForAll();
             for (int i = 0; i < rendererComponents.Count; i++)
             {
@@ -40,7 +40,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 internalSceneBoundsCheckComponent.SetRenderers(componentData.scene, componentData.entity, componentData.model.renderers);
             }
 
-            // PHYSICS COLLIDERS
+            // Update physics colliders
             var physicsColliderComponents = physicsInternalCollidersComponent.GetForAll();
             for (int i = 0; i < physicsColliderComponents.Count; i++)
             {
@@ -48,11 +48,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 if(!componentData.model.dirty) continue;
 
-                // TODO: Should overwrite colliders or not??? when is that collection cleared?
                 internalSceneBoundsCheckComponent.SetPhysicsColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
-            // POINTER COLLIDERS
+            // Update pointer colliders
             var pointerColliderComponents = pointerInternalCollidersComponent.GetForAll();
             for (int i = 0; i < pointerColliderComponents.Count; i++)
             {
@@ -60,7 +59,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 if(!componentData.model.dirty) continue;
 
-                // TODO: Should overwrite colliders or not??? when is that collection cleared?
                 internalSceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
@@ -93,8 +91,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             IDCLEntity entity = sbcComponentData.entity;
             if (entity == null || entity.gameObject == null || entity.scene == null || entity.scene.isPersistent)
                 return;
-
-            // TODO: To solve recursive entity evaluation of children: every time a transform is affected (parenting, position), the entity children should have its sbc component entity position updated.
 
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
             if (sbcComponentData.model.entityMeshBounds.size.sqrMagnitude > 0) // has a mesh/collider
