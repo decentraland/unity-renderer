@@ -88,7 +88,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     }
 
     public void ConfigurePools() =>
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+        placeCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
 
     public override void RefreshControl() =>
         places.RefreshControl();

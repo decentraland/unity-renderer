@@ -63,11 +63,8 @@ public class ExploreEventsCommonTests
         eventsSubSectionComponent.featuredEventCardsPool = null;
 
         // Act
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(
-            out eventsSubSectionComponent.featuredEventCardsPool,
-            EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME,
-            eventsSubSectionComponent.eventCardLongPrefab,
-            10);
+        eventsSubSectionComponent.featuredEventCardsPool =
+            PlacesAndEventsCardsFactory.GetCardsPoolLazy(EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME, eventsSubSectionComponent.eventCardLongPrefab, 10);
 
         // Assert
         Assert.IsNotNull(eventsSubSectionComponent.featuredEventCardsPool);

@@ -132,10 +132,11 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public void ConfigurePools()
     {
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+        trendingPlaceCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        featuredPlaceCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+
+        trendingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        liveEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -278,12 +279,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         int eventId = 0;
         int placeId = 0;
 
-        for (int i = 0 ; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
+        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
         {
             if (i % 2 == 0 && eventId < events.Count)
             {
                 trendingPlacesAndEvents.AddItem(
                     PlacesAndEventsCardsFactory.CreateConfiguredEventCard(trendingEventCardsPool, events[eventId], OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+
                 eventId++;
             }
             else if (placeId < places.Count)

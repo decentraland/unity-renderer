@@ -58,11 +58,8 @@ public class ExplorePlacesCommonTests
         placesSubSectionComponent.placeCardsPool = null;
 
         // Act
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(
-            out placesSubSectionComponent.placeCardsPool,
-            PlacesSubSectionComponentView.PLACE_CARDS_POOL_NAME,
-            placesSubSectionComponent.placeCardPrefab,
-            200);
+        placesSubSectionComponent.placeCardsPool =
+            PlacesAndEventsCardsFactory.GetCardsPoolLazy(PlacesSubSectionComponentView.PLACE_CARDS_POOL_NAME, placesSubSectionComponent.placeCardPrefab, 200);
 
         // Assert
         Assert.IsNotNull(placesSubSectionComponent.placeCardsPool);

@@ -17,14 +17,17 @@ public static class PlacesAndEventsCardsFactory
     /// <param name="poolName">Name of the pool.</param>
     /// <param name="cardPrefab">Card prefab to use by the pool.</param>
     /// <param name="maxPrewarmCount">Max number of pre-created cards.</param>
-    public static void GetCardsPoolLazy(out Pool pool, string poolName, BaseComponentView cardPrefab, int maxPrewarmCount)
+    public static Pool GetCardsPoolLazy(string poolName, BaseComponentView cardPrefab, int maxPrewarmCount)
     {
-        pool = PoolManager.i.GetPool(poolName);
+        Pool pool = PoolManager.i.GetPool(poolName);
 
-        if (pool != null) return;
+        if (pool != null)
+            return pool;
 
         pool = PoolManager.i.AddPool(poolName, Object.Instantiate(cardPrefab).gameObject, maxPrewarmCount: maxPrewarmCount, isPersistent: true);
         pool.ForcePrewarm();
+
+        return pool;
     }
 
     public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked) =>

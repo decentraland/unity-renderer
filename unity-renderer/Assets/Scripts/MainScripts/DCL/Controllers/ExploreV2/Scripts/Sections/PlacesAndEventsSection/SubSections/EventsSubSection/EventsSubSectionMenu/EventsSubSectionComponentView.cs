@@ -134,10 +134,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void ConfigurePools()
     {
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        PlacesAndEventsCardsFactory.GetCardsPoolLazy(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+        featuredEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        trendingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        upcomingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        goingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
