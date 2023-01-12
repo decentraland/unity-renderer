@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSRuntime;
@@ -36,8 +35,8 @@ namespace ECSSystems.PlayerSystem
             avatarTransform.OnChange += OnAvatarTransformChanged;
             worldOffset.OnChange += OnWorldOffsetChanged;
 
-            OnAvatarTransformChanged(DataStore.i.world.avatarTransform.Get(), null);
-            OnWorldOffsetChanged(CommonScriptableObjects.worldOffset.Get(), Vector3.zero);
+            OnAvatarTransformChanged(avatarTransform.Get(), null);
+            OnWorldOffsetChanged(worldOffset.Get(), Vector3.zero);
         }
 
         public void Dispose()
