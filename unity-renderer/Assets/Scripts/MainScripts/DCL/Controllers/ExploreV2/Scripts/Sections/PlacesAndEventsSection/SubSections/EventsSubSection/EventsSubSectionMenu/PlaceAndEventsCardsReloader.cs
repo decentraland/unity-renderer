@@ -44,19 +44,16 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     public bool CanReload()
     {
-        if (firstLoading)
-        {
-            firstLoading = false;
-            reloadSubSection = true;
-            lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        if (!firstLoading)
+            return reloadSubSection && !IsInCooldown();
 
-            return true;
-        }
-
-        if (!reloadSubSection || lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API)
-            return false;
+        firstLoading = false;
+        reloadSubSection = true;
+        lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
 
         return true;
+
+        bool IsInCooldown() => lastTimeAPIChecked < Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
     }
 
     public void RequestAll()
