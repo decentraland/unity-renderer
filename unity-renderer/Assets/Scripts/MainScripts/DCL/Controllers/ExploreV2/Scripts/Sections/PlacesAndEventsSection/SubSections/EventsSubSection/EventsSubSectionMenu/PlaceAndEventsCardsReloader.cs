@@ -9,7 +9,7 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     private readonly Action requestAllFromAPI;
 
-    internal bool firstLoading;
+    internal bool firstLoading = true;
     internal bool reloadSubSection;
     private bool isWaitingAnimTransition;
 
@@ -21,8 +21,6 @@ public class PlaceAndEventsCardsReloader : IDisposable
         this.exploreV2Menu = exploreV2Menu;
 
         this.requestAllFromAPI = requestAllFromAPI;
-
-        firstLoading = true;
     }
 
     public void Initialize()
