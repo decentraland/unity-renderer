@@ -1,4 +1,4 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.ECSComponents.Material.Tests")]
-[assembly: InternalsVisibleTo("ECS7Plugin.Systems.Material.Tests")]
+[assembly: InternalsVisibleTo("DCL.ECSComponents.VideoPlayer.Tests")]
+[assembly: InternalsVisibleTo("ECS7Plugin.Systems.VideoPlayer.Tests")]

@@ -126,7 +126,7 @@ namespace DCL.ECSComponents
                     material = materialAsset.material
                 });
 
-                    // Run task to forget previous material after update to avoid forgetting a
+                // Run task to forget previous material after update to avoid forgetting a
                 // material that has not be changed from the renderers yet, since material change
                 // is done by a system during update
                 UniTask.RunOnThreadPool(async () =>
