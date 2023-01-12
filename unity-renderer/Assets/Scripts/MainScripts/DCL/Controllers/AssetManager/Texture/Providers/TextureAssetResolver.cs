@@ -48,15 +48,17 @@ namespace DCL
                             }
 
                             // The valid texture is retrieved
-                            LogVerbose(LogType.Log, $"Texture {url} loaded from {provider}");
+                            AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Texture {url} loaded from {provider}");
                             break;
                         }
+
+                        AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Texture {url} loaded from {provider} is null");
                     }
                     catch (Exception e)
                     {
                         lastException = e;
 
-                        LogVerbose(e);
+                        AssetResolverLogger.LogVerbose(featureFlags, e);
 
                         // Propagate `OperationCanceledException` further as there is no reason to iterate
                         if (e is OperationCanceledException)
