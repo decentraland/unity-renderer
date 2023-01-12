@@ -15,10 +15,17 @@ namespace DCL.Social.Passports
         public PreviewCameraRotation PreviewCameraRotation { get; private set; }
 
         [SerializeField] private ShowHideAnimator tutorialShowHide;
+        [SerializeField] private GameObject loadingSpinner;
 
         public void HideTutorial()
         {
             tutorialShowHide.Hide();
+        }
+
+        public void SetAsLoading(bool isLoading)
+        {
+            loadingSpinner.SetActive(isLoading);
+            CharacterPreviewImage.gameObject.SetActive(!isLoading);
         }
 
         public override void RefreshControl()

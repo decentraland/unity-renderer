@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace DCL
 {
@@ -6,8 +6,10 @@ namespace DCL
     {
         [SerializeField] private Material abMaterial;
         [SerializeField] private Material gltfMaterial;
+        [SerializeField] private Material parametrizedShapeMaterial;
 
         public Material ABMaterial => abMaterial;
         public Material GLTFMaterial => gltfMaterial;
+        public Material ParametrizedShapeMaterial => parametrizedShapeMaterial;
     }
 }

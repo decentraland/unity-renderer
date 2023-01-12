@@ -37,7 +37,7 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var url = GetUrl(endPoint, urlEncodedParams);
-            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout);
+            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
 
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, urlEncodedParams);
         }
@@ -53,16 +53,20 @@ namespace DCLServices.Lambdas
             if (!webRequestAsyncOperation.isSucceeded)
                 return (default, false);
 
-            return !TryParseResponse(endPoint, urlEncodedParams, webRequestAsyncOperation.webRequest.downloadHandler.text, out TResponse response) ? (default, false) : (response, true);
+            string textResponse = webRequestAsyncOperation.webRequest.downloadHandler.text;
+            webRequestAsyncOperation.Dispose();
+
+            return !TryParseResponse(endPoint, urlEncodedParams, textResponse, out TResponse response) ? (default, false) : (response, true);
         }
 
         internal string GetUrl(string endPoint, (string paramName, string paramValue)[] urlEncodedParams)
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
-
-            urlBuilder.Append(catalyst.lambdasUrl);
-            urlBuilder.Append('/');
+            //urlBuilder.Append(catalyst.lambdasUrl);
+            // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
+            urlBuilder.Append("https://peer.decentraland.org/lambdas");
+            urlBuilder.Append("/");
 
             var endPointSpan = endPoint.AsSpan();
 

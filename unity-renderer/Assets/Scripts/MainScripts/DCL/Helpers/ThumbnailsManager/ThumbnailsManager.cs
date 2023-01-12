@@ -159,7 +159,8 @@ public static class ThumbnailsManager
         wasCreated = false;
         if (!spriteCache.ContainsKey(texture))
         {
-            spriteCache[texture] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            spriteCache[texture] =
+                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, 100, 0, SpriteMeshType.FullRect, Vector4.one, false);
             wasCreated = true;
         }
         return spriteCache[texture];

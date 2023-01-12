@@ -3750,6 +3750,7 @@ MonoBehaviour:
   - {fileID: 1157310377002194378}
   rejectSuccessLabel: {fileID: 1062692253404095684}
   confirmSuccessLabel: {fileID: 7573140463004759126}
+  currentCanvas: {fileID: 732256080388820253}
 --- !u!1 &7976889171558284917
 GameObject:
   m_ObjectHideFlags: 0

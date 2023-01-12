@@ -1,4 +1,5 @@
-﻿using AvatarSystem;
+using AvatarSystem;
+using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
@@ -15,10 +16,23 @@ namespace DCL.Components
 
         private bool isHovered;
 
-        public void Initialize(IDCLEntity entity, IAvatar avatar)
+        public event System.Action OnPointerEnterReport;
+        public event System.Action OnPointerExitReport;
+        private OnPointerEvent.Model model;
+
+        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
             this.entity = entity;
             this.avatar = avatar;
+            this.model = model;
+
+            CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
+        }
+
+        private void AllUIHiddenChanged(bool isAllUIHidden, bool _)
+        {
+            if (isAllUIHidden)
+                ResetAvatarOutlined();
         }
 
         private void ResetAvatarOutlined()
@@ -32,9 +46,14 @@ namespace DCL.Components
             {
                 var renderer = avatar.GetMainRenderer();
 
-                if (renderer != null)
+                if (renderer != null && !CommonScriptableObjects.allUIHidden.Get())
                     DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
             }
+        }
+
+        private void OnDestroy()
+        {
+            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
 
         public Transform GetTransform() =>
@@ -44,19 +63,25 @@ namespace DCL.Components
 
         public void SetHoverState(bool state)
         {
-            if (isHovered != state)
-            {
-                isHovered = state;
+            if (isHovered == state)
+                return;
 
-                if (isHovered)
-                    SetAvatarOutlined();
-                else
-                    ResetAvatarOutlined();
+            isHovered = state;
+
+            if (isHovered)
+            {
+                SetAvatarOutlined();
+                OnPointerEnterReport?.Invoke();
+            }
+            else
+            {
+                ResetAvatarOutlined();
+                OnPointerExitReport?.Invoke();
             }
         }
 
         public bool IsAtHoverDistance(float distance) =>
-            true;
+            !Utils.IsCursorLocked || distance <= model.distance;
 
         public bool IsVisible() =>
             true;
