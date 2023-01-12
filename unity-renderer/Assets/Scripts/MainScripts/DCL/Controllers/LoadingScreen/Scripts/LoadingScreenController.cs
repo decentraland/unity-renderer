@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using DCL.Rendering;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -20,6 +21,7 @@ namespace DCL.LoadingScreen
         private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
         private readonly NotificationsController notificationsController;
+        private readonly CullingController cullingController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
@@ -27,7 +29,7 @@ namespace DCL.LoadingScreen
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
+        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController, ICullingController cullingController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
         {
             this.view = view;
@@ -161,15 +163,15 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
-            Environment.i.platform.cullingController.Restart();
-            Environment.i.platform.cullingController.CycleFinished += CullingCycleFinished;
+            cullingController.Restart();
+            cullingController.CycleFinished += CullingCycleFinished;
         }
 
         private void CullingCycleFinished()
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
-            Environment.i.platform.cullingController.CycleFinished -= CullingCycleFinished;
+            cullingController.CycleFinished -= CullingCycleFinished;
         }
 
 
