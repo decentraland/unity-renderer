@@ -11,6 +11,7 @@ public class LoadingHUDView : MonoBehaviour
     [SerializeField] internal GameObject tipsContainer;
     [SerializeField] internal GameObject noTipsContainer;
     [SerializeField] internal ShowHideAnimator showHideAnimator;
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
     private bool isDestroyed = false;
 
@@ -31,18 +32,18 @@ public class LoadingHUDView : MonoBehaviour
     private void OnFinishHide(ShowHideAnimator obj)
     {
         showHideAnimator.OnWillFinishHide -= OnFinishHide;
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
-        DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(false);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(false);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Set(false);
+        dataStoreLoadingScreen.Ref.loadingHUD.visible.Set(false);
     }
 
     private void OnFinishStart(ShowHideAnimator obj)
     {
         showHideAnimator.OnWillFinishStart -= OnFinishStart;
         CommonScriptableObjects.isLoadingHUDOpen.Set(true);
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(false);
-        DataStore.i.HUDs.loadingHUD.fadeOut.Set(false);
-        DataStore.i.HUDs.loadingHUD.visible.Set(true);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(false);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Set(false);
+        dataStoreLoadingScreen.Ref.loadingHUD.visible.Set(true);
     }
 
     public void SetVisible(bool isVisible, bool instant) {

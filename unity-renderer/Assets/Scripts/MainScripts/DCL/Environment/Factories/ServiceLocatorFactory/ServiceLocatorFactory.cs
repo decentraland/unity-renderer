@@ -54,7 +54,7 @@ namespace DCL
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 
