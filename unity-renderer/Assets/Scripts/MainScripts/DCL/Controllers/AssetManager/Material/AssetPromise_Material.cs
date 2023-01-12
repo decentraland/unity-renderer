@@ -125,7 +125,7 @@ namespace DCL
 
             if (texture.videoTexture)
             {
-                var promise = new AssetPromise_VideoTexture(texture.src);
+                var promise = new AssetPromise_EmptyTexture();
                 AssetPromiseKeeper_Texture.i.Keep(promise);
                 return promise;
             }
