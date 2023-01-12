@@ -83,8 +83,8 @@ namespace DCL.Social.Friends
                 Debug.LogError($"Cannot display user profile {friendRequest.From}, is not allocated");
 
             var ownProfile = userProfileBridge.GetOwn();
-            view.SetOwnProfilePicture(ownProfile.face256SnapshotURL);
-
+            view.SetRecipientProfilePicture(ownProfile.face256SnapshotURL);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
             view.Show();
         }
 
@@ -105,6 +105,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.From);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
 
         private void Reject() =>
