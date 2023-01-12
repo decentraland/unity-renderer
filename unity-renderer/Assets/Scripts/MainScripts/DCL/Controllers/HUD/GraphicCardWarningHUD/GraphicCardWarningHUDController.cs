@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GraphicCardWarningHUDController : IHUD
 {
-    private readonly string restartMessage =
+    private readonly string warningMessage =
         "Your machine is not using a dedicated graphics card to run Decentraland. "
         + "This might lead to performance issues. Check your browser and OS configuration "
         + "and restart" + (Application.platform == RuntimePlatform.WebGLPlayer ? "your browser." : "the experience.");
@@ -57,7 +57,7 @@ public class GraphicCardWarningHUDController : IHUD
                     buttonMessage = "Dismiss",
                     destroyOnFinish = true,
                     groupID = "GraphicCard",
-                    message = restartMessage,
+                    message = warningMessage,
                     timer = 0,
                     type = Type.GRAPHIC_CARD_WARNING,
                 });
