@@ -13,7 +13,7 @@ namespace DCL.Rendering
     /// </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
-        private List<Rendereable> rendereables = new List<Rendereable>();
+        private readonly List<Rendereable> rendereables = new List<Rendereable>();
         private ICollection<Renderer> detectedRenderers = new List<Renderer>();
         private ICollection<Renderer> usingRenderers = new List<Renderer>();
         private ICollection<SkinnedMeshRenderer> detectedSkinnedRenderers;
@@ -40,39 +40,11 @@ namespace DCL.Rendering
         /// </summary>
         public IEnumerator PopulateRenderersList()
         {
-            List<Rendereable> rendereablesToRemove = new List<Rendereable>();
-            detectedRenderers.Clear();
-            foreach (Rendereable rendereable in rendereables)
-            {
-                if (rendereable == null)
-                {
-                    rendereablesToRemove.Add(rendereable);
-                    continue;
-                }
-                foreach (Renderer renderer in rendereable.renderers)
-                {
-                    if (renderer is not SkinnedMeshRenderer and not ParticleSystemRenderer)
-                        detectedRenderers.Add(renderer);
-                }
-            }
-            for (int i = rendereablesToRemove.Count - 1; i >= 0; i--)
-                rendereables.Remove(rendereablesToRemove[i]);
-
+            if (!dirty)
+                yield break;
+            
             detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
 
-
-            Debug.Log("----------------------------------");
-            Debug.Log(detectedRenderers.Count);
-            Renderer[] rends = Object.FindObjectsOfType<Renderer>();
-            List<Renderer> test = new List<Renderer>();
-            foreach (Renderer renderer in rends)
-            {
-                if (renderer is not SkinnedMeshRenderer and not ParticleSystemRenderer)
-                    test.Add(renderer);
-            }
-            Debug.Log(test.Count);
-
-            
             yield return null;
             yield return CalculateRenderers();
             yield return null;
@@ -107,8 +79,11 @@ namespace DCL.Rendering
             usingRenderers.Clear();
             foreach (Renderer renderer in checkingRenderers)
             {
-                if (renderer == null)
+                if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                {
+                    amount++;
                     continue;
+                }
 
                 if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
                 {
@@ -130,7 +105,10 @@ namespace DCL.Rendering
             foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
             {
                 if (skinnedRenderer == null)
+                {
+                    amount++;
                     continue;
+                }
 
                 if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
                 {
@@ -149,7 +127,7 @@ namespace DCL.Rendering
             usingRenderers.Clear();
             foreach (Renderer renderer in detectedRenderers)
             {
-                if (renderer == null)
+                if (renderer == null || !renderer.gameObject.activeInHierarchy)
                     continue;
 
                 if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
