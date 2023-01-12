@@ -7,6 +7,7 @@ using DCL.ECSComponents;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
@@ -50,21 +51,23 @@ namespace Tests
         }
 
         [UnityTest]
-        public void TryToStartVideo()
+        public IEnumerator TryToStartVideo()
         {
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
-                Playing = true
+                Playing = true,
             };
 
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
 
             Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, true);
         }
 
         [UnityTest]
-        public void VideoDefaultValues()
+        public IEnumerator VideoDefaultValues()
         {
             PBVideoPlayer model = new PBVideoPlayer()
             {
@@ -72,13 +75,15 @@ namespace Tests
             };
 
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
 
             Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, false);
             Assert.AreEqual(videoPlayerHandler.videoPlayer.volume, 1.0f);
         }
 
         [UnityTest]
-        public void VideoUpdateOnRuntime()
+        public IEnumerator VideoUpdateOnRuntime()
         {
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
@@ -87,6 +92,9 @@ namespace Tests
 
             Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, false);
             Assert.AreEqual(videoPlayerHandler.videoPlayer.volume, 1.0f);
+
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
 
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
@@ -94,6 +102,9 @@ namespace Tests
                 Playing = true,
                 Volume = 0.5f,
             });
+
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
 
             Assert.AreEqual(videoPlayerHandler.videoPlayer.url, "other-video.mp4");
             Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, true);
