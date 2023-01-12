@@ -1,13 +1,25 @@
 using DCL;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class PlayerNameShould : MonoBehaviour
 {
     private PlayerName playerName;
 
     [SetUp]
-    public void SetUp() { playerName = Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>(); }
+    public void SetUp()
+    {
+        playerName = Instantiate(Resources.Load<GameObject>("PlayerName")).GetComponent<PlayerName>();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Destroy(playerName.gameObject);
+        DataStore.Clear();
+    }
 
     [Test]
     public void BeInitializedProperly()
@@ -54,14 +66,16 @@ public class PlayerNameShould : MonoBehaviour
         Assert.AreEqual(visible, playerName.canvas.enabled);
     }
 
-    [Test]
-    [TestCase("Short")]
-    [TestCase("VeryLongName")]
-    public void SetNameCorrectly(string name)
+    [UnityTest]
+    public IEnumerator SetNameCase1()
     {
-        playerName.SetName(name, false, false);
-        Assert.AreEqual($"<color=#CFCDD4>{name}</color>", playerName.nameText.text);
-        Assert.AreEqual(new Vector2(playerName.nameText.GetPreferredValues().x + PlayerName.BACKGROUND_EXTRA_WIDTH, PlayerName.BACKGROUND_HEIGHT), playerName.background.rectTransform.sizeDelta);
+        yield return SetNameCorrectly("Short");
+    }
+
+    [UnityTest]
+    public IEnumerator SetNameCase2()
+    {
+        yield return SetNameCorrectly("VeryLongName");
     }
 
     [Test]
@@ -115,40 +129,79 @@ public class PlayerNameShould : MonoBehaviour
         Destroy(cameraStub);
     }
 
-    [TestCase("shitholename", "****holename")]
-    [TestCase("fuckfaceboob", "****face****")]
-    public void ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
+    [UnityTest]
+    public IEnumerator ApplyProfanityFilteringToOffensiveNamesCase1()
     {
-        DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
-        playerName.SetName(originalName, false, false);
-        Assert.AreEqual($"<color=#CFCDD4>{displayedName}</color>", playerName.nameText.text);
+        yield return ApplyProfanityFilteringToOffensiveNames("shitholename", "****holename");
     }
 
-    [Test]
-    public void SetGuestColor()
+    [UnityTest]
+    public IEnumerator ApplyProfanityFilteringToOffensiveNamesCase2()
+    {
+        yield return ApplyProfanityFilteringToOffensiveNames("fuckfaceboob", "****face****");
+    }
+
+    [UnityTest]
+    public IEnumerator SetGuestColor()
     {
         playerName.SetName("hey#83df", false, true);
+
+        // TODO: we should refactor to be able to mock ProfanityFilterSharedInstances.regexFilter
+        // internally, executes a UniTask which may take a frame to solve the name filtering making this a flaky test
+        yield return null;
+
         Assert.AreEqual("<color=#A09BA8>hey</color><color=#716B7C>#83df</color>", playerName.nameText.text);
     }
 
-    [Test]
-    public void SetWeb3Color()
+    [UnityTest]
+    public IEnumerator SetWeb3Color()
     {
         playerName.SetName("hey#83df", false, false);
+
+        // TODO: we should refactor to be able to mock ProfanityFilterSharedInstances.regexFilter
+        // internally, executes a UniTask which may take a frame to solve the name filtering making this a flaky test
+        // we could mock the filtering like: UniTask.FromResult("name")
+        yield return null;
+
         Assert.AreEqual("<color=#CFCDD4>hey</color><color=#A09BA8>#83df</color>", playerName.nameText.text);
     }
 
-    [Test]
-    public void SetClaimedColor()
+    [UnityTest]
+    public IEnumerator SetClaimedColor()
     {
         playerName.SetName("hey", true, false);
+
+        // TODO: we should refactor to be able to mock ProfanityFilterSharedInstances.regexFilter
+        // internally, executes a UniTask which may take a frame to solve the name filtering making this a flaky test
+        // we could mock the filtering like: UniTask.FromResult("name")
+        yield return null;
+
         Assert.AreEqual("<color=#FFFFFF>hey</color>", playerName.nameText.text);
     }
 
-    [TearDown]
-    public void TearDown()
+    private IEnumerator SetNameCorrectly(string name)
     {
-        Destroy(playerName.gameObject);
-        DataStore.Clear();
+        playerName.SetName(name, false, false);
+
+        // TODO: we should refactor to be able to mock ProfanityFilterSharedInstances.regexFilter
+        // internally, executes a UniTask which may take a frame to solve the name filtering making this a flaky test
+        // we could mock the filtering like: UniTask.FromResult("name")
+        yield return null;
+
+        Assert.AreEqual($"<color=#CFCDD4>{name}</color>", playerName.nameText.text);
+        Assert.AreEqual(new Vector2(playerName.nameText.GetPreferredValues().x + PlayerName.BACKGROUND_EXTRA_WIDTH, PlayerName.BACKGROUND_HEIGHT), playerName.background.rectTransform.sizeDelta);
+    }
+
+    private IEnumerator ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
+    {
+        DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
+        playerName.SetName(originalName, false, false);
+
+        // TODO: we should refactor to be able to mock ProfanityFilterSharedInstances.regexFilter
+        // internally, executes a UniTask which may take a frame to solve the name filtering making this a flaky test
+        // we could mock the filtering like: UniTask.FromResult("name")
+        yield return null;
+
+        Assert.AreEqual($"<color=#CFCDD4>{displayedName}</color>", playerName.nameText.text);
     }
 }
