@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class EventsSubSectionComponentController : IEventsSubSectionComponentController
+public class EventsSubSectionComponentController : IEventsSubSectionComponentController, IPlacesAndEventsAPIRequester
 {
     public event Action OnCloseExploreV2;
 
@@ -28,7 +28,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllEventsFromAPI);
+        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         this.view = view;
 
@@ -85,7 +85,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
     }
 
-    internal void RequestAllEventsFromAPI()
+    public void RequestAllFromAPI()
     {
         eventsAPIApiController.GetAllEvents(
             OnSuccess: OnRequestedEventsUpdated,

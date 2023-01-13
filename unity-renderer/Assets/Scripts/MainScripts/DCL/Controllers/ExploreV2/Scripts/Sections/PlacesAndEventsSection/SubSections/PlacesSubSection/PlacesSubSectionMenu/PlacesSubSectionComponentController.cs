@@ -8,7 +8,7 @@ using UnityEngine;
 using static HotScenesController;
 using Environment = DCL.Environment;
 
-public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
+public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController, IPlacesAndEventsAPIRequester
 {
     public event Action OnCloseExploreV2;
 
@@ -28,7 +28,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllPlacesFromAPI);
+        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         this.view = view;
 
@@ -84,7 +84,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
     }
 
-    internal void RequestAllPlacesFromAPI()
+    public void RequestAllFromAPI()
     {
         placesAPIApiController.GetAllPlaces(
             OnCompleted: OnRequestedEventsUpdated);

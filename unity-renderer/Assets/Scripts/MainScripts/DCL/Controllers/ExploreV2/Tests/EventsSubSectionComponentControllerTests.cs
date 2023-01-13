@@ -92,7 +92,7 @@ public class EventsSubSectionComponentControllerTests
     public void RequestAllEventsFromAPICorrectly()
     {
         // Act
-        eventsSubSectionComponentController.RequestAllEventsFromAPI();
+        eventsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());

@@ -5,9 +5,8 @@ using UnityEngine;
 public class PlaceAndEventsCardsReloader : IDisposable
 {
     private readonly IPlacesAndEventsSubSectionComponentView view;
+    private readonly IPlacesAndEventsAPIRequester requester;
     private readonly DataStore_ExploreV2 exploreV2Menu;
-
-    private readonly Action requestAllFromAPI;
 
     internal bool firstLoading = true;
     internal bool reloadSubSection;
@@ -15,12 +14,11 @@ public class PlaceAndEventsCardsReloader : IDisposable
 
     internal float lastTimeAPIChecked;
 
-    public PlaceAndEventsCardsReloader(IPlacesAndEventsSubSectionComponentView view, DataStore_ExploreV2 exploreV2Menu, Action requestAllFromAPI)
+    public PlaceAndEventsCardsReloader(IPlacesAndEventsSubSectionComponentView view, IPlacesAndEventsAPIRequester requester, DataStore_ExploreV2 exploreV2Menu)
     {
         this.view = view;
         this.exploreV2Menu = exploreV2Menu;
-
-        this.requestAllFromAPI = requestAllFromAPI;
+        this.requester = requester;
     }
 
     public void Initialize()
@@ -65,7 +63,7 @@ public class PlaceAndEventsCardsReloader : IDisposable
         lastTimeAPIChecked = Time.realtimeSinceStartup;
 
         if (!exploreV2Menu.isInShowAnimationTransiton.Get())
-            requestAllFromAPI();
+            requester.RequestAllFromAPI();
         else
         {
             exploreV2Menu.isInShowAnimationTransiton.OnChange += OnAnimationTransitionFinished;
@@ -78,6 +76,11 @@ public class PlaceAndEventsCardsReloader : IDisposable
         exploreV2Menu.isInShowAnimationTransiton.OnChange -= OnAnimationTransitionFinished;
         isWaitingAnimTransition = false;
 
-        requestAllFromAPI();
+        requester.RequestAllFromAPI();
     }
+}
+
+public interface IPlacesAndEventsAPIRequester
+{
+    void RequestAllFromAPI();
 }

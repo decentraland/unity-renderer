@@ -93,7 +93,7 @@ public class PlacesSubSectionComponentControllerTests
     public void RequestAllPlacesFromAPICorrectly()
     {
         // Act
-        placesSubSectionComponentController.RequestAllPlacesFromAPI();
+        placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());

@@ -101,7 +101,7 @@ public class HighlightsSubSectionComponentControllerTests
     public void RequestAllPlacesAndEventsFromAPICorrectly()
     {
         // Act
-        highlightsSubSectionComponentController.RequestAllPlacesAndEventsFromAPI();
+        highlightsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());

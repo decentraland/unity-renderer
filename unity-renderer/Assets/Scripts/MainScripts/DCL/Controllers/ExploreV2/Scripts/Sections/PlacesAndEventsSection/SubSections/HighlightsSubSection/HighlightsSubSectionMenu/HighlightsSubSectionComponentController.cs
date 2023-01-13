@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
-public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController
+public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController, IPlacesAndEventsAPIRequester
 {
     public event Action OnCloseExploreV2;
     public event Action OnGoToEventsSubSection;
@@ -31,7 +31,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public HighlightsSubSectionComponentController(IHighlightsSubSectionComponentView view, IPlacesAPIController placesAPI, IEventsAPIController eventsAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
     {
-        cardsReloader = new PlaceAndEventsCardsReloader(view, dataStore.exploreV2, RequestAllPlacesAndEventsFromAPI);
+        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         this.view = view;
 
@@ -97,7 +97,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             cardsReloader.RequestAll();
     }
 
-    internal void RequestAllPlacesAndEventsFromAPI()
+    public void RequestAllFromAPI()
     {
         placesAPIApiController.GetAllPlaces(
             OnCompleted: placeList =>
