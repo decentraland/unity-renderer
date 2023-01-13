@@ -1,24 +1,22 @@
+using DCL.ServerTime;
 using System;
 using System.Collections.Generic;
-using DCL.ServerTime;
 
 namespace DCL
 {
     public enum AppMode
     {
         DEFAULT,
-        BUILDER_IN_WORLD_EDITION
+        BUILDER_IN_WORLD_EDITION,
     }
 
     public class DataStore
     {
-        private static DataStore instance = new DataStore();
+        public static DataStore i { get; private set; } = new ();
 
-        public static DataStore i { get => instance; }
+        private readonly Dictionary<Type, object> dataStores = new ();
 
-        private Dictionary<Type, object> dataStores = new Dictionary<Type, object>();
-
-        public void Set<T>(T data) where T : class
+        public void Set<T>(T data) where T: class
         {
             if (!dataStores.ContainsKey(typeof(T)))
                 dataStores.Add(typeof(T), data);
@@ -26,7 +24,7 @@ namespace DCL
                 dataStores[typeof(T)] = data;
         }
 
-        public T Get<T>() where T : class, new()
+        public T Get<T>() where T: class, new()
         {
             if (!dataStores.ContainsKey(typeof(T)))
                 Set(new T());
@@ -34,7 +32,8 @@ namespace DCL
             return dataStores[typeof(T)] as T;
         }
 
-        public static void Clear() => instance = new DataStore();
+        public static void Clear() =>
+            i = new DataStore();
 
         public DataStore_World world => i.Get<DataStore_World>();
         public DataStore_Common common => i.Get<DataStore_Common>();
@@ -70,4 +69,15 @@ namespace DCL
         public DataStore_Notifications notifications => i.Get<DataStore_Notifications>();
         public DataStore_Outliner outliner => i.Get<DataStore_Outliner>();
     }
+
+    public struct DataStoreRef<T> where T: class, new()
+    {
+        private T @ref;
+
+        public T Ref => @ref ??= DataStore.i.Get<T>();
+    }
+
 }
+
+
+

@@ -13,6 +13,8 @@ namespace DCL.Camera
 {
     public class CameraController : MonoBehaviour
     {
+
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] internal new UnityEngine.Camera camera;
 
         private Transform cameraTransform;
@@ -84,6 +86,7 @@ namespace DCL.Camera
 
             OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
 
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnDecoupledLoadingScreenChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
@@ -94,6 +97,14 @@ namespace DCL.Camera
             SetInvertYAxis(DataStore.i.camera.invertYAxis.Get(), false);
 
             wasBlendingLastFrame = false;
+        }
+
+        private void OnDecoupledLoadingScreenChange(bool visibleState, bool prevVisibleState)
+        {
+            if (visibleState == prevVisibleState)
+                return;
+
+            SetCameraEnabledState(!visibleState);
         }
 
         void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
@@ -249,6 +260,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
             DataStore.i.camera.outputTexture.OnChange -= OnOutputTextureChange;
             DataStore.i.camera.invertYAxis.OnChange -= SetInvertYAxis;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnFullscreenUIVisibilityChange;
         }
 
         [Serializable]

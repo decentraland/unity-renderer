@@ -21,6 +21,7 @@ namespace DCL
 
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private InputAction_Trigger unlockInputAction;
         [SerializeField] private Canvas canvas;
         [SerializeField] private Image raycastTarget;
@@ -51,7 +52,7 @@ namespace DCL
 
         public void LockCursor()
         {
-            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || dataStoreLoadingScreen.Ref.loadingHUD.visible.Get() || dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
                 return;
 
             Utils.LockCursor();

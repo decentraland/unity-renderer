@@ -1,17 +1,20 @@
-using System;
-using System.Collections;
 using DCL;
 using DCL.Interface;
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class LoadingBridge : MonoBehaviour
 {
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+
     [Serializable]
     public class Payload
     {
-        public bool isVisible = false;
+        public bool isVisible;
         public string message = "";
-        public bool showTips = false;
+        public bool showTips;
     }
 
     [Serializable]
@@ -22,49 +25,52 @@ public class LoadingBridge : MonoBehaviour
         public string message;
     }
 
+    [Obsolete]
     public void SetLoadingScreen(string jsonMessage)
     {
+        if (isDecoupledLoadingScreenEnabled) return;
+
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
 
-        if (payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeIn.Get() && !DataStore.i.HUDs.loadingHUD.visible.Get())
-            DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
+        if (payload.isVisible && !dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Get() && !dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
+            dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(true);
 
-        if (!payload.isVisible && !DataStore.i.HUDs.loadingHUD.fadeOut.Get())
-            DataStore.i.HUDs.loadingHUD.fadeOut.Set(true);
+        if (!payload.isVisible && !dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Get())
+            dataStoreLoadingScreen.Ref.loadingHUD.fadeOut.Set(true);
 
         if (!string.IsNullOrEmpty(payload.message))
-            DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
-        DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set(payload.message);
+
+        dataStoreLoadingScreen.Ref.loadingHUD.showTips.Set(payload.showTips);
     }
-    
+
+    [Obsolete]
     public void FadeInLoadingHUD(string jsonMessage)
     {
+        if (isDecoupledLoadingScreenEnabled) return;
+
         //TODO: Logic to be cleaned by the RFC-1
         StartCoroutine(WaitForLoadingHUDVisible(jsonMessage));
     }
-    
-    IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
+
+    private IEnumerator WaitForLoadingHUDVisible(string jsonMessage)
     {
         //TODO: Logic to be cleaned by the RFC-1
         WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
-        
-        PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
-        if (!string.IsNullOrEmpty(payload.message))
-        {
-            DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
-        }
-        else
-        {
-            DataStore.i.HUDs.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
-        }
-        DataStore.i.HUDs.loadingHUD.percentage.Set(0);
-        DataStore.i.HUDs.loadingHUD.fadeIn.Set(true);
 
-        while (!DataStore.i.HUDs.loadingHUD.visible.Get())
-        {
+        PayloadCoords payload = JsonUtility.FromJson<PayloadCoords>(jsonMessage);
+
+        if (!string.IsNullOrEmpty(payload.message))
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set(payload.message);
+        else
+            dataStoreLoadingScreen.Ref.loadingHUD.message.Set("Teleporting to " + payload.xCoord + ", " + payload.yCoord + "...");
+
+        dataStoreLoadingScreen.Ref.loadingHUD.percentage.Set(0);
+        dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Set(true);
+
+        while (!dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
             yield return null;
-        }
-        
+
         WebInterface.LoadingHUDReadyForTeleport(payload.xCoord, payload.yCoord);
     }
 }
