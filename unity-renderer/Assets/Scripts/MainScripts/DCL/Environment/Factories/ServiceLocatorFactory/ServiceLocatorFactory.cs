@@ -64,7 +64,6 @@ namespace DCL
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedAssetBundleProvider() },
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
             }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 

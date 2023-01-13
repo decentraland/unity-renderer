@@ -39,7 +39,7 @@ namespace DCL.Providers
 
                     if (assetBundle)
                     {
-                        LogVerbose(LogType.Log, $"Asset Bundle {hash} loaded from {provider}");
+                        AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} loaded from {provider}");
                         return assetBundle;
                     }
                 }
@@ -47,7 +47,7 @@ namespace DCL.Providers
                 // Propagate `OperationCanceledException` further as there is no reason to iterate
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    LogVerbose(e);
+                    AssetResolverLogger.LogVerbose(featureFlags, e);
                     lastException = e;
                 }
             }
