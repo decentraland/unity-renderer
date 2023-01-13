@@ -100,6 +100,9 @@ namespace DCL
             return poolable;
         }
 
+        public T Get<T>() where T: MonoBehaviour =>
+            this.Get().gameObject.GetComponent<T>();
+
         private PoolableObject Extract()
         {
             PoolableObject po = null;

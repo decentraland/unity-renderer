@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IEventsSubSectionComponentView
+public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Number of events per row that fit with the current upcoming events grid configuration.
     /// </summary>
     int currentUpcomingEventsPerRow { get; }
-    
+
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
@@ -90,11 +90,6 @@ public interface IEventsSubSectionComponentView
     void HideEventModal();
 
     /// <summary>
-    /// Set the current scroll view position to 1.
-    /// </summary>
-    void RestartScrollViewPosition();
-
-    /// <summary>
     /// Configure the needed pools for the events instantiation.
     /// </summary>
     void ConfigurePools();
@@ -103,4 +98,6 @@ public interface IEventsSubSectionComponentView
     /// Show loading bar for all events groups
     /// </summary>
     void SetAllEventGroupsAsLoading();
+
+    void SetShowMoreButtonActive(bool isActive);
 }
