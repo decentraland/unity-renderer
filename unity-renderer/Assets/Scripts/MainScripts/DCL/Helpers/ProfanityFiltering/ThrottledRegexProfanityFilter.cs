@@ -23,7 +23,7 @@ namespace DCL.ProfanityFiltering
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            regexSteps.Clear();
         }
 
         public void Initialize()
