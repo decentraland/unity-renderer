@@ -1,16 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
 {
-    /// <summary>
-    /// This class is used for tracking all the renderers, skinnedMeshRenderers and Animations of the world.
-    ///
-    /// It currently uses a very lazy FindObjectsOfType approach, but is enough for its purposes as its used
-    /// to optimize a bigger bottleneck.
-    /// </summary>
+    /// <summary> This class is used for tracking all the renderers, skinnedMeshRenderers and Animations of the world. </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
         private readonly List<Rendereable> rendereables = new List<Rendereable>();
@@ -21,7 +15,7 @@ namespace DCL.Rendering
 
         private int ignoredLayersMask;
         private bool dirty = true;
-
+        
 
         public CullingObjectsTracker()
         {
@@ -32,14 +26,25 @@ namespace DCL.Rendering
             Rendereable.OnRendereableAdded += OnRendereableAdded;
         }
 
-        public void OnRendereableAdded(object sender, Rendereable rendereable)
+        /// <summary> Adds a rendereable to be tracked and calculating in the culling process. </summary>
+        public void OnRendereableAdded(object sender, Rendereable rendereable) => rendereables.Add(rendereable);
+
+        /// <summary> Sets a layer mask to be ignored, only one layer mask can be ingored at a given time. </summary>
+        public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
+
+        /// <summary> This will re-populate all the tracked objects synchronously </summary>
+        public void ForcePopulateRenderersList()
         {
-            rendereables.Add(rendereable);
+            detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
+
+            ForceCalculateRenderers();
+            ForceCalculateSkinnedRenderers();
+            usingAnimations = Object.FindObjectsOfType<Animation>();
+
+            dirty = false;
         }
 
-        /// <summary>
-        /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
-        /// </summary>
+        /// <summary> If the dirty flag is true, this coroutine will re-populate all the tracked objects. </summary>
         public IEnumerator PopulateRenderersList()
         {
             if (!dirty)
@@ -58,20 +63,75 @@ namespace DCL.Rendering
             dirty = false;
         }
 
-        /// <summary>
-        ///  This will re-populate all the tracked objects synchronously
-        /// </summary>
-        public void ForcePopulateRenderersList()
+        public void Dispose()
         {
-            detectedSkinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
-
-            ForceCalculateRenderers();
-            ForceCalculateSkinnedRenderers();
-            usingAnimations = Object.FindObjectsOfType<Animation>();
-
-            dirty = false;
+            dirty = true;
+            usingRenderers = null;
+            usingSkinnedRenderers = null;
+            detectedSkinnedRenderers = null;
+            usingAnimations = null;
+            PoolManager.i.OnGet -= MarkDirty;
+            Rendereable.OnRendereableAdded -= OnRendereableAdded;
         }
 
+        /// <summary> Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call. </summary>
+        public void MarkDirty() => dirty = true;
+
+        /// <summary> Returns true if dirty. </summary>
+        public bool IsDirty() => dirty;
+
+        /// <summary> Returns the renderers list. </summary>
+        public ICollection<Renderer> GetRenderers() => usingRenderers;
+
+        /// <summary> Returns the skinned renderers list. </summary>
+        public ICollection<SkinnedMeshRenderer> GetSkinnedRenderers() => usingSkinnedRenderers;
+
+        /// <summary> Returns the animations list. </summary>
+        public Animation[] GetAnimations() => usingAnimations;
+
+
+        private void ForceCalculateRenderers()
+        {
+            ForceCleanRendereables();
+            
+            usingRenderers = new List<Renderer>();
+            foreach (Rendereable rendereable in rendereables)
+            {
+                if (!rendereable.container.activeInHierarchy)
+                    continue;
+
+                foreach (Renderer renderer in rendereable.renderers)
+                {
+                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                        continue;
+
+                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                        usingRenderers.Add(renderer);
+                }
+            }
+        }
+
+        private void ForceCalculateSkinnedRenderers()
+        {
+            usingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
+            foreach (SkinnedMeshRenderer skinnedRenderer in detectedSkinnedRenderers)
+            {
+                if (skinnedRenderer == null)
+                    continue;
+
+                if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
+                    usingSkinnedRenderers.Add(skinnedRenderer);
+            }
+        }
+
+        private void ForceCleanRendereables()
+        {
+            for (int i = rendereables.Count - 1; i >= 0; i--)
+            {
+                if (rendereables[i] == null || rendereables[i].container == null)
+                    rendereables.RemoveAt(i);
+            }
+        }
 
         private IEnumerator CalculateRenderers()
         {
@@ -80,7 +140,13 @@ namespace DCL.Rendering
             usingRenderers.Clear();
             foreach (Rendereable rendereable in checkingRendereables)
             {
-                if (rendereable == null || !rendereable.container.activeInHierarchy)
+                if (rendereable == null || !rendereable.container)
+                {
+                    rendereables.Remove(rendereable);
+                    continue;
+                }
+
+                if (!rendereable.container.activeInHierarchy)
                     continue;
 
                 foreach (Renderer renderer in rendereable.renderers)
@@ -127,81 +193,6 @@ namespace DCL.Rendering
                 if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
                     usingSkinnedRenderers.Add(skinnedRenderer);
             }
-        }
-
-        private void ForceCalculateRenderers()
-        {
-            usingRenderers = new List<Renderer>();
-            foreach (Rendereable rendereable in rendereables)
-            {
-                if (rendereable == null || !rendereable.container.activeInHierarchy)
-                    continue;
-
-                foreach (Renderer renderer in rendereable.renderers)
-                {
-                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
-                        continue;
-
-                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
-                        usingRenderers.Add(renderer);
-                }
-            }
-        }
-
-        private void ForceCalculateSkinnedRenderers()
-        {
-            usingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
-            foreach (SkinnedMeshRenderer skinnedRenderer in detectedSkinnedRenderers)
-            {
-                if (skinnedRenderer == null)
-                    continue;
-
-                if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
-                    usingSkinnedRenderers.Add(skinnedRenderer);
-            }
-        }
-
-
-        public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
-
-        /// <summary>
-        /// Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call.
-        /// </summary>
-        public void MarkDirty() => dirty = true;
-
-        /// <summary>
-        /// Returns true if dirty.
-        /// </summary>
-        /// <returns>True if dirty.</returns>
-        public bool IsDirty() => dirty;
-
-        /// <summary>
-        /// Returns the renderers list.
-        /// </summary>
-        /// <returns>An ICollection with all the tracked renderers.</returns>
-        public ICollection<Renderer> GetRenderers() => usingRenderers;
-
-        /// <summary>
-        /// Returns the skinned renderers list.
-        /// </summary>
-        /// <returns>An ICollection with all the tracked skinned renderers.</returns>
-        public ICollection<SkinnedMeshRenderer> GetSkinnedRenderers() => usingSkinnedRenderers;
-
-        /// <summary>
-        /// Returns the animations list.
-        /// </summary>
-        /// <returns>An array with all the tracked animations.</returns>
-        public Animation[] GetAnimations() => usingAnimations;
-
-        public void Dispose()
-        {
-            dirty = true;
-            usingRenderers = null;
-            usingSkinnedRenderers = null;
-            detectedSkinnedRenderers = null;
-            usingAnimations = null;
-            PoolManager.i.OnGet -= MarkDirty;
-            Rendereable.OnRendereableAdded -= OnRendereableAdded;
         }
     }
 }
