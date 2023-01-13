@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.Controllers.AssetManager;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -22,6 +23,7 @@ namespace AssetPromiseKeeper_Tests
             var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
             serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
             serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
+            DataStore.i.featureFlags.flags.Set(new FeatureFlag { flags = { [AssetResolverLogger.VERBOSE_LOG_FLAG] = true } });
             Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;

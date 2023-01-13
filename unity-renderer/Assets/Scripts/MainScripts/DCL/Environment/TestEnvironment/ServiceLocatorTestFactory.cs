@@ -70,6 +70,8 @@ namespace DCL
             editorBundleProvider.GetAssetBundleAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
                                 .Returns(UniTask.FromResult<AssetBundle>(null));
 
+            DataStore.i.featureFlags.flags.Set(new FeatureFlag { flags = { [AssetResolverLogger.VERBOSE_LOG_FLAG] = true } });
+
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
