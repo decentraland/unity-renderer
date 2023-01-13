@@ -47,16 +47,6 @@ namespace DCL
             unlockInputAction.OnTriggered -= HandleUnlockInput;
         }
 
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            if (DataStore.i.camera.leftMouseButtonCursorLock.Get()) return;
-
-            if (Input.GetMouseButton(1))
-                LockCursor();
-            else
-                UnlockCursor();
-        }
-
         public void LockCursor()
         {
             if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || dataStoreLoadingScreen.Ref.loadingHUD.visible.Get() || dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
@@ -80,12 +70,10 @@ namespace DCL
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                if (!DataStore.i.camera.leftMouseButtonCursorLock.Get())
-                    LockCursor();
-
+                LockCursor();
                 DataStore.i.camera.panning.Set(true);
             }
-            else if (DataStore.i.camera.leftMouseButtonCursorLock.Get())
+            else if(DataStore.i.camera.leftMouseButtonCursorLock.Get())
                 LockCursor();
 
             OnMouseDown?.Invoke();
