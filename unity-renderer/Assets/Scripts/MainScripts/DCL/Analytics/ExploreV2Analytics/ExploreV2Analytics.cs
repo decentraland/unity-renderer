@@ -98,8 +98,8 @@ namespace ExploreV2Analytics
         public void SendClickOnPlaceInfo(string placeId, string placeName)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("event_id", placeId);
-            data.Add("event_name", placeName);
+            data.Add("place_id", placeId);
+            data.Add("place_name", placeName);
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_PLACE_INFO, data);
         }
     }

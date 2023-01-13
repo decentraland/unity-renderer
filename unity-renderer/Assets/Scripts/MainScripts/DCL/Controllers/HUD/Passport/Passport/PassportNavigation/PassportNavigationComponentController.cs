@@ -66,6 +66,7 @@ namespace DCL.Social.Passports
                 string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
+                view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
                 if (!userProfile.isGuest)
                 {
