@@ -12,6 +12,8 @@ public class FontAssetBundleGenerator : MonoBehaviour
         BuildFontAB(BuildTarget.WebGL);
         BuildFontAB(BuildTarget.StandaloneWindows);
         BuildFontAB(BuildTarget.StandaloneWindows64);
+        BuildFontAB(BuildTarget.StandaloneOSX);
+        BuildFontAB(BuildTarget.StandaloneLinux64);
     }
 
 
