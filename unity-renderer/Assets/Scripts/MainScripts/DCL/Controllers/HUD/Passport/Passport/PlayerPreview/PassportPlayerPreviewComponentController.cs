@@ -3,7 +3,6 @@ using DCL.Helpers;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Threading;
-using UnityEngine.UIElements;
 
 namespace DCL.Social.Passports
 {
@@ -36,6 +35,8 @@ namespace DCL.Social.Passports
                 previewController.ResetRotation();
         }
 
+        public void SetAsLoading(bool isLoading) => view.SetAsLoading(isLoading);
+
         private bool TutorialEnabled => PlayerPrefsUtils.GetBool(TUTORIAL_ENABLED_KEY, true);
 
         private void RotateCharacterPreview(float angularVelocity)
@@ -56,11 +57,23 @@ namespace DCL.Social.Passports
             view.SetModel(new (false));
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile)
+        public void UpdateWithUserProfile(UserProfile userProfile, bool activateLoading)
         {
-            previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
-                             .SuppressCancellationThrow()
-                             .Forget();
+            async UniTask UpdateWithUserProfileAsync()
+            {
+                if (activateLoading)
+                    SetAsLoading(true);
+
+                await previewController.TryUpdateModelAsync(userProfile.avatar, cancellationTokenSource.Token)
+                                       .SuppressCancellationThrow();
+
+                SetAsLoading(false);
+            }
+
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            UpdateWithUserProfileAsync().Forget();
         }
 
         public void Dispose()

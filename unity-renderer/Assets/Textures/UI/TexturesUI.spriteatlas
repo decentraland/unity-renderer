@@ -121,11 +121,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 903e82323051c41339d97e1f52c7c984, type: 3}
   - {fileID: 21300000, guid: fb2a51422f4f0f84ca589e9716428e06, type: 3}
   - {fileID: 21300000, guid: 6d6f6142025570c4c8c8705c19f66da4, type: 3}
-  - {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   - {fileID: 21300000, guid: 6ebca6627bf834831a528f22f85eb9de, type: 3}
   - {fileID: 21300000, guid: 9622f862db0a54f49a26e220aac90cbe, type: 3}
   - {fileID: 21300000, guid: 16a5648277f4daa4d9c15a5365076da6, type: 3}
   - {fileID: 21300000, guid: 72e0a7824370a4a86a33ecdaf1bdc198, type: 3}
+  - {fileID: 21300000, guid: dd2c2092a9ae16c49a268766674e5b2b, type: 3}
   - {fileID: 21300000, guid: e0b16592248644670b24222cef732ed0, type: 3}
   - {fileID: 21300000, guid: b3a558a257e4f4f988f0f1b57a559485, type: 3}
   - {fileID: 21300000, guid: aa3440b27b8b9423f9821f663863c0c0, type: 3}
@@ -534,11 +534,11 @@ SpriteAtlas:
   - Container12Shadow10
   - dance_male2_256
   - InputFieldBuilderFocus
-  - NameIcon
   - BrokenHeart
   - snowfall_256
   - SmartItemIcon
   - Key
+  - NamesIcon
   - NFTUniqueContainer
   - RoundedSquare20x20
   - ExpandIcon

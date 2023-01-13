@@ -15,7 +15,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@dcl/protocol": "^1.0.0-3840796783.commit-1c7238d",
+    "@dcl/protocol": "^1.0.0-3874844989.commit-d6daab3",
     "@protobuf-ts/protoc": "^2.8.1",
     "@types/fs-extra": "^9.0.8",
     "@types/glob": "^8.0.0",

@@ -5,6 +5,7 @@
 using System;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace DCL
@@ -23,6 +24,7 @@ namespace DCL
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private InputAction_Trigger unlockInputAction;
         [SerializeField] private Canvas canvas;
+        [SerializeField] private Image raycastTarget;
 
         public bool isLocked => Utils.IsCursorLocked;
         bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
@@ -109,6 +111,11 @@ namespace DCL
         }
 
         #endregion
+
+        public bool IsEqualsToRaycastTarget(GameObject gameObject)
+        {
+            return gameObject == this.gameObject || raycastTarget.gameObject == gameObject;
+        }
 
         private void HandleUnlockInput(DCLAction_Trigger action)
         {

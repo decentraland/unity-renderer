@@ -54,5 +54,6 @@ namespace DCL.Social.Friends
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
         SocialFriendRequest GetAllocatedFriendRequest(string friendRequestId);
         SocialFriendRequest GetAllocatedFriendRequestByUser(string userId);
+        UniTask<FriendshipStatus> GetFriendshipStatus(string userId);
     }
 }

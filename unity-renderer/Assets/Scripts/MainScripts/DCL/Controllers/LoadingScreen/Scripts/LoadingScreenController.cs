@@ -2,7 +2,6 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
-using DCL.Rendering;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -21,7 +20,6 @@ namespace DCL.LoadingScreen
         private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
         private readonly NotificationsController notificationsController;
-        private readonly CullingController cullingController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
@@ -29,7 +27,7 @@ namespace DCL.LoadingScreen
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController, ICullingController cullingController,
+        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
         {
             this.view = view;
@@ -42,14 +40,12 @@ namespace DCL.LoadingScreen
             this.notificationsController = notificationsController;
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
-            percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView());
+            percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
 
             this.playerDataStore.lastTeleportPosition.OnChange += TeleportRequested;
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
-
-            tipsController.StartTips();
         }
 
         public void Dispose()
@@ -108,12 +104,13 @@ namespace DCL.LoadingScreen
             {
                 currentDestination = currentDestinationCandidate;
 
-                view.FadeIn(false, true);
-
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
-                tipsController.StopTips();
+                //Temporarily removing tips until V2
+                //tipsController.StopTips();
                 percentageController.StartLoading(currentDestination);
+
+                view.FadeIn(false, true);
             }
             else
             {
@@ -163,17 +160,8 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
-            cullingController.Restart();
-            cullingController.CycleFinished += CullingCycleFinished;
-        }
-
-        private void CullingCycleFinished()
-        {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
-            cullingController.CycleFinished -= CullingCycleFinished;
         }
-
-
     }
 }

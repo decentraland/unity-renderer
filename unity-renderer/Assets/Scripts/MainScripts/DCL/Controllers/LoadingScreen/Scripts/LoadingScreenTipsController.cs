@@ -24,6 +24,8 @@ namespace DCL.LoadingScreen
         {
             this.tipsView = tipsView;
 
+            tipsView.gameObject.SetActive(false);
+
             currentLoadingTips = tipsView.defaultTips;
             currentRandomIndex = Random.Range(0, currentLoadingTips.Count);
         }
