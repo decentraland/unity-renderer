@@ -34,7 +34,7 @@ public class ECSSystemsController : IDisposable
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
 
-    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
+    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context, DataStore_FeatureFlag featureFlagDataStore)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
@@ -52,7 +52,7 @@ public class ECSSystemsController : IDisposable
 
         BaseVariable<bool> loadingScreenVisible;
 
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
+        if (featureFlagDataStore.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
             loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
         else
             loadingScreenVisible = dataStoreLoadingScreen.Ref.loadingHUD.visible;

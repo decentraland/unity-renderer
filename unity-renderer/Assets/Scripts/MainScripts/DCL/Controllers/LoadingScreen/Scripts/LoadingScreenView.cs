@@ -23,7 +23,6 @@ namespace DCL.LoadingScreen
 
         public override void Start()
         {
-            base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
             SetupBlitTexture();

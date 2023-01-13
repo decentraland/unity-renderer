@@ -47,7 +47,7 @@ namespace DCL.ECS7
                 (ECSComponent<PBPointerEvents>)componentsManager.GetOrCreateComponent(ComponentID.POINTER_EVENTS),
                 (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD));
 
-            systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
+            systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext, DataStore.i.featureFlags);
 
             sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
             sceneController.OnSceneRemoved += SceneControllerOnOnSceneRemoved;

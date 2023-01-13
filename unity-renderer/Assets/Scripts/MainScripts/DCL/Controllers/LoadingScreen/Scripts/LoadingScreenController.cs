@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using DCL.Rendering;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -20,6 +21,7 @@ namespace DCL.LoadingScreen
         private readonly DataStore_Realm realmDataStore;
         private readonly IWorldState worldState;
         private readonly NotificationsController notificationsController;
+        private readonly ICullingController cullingController;
 
         private Vector2Int currentDestination;
         private string currentRealm;
@@ -27,7 +29,7 @@ namespace DCL.LoadingScreen
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
+        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController, ICullingController cullingController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
         {
             this.view = view;
@@ -38,6 +40,7 @@ namespace DCL.LoadingScreen
             this.loadingScreenDataStore = loadingScreenDataStore;
             this.realmDataStore = realmDataStore;
             this.notificationsController = notificationsController;
+            this.cullingController = cullingController;
 
             tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
@@ -70,7 +73,7 @@ namespace DCL.LoadingScreen
             {
                 //We have to check if the player is loaded
                 if(commonDataStore.isPlayerRendererLoaded.Get())
-                    FadeOutView();
+                    AnalyzeCullingCycle();
                 else
                 {
                     percentageController.SetAvatarLoadingMessage();
@@ -83,7 +86,7 @@ namespace DCL.LoadingScreen
         private void PlayerLoaded(bool loaded, bool _)
         {
             if(loaded)
-                FadeOutView();
+                AnalyzeCullingCycle();
 
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
@@ -91,7 +94,7 @@ namespace DCL.LoadingScreen
         private void OnSignupFlow(bool current, bool previous)
         {
             if (current)
-                FadeOutView();
+                AnalyzeCullingCycle();
             else
                 view.FadeIn(false, false);
         }
@@ -154,7 +157,18 @@ namespace DCL.LoadingScreen
                     timer = 10f,
                     destroyOnFinish = true
                 });
+                AnalyzeCullingCycle();
+            }
+        }
+
+        private void AnalyzeCullingCycle()
+        {
+            if (commonDataStore.isSignUpFlow.Get())
                 FadeOutView();
+            else
+            {
+                cullingController.Restart();
+                cullingController.CycleFinished += FadeOutView;
             }
         }
 
@@ -162,6 +176,8 @@ namespace DCL.LoadingScreen
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+            cullingController.CycleFinished -= FadeOutView;
         }
+
     }
 }

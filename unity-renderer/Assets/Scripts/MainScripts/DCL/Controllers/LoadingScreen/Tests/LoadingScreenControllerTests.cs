@@ -2,6 +2,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using DCL.Helpers;
+using DCL.Rendering;
 using Decentraland.Bff;
 using System;
 using UnityEngine.Playables;
@@ -13,6 +14,7 @@ namespace DCL.LoadingScreen.Test
         private ILoadingScreenView loadingScreenView;
         private ISceneController sceneController;
         private IWorldState worldState;
+        private ICullingController cullingController;
 
         private Vector2Int destination = Utils.WorldToGridPosition(Vector3.zero);
 
@@ -30,6 +32,7 @@ namespace DCL.LoadingScreen.Test
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
             worldState = Substitute.For<IWorldState>();
+            cullingController = Substitute.For<ICullingController>();
             playerDataStore = new DataStore_Player();
             commonDataStore = new DataStore_Common();
             loadingScreenDataStore = new DataStore_LoadingScreen();
@@ -46,7 +49,7 @@ namespace DCL.LoadingScreen.Test
             NotificationsController notificationsController = auxiliaryViews.gameObject.AddComponent<NotificationsController>();
             notificationsController.allowNotifications = false;
 
-            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController,playerDataStore, commonDataStore, loadingScreenDataStore,realmDataStore );
+            loadingScreenController = new LoadingScreenController(loadingScreenView, sceneController, worldState, notificationsController,cullingController,playerDataStore, commonDataStore, loadingScreenDataStore,realmDataStore );
         }
 
         [Test]
@@ -64,6 +67,7 @@ namespace DCL.LoadingScreen.Test
             commonDataStore.isPlayerRendererLoaded.Set(true);
             worldState.GetSceneNumberByCoords(destination).Returns(5);
             sceneController.OnReadyScene += Raise.Event<Action<int>>(5);
+            cullingController.CycleFinished += Raise.Event<Action>();
 
             //Assert
             loadingScreenView.Received().FadeOut();
@@ -77,6 +81,7 @@ namespace DCL.LoadingScreen.Test
         {
             //Act
             commonDataStore.isSignUpFlow.Set(true);
+            cullingController.CycleFinished += Raise.Event<Action>();
 
             //Assert
             loadingScreenView.Received().FadeOut();
