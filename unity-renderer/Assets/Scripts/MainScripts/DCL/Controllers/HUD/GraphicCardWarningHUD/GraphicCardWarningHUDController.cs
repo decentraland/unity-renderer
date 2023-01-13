@@ -7,7 +7,7 @@ public class GraphicCardWarningHUDController : IHUD
     private readonly string warningMessage =
         "Your machine is not using a dedicated graphics card to run Decentraland. "
         + "This might lead to performance issues. Check your browser and OS configuration "
-        + "and restart" + (Application.platform == RuntimePlatform.WebGLPlayer ? "your browser." : "the experience.");
+        + "and restart " + (Application.platform == RuntimePlatform.WebGLPlayer ? "your browser." : "the experience.");
 
     public void Dispose() { }
 
