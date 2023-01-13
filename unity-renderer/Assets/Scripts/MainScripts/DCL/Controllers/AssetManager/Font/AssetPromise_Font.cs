@@ -37,12 +37,13 @@ namespace DCL
         private CancellationTokenSource cancellationTokenSource;
         private readonly AssetSource permittedSources;
 
-        private bool legacySystem;
+        private readonly bool fetchingEcsFonts;
 
-        public AssetPromise_Font(string src, string baseURL = "", string hash = "", bool legacySystem = true , AssetSource permittedSources = AssetSource.WEB) : base(baseURL, hash)
+        public AssetPromise_Font(string src, string baseURL = "", string hash = "", bool fetchingECSFonts = true , AssetSource permittedSources = AssetSource.WEB) : base(baseURL, hash)
         {
             this.permittedSources = permittedSources;
             this.src = src;
+            this.fetchingEcsFonts = fetchingECSFonts;
         }
 
         protected override void OnAfterLoadOrReuse() { }
@@ -62,7 +63,7 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            if (legacySystem)
+            if (fetchingEcsFonts)
             {
                 if (fontsMapping.TryGetValue(src, out string fontResourceName))
                     fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess, OnFail, fontResourceName));
