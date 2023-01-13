@@ -40,7 +40,7 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers;
         public IList<Collider> physicsColliders;
         public IList<Collider> pointerColliders;
-        public Bounds entityMeshBounds = new Bounds();
+        public Bounds entityLocalMeshBounds = new Bounds();
     }
 
     public class InternalVisibility : InternalComponent

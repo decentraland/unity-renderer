@@ -1,83 +1,83 @@
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
 {
     public class ECSSceneBoundsCheckerSystem
     {
-        private IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent;
-        private IInternalECSComponent<InternalRenderers> internalRenderersComponent;
-        private IInternalECSComponent<InternalColliders> pointerInternalCollidersComponent;
-        private IInternalECSComponent<InternalColliders> physicsInternalCollidersComponent;
+        private IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent;
+        private IInternalECSComponent<InternalRenderers> renderersComponent;
+        private IInternalECSComponent<InternalColliders> pointerCollidersComponent;
+        private IInternalECSComponent<InternalColliders> physicsCollidersComponent;
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent)
         {
-            this.internalSceneBoundsCheckComponent = sbcComponent;
-            this.internalRenderersComponent = renderersComponent;
-            this.pointerInternalCollidersComponent = pointerColliderComponent;
-            this.physicsInternalCollidersComponent = physicsColliderComponent;
+            this.sceneBoundsCheckComponent = sbcComponent;
+            this.renderersComponent = renderersComponent;
+            this.pointerCollidersComponent = pointerColliderComponent;
+            this.physicsCollidersComponent = physicsColliderComponent;
         }
 
         public void Update()
         {
-            // TODO: Should we update merged bounds when the transform/parenting is changed as well? should we avoid using Bounds class?
-            // TODO: Deal with "safe" merged bounds...
-            // TODO: merged bounds should adjust to MeshCollider or MeshRenderer being removed while the other still exists for the entity...
-            // TODO: When will merged bounds be cleaned up ???
-
             // Update renderers
-            var rendererComponents = internalRenderersComponent.GetForAll();
+            var rendererComponents = renderersComponent.GetForAll();
             for (int i = 0; i < rendererComponents.Count; i++)
             {
                 var componentData = rendererComponents[i].value;
 
                 if(!componentData.model.dirty) continue;
 
-                internalSceneBoundsCheckComponent.SetRenderers(componentData.scene, componentData.entity, componentData.model.renderers);
+                sceneBoundsCheckComponent.SetRenderers(componentData.scene, componentData.entity, componentData.model.renderers);
             }
 
             // Update physics colliders
-            var physicsColliderComponents = physicsInternalCollidersComponent.GetForAll();
+            var physicsColliderComponents = physicsCollidersComponent.GetForAll();
             for (int i = 0; i < physicsColliderComponents.Count; i++)
             {
                 var componentData = physicsColliderComponents[i].value;
 
                 if(!componentData.model.dirty) continue;
 
-                internalSceneBoundsCheckComponent.SetPhysicsColliders(componentData.scene, componentData.entity, componentData.model.colliders);
+                sceneBoundsCheckComponent.SetPhysicsColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
             // Update pointer colliders
-            var pointerColliderComponents = pointerInternalCollidersComponent.GetForAll();
+            var pointerColliderComponents = pointerCollidersComponent.GetForAll();
             for (int i = 0; i < pointerColliderComponents.Count; i++)
             {
                 var componentData = pointerColliderComponents[i].value;
 
                 if(!componentData.model.dirty) continue;
 
-                internalSceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
+                sceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
-            var sbcComponents = internalSceneBoundsCheckComponent.GetForAll();
+            var sbcComponents = sceneBoundsCheckComponent.GetForAll();
             for (int i = sbcComponents.Count-1; i >= 0 ; i--)
             {
                 var componentData = sbcComponents[i].value;
 
-                if (internalSceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
+                if(!componentData.model.dirty) continue;
+
+                if (sceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
                 {
                     // Since no other component is using the internal SBC component, we remove it.
-                    internalSceneBoundsCheckComponent.RemoveFor(componentData.scene, componentData.entity);
+                    sceneBoundsCheckComponent.RemoveFor(componentData.scene, componentData.entity);
                     continue;
                 }
 
                 // TODO: Avoid recalculating when not needed... (based on dirty state of the other 3 internal components ???)
-                internalSceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
-
-                if(!componentData.model.dirty) continue;
+                // TODO: Should we update merged bounds when the transform/parenting is changed as well? should we avoid using Bounds class?
+                // TODO: Deal with "safe" merged bounds...
+                // TODO: merged bounds should adjust to MeshCollider or MeshRenderer being removed while the other still exists for the entity...
+                // TODO: When will merged bounds be cleaned up ???
+                sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
 
                 //TODO: add cpu time budget managing here
 
@@ -88,15 +88,11 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         // TODO: Add 'outer bounds check' optimization
         private void RunEntityEvaluation(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            IDCLEntity entity = sbcComponentData.entity;
-            if (entity == null || entity.gameObject == null || entity.scene == null || entity.scene.isPersistent)
-                return;
-
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
-            if (sbcComponentData.model.entityMeshBounds.size.sqrMagnitude > 0) // has a mesh/collider
+            // TODO: Is it OK to rely on the bounds size for this check? is the bounds object being updated/cleaned correctly?
+            if (sbcComponentData.model.entityLocalMeshBounds.size != Vector3.zero) // has a mesh/collider
             {
-                // EvaluateMeshBounds();
-                EvaluateEntityPosition(sbcComponentData);
+                EvaluateMeshBounds(sbcComponentData);
             }
             else
             {
@@ -105,25 +101,25 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             // TODO: case for AvatarShape evaluation...
         }
 
+        private void EvaluateMeshBounds(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        {
+            Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
+            Vector3 entityGlobalPosition = sbcComponentData.model.entityPosition;
+            Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.max;
+            Vector3 globalBoundsMinPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.min;
+
+            bool isInsideBounds = sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset)
+                                  && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
+
+            SetInsideBoundsStateForEntity(sbcComponentData.entity, isInsideBounds);
+            SetInsideBoundsStateForMeshComponents(sbcComponentData, isInsideBounds);
+        }
+
         private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             bool isInsideBounds = sbcComponentData.scene.IsInsideSceneBoundaries(sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get());
-            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity, isInsideBounds);
             SetInsideBoundsStateForEntity(sbcComponentData.entity, isInsideBounds);
-        }
-
-        private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, bool isInsideBounds)
-        {
-            // if(entity.isInsideSceneBoundaries == isInsideBounds || !DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries.ContainsKey(entity.entityId))
-            if(entity.isInsideSceneBoundaries == isInsideBounds)
-                return;
-
-            // foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
-            // {
-            //     component.UpdateOutOfBoundariesState(isInsideBounds);
-            // }
-
-            //...
+            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity, isInsideBounds);
         }
 
         private void SetInsideBoundsStateForEntity(IDCLEntity entity, bool isInsideBounds)
@@ -131,6 +127,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             if (entity.isInsideSceneBoundaries == isInsideBounds)
                 return;
 
+            entity.isInsideSceneOuterBoundaries = isInsideBounds; // TODO: correct
             entity.isInsideSceneBoundaries = isInsideBounds;
 
             // for debugging
@@ -146,6 +143,44 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
 
             // OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBounds);
+        }
+
+        private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, bool isInsideBounds)
+        {
+            if (sbcComponentData.model.renderers != null)
+            {
+                for (var i = 0; i < sbcComponentData.model.renderers.Count; i++)
+                {
+                    sbcComponentData.model.renderers[i].enabled = isInsideBounds;
+                }
+            }
+
+            if (sbcComponentData.model.physicsColliders != null)
+            {
+                for (var i = 0; i < sbcComponentData.model.physicsColliders.Count; i++)
+                {
+                    sbcComponentData.model.physicsColliders[i].enabled = isInsideBounds;
+                }
+            }
+
+            if (sbcComponentData.model.pointerColliders != null)
+            {
+                for (var i = 0; i < sbcComponentData.model.pointerColliders.Count; i++)
+                {
+                    sbcComponentData.model.pointerColliders[i].enabled = isInsideBounds;
+                }
+            }
+        }
+
+        private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, bool isInsideBounds)
+        {
+
+            // foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
+            // {
+            //     component.UpdateOutOfBoundariesState(isInsideBounds);
+            // }
+
+            //...
         }
     }
 }

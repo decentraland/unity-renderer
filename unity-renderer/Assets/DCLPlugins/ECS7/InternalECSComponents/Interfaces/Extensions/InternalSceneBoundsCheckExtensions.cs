@@ -61,6 +61,7 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
+        // TODO: Deal with 'safe' bounds as in MeshesInfoUtils
         public static void RecalculateEntityMeshBounds(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
@@ -68,13 +69,16 @@ namespace DCL.ECS7.InternalComponents
 
             if (model == null) return;
 
-            Bounds newBounds = new Bounds();
+            // Clean existing bounds object
+            model.entityLocalMeshBounds.size = Vector3.zero;
+            model.entityLocalMeshBounds.center = entity.gameObject.transform.position;
 
+            // Encapsulate with global bounds
             if (model.renderers != null)
             {
                 for (var i = 0; i < model.renderers.Count; i++)
                 {
-                    newBounds.Encapsulate(model.renderers[i].bounds);
+                    model.entityLocalMeshBounds.Encapsulate(model.renderers[i].bounds);
                 }
             }
 
@@ -82,7 +86,7 @@ namespace DCL.ECS7.InternalComponents
             {
                 for (var i = 0; i < model.physicsColliders.Count; i++)
                 {
-                    newBounds.Encapsulate(model.physicsColliders[i].bounds);
+                    model.entityLocalMeshBounds.Encapsulate(model.physicsColliders[i].bounds);
                 }
             }
 
@@ -90,11 +94,13 @@ namespace DCL.ECS7.InternalComponents
             {
                 for (var i = 0; i < model.pointerColliders.Count; i++)
                 {
-                    newBounds.Encapsulate(model.pointerColliders[i].bounds);
+                    model.entityLocalMeshBounds.Encapsulate(model.pointerColliders[i].bounds);
                 }
             }
 
-            model.entityMeshBounds = newBounds;
+            // Turn min-max values to local/relative to be usable when the entity has moved
+            model.entityLocalMeshBounds.SetMinMax(model.entityLocalMeshBounds.min - model.entityLocalMeshBounds.center,
+                model.entityLocalMeshBounds.max - model.entityLocalMeshBounds.center);
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }

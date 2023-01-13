@@ -90,6 +90,7 @@ namespace DCL.ECSComponents
                 ProcessNewParent(scene, entity, model.parentId);
             }
 
+            // sbcInternalComponent.SetPosition(scene, entity, transform.position, !scene.isPersistent);
             sbcInternalComponent.SetPosition(scene, entity, transform.position);
         }
 
