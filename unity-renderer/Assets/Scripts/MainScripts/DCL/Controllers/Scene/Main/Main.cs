@@ -16,6 +16,7 @@ namespace DCL
     /// </summary>
     public class Main : MonoBehaviour
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private bool disableSceneDependencies;
         public static Main i { get; private set; }
 
@@ -48,7 +49,9 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
 
-                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+
             }
 
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
@@ -78,7 +81,6 @@ namespace DCL
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = false;
 
             kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
 #else
@@ -97,7 +99,8 @@ namespace DCL
             {
                 // Prewarm shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             }
         }
 
@@ -144,7 +147,9 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+
 
             DataStore.i.common.isApplicationQuitting.Set(true);
 

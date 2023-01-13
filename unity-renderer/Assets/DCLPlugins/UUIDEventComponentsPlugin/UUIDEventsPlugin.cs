@@ -17,7 +17,7 @@ public class UUIDEventsPlugin : IPlugin
         inputControllerLegacy = new InputController_Legacy();
         hoverCanvas = LoadAndInstantiate<InteractionHoverCanvasController>("InteractionHoverCanvas");
 
-        pointerEventsController = new PointerEventsController(inputControllerLegacy, hoverCanvas);
+        pointerEventsController = new PointerEventsController(inputControllerLegacy, hoverCanvas, SceneReferences.i?.mouseCatcher);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 

@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 using System;
 using System.Threading;
@@ -7,7 +7,7 @@ namespace DCLServices.Lambdas.LandsService
 {
     public class LandsService : ILandsService, ILambdaServiceConsumer<LandsResponse>
     {
-        internal const string END_POINT = "nfts/lands";
+        internal const string END_POINT = "nfts/lands/";
         internal const int TIMEOUT = ILambdasService.DEFAULT_TIMEOUT;
         internal const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
 

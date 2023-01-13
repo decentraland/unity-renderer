@@ -263,5 +263,8 @@ namespace DCL.Social.Friends
 
         public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
             throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
+
+        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId) =>
+            throw new NotImplementedException("Already implemented in RPCFriendsApiBridge");
     }
 }

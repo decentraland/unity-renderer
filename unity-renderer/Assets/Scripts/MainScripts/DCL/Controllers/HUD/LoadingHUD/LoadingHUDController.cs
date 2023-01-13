@@ -1,17 +1,19 @@
 using DCL;
-using UnityEngine;
 
 public class LoadingHUDController : IHUD
 {
     internal LoadingHUDView view;
-    internal BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
-    internal BaseVariable<bool> fadeIn => DataStore.i.HUDs.loadingHUD.fadeIn;
-    internal BaseVariable<bool> fadeOut => DataStore.i.HUDs.loadingHUD.fadeOut;
-    internal BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
-    internal BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
-    internal BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-    protected internal virtual LoadingHUDView CreateView() { return LoadingHUDView.CreateView(); }
+    internal BaseVariable<bool> visible => dataStoreLoadingScreen.Ref.loadingHUD.visible;
+    internal BaseVariable<bool> fadeIn => dataStoreLoadingScreen.Ref.loadingHUD.fadeIn;
+    internal BaseVariable<bool> fadeOut => dataStoreLoadingScreen.Ref.loadingHUD.fadeOut;
+    internal BaseVariable<string> message => dataStoreLoadingScreen.Ref.loadingHUD.message;
+    internal BaseVariable<float> percentage => dataStoreLoadingScreen.Ref.loadingHUD.percentage;
+    internal BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
+
+    protected internal virtual LoadingHUDView CreateView() =>
+        LoadingHUDView.CreateView();
 
     public void Initialize()
     {
@@ -25,28 +27,48 @@ public class LoadingHUDController : IHUD
         // set initial states to prevent reconciliation errors
         fadeIn.OnChange += OnFadeInChange;
         fadeOut.OnChange += OnFadeOutChange;
-        
+
         message.OnChange += OnMessageChanged;
         percentage.OnChange += OnPercentageChanged;
         showTips.OnChange += OnShowTipsChanged;
     }
 
-    private void OnVisibleHUDChanged(bool current, bool previous) { SetViewVisible(current, false); }
-    private void OnMessageChanged(string current, string previous) { view?.SetMessage(current); }
-    private void OnPercentageChanged(float current, float previous) { view?.SetPercentage(current / 100f); }
-    private void OnShowTipsChanged(bool current, bool previous) { view?.SetTips(current); }
+    private void OnVisibleHUDChanged(bool current, bool previous)
+    {
+        SetViewVisible(current, false);
+    }
+
+    private void OnMessageChanged(string current, string previous)
+    {
+        view?.SetMessage(current);
+    }
+
+    private void OnPercentageChanged(float current, float previous)
+    {
+        view?.SetPercentage(current / 100f);
+    }
+
+    private void OnShowTipsChanged(bool current, bool previous)
+    {
+        view?.SetTips(current);
+    }
+
     private void OnFadeInChange(bool current, bool previous)
     {
         if (current)
             SetViewVisible(true, false);
     }
+
     private void OnFadeOutChange(bool current, bool previous)
     {
         if (current)
             SetViewVisible(false, false);
     }
 
-    public void SetVisibility(bool visible) { this.visible.Set(visible); }
+    public void SetVisibility(bool visible)
+    {
+        this.visible.Set(visible);
+    }
 
     public void Dispose()
     {
@@ -62,5 +84,8 @@ public class LoadingHUDController : IHUD
         showTips.OnChange -= OnShowTipsChanged;
     }
 
-    internal void SetViewVisible(bool isVisible, bool instant) { view?.SetVisible(isVisible, instant); }
+    internal void SetViewVisible(bool isVisible, bool instant)
+    {
+        view?.SetVisible(isVisible, instant);
+    }
 }

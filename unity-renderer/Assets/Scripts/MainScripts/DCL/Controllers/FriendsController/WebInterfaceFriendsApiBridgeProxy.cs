@@ -108,5 +108,8 @@ namespace DCL.Social.Friends
 
         public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
             apiBridgeInUse.AcceptFriendshipAsync(friendRequestId);
+
+        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId) =>
+            newFriendsApiBridge.GetFriendshipStatus(userId);
     }
 }

@@ -9,5 +9,6 @@ namespace DCL
 
         public ClientEmotesKernelService Emotes();
         public ClientFriendRequestKernelService FriendRequests();
+        public ClientFriendsKernelService Friends();
     }
 }
