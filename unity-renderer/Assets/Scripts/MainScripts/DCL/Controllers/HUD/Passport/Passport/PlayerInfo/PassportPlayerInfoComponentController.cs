@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;

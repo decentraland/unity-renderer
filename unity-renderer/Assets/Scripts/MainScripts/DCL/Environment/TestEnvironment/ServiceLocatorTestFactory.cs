@@ -1,6 +1,7 @@
 ﻿using AvatarSystem;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
@@ -58,6 +59,8 @@ namespace DCL
                     return mockedFactory;
                 }
             );
+
+            result.Register<IProfanityFilter>(() => Substitute.For<IProfanityFilter>());
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());
