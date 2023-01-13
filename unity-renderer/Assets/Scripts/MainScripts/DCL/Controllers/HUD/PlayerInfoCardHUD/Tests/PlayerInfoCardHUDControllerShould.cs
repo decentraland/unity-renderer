@@ -268,6 +268,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         profanityWordProvider.GetNonExplicitWords().Returns(new[] { "fuck", "shit" });
         profanityWordProvider.GetExplicitWords().Returns(new[] { "ass" });
         profanityFilter = new RegexProfanityFilter(profanityWordProvider);
+        profanityFilter.Initialize();
     }
 
     private void GivenWearableCatalog()
