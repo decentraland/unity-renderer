@@ -13,14 +13,14 @@ namespace DCl.Social.Passports
 
         public WebInterfacePassportApiBridge() { }
 
-        public async UniTask<List<Nft>> QueryNftCollectionsEthereumAsync(string userId, CancellationToken ct)
+        public async UniTask<List<Nft>> QueryNftCollectionsAsync(string userId, NftCollectionsLayer layer, CancellationToken ct)
         {
             List<Nft> nftList = null;
             Promise<List<Nft>> promise = null;
 
             try
             {
-                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.ETHEREUM)
+                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, layer)
                     .Then((nfts) => nftList = nfts);
 
                 await promise.WithCancellation(ct);
@@ -33,55 +33,15 @@ namespace DCl.Social.Passports
             return nftList;
         }
 
-        public async UniTask<Nft> QueryNftCollectionEthereumAsync(string userId, string urn, CancellationToken ct)
+        public async UniTask<Nft> QueryNftCollectionAsync(string userId, string urn, NftCollectionsLayer layer, CancellationToken ct)
         {
             List<Nft> nftList = null;
             Promise<List<Nft>> promise = null;
 
             try
             {
-                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, NftCollectionsLayer.ETHEREUM)
+                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, layer)
                     .Then((nfts) => nftList = nfts);
-
-                await promise.WithCancellation(ct);
-            }
-            catch (OperationCanceledException e)
-            {
-                promise?.Reject("Canceled");
-            }
-
-            return nftList?.Count > 0 ? nftList[0] : null;
-        }
-
-        public async UniTask<List<Nft>> QueryNftCollectionsMaticAsync(string userId, CancellationToken ct)
-        {
-            List<Nft> nftList = null;
-            Promise<List<Nft>> promise = null;
-
-            try
-            {
-                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.MATIC)
-                         .Then((nfts) => nftList = nfts);
-
-                await promise.WithCancellation(ct);
-            }
-            catch (OperationCanceledException e)
-            {
-                promise?.Reject("Canceled");
-            }
-
-            return nftList;
-        }
-
-        public async UniTask<Nft> QueryNftCollectionMaticAsync(string userId, string urn, CancellationToken ct)
-        {
-            List<Nft> nftList = null;
-            Promise<List<Nft>> promise = null;
-
-            try
-            {
-                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, NftCollectionsLayer.MATIC)
-                         .Then((nfts) => nftList = nfts);
 
                 await promise.WithCancellation(ct);
             }

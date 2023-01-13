@@ -161,18 +161,18 @@ namespace DCL.Social.Passports
             if (string.IsNullOrEmpty(userId))
                 return;
 
-            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsEthereumAsync(userId, cts.Token);
-            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsMaticAsync(userId, cts.Token);
+            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token);
+            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token);
         }
 
         private void ClickedBuyNft(string id, string wearableType)
         {
             async UniTaskVoid QueryNftCollectionByUrnAsync(string urn)
             {
-                var nft = await passportApiBridge.QueryNftCollectionMaticAsync(currentUserProfile.userId, urn, cts.Token);
+                var nft = await passportApiBridge.QueryNftCollectionAsync(currentUserProfile.userId, urn, NftCollectionsLayer.MATIC, cts.Token);
 
                 if (nft == null)
-                    nft = await passportApiBridge.QueryNftCollectionEthereumAsync(currentUserProfile.userId, urn, cts.Token);
+                    nft = await passportApiBridge.QueryNftCollectionAsync(currentUserProfile.userId, urn, NftCollectionsLayer.ETHEREUM, cts.Token);
 
                 if (nft != null)
                     OpenNftMarketUrl(nft);
