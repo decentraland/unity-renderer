@@ -206,7 +206,7 @@ namespace DCL
                 RemoveReference(attachedEntitiesByComponent.First().Key);
             }
 
-            if (texturePromise != null && AssetPromiseKeeper_Texture.i != null)
+            if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
