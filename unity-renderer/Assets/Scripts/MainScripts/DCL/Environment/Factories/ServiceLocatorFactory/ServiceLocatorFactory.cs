@@ -54,7 +54,6 @@ namespace DCL
             result.Register<IBillboardsController>(BillboardsController.Create);
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
-                // Check https://github.com/decentraland/unity-renderer/issues/2201 for more info about partitionSize
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
 
             // HUD

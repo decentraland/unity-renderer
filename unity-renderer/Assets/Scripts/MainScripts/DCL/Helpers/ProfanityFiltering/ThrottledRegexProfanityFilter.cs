@@ -15,6 +15,8 @@ namespace DCL.ProfanityFiltering
         private readonly int partitionSize;
         private readonly List<Regex> regexSteps = new ();
 
+        /// <param name="wordProvider"></param>
+        /// <param name="partitionSize">Check https://github.com/decentraland/unity-renderer/issues/2201 for more info about partitionSize</param>
         public ThrottledRegexProfanityFilter(IProfanityWordProvider wordProvider, int partitionSize = 1)
         {
             this.wordProvider = wordProvider;
