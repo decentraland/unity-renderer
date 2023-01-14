@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace DCL.ECS7.InternalComponents
             {
                 for (var i = 0; i < model.physicsColliders.Count; i++)
                 {
-                    model.entityLocalMeshBounds.Encapsulate(model.physicsColliders[i].bounds);
+                    model.entityLocalMeshBounds.Encapsulate(GetColliderBounds(model.physicsColliders[i]));
                 }
             }
 
@@ -94,7 +95,7 @@ namespace DCL.ECS7.InternalComponents
             {
                 for (var i = 0; i < model.pointerColliders.Count; i++)
                 {
-                    model.entityLocalMeshBounds.Encapsulate(model.pointerColliders[i].bounds);
+                    model.entityLocalMeshBounds.Encapsulate(GetColliderBounds(model.pointerColliders[i]));
                 }
             }
 
@@ -105,11 +106,36 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
+        private static Bounds GetColliderBounds(Collider collider)
+        {
+            Bounds returnedBounds = collider.bounds;
+
+            // Disabled colliders return a size-0 bounds object, so we enable it only to get its bounds
+            int colliderLayer = collider.gameObject.layer;
+            if (!collider.enabled)
+            {
+                // Temporarily change the collider GO layer to avoid it colliding with anything.
+                GameObject colliderGO = collider.gameObject;
+                colliderGO.layer = PhysicsLayers.gizmosLayer;
+
+                // Enable collider to copy its real bounds
+                collider.enabled = true;
+                returnedBounds = collider.bounds;
+
+                // Reset modified values
+                collider.enabled = false;
+                colliderGO.layer = colliderLayer;
+            }
+
+            return returnedBounds;
+        }
+
         public static bool IsFullyDefaulted(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
+            // TODO: Just check for bounds size instead of the 3 collections?
             return model == null || (
                 model.entityPosition == Vector3.zero
                 && (model.renderers == null || model.renderers.Count == 0)

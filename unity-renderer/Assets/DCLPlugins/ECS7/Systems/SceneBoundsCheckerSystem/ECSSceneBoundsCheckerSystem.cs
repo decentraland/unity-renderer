@@ -89,7 +89,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private void RunEntityEvaluation(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
-            // TODO: Is it OK to rely on the bounds size for this check? is the bounds object being updated/cleaned correctly?
             if (sbcComponentData.model.entityLocalMeshBounds.size != Vector3.zero) // has a mesh/collider
             {
                 EvaluateMeshBounds(sbcComponentData);
