@@ -32,9 +32,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public void SetUp()
         {
             SetupReferences();
-
-            if (Settings.i == null)
-                Settings.CreateSharedInstance(new DefaultSettingsFactory());
         }
 
         [TearDown]
