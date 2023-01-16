@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Rendering;
 using NSubstitute;
@@ -27,7 +27,7 @@ namespace CullingControllerTests
                 settings ?? new CullingControllerSettings(),
                 cullingObjectsTracker ?? new CullingObjectsTracker());
 
-            result.SetSettings(new CullingControllerSettings() { maxTimeBudget = float.MaxValue });
+            result.SetSettings(new CullingControllerSettings());
 
             return result;
         }

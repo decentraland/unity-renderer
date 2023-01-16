@@ -165,7 +165,7 @@ namespace DCL.Rendering
                 if (r == null)
                     continue;
 
-                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
+                if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
@@ -228,7 +228,7 @@ namespace DCL.Rendering
                 if (r == null)
                     continue;
 
-                if (Time.realtimeSinceStartup - currentStartTime >= settings.maxTimeBudget)
+                if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     yield return null;
                     playerPosition = CommonScriptableObjects.playerUnityPosition;
@@ -372,7 +372,7 @@ namespace DCL.Rendering
 
             for (var i = 0; i < animsLength; i++)
             {
-                if (timeBudgetCount > settings.maxTimeBudget)
+                if (timeBudgetCount > CullingControllerSettings.MAX_TIME_BUDGET)
                 {
                     timeBudgetCount = 0;
                     yield return null;

@@ -133,77 +133,59 @@ namespace DCL.Rendering
 
         private bool ShouldNotBeIgnored(Renderer renderer) => ((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0;
 
-        
+
         private IEnumerator CalculateRenderers()
         {
-            int amount = 0;
-            using (ListPool<Rendereable>.Get(out List<Rendereable> tempList))
+            float currentStartTime = Time.realtimeSinceStartup;
+            usingRenderers.Clear();
+            for (int i = rendereables.Count - 1; i >= 0; i--)
             {
-                foreach (Rendereable rendereable in rendereables)
-                    tempList.Add(rendereable);
-                
-                usingRenderers.Clear();
-                foreach (Rendereable rendereable in tempList)
+                Rendereable rendereable = rendereables[i];
+                if (rendereable == null || !rendereable.container)
                 {
-                    if (rendereable == null || !rendereable.container)
-                    {
-                        rendereables.Remove(rendereable);
+                    rendereables.Remove(rendereable);
+                    continue;
+                }
+
+                if (!rendereable.container.activeInHierarchy)
+                    continue;
+
+                foreach (Renderer renderer in rendereable.renderers)
+                {
+                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
                         continue;
+
+                    if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
+                    {
+                        yield return null;
+                        currentStartTime = Time.realtimeSinceStartup;
                     }
 
-                    if (!rendereable.container.activeInHierarchy)
-                        continue;
-
-                    foreach (Renderer renderer in rendereable.renderers)
-                    {
-                        if (renderer == null || !renderer.gameObject.activeInHierarchy)
-                        {
-                            amount++;
-                            continue;
-                        }
-
-                        if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
-                        {
-                            yield return null;
-                            amount = 0;
-                        }
-                        amount++;
-
-                        if (ShouldNotBeIgnored(renderer))
-                            usingRenderers.Add(renderer);
-                    }
+                    if (ShouldNotBeIgnored(renderer))
+                        usingRenderers.Add(renderer);
                 }
             }
         }
 
         private IEnumerator CalculateSkinnedRenderers()
         {
-            int amount = 0;
+            float currentStartTime = Time.realtimeSinceStartup;
             List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
-            using (ListPool<SkinnedMeshRenderer>.Get(out List<SkinnedMeshRenderer> tempList))
+            usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
+            for (int i = checkingSkinnedRenderers.Count - 1; i >= 0; i--)
             {
-                foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
-                    tempList.Add(skinnedRenderer);
+                SkinnedMeshRenderer skinnedRenderer = checkingSkinnedRenderers[i];
+                if (skinnedRenderer == null)
+                    continue;
 
-                usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
-                foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
+                if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
                 {
-                    if (skinnedRenderer == null)
-                    {
-                        amount++;
-                        continue;
-                    }
-
-                    if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
-                    {
-                        yield return null;
-                        amount = 0;
-                    }
-                    amount++;
-
-                    if (ShouldNotBeIgnored(skinnedRenderer))
-                        usingSkinnedRenderers.Add(skinnedRenderer);
+                    yield return null;
+                    currentStartTime = Time.realtimeSinceStartup;
                 }
+
+                if (ShouldNotBeIgnored(skinnedRenderer))
+                    usingSkinnedRenderers.Add(skinnedRenderer);
             }
         }
     }

@@ -31,7 +31,6 @@ namespace CullingControllerTests
             // If we get the settings copy here, it can be overriden with unwanted values
             // by QualitySettingsController, breaking this test!!. 
             var settings = new CullingControllerSettings();
-            settings.maxTimeBudget = 99999;
             Environment.i.platform.cullingController.SetSettings(settings);
             Environment.i.platform.cullingController.Start();
 
