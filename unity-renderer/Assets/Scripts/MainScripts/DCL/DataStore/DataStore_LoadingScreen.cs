@@ -18,6 +18,6 @@ public class DataStore_LoadingScreen
 
     public class DecoupledLoadingScreen
     {
-        public readonly BaseVariable<bool> visible = new (true);
+        public readonly BaseVariable<bool> visible = new (false);
     }
 }
