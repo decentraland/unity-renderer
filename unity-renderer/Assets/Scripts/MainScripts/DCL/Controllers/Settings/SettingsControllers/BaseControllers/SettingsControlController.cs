@@ -13,9 +13,6 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 
         public virtual void Initialize()
         {
-            if (Settings.i == null)
-                Settings.CreateSharedInstance(new DefaultSettingsFactory());
-            
             currentGeneralSettings = Settings.i.generalSettings.Data;
             currentQualitySetting = Settings.i.qualitySettings.Data;
             currentAudioSettings = Settings.i.audioSettings.Data;
