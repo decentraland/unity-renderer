@@ -14,7 +14,10 @@ namespace DCL.SettingsCommon
 
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
+            leftMouseButtonCursorLock = true,
             mouseSensitivity = 0.6f,
+            invertYAxis = false,
+
             scenesLoadRadius = 4,
             avatarsLODDistance = 16,
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
@@ -26,7 +29,6 @@ namespace DCL.SettingsCommon
             hideUI = false,
             showAvatarNames = true,
             dynamicProceduralSkybox = true,
-            invertYAxis = false,
             skyboxTime = 0.0f,
             firstPersonCameraFOV = 60
         };
