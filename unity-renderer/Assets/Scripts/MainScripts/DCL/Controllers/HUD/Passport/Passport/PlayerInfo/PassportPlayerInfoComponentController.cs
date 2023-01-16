@@ -1,12 +1,14 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
+using System.Threading;
 
 namespace DCL.Social.Passports
 {
-    public class PassportPlayerInfoComponentController
+    public class PassportPlayerInfoComponentController : IDisposable
     {
         private readonly IPassportPlayerInfoComponentView view;
         private readonly DataStore dataStore;
@@ -20,6 +22,7 @@ namespace DCL.Social.Passports
         private string name;
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
         public event Action OnClosePassport;
+        private CancellationTokenSource cancellationTokenSource;
 
         public PassportPlayerInfoComponentController(
             StringVariable currentPlayerId,
@@ -55,6 +58,9 @@ namespace DCL.Social.Passports
         public void Dispose()
         {
             view.Dispose();
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = null;
             friendsController.OnUpdateFriendship -= UpdateFriendshipStatus;
         }
 
@@ -69,8 +75,15 @@ namespace DCL.Social.Passports
             OnClosePassport?.Invoke();
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) =>
-            UpdateWithUserProfileAsync(userProfile).Forget();
+        public void UpdateWithUserProfile(UserProfile userProfile)
+        {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+
+            // this is ugly, but nothing in the inner function works with cancellation token, we have to refactor FriendsController to be able to do it properly
+            UpdateWithUserProfileAsync(userProfile).AttachExternalCancellation(cancellationTokenSource.Token).Forget();
+        }
 
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {

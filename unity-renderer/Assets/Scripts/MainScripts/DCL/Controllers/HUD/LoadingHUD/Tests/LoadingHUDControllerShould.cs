@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class LoadingHUDControllerShould
 {
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+
     private LoadingHUDController hudController;
     private LoadingHUDView hudView;
-    private BaseVariable<bool> fadeIn => DataStore.i.HUDs.loadingHUD.fadeIn;
-    private BaseVariable<bool> fadeOut => DataStore.i.HUDs.loadingHUD.fadeOut;
-    private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
-    private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
+    private BaseVariable<bool> fadeIn => dataStoreLoadingScreen.Ref.loadingHUD.fadeIn;
+    private BaseVariable<bool> fadeOut => dataStoreLoadingScreen.Ref.loadingHUD.fadeOut;
+    private BaseVariable<string> message => dataStoreLoadingScreen.Ref.loadingHUD.message;
+    private BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
 
     [SetUp]
     public void SetUp()

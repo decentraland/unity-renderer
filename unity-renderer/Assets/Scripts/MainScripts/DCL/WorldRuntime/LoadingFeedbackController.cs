@@ -13,6 +13,8 @@ namespace DCL
     /// </summary>
     public class LoadingFeedbackController
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+
         private class SceneLoadingStatus
         {
             public int sceneInstanceId;
@@ -103,7 +105,7 @@ namespace DCL
 
         private void RefreshFeedbackMessage()
         {
-            if (!DataStore.i.HUDs.loadingHUD.fadeIn.Get() && !DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Get() && !dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
                 return;
 
             string loadingText = string.Empty;
@@ -116,7 +118,7 @@ namespace DCL
             {
                 loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
                 messageToSend.loadPercentage = loadingComponentsPercentage;
-                DataStore.i.HUDs.loadingHUD.percentage.Set(loadingComponentsPercentage);
+                dataStoreLoadingScreen.Ref.loadingHUD.percentage.Set(loadingComponentsPercentage);
                 loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
             }
 
@@ -138,7 +140,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(loadingText))
             {
-                DataStore.i.HUDs.loadingHUD.message.Set(loadingText);
+                dataStoreLoadingScreen.Ref.loadingHUD.message.Set(loadingText);
                 messageToSend.message = loadingText;
                 WebInterface.ScenesLoadingFeedback(messageToSend);
             }

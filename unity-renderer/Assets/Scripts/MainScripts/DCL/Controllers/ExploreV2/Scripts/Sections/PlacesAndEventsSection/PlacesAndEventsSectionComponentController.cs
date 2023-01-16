@@ -26,7 +26,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
 
     public PlacesAndEventsSectionComponentController(
-        IPlacesAndEventsSectionComponentView view, 
+        IPlacesAndEventsSectionComponentView view,
         IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
     {
@@ -43,7 +43,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             FriendsController.i,
             exploreV2Analytics,
             dataStore);
-
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
         highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
 
@@ -53,7 +52,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             FriendsController.i,
             exploreV2Analytics,
             dataStore);
-
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
@@ -61,7 +59,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             eventsAPI,
             exploreV2Analytics,
             dataStore);
-
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;

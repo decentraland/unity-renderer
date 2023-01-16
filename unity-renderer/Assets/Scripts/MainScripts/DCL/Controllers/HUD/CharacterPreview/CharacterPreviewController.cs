@@ -90,7 +90,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public async UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default)
         {
-            if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+            if (newModel.HaveSameWearablesAndColors(currentAvatarModel) && avatar.status == IAvatar.Status.Loaded)
                 return;
 
             loadingCts?.Cancel();

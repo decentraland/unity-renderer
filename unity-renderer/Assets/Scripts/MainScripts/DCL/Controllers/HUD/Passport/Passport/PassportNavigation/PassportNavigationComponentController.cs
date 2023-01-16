@@ -1,5 +1,6 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL.ProfanityFiltering;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
@@ -10,7 +11,7 @@ using UnityEngine;
 
 namespace DCL.Social.Passports
 {
-    public class PassportNavigationComponentController
+    public class PassportNavigationComponentController : IDisposable
     {
         private const int MAX_NFT_COUNT = 40;
 
@@ -30,6 +31,7 @@ namespace DCL.Social.Passports
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickCollectibles;
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public PassportNavigationComponentController(
             IPassportNavigationComponentView view,
@@ -55,29 +57,48 @@ namespace DCL.Social.Passports
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
         }
 
-        public void UpdateWithUserProfile(UserProfile userProfile) => UpdateWithUserProfileAsync(userProfile).Forget();
+        public void UpdateWithUserProfile(UserProfile userProfile)
+        {
+            async UniTaskVoid UpdateWithUserProfileAsync()
+            {
+                var ct = cts.Token;
+                currentUserId = userProfile.userId;
+                wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
+                string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
+                view.SetGuestUser(userProfile.isGuest);
+                view.SetName(filteredName);
+                view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
+
+                if (!userProfile.isGuest)
+                {
+                    string filteredDescription = await FilterContentAsync(userProfile.description).AttachExternalCancellation(ct);
+                    view.SetDescription(filteredDescription);
+                    view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
+                    LoadAndShowOwnedNamesAsync(userProfile).Forget();
+                    LoadAndShowOwnedLandsAsync(userProfile).Forget();
+                    LoadAndDisplayEquippedWearablesAsync(userProfile, ct).Forget();
+                }
+            }
+
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+            UpdateWithUserProfileAsync().Forget();
+        }
 
         public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
 
-        private async UniTaskVoid UpdateWithUserProfileAsync(UserProfile userProfile)
+        public void Dispose()
         {
-            currentUserId = userProfile.userId;
-            wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
-            string filteredName = await FilterContentAsync(userProfile.userName);
-            view.SetGuestUser(userProfile.isGuest);
-            view.SetName(filteredName);
-            if (!userProfile.isGuest)
-            {
-                string filteredDescription = await FilterContentAsync(userProfile.description);
-                view.SetDescription(filteredDescription);
-                view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                await LoadAndDisplayEquippedWearablesAsync(userProfile);
-            }
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
         }
 
-        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile)
+
+
+        private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
         {
-            CancellationToken ct = new CancellationToken();
             foreach (var t in userProfile.avatar.wearables)
             {
                 if (!cachedAvatarEquippedWearables.Contains(t))
@@ -86,8 +107,7 @@ namespace DCL.Social.Passports
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile);
-                    LoadAndShowOwnedNamesAsync(userProfile).Forget();
-                    LoadAndShowOwnedLandsAsync(userProfile).Forget();
+
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;
@@ -128,10 +148,9 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile)
         {
             view.SetCollectibleNamesLoadingActive(true);
-            var ct = new CancellationTokenSource().Token;
-            var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
+            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
-            var namesResult = new NamesResponse.NameEntry[] { };
+            var namesResult = Array.Empty<NamesResponse.NameEntry>();
 
             if (response.success)
                 namesResult = response.response.Names.ToArray();
@@ -145,11 +164,10 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile)
         {
             view.SetCollectibleLandsLoadingActive(true);
-            var ct = new CancellationTokenSource().Token;
             // TODO (Santi): Use userProfile.userId here!!
-            var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, ct);
+            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, CancellationToken.None);
-            var landsResult = new LandsResponse.LandEntry[] { };
+            var landsResult = Array.Empty<LandsResponse.LandEntry>();
 
             if (response.success)
                 landsResult = response.response.Lands.ToArray();

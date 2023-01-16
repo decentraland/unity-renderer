@@ -211,12 +211,12 @@ namespace DCL.ECSComponents
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "view profile"
+                    hoverText = "View Profile"
                 },
                 entity, player
             );
 
-            outlineOnHover.Initialize(entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 

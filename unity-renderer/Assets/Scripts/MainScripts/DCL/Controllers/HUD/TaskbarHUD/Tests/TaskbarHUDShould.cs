@@ -3,6 +3,7 @@ using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
