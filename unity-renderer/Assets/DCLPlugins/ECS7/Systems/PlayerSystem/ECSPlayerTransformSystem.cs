@@ -15,9 +15,6 @@ namespace ECSSystems.PlayerSystem
         private readonly Vector3Variable worldOffset;
         private readonly IECSComponentWriter componentsWriter;
 
-        private Transform currentAvatarTransform = null;
-        private Vector3 currentWorldOffset = Vector3.zero;
-
         private Vector3 lastAvatarPosition = Vector3.zero;
         private Quaternion lastAvatarRotation = Quaternion.identity;
         private long timeStamp = 0;
@@ -32,22 +29,17 @@ namespace ECSSystems.PlayerSystem
             this.componentsWriter = componentsWriter;
 
             loadedScenes.OnAdded += OnSceneLoaded;
-            avatarTransform.OnChange += OnAvatarTransformChanged;
-            worldOffset.OnChange += OnWorldOffsetChanged;
-
-            OnAvatarTransformChanged(avatarTransform.Get(), null);
-            OnWorldOffsetChanged(worldOffset.Get(), Vector3.zero);
         }
 
         public void Dispose()
         {
             loadedScenes.OnAdded -= OnSceneLoaded;
-            avatarTransform.OnChange -= OnAvatarTransformChanged;
-            worldOffset.OnChange -= OnWorldOffsetChanged;
         }
 
         public void Update()
         {
+            var currentAvatarTransform = avatarTransform.Get();
+
             if (currentAvatarTransform == null)
                 return;
 
@@ -63,7 +55,7 @@ namespace ECSSystems.PlayerSystem
 
             lastAvatarPosition = avatarPosition;
             lastAvatarRotation = avatarRotation;
-            Vector3 worldOffset = currentWorldOffset;
+            Vector3 currentWorldOffset = this.worldOffset.Get();
 
             IParcelScene scene;
 
@@ -71,7 +63,7 @@ namespace ECSSystems.PlayerSystem
             {
                 scene = loadedScenes[i];
 
-                var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
+                var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref currentWorldOffset);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
                     transform, timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
@@ -86,16 +78,6 @@ namespace ECSSystems.PlayerSystem
         private void OnSceneLoaded(IParcelScene obj)
         {
             newSceneAdded = true;
-        }
-
-        private void OnAvatarTransformChanged(Transform current, Transform previous)
-        {
-            currentAvatarTransform = current;
-        }
-
-        private void OnWorldOffsetChanged(Vector3 current, Vector3 previous)
-        {
-            currentWorldOffset = current;
         }
     }
 }
