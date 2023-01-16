@@ -1,4 +1,5 @@
 using DCL.ABConverter;
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -9,17 +10,25 @@ public class FontAssetBundleGenerator : MonoBehaviour
     [MenuItem("Decentraland/Build Font AB from folder", priority = 2)]
     private static void BuildFontABForAllPlatforms()
     {
-        BuildFontAB(BuildTarget.WebGL);
-        BuildFontAB(BuildTarget.StandaloneWindows);
-        BuildFontAB(BuildTarget.StandaloneWindows64);
+        //Build font ab
+        //BuildFontAB(BuildTarget.WebGL);
+        //BuildFontAB(BuildTarget.StandaloneWindows);
+        //BuildFontAB(BuildTarget.StandaloneWindows64);
         BuildFontAB(BuildTarget.StandaloneOSX);
-        BuildFontAB(BuildTarget.StandaloneLinux64);
+        //BuildFontAB(BuildTarget.StandaloneLinux64);
+
+        //Delete them from file so they dont get embedded into the build
+        DeleteAllFilesFromFolder();
     }
 
+    private static void DeleteAllFilesFromFolder()
+    {
+
+    }
 
     private static void BuildFontAB(BuildTarget target)
     {
-        string assetBundleDirectory = "Assets/StreamingAssets/fonts";
+        string assetBundleDirectory = "Assets/StreamingAssets/fontsA/";
 
         if (!Directory.Exists(assetBundleDirectory))
         {
@@ -31,7 +40,7 @@ public class FontAssetBundleGenerator : MonoBehaviour
         MarkFolderForAssetBundleBuild(fontDirectory, $"fontAssets_{BuildPipeline.GetBuildTargetName(target)}");
 
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
-            BuildAssetBundleOptions.None,
+            BuildAssetBundleOptions.AppendHashToAssetBundleName,
             target);
     }
 
