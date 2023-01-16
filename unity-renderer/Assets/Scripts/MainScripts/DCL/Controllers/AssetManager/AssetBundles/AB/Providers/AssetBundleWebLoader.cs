@@ -1,9 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
+using MainScripts.DCL.Controllers.AssetManager;
 using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace DCL.Providers
 {
@@ -32,9 +32,13 @@ namespace DCL.Providers
             try
             {
                 var url = contentUrl + hash;
+                var hash128 = ComputeHash(contentUrl, hash);
+
+                if (cachingEnabled)
+                    AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
 
                 using var webRequest = cachingEnabled
-                    ? webRequestController.Ref.GetAssetBundle(url, hash: ComputeHash(contentUrl, hash), disposeOnCompleted: false)
+                    ? webRequestController.Ref.GetAssetBundle(url, hash: hash128, disposeOnCompleted: false)
                     : webRequestController.Ref.GetAssetBundle(url, disposeOnCompleted: false);
 
                 return await FromWebRequestAsync(webRequest, url, cancellationToken);
@@ -42,7 +46,6 @@ namespace DCL.Providers
             finally
             {
                 performance.concurrentABRequests.Set(performance.concurrentABRequests.Get() - 1);
-                ;
             }
         }
 

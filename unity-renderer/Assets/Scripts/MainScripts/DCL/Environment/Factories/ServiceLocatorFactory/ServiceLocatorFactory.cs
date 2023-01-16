@@ -60,13 +60,12 @@ namespace DCL
             {
                 { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
                 { AssetSource.WEB, new AssetTextureWebLoader() }
-            }));
+            }, DataStore.i.featureFlags));
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.EMBEDDED, new EmbeddedAssetBundleProvider() },
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
-            }, new EditorAssetBundleProvider()));
+            }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

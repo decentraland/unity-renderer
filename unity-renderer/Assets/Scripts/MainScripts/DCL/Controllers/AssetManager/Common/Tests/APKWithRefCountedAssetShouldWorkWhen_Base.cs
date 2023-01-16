@@ -53,8 +53,9 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsFalse(calledSuccess);
             Assert.IsTrue(!calledFail);
 
+            yield return prom;
+
             keeper.library.Cleanup();
-            yield break;
         }
 
         [UnityTest]

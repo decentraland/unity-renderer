@@ -70,15 +70,17 @@ namespace DCL
             editorBundleProvider.GetAssetBundleAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
                                 .Returns(UniTask.FromResult<AssetBundle>(null));
 
+            DataStore.i.featureFlags.flags.Set(new FeatureFlag { flags = { [AssetResolverLogger.VERBOSE_LOG_FLAG] = true } });
+
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
-            }, editorBundleProvider));
+            }, editorBundleProvider, DataStore.i.featureFlags));
 
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
                 { AssetSource.WEB, new AssetTextureWebLoader() }
-            }));
+            }, DataStore.i.featureFlags));
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());

@@ -28,7 +28,7 @@ namespace DCL.Tests
             {
                 { AssetSource.EMBEDDED, r1 },
                 { AssetSource.WEB, r2 }
-            });
+            }, DataStore.i.featureFlags);
 
             var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
 
@@ -53,7 +53,7 @@ namespace DCL.Tests
             {
                 { AssetSource.EMBEDDED, r1 },
                 { AssetSource.WEB, r2 }
-            });
+            }, DataStore.i.featureFlags);
 
             var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
             Assert.IsFalse(res.IsSuccess);
@@ -74,7 +74,7 @@ namespace DCL.Tests
             {
                 { AssetSource.EMBEDDED, r1 },
                 { AssetSource.WEB, r2 }
-            });
+            }, DataStore.i.featureFlags);
 
             var res = await resolver.GetTextureAsync(AssetSource.WEB, URL, 1000, CancellationToken.None);
 
@@ -98,7 +98,7 @@ namespace DCL.Tests
             {
                 { AssetSource.EMBEDDED, r1 },
                 { AssetSource.WEB, r2 }
-            });
+            }, DataStore.i.featureFlags);
 
             var res = await resolver.GetTextureAsync(AssetSource.ALL, URL, 1000, CancellationToken.None);
             Assert.IsFalse(res.IsSuccess);

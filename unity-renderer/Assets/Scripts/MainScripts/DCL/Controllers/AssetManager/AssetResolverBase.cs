@@ -1,4 +1,5 @@
-﻿using MainScripts.DCL.Helpers.Utils;
+﻿using DCL;
+using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
 
 namespace MainScripts.DCL.Controllers.AssetManager
@@ -6,6 +7,13 @@ namespace MainScripts.DCL.Controllers.AssetManager
     public abstract class AssetResolverBase
     {
         protected static readonly AssetSource[] SOURCES = EnumUtils.Values<AssetSource>();
+
+        protected DataStore_FeatureFlag featureFlags { get; }
+
+        protected AssetResolverBase(DataStore_FeatureFlag featureFlags)
+        {
+            this.featureFlags = featureFlags;
+        }
 
         protected static bool HasFlag(AssetSource permittedSources, AssetSource source) =>
             EnumUtils.HasFlag(permittedSources, source);

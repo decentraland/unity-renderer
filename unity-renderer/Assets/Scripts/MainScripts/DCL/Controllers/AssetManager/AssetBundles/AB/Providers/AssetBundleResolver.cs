@@ -12,7 +12,8 @@ namespace DCL.Providers
         private readonly IReadOnlyDictionary<AssetSource, IAssetBundleProvider> providers;
         private readonly IAssetBundleProvider editorProvider;
 
-        public AssetBundleResolver(IReadOnlyDictionary<AssetSource, IAssetBundleProvider> providers, IAssetBundleProvider editorProvider)
+        public AssetBundleResolver(IReadOnlyDictionary<AssetSource, IAssetBundleProvider> providers, IAssetBundleProvider editorProvider, DataStore_FeatureFlag featureFlags)
+            : base(featureFlags)
         {
             this.providers = providers;
             this.editorProvider = editorProvider;
@@ -26,9 +27,9 @@ namespace DCL.Providers
             using var permittedProvidersPool = GetPermittedProviders(this.providers, permittedSources);
             var permittedProviders = permittedProvidersPool.GetList();
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             permittedProviders.Insert(0, editorProvider);
-            #endif
+#endif
 
             foreach (var provider in permittedProviders)
             {
@@ -38,13 +39,17 @@ namespace DCL.Providers
 
                     if (assetBundle)
                     {
-                        Debug.Log($"Asset Bundle {hash} loaded from {provider}");
+                        AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} loaded from {provider}");
                         return assetBundle;
                     }
                 }
 
                 // Propagate `OperationCanceledException` further as there is no reason to iterate
-                catch (Exception e) when (e is not OperationCanceledException) { lastException = e; }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    AssetResolverLogger.LogVerbose(featureFlags, e);
+                    lastException = e;
+                }
             }
 
             lastException ??= new AssetNotFoundException(permittedSources, hash);

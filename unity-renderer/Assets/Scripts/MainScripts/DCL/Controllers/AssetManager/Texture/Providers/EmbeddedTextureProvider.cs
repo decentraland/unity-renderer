@@ -13,7 +13,7 @@ namespace DCL
         public async UniTask<Texture2D> GetTextureAsync(string url, CancellationToken cancellationToken = default)
         {
             var lastSlash = url.LastIndexOf('/');
-            var hash = lastSlash > -1 ? url.Remove(0, lastSlash) : url;
+            var hash = lastSlash > -1 ? url.Remove(0, lastSlash + 1) : url;
             var result = await Resources.LoadAsync<Texture2D>(EmbeddedTextureResourcesPath.VALUE + "/" + hash).WithCancellation(cancellationToken);
             return (Texture2D)result;
         }
