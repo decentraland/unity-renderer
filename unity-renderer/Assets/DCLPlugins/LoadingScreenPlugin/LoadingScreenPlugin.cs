@@ -13,6 +13,7 @@ namespace DCLPlugins.LoadingScreenPlugin
 
         public LoadingScreenPlugin()
         {
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Set(true);
             loadingScreenController = new LoadingScreenController(LoadingScreenView.Create(), Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,DataStore.i.player,
                 DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm);
         }
