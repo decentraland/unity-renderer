@@ -38,9 +38,7 @@ public class ProfileHUDController : IHUD
 
     private Regex nameRegex = null;
 
-
     public RectTransform TutorialTooltipReference => view.TutorialReference;
-
 
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
@@ -57,8 +55,13 @@ public class ProfileHUDController : IHUD
         view.SetNonWalletSectionEnabled(false);
         view.SetDescriptionIsEditing(false);
 
-        view.LogedOutPressed += (object sender, EventArgs args) => WebInterface.LogOut();
-        view.SignedUpPressed += (object sender, EventArgs args) => WebInterface.RedirectToSignUp();
+        view.LogedOutPressed += OnLoggedOut;
+
+        // (object sender, EventArgs args) => WebInterface.LogOut();
+
+        view.SignedUpPressed += OnSignedUp;
+
+        // (object sender, EventArgs args) => WebInterface.RedirectToSignUp();
         view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
 
         view.Opened += (object sender, EventArgs args) =>
@@ -66,6 +69,7 @@ public class ProfileHUDController : IHUD
             WebInterface.RequestOwnProfileUpdate();
             OnOpen?.Invoke();
         };
+
         view.Closed += (object sender, EventArgs args) => OnClose?.Invoke();
         view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
         view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
@@ -91,17 +95,32 @@ public class ProfileHUDController : IHUD
         ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
 
+    private void OnSignedUp(object sender, EventArgs e)
+    {
+        DCL.SettingsCommon.Settings.i.SaveSettings();
+        WebInterface.RedirectToSignUp();
+    }
+
+    private void OnLoggedOut(object sender, EventArgs e)
+    {
+        DCL.SettingsCommon.Settings.i.SaveSettings();
+        WebInterface.LogOut();
+    }
+
     private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
     {
         OnOpen?.Invoke();
         view.ShowExpanded(isOpenCurrent);
     }
 
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) => view.GameObject.SetActive(current);
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) =>
+        view.GameObject.SetActive(current);
 
-    public void SetManaBalance(string balance) => view?.SetManaBalance(balance);
+    public void SetManaBalance(string balance) =>
+        view?.SetManaBalance(balance);
 
-    public void SetPolygonManaBalance(double balance) => view?.SetPolygonBalance(balance);
+    public void SetPolygonManaBalance(double balance) =>
+        view?.SetPolygonBalance(balance);
 
     public void SetVisibility(bool visible)
     {
@@ -142,16 +161,16 @@ public class ProfileHUDController : IHUD
         DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
 
-
     protected virtual GameObject GetViewPrefab()
     {
         return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD");
     }
 
+    private void OnProfileUpdated(UserProfile profile) =>
+        view?.SetProfile(profile);
 
-    private void OnProfileUpdated(UserProfile profile) => view?.SetProfile(profile);
-
-    private void ExploreV2Changed(bool current, bool previous) => view.SetStartMenuButtonActive(current);
+    private void ExploreV2Changed(bool current, bool previous) =>
+        view.SetStartMenuButtonActive(current);
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) =>
         nameRegex = new Regex(current.profiles.nameValidRegex);
@@ -176,7 +195,6 @@ public class ProfileHUDController : IHUD
     {
         view.ShowProfileIcon(!currentIsFullScreenMenuMode);
     }
-
 
     private IEnumerator ManaIntervalRoutine()
     {
