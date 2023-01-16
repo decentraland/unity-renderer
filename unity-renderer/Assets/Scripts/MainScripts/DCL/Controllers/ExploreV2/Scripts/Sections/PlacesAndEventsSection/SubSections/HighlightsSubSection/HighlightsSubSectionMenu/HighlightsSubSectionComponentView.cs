@@ -18,9 +18,9 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     private const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     private const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
-    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
-    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new Queue<Func<UniTask>>();
-    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new ();
+    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
+    private readonly CancellationTokenSource cancellationTokenSource = new ();
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
@@ -44,17 +44,26 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     [SerializeField] internal Color[] friendColors = null;
 
     [SerializeField] private Canvas canvas;
-    
+
     internal PlaceCardComponentView placeModal;
     internal EventCardComponentView eventModal;
     internal Pool trendingPlaceCardsPool;
     internal Pool trendingEventCardsPool;
     internal Pool featuredPlaceCardsPool;
     internal Pool liveEventCardsPool;
-    
+
     private bool isUpdatingCardsVisual;
 
     public Color[] currentFriendColors => friendColors;
+
+    public void SetAllAsLoading()
+    {
+        SetTrendingPlacesAndEventsAsLoading(true);
+        SetFeaturedPlacesAsLoading(true);
+        SetLiveAsLoading(true);
+    }
+
+    public int CurrentTilesPerRow { get; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
@@ -69,8 +78,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void Start()
     {
-        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
-        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+        eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();
@@ -110,7 +119,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         viewAllEventsButton.onClick.RemoveAllListeners();
     }
-    
+
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
@@ -123,10 +132,11 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public void ConfigurePools()
     {
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsUtils.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+        trendingPlaceCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        featuredPlaceCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+
+        trendingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        liveEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
@@ -167,7 +177,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
 
     public void HidePlaceModal()
@@ -179,7 +189,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
     public void HideEventModal()
@@ -188,7 +198,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             eventModal.Hide();
     }
 
-    public void RestartScrollViewPosition() => 
+    public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
 
     public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
@@ -209,9 +219,10 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            featuredPlaces.AddItem(
-                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, featuredPlaceCardsPool,
-                    OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(featuredPlaceCardsPool, place, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+            OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
+
+            this.featuredPlaces.AddItem(placeCard);
 
             await UniTask.NextFrame(cancellationToken);
         }
@@ -239,8 +250,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
-                ExploreEventsUtils.InstantiateConfiguredEventCard(eventInfo, pool,
-                    OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+                PlacesAndEventsCardsFactory.CreateConfiguredEventCard(pool, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
 
             await UniTask.NextFrame(cancellationToken);
         }
@@ -269,18 +279,22 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         int eventId = 0;
         int placeId = 0;
 
-        for (int i = 0 ; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
+        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
         {
             if (i % 2 == 0 && eventId < events.Count)
             {
-                trendingPlacesAndEvents.AddItem(ExploreEventsUtils.InstantiateConfiguredEventCard(events[eventId], trendingEventCardsPool,
-                    OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+                trendingPlacesAndEvents.AddItem(
+                    PlacesAndEventsCardsFactory.CreateConfiguredEventCard(trendingEventCardsPool, events[eventId], OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked));
+
                 eventId++;
             }
             else if (placeId < places.Count)
             {
-                trendingPlacesAndEvents.AddItem(ExplorePlacesUtils.InstantiateConfiguredPlaceCard(places[placeId], trendingPlaceCardsPool,
-                    OnFriendHandlerAdded, OnPlaceInfoClicked, OnPlaceJumpInClicked));
+                PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(trendingPlaceCardsPool, places[placeId], OnPlaceInfoClicked, OnPlaceJumpInClicked);
+                OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
+
+                trendingPlacesAndEvents.AddItem(placeCard);
+
                 placeId++;
             }
 
@@ -292,12 +306,12 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         poolsPrewarmAsyncsBuffer.Enqueue(() => trendingPlaceCardsPool.PrewarmAsync(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES, cancellationToken));
     }
-    
+
     private void UpdateCardsVisual()
     {
         if (!isUpdatingCardsVisual)
             UpdateCardsVisualProcess().Forget();
-        
+
         async UniTask UpdateCardsVisualProcess()
         {
             isUpdatingCardsVisual = true;

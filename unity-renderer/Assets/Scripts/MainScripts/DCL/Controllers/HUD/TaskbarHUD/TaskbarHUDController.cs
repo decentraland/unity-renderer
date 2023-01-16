@@ -259,7 +259,7 @@ public class TaskbarHUDController : IHUD
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        if (mouseCatcher.isLocked) return;
+        if (mouseCatcher.IsLocked) return;
 
         if (publicChatWindow.View.IsActive ||
             channelChatWindow.View.IsActive ||
