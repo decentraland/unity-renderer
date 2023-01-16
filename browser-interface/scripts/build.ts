@@ -48,7 +48,7 @@ async function main() {
 }
 
 async function checkFileSizes() {
-  const MAX_FILE_SIZE = 42_1000_1000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
+  const MAX_FILE_SIZE = 42_000_000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
   for (let file of glob.sync("**/*", { cwd: DIST_PATH, absolute: true })) {
     const stats = statSync(file)
     if (stats.size > MAX_FILE_SIZE) {
