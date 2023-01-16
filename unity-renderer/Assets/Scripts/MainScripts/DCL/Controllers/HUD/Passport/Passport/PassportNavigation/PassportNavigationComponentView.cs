@@ -14,9 +14,15 @@ namespace DCL.Social.Passports
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string linksRegex = @"\[(.*?)\)";
-        private const string linkTitleRegex = @"(?<=\[).+?(?=\])";
-        private const string linkRegex = @"(?<=\().+?(?=\))";
+        private const string LINKS_REGEX = @"\[(.*?)\)";
+        private const string LINK_TITLE_REGEX = @"(?<=\[).+?(?=\])";
+        private const string LINK_REGEX = @"(?<=\().+?(?=\))";
+        private const string OWN_PLAYER = "\n         You don't ";
+        private const string OTHER_PLAYERS = "\n         This person doesn't ";
+        private const string NO_WEARABLES_TEXT = "own any Wearables yet.";
+        private const string NO_EMOTES_TEXT = "own any Emotes yet.";
+        private const string NO_NAMES_TEXT = "own any NAMEs yet.";
+        private const string NO_LANDS_TEXT = "own any LANDs yet.";
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;
@@ -31,16 +37,16 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private GameObject emptyDescriptionGO;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
-        [SerializeField] private GameObject emptyWearablesText;
+        [SerializeField] private TMP_Text emptyWearablesText;
         [SerializeField] private GameObject nftWearablesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
-        [SerializeField] private GameObject emptyEmotesText;
+        [SerializeField] private TMP_Text emptyEmotesText;
         [SerializeField] private GameObject nftEmotesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftNamesCarousel;
-        [SerializeField] private GameObject emptyNamesText;
+        [SerializeField] private TMP_Text emptyNamesText;
         [SerializeField] private GameObject nftNamesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftLandsCarousel;
-        [SerializeField] private GameObject emptyLandsText;
+        [SerializeField] private TMP_Text emptyLandsText;
         [SerializeField] private GameObject nftLandsLoadingSpinner;
         [SerializeField] private Transform nftWearablesCarouselContent;
         [SerializeField] private Transform nftEmotesCarouselContent;
@@ -146,9 +152,18 @@ namespace DCL.Social.Passports
             blockedUsernameText.text = $"{username} {BLOCKED_TEXT}";
         }
 
+        public void SetOwnUserTexts(bool isOwnUser)
+        {
+            string prefix = isOwnUser ? OWN_PLAYER : OTHER_PLAYERS;
+            emptyWearablesText.text = $"{prefix}{NO_WEARABLES_TEXT}";
+            emptyEmotesText.text = $"{prefix}{NO_EMOTES_TEXT}";
+            emptyNamesText.text = $"{prefix}{NO_NAMES_TEXT}";
+            emptyLandsText.text = $"{prefix}{NO_LANDS_TEXT}";
+        }
+
         public void SetDescription(string description)
         {
-            MatchCollection matchCollection = Regex.Matches(description, linksRegex, RegexOptions.IgnoreCase);
+            MatchCollection matchCollection = Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase);
             List<string> links = new List<string>();
 
             foreach (Match link in matchCollection)
@@ -183,8 +198,8 @@ namespace DCL.Social.Passports
             {
                 PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
                 newLink.OnClickLink -= ClickedLink;
-                newLink.SetLinkTitle(Regex.Matches(link, linkTitleRegex, RegexOptions.IgnoreCase)[0].Value);
-                newLink.SetLink(Regex.Matches(link, linkRegex, RegexOptions.IgnoreCase)[0].Value);
+                newLink.SetLinkTitle(Regex.Matches(link, LINK_TITLE_REGEX, RegexOptions.IgnoreCase)[0].Value);
+                newLink.SetLink(Regex.Matches(link, LINK_REGEX, RegexOptions.IgnoreCase)[0].Value);
                 newLink.OnClickLink += ClickedLink;
             }
         }
@@ -239,7 +254,7 @@ namespace DCL.Social.Passports
         {
             nftWearablesCarousel.gameObject.SetActive(wearables.Length > 0);
             nftWearablesCarousel.CleanInstantiatedItems();
-            emptyWearablesText.SetActive(wearables.Length <= 0);
+            emptyWearablesText.gameObject.SetActive(wearables.Length <= 0);
             ownedNftWearablePageViews.Clear();
 
             for (int i = 0; i < wearables.Length; i += 4)
@@ -257,7 +272,7 @@ namespace DCL.Social.Passports
         {
             nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
             nftEmotesCarousel.CleanInstantiatedItems();
-            emptyEmotesText.SetActive(wearables.Length <= 0);
+            emptyEmotesText.gameObject.SetActive(wearables.Length <= 0);
 
             for (int i = 0; i < wearables.Length; i += 4)
             {
@@ -274,7 +289,7 @@ namespace DCL.Social.Passports
         {
             nftNamesCarousel.gameObject.SetActive(names.Length > 0);
             nftNamesCarousel.CleanInstantiatedItems();
-            emptyNamesText.SetActive(names.Length <= 0);
+            emptyNamesText.gameObject.SetActive(names.Length <= 0);
 
             for (int i = 0; i < names.Length; i += 4)
             {
@@ -293,7 +308,7 @@ namespace DCL.Social.Passports
         {
             nftLandsCarousel.gameObject.SetActive(lands.Length > 0);
             nftLandsCarousel.CleanInstantiatedItems();
-            emptyLandsText.SetActive(lands.Length <= 0);
+            emptyLandsText.gameObject.SetActive(lands.Length <= 0);
 
             for (int i = 0; i < lands.Length; i += 4)
             {
@@ -392,16 +407,16 @@ namespace DCL.Social.Passports
         public override void RefreshControl() { }
 
         public void SetCollectibleWearablesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftWearablesCarousel, emptyWearablesText, nftWearablesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftWearablesCarousel, emptyWearablesText.gameObject, nftWearablesLoadingSpinner);
 
         public void SetCollectibleEmotesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftEmotesCarousel, emptyEmotesText, nftEmotesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftEmotesCarousel, emptyEmotesText.gameObject, nftEmotesLoadingSpinner);
 
         public void SetCollectibleNamesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftNamesCarousel, emptyNamesText, nftNamesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftNamesCarousel, emptyNamesText.gameObject, nftNamesLoadingSpinner);
 
         public void SetCollectibleLandsLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftLandsCarousel, emptyLandsText, nftLandsLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftLandsCarousel, emptyLandsText.gameObject, nftLandsLoadingSpinner);
 
         private void SetCollectibleSectionLoadingActive(
             bool isActive,

@@ -8,6 +8,7 @@ namespace DCL
     public class DebugConfigComponent : MonoBehaviour
     {
         private static DebugConfigComponent sharedInstance;
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
         public static DebugConfigComponent i
         {
@@ -74,12 +75,13 @@ namespace DCL
         public bool enableDebugMode = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
-        
+
         [Header("Performance")]
         public bool disableGLTFDownloadThrottle = false;
         public bool multithreaded = false;
         public bool runPerformanceMeterToolDuringLoading = false;
         private PerformanceMeterController performanceMeterController;
+
 
         private void Awake()
         {
@@ -134,14 +136,16 @@ namespace DCL
                 CommonScriptableObjects.forcePerformanceMeter.Set(true);
                 performanceMeterController = new PerformanceMeterController();
 
-                DataStore.i.HUDs.loadingHUD.visible.OnChange += StartSampling;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += StartSampling;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += StartSampling;
                 CommonScriptableObjects.rendererState.OnChange += EndSampling;
             }
         }
-        
+
         private void StartSampling(bool current, bool previous)
         {
-            DataStore.i.HUDs.loadingHUD.visible.OnChange -= StartSampling;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= StartSampling;
+            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= StartSampling;
             performanceMeterController.StartSampling(999);
         }
         private void EndSampling(bool current, bool previous)
@@ -185,7 +189,7 @@ namespace DCL
             {
                 baseUrl = "http://play.decentraland.zone/?";
             }
-         
+
             switch (network)
             {
                 case Network.GOERLI:
@@ -193,7 +197,7 @@ namespace DCL
                     break;
                 case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";
-                    break; 
+                    break;
             }
 
             if (!string.IsNullOrEmpty(kernelVersion))
@@ -230,12 +234,12 @@ namespace DCL
             {
                 debugString += "ENABLE_GLTFAST&";
             }
-            
+
             if (enableDebugMode)
             {
                 debugString += "DEBUG_MODE&";
             }
-            
+
             if (!string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
@@ -264,7 +268,7 @@ namespace DCL
         }
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
-       
+
         private void QuitGame()
         {
 #if UNITY_EDITOR

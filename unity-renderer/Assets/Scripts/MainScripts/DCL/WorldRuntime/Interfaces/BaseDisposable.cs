@@ -85,6 +85,9 @@ namespace DCL.Components
 
         public void DetachFromEveryEntity()
         {
+            if (attachedEntities == null)
+                return;
+
             IDCLEntity[] attachedEntitiesArray = new IDCLEntity[attachedEntities.Count];
 
             attachedEntities.CopyTo(attachedEntitiesArray);
