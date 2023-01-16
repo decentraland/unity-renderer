@@ -1,7 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.AssetManager;
+using System;
+using System.Text;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.Providers
 {
@@ -30,7 +33,7 @@ namespace DCL.Providers
             try
             {
                 var url = contentUrl + hash;
-                var hash128 = Hash128.Compute(hash);
+                var hash128 = ComputeHash(contentUrl, hash);
 
                 if (cachingEnabled)
                     AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
@@ -41,7 +44,35 @@ namespace DCL.Providers
 
                 return await FromWebRequestAsync(webRequest, url, cancellationToken);
             }
-            finally { performance.concurrentABRequests.Set(performance.concurrentABRequests.Get() - 1); }
+            finally
+            {
+                performance.concurrentABRequests.Set(performance.concurrentABRequests.Get() - 1);
+            }
+        }
+
+        // According to https://adr.decentraland.org/adr/ADR-11
+        // we use /vX for versioning so caching system should respect it
+        internal static Hash128 ComputeHash(string contentUrl, string hash)
+        {
+            var hashBuilder = GenericPool<StringBuilder>.Get();
+            hashBuilder.Clear();
+            hashBuilder.Append(hash);
+
+            var span = contentUrl.AsSpan();
+
+            // content URL always ends with '/'
+            int indexOfVersionStart;
+
+            for (indexOfVersionStart = span.Length - 2; span[indexOfVersionStart] != '/'; indexOfVersionStart--) { }
+
+            indexOfVersionStart++;
+
+            if (span[indexOfVersionStart] == 'v')
+                hashBuilder.Insert(0, span.Slice(indexOfVersionStart, span.Length - indexOfVersionStart - 1));
+
+            var hash128 = Hash128.Compute(hashBuilder.ToString());
+            GenericPool<StringBuilder>.Release(hashBuilder);
+            return hash128;
         }
 
         private UniTask WaitForConcurrentRequestsSlot()
