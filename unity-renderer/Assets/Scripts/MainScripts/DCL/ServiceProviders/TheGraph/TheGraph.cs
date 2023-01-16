@@ -124,16 +124,7 @@ public class TheGraph : ITheGraph
     {
         Promise<List<Nft>> promise = new Promise<List<Nft>>();
 
-        string url = "";
-        switch (layer)
-        {
-            case NftCollectionsLayer.ETHEREUM:
-                url = NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM;
-                break;
-            case NftCollectionsLayer.MATIC:
-                url = NFT_COLLECTIONS_SUBGRAPH_URL_MATIC;
-                break;
-        }
+        string url = GetSubGraphUrl(layer);
 
         Query(url, TheGraphQueries.getNftCollectionsQuery, new AddressVariable() { address = address.ToLower() })
             .Then(resultJson =>
@@ -145,7 +136,39 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
+    public Promise<List<Nft>> QueryNftCollectionsByUrn(string address, string urn, NftCollectionsLayer layer)
+    {
+        Promise<List<Nft>> promise = new Promise<List<Nft>>();
+
+        string url = GetSubGraphUrl(layer);
+
+        Query(url, TheGraphQueries.getNftCollectionByUserAndUrnQuery, new AddressAndUrnVariable() { address = address.ToLower(), urn = urn.ToLower() })
+            .Then(resultJson =>
+            {
+                ProcessReceivedNftData(promise, resultJson);
+            })
+            .Catch(error => promise.Reject(error));
+
+        return promise;
+    }
+
     public void Dispose() { landQueryCache.Dispose(); }
+
+    private string GetSubGraphUrl(NftCollectionsLayer layer)
+    {
+        string url = "";
+        switch (layer)
+        {
+            case NftCollectionsLayer.ETHEREUM:
+                url = NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM;
+                break;
+            case NftCollectionsLayer.MATIC:
+                url = NFT_COLLECTIONS_SUBGRAPH_URL_MATIC;
+                break;
+        }
+
+        return url;
+    }
 
     private void ProcessReceivedLandsData(Promise<List<Land>> landPromise, string jsonValue, string lowerCaseAddress, bool cache)
     {

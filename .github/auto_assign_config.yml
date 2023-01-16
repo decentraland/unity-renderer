@@ -17,7 +17,7 @@ reviewGroups:
     - popuz    
   qa:
     - kwssbocian
-    - kwspgoliasz
+    - kwsskulinski
 
 filterLabels:
   exclude:

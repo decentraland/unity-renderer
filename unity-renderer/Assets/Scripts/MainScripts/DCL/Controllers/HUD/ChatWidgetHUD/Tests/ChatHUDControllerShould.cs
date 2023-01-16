@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ProfanityFiltering;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -15,11 +16,13 @@ public class ChatHUDControllerShould
     private ChatHUDController controller;
     private IChatHUDComponentView view;
     private DataStore dataStore;
+    private IProfanityFilter profanityFilter;
 
     [SetUp]
     public void SetUp()
     {
-        var profanityFilter = GivenProfanityFilter();
+        profanityFilter = Substitute.For<IProfanityFilter>();
+        profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0].ToString()));
         dataStore = new DataStore();
         dataStore.settings.profanityChatFilteringEnabled.Set(true);
         view = Substitute.For<IChatHUDComponentView>();
@@ -91,9 +94,9 @@ public class ChatHUDControllerShould
     {
         ChatMessage msg = null;
         controller.OnSendMessage += m => msg = m;
-        
+
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.NONE, "", text));
-        
+
         Assert.AreEqual(OWN_USER_ID, msg.sender);
         Assert.AreEqual(ChatMessage.Type.PRIVATE, msg.messageType);
         Assert.AreEqual(recipient, msg.recipient);
@@ -106,9 +109,9 @@ public class ChatHUDControllerShould
         const string body = "how are you?";
         ChatMessage msg = null;
         controller.OnSendMessage += m => msg = m;
-        
+
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.NONE, "", body));
-        
+
         Assert.AreEqual(OWN_USER_ID, msg.sender);
         Assert.AreEqual(body, msg.body);
     }
@@ -119,6 +122,8 @@ public class ChatHUDControllerShould
     public IEnumerator FilterProfanityMessageWithExplicitWords(string body, string expected) => UniTask.ToCoroutine(
         async () =>
         {
+            profanityFilter.Filter($"<noparse>{body}</noparse>").Returns(UniTask.FromResult($"<noparse>{expected}</noparse>"));
+
             var msg = new ChatEntryModel
             {
                 messageType = ChatMessage.Type.PUBLIC,
@@ -138,6 +143,8 @@ public class ChatHUDControllerShould
     public IEnumerator FilterProfanityMessageWithNonExplicitWords(string body, string expected) => UniTask.ToCoroutine(
         async () =>
         {
+            profanityFilter.Filter($"<noparse>{body}</noparse>").Returns(UniTask.FromResult($"<noparse>{expected}</noparse>"));
+
             var msg = new ChatEntryModel
             {
                 messageType = ChatMessage.Type.PUBLIC,
@@ -157,6 +164,8 @@ public class ChatHUDControllerShould
     public IEnumerator FilterProfanitySenderName(string originalName, string filteredName) => UniTask.ToCoroutine(
         async () =>
         {
+            profanityFilter.Filter(originalName).Returns(UniTask.FromResult(filteredName));
+
             var msg = new ChatEntryModel
             {
                 messageType = ChatMessage.Type.PUBLIC,
@@ -175,6 +184,8 @@ public class ChatHUDControllerShould
     public IEnumerator FilterProfanityReceiverName(string originalName, string filteredName) => UniTask.ToCoroutine(
         async () =>
         {
+            profanityFilter.Filter(originalName).Returns(UniTask.FromResult(filteredName));
+
             var msg = new ChatEntryModel
             {
                 messageType = ChatMessage.Type.PUBLIC,
@@ -229,14 +240,14 @@ public class ChatHUDControllerShould
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
         view.OnNextChatInHistory += Raise.Event<Action>();
         view.OnNextChatInHistory += Raise.Event<Action>();
-        
+
         Received.InOrder(() =>
         {
             view.SetInputFieldText("sup");
             view.SetInputFieldText("hey");
         });
     }
-    
+
     [Test]
     public void DisplayPreviousMessageInHistory()
     {
@@ -244,26 +255,26 @@ public class ChatHUDControllerShould
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "sup"));
         view.OnPreviousChatInHistory += Raise.Event<Action>();
         view.OnPreviousChatInHistory += Raise.Event<Action>();
-        
+
         Received.InOrder(() =>
         {
             view.SetInputFieldText("hey");
             view.SetInputFieldText("sup");
         });
     }
-    
+
     [Test]
     public void DoNotDuplicateMessagesInHistory()
     {
         const string repeatedMessage = "hey";
-        
+
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", repeatedMessage));
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "bleh"));
         view.OnNextChatInHistory += Raise.Event<Action>();
         view.OnNextChatInHistory += Raise.Event<Action>();
         view.OnNextChatInHistory += Raise.Event<Action>();
-        
+
         Received.InOrder(() =>
         {
             view.SetInputFieldText("bleh");
@@ -277,7 +288,7 @@ public class ChatHUDControllerShould
     public void ResetInputField(bool loseFocus)
     {
         controller.ResetInputField(loseFocus);
-        
+
         view.Received(1).ResetInputField(loseFocus);
     }
 
@@ -285,7 +296,7 @@ public class ChatHUDControllerShould
     public void UnfocusInputField()
     {
         controller.UnfocusInputField();
-        
+
         view.Received(1).UnfocusInputField();
     }
 
@@ -295,7 +306,7 @@ public class ChatHUDControllerShould
     public void SetInputFieldText(string text)
     {
         controller.SetInputFieldText(text);
-        
+
         view.Received(1).SetInputFieldText(text);
     }
 
@@ -303,7 +314,7 @@ public class ChatHUDControllerShould
     public void ClearAllEntries()
     {
         controller.ClearAllEntries();
-        
+
         view.Received(1).ClearAllEntries();
     }
 
@@ -311,15 +322,7 @@ public class ChatHUDControllerShould
     public void SetChannelJoinSourceWhenJoinCommandIsWritten()
     {
         view.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage(ChatMessage.Type.PUBLIC, "test", "/join my-channel"));
-        
-        Assert.AreEqual(ChannelJoinedSource.Command, dataStore.channels.channelJoinedSource.Get());
-    }
 
-    private RegexProfanityFilter GivenProfanityFilter()
-    {
-        var wordProvider = Substitute.For<IProfanityWordProvider>();
-        wordProvider.GetExplicitWords().Returns(new[] {"ass", "shit"});
-        wordProvider.GetNonExplicitWords().Returns(new[] {"fuck", "bitch", "asshole"});
-        return new RegexProfanityFilter(wordProvider);
+        Assert.AreEqual(ChannelJoinedSource.Command, dataStore.channels.channelJoinedSource.Get());
     }
 }

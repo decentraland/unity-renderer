@@ -1,12 +1,12 @@
+using DCL;
+using DCL.Helpers;
+using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Helpers;
-using DCL.Interface;
-using Decentraland.Renderer.KernelServices;
+using UnityEditor;
 using UnityEngine;
-using Environment = System.Environment;
+using Environment = DCL.Environment;
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
@@ -55,9 +55,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
-            model = null;
+            model = new UserProfileModel();
             return;
         }
+
+        bool isModelDirty = !newModel.Equals(model);
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
@@ -75,18 +77,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
+        model.version = newModel.version;
 
         if (model.snapshots != null && faceSnapshotDirty)
-        {
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
-        }
 
         if (model.snapshots != null && bodySnapshotDirty)
-        {
             bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
-        }
 
-        OnUpdate?.Invoke(this);
+        if (isModelDirty)
+            OnUpdate?.Invoke(this);
     }
 
     public int GetItemAmount(string itemId)
@@ -111,7 +111,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().Emotes();
+        ClientEmotesKernelService emotes = Environment.i.serviceLocator.Get<IRPC>().Emotes();
         // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
@@ -180,7 +180,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        if (UnityEditor.AssetDatabase.Contains(this))
+        if (AssetDatabase.Contains(this))
             Resources.UnloadAsset(this);
     }
 #endif
