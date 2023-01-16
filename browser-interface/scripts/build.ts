@@ -1,5 +1,5 @@
 import * as glob from "glob"
-import { writeFileSync, readFileSync } from "fs"
+import { writeFileSync, readFileSync, statSync } from "fs"
 import * as path from "path"
 import { copyFile, ensureFileExists } from "./utils"
 
@@ -44,6 +44,18 @@ async function main() {
   await buildRollup()
   await createTypings()
   await createPackageJson()
+  await checkFileSizes()
+}
+
+async function checkFileSizes() {
+  const MAX_FILE_SIZE = 42_1000_1000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
+  for (let file of glob.sync("**/*", { cwd: DIST_PATH, absolute: true })) {
+    const stats = statSync(file)
+    if (stats.size > MAX_FILE_SIZE) {
+      console.error(`The file ${file} exceeds the maximum cacheable file size: ${(stats.size / 1024 / 1024).toFixed(2)}MB`)
+      process.exitCode = 1
+    }
+  }
 }
 
 async function copyBuiltFiles() {

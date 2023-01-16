@@ -30,6 +30,9 @@ export function copyFile(from: string, to: string) {
     }
   }
 
+  // create the folder for the file
+  fs.mkdir(path.dirname(to), { recursive: true })
+
   fs.copySync(from, to)
 
   if (!fs.existsSync(to)) {
