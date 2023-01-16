@@ -146,6 +146,7 @@ namespace DCL.Social.Passports
             {
                 dataStore.HUDs.connectWalletModalVisible.Set(true);
             }
+            CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);
         }

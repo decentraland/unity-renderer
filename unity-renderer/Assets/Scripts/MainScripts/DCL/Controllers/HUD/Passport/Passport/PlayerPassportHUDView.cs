@@ -58,7 +58,6 @@ namespace DCL.Social.Passports
             {
                 mouseCatcher.UnlockCursor();
             }
-            CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
 
             animationCancellationToken.Cancel();
             animationCancellationToken = new CancellationTokenSource();
