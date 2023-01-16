@@ -44,7 +44,7 @@ namespace CullingControllerTests
             rendereable.renderers.Add(originalRendererD);
             testGameObjectD.layer = 0;
 
-            ICollection<Renderer> renderers = null;
+            IReadOnlyList<Renderer> renderers = null;
             Renderer obtainedRendererA = null, obtainedRendererB = null, obtainedRendererC = null, obtainedRendererD = null;
 
             tracker.OnRendereableAdded(null, rendereable);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.Rendering
 {
@@ -8,21 +9,18 @@ namespace DCL.Rendering
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
         private readonly List<Rendereable> rendereables = new List<Rendereable>();
-        private ICollection<Renderer> usingRenderers = new List<Renderer>();
-        private ICollection<SkinnedMeshRenderer> detectedSkinnedRenderers;
-        private ICollection<SkinnedMeshRenderer> usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
+        private List<Renderer> usingRenderers = new List<Renderer>();
+        private SkinnedMeshRenderer[] detectedSkinnedRenderers;
+        private List<SkinnedMeshRenderer> usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
         private Animation[] usingAnimations;
 
         private int ignoredLayersMask;
         private bool dirty = true;
-        
+
 
         public CullingObjectsTracker()
         {
-            PoolManager.i.OnGet -= MarkDirty;
             PoolManager.i.OnGet += MarkDirty;
-
-            Rendereable.OnRendereableAdded -= OnRendereableAdded;
             Rendereable.OnRendereableAdded += OnRendereableAdded;
         }
 
@@ -81,10 +79,10 @@ namespace DCL.Rendering
         public bool IsDirty() => dirty;
 
         /// <summary> Returns the renderers list. </summary>
-        public ICollection<Renderer> GetRenderers() => usingRenderers;
+        public IReadOnlyList<Renderer> GetRenderers() => usingRenderers;
 
         /// <summary> Returns the skinned renderers list. </summary>
-        public ICollection<SkinnedMeshRenderer> GetSkinnedRenderers() => usingSkinnedRenderers;
+        public IReadOnlyList<SkinnedMeshRenderer> GetSkinnedRenderers() => usingSkinnedRenderers;
 
         /// <summary> Returns the animations list. </summary>
         public Animation[] GetAnimations() => usingAnimations;
@@ -93,7 +91,7 @@ namespace DCL.Rendering
         private void ForceCalculateRenderers()
         {
             ForceCleanRendereables();
-            
+
             usingRenderers = new List<Renderer>();
             foreach (Rendereable rendereable in rendereables)
             {
@@ -133,25 +131,64 @@ namespace DCL.Rendering
             }
         }
 
+        private bool ShouldNotBeIgnored(Renderer renderer) => ((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0;
+
+        
         private IEnumerator CalculateRenderers()
         {
             int amount = 0;
-            List<Rendereable> checkingRendereables = new List<Rendereable>(rendereables);
-            usingRenderers.Clear();
-            foreach (Rendereable rendereable in checkingRendereables)
+            using (ListPool<Rendereable>.Get(out List<Rendereable> tempList))
             {
-                if (rendereable == null || !rendereable.container)
+                foreach (Rendereable rendereable in rendereables)
+                    tempList.Add(rendereable);
+                
+                usingRenderers.Clear();
+                foreach (Rendereable rendereable in tempList)
                 {
-                    rendereables.Remove(rendereable);
-                    continue;
+                    if (rendereable == null || !rendereable.container)
+                    {
+                        rendereables.Remove(rendereable);
+                        continue;
+                    }
+
+                    if (!rendereable.container.activeInHierarchy)
+                        continue;
+
+                    foreach (Renderer renderer in rendereable.renderers)
+                    {
+                        if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                        {
+                            amount++;
+                            continue;
+                        }
+
+                        if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
+                        {
+                            yield return null;
+                            amount = 0;
+                        }
+                        amount++;
+
+                        if (ShouldNotBeIgnored(renderer))
+                            usingRenderers.Add(renderer);
+                    }
                 }
+            }
+        }
 
-                if (!rendereable.container.activeInHierarchy)
-                    continue;
+        private IEnumerator CalculateSkinnedRenderers()
+        {
+            int amount = 0;
+            List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
+            using (ListPool<SkinnedMeshRenderer>.Get(out List<SkinnedMeshRenderer> tempList))
+            {
+                foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
+                    tempList.Add(skinnedRenderer);
 
-                foreach (Renderer renderer in rendereable.renderers)
+                usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
+                foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
                 {
-                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                    if (skinnedRenderer == null)
                     {
                         amount++;
                         continue;
@@ -164,34 +201,9 @@ namespace DCL.Rendering
                     }
                     amount++;
 
-                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
-                        usingRenderers.Add(renderer);
+                    if (ShouldNotBeIgnored(skinnedRenderer))
+                        usingSkinnedRenderers.Add(skinnedRenderer);
                 }
-            }
-        }
-
-        private IEnumerator CalculateSkinnedRenderers()
-        {
-            int amount = 0;
-            List<SkinnedMeshRenderer> checkingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
-            usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
-            foreach (SkinnedMeshRenderer skinnedRenderer in checkingSkinnedRenderers)
-            {
-                if (skinnedRenderer == null)
-                {
-                    amount++;
-                    continue;
-                }
-
-                if (amount >= CullingControllerSettings.MAX_POPULATING_ELEMENTS_PER_FRAME)
-                {
-                    yield return null;
-                    amount = 0;
-                }
-                amount++;
-
-                if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
-                    usingSkinnedRenderers.Add(skinnedRenderer);
             }
         }
     }
