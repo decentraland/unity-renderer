@@ -8,7 +8,7 @@ public class NftPageView : BaseComponentView
     public event Action OnFocusAnyNtf;
 
     [SerializeField] private NFTIconComponentView[] nftElements;
-    private (string, string)[] nftIds = new (string, string)[4];
+    private (string, string)[] nftIds;
 
     public bool IsNftInfoActived { get; set; } = false;
 
@@ -21,13 +21,7 @@ public class NftPageView : BaseComponentView
             {
                 nftElements[i].gameObject.SetActive(true);
                 nftElements[i].Configure(nftModels[i]);
-                nftElements[i].onMarketplaceButtonClick.RemoveAllListeners();
-                nftElements[i].onDetailInfoButtonClick.RemoveAllListeners();
-                nftElements[i].onFocused -= FocusNftItem;
-                int idIndex = i;
-                nftElements[i].onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(idIndex));
-                nftElements[i].onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
-                nftElements[i].onFocused += FocusNftItem;
+                RegisterNftElementActions(nftElements[i], i);
             }
             else
             {
@@ -49,6 +43,16 @@ public class NftPageView : BaseComponentView
     {
         for (int i = 0; i < nftElements.Length; i++)
             nftElements[i].SetNFTItemInfoActive(false);
+    }
+
+    private void RegisterNftElementActions(NFTIconComponentView nftElement, int idIndex)
+    {
+        nftElement.onMarketplaceButtonClick.RemoveAllListeners();
+        nftElement.onDetailInfoButtonClick.RemoveAllListeners();
+        nftElement.onFocused -= FocusNftItem;
+        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(idIndex));
+        nftElement.onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
+        nftElement.onFocused += FocusNftItem;
     }
 
     private void ClickOnBuyWearable(int index)
