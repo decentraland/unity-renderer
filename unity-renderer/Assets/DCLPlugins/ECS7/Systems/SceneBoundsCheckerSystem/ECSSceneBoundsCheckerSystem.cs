@@ -13,6 +13,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private IInternalECSComponent<InternalRenderers> renderersComponent;
         private IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private IInternalECSComponent<InternalColliders> physicsCollidersComponent;
+
+        // TODO: Toggle which feedback style is instantiated based on being in debug/preview mode or not
         // private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_EnabledToggle();
         private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_RedWireframe();
 
@@ -78,16 +80,20 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     continue;
                 }
 
-                // TODO: Avoid recalculating when not needed... (based on dirty state of the other 3 internal components ???)
-                // TODO: Should we update merged bounds when the transform/parenting is changed as well? should we avoid using Bounds class?
-                // TODO: Deal with "safe" merged bounds...
-                // TODO: merged bounds should adjust to MeshCollider or MeshRenderer being removed while the other still exists for the entity...
-                // TODO: When will merged bounds be cleaned up ???
-                sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
+                if (componentData.model.meshesDirty)
+                {
+                    // TODO: Deal with "safe" merged bounds...
+                    // TODO: When will merged bounds be cleaned up ???
+                    sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
+                }
 
                 //TODO: add cpu time budget managing here
 
                 RunEntityEvaluation(componentData);
+
+                // This reset of the meshesDirty will trigger 1 extra check due to the sbcComponent dirty flag
+                componentData.model.meshesDirty = false;
+                sceneBoundsCheckComponent.PutFor(componentData.scene, componentData.entity, componentData.model);
             }
         }
 

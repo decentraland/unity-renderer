@@ -40,6 +40,7 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.renderers = newRenderersCollection;
+            model.meshesDirty = true;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -49,6 +50,7 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.physicsColliders = newCollidersCollection;
+            model.meshesDirty = true;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -58,6 +60,7 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
             model.pointerColliders = newCollidersCollection;
+            model.meshesDirty = true;
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
