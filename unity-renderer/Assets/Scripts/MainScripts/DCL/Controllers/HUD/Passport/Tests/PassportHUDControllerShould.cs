@@ -50,7 +50,8 @@ namespace DCL.Social.Passports
                                 friendsController,
                                 userProfileBridge,
                                 socialAnalytics,
-                                Substitute.For<IClipboard>());
+                                Substitute.For<IClipboard>(),
+                                passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
             playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());

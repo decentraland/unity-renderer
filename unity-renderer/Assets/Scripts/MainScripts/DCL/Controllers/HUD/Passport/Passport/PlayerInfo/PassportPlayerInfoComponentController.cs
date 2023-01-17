@@ -18,6 +18,7 @@ namespace DCL.Social.Passports
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable currentPlayerId;
         private readonly IClipboard clipboard;
+        private readonly IPassportApiBridge passportApiBridge;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
@@ -33,7 +34,8 @@ namespace DCL.Social.Passports
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
             ISocialAnalytics socialAnalytics,
-            IClipboard clipboard)
+            IClipboard clipboard,
+            IPassportApiBridge passportApiBridge)
         {
             this.currentPlayerId = currentPlayerId;
             this.view = view;
@@ -43,6 +45,7 @@ namespace DCL.Social.Passports
             this.userProfileBridge = userProfileBridge;
             this.socialAnalytics = socialAnalytics;
             this.clipboard = clipboard;
+            this.passportApiBridge = passportApiBridge;
 
             view.OnAddFriend += AddPlayerAsFriend;
             view.OnRemoveFriend += RemoveFriend;
@@ -233,7 +236,7 @@ namespace DCL.Social.Passports
             if (ownUserProfile.IsBlocked(currentPlayerId)) return;
             ownUserProfile.Block(currentPlayerId);
             view.SetIsBlocked(true);
-            WebInterface.SendBlockPlayer(currentPlayerId);
+            passportApiBridge.SendBlockPlayer(currentPlayerId);
             socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
         }
 
@@ -242,13 +245,13 @@ namespace DCL.Social.Passports
             if (!ownUserProfile.IsBlocked(currentPlayerId)) return;
             ownUserProfile.Unblock(currentPlayerId);
             view.SetIsBlocked(false);
-            WebInterface.SendUnblockPlayer(currentPlayerId);
+            passportApiBridge.SendUnblockPlayer(currentPlayerId);
             socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
         }
 
         private void ReportUser()
         {
-            WebInterface.SendReportPlayer(currentPlayerId, name);
+            passportApiBridge.SendReportPlayer(currentPlayerId, name);
             socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
         }
 

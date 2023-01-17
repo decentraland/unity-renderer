@@ -64,7 +64,8 @@ public class HUDFactory : IHUDFactory
                             new SocialAnalytics(
                                 Environment.i.platform.serviceProviders.analytics,
                                 new UserProfileWebInterfaceBridge()),
-                            Environment.i.platform.clipboard),
+                            Environment.i.platform.clipboard,
+                            new WebInterfacePassportApiBridge()),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,

@@ -13,7 +13,8 @@ namespace DCL.Social.Passports
         private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
-        private static readonly string[] ALLOWED_TYPES = { "name", "parcel", "estate" };
+        private const string NAME_TYPE = "name";
+        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
 
         private readonly IPlayerPassportHUDView view;
         private readonly StringVariable currentPlayerId;
@@ -169,7 +170,7 @@ namespace DCL.Social.Passports
         {
             if (ALLOWED_TYPES.Contains(wearableType))
             {
-                WebInterface.OpenURL((wearableType is "name" ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
+                passportApiBridge.OpenURL((wearableType is NAME_TYPE ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
                 socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
                 return;
             }
@@ -180,13 +181,13 @@ namespace DCL.Social.Passports
 
             if (ownedCollectible != null)
             {
-                WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
+                passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
                 //TODO: integrate ItemType itemType once new lambdas are active
                 socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
             }
             else
             {
-                WebInterface.OpenURL(URL_COLLECTIBLE_GENERIC);
+                passportApiBridge.OpenURL(URL_COLLECTIBLE_GENERIC);
             }
         }
 

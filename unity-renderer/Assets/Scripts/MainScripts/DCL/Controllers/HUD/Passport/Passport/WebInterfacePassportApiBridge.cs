@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Interface;
 using DCL.Social.Passports;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,26 @@ namespace DCl.Social.Passports
                      .Then((nfts) => nftList = nfts);
 
             return nftList;
+        }
+
+        public void OpenURL(string url)
+        {
+            WebInterface.OpenURL(url);
+        }
+
+        public void SendBlockPlayer(string playerId)
+        {
+            WebInterface.SendBlockPlayer(playerId);
+        }
+
+        public void SendUnblockPlayer(string playerId)
+        {
+            WebInterface.SendUnblockPlayer(playerId);
+        }
+
+        public void SendReportPlayer(string currentPlayerId, string name)
+        {
+            WebInterface.SendReportPlayer(currentPlayerId, name);
         }
     }
 }
