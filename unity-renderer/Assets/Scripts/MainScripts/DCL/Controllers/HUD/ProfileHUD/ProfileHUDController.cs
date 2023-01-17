@@ -56,12 +56,8 @@ public class ProfileHUDController : IHUD
         view.SetDescriptionIsEditing(false);
 
         view.LogedOutPressed += OnLoggedOut;
-
-        // (object sender, EventArgs args) => WebInterface.LogOut();
-
         view.SignedUpPressed += OnSignedUp;
 
-        // (object sender, EventArgs args) => WebInterface.RedirectToSignUp();
         view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
 
         view.Opened += (object sender, EventArgs args) =>
@@ -143,6 +139,9 @@ public class ProfileHUDController : IHUD
 
     public void Dispose()
     {
+        view.LogedOutPressed -= OnLoggedOut;
+        view.SignedUpPressed -= OnSignedUp;
+
         if (fetchManaIntervalRoutine != null)
         {
             CoroutineStarter.Stop(fetchManaIntervalRoutine);
