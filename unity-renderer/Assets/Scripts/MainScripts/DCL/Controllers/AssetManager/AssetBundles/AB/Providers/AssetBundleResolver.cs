@@ -28,7 +28,7 @@ namespace DCL.Providers
             var permittedProviders = permittedProvidersPool.GetList();
 
 #if UNITY_EDITOR
-            permittedProviders.Insert(0, editorProvider);
+            //permittedProviders.Insert(0, editorProvider);
 #endif
 
             foreach (var provider in permittedProviders)

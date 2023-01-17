@@ -103,6 +103,7 @@ namespace DCL
             }
             catch (Exception e)
             {
+                Debug.Log("FAILED TO LOAD FONTS");
                 onFail?.Invoke(e);
             }
         }

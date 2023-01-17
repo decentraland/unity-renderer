@@ -12,10 +12,16 @@ namespace DCL.Providers
             await webRequest.WithCancellation(cancellationToken);
 
             if (webRequest.isDisposed)
+            {
+                Debug.Log($"Operation is disposed. Url: {url}");
                 throw new AssetBundleException($"Operation is disposed. Url: {url}");
+            }
 
             if (!webRequest.isSucceeded)
+            {
+                Debug.Log($"Request failed {webRequest.webRequest.error}. Url: {url}");
                 throw new AssetBundleException($"Request failed {webRequest.webRequest.error}. Url: {url}");
+            }
 
             return DownloadHandlerAssetBundle.GetContent(webRequest.webRequest);
         }

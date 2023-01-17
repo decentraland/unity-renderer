@@ -33,6 +33,7 @@ namespace DCL.Providers
             try
             {
                 var url = contentUrl + hash;
+                Debug.Log("AAAA " + url);
                 var hash128 = ComputeHash(contentUrl, hash);
 
                 if (cachingEnabled)
