@@ -23,6 +23,10 @@ namespace DCL.Social.Passports
         private const string NO_EMOTES_TEXT = "own any Emotes yet.";
         private const string NO_NAMES_TEXT = "own any NAMEs yet.";
         private const string NO_LANDS_TEXT = "own any LANDs yet.";
+        private const string NAME_TYPE = "name";
+        private const string EMOTE_TYPE = "emote";
+        private const string LEGENDARY_RARITY = "legendary";
+        private const string LAND_RARITY = "land";
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;
@@ -459,14 +463,14 @@ namespace DCL.Social.Passports
                     {
                         showMarketplaceButton = true,
                         showType = true,
-                        type = "name",
+                        type = NAME_TYPE,
                         marketplaceURI = "",
                         name = names[i + j].Name,
-                        rarity = "legendary",
+                        rarity = LEGENDARY_RARITY,
                         imageURI = ""
                     };
 
-                    nftIds[j] = (names[i + j].ContractAddress, "name");
+                    nftIds[j] = (names[i + j].ContractAddress, NAME_TYPE);
                 }
                 else
                 {
@@ -544,14 +548,14 @@ namespace DCL.Social.Passports
                     {
                         showMarketplaceButton = true,
                         showType = true,
-                        type = "emote",
+                        type = EMOTE_TYPE,
                         marketplaceURI = "",
                         name = wearables[i + j].GetName(),
                         rarity = wearables[i + j].rarity,
                         imageURI = wearables[i + j].ComposeThumbnailUrl()
                     };
 
-                    nftIds[j] = (wearables[i + j].id, "emote");
+                    nftIds[j] = (wearables[i + j].id, EMOTE_TYPE);
                     wearableItemsForThisPage[j] = wearables[i + j];
                 }
                 else
@@ -592,7 +596,7 @@ namespace DCL.Social.Passports
                         type = lands[i + j].Category,
                         marketplaceURI = "",
                         name = !string.IsNullOrEmpty(lands[i + j].Name) ? lands[i + j].Name : lands[i + j].Category,
-                        rarity = "land",
+                        rarity = LAND_RARITY,
                         imageURI = lands[i + j].Image
                     };
 
