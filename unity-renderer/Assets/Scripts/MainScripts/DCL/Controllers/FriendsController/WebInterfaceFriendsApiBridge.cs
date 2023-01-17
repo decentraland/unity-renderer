@@ -15,7 +15,6 @@ namespace DCL.Social.Friends
 
         public event Action<FriendshipInitializationMessage> OnInitialized;
         public event Action<string> OnFriendNotFound;
-        public event Action<AddFriendsPayload> OnFriendsAdded;
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded; // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public event Action<AddFriendsWithDirectMessagesPayload> OnFriendWithDirectMessagesAdded;
         public event Action<UserStatus> OnUserPresenceUpdated;
@@ -33,8 +32,18 @@ namespace DCL.Social.Friends
             OnFriendNotFound?.Invoke(name);
 
         [PublicAPI]
-        public void AddFriends(string json) =>
-            OnFriendsAdded?.Invoke(JsonUtility.FromJson<AddFriendsPayload>(json));
+        public void AddFriends(string json)
+        {
+            var payload = JsonUtility.FromJson<AddFriendsPayload>(json);
+            string messageId = "GetFriendsRequest";
+            if (!pendingRequests.ContainsKey(messageId))
+                return;
+
+            var task = (UniTaskCompletionSource<AddFriendsPayload>)pendingRequests[messageId];
+
+            pendingRequests.Remove(messageId);
+            task.TrySetResult(payload);
+        }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         [PublicAPI]
@@ -157,11 +166,25 @@ namespace DCL.Social.Friends
             });
         }
 
-        public void GetFriends(int limit, int skip) =>
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip)
+        {
+            var task = new UniTaskCompletionSource<AddFriendsPayload>();
+
+            pendingRequests["GetFriendsRequest"] = task;
             WebInterface.GetFriends(limit, skip);
 
-        public void GetFriends(string usernameOrId, int limit) =>
+            return task.Task;
+        }
+
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit)
+        {
+            var task = new UniTaskCompletionSource<AddFriendsPayload>();
+
+            pendingRequests["GetFriendsRequest"] = task;
             WebInterface.GetFriends(usernameOrId, limit);
+
+            return task.Task;
+        }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)

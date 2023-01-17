@@ -55,13 +55,11 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
-    public void GetFriends(int limit, int skip)
-    {
-    }
+    public UniTask<string[]> GetFriendsAsync(int limit, int skip) =>
+        UniTask.FromResult(new string[0]);
 
-    public void GetFriends(string usernameOrId, int limit)
-    {
-    }
+    public UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit) =>
+        UniTask.FromResult(new string[0]);
 
     public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
     {

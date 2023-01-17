@@ -14,7 +14,6 @@ namespace DCL.Social.Friends
         event Action<string> OnFriendNotFound;
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
-        event Action<int> OnTotalFriendsUpdated;
         event Action<SocialFriendRequest> OnFriendRequestReceived;
         event Action<SocialFriendRequest> OnSentFriendRequestApproved;
 
@@ -45,8 +44,8 @@ namespace DCL.Social.Friends
         UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
-        void GetFriends(int limit, int skip);
-        void GetFriends(string usernameOrId, int limit);
+        UniTask<string[]> GetFriendsAsync(int limit, int skip);
+        UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit);
         [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);

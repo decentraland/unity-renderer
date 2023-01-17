@@ -169,7 +169,7 @@ namespace DCL.Social.Friends
                     View.Set(friend.Key, friend.Value);
 
                 if (View.IsFriendListActive)
-                    DisplayMoreFriends();
+                    DisplayMoreFriendsAsync().Forget();
                 else if (View.IsRequestListActive)
                     DisplayMoreFriendRequestsAsync().Forget();
 
@@ -198,7 +198,7 @@ namespace DCL.Social.Friends
             if (View.IsActive())
             {
                 if (View.IsFriendListActive && lastSkipForFriends <= 0)
-                    DisplayMoreFriends();
+                    DisplayMoreFriendsAsync().Forget();
                 else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                     DisplayMoreFriendRequestsAsync().Forget();
             }
@@ -605,14 +605,19 @@ namespace DCL.Social.Friends
         private void DisplayFriendsIfAnyIsLoaded()
         {
             if (lastSkipForFriends > 0) return;
-            DisplayMoreFriends();
+            DisplayMoreFriendsAsync().Forget();
         }
 
-        private void DisplayMoreFriends()
+        private void DisplayMoreFriends() =>
+            DisplayMoreFriendsAsync().Forget();
+
+        private async UniTask DisplayMoreFriendsAsync()
         {
             if (!friendsController.IsInitialized) return;
 
-            friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
+            var friendsToAdd = await friendsController.GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
+            for (int i = 0; i < friendsToAdd.Length; i++)
+                HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             // We are not handling properly the case when the friends are not fetched correctly from server.
             // 'lastSkipForFriends' will have an invalid value.
@@ -719,7 +724,10 @@ namespace DCL.Social.Friends
                     friendsController.TotalFriendCount));
         }
 
-        private void SearchFriends(string search)
+        private void SearchFriends(string search) =>
+            SearchFriendsAsync(search).Forget();
+
+        private async UniTask SearchFriendsAsync(string search)
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -729,7 +737,9 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
+            var friendsToAdd = await friendsController.GetFriendsAsync(search, MAX_SEARCHED_FRIENDS);
+            for (int i = 0; i < friendsToAdd.Length; i++)
+                HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             View.EnableSearchMode();
             View.HideMoreFriendsToLoadHint();

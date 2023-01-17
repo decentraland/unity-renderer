@@ -39,9 +39,6 @@ namespace DCL.Social.Friends
             this.fallbackApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
             this.newFriendsApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
 
-            this.fallbackApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
-            this.newFriendsApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
-
             this.fallbackApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
             this.newFriendsApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
 
@@ -73,11 +70,11 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
 
-        public void GetFriends(int limit, int skip) =>
-            apiBridgeInUse.GetFriends(limit, skip);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip) =>
+            apiBridgeInUse.GetFriendsAsync(limit, skip);
 
-        public void GetFriends(string usernameOrId, int limit) =>
-            apiBridgeInUse.GetFriends(usernameOrId, limit);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit) =>
+            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridgeInUse.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
