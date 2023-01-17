@@ -37,22 +37,26 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public int currentPlacesPerRow => places.currentItemsPerRow;
 
+    public void SetAllAsLoading() => SetPlacesAsLoading(true);
+    public void SetShowMoreButtonActive(bool isActive) => SetShowMorePlacesButtonActive(isActive);
+    public int CurrentTilesPerRow => currentPlacesPerRow;
+
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
     public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
     public event Action OnShowMorePlacesClicked;
-    
+
     public override void Awake()
     {
         base.Awake();
         placesCanvas = places.GetComponent<Canvas>();
     }
-    
+
     public override void Start()
     {
-        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 
         places.RemoveItems();
 
@@ -82,26 +86,26 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             Destroy(placeModal.gameObject);
         }
     }
-    
+
     public void ConfigurePools() =>
-        ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+        placeCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
 
     public override void RefreshControl() =>
         places.RefreshControl();
-    
+
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
         SetPlacesAsLoading(false);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
-        
+
         placeCardsPool.ReleaseAll();
-        
+
         this.places.ExtractItems();
         this.places.RemoveItems();
 
         SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
     }
-    
+
     public void SetPlacesAsLoading(bool isVisible)
     {
         placesCanvas.enabled = !isVisible;
@@ -112,22 +116,25 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             placesNoDataText.gameObject.SetActive(false);
     }
 
-    public void AddPlaces(List<PlaceCardComponentModel> places) => 
+    public void AddPlaces(List<PlaceCardComponentModel> places) =>
         SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
 
     private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            this.places.AddItem(
-                ExplorePlacesUtils.InstantiateConfiguredPlaceCard(place, placeCardsPool, OnFriendHandlerAdded, OnInfoClicked, OnJumpInClicked));
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked);
+            OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
+
+            this.places.AddItem(placeCard);
+
             await UniTask.NextFrame(cancellationToken);
         }
-        
+
         this.places.SetItemSizeForModel();
         await placeCardsPool.PrewarmAsync(places.Count, cancellationToken);
     }
-    
+
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
@@ -138,13 +145,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             OnDisable();
     }
 
-    public void SetShowMorePlacesButtonActive(bool isActive) => 
+    public void SetShowMorePlacesButtonActive(bool isActive) =>
         showMorePlacesButtonContainer.gameObject.SetActive(isActive);
 
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal()
@@ -153,6 +160,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             placeModal.Hide();
     }
 
-    public void RestartScrollViewPosition() => 
+    public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
 }

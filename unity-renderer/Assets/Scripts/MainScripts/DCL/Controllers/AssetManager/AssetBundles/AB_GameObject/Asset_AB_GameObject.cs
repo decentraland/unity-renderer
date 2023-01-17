@@ -45,6 +45,12 @@ namespace DCL
         {
             AssetPromiseKeeper_AB.i.Forget(ownerPromise);
             Object.Destroy(container);
+            meshes.Clear();
+            meshToTriangleCount.Clear();
+            renderers.Clear();
+            materials.Clear();
+            textures.Clear();
+            animationClips.Clear();
         }
 
         public void Show(System.Action OnFinish)

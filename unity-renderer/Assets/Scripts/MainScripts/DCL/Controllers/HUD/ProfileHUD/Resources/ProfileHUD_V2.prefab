@@ -4672,7 +4672,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: VIEW PASSPORT
+  m_text: VIEW PROFILE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
@@ -6765,7 +6765,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: -8}
-  m_SizeDelta: {x: -32, y: 50}
+  m_SizeDelta: {x: -32, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!225 &3857867295939141320
 CanvasGroup:
@@ -7082,8 +7082,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Add links at the end of your intro if you want them to be interpreted as
-    a separate section.
+  m_text: "You can add links to your profile by adding them \nat the end of the text
+    with the following format [text](https://wwww.url.com/)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
