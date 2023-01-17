@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECSRuntime;
@@ -11,10 +10,9 @@ namespace ECSSystems.PlayerSystem
 {
     public class ECSPlayerTransformSystem : IDisposable
     {
-        private readonly BaseVariable<Transform> avatarTransform;
-        private readonly RendererState rendererState;
-        private readonly Vector3Variable worldOffset;
         private readonly BaseList<IParcelScene> loadedScenes;
+        private readonly BaseVariable<Transform> avatarTransform;
+        private readonly Vector3Variable worldOffset;
         private readonly IECSComponentWriter componentsWriter;
 
         private Vector3 lastAvatarPosition = Vector3.zero;
@@ -22,12 +20,12 @@ namespace ECSSystems.PlayerSystem
         private long timeStamp = 0;
         private bool newSceneAdded = false;
 
-        public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter)
+        public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter,
+            BaseList<IParcelScene> sdk7Scenes, BaseVariable<Transform> avatarTransform, Vector3Variable worldOffset)
         {
-            avatarTransform = DataStore.i.world.avatarTransform;
-            rendererState = CommonScriptableObjects.rendererState;
-            worldOffset = CommonScriptableObjects.worldOffset;
-            loadedScenes = DataStore.i.ecs7.scenes;
+            loadedScenes = sdk7Scenes;
+            this.avatarTransform = avatarTransform;
+            this.worldOffset = worldOffset;
             this.componentsWriter = componentsWriter;
 
             loadedScenes.OnAdded += OnSceneLoaded;
@@ -40,13 +38,13 @@ namespace ECSSystems.PlayerSystem
 
         public void Update()
         {
-            if (!rendererState.Get())
+            var currentAvatarTransform = avatarTransform.Get();
+
+            if (currentAvatarTransform == null)
                 return;
 
-            Transform avatarT = avatarTransform.Get();
-
-            Vector3 avatarPosition = avatarT.position;
-            Quaternion avatarRotation = avatarT.rotation;
+            Vector3 avatarPosition = currentAvatarTransform.position;
+            Quaternion avatarRotation = currentAvatarTransform.rotation;
 
             if (!newSceneAdded && lastAvatarPosition == avatarPosition && lastAvatarRotation == avatarRotation)
             {
@@ -57,14 +55,15 @@ namespace ECSSystems.PlayerSystem
 
             lastAvatarPosition = avatarPosition;
             lastAvatarRotation = avatarRotation;
-            Vector3 worldOffset = this.worldOffset.Get();
+            Vector3 currentWorldOffset = this.worldOffset.Get();
 
             IParcelScene scene;
+
             for (int i = 0; i < loadedScenes.Count; i++)
             {
                 scene = loadedScenes[i];
 
-                var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref worldOffset);
+                var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref currentWorldOffset);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
                     transform, timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
