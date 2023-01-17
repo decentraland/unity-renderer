@@ -31,9 +31,9 @@ public class RenderingController : MonoBehaviour
 
     private void DecoupleLoadingScreenVisibilityChange(bool visible, bool _)
     {
-        if (visible)
-            DeactivateRendering_Internal();
-        else
+        //Removed the Deactive rendering logic. This was not being called by kernel, and started calling it from the decoupled loading screen brought unexpected behaviour.
+        //This requires a further refactor and analysis on how the CommonScriptableObjects.renderState is used
+        if(!visible)
             //Coming-from-kernel condition. If we are on signup flow, then we must force the ActivateRendering
             ActivateRendering_Internal(isSignUpFlow);
     }
