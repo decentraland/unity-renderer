@@ -145,18 +145,22 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string friendId) =>
             apiBridge.RemoveFriend(friendId);
 
-        public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken ct)
+        public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
-            var payload = await apiBridge.GetFriendsAsync(limit, skip, ct);
+            var payload = await apiBridge.GetFriendsAsync(limit, skip, cancellationToken);
+            await UniTask.SwitchToMainThread();
+
             TotalFriendCount = payload.totalFriends;
             AddFriends(payload.friends);
 
             return payload.friends;
         }
 
-        public async UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct)
+        public async UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default)
         {
-            var payload= await apiBridge.GetFriendsAsync(usernameOrId, limit, ct);
+            var payload = await apiBridge.GetFriendsAsync(usernameOrId, limit, cancellationToken);
+            await UniTask.SwitchToMainThread();
+
             TotalFriendCount = payload.totalFriends;
             AddFriends(payload.friends);
 

@@ -40,7 +40,7 @@ namespace DCL.Social.Friends
         public event Action OnClosed;
         public event Action OnViewClosed;
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
         public FriendsHUDController(DataStore dataStore,
             IFriendsController friendsController,
@@ -118,9 +118,9 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            cts?.Cancel();
-            cts?.Dispose();
-            cts = null;
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
 
             if (friendsController != null)
             {
@@ -618,9 +618,9 @@ namespace DCL.Social.Friends
 
         private void DisplayMoreFriends()
         {
-            cts?.Cancel();
-            cts?.Dispose();
-            cts = null;
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
 
             DisplayMoreFriendsAsync().Forget();
         }
@@ -629,10 +629,10 @@ namespace DCL.Social.Friends
         {
             if (!friendsController.IsInitialized) return;
 
-            cts = new CancellationTokenSource();
+            friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
             var friendsToAdd = await friendsController
-                .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, cts.Token)
+                .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, friendOperationsCancellationTokenSource.Token)
                 .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
 
             for (int i = 0; i < friendsToAdd.Length; i++)
@@ -745,9 +745,9 @@ namespace DCL.Social.Friends
 
         private void SearchFriends(string search)
         {
-            cts?.Cancel();
-            cts?.Dispose();
-            cts = null;
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
 
             SearchFriendsAsync(search).Forget();
         }
@@ -762,10 +762,10 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            cts = new CancellationTokenSource();
+            friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
             var friendsToAdd = await friendsController
-                .GetFriendsAsync(search, MAX_SEARCHED_FRIENDS, cts.Token)
+                .GetFriendsAsync(search, MAX_SEARCHED_FRIENDS, friendOperationsCancellationTokenSource.Token)
                 .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
 
             for (int i = 0; i < friendsToAdd.Length; i++)

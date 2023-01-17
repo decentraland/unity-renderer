@@ -71,11 +71,11 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken ct) =>
-            apiBridgeInUse.GetFriendsAsync(limit, skip, ct);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
+            apiBridgeInUse.GetFriendsAsync(limit, skip, cancellationToken);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct) =>
-            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit, ct);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
+            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit, cancellationToken);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridgeInUse.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);

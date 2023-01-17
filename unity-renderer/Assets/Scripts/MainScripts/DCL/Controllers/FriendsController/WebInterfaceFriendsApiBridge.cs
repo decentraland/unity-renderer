@@ -11,6 +11,8 @@ namespace DCL.Social.Friends
 {
     public partial class WebInterfaceFriendsApiBridge : MonoBehaviour, IFriendsApiBridge
     {
+        private const string GET_FRIENDS_REQUEST_MESSAGE_ID = "GetFriendsRequest";
+
         private readonly Dictionary<string, IUniTaskSource> pendingRequests = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<FriendshipUpdateStatusMessage>> updatedFriendshipPendingRequests = new ();
 
@@ -36,7 +38,7 @@ namespace DCL.Social.Friends
         public void AddFriends(string json)
         {
             var payload = JsonUtility.FromJson<AddFriendsPayload>(json);
-            string messageId = "GetFriendsRequest";
+            string messageId = GET_FRIENDS_REQUEST_MESSAGE_ID;
             if (!pendingRequests.ContainsKey(messageId))
                 return;
 
@@ -167,24 +169,28 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken ct)
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var task = new UniTaskCompletionSource<AddFriendsPayload>();
 
-            pendingRequests["GetFriendsRequest"] = task;
+            pendingRequests[GET_FRIENDS_REQUEST_MESSAGE_ID] = task;
             WebInterface.GetFriends(limit, skip);
 
-            return task.Task.AttachExternalCancellation(ct);
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct)
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var task = new UniTaskCompletionSource<AddFriendsPayload>();
 
-            pendingRequests["GetFriendsRequest"] = task;
+            pendingRequests[GET_FRIENDS_REQUEST_MESSAGE_ID] = task;
             WebInterface.GetFriends(usernameOrId, limit);
 
-            return task.Task.AttachExternalCancellation(ct);
+            return task.Task.AttachExternalCancellation(cancellationToken);
         }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
