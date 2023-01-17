@@ -13,6 +13,7 @@ namespace DCL.Social.Passports
         private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
+        private static readonly string[] ALLOWED_TYPES = { "name", "parcel", "estate" };
 
         private readonly IPlayerPassportHUDView view;
         private readonly StringVariable currentPlayerId;
@@ -166,7 +167,7 @@ namespace DCL.Social.Passports
 
         private void ClickedBuyNft(string id, string wearableType)
         {
-            if (wearableType is "name" or "parcel" or "estate")
+            if (ALLOWED_TYPES.Contains(wearableType))
             {
                 WebInterface.OpenURL((wearableType is "name" ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
                 socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
