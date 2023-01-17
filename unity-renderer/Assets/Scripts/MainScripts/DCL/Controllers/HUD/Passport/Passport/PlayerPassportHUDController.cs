@@ -160,6 +160,7 @@ namespace DCL.Social.Passports
             if (string.IsNullOrEmpty(userId))
                 return;
 
+            //TODO: Not integrating CT yet due to changes incoming from issue #4040
             (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsEthereum(userId), passportApiBridge.QueryNftCollectionsMatic(userId));
         }
 

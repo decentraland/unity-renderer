@@ -19,9 +19,7 @@ public class TheGraph : ITheGraph
 
     private readonly IDataCache<List<Land>> landQueryCache = new DataCache<List<Land>>();
 
-    public Promise<string> Query(string url, string query) { return Query(url, query, null); }
-
-    public Promise<string> Query(string url, string query, QueryVariablesBase variables)
+    private Promise<string> Query(string url, string query, QueryVariablesBase variables)
     {
         Promise<string> promise = new Promise<string>();
 
@@ -61,8 +59,6 @@ public class TheGraph : ITheGraph
 
         return promise;
     }
-
-    public Promise<List<Land>> QueryLands(string network, string address) { return QueryLands(network, address, DEFAULT_CACHE_TIME); }
 
     public Promise<List<Land>> QueryLands(string network, string address, float cacheMaxAgeSeconds)
     {
