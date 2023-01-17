@@ -3,6 +3,7 @@ using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Passports
@@ -32,6 +33,7 @@ namespace DCL.Social.Passports
         private List<Nft> ownedNftCollectionsL1 = new ();
         private List<Nft> ownedNftCollectionsL2 = new ();
         private double passportOpenStartTime;
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -105,6 +107,10 @@ namespace DCL.Social.Passports
 
         public void Dispose()
         {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
             playerInfoController.OnClosePassport -= ClosePassport;
@@ -162,12 +168,24 @@ namespace DCL.Social.Passports
             if (string.IsNullOrEmpty(userId))
                 return;
 
-            //TODO: Not integrating CT yet due to changes incoming from issue #4040
-            (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsEthereum(userId), passportApiBridge.QueryNftCollectionsMatic(userId));
+            (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token), passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token));
         }
 
         private void ClickedBuyNft(string id, string wearableType)
         {
+            async UniTaskVoid QueryNftCollectionByUrnAsync(string urn)
+            {
+                var nft = await passportApiBridge.QueryNftCollectionAsync(currentUserProfile.userId, urn, NftCollectionsLayer.MATIC, cts.Token);
+
+                if (nft == null)
+                    nft = await passportApiBridge.QueryNftCollectionAsync(currentUserProfile.userId, urn, NftCollectionsLayer.ETHEREUM, cts.Token);
+
+                if (nft != null)
+                    OpenNftMarketUrl(nft);
+                else
+                    passportApiBridge.OpenURL(URL_COLLECTIBLE_GENERIC);
+            }
+
             if (ALLOWED_TYPES.Contains(wearableType))
             {
                 passportApiBridge.OpenURL((wearableType is NAME_TYPE ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
@@ -180,15 +198,24 @@ namespace DCL.Social.Passports
                 ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == id);
 
             if (ownedCollectible != null)
-            {
-                passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
-                //TODO: integrate ItemType itemType once new lambdas are active
-                socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
-            }
+                OpenNftMarketUrl(ownedCollectible);
             else
             {
-                passportApiBridge.OpenURL(URL_COLLECTIBLE_GENERIC);
+                cts?.Cancel();
+                cts?.Dispose();
+                cts = new CancellationTokenSource();
+
+                // In case the NFT's information is not found neither on ownedNftCollectionsL1 nor or ownedNftCollectionsL2 (it could happen due
+                // to the TheGraph queries only return a maximum of 100 entries by default), we request the information of this specific NFT.
+                QueryNftCollectionByUrnAsync(id).Forget();
             }
+        }
+
+        private void OpenNftMarketUrl(Nft nft)
+        {
+            passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{tokenId}", nft.tokenId));
+            //TODO: integrate ItemType itemType once new lambdas are active
+            socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
         }
 
         private void ClickedCollectibles()

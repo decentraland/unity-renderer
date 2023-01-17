@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.Helpers;
 using DCL.Social.Passports;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Threading;
 
 namespace DCl.Social.Passports
 {
@@ -13,22 +14,44 @@ namespace DCl.Social.Passports
 
         public WebInterfacePassportApiBridge() { }
 
-        public async UniTask<List<Nft>> QueryNftCollectionsEthereum(string userId)
+        public async UniTask<List<Nft>> QueryNftCollectionsAsync(string userId, NftCollectionsLayer layer, CancellationToken ct)
         {
-            List<Nft> nftList = new List<Nft>();
-            await DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.ETHEREUM)
-                     .Then((nfts) => nftList = nfts);
+            List<Nft> nftList = null;
+            Promise<List<Nft>> promise = null;
+
+            try
+            {
+                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, layer)
+                    .Then((nfts) => nftList = nfts);
+
+                await promise.WithCancellation(ct);
+            }
+            catch (OperationCanceledException e)
+            {
+                promise?.Reject("Canceled");
+            }
 
             return nftList;
         }
 
-        public async UniTask<List<Nft>> QueryNftCollectionsMatic(string userId)
+        public async UniTask<Nft> QueryNftCollectionAsync(string userId, string urn, NftCollectionsLayer layer, CancellationToken ct)
         {
-            List<Nft> nftList = new List<Nft>();
-            await DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userId, NftCollectionsLayer.MATIC)
-                     .Then((nfts) => nftList = nfts);
+            List<Nft> nftList = null;
+            Promise<List<Nft>> promise = null;
 
-            return nftList;
+            try
+            {
+                promise = DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollectionsByUrn(userId, urn, layer)
+                    .Then((nfts) => nftList = nfts);
+
+                await promise.WithCancellation(ct);
+            }
+            catch (OperationCanceledException e)
+            {
+                promise?.Reject("Canceled");
+            }
+
+            return nftList?.Count > 0 ? nftList[0] : null;
         }
 
         public void OpenURL(string url)
