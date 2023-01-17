@@ -17,6 +17,7 @@ namespace MainScripts.DCL.AssetsEmbedment.Editor
             if (assetPath.Contains(texturesPath))
             {
                 var texImporter = (TextureImporter)assetImporter;
+                texImporter.isReadable = true;
                 texImporter.alphaIsTransparency = true;
                 texImporter.mipmapEnabled = false;
             }
