@@ -7,6 +7,7 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -90,14 +91,14 @@ namespace DCl.Social.Friends
         [Test]
         public void SendFriendRequestByNameCorrectly()
         {
-            friendsController.RequestFriendshipAsync(OTHER_USER_NAME, "")
+            friendsController.RequestFriendshipAsync(OTHER_USER_NAME, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_NAME);
 
-            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_NAME, "");
+            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_NAME, "", Arg.Any<CancellationToken>());
             socialAnalytics.Received(1)
                 .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
@@ -106,14 +107,14 @@ namespace DCl.Social.Friends
         [Test]
         public void SendFriendRequestByIdCorrectly()
         {
-            friendsController.RequestFriendshipAsync(OTHER_USER_ID, "")
+            friendsController.RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("requestId", 100, OWN_USER_ID, OTHER_USER_ID, "")));
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
-            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_ID, "");
+            friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>());
             socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
             view.Received(1).ShowRequestSendSuccess();
         }
@@ -153,9 +154,9 @@ namespace DCl.Social.Friends
         {
             view.FriendRequestCount.Returns(5);
 
-            _ = friendsController.IsInitialized.Returns(true);
-            _ = friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+            friendsController.IsInitialized.Returns(true);
+            friendsController
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -169,9 +170,9 @@ namespace DCl.Social.Friends
         {
             view.FriendRequestCount.Returns(5);
 
-            _ = friendsController.IsInitialized.Returns(true);
-            _ = friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+            friendsController.IsInitialized.Returns(true);
+            friendsController
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -273,9 +274,9 @@ namespace DCl.Social.Friends
             view.ContainsFriendRequest(OTHER_USER_ID).Returns(true);
             view.FriendRequestCount.Returns(10000);
 
-            _ = friendsController.IsInitialized.Returns(true);
-            _ = friendsController
-                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>())
+            friendsController.IsInitialized.Returns(true);
+            friendsController
+                .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
             controller.DisplayMoreFriendRequests();
@@ -385,7 +386,7 @@ namespace DCl.Social.Friends
 
             controller.SetVisibility(true);
 
-            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -396,7 +397,7 @@ namespace DCl.Social.Friends
 
             view.OnRequestListDisplayed += Raise.Event<Action>();
 
-            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0);
+            friendsController.Received(1).GetFriendRequestsAsync(30, 0, 30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -478,7 +479,7 @@ namespace DCl.Social.Friends
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
-            friendsController.GetFriendRequestsAsync(30, 0, 30, 0);
+            friendsController.GetFriendRequestsAsync(30, 0, 30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -539,7 +540,7 @@ namespace DCl.Social.Friends
             controller.SetVisibility(false);
             controller.SetVisibility(true);
 
-            friendsController.Received(2).GetFriendRequestsAsync(30, 0, 30, 0);
+            friendsController.Received(2).GetFriendRequestsAsync(30, 0, 30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]

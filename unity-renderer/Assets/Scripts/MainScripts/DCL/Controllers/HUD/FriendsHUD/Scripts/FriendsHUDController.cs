@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -25,6 +26,7 @@ namespace DCL.Social.Friends
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         private bool isQuickActionsForFriendRequestsEnabled => !isNewFriendRequestsEnabled || dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
+        private CancellationTokenSource friendOperationsCancellationToken = new ();
 
         private UserProfile ownUserProfile;
         private bool searchingFriends;
@@ -114,6 +116,9 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = null;
+
             if (friendsController != null)
             {
                 friendsController.OnInitialized -= HandleFriendsInitialized;
@@ -144,7 +149,7 @@ namespace DCL.Social.Friends
 
             if (userProfileBridge != null)
             {
-                foreach (var friendId in friends.Keys)
+                foreach (string friendId in friends.Keys)
                 {
                     var profile = userProfileBridge.Get(friendId);
                     if (profile == null) continue;
@@ -171,7 +176,11 @@ namespace DCL.Social.Friends
                 if (View.IsFriendListActive)
                     DisplayMoreFriends();
                 else if (View.IsRequestListActive)
-                    DisplayMoreFriendRequestsAsync().Forget();
+                {
+                    friendOperationsCancellationToken.Cancel();
+                    friendOperationsCancellationToken = new CancellationTokenSource();
+                    DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
+                }
 
                 OnOpened?.Invoke();
             }
@@ -200,7 +209,11 @@ namespace DCL.Social.Friends
                 if (View.IsFriendListActive && lastSkipForFriends <= 0)
                     DisplayMoreFriends();
                 else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
-                    DisplayMoreFriendRequestsAsync().Forget();
+                {
+                    friendOperationsCancellationToken.Cancel();
+                    friendOperationsCancellationToken = new CancellationTokenSource();
+                    DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
+                }
             }
 
             UpdateNotificationsCounter();
@@ -211,7 +224,7 @@ namespace DCL.Social.Friends
 
         private async UniTask UpdateBlockStatus(UserProfile profile)
         {
-            const int iterationsPerFrame = 10;
+            const int ITERATIONS_PER_FRAME = 10;
 
             //NOTE(Brian): HashSet to check Contains quicker.
             var allBlockedUsers = profile.blocked != null
@@ -222,7 +235,7 @@ namespace DCL.Social.Friends
 
             foreach (var friendPair in friends)
             {
-                var friendId = friendPair.Key;
+                string friendId = friendPair.Key;
                 var model = friendPair.Value;
 
                 model.blocked = allBlockedUsers.Contains(friendId);
@@ -231,15 +244,19 @@ namespace DCL.Social.Friends
 
                 iterations++;
 
-                if (iterations > 0 && iterations % iterationsPerFrame == 0)
+                if (iterations > 0 && iterations % ITERATIONS_PER_FRAME == 0)
                     await UniTask.NextFrame();
             }
         }
 
-        private void HandleRequestFriendship(string userNameOrId) =>
-            HandleRequestFriendshipAsync(userNameOrId).Forget();
+        private void HandleRequestFriendship(string userNameOrId)
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            HandleRequestFriendshipAsync(userNameOrId, friendOperationsCancellationToken.Token).Forget();
+        }
 
-        private async UniTaskVoid HandleRequestFriendshipAsync(string userNameOrId)
+        private async UniTaskVoid HandleRequestFriendshipAsync(string userNameOrId, CancellationToken cancellationToken)
         {
             if (AreAlreadyFriends(userNameOrId))
                 View.ShowRequestSendError(FriendRequestError.AlreadyFriends);
@@ -251,13 +268,13 @@ namespace DCL.Social.Friends
 
                     try
                     {
-                        request = await friendsController.RequestFriendshipAsync(userNameOrId, "")
+                        request = await friendsController.RequestFriendshipAsync(userNameOrId, "", cancellationToken)
                                                                        .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
                         socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
                             PlayerActionSource.FriendsHUD);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (e is not OperationCanceledException)
                     {
                         socialAnalytics.SendFriendRequestError(ownUserProfile?.userId, userNameOrId,
                             PlayerActionSource.FriendsHUD.ToString(),
@@ -271,10 +288,10 @@ namespace DCL.Social.Friends
                     // we do require the user profile to be valid, otherwise we lack of information to be able to add the friend request
                     if (userProfileBridge.Get(request.To) == null)
                     {
-                        await userProfileBridge.RequestFullUserProfileAsync(request.To)
+                        await userProfileBridge.RequestFullUserProfileAsync(request.To, cancellationToken)
                                                .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
-                        await UniTask.SwitchToMainThread();
+                        await UniTask.SwitchToMainThread(cancellationToken);
                     }
 
                     ShowFriendRequest(request);
@@ -491,16 +508,20 @@ namespace DCL.Social.Friends
         private void HandleUnfriend(string userId) =>
             friendsController.RemoveFriend(userId);
 
-        private void HandleRequestRejected(FriendRequestEntryModel entry) =>
-            HandleRequestRejectedAsync(entry.userId).Forget();
+        private void HandleRequestRejected(FriendRequestEntryModel entry)
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            HandleRequestRejectedAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
+        }
 
-        private async UniTaskVoid HandleRequestRejectedAsync(string userId)
+        private async UniTaskVoid HandleRequestRejectedAsync(string userId, CancellationToken cancellationToken)
         {
             if (isNewFriendRequestsEnabled)
             {
                 try
                 {
-                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId)
+                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId, cancellationToken)
                                                                    .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
                     socialAnalytics.SendFriendRequestRejected(request.From, request.To,
@@ -508,7 +529,7 @@ namespace DCL.Social.Friends
 
                     RemoveFriendship(userId);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
 
@@ -532,23 +553,20 @@ namespace DCL.Social.Friends
             UpdateNotificationsCounter();
         }
 
-        private void HandleRequestCancelled(FriendRequestEntryModel entry) =>
-            HandleRequestCancelledAsync(entry.userId).Forget();
-
-        private async UniTaskVoid HandleRequestCancelledAsync(string userId)
+        private async UniTaskVoid HandleRequestCancelledAsync(string userId, CancellationToken cancellationToken)
         {
             if (isNewFriendRequestsEnabled)
             {
                 try
                 {
-                    FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId);
+                    FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
                     socialAnalytics.SendFriendRequestCancelled(request.From, request.To,
                         PlayerActionSource.FriendsHUD.ToString());
 
                     RemoveFriendship(userId);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
                     socialAnalytics.SendFriendRequestError(request?.From, request?.To,
@@ -567,23 +585,34 @@ namespace DCL.Social.Friends
             }
         }
 
-        private void HandleRequestAccepted(FriendRequestEntryModel entry) =>
-            HandleRequestAcceptedAsync(entry.userId).Forget();
+        private void HandleRequestCancelled(FriendRequestEntryModel entry)
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            HandleRequestCancelledAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
+        }
 
-        private async UniTaskVoid HandleRequestAcceptedAsync(string userId)
+        private void HandleRequestAccepted(FriendRequestEntryModel entry)
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            HandleRequestAcceptedAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
+        }
+
+        private async UniTaskVoid HandleRequestAcceptedAsync(string userId, CancellationToken cancellationToken)
         {
             if (isNewFriendRequestsEnabled)
             {
                 try
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId)
+                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken)
                                                      .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
                     socialAnalytics.SendFriendRequestApproved(request.From, request.To,
                         PlayerActionSource.FriendsHUD.ToString(),
                         request.HasBodyMessage);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
                     socialAnalytics.SendFriendRequestError(request?.From, request?.To,
@@ -616,27 +645,33 @@ namespace DCL.Social.Friends
 
             // We are not handling properly the case when the friends are not fetched correctly from server.
             // 'lastSkipForFriends' will have an invalid value.
+            // this may happen only on the old flow.. the task operation should throw an exception if anything goes wrong in the new flow
             lastSkipForFriends += LOAD_FRIENDS_ON_DEMAND_COUNT;
 
             ShowOrHideMoreFriendsToLoadHint();
         }
 
-        public void DisplayMoreFriendRequests() =>
-            DisplayMoreFriendRequestsAsync().Forget();
+        public void DisplayMoreFriendRequests()
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
+        }
 
-        private async UniTask DisplayMoreFriendRequestsAsync()
+        private async UniTask DisplayMoreFriendRequestsAsync(CancellationToken cancellationToken)
         {
             if (!friendsController.IsInitialized) return;
             if (searchingFriends) return;
 
             if (isNewFriendRequestsEnabled)
             {
-                var allfriendRequests = await friendsController.GetFriendRequestsAsync(
+                var allFriendRequests = await friendsController.GetFriendRequestsAsync(
                                                                     LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-                                                                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests)
+                                                                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                                                                    cancellationToken)
                                                                .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_TIMEOUT));
 
-                AddFriendRequests(allfriendRequests);
+                AddFriendRequests(allFriendRequests);
             }
             else
             {
@@ -648,6 +683,7 @@ namespace DCL.Social.Friends
 
             // We are not handling properly the case when the friend requests are not fetched correctly from server.
             // 'lastSkipForFriendRequests' will have an invalid value.
+            // this may happen only on the old flow.. the task operation should throw an exception if anything goes wrong in the new flow
             lastSkipForFriendRequests += LOAD_FRIENDS_ON_DEMAND_COUNT;
 
             ShowOrHideMoreFriendRequestsToLoadHint();
@@ -696,7 +732,9 @@ namespace DCL.Social.Friends
         private void DisplayFriendRequestsIfAnyIsLoaded()
         {
             if (lastSkipForFriendRequests > 0) return;
-            DisplayMoreFriendRequestsAsync().Forget();
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
         }
 
         private void ShowOrHideMoreFriendRequestsToLoadHint()

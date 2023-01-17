@@ -113,14 +113,14 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid RejectAsync(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
             try
             {
-                FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId)
+                FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId, cancellationToken)
                                                                      .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_OPERATION_TIMEOUT));
-
-                if (cancellationToken.IsCancellationRequested) return;
 
                 socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
 
@@ -128,10 +128,9 @@ namespace DCL.Social.Friends
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return;
 
                 FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
                 socialAnalytics.SendFriendRequestError(request?.From, request?.To,
@@ -150,14 +149,14 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid ConfirmAsync(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
             try
             {
-                FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId)
+                FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId, cancellationToken)
                                                                      .Timeout(TimeSpan.FromSeconds(FRIEND_REQUEST_OPERATION_TIMEOUT));
-
-                if (cancellationToken.IsCancellationRequested) return;
 
                 socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
 
@@ -165,10 +164,10 @@ namespace DCL.Social.Friends
                 await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
                 view.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
-                if (cancellationToken.IsCancellationRequested) return;
+
                 FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
                 socialAnalytics.SendFriendRequestError(request?.From, request?.To,
                     "modal",

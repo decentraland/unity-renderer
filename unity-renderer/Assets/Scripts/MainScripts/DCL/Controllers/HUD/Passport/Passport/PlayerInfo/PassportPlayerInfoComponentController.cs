@@ -81,11 +81,10 @@ namespace DCL.Social.Passports
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
 
-            // this is ugly, but nothing in the inner function works with cancellation token, we have to refactor FriendsController to be able to do it properly
-            UpdateWithUserProfileAsync(userProfile).AttachExternalCancellation(cancellationTokenSource.Token).Forget();
+            UpdateWithUserProfileAsync(userProfile, cancellationTokenSource.Token).Forget();
         }
 
-        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
+        private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile, CancellationToken cancellationToken)
         {
             name = userProfile.name;
             string filteredName = await FilterName(userProfile);
@@ -109,7 +108,7 @@ namespace DCL.Social.Passports
                     isGuest = userProfile.isGuest,
                     isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
                     hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
-                    friendshipStatus = await friendsController.GetFriendshipStatus(userProfile.userId),
+                    friendshipStatus = await friendsController.GetFriendshipStatus(userProfile.userId, cancellationToken),
                 };
             }
 
@@ -147,19 +146,25 @@ namespace DCL.Social.Passports
             socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
         }
 
-        private void CancelFriendRequest() =>
-            CancelFriendRequestAsync().Forget();
+        private void CancelFriendRequest()
+        {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            CancelFriendRequestAsync(cancellationTokenSource.Token).Forget();
+        }
 
-        private async UniTaskVoid CancelFriendRequestAsync()
+        private async UniTaskVoid CancelFriendRequestAsync(CancellationToken cancellationToken)
         {
             if (isNewFriendRequestsEnabled)
             {
                 try
                 {
-                    await friendsController.CancelRequestByUserIdAsync(currentPlayerId).Timeout(TimeSpan.FromSeconds(10));
+                    await friendsController.CancelRequestByUserIdAsync(currentPlayerId, cancellationToken)
+                                           .Timeout(TimeSpan.FromSeconds(10));
                     dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
@@ -179,23 +184,28 @@ namespace DCL.Social.Passports
                 PlayerActionSource.Passport.ToString());
         }
 
-        private void AcceptFriendRequest() =>
-            AcceptFriendRequestAsync().Forget();
+        private void AcceptFriendRequest()
+        {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            AcceptFriendRequestAsync(cancellationTokenSource.Token).Forget();
+        }
 
-        private async UniTaskVoid AcceptFriendRequestAsync()
+        private async UniTaskVoid AcceptFriendRequestAsync(CancellationToken cancellationToken)
         {
             if (isNewFriendRequestsEnabled)
             {
                 try
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId).Timeout(TimeSpan.FromSeconds(10));
+                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken).Timeout(TimeSpan.FromSeconds(10));
                     dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
                     socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),
                         request.HasBodyMessage);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 

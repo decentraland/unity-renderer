@@ -20,6 +20,7 @@ namespace DCL.Social.Friends
         private string messageBody;
         private string recipientId;
         private CancellationTokenSource hideCancellationToken = new ();
+        private CancellationTokenSource friendOperationsCancellationToken = new ();
         private bool sendInProgress;
 
         public SendFriendRequestHUDController(
@@ -46,6 +47,8 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = null;
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;
@@ -75,10 +78,14 @@ namespace DCL.Social.Friends
             view.Show();
         }
 
-        private void Send() =>
-            SendAsync().Forget();
+        private void Send()
+        {
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            SendAsync(friendOperationsCancellationToken.Token).Forget();
+        }
 
-        private async UniTaskVoid SendAsync()
+        private async UniTaskVoid SendAsync(CancellationToken cancellationToken)
         {
             hideCancellationToken?.Cancel();
             hideCancellationToken = new CancellationTokenSource();
@@ -89,21 +96,23 @@ namespace DCL.Social.Friends
             {
                 sendInProgress = true;
 
-                await friendsController.RequestFriendshipAsync(recipientId, messageBody)
+                await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken)
                                        .Timeout(TimeSpan.FromSeconds(SEND_TIMEOUT));
 
-                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId, recipientId, messageBody.Length,
+                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
+                    recipientId, messageBody.Length,
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
 
                 view.ShowSendSuccess();
                 sendInProgress = false;
 
-                await UniTask.Delay(AUTOMATIC_CLOSE_DELAY, cancellationToken: hideCancellationToken.Token);
+                await UniTask.Delay(AUTOMATIC_CLOSE_DELAY,
+                    cancellationToken: hideCancellationToken.AddTo(cancellationToken).Token);
 
                 if (!hideCancellationToken.IsCancellationRequested)
                     view.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 await UniTask.SwitchToMainThread();
 

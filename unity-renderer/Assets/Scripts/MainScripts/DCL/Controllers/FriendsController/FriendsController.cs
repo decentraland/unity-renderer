@@ -3,6 +3,7 @@ using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -80,12 +81,14 @@ namespace DCL.Social.Friends
             return friends[friendId].friendshipStatus == status;
         }
 
-        public async UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody)
+        public async UniTask<FriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken)
         {
-            var payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody);
-            var friendRequestPayload = payload.friendRequest;
+            cancellationToken.ThrowIfCancellationRequested();
 
-            var friendRequest = new FriendRequest(friendRequestPayload.friendRequestId,
+            RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
+            FriendRequestPayload friendRequestPayload = payload.friendRequest;
+
+            FriendRequest friendRequest = new (friendRequestPayload.friendRequestId,
                 friendRequestPayload.timestamp,
                 friendRequestPayload.from,
                 friendRequestPayload.to,
@@ -93,7 +96,7 @@ namespace DCL.Social.Friends
 
             friendRequests[friendRequest.FriendRequestId] = friendRequest;
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.To });
@@ -107,14 +110,16 @@ namespace DCL.Social.Friends
         public Dictionary<string, UserStatus> GetAllocatedFriends() =>
             new (friends);
 
-        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId)
+        public async UniTask<FriendRequest> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
-            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
             FriendRequestPayload requestPayload = payload.FriendRequest;
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.APPROVED, userId = request.From });
@@ -125,14 +130,16 @@ namespace DCL.Social.Friends
         public void RejectFriendship(string friendUserId) =>
             apiBridge.RejectFriendship(friendUserId);
 
-        public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId)
+        public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
-            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
             FriendRequestPayload requestPayload = payload.FriendRequestPayload;
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REJECTED, userId = request.From });
@@ -156,10 +163,12 @@ namespace DCL.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<List<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
         {
-            var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip);
-            await UniTask.SwitchToMainThread();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             TotalReceivedFriendRequestCount = payload.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = payload.totalSentFriendRequests;
@@ -169,6 +178,8 @@ namespace DCL.Social.Friends
 
             foreach (var friendRequest in payload.requestedFrom)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
                 receivedFriendRequestsToAdd.Add(request);
@@ -179,6 +190,8 @@ namespace DCL.Social.Friends
 
             foreach (var friendRequest in payload.requestedTo)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var request = ToFriendRequest(friendRequest);
                 friendRequests[request.FriendRequestId] = request;
                 receivedFriendRequestsToAdd.Add(request);
@@ -215,11 +228,11 @@ namespace DCL.Social.Friends
             return result;
         }
 
-        public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId)
+        public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken)
         {
-            FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId);
+            FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId, cancellationToken);
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
@@ -230,16 +243,18 @@ namespace DCL.Social.Friends
             return status;
         }
 
-        public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId)
+        public async UniTask<FriendRequest> CancelRequestByUserIdAsync(string friendUserId, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             FriendRequest request = GetAllocatedFriendRequestByUser(friendUserId);
 
             if (request != null)
             {
-                await apiBridge.CancelRequestAsync(request.FriendRequestId);
+                await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
                 friendRequests.Remove(request.FriendRequestId);
 
-                await UniTask.SwitchToMainThread();
+                await UniTask.SwitchToMainThread(cancellationToken);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.CANCELLED, userId = friendUserId });
@@ -248,8 +263,8 @@ namespace DCL.Social.Friends
             }
 
             // TODO (FRIEND REQUESTS): this operation is deprecated and should be removed after the release of improved friend requests
-            await apiBridge.CancelRequestByUserIdAsync(friendUserId);
-            await UniTask.SwitchToMainThread();
+            await apiBridge.CancelRequestByUserIdAsync(friendUserId, cancellationToken);
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendUserId });
@@ -260,14 +275,16 @@ namespace DCL.Social.Friends
         public void CancelRequestByUserId(string friendUserId) =>
             apiBridge.CancelRequestByUserId(friendUserId);
 
-        public async UniTask<FriendRequest> CancelRequestAsync(string friendRequestId)
+        public async UniTask<FriendRequest> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken)
         {
-            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken);
             var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);
 
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendRequest.To });

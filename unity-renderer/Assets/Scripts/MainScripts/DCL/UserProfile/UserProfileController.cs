@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using DCL;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -122,8 +123,10 @@ public class UserProfileController : MonoBehaviour
 
     public void ClearProfilesCatalog() { userProfilesCatalog?.Clear(); }
 
-    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId)
+    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         // TODO: the renderer should not alter the userId nor ethAddress
         // There is a problem in case management of addresses that we cannot handle from renderer only
         userId = userId?.ToLower();
@@ -134,6 +137,6 @@ public class UserProfileController : MonoBehaviour
         var task = new UniTaskCompletionSource<UserProfile>();
         pendingUserProfileTasks[userId] = task;
 
-        return task.Task;
+        return task.Task.AttachExternalCancellation(cancellationToken);
     }
 }

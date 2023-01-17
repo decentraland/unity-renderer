@@ -4,6 +4,7 @@ using DCL;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
 using DCL.Social.Friends;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -715,9 +716,9 @@ public class TaskbarHUDController : IHUD
             OpenChatList();
         else
         {
-            async UniTaskVoid OpenPrivateChatAsync(string chatId)
+            async UniTaskVoid OpenPrivateChatAsync(string chatId, CancellationToken cancellationToken = default)
             {
-                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId);
+                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId, cancellationToken);
 
                 if (friendshipStatus == FriendshipStatus.FRIEND)
                     OpenPrivateChat(chatId);
