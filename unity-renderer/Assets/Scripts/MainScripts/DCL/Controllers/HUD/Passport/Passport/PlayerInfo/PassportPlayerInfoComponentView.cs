@@ -53,7 +53,8 @@ namespace DCL.Social.Passports
         public event Action OnReportUser;
         public event Action<string> OnWhisperUser;
         public event Action OnJumpInUser;
-        public event Action OnWalletCopy;
+        public event Action<string> OnWalletCopy;
+        public event Action<string> OnUsernameCopy;
 
         private string fullWalletAddress;
         private bool areFriends;
@@ -61,7 +62,7 @@ namespace DCL.Social.Passports
         private Coroutine copyAddressRoutine = null;
         private Coroutine copyNameRoutine = null;
         private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
-        
+
         public override void Start()
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
@@ -236,8 +237,7 @@ namespace DCL.Social.Passports
             if(fullWalletAddress == null)
                 return;
 
-            OnWalletCopy?.Invoke();
-            Environment.i.platform.clipboard.WriteText(fullWalletAddress);
+            OnWalletCopy?.Invoke(fullWalletAddress);
             if (copyAddressRoutine != null)
             {
                 StopCoroutine(copyAddressRoutine);
@@ -251,7 +251,7 @@ namespace DCL.Social.Passports
             if(string.IsNullOrEmpty(model.name))
                 return;
 
-            Environment.i.platform.clipboard.WriteText(model.name);
+            OnUsernameCopy?.Invoke(model.name);
             if (copyNameRoutine != null)
             {
                 StopCoroutine(copyNameRoutine);

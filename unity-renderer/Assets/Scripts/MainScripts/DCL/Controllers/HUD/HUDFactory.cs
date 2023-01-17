@@ -63,7 +63,8 @@ public class HUDFactory : IHUDFactory
                             new UserProfileWebInterfaceBridge(),
                             new SocialAnalytics(
                                 Environment.i.platform.serviceProviders.analytics,
-                                new UserProfileWebInterfaceBridge())),
+                                new UserProfileWebInterfaceBridge()),
+                            Environment.i.platform.clipboard),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,
@@ -81,7 +82,9 @@ public class HUDFactory : IHUDFactory
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
                             new UserProfileWebInterfaceBridge()),
-                        DataStore.i);
+                        DataStore.i,
+                        SceneReferences.i.mouseCatcher,
+                        CommonScriptableObjects.playerInfoCardVisibleState);
                 }
                 else
                 {

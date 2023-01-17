@@ -17,7 +17,8 @@ namespace DCL.Social.Passports
         event Action OnReportUser;
         event Action<string> OnWhisperUser;
         event Action OnJumpInUser;
-        event Action OnWalletCopy;
+        event Action<string> OnWalletCopy;
+        event Action<string> OnUsernameCopy;
 
         void SetIsBlocked(bool isBlocked);
         void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);

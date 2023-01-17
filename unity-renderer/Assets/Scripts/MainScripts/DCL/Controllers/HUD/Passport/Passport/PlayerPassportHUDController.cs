@@ -24,6 +24,7 @@ namespace DCL.Social.Passports
         private readonly PassportPlayerInfoComponentController playerInfoController;
         private readonly PassportPlayerPreviewComponentController playerPreviewController;
         private readonly PassportNavigationComponentController passportNavigationController;
+        private readonly BooleanVariable playerInfoCardVisibleState;
 
         private UserProfile currentUserProfile;
         private List<Nft> ownedNftCollectionsL1 = new ();
@@ -39,7 +40,9 @@ namespace DCL.Social.Passports
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics,
-            DataStore dataStore)
+            DataStore dataStore,
+            MouseCatcher mouseCatcher,
+            BooleanVariable playerInfoCardVisibleState)
         {
             this.view = view;
             this.playerInfoController = playerInfoController;
@@ -50,8 +53,9 @@ namespace DCL.Social.Passports
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
             this.dataStore = dataStore;
+            this.playerInfoCardVisibleState = playerInfoCardVisibleState;
 
-            view.Initialize();
+            view.Initialize(mouseCatcher);
             view.OnClose += RemoveCurrentPlayer;
 
             closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
@@ -146,7 +150,7 @@ namespace DCL.Social.Passports
             {
                 dataStore.HUDs.connectWalletModalVisible.Set(true);
             }
-            CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
+            playerInfoCardVisibleState.Set(visible);
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);
         }
@@ -156,8 +160,7 @@ namespace DCL.Social.Passports
             if (string.IsNullOrEmpty(userId))
                 return;
 
-            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsEthereum(userId);
-            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsMatic(userId);
+            (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsEthereum(userId), passportApiBridge.QueryNftCollectionsMatic(userId));
         }
 
         private void ClickedBuyNft(string id, string wearableType)

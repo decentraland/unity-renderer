@@ -17,6 +17,7 @@ namespace SocialFeaturesAnalytics
         void SendInspectAvatar(double timeSpent);
         void SendLinkClick(PlayerActionSource source);
         void SendWalletCopy(PlayerActionSource source);
+        void SendUsernameCopy(PlayerActionSource source);
         void SendJumpInToPlayer(PlayerActionSource source);
         void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source);

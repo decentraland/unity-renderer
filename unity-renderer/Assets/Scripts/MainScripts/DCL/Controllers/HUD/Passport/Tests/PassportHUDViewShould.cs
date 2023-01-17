@@ -14,7 +14,7 @@ public class PassportHUDViewShould
     public void SetUp()
     {
         view = PlayerPassportHUDView.CreateView();
-        view.Initialize();
+        view.Initialize(Substitute.For<MouseCatcher>());
     }
 
     [TearDown]
@@ -29,7 +29,7 @@ public class PassportHUDViewShould
         view.SetVisibility(true);
         Assert.IsTrue(view.gameObject.activeSelf);
     }
-    
+
     [Test]
     public void Hide()
     {

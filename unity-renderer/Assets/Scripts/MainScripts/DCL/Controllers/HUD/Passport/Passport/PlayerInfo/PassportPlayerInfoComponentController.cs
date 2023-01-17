@@ -17,6 +17,7 @@ namespace DCL.Social.Passports
         private readonly IUserProfileBridge userProfileBridge;
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable currentPlayerId;
+        private readonly IClipboard clipboard;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
@@ -31,7 +32,8 @@ namespace DCL.Social.Passports
             IProfanityFilter profanityFilter,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            IClipboard clipboard)
         {
             this.currentPlayerId = currentPlayerId;
             this.view = view;
@@ -40,6 +42,7 @@ namespace DCL.Social.Passports
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.socialAnalytics = socialAnalytics;
+            this.clipboard = clipboard;
 
             view.OnAddFriend += AddPlayerAsFriend;
             view.OnRemoveFriend += RemoveFriend;
@@ -51,6 +54,7 @@ namespace DCL.Social.Passports
             view.OnWhisperUser += WhisperUser;
             view.OnJumpInUser += JumpInUser;
             view.OnWalletCopy += WalletCopy;
+            view.OnUsernameCopy += UsernameCopy;
 
             friendsController.OnUpdateFriendship += UpdateFriendshipStatus;
         }
@@ -64,8 +68,15 @@ namespace DCL.Social.Passports
             friendsController.OnUpdateFriendship -= UpdateFriendshipStatus;
         }
 
-        private void WalletCopy()
+        private void WalletCopy(string address)
         {
+            clipboard.WriteText(address);
+            socialAnalytics.SendWalletCopy(PlayerActionSource.Passport);
+        }
+
+        private void UsernameCopy(string username)
+        {
+            clipboard.WriteText(username);
             socialAnalytics.SendWalletCopy(PlayerActionSource.Passport);
         }
 

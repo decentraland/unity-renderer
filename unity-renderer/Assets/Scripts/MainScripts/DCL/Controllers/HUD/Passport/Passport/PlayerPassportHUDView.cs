@@ -33,7 +33,7 @@ namespace DCL.Social.Passports
         public static PlayerPassportHUDView CreateView() =>
             Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
 
-        public void Initialize()
+        public void Initialize(MouseCatcher mouseCatcher)
         {
             hideCardButton.onClick.RemoveAllListeners();
             hideCardButton.onClick.AddListener(ClosePassport);
@@ -41,7 +41,7 @@ namespace DCL.Social.Passports
             hideCardButtonGuest.onClick.AddListener(ClosePassport);
             backgroundButton.onClick.RemoveAllListeners();
             backgroundButton.onClick.AddListener(ClosePassport);
-            mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
+            this.mouseCatcher = mouseCatcher;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseDown += ClosePassport;
