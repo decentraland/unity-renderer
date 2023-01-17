@@ -132,6 +132,10 @@ namespace DCL.Social.Passports
         {
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseDown -= ClosePassport;
+
+            animationCancellationToken?.Cancel();
+            animationCancellationToken?.Dispose();
+            animationCancellationToken = null;
         }
 
         private void ClosePassport()
