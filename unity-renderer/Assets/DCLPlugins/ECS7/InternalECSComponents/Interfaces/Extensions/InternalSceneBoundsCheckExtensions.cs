@@ -72,6 +72,8 @@ namespace DCL.ECS7.InternalComponents
 
             // Clean existing bounds object
             model.entityLocalMeshBounds.size = Vector3.zero;
+
+            // Note: the center shouldn't be modified beyond this point as it affects the bounds relative values
             model.entityLocalMeshBounds.center = entity.gameObject.transform.position;
 
             // Encapsulate with global bounds
@@ -100,8 +102,9 @@ namespace DCL.ECS7.InternalComponents
             }
 
             // Turn min-max values to local/relative to be usable when the entity has moved
-            model.entityLocalMeshBounds.SetMinMax(model.entityLocalMeshBounds.min - model.entityLocalMeshBounds.center,
-                model.entityLocalMeshBounds.max - model.entityLocalMeshBounds.center);
+            Vector3 entityPosition = entity.gameObject.transform.position;
+            model.entityLocalMeshBounds.SetMinMax(model.entityLocalMeshBounds.min - entityPosition,
+                model.entityLocalMeshBounds.max - entityPosition);
 
             sbcInternalComponent.PutFor(scene, entity, model);
         }
@@ -111,11 +114,12 @@ namespace DCL.ECS7.InternalComponents
             Bounds returnedBounds = collider.bounds;
 
             // Disabled colliders return a size-0 bounds object, so we enable it only to get its bounds
-            int colliderLayer = collider.gameObject.layer;
             if (!collider.enabled)
             {
-                // Temporarily change the collider GO layer to avoid it colliding with anything.
                 GameObject colliderGO = collider.gameObject;
+                int colliderLayer = colliderGO.layer;
+
+                // Temporarily change the collider GO layer to avoid it colliding with anything.
                 colliderGO.layer = PhysicsLayers.gizmosLayer;
 
                 // Enable collider to copy its real bounds

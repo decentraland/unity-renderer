@@ -59,6 +59,7 @@ public class ECSSystemsController : IDisposable
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             context.internalEcsComponents.sceneBoundsCheckComponent,
+            context.internalEcsComponents.visibilityComponent,
             context.internalEcsComponents.renderersComponent,
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.physicColliderComponent);
@@ -85,14 +86,14 @@ public class ECSSystemsController : IDisposable
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             uiInputSenderSystem.Update,
-            billboardSystem.Update,
-            sceneBoundsCheckerSystem.Update
+            billboardSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
         {
             cameraEntitySystem.Update,
-            playerTransformSystem.Update
+            playerTransformSystem.Update,
+            sceneBoundsCheckerSystem.Update // Should always be the last system
         };
     }
 
@@ -117,8 +118,6 @@ public class ECSSystemsController : IDisposable
         {
             updateSystems[i].Invoke();
         }
-
-        internalComponentWriteSystem.Invoke();
     }
 
     private void LateUpdate()
@@ -129,5 +128,7 @@ public class ECSSystemsController : IDisposable
         {
             lateUpdateSystems[i].Invoke();
         }
+
+        internalComponentWriteSystem.Invoke();
     }
 }

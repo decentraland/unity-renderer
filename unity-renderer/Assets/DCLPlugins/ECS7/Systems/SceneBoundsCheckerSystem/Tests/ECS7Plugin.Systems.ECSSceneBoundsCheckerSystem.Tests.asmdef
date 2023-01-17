@@ -1,5 +1,5 @@
 {
-    "name": "ECS7Plugin.Systems.ECSSceneBoundsChecker",
+    "name": "ECS7Plugin.Systems.ECSSceneBoundsChecker.Tests",
     "rootNamespace": "",
     "references": [
         "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",

@@ -1,3 +1,4 @@
+
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -8,16 +9,21 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
     public class ECSSceneBoundsCheckerSystem
     {
         private IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent;
+        private IInternalECSComponent<InternalVisibility> visibilityComponent;
         private IInternalECSComponent<InternalRenderers> renderersComponent;
         private IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private IInternalECSComponent<InternalColliders> physicsCollidersComponent;
+        // private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_EnabledToggle();
+        private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_RedWireframe();
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
+            IInternalECSComponent<InternalVisibility> visibilityComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent)
         {
             this.sceneBoundsCheckComponent = sbcComponent;
+            this.visibilityComponent = visibilityComponent;
             this.renderersComponent = renderersComponent;
             this.pointerCollidersComponent = pointerColliderComponent;
             this.physicsCollidersComponent = physicsColliderComponent;
@@ -126,7 +132,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             if (entity.isInsideSceneBoundaries == isInsideBounds)
                 return;
 
-            entity.isInsideSceneOuterBoundaries = isInsideBounds; // TODO: correct
+            entity.isInsideSceneOuterBoundaries = isInsideBounds; // TODO: correct with outer boundaries optimization
             entity.isInsideSceneBoundaries = isInsideBounds;
 
             // for debugging
@@ -140,46 +146,15 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 entity.gameObject.name = entity.gameObject.name.Replace("+", "");
                 entity.gameObject.name += "/";
             }
-
-            // OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBounds);
         }
 
         private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, bool isInsideBounds)
         {
-            if (sbcComponentData.model.renderers != null)
-            {
-                for (var i = 0; i < sbcComponentData.model.renderers.Count; i++)
-                {
-                    sbcComponentData.model.renderers[i].enabled = isInsideBounds;
-                }
-            }
-
-            if (sbcComponentData.model.physicsColliders != null)
-            {
-                for (var i = 0; i < sbcComponentData.model.physicsColliders.Count; i++)
-                {
-                    sbcComponentData.model.physicsColliders[i].enabled = isInsideBounds;
-                }
-            }
-
-            if (sbcComponentData.model.pointerColliders != null)
-            {
-                for (var i = 0; i < sbcComponentData.model.pointerColliders.Count; i++)
-                {
-                    sbcComponentData.model.pointerColliders[i].enabled = isInsideBounds;
-                }
-            }
+            outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), isInsideBounds);
         }
 
         private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, bool isInsideBounds)
         {
-
-            // foreach (IOutOfSceneBoundariesHandler component in DataStore.i.sceneBoundariesChecker.componentsCheckSceneBoundaries[entity.entityId])
-            // {
-            //     component.UpdateOutOfBoundariesState(isInsideBounds);
-            // }
-
-            //...
         }
     }
 }
