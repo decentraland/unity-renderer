@@ -117,77 +117,18 @@ namespace ECSSystems.PointerInputSystem
             }
 
             // Check if the hovered entity has changed with three options:
-
             // 1) We were hitting a collider A and now we're hitting a collider B
-            if (
-                colliderData != null && // current collider
-                state.lastHoverFeedback.hasValue && // previous collider
-                (state.lastHoverFeedback.entityId != colliderData.entity.entityId ||
-                    state.lastHoverFeedback.sceneNumber != colliderData.scene.sceneData.sceneNumber))
+            if (IsColliderDifferent(state, colliderData)) {
+                HandleColliderChanged(state, colliderData);
+
+            // 2) We were hitting a collider A and now we're not hitting anything
+            } else if (IsColliderMissing(state, colliderData))
             {
-                if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
-                {
-                    AddInputResultEvent(
-                        state,
-                        InputAction.IaAny,
-                        state.lastHoverFeedback.scene,
-                        state.lastHoverFeedback.entityId,
-                        raycastRay,
-                        raycastHit,
-                        PointerEventType.PetHoverLeave
-                    );
-                }
+                HandleMissingCollider(state);
 
-                AddInputResultEvent(
-                    state,
-                    InputAction.IaAny,
-                    colliderData.scene,
-                    colliderData.entity.entityId,
-                    raycastRay,
-                    raycastHit,
-                    PointerEventType.PetHoverEnter
-                );
-
-                state.interactionHoverCanvas.Hide();
-
-                state.lastHoverFeedback.hasValue = true;
-                state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
-                state.lastHoverFeedback.scene = colliderData.scene;
-                state.lastHoverFeedback.entityId = colliderData.entity.entityId;
-                // 2) We were hitting a collider A and now we're not hitting anything
-            } else if (colliderData == null && state.lastHoverFeedback.hasValue) {
-                if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
-                {
-                    AddInputResultEvent(
-                        state,
-                        InputAction.IaAny,
-                        state.lastHoverFeedback.scene,
-                        state.lastHoverFeedback.entityId,
-                        raycastRay,
-                        raycastHit,
-                        PointerEventType.PetHoverLeave
-                    );
-                }
-
-                state.interactionHoverCanvas.Hide();
-                state.lastHoverFeedback.hasValue = false;
-
-                // 3) We were not hitting anything and now we're hitting collider A
-            } else if (colliderData != null && !state.lastHoverFeedback.hasValue) {
-                AddInputResultEvent(
-                    state,
-                    InputAction.IaAny,
-                    colliderData.scene,
-                    colliderData.entity.entityId,
-                    raycastRay,
-                    raycastHit,
-                    PointerEventType.PetHoverEnter
-                );
-
-                state.lastHoverFeedback.hasValue = true;
-                state.lastHoverFeedback.sceneNumber = colliderScene.sceneData.sceneNumber;
-                state.lastHoverFeedback.scene = colliderData.scene;
-                state.lastHoverFeedback.entityId = colliderData.entity.entityId;
+            // 3) We were not hitting anything and now we're hitting collider A
+            } else if (IsColliderAvailable(state, colliderData)) {
+                HandleAvailableCollider(state, colliderData);
             }
 
             if (colliderData != null)
@@ -195,6 +136,99 @@ namespace ECSSystems.PointerInputSystem
                 var hoverEvents = state.pointerEvents.GetPointerEventsForEntity(colliderData.scene, colliderData.entity);
                 state.interactionHoverCanvas.ShowHoverTooltips(hoverEvents, curState, raycastHit.distance, isAnyButtonDown);
             }
+        }
+        private static bool IsColliderDifferent(State state, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        {
+            return colliderData != null && // current collider
+                   state.lastHoverFeedback.hasValue && // previous collider
+                   (state.lastHoverFeedback.entityId != colliderData.entity.entityId ||
+                    state.lastHoverFeedback.sceneNumber != colliderData.scene.sceneData.sceneNumber);
+        }
+
+        private static bool IsColliderMissing(State state, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        {
+            return colliderData == null && state.lastHoverFeedback.hasValue;
+        }
+
+        private static bool IsColliderAvailable(State state, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        {
+            return colliderData != null && !state.lastHoverFeedback.hasValue;
+        }
+
+        private static void HandleColliderChanged(State state, IECSReadOnlyComponentData<InternalColliders> colliderData) {
+            DataStore_ECS7.RaycastEvent.Hit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
+            Ray raycastRay = state.dataStoreEcs7.lastPointerRayHit.ray;
+
+            if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
+            {
+                AddInputResultEvent(
+                    state,
+                    InputAction.IaAny,
+                    state.lastHoverFeedback.scene,
+                    state.lastHoverFeedback.entityId,
+                    raycastRay,
+                    raycastHit,
+                    PointerEventType.PetHoverLeave
+                );
+            }
+
+            AddInputResultEvent(
+                state,
+                InputAction.IaAny,
+                colliderData.scene,
+                colliderData.entity.entityId,
+                raycastRay,
+                raycastHit,
+                PointerEventType.PetHoverEnter
+            );
+
+            state.interactionHoverCanvas.Hide();
+
+            state.lastHoverFeedback.hasValue = true;
+            state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
+            state.lastHoverFeedback.scene = colliderData.scene;
+            state.lastHoverFeedback.entityId = colliderData.entity.entityId;
+        }
+
+        private static void HandleMissingCollider(State state) {
+            DataStore_ECS7.RaycastEvent.Hit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
+            Ray raycastRay = state.dataStoreEcs7.lastPointerRayHit.ray;
+
+            if (state.worldState.ContainsScene(state.lastHoverFeedback.sceneNumber))
+            {
+                AddInputResultEvent(
+                    state,
+                    InputAction.IaAny,
+                    state.lastHoverFeedback.scene,
+                    state.lastHoverFeedback.entityId,
+                    raycastRay,
+                    raycastHit,
+                    PointerEventType.PetHoverLeave
+                );
+            }
+
+            state.interactionHoverCanvas.Hide();
+            state.lastHoverFeedback.hasValue = false;
+        }
+
+        private static void  HandleAvailableCollider(State state, IECSReadOnlyComponentData<InternalColliders> colliderData) {
+            DataStore_ECS7.RaycastEvent.Hit raycastHit = state.dataStoreEcs7.lastPointerRayHit.hit;
+            Ray raycastRay = state.dataStoreEcs7.lastPointerRayHit.ray;
+
+            AddInputResultEvent(
+                state,
+                InputAction.IaAny,
+                colliderData.scene,
+                colliderData.entity.entityId,
+                raycastRay,
+                raycastHit,
+                PointerEventType.PetHoverEnter
+            );
+
+            state.lastHoverFeedback.hasValue = true;
+            state.lastHoverFeedback.sceneNumber = colliderData.scene.sceneData.sceneNumber;
+            state.lastHoverFeedback.scene = colliderData.scene;
+            state.lastHoverFeedback.entityId = colliderData.entity.entityId;
         }
 
         private static void BroadcastInputResultEvent(State state, InputAction buttonId,
