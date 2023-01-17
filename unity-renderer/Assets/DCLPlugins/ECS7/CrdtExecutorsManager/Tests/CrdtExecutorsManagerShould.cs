@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.CRDT;
@@ -7,6 +5,8 @@ using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
 using RPC.Context;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,7 +17,6 @@ namespace Tests
         private Dictionary<int, ICRDTExecutor> crdtExecutors;
         private ECSComponentsManager componentsManager;
         private ISceneController sceneController;
-        private IWorldState worldState;
         private CRDTServiceContext rpcCrdtServiceContext;
         private CrdtExecutorsManager executorsManager;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -29,8 +28,7 @@ namespace Tests
             componentsManager = new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
             rpcCrdtServiceContext = new CRDTServiceContext();
             sceneController = Substitute.For<ISceneController>();
-            worldState = Substitute.For<IWorldState>();
-            executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, worldState, rpcCrdtServiceContext);
+            executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtServiceContext);
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
         }
 
@@ -65,6 +63,16 @@ namespace Tests
         }
 
         [Test]
+        public void CreateCrdtExecutorOnSceneLoad()
+        {
+            const int sceneNumber = 666;
+            IParcelScene scene = testUtils.CreateScene(sceneNumber);
+
+            sceneController.OnNewSceneAdded += Raise.Event<Action<IParcelScene>>(scene);
+            Assert.AreEqual(1, crdtExecutors.Count);
+        }
+
+        [Test]
         public void IgnoreCrdtMessageWhenSceneNotLoaded()
         {
             const int sceneNumber = 666;
@@ -78,13 +86,7 @@ namespace Tests
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
-
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          param[1] = scene;
-                          return true;
-                      });
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage = new CRDTMessage()
             {
@@ -105,13 +107,7 @@ namespace Tests
             const int sceneNumber = 666;
             ECS7TestScene scene = testUtils.CreateScene(sceneNumber);
             scene.crdtExecutor = null;
-
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          param[1] = scene;
-                          return true;
-                      });
+            crdtExecutors[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
             CRDTMessage crdtMessage1 = new CRDTMessage()
             {
@@ -133,14 +129,8 @@ namespace Tests
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage1);
             ICRDTExecutor sceneExecutor = crdtExecutors[sceneNumber];
 
-            // Clear executors dictionary and make worldState.TryGetScene assert
+            // Clear executors dictionary
             crdtExecutors.Clear();
-            worldState.TryGetScene(sceneNumber, out Arg.Any<IParcelScene>())
-                      .Returns(param =>
-                      {
-                          Assert.Fail("this shouldn't be called");
-                          return true;
-                      });
 
             // Send second message for same scene
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage2);

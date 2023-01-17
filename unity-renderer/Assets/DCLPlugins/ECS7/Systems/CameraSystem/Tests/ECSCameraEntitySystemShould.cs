@@ -47,13 +47,15 @@ namespace Tests
         public void TearDown()
         {
             DataStore.Clear();
+            CommonScriptableObjects.UnloadAll();
             Object.Destroy(cameraTransform.gameObject);
         }
 
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock(),
+                DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
             system.Update();
 
@@ -81,7 +83,8 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock(),
+                DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
             system.Update();
 
@@ -114,7 +117,8 @@ namespace Tests
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
 
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock(),
+                DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
             system.Update();
 
@@ -148,7 +152,8 @@ namespace Tests
         {
             Utils.LockCursor();
 
-            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock());
+            ECSCameraEntitySystem system = new ECSCameraEntitySystem(componentsWriter, new PBCameraMode(), new PBPointerLock(),
+                DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
             system.Update();
 

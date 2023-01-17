@@ -236,7 +236,7 @@ namespace DCL
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "view profile"
+                    hoverText = "View Profile"
                 },
                 entity, player
             );

@@ -1,4 +1,5 @@
 using AvatarSystem;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;

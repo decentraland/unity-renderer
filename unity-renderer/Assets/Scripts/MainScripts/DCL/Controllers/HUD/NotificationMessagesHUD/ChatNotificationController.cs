@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;
