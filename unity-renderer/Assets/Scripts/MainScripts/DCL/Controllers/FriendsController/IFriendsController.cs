@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
 namespace DCL.Social.Friends
@@ -44,8 +45,8 @@ namespace DCL.Social.Friends
         UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
-        UniTask<string[]> GetFriendsAsync(int limit, int skip);
-        UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit);
+        UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken ct);
+        UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct);
         [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);

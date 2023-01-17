@@ -3,6 +3,7 @@ using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -144,18 +145,18 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string friendId) =>
             apiBridge.RemoveFriend(friendId);
 
-        public async UniTask<string[]> GetFriendsAsync(int limit, int skip)
+        public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken ct)
         {
-            var payload = await apiBridge.GetFriendsAsync(limit, skip);
+            var payload = await apiBridge.GetFriendsAsync(limit, skip, ct);
             TotalFriendCount = payload.totalFriends;
             AddFriends(payload.friends);
 
             return payload.friends;
         }
 
-        public async UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit)
+        public async UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct)
         {
-            var payload= await apiBridge.GetFriendsAsync(usernameOrId, limit);
+            var payload= await apiBridge.GetFriendsAsync(usernameOrId, limit, ct);
             TotalFriendCount = payload.totalFriends;
             AddFriends(payload.friends);
 

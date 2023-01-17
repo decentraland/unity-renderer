@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using System;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -70,11 +71,11 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip) =>
-            apiBridgeInUse.GetFriendsAsync(limit, skip);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken ct) =>
+            apiBridgeInUse.GetFriendsAsync(limit, skip, ct);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit) =>
-            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct) =>
+            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit, ct);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridgeInUse.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);

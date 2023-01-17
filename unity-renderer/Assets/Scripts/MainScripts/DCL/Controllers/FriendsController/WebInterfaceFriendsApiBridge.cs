@@ -5,6 +5,7 @@ using DCL.Interface;
 using DCl.Social.Friends;
 using JetBrains.Annotations;
 using UnityEngine;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -166,24 +167,24 @@ namespace DCL.Social.Friends
             });
         }
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip)
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken ct)
         {
             var task = new UniTaskCompletionSource<AddFriendsPayload>();
 
             pendingRequests["GetFriendsRequest"] = task;
             WebInterface.GetFriends(limit, skip);
 
-            return task.Task;
+            return task.Task.AttachExternalCancellation(ct);
         }
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit)
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct)
         {
             var task = new UniTaskCompletionSource<AddFriendsPayload>();
 
             pendingRequests["GetFriendsRequest"] = task;
             WebInterface.GetFriends(usernameOrId, limit);
 
-            return task.Task;
+            return task.Task.AttachExternalCancellation(ct);
         }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version

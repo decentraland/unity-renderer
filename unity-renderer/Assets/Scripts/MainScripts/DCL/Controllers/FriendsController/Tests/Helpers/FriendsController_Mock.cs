@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
@@ -55,10 +56,10 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(friendId, FriendshipAction.DELETED);
     }
 
-    public UniTask<string[]> GetFriendsAsync(int limit, int skip) =>
+    public UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken ct) =>
         UniTask.FromResult(new string[0]);
 
-    public UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit) =>
+    public UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct) =>
         UniTask.FromResult(new string[0]);
 
     public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)

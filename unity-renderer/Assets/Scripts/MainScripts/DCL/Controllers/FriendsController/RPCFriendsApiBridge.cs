@@ -116,11 +116,11 @@ namespace DCl.Social.Friends
         public void RemoveFriend(string userId) =>
             fallbackApiBridge.RemoveFriend(userId);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip) =>
-            fallbackApiBridge.GetFriendsAsync(limit, skip);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken ct) =>
+            fallbackApiBridge.GetFriendsAsync(limit, skip, ct);
 
-        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit) =>
-            fallbackApiBridge.GetFriendsAsync(usernameOrId, limit);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken ct) =>
+            fallbackApiBridge.GetFriendsAsync(usernameOrId, limit, ct);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
