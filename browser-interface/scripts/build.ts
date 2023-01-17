@@ -48,7 +48,7 @@ async function main() {
 
 async function copyBuiltFiles() {
   for (let file of glob.sync("**/*", { cwd: process.env.BUILD_PATH!, absolute: true })) {
-    copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + "/", "./")))
+    copyFile(file, path.resolve(DIST_PATH, file.replace(process.env.BUILD_PATH! + "/", "./")))
   }
   
   const basePath = path.resolve(process.env.BUILD_PATH!, "Build")
