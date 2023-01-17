@@ -11,10 +11,10 @@ public class FontAssetBundleGenerator : MonoBehaviour
     private static void BuildFontABForAllPlatforms()
     {
         //Build font ab
-        //BuildFontAB(BuildTarget.WebGL);
-        //BuildFontAB(BuildTarget.StandaloneWindows);
-        //BuildFontAB(BuildTarget.StandaloneWindows64);
-        BuildFontAB(BuildTarget.StandaloneOSX);
+        BuildFontAB(BuildTarget.WebGL);
+        BuildFontAB(BuildTarget.StandaloneWindows);
+        BuildFontAB(BuildTarget.StandaloneWindows64);
+        //BuildFontAB(BuildTarget.StandaloneOSX);
         //BuildFontAB(BuildTarget.StandaloneLinux64);
 
         //Delete them from file so they dont get embedded into the build
