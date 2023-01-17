@@ -187,7 +187,7 @@ namespace DCL
         private void SetupAdditionalFonts()
         {
             Debug.Log($"bbbbb {Application.streamingAssetsPath}");
-            AssetPromise_Font additionalFonts = new AssetPromise_Font("", "https://renderer-artifacts.decentraland.org/branch/feat/download-cjk-fonts/StreamingAssets", $"/fontassets_webgl", false);
+            AssetPromise_Font additionalFonts = new AssetPromise_Font("", Application.streamingAssetsPath, $"/fontassets_webgl", false);
             AssetPromiseKeeper_Font.i.Keep(additionalFonts);
         }
     }
