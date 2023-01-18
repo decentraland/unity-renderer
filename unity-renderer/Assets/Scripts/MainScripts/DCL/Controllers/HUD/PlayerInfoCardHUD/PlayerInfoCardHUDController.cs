@@ -121,8 +121,7 @@ public class PlayerInfoCardHUDController : IHUD
                 friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
                 FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId,
-                                                                    friendOperationsCancellationTokenSource.Token)
-                                                               .Timeout(TimeSpan.FromSeconds(10));
+                    friendOperationsCancellationTokenSource.Token);
 
                 socialAnalytics.SendFriendRequestCancelled(request.From, request.To, PlayerActionSource.Passport.ToString());
             }
@@ -161,8 +160,7 @@ public class PlayerInfoCardHUDController : IHUD
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationTokenSource.Token)
-                                                 .Timeout(TimeSpan.FromSeconds(10));
+                                                      friendOperationsCancellationTokenSource.Token);
 
                 socialAnalytics.SendFriendRequestApproved(request.From, request.To, PlayerActionSource.Passport.ToString(),
                     request.HasBodyMessage);
@@ -205,8 +203,7 @@ public class PlayerInfoCardHUDController : IHUD
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.RejectFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationTokenSource.Token)
-                                                 .Timeout(TimeSpan.FromSeconds(10));
+                                                      friendOperationsCancellationTokenSource.Token);
 
                 socialAnalytics.SendFriendRequestRejected(request.From, request.To,
                     PlayerActionSource.Passport.ToString(), request.HasBodyMessage);

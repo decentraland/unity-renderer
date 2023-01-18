@@ -9,6 +9,8 @@ namespace DCL.Social.Friends
 {
     public class FriendsController : IFriendsController
     {
+        private const int REQUEST_TIMEOUT = 30;
+
         // TODO: remove singleton, rename to FriendsService and add to service locator
         public static FriendsController i { get; private set; }
 
@@ -86,7 +88,9 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken);
+            RequestFriendshipConfirmationPayload payload = await apiBridge.RequestFriendshipAsync(friendUserId, messageBody, cancellationToken)
+                                                                          .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
             FriendRequestPayload friendRequestPayload = payload.friendRequest;
 
             FriendRequest friendRequest = new (friendRequestPayload.friendRequestId,
@@ -113,7 +117,9 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken);
+            AcceptFriendshipPayload payload = await apiBridge.AcceptFriendshipAsync(friendRequestId, cancellationToken)
+                                                             .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
             FriendRequestPayload requestPayload = payload.FriendRequest;
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
@@ -131,7 +137,9 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken);
+            RejectFriendshipPayload payload = await apiBridge.RejectFriendshipAsync(friendRequestId, cancellationToken)
+                                                             .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
             FriendRequestPayload requestPayload = payload.FriendRequestPayload;
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
@@ -162,7 +170,8 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
+            var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken)
+                                         .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
             TotalReceivedFriendRequestCount = payload.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = payload.totalSentFriendRequests;
@@ -243,7 +252,9 @@ namespace DCL.Social.Friends
 
             if (request != null)
             {
-                await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
+                await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken)
+                               .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
                 friendRequests.Remove(request.FriendRequestId);
 
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -268,7 +279,9 @@ namespace DCL.Social.Friends
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken);
+            CancelFriendshipConfirmationPayload payload = await apiBridge.CancelRequestAsync(friendRequestId, cancellationToken)
+                                                                         .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
             var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);

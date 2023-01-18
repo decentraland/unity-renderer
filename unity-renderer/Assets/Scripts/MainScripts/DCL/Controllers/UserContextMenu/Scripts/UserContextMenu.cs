@@ -233,8 +233,7 @@ public class UserContextMenu : MonoBehaviour
         {
             try
             {
-                FriendRequest request = await FriendsController.i.CancelRequestByUserIdAsync(userId, cancellationToken)
-                                                               .Timeout(TimeSpan.FromSeconds(10));
+                FriendRequest request = await FriendsController.i.CancelRequestByUserIdAsync(userId, cancellationToken);
 
                 GetSocialAnalytics()
                    .SendFriendRequestCancelled(request.From, request.To,

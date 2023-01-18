@@ -160,8 +160,7 @@ namespace DCL.Social.Passports
             {
                 try
                 {
-                    await friendsController.CancelRequestByUserIdAsync(currentPlayerId, cancellationToken)
-                                           .Timeout(TimeSpan.FromSeconds(10));
+                    await friendsController.CancelRequestByUserIdAsync(currentPlayerId, cancellationToken);
                     dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
@@ -199,7 +198,7 @@ namespace DCL.Social.Passports
                 try
                 {
                     FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken).Timeout(TimeSpan.FromSeconds(10));
+                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
                     dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
                     socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString(),

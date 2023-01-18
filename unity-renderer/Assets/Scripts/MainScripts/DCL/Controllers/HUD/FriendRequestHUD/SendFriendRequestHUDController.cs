@@ -9,7 +9,6 @@ namespace DCL.Social.Friends
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
         private const int AUTOMATIC_CLOSE_DELAY = 2000;
-        private const int SEND_TIMEOUT = 10;
 
         private readonly ISendFriendRequestHUDView view;
         private readonly DataStore dataStore;
@@ -96,8 +95,7 @@ namespace DCL.Social.Friends
             {
                 sendInProgress = true;
 
-                await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken)
-                                       .Timeout(TimeSpan.FromSeconds(SEND_TIMEOUT));
+                await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
 
                 socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
                     recipientId, messageBody.Length,
