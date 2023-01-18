@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Providers;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.Services;
 using DCLServices.Lambdas;
@@ -55,6 +56,9 @@ namespace DCL
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
 
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
+
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
@@ -69,8 +73,7 @@ namespace DCL
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
-
+            result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 

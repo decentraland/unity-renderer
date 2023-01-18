@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
 using DCL.Providers;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
@@ -64,6 +65,8 @@ namespace DCL
                     return mockedFactory;
                 }
             );
+
+            result.Register<IProfanityFilter>(() => Substitute.For<IProfanityFilter>());
 
             var editorBundleProvider = Substitute.For<IAssetBundleProvider>();
 
