@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -41,21 +42,18 @@ namespace DCL.Social.Friends
         [Test]
         public void AddFriends()
         {
-            var updatedFriends = new Dictionary<string, FriendshipAction>();
-            var totalFriends = 0;
-            controller.OnUpdateFriendship += (s, action) => updatedFriends[s] = action;
-            controller.OnTotalFriendsUpdated += i => totalFriends = i;
-
-            apiBridge.OnFriendsAdded += Raise.Event<Action<AddFriendsPayload>>(
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
                 new AddFriendsPayload
                 {
                     totalFriends = 2,
                     friends = new[] {"woah", "bleh"}
-                });
+                }));
+            controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
-            Assert.AreEqual(2, totalFriends);
-            Assert.AreEqual(FriendshipAction.APPROVED, updatedFriends["woah"]);
-            Assert.AreEqual(FriendshipAction.APPROVED, updatedFriends["bleh"]);
+            Assert.AreEqual(2, controller.TotalFriendCount);
+            var updatedFriends = controller.GetAllocatedFriends();
+            Assert.AreEqual(FriendshipStatus.FRIEND, updatedFriends["woah"].friendshipStatus);
+            Assert.AreEqual(FriendshipStatus.FRIEND, updatedFriends["bleh"].friendshipStatus);
         }
 
         [Test]
@@ -187,12 +185,14 @@ namespace DCL.Social.Friends
         {
             var updatedFriends = new Dictionary<string, UserStatus>();
             controller.OnUpdateUserStatus += (s, status) => updatedFriends[s] = status;
-            apiBridge.OnFriendsAdded += Raise.Event<Action<AddFriendsPayload>>(
+
+            _ = apiBridge.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(
                 new AddFriendsPayload
                 {
                     totalFriends = 7,
                     friends = new[] {"usr1"}
-                });
+                }));
+            controller.GetFriendsAsync(0, 0, new CancellationToken()).Forget();
 
             apiBridge.OnUserPresenceUpdated += Raise.Event<Action<UserStatus>>(new UserStatus
             {
@@ -265,9 +265,6 @@ namespace DCL.Social.Friends
         [Test]
         public void UpdateTotalFriendCount()
         {
-            var totalFriendCount = 0;
-            controller.OnTotalFriendsUpdated += i => totalFriendCount = i;
-
             apiBridge.OnTotalFriendCountUpdated += Raise.Event<Action<UpdateTotalFriendsPayload>>(
                 new UpdateTotalFriendsPayload
                 {
@@ -275,7 +272,6 @@ namespace DCL.Social.Friends
                 });
 
             Assert.AreEqual(8, controller.TotalFriendCount);
-            Assert.AreEqual(8, totalFriendCount);
         }
 
         [Test]
