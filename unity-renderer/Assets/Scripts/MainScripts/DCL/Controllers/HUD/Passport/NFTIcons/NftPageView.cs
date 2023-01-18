@@ -1,4 +1,5 @@
 using System;
+using System.Management.Instrumentation;
 using UnityEngine;
 
 public class NftPageView : BaseComponentView
@@ -8,13 +9,11 @@ public class NftPageView : BaseComponentView
     public event Action OnFocusAnyNtf;
 
     [SerializeField] private NFTIconComponentView[] nftElements;
-    private (string, string)[] nftIds;
 
     public bool IsNftInfoActived { get; set; } = false;
 
-    public void SetPageElementsContent(NFTIconComponentModel[] nftModels, (string, string)[] ids)
+    public void SetPageElementsContent(NFTIconComponentModel[] nftModels)
     {
-        nftIds = ids;
         for (int i = 0; i < nftModels.Length; i++)
         {
             if (nftModels[i] != null)
@@ -50,14 +49,14 @@ public class NftPageView : BaseComponentView
         nftElement.onMarketplaceButtonClick.RemoveAllListeners();
         nftElement.onDetailInfoButtonClick.RemoveAllListeners();
         nftElement.onFocused -= FocusNftItem;
-        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(idIndex));
+        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(nftElement.model.nftId));
         nftElement.onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
         nftElement.onFocused += FocusNftItem;
     }
 
-    private void ClickOnBuyWearable(int index)
+    private void ClickOnBuyWearable((string, string) ids)
     {
-        OnClickBuyNft?.Invoke(nftIds[index].Item1, nftIds[index].Item2);
+        OnClickBuyNft?.Invoke(ids.Item1, ids.Item2);
     }
 
     private void ClickOnDetailInfo(int index, bool showInLeftSide)
