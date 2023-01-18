@@ -62,7 +62,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.visibilityComponent,
             context.internalEcsComponents.renderersComponent,
             context.internalEcsComponents.onPointerColliderComponent,
-            context.internalEcsComponents.physicColliderComponent);
+            context.internalEcsComponents.physicColliderComponent,
+            DataStore.i.debugConfig.isDebugMode.Get());
 
         ECSTransformParentingSystem.internalSceneBoundsCheckComponent = context.internalEcsComponents.sceneBoundsCheckComponent;
 

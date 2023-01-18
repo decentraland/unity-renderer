@@ -13,22 +13,22 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private IInternalECSComponent<InternalRenderers> renderersComponent;
         private IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private IInternalECSComponent<InternalColliders> physicsCollidersComponent;
-
-        // TODO: Toggle which feedback style is instantiated based on being in debug/preview mode or not
-        // private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_EnabledToggle();
-        private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback = new ECSOutOfSceneBoundsFeedback_RedWireframe();
+        private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
             IInternalECSComponent<InternalVisibility> visibilityComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            IInternalECSComponent<InternalColliders> physicsColliderComponent)
+            IInternalECSComponent<InternalColliders> physicsColliderComponent,
+            bool previewMode = false)
         {
             this.sceneBoundsCheckComponent = sbcComponent;
             this.visibilityComponent = visibilityComponent;
             this.renderersComponent = renderersComponent;
             this.pointerCollidersComponent = pointerColliderComponent;
             this.physicsCollidersComponent = physicsColliderComponent;
+
+            outOfBoundsVisualFeedback = previewMode ? new ECSOutOfSceneBoundsFeedback_RedWireframe() : new ECSOutOfSceneBoundsFeedback_EnabledToggle();
         }
 
         public void Update()
