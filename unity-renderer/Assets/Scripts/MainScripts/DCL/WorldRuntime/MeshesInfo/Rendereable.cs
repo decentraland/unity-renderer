@@ -31,14 +31,7 @@ namespace DCL
         // This can be safely removed once we get rid of the old importer
         public bool isGLTFast = false;
 
-        public static EventHandler<Rendereable> OnRendereableAdded;
 
-
-        public Rendereable()
-        {
-            OnRendereableAdded?.Invoke(this, this);
-        }
-        
         public bool Equals(Rendereable other)
         {
             return container == other.container;

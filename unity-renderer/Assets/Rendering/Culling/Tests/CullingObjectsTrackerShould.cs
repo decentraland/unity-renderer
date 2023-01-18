@@ -11,14 +11,28 @@ namespace CullingControllerTests
 {
     public class CullingObjectsTrackerShould
     {
+        private DataStore_WorldObjects data;
+
+        
+        [SetUp]
+        public void SetUp()
+        {
+            data = new DataStore_WorldObjects();
+            DataStore.i.Set(data);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            data = null;
+            DataStore.Clear();
+        }
+
         [UnityTest]
         public IEnumerator FilterIgnoredLayerMasksCorrectly()
         {
             // Arrange
-            GameObject container = new GameObject();
-            Rendereable rendereable = new Rendereable();
-            rendereable.container = container;
-            
+            DataStore.i.sceneWorldObjects.sceneData.Add(0, new DataStore_WorldObjects.SceneData());
             int layer = 5;
             int layerMask = 1 << layer;
             var tracker = new CullingObjectsTracker();
@@ -26,28 +40,24 @@ namespace CullingControllerTests
 
             var testGameObjectA = new GameObject();
             var originalRendererA = testGameObjectA.AddComponent<MeshRenderer>();
-            rendereable.renderers.Add(originalRendererA);
+            DataStore.i.sceneWorldObjects.sceneData[0].renderers.Add(originalRendererA);
             testGameObjectA.layer = layer;
 
             var testGameObjectB = new GameObject();
             var originalRendererB = testGameObjectB.AddComponent<MeshRenderer>();
-            rendereable.renderers.Add(originalRendererB);
+            DataStore.i.sceneWorldObjects.sceneData[0].renderers.Add(originalRendererB);
             testGameObjectB.layer = 0;
 
             var testGameObjectC = new GameObject();
             var originalRendererC = testGameObjectC.AddComponent<SkinnedMeshRenderer>();
-            rendereable.renderers.Add(originalRendererC);
             testGameObjectC.layer = layer;
 
             var testGameObjectD = new GameObject();
             var originalRendererD = testGameObjectD.AddComponent<SkinnedMeshRenderer>();
-            rendereable.renderers.Add(originalRendererD);
             testGameObjectD.layer = 0;
 
             IReadOnlyList<Renderer> renderers = null;
             Renderer obtainedRendererA = null, obtainedRendererB = null, obtainedRendererC = null, obtainedRendererD = null;
-
-            tracker.OnRendereableAdded(null, rendereable);
 
             // Act
             yield return tracker.PopulateRenderersList();
@@ -74,7 +84,6 @@ namespace CullingControllerTests
             Object.Destroy(testGameObjectB);
             Object.Destroy(testGameObjectC);
             Object.Destroy(testGameObjectD);
-            Object.Destroy(container);
 
             yield return null;
         }

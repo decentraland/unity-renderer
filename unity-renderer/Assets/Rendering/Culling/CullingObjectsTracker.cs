@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
+using static DCL.DataStore_WorldObjects;
 
 namespace DCL.Rendering
 {
     /// <summary> This class is used for tracking all the renderers, skinnedMeshRenderers and Animations of the world. </summary>
     public class CullingObjectsTracker : ICullingObjectsTracker
     {
-        private readonly List<Rendereable> rendereables = new List<Rendereable>();
         private List<Renderer> usingRenderers = new List<Renderer>();
         private SkinnedMeshRenderer[] detectedSkinnedRenderers;
         private List<SkinnedMeshRenderer> usingSkinnedRenderers = new List<SkinnedMeshRenderer>();
@@ -21,11 +21,7 @@ namespace DCL.Rendering
         public CullingObjectsTracker()
         {
             PoolManager.i.OnGet += MarkDirty;
-            Rendereable.OnRendereableAdded += OnRendereableAdded;
         }
-
-        /// <summary> Adds a rendereable to be tracked and calculating in the culling process. </summary>
-        public void OnRendereableAdded(object sender, Rendereable rendereable) => rendereables.Add(rendereable);
 
         /// <summary> Sets a layer mask to be ignored, only one layer mask can be ingored at a given time. </summary>
         public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
@@ -69,7 +65,6 @@ namespace DCL.Rendering
             detectedSkinnedRenderers = null;
             usingAnimations = null;
             PoolManager.i.OnGet -= MarkDirty;
-            Rendereable.OnRendereableAdded -= OnRendereableAdded;
         }
 
         /// <summary> Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call. </summary>
@@ -90,20 +85,15 @@ namespace DCL.Rendering
 
         private void ForceCalculateRenderers()
         {
-            ForceCleanRendereables();
-
             usingRenderers = new List<Renderer>();
-            foreach (Rendereable rendereable in rendereables)
+            foreach (KeyValuePair<int, SceneData> entry in DataStore.i.sceneWorldObjects.sceneData)
             {
-                if (!rendereable.container.activeInHierarchy)
-                    continue;
-
-                foreach (Renderer renderer in rendereable.renderers)
+                foreach (Renderer renderer in entry.Value.renderers.Get())
                 {
                     if (renderer == null || !renderer.gameObject.activeInHierarchy)
                         continue;
 
-                    if (((1 << renderer.gameObject.layer) & ignoredLayersMask) == 0)
+                    if (ShouldNotBeIgnored(renderer))
                         usingRenderers.Add(renderer);
                 }
             }
@@ -114,20 +104,8 @@ namespace DCL.Rendering
             usingSkinnedRenderers = new List<SkinnedMeshRenderer>(detectedSkinnedRenderers);
             foreach (SkinnedMeshRenderer skinnedRenderer in detectedSkinnedRenderers)
             {
-                if (skinnedRenderer == null)
-                    continue;
-
-                if (((1 << skinnedRenderer.gameObject.layer) & ignoredLayersMask) == 0)
+                if (skinnedRenderer != null && ShouldNotBeIgnored(skinnedRenderer))
                     usingSkinnedRenderers.Add(skinnedRenderer);
-            }
-        }
-
-        private void ForceCleanRendereables()
-        {
-            for (int i = rendereables.Count - 1; i >= 0; i--)
-            {
-                if (rendereables[i] == null || rendereables[i].container == null)
-                    rendereables.RemoveAt(i);
             }
         }
 
@@ -138,31 +116,30 @@ namespace DCL.Rendering
         {
             float currentStartTime = Time.realtimeSinceStartup;
             usingRenderers.Clear();
-            for (int i = rendereables.Count - 1; i >= 0; i--)
+            foreach (SceneData sceneData in DataStore.i.sceneWorldObjects.sceneData.GetValues())
             {
-                Rendereable rendereable = rendereables[i];
-                if (rendereable == null || !rendereable.container)
-                {
-                    rendereables.Remove(rendereable);
-                    continue;
-                }
-
-                if (!rendereable.container.activeInHierarchy)
+                if (sceneData == null)
                     continue;
 
-                foreach (Renderer renderer in rendereable.renderers)
+                using (PooledObject<List<Renderer>> pooledObject = ListPool<Renderer>.Get(out List<Renderer> tempList))
                 {
-                    if (renderer == null || !renderer.gameObject.activeInHierarchy)
-                        continue;
+                    foreach (Renderer renderer in sceneData.renderers.Get())
+                        tempList.Add(renderer);
 
-                    if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
+                    foreach (Renderer renderer in tempList)
                     {
-                        yield return null;
-                        currentStartTime = Time.realtimeSinceStartup;
-                    }
+                        if (renderer == null || !renderer.gameObject.activeInHierarchy)
+                            continue;
 
-                    if (ShouldNotBeIgnored(renderer))
-                        usingRenderers.Add(renderer);
+                        if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
+                        {
+                            yield return null;
+                            currentStartTime = Time.realtimeSinceStartup;
+                        }
+
+                        if (ShouldNotBeIgnored(renderer))
+                            usingRenderers.Add(renderer);
+                    }
                 }
             }
         }

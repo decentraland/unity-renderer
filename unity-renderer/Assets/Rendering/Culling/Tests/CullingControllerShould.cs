@@ -4,7 +4,6 @@ using DCL.Rendering;
 using NSubstitute;
 using NSubstitute.Exceptions;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;

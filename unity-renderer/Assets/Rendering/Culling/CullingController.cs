@@ -140,22 +140,18 @@ namespace DCL.Rendering
         /// <returns>IEnumerator to be yielded.</returns>
         internal IEnumerator ProcessProfile(CullingControllerProfile profile)
         {
-            IEnumerable<Renderer> renderers = null;
+            // If profile matches the skinned renderer profile in settings the skinned renderers are going to be used.
+            IReadOnlyList<Renderer> renderers = profile ==
+                settings.rendererProfile ?
+                objectsTracker.GetRenderers() :
+                objectsTracker.GetSkinnedRenderers();
 
-            // If profile matches the skinned renderer profile in settings,
-            // the skinned renderers are going to be used.
-            if (profile == settings.rendererProfile)
-                renderers = objectsTracker.GetRenderers();
-            else
-                renderers = objectsTracker.GetSkinnedRenderers();
-
-            if (settings.enableShadowCulling)
-                yield return ProcessProfileWithEnabledCulling(profile, renderers);
-            else
-                yield return ProcessProfileWithDisabledCulling(profile, renderers);
+            yield return settings.enableShadowCulling
+                ? ProcessProfileWithEnabledCulling(profile, renderers)
+                : (object)ProcessProfileWithDisabledCulling(profile, renderers);
         }
 
-        internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IEnumerable<Renderer> renderers)
+        internal IEnumerator ProcessProfileWithEnabledCulling(CullingControllerProfile profile, IReadOnlyList<Renderer> renderers)
         {
             Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
             float currentStartTime = Time.realtimeSinceStartup;
@@ -329,11 +325,8 @@ namespace DCL.Rendering
                 }
 
                 int profilesCount = profiles.Count;
-
-                for (int pIndex = 0; pIndex < profilesCount; pIndex++)
-                {
-                    yield return ProcessProfile(profiles[pIndex]);
-                }
+                for (int profileIndex = 0; profileIndex < profilesCount; profileIndex++)
+                    yield return ProcessProfile(profiles[profileIndex]);
 
                 RaiseDataReport();
                 timeBudgetCount = 0;
