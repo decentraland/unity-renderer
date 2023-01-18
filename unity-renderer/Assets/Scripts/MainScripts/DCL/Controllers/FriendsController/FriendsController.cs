@@ -3,6 +3,7 @@ using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -14,7 +15,6 @@ namespace DCL.Social.Friends
         private readonly Dictionary<string, FriendRequest> friendRequests = new ();
         private readonly Dictionary<string, UserStatus> friends = new ();
 
-        public event Action<int> OnTotalFriendsUpdated;
         public int AllocatedFriendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
         public bool IsInitialized { get; private set; }
 
@@ -45,7 +45,6 @@ namespace DCL.Social.Friends
             this.apiBridge = apiBridge;
             apiBridge.OnInitialized += Initialize;
             apiBridge.OnFriendNotFound += FriendNotFound;
-            apiBridge.OnFriendsAdded += AddFriends;
             apiBridge.OnFriendWithDirectMessagesAdded += AddFriendsWithDirectMessages;
             apiBridge.OnUserPresenceUpdated += UpdateUserPresence;
             apiBridge.OnFriendshipStatusUpdated += HandleUpdateFriendshipStatus;
@@ -146,11 +145,27 @@ namespace DCL.Social.Friends
         public void RemoveFriend(string friendId) =>
             apiBridge.RemoveFriend(friendId);
 
-        public void GetFriends(int limit, int skip) =>
-            apiBridge.GetFriends(limit, skip);
+        public async UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default)
+        {
+            var payload = await apiBridge.GetFriendsAsync(limit, skip, cancellationToken);
+            await UniTask.SwitchToMainThread();
 
-        public void GetFriends(string usernameOrId, int limit) =>
-            apiBridge.GetFriends(usernameOrId, limit);
+            TotalFriendCount = payload.totalFriends;
+            AddFriends(payload.friends);
+
+            return payload.friends;
+        }
+
+        public async UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default)
+        {
+            var payload = await apiBridge.GetFriendsAsync(usernameOrId, limit, cancellationToken);
+            await UniTask.SwitchToMainThread();
+
+            TotalFriendCount = payload.totalFriends;
+            AddFriends(payload.friends);
+
+            return payload.friends;
+        }
 
         // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
@@ -281,17 +296,17 @@ namespace DCL.Social.Friends
         private void FriendNotFound(string name) =>
             OnFriendNotFound?.Invoke(name);
 
-        private void AddFriends(AddFriendsPayload msg)
-        {
-            TotalFriendCount = msg.totalFriends;
-            OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
-            AddFriends(msg.friends);
-        }
-
         private void AddFriendsWithDirectMessages(AddFriendsWithDirectMessagesPayload friendsWithDMs)
         {
             TotalFriendsWithDirectMessagesCount = friendsWithDMs.totalFriendsWithDirectMessages;
-            AddFriends(friendsWithDMs.currentFriendsWithDirectMessages.Select(messages => messages.userId));
+
+            var friendIds = friendsWithDMs.currentFriendsWithDirectMessages.Select(messages => messages.userId);
+            foreach (var friendId in friendIds)
+            {
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                { action = FriendshipAction.APPROVED, userId = friendId });
+            }
+
             OnAddFriendsWithDirectMessages?.Invoke(friendsWithDMs.currentFriendsWithDirectMessages.ToList());
         }
 
@@ -314,7 +329,6 @@ namespace DCL.Social.Friends
         private void UpdateTotalFriends(UpdateTotalFriendsPayload msg)
         {
             TotalFriendCount = msg.totalFriends;
-            OnTotalFriendsUpdated?.Invoke(TotalFriendCount);
         }
 
         private void UpdateUserStatus(UserStatus newUserStatus)
@@ -406,8 +420,10 @@ namespace DCL.Social.Friends
         {
             foreach (var friendId in friendIds)
             {
-                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                    { action = FriendshipAction.APPROVED, userId = friendId });
+                if (!friends.ContainsKey(friendId))
+                    friends.Add(friendId, new UserStatus { userId = friendId });
+
+                friends[friendId].friendshipStatus = ToFriendshipStatus(FriendshipAction.APPROVED);
             }
         }
 

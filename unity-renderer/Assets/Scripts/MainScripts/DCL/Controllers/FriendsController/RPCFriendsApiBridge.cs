@@ -43,12 +43,6 @@ namespace DCl.Social.Friends
             remove => fallbackApiBridge.OnFriendNotFound -= value;
         }
 
-        public event Action<AddFriendsPayload> OnFriendsAdded
-        {
-            add => fallbackApiBridge.OnFriendsAdded += value;
-            remove => fallbackApiBridge.OnFriendsAdded -= value;
-        }
-
         public event Action<AddFriendRequestsPayload> OnFriendRequestsAdded
         {
             add => fallbackApiBridge.OnFriendRequestsAdded += value;
@@ -122,11 +116,11 @@ namespace DCl.Social.Friends
         public void RemoveFriend(string userId) =>
             fallbackApiBridge.RemoveFriend(userId);
 
-        public void GetFriends(int limit, int skip) =>
-            fallbackApiBridge.GetFriends(limit, skip);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
+            fallbackApiBridge.GetFriendsAsync(limit, skip, cancellationToken);
 
-        public void GetFriends(string usernameOrId, int limit) =>
-            fallbackApiBridge.GetFriends(usernameOrId, limit);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
+            fallbackApiBridge.GetFriendsAsync(usernameOrId, limit, cancellationToken);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
