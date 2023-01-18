@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD

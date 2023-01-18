@@ -1,5 +1,6 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL.ProfanityFiltering;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
@@ -66,6 +67,7 @@ namespace DCL.Social.Passports
                 string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
+                view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
                 if (!userProfile.isGuest)
                 {

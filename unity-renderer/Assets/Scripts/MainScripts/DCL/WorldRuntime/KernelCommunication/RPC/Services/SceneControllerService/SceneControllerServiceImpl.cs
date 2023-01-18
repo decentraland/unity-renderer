@@ -36,7 +36,6 @@ namespace RPC.Services
         private readonly BinaryWriter getStateBinaryWriter;
 
         private readonly CRDTSceneMessage reusableCrdtMessageResult = new CRDTSceneMessage();
-        private readonly CRDTSceneCurrentState reusableCurrentStateResult = new CRDTSceneCurrentState();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
@@ -218,15 +217,18 @@ namespace RPC.Services
                 sceneState = executor.crdtProtocol;
             }
 
-            reusableCurrentStateResult.HasOwnEntities = false;
+            CRDTSceneCurrentState result = new CRDTSceneCurrentState
+            {
+                HasOwnEntities = false
+            };
 
             try
             {
-                sendCrdtMemoryStream.SetLength(0);
+                getStateMemoryStream.SetLength(0);
 
                 // serialize outgoing messages
                 crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                KernelBinaryMessageSerializer.Serialize(sendCrdtBinaryWriter, outgoingMessages);
+                KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, outgoingMessages);
                 outgoingMessages.ClearOnUpdated();
 
                 // serialize scene state
@@ -238,7 +240,7 @@ namespace RPC.Services
                     {
                         if (state[i].data != null)
                         {
-                            reusableCurrentStateResult.HasOwnEntities = true;
+                            result.HasOwnEntities = true;
                             break;
                         }
                     }
@@ -246,15 +248,14 @@ namespace RPC.Services
                     KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, sceneState);
                 }
 
-                reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
+                result.Payload = ByteString.CopyFrom(getStateMemoryStream.ToArray());
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
-                reusableCrdtMessageResult.Payload = ByteString.Empty;
             }
 
-            return reusableCurrentStateResult;
+            return result;
         }
     }
 }

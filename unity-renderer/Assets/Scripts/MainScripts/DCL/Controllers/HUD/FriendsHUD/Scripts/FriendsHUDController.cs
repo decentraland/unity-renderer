@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -13,6 +14,7 @@ namespace DCL.Social.Friends
         private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
         private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
         private const int FRIEND_REQUEST_TIMEOUT = 10;
+        private const int GET_FRIENDS_TIMEOUT = 10;
 
         private readonly Dictionary<string, FriendEntryModel> friends = new ();
         private readonly Dictionary<string, FriendEntryModel> onlineFriends = new ();
@@ -37,6 +39,8 @@ namespace DCL.Social.Friends
         public event Action OnOpened;
         public event Action OnClosed;
         public event Action OnViewClosed;
+
+        private CancellationTokenSource friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
         public FriendsHUDController(DataStore dataStore,
             IFriendsController friendsController,
@@ -114,6 +118,10 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
+
             if (friendsController != null)
             {
                 friendsController.OnInitialized -= HandleFriendsInitialized;
@@ -169,7 +177,7 @@ namespace DCL.Social.Friends
                     View.Set(friend.Key, friend.Value);
 
                 if (View.IsFriendListActive)
-                    DisplayMoreFriends();
+                    DisplayMoreFriendsAsync().Forget();
                 else if (View.IsRequestListActive)
                     DisplayMoreFriendRequestsAsync().Forget();
 
@@ -198,7 +206,7 @@ namespace DCL.Social.Friends
             if (View.IsActive())
             {
                 if (View.IsFriendListActive && lastSkipForFriends <= 0)
-                    DisplayMoreFriends();
+                    DisplayMoreFriendsAsync().Forget();
                 else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                     DisplayMoreFriendRequestsAsync().Forget();
             }
@@ -605,14 +613,30 @@ namespace DCL.Social.Friends
         private void DisplayFriendsIfAnyIsLoaded()
         {
             if (lastSkipForFriends > 0) return;
-            DisplayMoreFriends();
+            DisplayMoreFriendsAsync().Forget();
         }
 
         private void DisplayMoreFriends()
         {
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
+
+            DisplayMoreFriendsAsync().Forget();
+        }
+
+        private async UniTask DisplayMoreFriendsAsync()
+        {
             if (!friendsController.IsInitialized) return;
 
-            friendsController.GetFriends(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends);
+            friendOperationsCancellationTokenSource = new CancellationTokenSource();
+
+            var friendsToAdd = await friendsController
+                .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, friendOperationsCancellationTokenSource.Token)
+                .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
+
+            for (int i = 0; i < friendsToAdd.Length; i++)
+                HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             // We are not handling properly the case when the friends are not fetched correctly from server.
             // 'lastSkipForFriends' will have an invalid value.
@@ -721,6 +745,15 @@ namespace DCL.Social.Friends
 
         private void SearchFriends(string search)
         {
+            friendOperationsCancellationTokenSource?.Cancel();
+            friendOperationsCancellationTokenSource?.Dispose();
+            friendOperationsCancellationTokenSource = null;
+
+            SearchFriendsAsync(search).Forget();
+        }
+
+        private async UniTask SearchFriendsAsync(string search)
+        {
             if (string.IsNullOrEmpty(search))
             {
                 View.DisableSearchMode();
@@ -729,7 +762,14 @@ namespace DCL.Social.Friends
                 return;
             }
 
-            friendsController.GetFriends(search, MAX_SEARCHED_FRIENDS);
+            friendOperationsCancellationTokenSource = new CancellationTokenSource();
+
+            var friendsToAdd = await friendsController
+                .GetFriendsAsync(search, MAX_SEARCHED_FRIENDS, friendOperationsCancellationTokenSource.Token)
+                .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
+
+            for (int i = 0; i < friendsToAdd.Length; i++)
+                HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             View.EnableSearchMode();
             View.HideMoreFriendsToLoadHint();
