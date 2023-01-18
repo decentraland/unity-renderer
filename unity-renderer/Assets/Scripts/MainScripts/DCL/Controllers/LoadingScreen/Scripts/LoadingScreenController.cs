@@ -68,6 +68,8 @@ namespace DCL.LoadingScreen
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
+                Debug.Log("Scene is Loaded: " + obj);
+
                 //We have to check if the player is loaded
                 if(commonDataStore.isPlayerRendererLoaded.Get())
                     FadeOutView();
@@ -160,6 +162,7 @@ namespace DCL.LoadingScreen
 
         private void FadeOutView()
         {
+            Debug.Log("Loading Screen FadeOut");
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
         }
