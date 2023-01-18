@@ -167,7 +167,7 @@ namespace DCL.Controllers
                 }
             }
 
-            blockersToAdd = LookForLimits(allLoadedParcelCoords, blockers, 0);
+            blockersToAdd = LookForLimits(dontAddABlockerHere: allLoadedParcelCoords, blockers, 0);
 
             // Remove extra blockers
             foreach (var coords in blockersToRemove)
@@ -198,7 +198,8 @@ namespace DCL.Controllers
 
                         if (!dontAddABlockerHere.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
                         {
-                            blockersCandidate.Add(checkedPosition);
+                            if (IsSceneKnown (checkedPosition))
+                                blockersCandidate.Add(checkedPosition);
                         }
                     }
                 }
@@ -216,6 +217,11 @@ namespace DCL.Controllers
         private void OnWorldsBlockerEnabledChange(bool newState, bool _)
         {
             SetEnabled(newState);
+        }
+
+        private bool IsSceneKnown(Vector2Int parcel)
+        {
+            return sceneHandler.GetScene(parcel) != null;
         }
     }
 }
