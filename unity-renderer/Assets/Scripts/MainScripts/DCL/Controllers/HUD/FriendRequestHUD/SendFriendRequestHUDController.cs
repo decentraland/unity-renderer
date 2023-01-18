@@ -48,7 +48,7 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             friendOperationsCancellationToken.Cancel();
-            friendOperationsCancellationToken = null;
+            friendOperationsCancellationToken.Dispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;

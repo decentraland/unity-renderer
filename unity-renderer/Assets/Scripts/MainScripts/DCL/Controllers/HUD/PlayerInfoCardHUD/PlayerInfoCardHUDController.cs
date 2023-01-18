@@ -340,7 +340,7 @@ public class PlayerInfoCardHUDController : IHUD
     public void Dispose()
     {
         friendOperationsCancellationTokenSource.Cancel();
-        friendOperationsCancellationTokenSource = null;
+        friendOperationsCancellationTokenSource.Dispose();
 
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
