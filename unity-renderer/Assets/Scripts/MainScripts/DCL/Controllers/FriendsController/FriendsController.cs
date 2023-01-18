@@ -9,6 +9,7 @@ namespace DCL.Social.Friends
 {
     public class FriendsController : IFriendsController
     {
+        // TODO: remove singleton, rename to FriendsService and add to service locator
         public static FriendsController i { get; private set; }
 
         private readonly IFriendsApiBridge apiBridge;
@@ -96,8 +97,6 @@ namespace DCL.Social.Friends
 
             friendRequests[friendRequest.FriendRequestId] = friendRequest;
 
-            await UniTask.SwitchToMainThread(cancellationToken);
-
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REQUESTED_TO, userId = friendRequest.To });
 
@@ -119,8 +118,6 @@ namespace DCL.Social.Friends
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
 
-            await UniTask.SwitchToMainThread(cancellationToken);
-
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.APPROVED, userId = request.From });
 
@@ -138,8 +135,6 @@ namespace DCL.Social.Friends
             FriendRequestPayload requestPayload = payload.FriendRequestPayload;
             var request = ToFriendRequest(requestPayload);
             friendRequests.Remove(request.FriendRequestId);
-
-            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.REJECTED, userId = request.From });
@@ -168,7 +163,6 @@ namespace DCL.Social.Friends
             cancellationToken.ThrowIfCancellationRequested();
 
             var payload = await apiBridge.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
-            await UniTask.SwitchToMainThread(cancellationToken);
 
             TotalReceivedFriendRequestCount = payload.totalReceivedFriendRequests;
             TotalSentFriendRequestCount = payload.totalSentFriendRequests;
@@ -232,8 +226,6 @@ namespace DCL.Social.Friends
         {
             FriendshipStatus status = await apiBridge.GetFriendshipStatus(userId, cancellationToken);
 
-            await UniTask.SwitchToMainThread(cancellationToken);
-
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
             {
                 action = ToFriendshipAction(status),
@@ -254,8 +246,6 @@ namespace DCL.Social.Friends
                 await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
                 friendRequests.Remove(request.FriendRequestId);
 
-                await UniTask.SwitchToMainThread(cancellationToken);
-
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                     { action = FriendshipAction.CANCELLED, userId = friendUserId });
 
@@ -264,7 +254,6 @@ namespace DCL.Social.Friends
 
             // TODO (FRIEND REQUESTS): this operation is deprecated and should be removed after the release of improved friend requests
             await apiBridge.CancelRequestByUserIdAsync(friendUserId, cancellationToken);
-            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendUserId });
@@ -283,8 +272,6 @@ namespace DCL.Social.Friends
             var friendRequest = ToFriendRequest(payload.friendRequest);
             friendRequestId = friendRequest.FriendRequestId;
             friendRequests.Remove(friendRequestId);
-
-            await UniTask.SwitchToMainThread(cancellationToken);
 
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
                 { action = FriendshipAction.CANCELLED, userId = friendRequest.To });

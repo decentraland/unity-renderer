@@ -114,8 +114,6 @@ namespace DCL.Social.Friends
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                await UniTask.SwitchToMainThread();
-
                 if (!sendInProgress)
                     return;
 

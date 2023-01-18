@@ -130,8 +130,6 @@ namespace DCL.Social.Friends
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                await UniTask.SwitchToMainThread(cancellationToken);
-
                 FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
                 socialAnalytics.SendFriendRequestError(request?.From, request?.To,
                     "modal",
@@ -166,8 +164,6 @@ namespace DCL.Social.Friends
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                await UniTask.SwitchToMainThread(cancellationToken);
-
                 FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
                 socialAnalytics.SendFriendRequestError(request?.From, request?.To,
                     "modal",
