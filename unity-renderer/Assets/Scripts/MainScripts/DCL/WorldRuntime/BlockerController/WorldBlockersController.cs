@@ -67,6 +67,11 @@ namespace DCL.Controllers
             if (!enabled || sceneHandler == null)
                 return;
 
+            // FD:: should get the scene state, and subscribe to "isLoaded" event.
+            // once isLoaded fires up, we can disable the green blocker
+            // SetupWorldBlockers(sceneHandler.GetCurrentlyLoadingScenesCoords);
+            // var blockedScenes = sceneHandler.GetAllLoadedScenesCoords();
+            // blockedScenes.RemoveWhere(x => sceneHandler.GetEmptySceneCoords().Contains(x));
             SetupWorldBlockers(sceneHandler.GetAllLoadedScenesCoords());
         }
 
@@ -167,14 +172,26 @@ namespace DCL.Controllers
                 }
             }
 
-            blockersToAdd = LookForLimits(allLoadedParcelCoords, blockers, 0);
+            blockersToAdd = LookForLimits(dontAddABlockerHere: allLoadedParcelCoords, blockers, 0);
+
+            // FD:: Should be check here if blockersToAdd contains anything that needs to be loaded
+            // but until we get there there's no way to know it.
+            // maybe the only way is to check if something is loading in "blockersToAdd"
+            // WWTTTFFFFFFFFFFFFFFFFFFFFFFF read
+            HashSet<Vector2Int> filteredBlocks = new HashSet<Vector2Int>();
+
+            foreach (Vector2Int block in blockersToAdd)
+            {
+                if (IsSceneKnown (block))
+                    filteredBlocks.Add (block);
+            }
 
             // Remove extra blockers
             foreach (var coords in blockersToRemove)
                 blockerInstanceHandler.HideBlocker(coords, false);
 
             // Add missing blockers
-            foreach (var coords in blockersToAdd)
+            foreach (var coords in filteredBlocks)
                 blockerInstanceHandler.ShowBlocker(coords, false, CommonScriptableObjects.rendererState.Get());
         }
 
@@ -217,5 +234,14 @@ namespace DCL.Controllers
         {
             SetEnabled(newState);
         }
+
+        private bool IsSceneKnown(Vector2Int parcel)
+        {
+            return sceneHandler.GetScene(parcel) != null;
+        }
+
+
+
+
     }
 }

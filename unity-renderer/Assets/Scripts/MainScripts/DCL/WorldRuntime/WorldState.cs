@@ -98,11 +98,97 @@ namespace DCL
             return allLoadedParcelCoords;
         }
 
+        // FD:: test
+        public HashSet<Vector2Int> GetEmptyLoadedSceneCoords()
+        {
+            HashSet<Vector2Int> allEmptySceneCoords = new HashSet<Vector2Int>();
+
+            // Create fast (hashset) collection of loaded parcels coords
+            foreach (ParcelScene scene in scenesSortedByDistance)
+            {
+                // check if this is not an empty parcel string name "Qm-83,-130m"
+                if (scene.sceneData.id.Length > 14) 
+                    continue;
+
+                allEmptySceneCoords.UnionWith(scene.parcels);
+            }
+
+            return allEmptySceneCoords;
+        }
+
+        // FD:: test
+        public HashSet<Vector2Int> GetNonEmptyLoadingScenesCoordsOLD()
+        {
+            HashSet<Vector2Int> nonEmptyLoadingScenesCoords = new HashSet<Vector2Int>();
+
+            foreach (var element in loadedScenes)
+            {
+                ParcelScene scene = element.Value as ParcelScene;
+
+                // Skip scene if it's not ready
+                if (!scene.sceneLifecycleHandler.isReady)
+                    continue;
+
+                // Skip scene if it doesn't have a loader or it's already loaded
+                // LoadWrapper loader = null;
+                // foreach (var entitykvp in scene.entities)
+                // {
+                //     loader = GetLoaderForEntity(entitykvp.Value);
+                // }
+                // if (loader == null || loader.alreadyLoaded)
+                //     continue;
+
+                // Skip scene if it doesn't have any entities
+                // scene.parcels.Count == 16
+                // if (scene.parcels.Count > 1)
+                //     continue;
+                // if (scene.entities.Count == 0)
+                //     continue;
+
+                // scenedata.id string > 12
+
+                // Add scene parcels coordinates to the hashset
+                nonEmptyLoadingScenesCoords.UnionWith(scene.parcels);
+            }
+
+            return nonEmptyLoadingScenesCoords;
+        }
+
+        // FD:: test
+        public HashSet<Vector2Int> GetCurrentlyLoadingScenesCoords()
+        {
+            HashSet<Vector2Int> allLoadedParcelCoords = new HashSet<Vector2Int>();
+
+            // Create fast (hashset) collection of loaded parcels coords
+            foreach (var element in loadedScenes)
+            {
+                ParcelScene scene = element.Value as ParcelScene;
+
+                if (!scene.sceneLifecycleHandler.isReady)
+                    continue;
+
+                // check the loading state of the scene
+                LoadWrapper loader = GetLoaderForEntity(scene.GetEntityById(scene.sceneData.id));
+
+                if (loader == null || !loader.alreadyLoaded)
+                    continue;
+
+                allLoadedParcelCoords.UnionWith(scene.parcels);
+            }
+
+            return allLoadedParcelCoords;
+        }
+
         private readonly Dictionary<GameObject, LoadWrapper>
             attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
 
         public LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
+            if (entity == null)
+            {
+                Debug.LogWarning("NULL entity at GetLoaderForEntity()");
+                return null;
+            }    
             if (entity.meshRootGameObject == null)
             {
                 Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
