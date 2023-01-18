@@ -198,7 +198,7 @@ namespace DCL.Controllers
 
                         if (!dontAddABlockerHere.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
                         {
-                            if (IsSceneKnown (checkedPosition))
+                            if (DataStore.i.common.isWorld.Get() || IsSceneKnown (checkedPosition))
                                 blockersCandidate.Add(checkedPosition);
                         }
                     }
