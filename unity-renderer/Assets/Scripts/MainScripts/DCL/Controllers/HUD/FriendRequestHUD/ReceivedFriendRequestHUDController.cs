@@ -128,12 +128,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    "modal",
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;
@@ -161,12 +156,7 @@ namespace DCL.Social.Friends
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    "modal",
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
                 throw;

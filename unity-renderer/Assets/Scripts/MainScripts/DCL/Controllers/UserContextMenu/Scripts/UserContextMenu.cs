@@ -241,13 +241,8 @@ public class UserContextMenu : MonoBehaviour
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = FriendsController.i.GetAllocatedFriendRequestByUser(userId);
-
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    PlayerActionSource.ProfileContextMenu.ToString(),
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
+                    FriendsController.i, socialAnalytics);
 
                 throw;
             }

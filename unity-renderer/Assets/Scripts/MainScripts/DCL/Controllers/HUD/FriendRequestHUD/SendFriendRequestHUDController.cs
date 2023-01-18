@@ -46,7 +46,6 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken.Dispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
@@ -115,11 +114,8 @@ namespace DCL.Social.Friends
                 if (!sendInProgress)
                     return;
 
-                socialAnalytics.SendFriendRequestError(userProfileBridge.GetOwn().userId, recipientId,
-                    dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsAsSender(recipientId, dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
+                    userProfileBridge, socialAnalytics);
 
                 view.Show();
                 dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);

@@ -165,13 +165,8 @@ namespace DCL.Social.Passports
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-
-                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                        "modal",
-                        e is FriendshipException fe
-                            ? fe.ErrorCode.ToString()
-                            : FriendRequestErrorCodes.Unknown.ToString());
+                    e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, "modal",
+                        friendsController, socialAnalytics);
 
                     throw;
                 }
@@ -206,13 +201,8 @@ namespace DCL.Social.Passports
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-
-                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                        "modal",
-                        e is FriendshipException fe
-                            ? fe.ErrorCode.ToString()
-                            : FriendRequestErrorCodes.Unknown.ToString());
+                    e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, "modal",
+                        friendsController, socialAnalytics);
 
                     throw;
                 }

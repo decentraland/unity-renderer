@@ -127,13 +127,8 @@ public class PlayerInfoCardHUDController : IHUD
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    PlayerActionSource.Passport.ToString(),
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
 
                 throw;
             }
@@ -167,13 +162,8 @@ public class PlayerInfoCardHUDController : IHUD
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    PlayerActionSource.Passport.ToString(),
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
 
                 throw;
             }
@@ -210,13 +200,8 @@ public class PlayerInfoCardHUDController : IHUD
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
-
-                socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                    PlayerActionSource.Passport.ToString(),
-                    e is FriendshipException fe
-                        ? fe.ErrorCode.ToString()
-                        : FriendRequestErrorCodes.Unknown.ToString());
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
 
                 throw;
             }

@@ -115,7 +115,6 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            friendOperationsCancellationToken?.Cancel();
             friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = null;
 
@@ -275,11 +274,8 @@ namespace DCL.Social.Friends
                     }
                     catch (Exception e) when (e is not OperationCanceledException)
                     {
-                        socialAnalytics.SendFriendRequestError(ownUserProfile?.userId, userNameOrId,
-                            PlayerActionSource.FriendsHUD.ToString(),
-                            e is FriendshipException fe
-                                ? fe.ErrorCode.ToString()
-                                : FriendRequestErrorCodes.Unknown.ToString());
+                        e.ReportFriendRequestErrorToAnalyticsAsSender(userNameOrId, PlayerActionSource.FriendsHUD.ToString(),
+                            userProfileBridge, socialAnalytics);
 
                         throw;
                     }
@@ -530,13 +526,8 @@ namespace DCL.Social.Friends
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-
-                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                        PlayerActionSource.FriendsHUD.ToString(),
-                        e is FriendshipException fe
-                            ? fe.ErrorCode.ToString()
-                            : FriendRequestErrorCodes.Unknown.ToString());
+                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                        friendsController, socialAnalytics);
 
                     throw;
                 }
@@ -567,13 +558,8 @@ namespace DCL.Social.Friends
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-
-                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                        PlayerActionSource.FriendsHUD.ToString(),
-                        e is FriendshipException fe
-                            ? fe.ErrorCode.ToString()
-                            : FriendRequestErrorCodes.Unknown.ToString());
+                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                        friendsController, socialAnalytics);
 
                     throw;
                 }
@@ -616,13 +602,8 @@ namespace DCL.Social.Friends
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-
-                    socialAnalytics.SendFriendRequestError(request?.From, request?.To,
-                        PlayerActionSource.FriendsHUD.ToString(),
-                        e is FriendshipException fe
-                            ? fe.ErrorCode.ToString()
-                            : FriendRequestErrorCodes.Unknown.ToString());
+                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                        friendsController, socialAnalytics);
 
                     throw;
                 }
