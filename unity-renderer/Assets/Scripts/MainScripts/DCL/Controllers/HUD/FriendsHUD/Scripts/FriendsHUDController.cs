@@ -116,7 +116,8 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken?.Cancel();
+            friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = null;
 
             if (friendsController != null)
