@@ -176,11 +176,11 @@ namespace DCL
                 statsPanel.SetCellText(1, (int) Rows.MATERIAL_COUNT, materialCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.MESHES_COUNT, meshesCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.GLTF_BEING_LOADED,
-                    GLTFComponent.downloadingCount.ToString() + " ... In Queue: " +
-                    GLTFComponent.queueCount.ToString());
+                    GLTFComponent.downloadingCount + " ... In Queue: " +
+                    GLTFComponent.queueCount);
                 statsPanel.SetCellText(1, (int) Rows.AB_BEING_LOADED,
-                    AssetPromise_AB.downloadingCount.ToString() + " ...  In Queue: " +
-                    AssetPromise_AB.queueCount.ToString());
+                    DataStore.i.performance.concurrentABRequests.Get() + " ...  In Queue: " +
+                    AssetPromise_AB.queueCount);
                 statsPanel.SetCellText(1, (int) Rows.RENDERER_UNLOCK_SEGS,
                     RenderingController.firstActivationTime.ToString(CultureInfo.InvariantCulture));
 
