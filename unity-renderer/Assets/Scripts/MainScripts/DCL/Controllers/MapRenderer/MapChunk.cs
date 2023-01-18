@@ -17,9 +17,9 @@ namespace DCL
         [System.NonSerialized] public MapAtlas owner;
         protected RectTransform rt;
         protected bool isLoadingOrLoaded = false;
-        private WebRequestAsyncOperation loadOp;
+        private IWebRequestAsyncOperation loadOp;
 
-        public virtual WebRequestAsyncOperation LoadChunkImage()
+        public virtual IWebRequestAsyncOperation LoadChunkImage()
         {
             isLoadingOrLoaded = true;
 

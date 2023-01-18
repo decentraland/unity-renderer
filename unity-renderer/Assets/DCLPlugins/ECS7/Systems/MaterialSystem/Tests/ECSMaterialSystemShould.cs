@@ -1,13 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using Decentraland.Common;
 using ECSSystems.MaterialSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
@@ -90,10 +91,12 @@ namespace Tests
             {
                 renderers = new List<Renderer>() { renderer00 }
             });
+
             texturizableComponent.PutFor(scene0, entity01, new InternalTexturizable()
             {
                 renderers = new List<Renderer>() { renderer01 }
             });
+
             texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable()
             {
                 renderers = new List<Renderer>() { renderer10 }
@@ -109,11 +112,13 @@ namespace Tests
 
             // create material for scene0 entities
             Material scene0Material = new Material(materialResource);
+
             materialComponent.PutFor(scene0, entity00, new InternalMaterial()
             {
                 material = scene0Material,
                 castShadows = false
             });
+
             materialComponent.PutFor(scene0, entity01, new InternalMaterial()
             {
                 material = scene0Material,
@@ -145,6 +150,7 @@ namespace Tests
 
             // create material for scene1 entity
             Material scene1Material = scene0Material;
+
             materialComponent.PutFor(scene1, entity10, new InternalMaterial()
             {
                 material = scene1Material,
@@ -169,6 +175,7 @@ namespace Tests
 
             // change material for scene1 entity
             scene1Material = new Material(materialResource);
+
             materialComponent.PutFor(scene1, entity10, new InternalMaterial()
             {
                 material = scene1Material,
@@ -206,6 +213,7 @@ namespace Tests
             {
                 renderers = new List<Renderer>() { renderer00 }
             });
+
             texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable()
             {
                 renderers = new List<Renderer>() { renderer10 }
@@ -213,11 +221,13 @@ namespace Tests
 
             // add same material for both
             Material scene0Material = new Material(materialResource);
+
             materialComponent.PutFor(scene0, entity00, new InternalMaterial()
             {
                 material = scene0Material,
                 castShadows = false
             });
+
             materialComponent.PutFor(scene1, entity10, new InternalMaterial()
             {
                 material = scene0Material,
@@ -245,10 +255,12 @@ namespace Tests
         {
             ECS7TestEntity entity = scene0.CreateEntity(100);
             Renderer renderer = entity.gameObject.AddComponent<MeshRenderer>();
+
             internalEcsComponents.texturizableComponent.PutFor(scene0, entity, new InternalTexturizable()
             {
                 renderers = new List<Renderer>() { renderer }
             });
+
             materialComponent.Create(scene0, entity);
 
             PBMaterial CreateModel(Color color)
@@ -257,7 +269,7 @@ namespace Tests
                 {
                     Pbr = new PBMaterial.Types.PbrMaterial()
                     {
-                        AlbedoColor = new Color3() { R = color.r, G = color.g, B = color.b }
+                        AlbedoColor = new Color4() { R = color.r, G = color.g, B = color.b, A = 1 }
                     }
                 };
             }

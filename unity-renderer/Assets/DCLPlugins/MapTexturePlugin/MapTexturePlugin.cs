@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,6 +14,15 @@ public class MapTexturePlugin : IPlugin
 
     private CancellationTokenSource cts;
 
+    private static readonly TextureFormat?[] PRIORITIZED_FORMATS =
+    {
+        // available for iOS/Android WebGL player
+        TextureFormat.ETC2_RGBA8,
+        TextureFormat.BC7,
+        TextureFormat.DXT5,
+        TextureFormat.RGBA32
+    };
+
     public MapTexturePlugin()
     {
         cts = new CancellationTokenSource();
@@ -20,11 +30,16 @@ public class MapTexturePlugin : IPlugin
         DataStore.i.HUDs.mapMainTexture.Set(Resources.Load<Texture2D>("MapDefault"));
         DataStore.i.HUDs.mapEstatesTexture.Set(Resources.Load<Texture2D>("MapDefaultEstates"));
 
-        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, cts.Token);
-        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, cts.Token);
+        var textureFormat = PRIORITIZED_FORMATS.FirstOrDefault(f => SystemInfo.SupportsTextureFormat(f.Value));
+
+        if (textureFormat == null)
+            return;
+
+        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, textureFormat.Value, cts.Token);
+        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, textureFormat.Value, cts.Token);
     }
 
-    private static async UniTaskVoid DownloadTexture(string url, BaseVariable<Texture> textureVariable, CancellationToken ct)
+    private static async UniTaskVoid DownloadTexture(string url, BaseVariable<Texture> textureVariable, TextureFormat textureFormat, CancellationToken ct)
     {
         while (true)
         {

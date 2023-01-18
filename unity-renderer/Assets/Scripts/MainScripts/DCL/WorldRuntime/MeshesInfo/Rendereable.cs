@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Models;
@@ -8,7 +8,7 @@ namespace DCL
 {
     /// <summary>
     /// The Rendereable object represents any loaded object that should be visible in the world.
-    /// 
+    ///
     /// With this in place, the SceneBoundsChecker, CullingController and SceneMetricsCounter
     /// implementations can  be changed to be reactive, and lots of FindObjects and GetComponentsInChildren
     /// calls can be saved.
@@ -17,15 +17,20 @@ namespace DCL
     {
         public long ownerId;
         public GameObject container;
-        public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
-        public HashSet<Mesh> meshes = new HashSet<Mesh>();
-        public HashSet<Renderer> renderers = new HashSet<Renderer>();
-        public HashSet<Material> materials = new HashSet<Material>();
-        public HashSet<Texture> textures = new HashSet<Texture>();
-        public HashSet<AnimationClip> animationClips = new HashSet<AnimationClip>();
+        public Dictionary<Mesh, int> meshToTriangleCount = new ();
+        public HashSet<Mesh> meshes = new ();
+        public HashSet<Renderer> renderers = new ();
+        public HashSet<Material> materials = new ();
+        public HashSet<Texture> textures = new ();
+        public HashSet<AnimationClip> animationClips = new ();
         public int totalTriangleCount = 0;
         public long animationClipSize = 0;
         public long meshDataSize = 0;
+
+        //Kinerius: since our old importer and the new one has a lot of architectural design differences, we have to keep track of them on multiple places
+        // This can be safely removed once we get rid of the old importer
+        public bool isGLTFast = false;
+
 
         public bool Equals(Rendereable other)
         {
@@ -34,7 +39,7 @@ namespace DCL
 
         public object Clone()
         {
-            var result = (Rendereable) this.MemberwiseClone();
+            var result = (Rendereable)MemberwiseClone();
             result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
             result.renderers = new HashSet<Renderer>(renderers);
             result.materials = new HashSet<Material>(materials);
@@ -60,8 +65,8 @@ namespace DCL
 
         public override string ToString()
         {
-            return
-                $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} ... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
+            return $"Rendereable - owner: {ownerId} ... textures: {textures.Count} ... triangles: {totalTriangleCount} " +
+                $"... materials: {materials.Count} ... meshes: {meshes.Count} ... renderers: {renderers.Count}";
         }
     }
 }

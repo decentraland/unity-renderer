@@ -1,17 +1,26 @@
+using DCL.Helpers;
+using System;
+using System.Globalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FriendRequestEntry : FriendEntryBase
 {
+    [SerializeField] internal TMP_Text bodyMessage;
+    [SerializeField] internal TMP_Text requestDate;
+    [SerializeField] internal GameObject shortcutButtonsContainer;
     [SerializeField] internal Button acceptButton;
     [SerializeField] internal Button rejectButton;
     [SerializeField] internal Button cancelButton;
+    [SerializeField] internal Button openButton;
 
     public bool isReceived { get; private set; }
 
-    public event System.Action<FriendRequestEntry> OnAccepted;
-    public event System.Action<FriendRequestEntry> OnRejected;
-    public event System.Action<FriendRequestEntry> OnCancelled;
+    public event Action<FriendRequestEntry> OnAccepted;
+    public event Action<FriendRequestEntry> OnRejected;
+    public event Action<FriendRequestEntry> OnCancelled;
+    public event Action<FriendRequestEntry> OnOpened;
 
     public override void Awake()
     {
@@ -23,12 +32,16 @@ public class FriendRequestEntry : FriendEntryBase
         acceptButton.onClick.AddListener(() => OnAccepted?.Invoke(this));
         rejectButton.onClick.AddListener(() => OnRejected?.Invoke(this));
         cancelButton.onClick.AddListener(() => OnCancelled?.Invoke(this));
+        openButton.onClick.AddListener(() => OnOpened?.Invoke(this));
     }
 
     public void Populate(FriendRequestEntryModel model)
     {
         base.Populate(model);
+        SetBodyMessage(model.bodyMessage);
+        SetRequestDate(model.timestamp);
         SetReceived(model.isReceived);
+        SetShortcutButtonsActive(model.isShortcutButtonsActive);
     }
 
     public override void Populate(FriendEntryModel model)
@@ -36,7 +49,29 @@ public class FriendRequestEntry : FriendEntryBase
         base.Populate(model);
 
         if (model is FriendRequestEntryModel requestModel)
+        {
+            SetBodyMessage(requestModel.bodyMessage);
+            SetRequestDate(requestModel.timestamp);
             SetReceived(requestModel.isReceived);
+            SetShortcutButtonsActive(requestModel.isShortcutButtonsActive);
+        }
+    }
+
+    private void SetBodyMessage(string value)
+    {
+        if (bodyMessage == null)
+            return;
+
+        bodyMessage.text = value;
+        bodyMessage.gameObject.SetActive(!string.IsNullOrEmpty(value));
+    }
+
+    private void SetRequestDate(long value)
+    {
+        if (requestDate == null)
+            return;
+
+        requestDate.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
     }
 
     private void SetReceived(bool value)
@@ -63,5 +98,14 @@ public class FriendRequestEntry : FriendEntryBase
         cancelButton.gameObject.SetActive(true);
         acceptButton.gameObject.SetActive(false);
         rejectButton.gameObject.SetActive(false);
+    }
+
+    private void SetShortcutButtonsActive(bool isActive)
+    {
+        if (shortcutButtonsContainer != null)
+            shortcutButtonsContainer.SetActive(isActive);
+
+        if (requestDate != null)
+            requestDate.gameObject.SetActive(!isActive);
     }
 }

@@ -1,11 +1,15 @@
-using System;
-using System.IO;
-using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
+using DCL.Controllers;
 using DCL.CRDT;
+using DCL.Models;
+using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using KernelCommunication;
 using rpc_csharp;
+using System;
+using System.IO;
+using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
@@ -28,6 +32,11 @@ namespace RPC.Services
 
         public async UniTask<CRDTResponse> SendCrdt(CRDTManyMessages messages, RPCContext context, CancellationToken ct)
         {
+            // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
+            // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
+            await UniTask.WaitUntil(() => context.crdt.MessagingControllersManager.ContainsController(messages.SceneNumber),
+                cancellationToken: ct);
+
             await UniTask.WaitWhile(() => context.crdt.MessagingControllersManager.HasScenePendingMessages(messages.SceneNumber),
                 cancellationToken: ct);
 
@@ -43,6 +52,23 @@ namespace RPC.Services
                             continue;
 
                         context.crdt.CrdtMessageReceived?.Invoke(messages.SceneNumber, crdtMessage);
+                    }
+                }
+
+                if (context.crdt.WorldState.TryGetScene(messages.SceneNumber, out IParcelScene scene))
+                {
+                    // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
+                    // kernel won't be sending that message for those scenes
+                    if (scene.sceneData.sdk7 && !scene.IsInitMessageDone())
+                    {
+                        context.crdt.SceneController.EnqueueSceneMessage(new QueuedSceneMessage_Scene()
+                        {
+                            sceneNumber = messages.SceneNumber,
+                            tag = "scene",
+                            payload = new Protocol.SceneReady(),
+                            method = MessagingTypes.INIT_DONE,
+                            type = QueuedSceneMessage.Type.SCENE_MESSAGE
+                        });
                     }
                 }
             }
@@ -69,7 +95,7 @@ namespace RPC.Services
 
                 KernelBinaryMessageSerializer.Serialize(binaryWriter, sceneCrdtState);
                 sceneCrdtState.ClearOnUpdated();
-                
+
                 reusableCrdtMessage.SceneId = request.SceneId;
                 reusableCrdtMessage.SceneNumber = request.SceneNumber;
                 reusableCrdtMessage.Payload = ByteString.CopyFrom(memoryStream.ToArray());

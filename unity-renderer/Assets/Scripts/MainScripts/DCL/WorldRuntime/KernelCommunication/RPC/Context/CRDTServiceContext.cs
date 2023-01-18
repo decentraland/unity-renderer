@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using DCL;
 using DCL.CRDT;
+using System;
+using System.Collections.Generic;
 
 namespace RPC.Context
 {
@@ -9,6 +9,12 @@ namespace RPC.Context
     {
         public readonly Dictionary<int, CRDTProtocol> scenesOutgoingCrdts = new Dictionary<int, CRDTProtocol>(24);
         public IMessagingControllersManager MessagingControllersManager;
+        public IWorldState WorldState;
+        public ISceneController SceneController;
         public Action<int, CRDTMessage> CrdtMessageReceived;
+
+        // TODO: we actually just want `CRDTProtocol` for this propose.
+        // but we should first refactor `CRDTExecutor` so it receive it's `CRDTProtocol` using dependency injection
+        public Dictionary<int, ICRDTExecutor> CrdtExecutors;
     }
 }

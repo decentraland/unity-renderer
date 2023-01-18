@@ -1,11 +1,12 @@
+using DCL;
+using DCL.Helpers;
+using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Helpers;
-using DCL.Interface;
+using UnityEditor;
 using UnityEngine;
-using Environment = System.Environment;
+using Environment = DCL.Environment;
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
@@ -18,7 +19,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         Backpack
     }
 
-    static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
 
@@ -49,13 +49,17 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar = new AvatarModel()
     };
 
+    private int emoteLamportTimestamp = 1;
+
     public void UpdateData(UserProfileModel newModel)
     {
         if (newModel == null)
         {
-            model = null;
+            model = new UserProfileModel();
             return;
         }
+
+        bool isModelDirty = !newModel.Equals(model);
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
@@ -73,18 +77,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
+        model.version = newModel.version;
 
         if (model.snapshots != null && faceSnapshotDirty)
-        {
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
-        }
 
         if (model.snapshots != null && bodySnapshotDirty)
-        {
             bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
-        }
 
-        OnUpdate?.Invoke(this);
+        if (isModelDirty)
+            OnUpdate?.Invoke(this);
     }
 
     public int GetItemAmount(string itemId)
@@ -105,17 +107,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void SetAvatarExpression(string id, EmoteSource source)
     {
-        long timestamp = (long)(DateTime.UtcNow - epochStart).TotalMilliseconds;
+        int timestamp = emoteLamportTimestamp++;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
+        ClientEmotesKernelService emotes = Environment.i.serviceLocator.Get<IRPC>().Emotes();
+        // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
             Timestamp = timestamp
         });
-        
+
         OnUpdate?.Invoke(this);
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
@@ -177,7 +180,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        if (UnityEditor.AssetDatabase.Contains(this))
+        if (AssetDatabase.Contains(this))
             Resources.UnloadAsset(this);
     }
 #endif

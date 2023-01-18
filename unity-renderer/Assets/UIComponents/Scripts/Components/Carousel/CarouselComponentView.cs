@@ -55,13 +55,13 @@ public interface ICarouselComponentView
     /// <param name="prefab">Prefab to create items</param>
     /// <param name="amountOfItems">Amounts of items to be created</param>
     void SetItems(BaseComponentView prefab, int amountOfItems);
-    
+
     /// <summary>
     /// Adds a new item in the carousel.
     /// </summary>
     /// <param name="item">An UI component.</param>
     void AddItem(BaseComponentView item);
-    
+
     /// <summary>
     /// Adds a new item in the carousel and update carousel dot selector.
     /// </summary>
@@ -144,6 +144,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     [SerializeField] internal Button dotButtonTemplate;
     [SerializeField] internal Color dotSelectedColor;
     [SerializeField] internal Color dotUnselectedColor;
+    [SerializeField] internal bool showOnFocus = false;
 
     [Header("Configuration")]
     [SerializeField] internal CarouselComponentModel model;
@@ -215,11 +216,20 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         horizontalLayout.spacing = newSpace;
     }
 
-    public void SetTimeBetweenItems(float newTime) { model.timeBetweenItems = newTime; }
+    public void SetTimeBetweenItems(float newTime)
+    {
+        model.timeBetweenItems = newTime;
+    }
 
-    public void SetAnimationTransitionTime(float newTime) { model.animationTransitionTime = newTime; }
+    public void SetAnimationTransitionTime(float newTime)
+    {
+        model.animationTransitionTime = newTime;
+    }
 
-    public void SetAnimationCurve(AnimationCurve newCurve) { model.animationCurve = newCurve; }
+    public void SetAnimationCurve(AnimationCurve newCurve)
+    {
+        model.animationCurve = newCurve;
+    }
 
     public void SetBackgroundColor(Color newColor)
     {
@@ -230,8 +240,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
         background.color = newColor;
     }
-    
-    public void SetManualControlsActive() => 
+
+    public void SetManualControlsActive() =>
         SetManualControlsActive(model.showManualControls);
 
     public void SetManualControlsActive(bool isActived)
@@ -246,7 +256,30 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         nextButton.gameObject.SetActive(isActived && currentNumberOfItems > 1);
         dotsSelector.gameObject.SetActive(isActived && currentNumberOfItems > 1);
     }
-    
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        if (previousButton == null || nextButton == null || !showOnFocus)
+            return;
+
+        int currentNumberOfItems = itemsContainer.childCount;
+        previousButton.gameObject.SetActive(currentNumberOfItems > 1);
+        nextButton.gameObject.SetActive(currentNumberOfItems > 1);
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        if (previousButton == null || nextButton == null || !showOnFocus)
+            return;
+
+        previousButton.gameObject.SetActive(false);
+        nextButton.gameObject.SetActive(false);
+    }
+
     public void SetItems(BaseComponentView prefab, int amountOfItems)
     {
         DestroyInstantiatedItems();
@@ -280,10 +313,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         SetManualControlsActive(model.showManualControls);
         GenerateDotsSelector();
     }
-    
-    public void AddItem(BaseComponentView item) => 
+
+    public void AddItem(BaseComponentView item) =>
         CreateItem(item, $"Item{instantiatedItems.Count}");
-    
+
     public void RemoveItem(BaseComponentView item)
     {
         BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);
@@ -363,7 +396,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         int index = 0;
         SetSelectedDot(index);
-
     }
 
     public void GoToNextItem()
@@ -449,13 +481,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void DestroyInstantiatedItems()
     {
         List<BaseComponentView> itemsToDestroy = ExtractItems();
-        
+
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
             if (itemToDestroy != null)
                 DestroyImmediate(itemToDestroy.gameObject);
         }
-        
+
         itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
@@ -473,7 +505,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         currentItemIndex = fromIndex;
         SetSelectedDot(currentItemIndex);
-
         bool continueCarrousel = true;
         while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {
@@ -637,6 +668,18 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
             currentIndex++;
         }
+    }
+
+    public void CleanInstantiatedItems()
+    {
+        instantiatedItems = new List<BaseComponentView>();
+    }
+
+    public void ResetManualCarousel()
+    {
+        isInTransition = false;
+        currentItemIndex = 0;
+        SetSelectedDot(0);
     }
 
     internal IEnumerator RegisterCurrentInstantiatedItems()

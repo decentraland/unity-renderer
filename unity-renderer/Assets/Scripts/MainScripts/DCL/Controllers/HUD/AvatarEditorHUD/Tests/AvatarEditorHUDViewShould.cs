@@ -108,7 +108,7 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
-            
+
             Assert.IsTrue(selector.currentItemToggles.ContainsKey(wearableId));
             Assert.IsTrue(selector.totalWearables.ContainsKey(wearableId));
         }
@@ -131,7 +131,7 @@ namespace AvatarEditorHUD_Tests
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
-                email = "mail",
+                email = "email",
                 avatar = new AvatarModel()
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
@@ -261,7 +261,7 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsTrue( itemToggleObject.smartItemBadge.activeSelf);
         }
-        
+
         [Test]
         public void HideSmartIconWhenIsNormalNFT()
         {
@@ -272,7 +272,7 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
         }
-        
+
         [Test]
         public void ShowWarningWhenNoLinkedWearableAvailable()
         {

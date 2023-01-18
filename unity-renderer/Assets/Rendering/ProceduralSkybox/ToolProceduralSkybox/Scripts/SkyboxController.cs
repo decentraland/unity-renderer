@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace DCL.Skybox
 {
     /// <summary>
-    /// This class will handle runtime execution of skybox cycle. 
+    /// This class will handle runtime execution of skybox cycle.
     /// Load and assign material to the Skybox.
     /// This will mostly increment the time cycle and apply values from configuration to the material.
     /// </summary>
@@ -96,7 +96,7 @@ namespace DCL.Skybox
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
             // Register UI related events
-            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
+            DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
 
@@ -113,7 +113,7 @@ namespace DCL.Skybox
 
         private void FixedTime_OnChange(float current, float previous)
         {
-            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
                 PauseTime(true, current);
             }
@@ -124,9 +124,9 @@ namespace DCL.Skybox
             }
         }
 
-        private void UseDynamicSkybox_OnChange(bool current, bool previous)
+        private void UseDynamicSkybox_OnChange(SkyboxMode current, SkyboxMode _)
         {
-            if (current)
+            if (current == SkyboxMode.Dynamic)
             {
                 // Get latest time from server
                 UpdateConfig();
@@ -138,7 +138,7 @@ namespace DCL.Skybox
 
             if (runtimeReflectionObj != null)
             {
-                runtimeReflectionObj.SkyboxModeChanged(current);
+                runtimeReflectionObj.SkyboxModeChanged(current == SkyboxMode.Dynamic);
             }
         }
 
@@ -241,7 +241,7 @@ namespace DCL.Skybox
             // Reset Object Update value without notifying
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
 
-            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
                 return;
             }
@@ -476,10 +476,10 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
             DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;
-            configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            if(configuration != null) configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            DataStore.i.skyboxConfig.mode.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;

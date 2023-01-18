@@ -58,7 +58,6 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Settings)]
     public void RaiseOnSectionOpenCorrectly(ExploreSection section)
@@ -84,7 +83,6 @@ public class ExploreV2MenuComponentControllerTests
         Assert.AreEqual(section == ExploreSection.Explore, exploreV2MenuController.placesAndEventsVisible.Get());
         Assert.AreEqual(section == ExploreSection.Backpack, exploreV2MenuController.avatarEditorVisible.Get());
         Assert.AreEqual(section == ExploreSection.Map, exploreV2MenuController.navmapVisible.Get());
-        Assert.AreEqual(section == ExploreSection.Builder, exploreV2MenuController.builderVisible.Get());
         Assert.AreEqual(section == ExploreSection.Quest, exploreV2MenuController.questVisible.Get());
         Assert.AreEqual(section == ExploreSection.Settings, exploreV2MenuController.settingsVisible.Get());
         Assert.IsFalse(exploreV2MenuController.profileCardIsOpen.Get());
@@ -124,7 +122,6 @@ public class ExploreV2MenuComponentControllerTests
             Assert.IsFalse(exploreV2MenuController.avatarEditorVisible.Get());
             Assert.IsFalse(exploreV2MenuController.profileCardIsOpen.Get());
             Assert.IsFalse(exploreV2MenuController.navmapVisible.Get());
-            Assert.IsFalse(exploreV2MenuController.builderVisible.Get());
             Assert.IsFalse(exploreV2MenuController.questVisible.Get());
             Assert.IsFalse(exploreV2MenuController.settingsVisible.Get());
         }
@@ -132,175 +129,69 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuView.Received().SetVisible(isVisible);
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaisePlacesAndEventsVisibleChangedCorrectly(bool isVisible)
+    [TestCase(ExploreSection.Explore,true)]
+    [TestCase(ExploreSection.Explore, false)]
+    [TestCase(ExploreSection.Map, true)]
+    [TestCase(ExploreSection.Map,false)]
+    [TestCase(ExploreSection.Backpack, true)]
+    [TestCase(ExploreSection.Backpack,false)]
+    [TestCase(ExploreSection.Quest, true)]
+    [TestCase(ExploreSection.Quest,false)]
+    [TestCase(ExploreSection.Settings, true)]
+    [TestCase(ExploreSection.Settings,false)]
+    public void RaiseSectionVisibleChangedCorrectly(ExploreSection section, bool isVisible)
     {
         // Arrange
-        exploreV2MenuController.isInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Explore;
+        switch (section)
+        {
+            case ExploreSection.Explore:
+                exploreV2MenuController.isInitialized.Set(true);
+                break;
+            case ExploreSection.Map:
+                exploreV2MenuController.isNavmapInitialized.Set(true);
+                break;
+            case ExploreSection.Quest:
+                exploreV2MenuController.isQuestInitialized.Set(true);
+                break;
+            case ExploreSection.Settings:
+                exploreV2MenuController.isSettingsPanelInitialized.Set(true);
+                break;
+            case ExploreSection.Backpack:
+                exploreV2MenuController.isAvatarEditorInitialized.Set(true);
+                DataStore.i.common.isSignUpFlow.Set(false);
+                break;
+        }
+
+        exploreV2MenuController.currentOpenSection = section;
 
         // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Explore, isVisible);
+        exploreV2MenuController.SetMenuTargetVisibility(section, isVisible);
 
         // Assert
+        exploreV2MenuView.Received().SetVisible(isVisible);
+
         if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Explore);
+            Assert.That(exploreV2MenuController.currentSectionIndex.Get(), Is.EqualTo((int)section));
 
         Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Explore, isVisible);
+        exploreV2Analytics.Received().SendStartMenuSectionVisibility(section, isVisible);
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsAvatarEditorInitializedChangedCorrectly(bool isVisible)
+    [TestCase(ExploreSection.Quest, true)]
+    [TestCase(ExploreSection.Quest,false)]
+    [TestCase(ExploreSection.Map, true)]
+    [TestCase(ExploreSection.Map,false)]
+    [TestCase(ExploreSection.Backpack, true)]
+    [TestCase(ExploreSection.Backpack,false)]
+    [TestCase(ExploreSection.Settings, true)]
+    [TestCase(ExploreSection.Settings,false)]
+    public void RaiseIsSectionInitializedChangedCorrectly(ExploreSection section, bool isVisible)
     {
         // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Backpack, isVisible);
+        exploreV2MenuController.SectionInitializedChanged(section, isVisible);
 
         // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Backpack, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseAvatarEditorVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isAvatarEditorInitialized.Set(true);
-        DataStore.i.common.isSignUpFlow.Set(false);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Backpack;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Backpack, isVisible);
-        ;
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Backpack);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Backpack, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsNavMapInitializedChangedCorrectly(bool isVisible)
-    {
-        // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Map, isVisible);
-
-        // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Map, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseNavmapVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isNavmapInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Map;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Map, isVisible);
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Map);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Map, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsBuilderInitializedChangedCorrectly(bool isVisible)
-    {
-        // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Builder, isVisible);
-
-        // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Builder, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseBuilderVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isBuilderInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Builder;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Builder, isVisible);
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Builder);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Builder, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsQuestInitializedChangedCorrectly(bool isVisible)
-    {
-        // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Quest, isVisible);
-
-        // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Quest, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseQuestVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isQuestInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Quest;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Quest, isVisible);
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Quest);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Quest, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseIsSettingsPanelInitializedChangedCorrectly(bool isVisible)
-    {
-        // Act
-        exploreV2MenuController.SectionInitializedChanged(ExploreSection.Settings, isVisible);
-
-        // Assert
-        exploreV2MenuView.Received().SetSectionActive(ExploreSection.Settings, isVisible);
-    }
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void RaiseSettingsVisibleChangedCorrectly(bool isVisible)
-    {
-        // Arrange
-        exploreV2MenuController.isSettingsPanelInitialized.Set(true);
-        exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
-
-        // Act
-        exploreV2MenuController.SetMenuTargetVisibility(ExploreSection.Settings, isVisible);
-
-        // Assert
-        if (isVisible)
-            exploreV2MenuView.Received().GoToSection(ExploreSection.Settings);
-
-        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2Analytics.Received().SendStartMenuSectionVisibility(ExploreSection.Settings, isVisible);
+        exploreV2MenuView.Received().SetSectionActive(section, isVisible);
     }
 
     [Test]
@@ -324,7 +215,6 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [TestCase(ExploreSection.Backpack)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Map)]
     [TestCase(ExploreSection.Quest)]
@@ -333,8 +223,6 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         if (section == ExploreSection.Backpack)
-            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
-        else
             DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
 
         // Act
@@ -347,7 +235,6 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(ExploreSection.Explore)]
     [TestCase(ExploreSection.Backpack)]
     [TestCase(ExploreSection.Map)]
-    [TestCase(ExploreSection.Builder)]
     [TestCase(ExploreSection.Quest)]
     [TestCase(ExploreSection.Settings)]
     public void ShouldChangeVisibilityVarsOnViewSectionOpen(ExploreSection sectionId)
@@ -362,7 +249,7 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         Assert.AreEqual(sectionId, exploreV2MenuController.currentOpenSection);
 
-        foreach (KeyValuePair<BaseVariable<bool>, ExploreSection> sectionVisiblityVar in exploreV2MenuController.sectionsByVisiblityVar)
+        foreach (KeyValuePair<BaseVariable<bool>, ExploreSection> sectionVisiblityVar in exploreV2MenuController.sectionsByVisibilityVar)
             Assert.IsTrue(sectionVisiblityVar.Key.Get() == (sectionId == sectionVisiblityVar.Value));
 
         // would be nice to implement: exploreV2MenuView.ReceivedWithAnyArgs(1).GoToSection(default); exploreV2MenuView.Received(1).GoToSection(sectionId);
@@ -372,36 +259,42 @@ public class ExploreV2MenuComponentControllerTests
     public void UpdateRealmInfoCorrectly()
     {
         // Arrange
-        string testRealmName = "TestName";
+        ExploreV2ComponentRealmsController realmsController = new ExploreV2ComponentRealmsController(DataStore.i.realm, exploreV2MenuView);
+
+        const string TEST_REALM_NAME = "TestName";
         DataStore.i.realm.playerRealm.Set(new CurrentRealmModel
         {
-            serverName = testRealmName,
-            layer = null
+            serverName = TEST_REALM_NAME,
+            layer = null,
         });
 
-        List<RealmModel> testRealmList = new List<RealmModel>();
-        int testUsersCount = 100;
-        testRealmList.Add(new RealmModel
+        const int TEST_USERS_COUNT = 100;
+        List<RealmModel> testRealmList = new List<RealmModel>
         {
-            serverName = testRealmName,
-            layer = null,
-            usersCount = testUsersCount
-        });
+            new()
+            {
+                serverName = TEST_REALM_NAME,
+                layer = null,
+                usersCount = TEST_USERS_COUNT,
+            },
+        };
         DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
 
         // Act
-        exploreV2MenuController.UpdateRealmInfo(testRealmName);
+        realmsController.UpdateRealmInfo(TEST_REALM_NAME);
 
         // Assert
-        exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);
-        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(testRealmName);
-        exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
+        exploreV2MenuView.currentRealmViewer.Received().SetRealm(TEST_REALM_NAME);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(TEST_REALM_NAME);
+        exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(TEST_USERS_COUNT);
     }
 
     [Test]
     public void UpdateAvailableRealmsInfoCorrectly()
     {
         // Arrange
+        ExploreV2ComponentRealmsController realmsController = new ExploreV2ComponentRealmsController(DataStore.i.realm, exploreV2MenuView);
+
         RealmModel[] testRealms =
         {
             new RealmModel
@@ -422,11 +315,11 @@ public class ExploreV2MenuComponentControllerTests
         };
 
         // Act
-        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms);
+        realmsController.UpdateAvailableRealmsInfo(testRealms);
 
         // Assert
-        Assert.AreEqual(3, exploreV2MenuController.currentAvailableRealms.Count);
-        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(exploreV2MenuController.currentAvailableRealms);
+        Assert.AreEqual(3, realmsController.currentAvailableRealms.Count);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(realmsController.currentAvailableRealms);
     }
 
     [Test]

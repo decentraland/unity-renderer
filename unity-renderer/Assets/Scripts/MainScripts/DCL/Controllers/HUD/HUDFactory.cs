@@ -1,22 +1,28 @@
+using AvatarSystem;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
-using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
+using DCL.ProfanityFiltering;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
+using DCl.Social.Passports;
 using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
+using DCLServices.Lambdas.NamesService;
+using DCLServices.Lambdas.LandsService;
 
 public class HUDFactory : IHUDFactory
 {
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+
     public virtual IHUD CreateHUD(HUDElementID hudElementId)
     {
         IHUD hudElement = null;
@@ -43,28 +49,39 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.PLAYER_INFO_CARD:
                 if(DataStore.i.HUDs.enableNewPassport.Get())
                 {
-                    //TODO: this is temporary, once the old passport flow is removed 
+                    //TODO: this is temporary, once the old passport flow is removed
                     //this can be moved to the passport plugin
                     PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
                     hudElement = new PlayerPassportHUDController(
                         view,
                         new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"), 
-                            view.PlayerInfoView, 
-                            DataStore.i, 
-                            ProfanityFilterSharedInstances.regexFilter, 
-                            FriendsController.i, 
-                            new UserProfileWebInterfaceBridge()),
+                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                            view.PlayerInfoView,
+                            DataStore.i,
+                            Environment.i.serviceLocator.Get<IProfanityFilter>(),
+                            FriendsController.i,
+                            new UserProfileWebInterfaceBridge(),
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
                         new PassportNavigationComponentController(
                             view.PassportNavigationView,
-                            ProfanityFilterSharedInstances.regexFilter,
+                            Environment.i.serviceLocator.Get<IProfanityFilter>(),
+                            new WearableItemResolver(),
+                            new WearablesCatalogControllerBridge(),
+                            Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                            Environment.i.serviceLocator.Get<INamesService>(),
+                            Environment.i.serviceLocator.Get<ILandsService>(),
+                            new UserProfileWebInterfaceBridge(),
                             DataStore.i),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
+                        new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
-                            new UserProfileWebInterfaceBridge()));
+                            new UserProfileWebInterfaceBridge()),
+                        DataStore.i);
                 }
                 else
                 {
@@ -76,7 +93,7 @@ public class HUDFactory : IHUDFactory
                         new SocialAnalytics(
                             Environment.i.platform.serviceProviders.analytics,
                             new UserProfileWebInterfaceBridge()),
-                        ProfanityFilterSharedInstances.regexFilter,
+                        Environment.i.serviceLocator.Get<IProfanityFilter>(),
                         DataStore.i,
                         CommonScriptableObjects.playerInfoCardVisibleState);
                 }
@@ -108,7 +125,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
-                    new WebInterfaceBrowserBridge());
+                    new WebInterfaceBrowserBridge(),
+                    CommonScriptableObjects.rendererState);
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -127,7 +145,7 @@ public class HUDFactory : IHUDFactory
                     ChatController.i,
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
-                    ProfanityFilterSharedInstances.regexFilter,
+                    Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
                 break;
@@ -141,7 +159,7 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    ProfanityFilterSharedInstances.regexFilter);
+                    Environment.i.serviceLocator.Get<IProfanityFilter>());
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
@@ -201,7 +219,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.SIGNUP:
                 var analytics = Environment.i.platform.serviceProviders.analytics;
-                hudElement = new SignupHUDController(analytics);
+                hudElement = new SignupHUDController(analytics, dataStoreLoadingScreen.Ref);
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;

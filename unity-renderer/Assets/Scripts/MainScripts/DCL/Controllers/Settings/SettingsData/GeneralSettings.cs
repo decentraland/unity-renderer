@@ -9,8 +9,12 @@ namespace DCL.SettingsCommon
         public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
 
         public float mouseSensitivity;
+        public bool invertYAxis;
+        public bool leftMouseButtonCursorLock;
+
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
+
         public float scenesLoadRadius;
         public float avatarsLODDistance;
         public float maxNonLODAvatars;
@@ -19,8 +23,9 @@ namespace DCL.SettingsCommon
         public bool nightMode;
         public bool hideUI;
         public bool showAvatarNames;
+
         public bool dynamicProceduralSkybox;
-        public bool invertYAxis;
+        public float useDynamicSkybox;
         public float skyboxTime;
 
         [Tooltip("First person camera FOV")]

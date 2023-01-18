@@ -1,8 +1,11 @@
+using Cysharp.Threading.Tasks;
+using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
-using DCL.Social.Friends;
+using System.Threading;
+using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
-namespace DCl.Social.Friends
+namespace DCL.Social.Friends
 {
     public interface IFriendsController
     {
@@ -12,7 +15,8 @@ namespace DCl.Social.Friends
         event Action<string> OnFriendNotFound;
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
-        event Action<int> OnTotalFriendsUpdated;
+        event Action<SocialFriendRequest> OnFriendRequestReceived;
+        event Action<SocialFriendRequest> OnSentFriendRequestApproved;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }
@@ -26,16 +30,30 @@ namespace DCl.Social.Friends
         UserStatus GetUserStatus(string userId);
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
+        UniTask<SocialFriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody);
+        [Obsolete("Old API. Use RequestFriendship(string friendUserId, string messageBody) instead")]
         void RequestFriendship(string friendUserId);
-        void CancelRequest(string friendUserId);
+        UniTask<SocialFriendRequest> CancelRequestByUserIdAsync(string friendUserId);
+        [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
+        void CancelRequestByUserId(string friendUserId);
+        UniTask<SocialFriendRequest> CancelRequestAsync(string friendRequestId);
+        [Obsolete("Old API. Use AcceptFriendshipAsync instead")]
         void AcceptFriendship(string friendUserId);
+        UniTask<SocialFriendRequest> AcceptFriendshipAsync(string friendRequestId);
+        [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string friendUserId);
+        UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
-        void GetFriends(int limit, int skip);
-        void GetFriends(string usernameOrId, int limit);
-        void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default);
+        UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default);
+        [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
+        void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
+        UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
+        SocialFriendRequest GetAllocatedFriendRequest(string friendRequestId);
+        SocialFriendRequest GetAllocatedFriendRequestByUser(string userId);
+        UniTask<FriendshipStatus> GetFriendshipStatus(string userId);
     }
 }

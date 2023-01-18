@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IHighlightsSubSectionComponentView
+public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -117,11 +117,6 @@ public interface IHighlightsSubSectionComponentView
     /// Hides the Event Card modal.
     /// </summary>
     void HideEventModal();
-
-    /// <summary>
-    /// Set the current scroll view position to 1.
-    /// </summary>
-    void RestartScrollViewPosition();
 
     /// <summary>
     /// Configure the needed pools for the places and events instantiation.

@@ -64,32 +64,15 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
         CommonScriptableObjects.rendererState.AddLock(this);
 
-#if UNITY_WEBGL
-        fatalErrorReporter = new WebFatalErrorReporter();
-#else
-        fatalErrorReporter = new DefaultFatalErrorReporter(DataStore.i);
-#endif
-
         mainCamera = Camera.main;
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }
 
-    private AvatarSystem.Avatar GetStandardAvatar()
-    {
-        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-        AvatarSystem.NoLODs noLod = new NoLODs();
-        return new AvatarSystem.Avatar(
-            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            animator,
-            new Visibility(),
-            noLod,
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
-    }
+    private IAvatar GetStandardAvatar() =>
+        Environment.i.serviceLocator.Get<IAvatarFactory>()
+                   .CreateAvatar(avatarContainer, GetComponentInChildren<AvatarAnimatorLegacy>(), NoLODs.i, new Visibility());
 
-    private AvatarWithHologram GetAvatarWithHologram()
+    private IAvatar GetAvatarWithHologram()
     {
         AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
         AvatarSystem.NoLODs noLod = new NoLODs();
@@ -223,7 +206,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
-                
+
                 avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
@@ -268,7 +251,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         currentActiveModifiers.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
         DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.HIDE_AVATAR);
     }
-    
+
     public void RemoveHideAvatarModifier()
     {
         DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.HIDE_AVATAR);
@@ -285,7 +268,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         DataStore.i.HUDs.avatarAreaWarnings.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
     }
-    
+
     public void RemoveHidePassportModifier()
     {
         DataStore.i.HUDs.avatarAreaWarnings.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);

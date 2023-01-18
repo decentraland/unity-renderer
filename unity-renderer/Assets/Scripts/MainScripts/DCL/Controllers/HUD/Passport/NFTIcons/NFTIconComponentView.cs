@@ -1,25 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IComponentModelConfig<NFTIconComponentModel>
 {
 
     [SerializeField] internal ButtonComponentView marketplaceButton;
+    [SerializeField] internal Button detailInfoButton;
     [SerializeField] internal TMP_Text nftName;
     [SerializeField] internal TMP_Text nftNameMarketPlace;
     [SerializeField] internal GameObject marketplaceSection;
+    [SerializeField] internal GameObject outline;
     [SerializeField] internal ImageComponentView nftImage;
+    [SerializeField] internal TMP_Text nftTextInsteadOfImage;
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal Image rarityBackgroundImage;
     [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
-    
+    [SerializeField] internal NFTSkinFactory skinFactory;
+    [SerializeField] internal SizeOnHover sizeOnHoverComponent;
+    [SerializeField] internal Transform nftItemInfoPositionRightRef;
+    [SerializeField] internal Transform nftItemInfoPositionLeftRef;
+
     [SerializeField] internal NFTIconComponentModel model;
 
     public Button.ButtonClickedEvent onMarketplaceButtonClick => marketplaceButton?.onClick;
+    public Button.ButtonClickedEvent onDetailInfoButtonClick => detailInfoButton?.onClick;
+
+    private NFTItemInfo nftItemInfo;
+    private NFTItemInfo.Model nftItemInfoCurrentModel;
+    private bool showCategoryInfoOnNftItem;
+    private string nftItemInfoRarity;
 
     public void Configure(NFTIconComponentModel newModel)
     {
@@ -36,8 +47,10 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
             return;
 
         SetName(model.name);
+        SetShowMarketplaceButton(model.showMarketplaceButton);
         SetMarketplaceURI(model.marketplaceURI);
         SetImageURI(model.imageURI);
+        SetShowType(model.showType);
         SetType(model.type);
         SetRarity(model.rarity);
     }
@@ -62,35 +75,101 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         model.imageURI = imageURI;
 
-        nftImage.SetImage(imageURI);
+        if (nftImage != null)
+        {
+            nftImage.SetImage(imageURI);
+            nftImage.gameObject.SetActive(!string.IsNullOrEmpty(imageURI));
+        }
+
+        if (nftTextInsteadOfImage != null)
+        {
+            nftTextInsteadOfImage.text = model.name;
+            nftTextInsteadOfImage.gameObject.SetActive(string.IsNullOrEmpty(imageURI));
+        }
     }
-    
+
+    public void SetShowType(bool showType)
+    {
+        model.showType = showType;
+
+        typeImage.gameObject.SetActive(showType);
+        rarityBackgroundImage.gameObject.SetActive(showType);
+    }
+
     public void SetType(string type)
     {
         model.type = type;
-    
+
         typeImage.SetImage(nftTypesIcons.GetTypeImage(type));
     }
 
     public void SetRarity(string rarity)
     {
         model.rarity = rarity;
+        Color rarityColor = nftTypesIcons.GetColor(rarity);
+        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
+        rarityBackgroundImage.color = rarityColor;
+    }
 
-        backgroundImage.color = nftTypesIcons.GetColor(rarity);
+    public void SetShowMarketplaceButton(bool showMarketplaceButton)
+    {
+        model.showMarketplaceButton = showMarketplaceButton;
     }
 
     public override void OnFocus()
     {
+        if (!sizeOnHoverComponent.enabled)
+            return;
+
         base.OnFocus();
 
-        marketplaceSection.SetActive(true);
+        SetNFTIconAsSelected(true);
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
 
-        marketplaceSection.SetActive(false);
+        if (nftItemInfo == null || (nftItemInfo != null && !nftItemInfo.gameObject.activeSelf))
+            SetNFTIconAsSelected(false);
     }
 
+    public void ConfigureNFTItemInfo(NFTItemInfo nftItemInfoModal, WearableItem wearableItem, bool showCategoryInfo)
+    {
+        nftItemInfo = nftItemInfoModal;
+        nftItemInfo.OnCloseButtonClick.RemoveAllListeners();
+        nftItemInfo.OnCloseButtonClick.AddListener(() => SetNFTItemInfoActive(false));
+        nftItemInfoCurrentModel = NFTItemInfo.Model.FromWearableItem(wearableItem);
+        showCategoryInfoOnNftItem = showCategoryInfo;
+        nftItemInfoRarity = wearableItem.rarity;
+    }
+
+    public void SetNFTItemInfoActive(bool isActive, bool showInLeftSide = false)
+    {
+        SetNFTIconAsSelected(isActive);
+        sizeOnHoverComponent.enabled = !isActive;
+
+        if (nftItemInfo != null)
+        {
+            nftItemInfo.SetActive(isActive);
+
+            if (isActive)
+            {
+                nftItemInfo.SetModel(nftItemInfoCurrentModel);
+                nftItemInfo.SetSkin(nftItemInfoRarity, skinFactory.GetSkinForRarity(nftItemInfoRarity));
+                nftItemInfo.SetSellButtonActive(false);
+                nftItemInfo.SetCategoryInfoActive(showCategoryInfoOnNftItem);
+                nftItemInfo.transform.position = showInLeftSide ? nftItemInfoPositionLeftRef.position : nftItemInfoPositionRightRef.position;
+            }
+        }
+    }
+
+    private void SetNFTIconAsSelected(bool isSelected)
+    {
+        if (!model.showMarketplaceButton)
+            return;
+
+        marketplaceSection.SetActive(isSelected);
+        outline.SetActive(isSelected);
+    }
 }

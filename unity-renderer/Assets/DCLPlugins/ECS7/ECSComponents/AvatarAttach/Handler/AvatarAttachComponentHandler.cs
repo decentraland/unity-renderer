@@ -53,12 +53,7 @@ namespace DCL.ECSComponents
             
             // Detach previous attachments
             Detach();
-
-            if (!string.IsNullOrEmpty(model.AvatarId))
-            {
-                // Attach the anchor point
-                Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
-            }
+            Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
 
             prevModel = model;
         }
@@ -85,7 +80,7 @@ namespace DCL.ECSComponents
             getAnchorPointsHandler.SearchAnchorPoints(avatarId, anchorPoints =>
             {
                 Attach(anchorPoints, anchorPointId);
-            });
+            }, supportNullId: true);
         }
 
         internal virtual void Attach(IAvatarAnchorPoints anchorPoints, AvatarAnchorPointIds anchorPointId)

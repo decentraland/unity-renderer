@@ -118,12 +118,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public FriendsHandler friendsHandler { get; set; }
     internal MapInfoHandler mapInfoHandler { get; set; }
 
-    internal Dictionary<string, BaseComponentView> currentFriendHeads = new Dictionary<string, BaseComponentView>();
+    internal readonly Dictionary<string, BaseComponentView> currentFriendHeads = new ();
 
-    public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
-    public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
+    public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
 
-    internal bool thumbnailFromMarketPlaceRequested = false;
+    private bool thumbnailFromMarketPlaceRequested;
 
     public override void Awake()
     {

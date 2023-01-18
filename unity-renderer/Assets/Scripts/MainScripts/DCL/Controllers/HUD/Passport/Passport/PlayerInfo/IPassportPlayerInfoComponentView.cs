@@ -1,15 +1,28 @@
+using DCl.Social.Friends;
 using System;
+using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using UIComponents.Scripts.Components;
 
 namespace DCL.Social.Passports
 {
-    public interface IPassportPlayerInfoComponentView
+    public interface IPassportPlayerInfoComponentView : IBaseComponentView<PlayerPassportModel>
     {
         event Action OnAddFriend;
+        event Action OnRemoveFriend;
+        event Action OnCancelFriendRequest;
+        event Action OnAcceptFriendRequest;
+        event Action OnBlockUser;
+        event Action OnUnblockUser;
+        event Action OnReportUser;
+        event Action<string> OnWhisperUser;
+        event Action OnJumpInUser;
+        event Action OnWalletCopy;
 
-        void SetName(string name);
-        void SetWallet(string wallet);
-        void SetPresence(PresenceStatus status);
-        void SetGuestUser(bool isGuest);
+        void SetIsBlocked(bool isBlocked);
+        void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
+        void ResetPanelOnClose();
+        void SetFriendStatus(FriendshipStatus status);
+        void SetActionsActive(bool isActive);
     }
 }

@@ -1,0 +1,31 @@
+{
+    "name": "NameServiceTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:68069f49d86442cd9618861b4d74b1aa",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:32b7ae2f3c4f455b8d4c175d6d708065",
+        "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

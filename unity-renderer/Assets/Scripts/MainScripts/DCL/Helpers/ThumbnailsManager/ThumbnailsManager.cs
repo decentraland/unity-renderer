@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL;
+using MainScripts.DCL.Controllers.AssetManager;
 using Object = UnityEngine.Object;
 
 //In the future the AssetManager will do this
@@ -52,7 +53,7 @@ public static class ThumbnailsManager
         if (string.IsNullOrEmpty(url))
             return null;
 
-        var promise = new AssetPromise_Texture(url);
+        var promise = new AssetPromise_Texture(url, permittedSources: AssetSource.ALL);
         AssetPromiseKeeper_Texture.i.Keep(promise);
 
         return promise;
@@ -88,13 +89,13 @@ public static class ThumbnailsManager
             {
                 promise.OnSuccessEvent += OnComplete;
             }
-            
+
             return;
         }
-        
-        var newPromise = new AssetPromise_Texture(url);
+
+        var newPromise = new AssetPromise_Texture(url, permittedSources: AssetSource.ALL);
         promiseCache.Add(url, newPromise);
-        
+
         AddToQueue(new EnqueuedThumbnail(newPromise, OnComplete));
         CheckQueue();
     }
@@ -109,7 +110,7 @@ public static class ThumbnailsManager
                 progressList.RemoveAt(i);
             }
         }
-        
+
         if (availableSlots > 0)
         {
             var availableDownloads = Mathf.Min(availableSlots, promiseQueue.Count);
@@ -120,7 +121,7 @@ public static class ThumbnailsManager
                 {
                     if (promiseQueue.Count == 0)
                         break;
-                    
+
                     var promise = promiseQueue.Dequeue();
                     AssetPromise_Texture assetPromiseTexture = promise.Promise;
                     BeginDownload(assetPromiseTexture, promise.OnComplete);
@@ -146,19 +147,20 @@ public static class ThumbnailsManager
         promise.OnFailEvent += (x, error) =>
         {
             progressList.Remove(promise);
-            Debug.Log($"Error downloading: {promise.url}, Exception: {error}"); 
+            Debug.Log($"Error downloading: {promise.url}, Exception: {error}");
             CheckQueue();
         };
-        
+
         AssetPromiseKeeper_Texture.i.Keep(promise);
     }
-    
+
     public static Sprite GetOrCreateSpriteFromTexture(Texture2D texture, out bool wasCreated)
     {
         wasCreated = false;
         if (!spriteCache.ContainsKey(texture))
         {
-            spriteCache[texture] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            spriteCache[texture] =
+                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, 100, 0, SpriteMeshType.FullRect, Vector4.one, false);
             wasCreated = true;
         }
         return spriteCache[texture];

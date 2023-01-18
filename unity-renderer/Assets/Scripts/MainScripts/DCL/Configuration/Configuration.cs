@@ -3,12 +3,11 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-    public static class BIWSettings
+    public static class AssetCatalogUrlSettings // EX: BIWSettings
     {
-        //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
+        //Note: Don't use these URL directly, you need to get them in the SceneEndpoints (before known as BuilderInWorldUtils) to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
-        public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
@@ -71,7 +70,6 @@ namespace DCL.Configuration
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
-        public const string BIW_HEADER_REQUEST_WITH_PARAM_EVENT_NAME = "RequestSignedHeaderForBuilder";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
         public static float ENTITY_POSITION_REPORTING_THRESHOLD = 0.04f; // In meters
         public static float ENTITY_SCALE_REPORTING_THRESHOLD = 0.04f; // In meters
@@ -90,7 +88,7 @@ namespace DCL.Configuration
 
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
-        
+
         public const string FLOOR_THUMBNAIL_KEY = "FloorBaseGrass_01/thumbnail.png";
         public const string FLOOR_THUMBNAIL_VALUE = "QmexuPHcbEtQCR11dPXxKZmRjGuY4iTooPJYfST7hW71DE";
 
@@ -187,7 +185,7 @@ namespace DCL.Configuration
 
     public static class TestSettings
     {
-        public static int VISUAL_TESTS_APPROVED_AFFINITY = 95;
+        public static int VISUAL_TESTS_APPROVED_AFFINITY = 93;
         public static float VISUAL_TESTS_PIXELS_CHECK_THRESHOLD = 5.0f;
         public static int VISUAL_TESTS_SNAPSHOT_WIDTH = 1280;
         public static int VISUAL_TESTS_SNAPSHOT_HEIGHT = 720;

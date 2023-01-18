@@ -27,7 +27,7 @@ namespace AvatarSystem
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -40,10 +40,9 @@ namespace AvatarSystem
         }
 
         /// <summary>
-        /// Starts the loading process for the Avatar. 
+        /// Starts the loading process for the Avatar.
         /// </summary>
         /// <param name="wearablesIds"></param>
-        /// <param name="emotesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
@@ -123,6 +122,9 @@ namespace AvatarSystem
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
 
         public Transform[] GetBones() => loader.GetBones();
+
+        public Renderer GetMainRenderer() =>
+            gpuSkinning.renderer;
 
         public void Dispose()
         {

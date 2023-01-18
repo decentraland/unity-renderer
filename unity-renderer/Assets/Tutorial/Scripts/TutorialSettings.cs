@@ -14,34 +14,31 @@ namespace DCL.Tutorial
         public bool sendStats = true;
 
         [Header("Tutorial Steps on Genesis Plaza")]
-        public List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
+        public List<TutorialStep> stepsOnGenesisPlaza = new ();
 
         [Header("Tutorial Steps from Deep Link")]
-        public List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
+        public List<TutorialStep> stepsFromDeepLink = new ();
 
         [Header("Tutorial Steps from Reset Tutorial")]
-        public List<TutorialStep> stepsFromReset = new List<TutorialStep>();
-
-        [Header("Tutorial Steps from Builder In World")]
-        public List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
+        public List<TutorialStep> stepsFromReset = new ();
 
         [Header("Tutorial Steps from User That Already Did The Tutorial")]
-        public List<TutorialStep> stepsFromUserThatAlreadyDidTheTutorial = new List<TutorialStep>();
+        public List<TutorialStep> stepsFromUserThatAlreadyDidTheTutorial = new ();
 
         [Header("Teacher Configuration")]
         public float teacherMovementSpeed = 4f;
         public AnimationCurve teacherMovementCurve;
 
         [Header("Eagle Eye Camera Configuration")]
-        public Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
-        public Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
+        public Vector3 eagleCamInitPosition = new (30, 30, -50);
+        public Vector3 eagleCamInitLookAtPoint = new (0, 0, 0);
         public bool eagleCamRotationActived = true;
         public float eagleCamRotationSpeed = 1f;
 
         [Header("Debugging Configuration")]
-        public bool debugRunTutorial = false;
-        public int debugStartingStepIndex;
-        public bool debugOpenedFromDeepLink = false;
+        public bool debugRunTutorial;
+        [Min(0)] public int debugStartingStepIndex;
+        public bool debugOpenedFromDeepLink;
 
         internal Camera teacherCamera;
         internal RawImage teacherRawImage;
@@ -57,6 +54,9 @@ namespace DCL.Tutorial
             this.teacherCanvas = teacherCanvas;
         }
 
-        public void ConfigureEagleEyeCamera(CinemachineVirtualCamera eagleEyeCamera) { this.eagleEyeCamera = eagleEyeCamera; }
+        public void ConfigureEagleEyeCamera(CinemachineVirtualCamera eagleEyeCamera)
+        {
+            this.eagleEyeCamera = eagleEyeCamera;
+        }
     }
 }

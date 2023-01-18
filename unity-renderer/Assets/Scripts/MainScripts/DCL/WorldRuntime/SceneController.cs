@@ -69,7 +69,7 @@ namespace DCL
             TaskUtils.Run(async () => await WatchForNewChunksToDecode(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
 #endif
         }
-        
+
         private void PrewarmSceneMessagesPool()
         {
             if (prewarmSceneMessagesPool)
@@ -305,8 +305,10 @@ namespace DCL
 
                     case MessagingTypes.INIT_DONE:
                         {
-                            scene.sceneLifecycleHandler.SetInitMessagesDone();
-
+                            if (!scene.IsInitMessageDone())
+                            {
+                                scene.sceneLifecycleHandler.SetInitMessagesDone();
+                            }
                             break;
                         }
 
@@ -410,7 +412,7 @@ namespace DCL
             while (true)
             {
                 maxTimeForDecode = CommonScriptableObjects.rendererState.Get() ? MAX_TIME_FOR_DECODE : float.MaxValue;
-                
+
                 if (chunksToDecode.TryDequeue(out string chunk))
                 {
                     EnqueueChunk(chunk);
@@ -507,7 +509,7 @@ namespace DCL
 
         //======================================================================
         public event Action<int> OnReadyScene;
-        
+
         public void SendSceneReady(int sceneNumber)
         {
             messagingControllersManager.SetSceneReady(sceneNumber);
@@ -519,10 +521,6 @@ namespace DCL
 
             OnReadyScene?.Invoke(sceneNumber);
         }
-
-        public void ActivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_BIW()); }
-
-        public void DeactivateBuilderInWorldEditScene() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
 
         private void SetPositionDirty(Vector2Int gridPosition, Vector2Int previous)
         {
@@ -557,7 +555,7 @@ namespace DCL
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
             else
-            {   
+            {
                 // 1. Set current scene id
                 CommonScriptableObjects.sceneNumber.Set(currentSceneNumber);
 
@@ -567,7 +565,7 @@ namespace DCL
 
             OnSortScenes?.Invoke();
         }
-        
+
         private void OnCurrentSceneNumberChange(int newSceneNumber, int previousSceneNumber)
         {
             if (Environment.i.world.state.TryGetScene(newSceneNumber, out IParcelScene newCurrentScene)
@@ -586,12 +584,17 @@ namespace DCL
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
-            
-            if (VERBOSE)
-                Debug.Log($"{Time.frameCount}: Trying to load scene: id: {sceneToLoad.id}; number: {sceneToLoad.sceneNumber}");
 
+            LoadUnityParcelScene(sceneToLoad);
+        }
+
+        public void LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad)
+        {
             if (sceneToLoad == null || sceneToLoad.sceneNumber <= 0)
                 return;
+
+            if (VERBOSE)
+                Debug.Log($"{Time.frameCount}: Trying to load scene: id: {sceneToLoad.id}; number: {sceneToLoad.sceneNumber}");
 
             DebugConfig debugConfig = DataStore.i.debugConfig;
 #if UNITY_EDITOR
@@ -693,9 +696,9 @@ namespace DCL
                 return;
 
             worldState.RemoveScene(sceneNumber);
-            
+
             DataStore.i.world.portableExperienceIds.Remove(scene.sceneData.id);
-            
+
             // Remove messaging controller for unloaded scene
             messagingControllersManager.RemoveController(sceneNumber);
 
@@ -715,7 +718,7 @@ namespace DCL
         public void UnloadAllScenes(bool includePersistent = false)
         {
             var worldState = Environment.i.world.state;
-            
+
             // since the list was changing by this foreach, we make a copy
             var list = worldState.GetLoadedScenes().ToArray();
 
@@ -763,7 +766,7 @@ namespace DCL
             Environment.i.messaging.manager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
 
-        public void CreateGlobalScene(string json)
+        public void CreateGlobalScene(CreateGlobalSceneMessage globalScene)
         {
 #if UNITY_EDITOR
             DebugConfig debugConfig = DataStore.i.debugConfig;
@@ -771,7 +774,6 @@ namespace DCL
             if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
                 return;
 #endif
-            CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
 
             // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
             //              It should never have references to UI systems or higher level systems.
@@ -814,6 +816,7 @@ namespace DCL
             }
 
             worldState.AddScene(newScene);
+
             OnNewSceneAdded?.Invoke(newScene);
 
             if (newScene.isPortableExperience)
@@ -863,7 +866,7 @@ namespace DCL
         public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<IParcelScene> OnNewSceneAdded;
         public event Action<IParcelScene> OnSceneRemoved;
-        
+
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
     }
 }

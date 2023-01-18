@@ -13,8 +13,9 @@ namespace DCL.Camera
 {
     public class CameraController : MonoBehaviour
     {
+
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] internal new UnityEngine.Camera camera;
-        [SerializeField] internal UnityEngine.Camera hudsCamera;
 
         private Transform cameraTransform;
 
@@ -62,7 +63,6 @@ namespace DCL.Camera
         private void Awake()
         {
             cameraTransform = this.camera.transform;
-            DataStore.i.camera.hudsCamera.Set(hudsCamera);
             DataStore.i.camera.transform.Set(cameraTransform);
 
             SetCameraEnabledState(CommonScriptableObjects.rendererState.Get());
@@ -85,7 +85,8 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
 
             OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
-           
+
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnDecoupledLoadingScreenChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
@@ -96,6 +97,14 @@ namespace DCL.Camera
             SetInvertYAxis(DataStore.i.camera.invertYAxis.Get(), false);
 
             wasBlendingLastFrame = false;
+        }
+
+        private void OnDecoupledLoadingScreenChange(bool visibleState, bool prevVisibleState)
+        {
+            if (visibleState == prevVisibleState)
+                return;
+
+            SetCameraEnabledState(!visibleState);
         }
 
         void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
@@ -251,6 +260,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
             DataStore.i.camera.outputTexture.OnChange -= OnOutputTextureChange;
             DataStore.i.camera.invertYAxis.OnChange -= SetInvertYAxis;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnFullscreenUIVisibilityChange;
         }
 
         [Serializable]

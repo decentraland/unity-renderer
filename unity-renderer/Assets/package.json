@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "displayName": "DCL Unity Renderer",
   "description": "Decentraland Unity Renderer Package",
-  "unity": "2020.3",
-  "unityRelease": "0f1",
+  "unity": "2021.3",
+  "unityRelease": "14f1",
   "gitDependencies": {
     "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
-    "net.tnrd.nsubstitute": "https://github.com/decentraland/Unity3D-NSubstitute.git"
+    "net.tnrd.nsubstitute": "https://github.com/decentraland/Unity3D-NSubstitute.git",
+    "com.atteneder.draco": "https://github.com/atteneder/DracoUnity.git",
+    "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
+    "com.decentraland.webgl-ime-input": "https://github.com/decentraland/webgl-ime-input.git"
   },
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",

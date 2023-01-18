@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using DCL.Chat.HUD;
-using DCl.Social.Friends;
+﻿using DCL.Chat.HUD;
+using DCL.Social.Friends;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,7 +11,7 @@ using UnityEngine.UI;
 public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatComponentView, IPointerDownHandler
 {
     private const float REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD = 0.995f;
-    
+
     [SerializeField] internal Button backButton;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal UserThumbnailComponentView userThumbnail;
@@ -85,12 +84,12 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
     {
         if (!this) return;
         if (!gameObject) return;
-        
+
         if (userContextMenu != null)
         {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
         }
-        
+
         base.Dispose();
     }
 
@@ -134,7 +133,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             isUserBlocked = isBlocked
         };
         RefreshControl();
-        
+
         jumpInButton.Initialize(friendsController, profile.userId, socialAnalytics);
     }
 

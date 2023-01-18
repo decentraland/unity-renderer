@@ -1,10 +1,20 @@
-﻿using DCL.Chat;
+using AvatarSystem;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
+using DCL.Providers;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.Services;
+using DCLServices.Lambdas;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
+using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using System.Collections.Generic;
 using UnityEngine;
+using WorldsFeaturesAnalytics;
 
 namespace DCL
 {
@@ -22,6 +32,9 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IWebRequestController>(WebRequestController.Create);
             result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<ILambdasService>(() => new LambdasService());
+            result.Register<INamesService>(() => new NamesService());
+            result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
 
@@ -34,19 +47,41 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+            result.Register<IAvatarFactory>(() => new AvatarFactory(result));
+            result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
+            result.Register<IBillboardsController>(BillboardsController.Create);
+
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
+
+            // Asset Providers
+            result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
+                { AssetSource.WEB, new AssetTextureWebLoader() }
+            }, DataStore.i.featureFlags));
+
+            result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
+            {
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
+            }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
-            
+
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
+
+            // Analytics
+
+            result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
 
             return result;
         }

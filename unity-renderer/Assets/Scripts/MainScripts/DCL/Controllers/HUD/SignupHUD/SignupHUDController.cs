@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using JetBrains.Annotations;
 
 namespace SignupHUD
 {
@@ -12,17 +13,18 @@ namespace SignupHUD
         internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
         private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
+        private readonly DataStore_LoadingScreen loadingScreenDataStore;
 
         internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
-        public SignupHUDController()
-        {
-            
-        }
+        [UsedImplicitly]
+        public SignupHUDController() { }
 
-        public SignupHUDController(IAnalytics analytics)
+        public SignupHUDController(IAnalytics analytics, DataStore_LoadingScreen loadingScreenDataStore)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
+            this.loadingScreenDataStore = loadingScreenDataStore;
+            loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
         }
 
         public void Initialize(IHUD avatarEditorHUD)
@@ -41,7 +43,7 @@ namespace SignupHUD
             view.OnEditAvatar += OnEditAvatar;
             view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
-            
+
             CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnLoadingScreenAppear;
         }
         private void OnLoadingScreenAppear(bool current, bool previous)
@@ -98,6 +100,7 @@ namespace SignupHUD
             view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnLoadingScreenAppear;
+            loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenAppear;
             view.Dispose();
         }
     }

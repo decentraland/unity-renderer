@@ -9,7 +9,7 @@ using DCL.Models;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 using RaycastHit = UnityEngine.RaycastHit;
-using Vector3 = DCL.ECSComponents.Vector3;
+using Vector3 = Decentraland.Common.Vector3;
 
 namespace DCLPlugins.ECSComponents.Raycast
 {
@@ -17,11 +17,11 @@ namespace DCLPlugins.ECSComponents.Raycast
     {
         // Lamport timestamp for raycast responses, we may want to move it to scene-level in the future
         private static int responseTimestamp = 0;
-        
+
         private IECSComponentWriter componentWriter;
         private LayerMask raycastLayerMaskTarget;
         private IInternalECSComponent<InternalColliders> physicsColliderComponent;
-        
+
         public RaycastComponentHandler(IECSComponentWriter componentWriter, IInternalECSComponent<InternalColliders> physicsColliderComponent)
         {
             this.componentWriter = componentWriter;
@@ -30,7 +30,7 @@ namespace DCLPlugins.ECSComponents.Raycast
             // Cast all layers except the OnPointerEvent one
             raycastLayerMaskTarget = ~(1 << PhysicsLayers.onPointerEventLayer);
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
         }
@@ -46,13 +46,13 @@ namespace DCLPlugins.ECSComponents.Raycast
             Ray ray = new Ray();
             ray.origin = PositionUtils.WorldToUnityPosition(origin + worldGridPosition);
             ray.direction = new UnityEngine.Vector3(model.Direction.X, model.Direction.Y, model.Direction.Z);
-            
+
             PBRaycastResult result = new PBRaycastResult();
             result.Direction = model.Direction.Clone();
             result.Origin = model.Origin.Clone();
             result.Timestamp = responseTimestamp;
             responseTimestamp++;
-            
+
             RaycastHit[] hits = null;
             if (model.QueryType == RaycastQueryType.RqtHitFirst)
             {
@@ -92,7 +92,7 @@ namespace DCLPlugins.ECSComponents.Raycast
                     hit.Length = hits[i].distance;
                     hit.Origin = model.Origin.Clone();
 
-                    var worldPosition = PositionUtils.UnityToWorldPosition(hits[i].point - worldGridPosition);
+                    var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(hits[i].point, scene);
                     hit.Position = new Vector3();
                     hit.Position.X = worldPosition.x;
                     hit.Position.Y = worldPosition.y;
@@ -113,9 +113,9 @@ namespace DCLPlugins.ECSComponents.Raycast
             }
 
             componentWriter.PutComponent(
-                scene.sceneData.sceneNumber, entity.entityId, 
-                ComponentID.RAYCAST_RESULT, 
-                result, 
+                scene.sceneData.sceneNumber, entity.entityId,
+                ComponentID.RAYCAST_RESULT,
+                result,
                 ECSComponentWriteType.WRITE_STATE_LOCALLY | ECSComponentWriteType.SEND_TO_SCENE
             );
         }
@@ -125,4 +125,4 @@ namespace DCLPlugins.ECSComponents.Raycast
             responseTimestamp = 0;
         }
     }
-} 
+}

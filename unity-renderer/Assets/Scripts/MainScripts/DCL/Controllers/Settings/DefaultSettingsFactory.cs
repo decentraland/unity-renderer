@@ -14,19 +14,21 @@ namespace DCL.SettingsCommon
 
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
+            leftMouseButtonCursorLock = true,
             mouseSensitivity = 0.6f,
-            scenesLoadRadius = 2,
+            invertYAxis = false,
+
+            scenesLoadRadius = 4,
             avatarsLODDistance = 16,
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,
             voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-            namesOpacity = 0.5f,
+            namesOpacity = 1f,
             profanityChatFiltering = true,
             nightMode = false,
             hideUI = false,
             showAvatarNames = true,
             dynamicProceduralSkybox = true,
-            invertYAxis = false,
             skyboxTime = 0.0f,
             firstPersonCameraFOV = 60
         };

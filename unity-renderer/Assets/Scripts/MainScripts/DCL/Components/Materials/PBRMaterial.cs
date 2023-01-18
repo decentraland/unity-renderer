@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -6,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using DCL.Shaders;
 
 namespace DCL.Components
 {
@@ -344,6 +344,11 @@ namespace DCL.Components
                 if ( coroutine != null )
                     CoroutineStarter.Stop(coroutine);
             }
+            
+            albedoDCLTexture = null;
+            alphaDCLTexture = null;
+            emissiveDCLTexture = null;
+            bumpDCLTexture = null;
 
             base.Dispose();
         }

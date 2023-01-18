@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
-using DCL.Interface;
-using DCl.Social.Friends;
+using DCL.ProfanityFiltering;
+using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -36,7 +36,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
@@ -77,7 +77,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
@@ -124,12 +125,13 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             Substitute.For<ISocialAnalytics>(),
             Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>());
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
         worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
         controller.AddWorldChatWindow(worldChatWindowController);
 
         var publicChatChannelController = new PublicChatWindowController(
-            this.chatController,  
+            this.chatController,
             userProfileBridge,
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),

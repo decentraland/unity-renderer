@@ -40,7 +40,7 @@ namespace DCL
             OnGet?.Invoke();
         }
 
-        public void OnPoolRelease()
+        private void OnPoolRelease()
         {
             if (lifecycleHandlers != null)
             {
