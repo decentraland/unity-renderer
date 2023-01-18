@@ -83,11 +83,12 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 if (componentData.model.meshesDirty)
                 {
                     // TODO: Deal with "safe" merged bounds...
-                    // TODO: When will merged bounds be cleaned up ???
+                    // TODO: When will merged bounds be cleaned up? If entity did have meshes and now it doesn't, does the merged bounds get re-set/cleaned?
                     sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
                 }
 
                 //TODO: add cpu time budget managing here
+                //TODO: deal with height checks ???
 
                 RunEntityEvaluation(componentData);
 
@@ -119,47 +120,34 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.max;
             Vector3 globalBoundsMinPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.min;
 
-            bool isInsideBounds = sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset)
-                                  && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
+            // 1. cheap outer-bounds check
+            sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(globalBoundsMaxPoint)
+                                                                   && sbcComponentData.scene.IsInsideSceneOuterBoundaries(globalBoundsMinPoint);
 
-            SetInsideBoundsStateForEntity(sbcComponentData.entity, isInsideBounds);
-            SetInsideBoundsStateForMeshComponents(sbcComponentData, isInsideBounds);
+            // 2. confirm with inner-bounds check only if entity is inside outer bounds
+            sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset)
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
+            SetInsideBoundsStateForMeshComponents(sbcComponentData);
         }
 
         private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            bool isInsideBounds = sbcComponentData.scene.IsInsideSceneBoundaries(sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get());
-            SetInsideBoundsStateForEntity(sbcComponentData.entity, isInsideBounds);
-            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity, isInsideBounds);
+            // 1. cheap outer-bounds check
+            sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
+
+            // 2. confirm with inner-bounds check only if entity is inside outer bounds
+            sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get());
+            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity);
         }
 
-        private void SetInsideBoundsStateForEntity(IDCLEntity entity, bool isInsideBounds)
+        private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            if (entity.isInsideSceneBoundaries == isInsideBounds)
-                return;
-
-            entity.isInsideSceneOuterBoundaries = isInsideBounds; // TODO: correct with outer boundaries optimization
-            entity.isInsideSceneBoundaries = isInsideBounds;
-
-            // for debugging
-            if (isInsideBounds)
-            {
-                entity.gameObject.name = entity.gameObject.name.Replace("/", "");
-                entity.gameObject.name += "+";
-            }
-            else
-            {
-                entity.gameObject.name = entity.gameObject.name.Replace("+", "");
-                entity.gameObject.name += "/";
-            }
+            outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), sbcComponentData.entity.isInsideSceneBoundaries);
         }
 
-        private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, bool isInsideBounds)
-        {
-            outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), isInsideBounds);
-        }
-
-        private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, bool isInsideBounds)
+        private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity)
         {
         }
     }
