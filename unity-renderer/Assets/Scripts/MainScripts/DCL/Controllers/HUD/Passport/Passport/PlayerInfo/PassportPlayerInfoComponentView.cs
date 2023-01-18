@@ -160,19 +160,10 @@ namespace DCL.Social.Passports
 
         private void SetName(string name)
         {
-            if (name.Contains('#'))
-            {
-                this.name.SetText(name.Split('#')[0]);
-                address.SetText($"#{name.Split('#')[1]}");
-            }
-            else
-            {
-                this.name.SetText(name);
-                address.SetText("");
-            }
-
+            string[] splitName = name.Split('#');
+            this.name.SetText(splitName[0]);
+            address.SetText($"{(splitName.Length == 2 ? "#" + splitName[1] : "")}");
             Utils.ForceRebuildLayoutImmediate(usernameRect);
-
             nameInOptionsPanel.text = name;
         }
 
