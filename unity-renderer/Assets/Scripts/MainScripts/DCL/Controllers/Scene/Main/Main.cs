@@ -41,6 +41,7 @@ namespace DCL
                 InitializeSceneDependencies();
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
+
             // TODO: migrate chat controller singleton into a service in the service locator
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
 
@@ -51,11 +52,11 @@ namespace DCL
 
                 dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
-
             }
 
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
             WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
+
             FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
                 webInterfaceFriendsApiBridge,
                 RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), webInterfaceFriendsApiBridge),
@@ -84,12 +85,10 @@ namespace DCL
 
             kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
 #else
+
             // TODO(Brian): Remove this branching once we finish migrating all tests out of the
             //              IntegrationTestSuite_Legacy base class.
-            if (!EnvironmentSettings.RUNNING_TESTS)
-            {
-                kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
-            }
+            if (!EnvironmentSettings.RUNNING_TESTS) { kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL); }
 #endif
         }
 
@@ -137,6 +136,7 @@ namespace DCL
         {
             Application.wantsToQuit += ApplicationWantsToQuit;
         }
+
         private static bool ApplicationWantsToQuit()
         {
             if (i != null)
@@ -150,8 +150,8 @@ namespace DCL
             dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
-
             DataStore.i.common.isApplicationQuitting.Set(true);
+            Settings.i.SaveSettings();
 
             pluginSystem?.Dispose();
 
@@ -186,6 +186,7 @@ namespace DCL
             MainSceneFactory.CreateEventSystem();
         }
 
-        protected virtual void CreateEnvironment() => MainSceneFactory.CreateEnvironment();
+        protected virtual void CreateEnvironment() =>
+            MainSceneFactory.CreateEnvironment();
     }
 }
