@@ -27,9 +27,7 @@ namespace DCL.LoadingScreen
             base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
-#if !UNITY_EDITOR
-            betaTag.SetActive(Application.platform != RuntimePlatform.WebGLPlayer);
-#endif
+            betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
             
             SetupBlitTexture();
             rawImage.gameObject.SetActive(false);
