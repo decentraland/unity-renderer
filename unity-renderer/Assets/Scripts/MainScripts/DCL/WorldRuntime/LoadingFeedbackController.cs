@@ -40,8 +40,10 @@ namespace DCL
             DataStore.i.featureFlags.flags.OnChange += FeatureFlagsSet;
         }
 
-        private void FeatureFlagsSet(FeatureFlag current, FeatureFlag previous)
+        private void FeatureFlagsSet(FeatureFlag current, FeatureFlag _)
         {
+            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsSet;
+        
             isDecoupledLoadingScreenEnabled = current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             if (!isDecoupledLoadingScreenEnabled)
             {
@@ -52,7 +54,6 @@ namespace DCL
                 AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
                 CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
             }
-            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsSet;
         }
 
         public void Dispose()
