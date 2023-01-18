@@ -84,6 +84,8 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) =>
     new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
+      const resolveWithBaseUrlNoV = (file: string) =>
+    new URL(file, baseUrl).toString()
 
   const enableBrotli =
     typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https:"
@@ -94,7 +96,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl + postfix),
     frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl + postfix),
     codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl + postfix),
-    streamingAssetsUrl: "StreamingAssets",
+    streamingAssetsUrl: resolveWithBaseUrlNoV("StreamingAssets"),
     companyName: "Decentraland",
     productName: "Decentraland World Client",
     productVersion: "0.1",
