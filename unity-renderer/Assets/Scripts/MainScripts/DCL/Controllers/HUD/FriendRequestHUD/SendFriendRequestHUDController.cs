@@ -46,6 +46,7 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             friendOperationsCancellationToken.Dispose();
+            hideCancellationToken.Dispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;
@@ -79,11 +80,20 @@ namespace DCL.Social.Friends
         {
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken = new CancellationTokenSource();
-            hideCancellationToken?.Cancel();
+
+            try
+            {
+                hideCancellationToken.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // the view has already been hidden before, so ignore the exception
+            }
+
             hideCancellationToken = new CancellationTokenSource();
 
             SendAsync(friendOperationsCancellationToken.Token,
-                    hideCancellationToken.AddTo(friendOperationsCancellationToken.Token).Token)
+                    hideCancellationToken.Token)
                .Forget();
         }
 
@@ -119,7 +129,7 @@ namespace DCL.Social.Friends
 
         private void Hide()
         {
-            hideCancellationToken?.Cancel();
+            hideCancellationToken.Cancel();
             dataStore.HUDs.sendFriendRequest.Set(null, false);
             view.Close();
         }
