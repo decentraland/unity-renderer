@@ -100,7 +100,7 @@ namespace DCL.Social.Passports
             cts?.Dispose();
             cts = null;
 
-            wearablesPromise.Dispose();
+            wearablesPromise?.Dispose();
         }
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
