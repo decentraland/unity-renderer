@@ -68,7 +68,7 @@ namespace DCL.LoadingScreen
             //We have to check that the latest scene loaded is the one from our current destination
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
-                Debug.Log("Scene is Loaded: " + obj);
+                Debug.Log($"Scene {obj} is ready for coords {currentDestination}");
 
                 //We have to check if the player is loaded
                 if(commonDataStore.isPlayerRendererLoaded.Get())
@@ -105,6 +105,8 @@ namespace DCL.LoadingScreen
             if (IsNewRealm() || IsSceneLoaded(currentDestinationCandidate))
             {
                 currentDestination = currentDestinationCandidate;
+
+                Debug.Log("Teleport requested to " + currentDestinationCandidate);
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
                 //This is probably going to change with the integration of WORLDS loading screen
