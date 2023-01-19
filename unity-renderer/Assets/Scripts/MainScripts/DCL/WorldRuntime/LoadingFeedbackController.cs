@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Controllers;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace DCL
     public class LoadingFeedbackController
     {
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+        private  bool isDecoupledLoadingScreenEnabled;
 
         private class SceneLoadingStatus
         {
@@ -35,20 +37,35 @@ namespace DCL
 
         public LoadingFeedbackController()
         {
-            loadedScenes = new List<SceneLoadingStatus>();
+            DataStore.i.featureFlags.flags.OnChange += FeatureFlagsSet;
+        }
 
-            Environment.i.world.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
-            GLTFComponent.OnDownloadingProgressUpdate += GLTFComponent_OnDownloadingProgressUpdate;
-            AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
-            CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+        private void FeatureFlagsSet(FeatureFlag current, FeatureFlag _)
+        {
+            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsSet;
+
+            isDecoupledLoadingScreenEnabled = current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+            if (!isDecoupledLoadingScreenEnabled)
+            {
+                loadedScenes = new List<SceneLoadingStatus>();
+
+                //Add this null check is quite bad. But we are deleting this class soon, so it does not generate any tech debt
+                if(Environment.i.world.sceneController != null) Environment.i.world.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
+                GLTFComponent.OnDownloadingProgressUpdate += GLTFComponent_OnDownloadingProgressUpdate;
+                AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
+                CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+            }
         }
 
         public void Dispose()
         {
-            Environment.i.world.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
-            GLTFComponent.OnDownloadingProgressUpdate -= GLTFComponent_OnDownloadingProgressUpdate;
-            AssetPromise_AB.OnDownloadingProgressUpdate -= AssetPromise_AB_OnDownloadingProgressUpdate;
-            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            if (!isDecoupledLoadingScreenEnabled)
+            {
+                Environment.i.world.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
+                GLTFComponent.OnDownloadingProgressUpdate -= GLTFComponent_OnDownloadingProgressUpdate;
+                AssetPromise_AB.OnDownloadingProgressUpdate -= AssetPromise_AB_OnDownloadingProgressUpdate;
+                CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            }
         }
 
         private void SceneController_OnNewSceneAdded(IParcelScene scene)

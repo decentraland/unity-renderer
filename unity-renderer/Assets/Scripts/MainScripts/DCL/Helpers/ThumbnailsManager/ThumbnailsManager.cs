@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL;
+using MainScripts.DCL.Controllers.AssetManager;
 using Object = UnityEngine.Object;
 
 //In the future the AssetManager will do this
@@ -52,7 +53,7 @@ public static class ThumbnailsManager
         if (string.IsNullOrEmpty(url))
             return null;
 
-        var promise = new AssetPromise_Texture(url);
+        var promise = new AssetPromise_Texture(url, permittedSources: AssetSource.ALL);
         AssetPromiseKeeper_Texture.i.Keep(promise);
 
         return promise;
@@ -92,7 +93,7 @@ public static class ThumbnailsManager
             return;
         }
 
-        var newPromise = new AssetPromise_Texture(url);
+        var newPromise = new AssetPromise_Texture(url, permittedSources: AssetSource.ALL);
         promiseCache.Add(url, newPromise);
 
         AddToQueue(new EnqueuedThumbnail(newPromise, OnComplete));

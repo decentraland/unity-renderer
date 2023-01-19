@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
@@ -44,6 +45,8 @@ namespace DCl.Social.Friends
             userProfileBridge.GetOwn().Returns(ownProfile);
             friendsController = Substitute.For<IFriendsController>();
             friendsController.AllocatedFriendCount.Returns(FRIENDS_COUNT);
+            friendsController.GetFriendsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(new string[0]));
+            friendsController.GetFriendsAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(new string[0]));
             dataStore = new DataStore();
             controller = new FriendsHUDController(dataStore,
                 friendsController,
@@ -363,7 +366,7 @@ namespace DCl.Social.Friends
 
             controller.SetVisibility(true);
 
-            friendsController.Received(1).GetFriends(30, 0);
+            friendsController.Received(1).GetFriendsAsync(30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -373,7 +376,7 @@ namespace DCl.Social.Friends
 
             view.OnFriendListDisplayed += Raise.Event<Action>();
 
-            friendsController.Received(1).GetFriends(30, 0);
+            friendsController.Received(1).GetFriendsAsync(30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -458,7 +461,7 @@ namespace DCl.Social.Friends
             friendsController.IsInitialized.Returns(true);
             view.OnRequireMoreFriends += Raise.Event<Action>();
 
-            friendsController.GetFriends(30, 0);
+            friendsController.Received(1).GetFriendsAsync(30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -470,7 +473,7 @@ namespace DCl.Social.Friends
 
             view.OnRequireMoreFriends += Raise.Event<Action>();
 
-            friendsController.Received(1).GetFriends(30, 30);
+            friendsController.Received(1).GetFriendsAsync(30, 30, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -505,7 +508,7 @@ namespace DCl.Social.Friends
 
             view.OnSearchFriendsRequested += Raise.Event<Action<string>>(searchText);
 
-            friendsController.Received(1).GetFriends(searchText, 100);
+            friendsController.Received(1).GetFriendsAsync(searchText, 100, Arg.Any<CancellationToken>());
             view.Received(1).EnableSearchMode();
         }
 
@@ -527,7 +530,7 @@ namespace DCl.Social.Friends
             controller.SetVisibility(false);
             controller.SetVisibility(true);
 
-            friendsController.Received(2).GetFriends(30, 0);
+            friendsController.Received(2).GetFriendsAsync(30, 0, Arg.Any<CancellationToken>());
         }
 
         [Test]
