@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using System;
 using System.Collections;
@@ -6,6 +7,8 @@ using TMPro;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
@@ -13,7 +16,7 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
-        private const float COPY_TOAST_VISIBLE_TIME = 3;
+        private const int COPY_TOAST_VISIBLE_TIME = 3000;
 
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI address;
@@ -59,9 +62,8 @@ namespace DCL.Social.Passports
         private string fullWalletAddress;
         private bool areFriends;
         private bool isBlocked = false;
-        private Coroutine copyAddressRoutine = null;
-        private Coroutine copyNameRoutine = null;
         private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
+        private CancellationTokenSource cts;
 
         public override void Start()
         {
@@ -119,12 +121,15 @@ namespace DCL.Social.Passports
 
             walletCopyButton.onClick.RemoveAllListeners();
             addFriendButton.onClick.RemoveAllListeners();
+
+            ResetCancellationToken();
         }
 
-        public void ResetPanelOnClose()
+        public void ResetCopyToast()
         {
             copyAddressToast.Hide(true);
             copyUsernameToast.Hide(true);
+            ResetCancellationToken();
         }
 
         public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
@@ -163,6 +168,8 @@ namespace DCL.Social.Passports
             string[] splitName = name.Split('#');
             this.name.SetText(splitName[0]);
             address.SetText($"{(splitName.Length == 2 ? "#" + splitName[1] : "")}");
+            //We are forced to use this due to the UI not being correctly responsive with the placing of the copy icon
+            //without the force rebuild it's not setting the elements as dirty and not replacing them correctly
             Utils.ForceRebuildLayoutImmediate(usernameRect);
             nameInOptionsPanel.text = name;
         }
@@ -229,12 +236,9 @@ namespace DCL.Social.Passports
                 return;
 
             OnWalletCopy?.Invoke(fullWalletAddress);
-            if (copyAddressRoutine != null)
-            {
-                StopCoroutine(copyAddressRoutine);
-            }
-
-            copyAddressRoutine = StartCoroutine(ShowCopyToast(copyAddressToast));
+            ResetCopyToast();
+            cts = new CancellationTokenSource();
+            ShowCopyToast(copyAddressToast, cts.Token).Forget();
         }
 
         private void CopyUsernameToClipboard()
@@ -243,15 +247,12 @@ namespace DCL.Social.Passports
                 return;
 
             OnUsernameCopy?.Invoke(model.name);
-            if (copyNameRoutine != null)
-            {
-                StopCoroutine(copyNameRoutine);
-            }
-
-            copyNameRoutine = StartCoroutine(ShowCopyToast(copyUsernameToast));
+            ResetCopyToast();
+            cts = new CancellationTokenSource();
+            ShowCopyToast(copyUsernameToast, cts.Token).Forget();
         }
 
-        private IEnumerator ShowCopyToast(ShowHideAnimator toast)
+        private async UniTaskVoid ShowCopyToast(ShowHideAnimator toast, CancellationToken ct)
         {
             if (!toast.gameObject.activeSelf)
             {
@@ -259,8 +260,15 @@ namespace DCL.Social.Passports
             }
 
             toast.Show();
-            yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
+            await Task.Delay(COPY_TOAST_VISIBLE_TIME, ct);
             toast.Hide();
+        }
+
+        private void ResetCancellationToken()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
         }
 
         private void WhisperActionFlow()

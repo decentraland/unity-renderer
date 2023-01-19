@@ -22,7 +22,7 @@ namespace DCL.Social.Passports
 
         void SetIsBlocked(bool isBlocked);
         void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics);
-        void ResetPanelOnClose();
+        void ResetCopyToast();
         void SetFriendStatus(FriendshipStatus status);
         void SetActionsActive(bool isActive);
     }

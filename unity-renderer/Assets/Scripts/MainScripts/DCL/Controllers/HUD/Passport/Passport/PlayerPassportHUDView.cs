@@ -69,7 +69,7 @@ namespace DCL.Social.Passports
             }
             else
             {
-                playerInfoView.ResetPanelOnClose();
+                playerInfoView.ResetCopyToast();
                 HidePassportAnimation(animationCancellationToken.Token);
             }
 
