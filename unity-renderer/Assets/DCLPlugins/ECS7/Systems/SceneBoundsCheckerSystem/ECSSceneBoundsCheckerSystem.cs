@@ -66,10 +66,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 sceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
-            var sbcComponents = sceneBoundsCheckComponent.GetForAll();
-            for (int i = sbcComponents.Count-1; i >= 0 ; i--)
+            var sbcComponentGroup = sceneBoundsCheckComponent.GetForAll();
+            for (int i = sbcComponentGroup.Count-1; i >= 0 ; i--)
             {
-                var componentData = sbcComponents[i].value;
+                var componentData = sbcComponentGroup[i].value;
 
                 if(!componentData.model.dirty) continue;
 
@@ -98,7 +98,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
         }
 
-        // TODO: Add 'outer bounds check' optimization
         private void RunEntityEvaluation(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
@@ -126,7 +125,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             // 2. confirm with inner-bounds check only if entity is inside outer bounds
             sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
-                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset)
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset, globalBoundsMaxPoint.y)
                                                               && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
             SetInsideBoundsStateForMeshComponents(sbcComponentData);
         }
@@ -137,8 +136,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
 
             // 2. confirm with inner-bounds check only if entity is inside outer bounds
+            Vector3 entityWorldPosition = sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get();
             sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
-                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get());
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(entityWorldPosition, entityWorldPosition.y);
             SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity);
         }
 
