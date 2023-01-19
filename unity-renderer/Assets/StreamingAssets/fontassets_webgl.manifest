@@ -7,7 +7,7 @@ Hashes:
   TypeTreeHash:
     serializedVersion: 2
     Hash: 68b90cd9c0b6bc80927e1583d2a04dd2
-HashAppended: 1
+HashAppended: 0
 ClassTypes:
 - Class: 21
   Script: {instanceID: 0}

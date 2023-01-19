@@ -40,7 +40,7 @@ public class FontAssetBundleGenerator : MonoBehaviour
         MarkFolderForAssetBundleBuild(fontDirectory, $"fontAssets_{BuildPipeline.GetBuildTargetName(target)}");
 
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
-            BuildAssetBundleOptions.AppendHashToAssetBundleName,
+            BuildAssetBundleOptions.None,
             target);
     }
 

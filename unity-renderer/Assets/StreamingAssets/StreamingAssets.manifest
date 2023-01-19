@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 3542599897
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: fontassets_webgl
+      Dependencies: {}
