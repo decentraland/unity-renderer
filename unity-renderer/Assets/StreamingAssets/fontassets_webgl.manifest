@@ -1,0 +1,52 @@
+ManifestFileVersion: 0
+CRC: 1495267128
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5d97e3e3535a00d9e54a580c5fae6c45
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 68b90cd9c0b6bc80927e1583d2a04dd2
+HashAppended: 1
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
+Assets:
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansSC-SemiBold.otf
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansSC-SemiBold SDF.asset
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansJP-SemiBold SDF.asset
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansKR-SemiBold SDF.asset
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansKR-SemiBold.otf
+- Assets/TextMesh Pro/Resources/Fonts Sources/NotoSansJP-SemiBold.otf
+Dependencies: []

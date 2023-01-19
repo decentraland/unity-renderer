@@ -11,21 +11,21 @@ using UnityEngine;
 namespace DCL
 {
     /// <summary>
-    /// This is the InitialScene entry point.
-    /// Most of the application subsystems should be initialized from this class Awake() event.
+    ///     This is the InitialScene entry point.
+    ///     Most of the application subsystems should be initialized from this class Awake() event.
     /// </summary>
     public class Main : MonoBehaviour
     {
-        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private bool disableSceneDependencies;
-        public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-
-        private PerformanceMetricsController performanceMetricsController;
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         protected IKernelCommunication kernelCommunication;
 
+        private PerformanceMetricsController performanceMetricsController;
+
         protected PluginSystem pluginSystem;
+        public static Main i { get; private set; }
 
         protected virtual void Awake()
         {
@@ -71,6 +71,25 @@ namespace DCL
             InitializeCommunication();
         }
 
+        protected virtual void Start()
+        {
+            // this event should be the last one to be executed after initialization
+            // it is used by the kernel to signal "EngineReady" or something like that
+            // to prevent race conditions like "SceneController is not an object",
+            // aka sending events before unity is ready
+            WebInterface.SendSystemInfoReport();
+
+            // We trigger the Decentraland logic once everything is initialized.
+            WebInterface.StartDecentraland();
+
+            SetupAdditionalFonts();
+        }
+
+        protected virtual void Update()
+        {
+            performanceMetricsController?.Update();
+        }
+
         protected virtual void InitializeDataStore()
         {
             DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettings.GLTF_TEX_MAX_SIZE_WEB);
@@ -92,7 +111,7 @@ namespace DCL
 #endif
         }
 
-        void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
+        private void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
         {
             if (newVisibleValue)
             {
@@ -114,25 +133,8 @@ namespace DCL
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
         }
 
-        protected virtual void Start()
-        {
-            // this event should be the last one to be executed after initialization
-            // it is used by the kernel to signal "EngineReady" or something like that
-            // to prevent race conditions like "SceneController is not an object",
-            // aka sending events before unity is ready
-            WebInterface.SendSystemInfoReport();
-
-            // We trigger the Decentraland logic once everything is initialized.
-            WebInterface.StartDecentraland();
-        }
-
-        protected virtual void Update()
-        {
-            performanceMetricsController?.Update();
-        }
-
         [RuntimeInitializeOnLoadMethod]
-        static void RunOnStart()
+        private static void RunOnStart()
         {
             Application.wantsToQuit += ApplicationWantsToQuit;
         }
@@ -188,5 +190,11 @@ namespace DCL
 
         protected virtual void CreateEnvironment() =>
             MainSceneFactory.CreateEnvironment();
+
+        private void SetupAdditionalFonts()
+        {
+            AssetPromise_Font additionalFonts = new AssetPromise_Font("", Application.streamingAssetsPath, "/fontassets_webgl", false);
+            AssetPromiseKeeper_Font.i.Keep(additionalFonts);
+        }
     }
 }

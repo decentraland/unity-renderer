@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Providers;
+using MainScripts.DCL.Controllers.AssetManager;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_Font : AssetPromise<Asset_Font>
+    public class AssetPromise_Font : AssetPromise_WithUrl<Asset_Font>
     {
         private const string RESOURCE_FONT_FOLDER = "Fonts & Materials";
         private const string DEFAULT_SANS_SERIF_HEAVY = "Inter-Heavy SDF";
@@ -29,9 +33,17 @@ namespace DCL
         private string src;
         private Coroutine fontCoroutine;
 
-        public AssetPromise_Font(string src)
+        private Service<IAssetBundleResolver> assetBundleResolver;
+        private CancellationTokenSource cancellationTokenSource;
+        private readonly AssetSource permittedSources;
+
+        private readonly bool fetchingEcsFonts;
+
+        public AssetPromise_Font(string src, string baseURL = "", string hash = "", bool fetchingECSFonts = true , AssetSource permittedSources = AssetSource.WEB) : base(baseURL, hash)
         {
+            this.permittedSources = permittedSources;
             this.src = src;
+            this.fetchingEcsFonts = fetchingECSFonts;
         }
 
         protected override void OnAfterLoadOrReuse() { }
@@ -51,13 +63,48 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            if (fontsMapping.TryGetValue(src, out string fontResourceName))
+            if (fetchingEcsFonts)
             {
-                fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess, OnFail, fontResourceName));
+                if (fontsMapping.TryGetValue(src, out string fontResourceName))
+                    fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess, OnFail, fontResourceName));
+                else
+                    OnFail?.Invoke(new Exception("Font doesn't correspond with any know font"));
             }
             else
             {
-                OnFail?.Invoke(new Exception("Font doesn't correspond with any know font"));
+                if (cancellationTokenSource != null)
+                    return;
+
+                cancellationTokenSource = new CancellationTokenSource();
+                LoadFonts(OnSuccess, OnFail, cancellationTokenSource.Token).Forget();
+            }
+
+        }
+
+        private async UniTask LoadFonts(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var assetBundle = await assetBundleResolver.Ref.GetAssetBundleAsync(permittedSources, contentUrl, hash, cancellationToken);
+
+                var fallbackFontAssets = TMP_Settings.fallbackFontAssets;
+
+                if (fallbackFontAssets == null)
+                {
+                    fallbackFontAssets = new List<TMP_FontAsset>();
+                }
+
+                var fonts = assetBundle.LoadAllAssets<TMP_FontAsset>();
+                fallbackFontAssets.AddRange(fonts);
+
+                TMP_Settings.fallbackFontAssets = fallbackFontAssets;
+
+                onSuccess?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("FAILED TO LOAD FONTS");
+                onFail?.Invoke(e);
             }
         }
 
