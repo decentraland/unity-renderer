@@ -63,10 +63,7 @@ namespace DCLServices.Lambdas
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
-            //urlBuilder.Append(catalyst.lambdasUrl);
-            // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
-            urlBuilder.Append("https://peer.decentraland.org/lambdas");
-            urlBuilder.Append("/");
+            urlBuilder.Append("https://peer.decentraland.org/lambdas/");
 
             var endPointSpan = endPoint.AsSpan();
 
@@ -80,7 +77,7 @@ namespace DCLServices.Lambdas
 
             if (urlEncodedParams.Length > 0)
             {
-                urlBuilder.Append('?');
+                urlBuilder.Append(urlBuilder.ToString().Contains('?') ? '&' : '?');
 
                 for (var i = 0; i < urlEncodedParams.Length; i++)
                 {

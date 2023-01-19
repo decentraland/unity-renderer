@@ -3,13 +3,14 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
-using DCL.Providers;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.Lambdas.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace DCL
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
+            result.Register<IWearablesCatalogService>(() => new WearablesCatalogService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
 
