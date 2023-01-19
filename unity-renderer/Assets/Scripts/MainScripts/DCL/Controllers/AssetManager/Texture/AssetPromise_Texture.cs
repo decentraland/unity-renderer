@@ -1,14 +1,15 @@
+using Cysharp.Threading.Tasks;
 using System;
 using DCL.Helpers;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.Controllers.AssetManager;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace DCL
 {
     public class AssetPromise_Texture : AssetPromise<Asset_Texture>
     {
-        private const string PLAIN_BASE64_PROTOCOL = "data:text/plain;base64,";
         private const TextureWrapMode DEFAULT_WRAP_MODE = TextureWrapMode.Clamp;
         private const FilterMode DEFAULT_FILTER_MODE = FilterMode.Bilinear;
 
@@ -19,12 +20,16 @@ namespace DCL
         private readonly bool storeDefaultTextureInAdvance = false;
         private readonly bool storeTexAsNonReadable = false;
         private readonly int maxTextureSize;
+        private readonly AssetSource permittedSources;
+
+        private CancellationTokenSource cancellationTokenSource;
+
+        private Service<ITextureAssetResolver> textureResolver;
 
         public string url { get; }
 
-        IWebRequestAsyncOperation webRequestOp;
-
-        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true, int? overrideMaxTextureSize = null)
+        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true,
+            int? overrideMaxTextureSize = null, AssetSource permittedSources = AssetSource.WEB)
         {
             url = textureUrl;
             wrapMode = textureWrapMode;
@@ -34,74 +39,53 @@ namespace DCL
             maxTextureSize = overrideMaxTextureSize ?? DataStore.i.textureConfig.generalMaxSize.Get();
             idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, maxTextureSize);
             idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode, maxTextureSize);
+            this.permittedSources = permittedSources;
         }
 
         protected override void OnAfterLoadOrReuse() { }
 
         protected override void OnBeforeLoadOrReuse() { }
 
-        protected override object GetLibraryAssetCheckId() { return idWithTexSettings; }
+        protected override object GetLibraryAssetCheckId()
+        {
+            return idWithTexSettings;
+        }
 
         protected override void OnCancelLoading()
         {
-            if (webRequestOp != null)
-                webRequestOp.Dispose();
+            cancellationTokenSource?.Cancel();
         }
 
-        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
+        protected override void OnLoad(Action onSuccess, Action<Exception> onFail)
         {
             // Reuse the already-stored default texture, we duplicate it and set the needed config afterwards in AddToLibrary()
             if (library.Contains(idWithDefaultTexSettings) && !UsesDefaultWrapAndFilterMode())
             {
-                OnSuccess?.Invoke();
+                onSuccess?.Invoke();
                 return;
             }
 
-            if (!url.StartsWith(PLAIN_BASE64_PROTOCOL))
-            {
-                webRequestOp = DCL.Environment.i.platform.webRequest.GetTexture(
-                    url: url,
-                    OnSuccess: (webRequestResult) =>
-                    {
-                        if (asset != null)
-                        {
-                            Texture2D texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
-                            asset.texture = TextureHelpers.ClampSize(texture, maxTextureSize, useGPUCopy: false);
-                            asset.resizingFactor = Mathf.Min(1, TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize));
-                            if (TextureUtils.IsQuestionMarkPNG(asset.texture))
-                                OnFail?.Invoke(new Exception("The texture is a question mark"));
-                            else
-                                OnSuccess?.Invoke();
-                        }
-                        else
-                        {
-                            OnFail?.Invoke(new Exception("The texture asset is null"));
-                        }
-                    },
-                    OnFail: (webRequestResult) =>
-                    {
-                        OnFail?.Invoke(new Exception($"Texture promise failed: {webRequestResult?.webRequest?.error}"));
-                    });
-            }
-            else
-            {
-                //For Base64 protocols we just take the bytes and create the texture
-                //to avoid Unity's web request issue with large URLs
-                try {
-                    string substring = url.Substring(PLAIN_BASE64_PROTOCOL.Length);
-                    byte[] decodedTexture = Convert.FromBase64String(substring);
-                    asset.texture = new Texture2D(1, 1);
-                    asset.texture.LoadImage(decodedTexture);
-                    asset.resizingFactor = TextureHelpers.GetScalingFactor(asset.texture.width, asset.texture.height, maxTextureSize);
-                    asset.texture = TextureHelpers.ClampSize(asset.texture, maxTextureSize);
-                    OnSuccess?.Invoke();
-                }
-                catch (Exception e)
-                {
-                    OnFail?.Invoke(e);
-                }
+            cancellationTokenSource = new CancellationTokenSource();
 
+            async UniTaskVoid LaunchRequest()
+            {
+                var result = await textureResolver.Ref.GetTextureAsync(permittedSources, url,
+                    maxTextureSize, cancellationTokenSource.Token);
+
+                if (result.IsSuccess)
+                {
+                    var successResponse = result.GetSuccessResponse();
+                    asset.texture = successResponse.Texture;
+                    asset.resizingFactor = successResponse.ResizingFactor;
+                    onSuccess?.Invoke();
+                }
+                else
+                {
+                    onFail?.Invoke(result.GetFailResponse().Exception);
+                }
             }
+
+            LaunchRequest().Forget();
         }
 
         protected override bool AddToLibrary()
@@ -144,7 +128,10 @@ namespace DCL
             return true;
         }
 
-        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode, int maxSize) { return $"{((int)textureWrapMode)}{((int)textureFilterMode)}{textureUrl}{maxSize}"; }
+        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode, int maxSize)
+        {
+            return $"{((int)textureWrapMode)}{((int)textureFilterMode)}{textureUrl}{maxSize}";
+        }
 
         public override object GetId()
         {
@@ -152,6 +139,9 @@ namespace DCL
             return idWithDefaultTexSettings;
         }
 
-        public bool UsesDefaultWrapAndFilterMode() { return wrapMode == DEFAULT_WRAP_MODE && filterMode == DEFAULT_FILTER_MODE; }
+        public bool UsesDefaultWrapAndFilterMode()
+        {
+            return wrapMode == DEFAULT_WRAP_MODE && filterMode == DEFAULT_FILTER_MODE;
+        }
     }
 }

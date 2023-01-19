@@ -1,10 +1,16 @@
 ﻿using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
+using DCL.Providers;
 using DCL.ProfanityFiltering;
 using DCL.Rendering;
+using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
+using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 
 namespace DCL
 {
@@ -61,6 +67,23 @@ namespace DCL
             );
 
             result.Register<IProfanityFilter>(() => Substitute.For<IProfanityFilter>());
+
+            var editorBundleProvider = Substitute.For<IAssetBundleProvider>();
+
+            editorBundleProvider.GetAssetBundleAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                                .Returns(UniTask.FromResult<AssetBundle>(null));
+
+            DataStore.i.featureFlags.flags.Set(new FeatureFlag { flags = { [AssetResolverLogger.VERBOSE_LOG_FLAG] = true } });
+
+            result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
+            {
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
+            }, editorBundleProvider, DataStore.i.featureFlags));
+
+            result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
+            {
+                { AssetSource.WEB, new AssetTextureWebLoader() }
+            }, DataStore.i.featureFlags));
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());

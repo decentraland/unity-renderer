@@ -64,8 +64,11 @@ public class ECSSystemsController : IDisposable
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
-        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock());
-        playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter);
+        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
+            DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
+
+        playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter, DataStore.i.ecs7.scenes,
+            DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
