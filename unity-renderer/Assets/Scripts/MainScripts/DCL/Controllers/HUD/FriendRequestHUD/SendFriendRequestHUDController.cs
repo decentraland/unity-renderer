@@ -20,7 +20,6 @@ namespace DCL.Social.Friends
         private string recipientId;
         private CancellationTokenSource hideCancellationToken = new ();
         private CancellationTokenSource friendOperationsCancellationToken = new ();
-        private bool sendInProgress;
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
@@ -80,20 +79,20 @@ namespace DCL.Social.Friends
         {
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken = new CancellationTokenSource();
-            SendAsync(friendOperationsCancellationToken.Token).Forget();
-        }
-
-        private async UniTaskVoid SendAsync(CancellationToken cancellationToken)
-        {
             hideCancellationToken?.Cancel();
             hideCancellationToken = new CancellationTokenSource();
 
+            SendAsync(friendOperationsCancellationToken.Token,
+                    hideCancellationToken.AddTo(friendOperationsCancellationToken.Token).Token)
+               .Forget();
+        }
+
+        private async UniTaskVoid SendAsync(CancellationToken cancellationToken, CancellationToken automaticCloseCancellationToken)
+        {
             view.ShowPendingToSend();
 
             try
             {
-                sendInProgress = true;
-
                 await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
 
                 socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
@@ -101,19 +100,14 @@ namespace DCL.Social.Friends
                     (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
 
                 view.ShowSendSuccess();
-                sendInProgress = false;
 
                 await UniTask.Delay(AUTOMATIC_CLOSE_DELAY,
-                    cancellationToken: hideCancellationToken.AddTo(cancellationToken).Token);
+                    cancellationToken: automaticCloseCancellationToken);
 
-                if (!hideCancellationToken.IsCancellationRequested)
-                    view.Close();
+                view.Close();
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                if (!sendInProgress)
-                    return;
-
                 e.ReportFriendRequestErrorToAnalyticsAsSender(recipientId, dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
                     userProfileBridge, socialAnalytics);
 
