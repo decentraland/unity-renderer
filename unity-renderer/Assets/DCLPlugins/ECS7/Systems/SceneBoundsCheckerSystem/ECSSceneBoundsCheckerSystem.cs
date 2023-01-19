@@ -66,6 +66,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 sceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
+            // Note: the components are traversed backwards as we may free the 'fully defaulted' entities from the component
             var sbcComponentGroup = sceneBoundsCheckComponent.GetForAll();
             for (int i = sbcComponentGroup.Count-1; i >= 0 ; i--)
             {
@@ -86,9 +87,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     // TODO: When will merged bounds be cleaned up? If entity did have meshes and now it doesn't, does the merged bounds get re-set/cleaned?
                     sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
                 }
-
-                //TODO: add cpu time budget managing here
-                //TODO: deal with height checks ???
 
                 RunEntityEvaluation(componentData);
 
@@ -119,14 +117,74 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.max;
             Vector3 globalBoundsMinPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.min;
 
-            // 1. cheap outer-bounds check
+            // 1. Cheap outer-bounds check
             sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(globalBoundsMaxPoint)
                                                                    && sbcComponentData.scene.IsInsideSceneOuterBoundaries(globalBoundsMinPoint);
 
-            // 2. confirm with inner-bounds check only if entity is inside outer bounds
-            sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
-                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset, globalBoundsMaxPoint.y)
-                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
+            if (sbcComponentData.entity.isInsideSceneOuterBoundaries)
+            {
+                // 2. If entity is inside outer bounds then check full merged bounds AABB
+                sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMaxPoint + worldOffset, globalBoundsMaxPoint.y)
+                                                                  && sbcComponentData.scene.IsInsideSceneBoundaries(globalBoundsMinPoint + worldOffset);
+
+                // 3. If merged bounds is detected as outside bounds we need a final check on submeshes (for L-Shaped subdivided meshes)
+                if (!sbcComponentData.entity.isInsideSceneBoundaries)
+                {
+                    var renderers = sbcComponentData.model.renderers;
+                    var physicsColliders = sbcComponentData.model.physicsColliders;
+                    var pointerColliders = sbcComponentData.model.pointerColliders;
+                    int renderersCount = renderers?.Count ?? 0;
+                    int collidersCount = physicsColliders?.Count ?? 0 + pointerColliders?.Count ?? 0;
+
+                    // For entities with 1 mesh/collider the already-checked merged bounds already represent its bounds
+                    // So we avoid all these unneeded submesh checks for those
+                    if (renderersCount + collidersCount > 1)
+                    {
+                        bool isInsideBounds = true;
+
+                        if (renderers != null)
+                        {
+                            for (int i = 0; i < renderersCount; i++)
+                            {
+                                if (!sbcComponentData.scene.IsInsideSceneBoundaries(renderers[i].bounds))
+                                {
+                                    isInsideBounds = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isInsideBounds && physicsColliders != null)
+                        {
+                            int physicsCollidersCount = physicsColliders.Count;
+                            for (int i = 0; i < physicsCollidersCount; i++)
+                            {
+                                if (!sbcComponentData.scene.IsInsideSceneBoundaries(physicsColliders[i].bounds))
+                                {
+                                    isInsideBounds = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isInsideBounds && pointerColliders != null)
+                        {
+                            int pointerCollidersCount = pointerColliders.Count;
+                            for (int i = 0; i < pointerCollidersCount; i++)
+                            {
+                                if (!sbcComponentData.scene.IsInsideSceneBoundaries(pointerColliders[i].bounds))
+                                {
+                                    isInsideBounds = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        sbcComponentData.entity.isInsideSceneBoundaries = isInsideBounds;
+                    }
+                }
+            }
+
             SetInsideBoundsStateForMeshComponents(sbcComponentData);
         }
 
