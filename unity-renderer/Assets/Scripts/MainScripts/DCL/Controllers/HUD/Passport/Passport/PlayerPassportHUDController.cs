@@ -60,7 +60,7 @@ namespace DCL.Social.Passports
             this.playerInfoCardVisibleState = playerInfoCardVisibleState;
 
             view.Initialize(mouseCatcher);
-            view.OnClose += RemoveCurrentPlayer;
+            view.OnClose += ClosePassport;
 
             closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -88,7 +88,10 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
-            RemoveCurrentPlayer();
+            passportNavigationController.CloseAllNFTItemInfos();
+            passportNavigationController.SetViewInitialPage();
+            playerInfoController.ClosePassport();
+            currentPlayerId.Set(null);
         }
 
         /// <summary>
@@ -233,12 +236,6 @@ namespace DCL.Social.Passports
             playerPreviewController.UpdateWithUserProfile(userProfile, activateLoading);
             playerInfoController.UpdateWithUserProfile(userProfile);
             passportNavigationController.UpdateWithUserProfile(userProfile);
-        }
-
-        private void RemoveCurrentPlayer()
-        {
-            passportNavigationController.CloseAllNFTItemInfos();
-            currentPlayerId.Set(null);
         }
 
     }

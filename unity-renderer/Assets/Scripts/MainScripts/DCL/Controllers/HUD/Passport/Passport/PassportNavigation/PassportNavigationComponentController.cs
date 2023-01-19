@@ -91,6 +91,9 @@ namespace DCL.Social.Passports
 
         public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
 
+        public void SetViewInitialPage() =>
+            view.SetInitialPage();
+
         public void Dispose()
         {
             cts?.Cancel();

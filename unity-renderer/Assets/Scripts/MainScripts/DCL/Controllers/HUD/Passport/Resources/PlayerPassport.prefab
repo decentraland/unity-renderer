@@ -10091,6 +10091,7 @@ GameObject:
   - component: {fileID: 4730127478067071233}
   - component: {fileID: 7671956882880208467}
   - component: {fileID: 5415272932879589750}
+  - component: {fileID: 3297630782904995018}
   m_Layer: 5
   m_Name: PlayerPassport
   m_TagString: Untagged
@@ -10193,9 +10194,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
-  playerInfoView: {fileID: 3932498503331563202}
-  playerPreviewView: {fileID: 5423559981488462122}
-  passportNavigationView: {fileID: 8681850989839898333}
   hideCardButton: {fileID: 8051103680769704816}
   hideCardButtonGuest: {fileID: 2364965511816668693}
   backgroundButton: {fileID: 1977337224525190038}
@@ -10223,6 +10221,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &3297630782904995018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114439979106705424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ebe398b837741d28f0afe841805f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passportView: {fileID: 4730127478067071233}
+  playerInfoView: {fileID: 3932498503331563202}
+  playerPreviewView: {fileID: 5423559981488462122}
+  passportNavigationView: {fileID: 8681850989839898333}
 --- !u!1 &8166742031611606002
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,9 +9,6 @@ namespace DCL.Social.Passports
 {
     public class PlayerPassportHUDView : BaseComponentView, IPlayerPassportHUDView
     {
-        [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
-        [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
-        [SerializeField] private PassportNavigationComponentView passportNavigationView;
         [SerializeField] internal Button hideCardButton;
         [SerializeField] internal Button hideCardButtonGuest;
         [SerializeField] internal Button backgroundButton;
@@ -20,9 +17,6 @@ namespace DCL.Social.Passports
         [SerializeField] internal Canvas passportCanvas;
         [SerializeField] internal CanvasGroup passportCanvasGroup;
 
-        public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
-        public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
-        public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
         public int PassportCurrentSortingOrder => passportCanvas.sortingOrder;
 
         public event Action OnClose;
@@ -69,7 +63,6 @@ namespace DCL.Social.Passports
             }
             else
             {
-                playerInfoView.ResetCopyToast();
                 HidePassportAnimation(animationCancellationToken.Token);
             }
 
@@ -140,7 +133,6 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
-            passportNavigationView.SetInitialPage();
             OnClose?.Invoke();
         }
     }

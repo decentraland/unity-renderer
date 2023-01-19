@@ -99,6 +99,11 @@ namespace DCL.Social.Passports
             UpdateWithUserProfileAsync(userProfile).AttachExternalCancellation(cancellationTokenSource.Token).Forget();
         }
 
+        public void ClosePassport()
+        {
+            view.ResetCopyToast();
+        }
+
         private async UniTask UpdateWithUserProfileAsync(UserProfile userProfile)
         {
             name = userProfile.name;
