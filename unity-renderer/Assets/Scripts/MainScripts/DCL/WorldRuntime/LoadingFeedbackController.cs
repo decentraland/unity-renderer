@@ -15,6 +15,7 @@ namespace DCL
     public class LoadingFeedbackController
     {
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+        private BaseVariable<FeatureFlag> featureFlags;
         private  bool isDecoupledLoadingScreenEnabled;
 
         private class SceneLoadingStatus
@@ -37,13 +38,17 @@ namespace DCL
 
         public LoadingFeedbackController()
         {
-            DataStore.i.featureFlags.flags.OnChange += FeatureFlagsSet;
+            if (DataStore.i.featureFlags != null)
+            {
+                this.featureFlags = DataStore.i.featureFlags.flags;
+                featureFlags.OnChange += FeatureFlagsSet;
+            }
         }
 
         private void FeatureFlagsSet(FeatureFlag current, FeatureFlag _)
         {
-            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsSet;
-        
+            featureFlags.OnChange -= FeatureFlagsSet;
+
             isDecoupledLoadingScreenEnabled = current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             if (!isDecoupledLoadingScreenEnabled)
             {
