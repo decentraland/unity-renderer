@@ -34,9 +34,9 @@ MonoBehaviour:
   m_RedirectLimit: -1
   m_RetryCount: 0
   m_BuildPath:
-    m_Id: 444aa99579e9a8f4a9b3ac0d5c1fbba9
+    m_Id: cecc1a355e5fd114885210fb3701e216
   m_LoadPath:
-    m_Id: https://renderer-artifacts.decentraland.org/branch/feat/download-cjk-fonts-addressables/StreamingAssets/fontassets_webgl
+    m_Id: 857e18dbc8372dc45944c1f137ae94d8
   m_BundleMode: 0
   m_AssetBundleProviderType:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

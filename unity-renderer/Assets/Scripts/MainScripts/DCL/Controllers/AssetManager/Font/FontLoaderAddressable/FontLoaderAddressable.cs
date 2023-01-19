@@ -27,6 +27,7 @@ public class FontLoaderAddressable : MonoBehaviour
 
     private void FontLoadComplete(AsyncOperationHandle<TMP_FontAsset> obj)
     {
+
         var fallbackFontAssets = TMP_Settings.fallbackFontAssets;
 
         if (fallbackFontAssets == null)
@@ -35,6 +36,8 @@ public class FontLoaderAddressable : MonoBehaviour
         }
 
         fallbackFontAssets.Add(obj.Result);
+
+        Debug.Log($"Font {obj.Result.name} loaded successfully");
 
         TMP_Settings.fallbackFontAssets = fallbackFontAssets;
     }
