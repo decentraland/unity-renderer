@@ -193,8 +193,8 @@ namespace DCL
 
         private void SetupAdditionalFonts()
         {
-            AssetPromise_Font additionalFonts = new AssetPromise_Font("", Application.streamingAssetsPath, "/fontassets_webgl", false);
-            AssetPromiseKeeper_Font.i.Keep(additionalFonts);
+            //AssetPromise_Font additionalFonts = new AssetPromise_Font("", Application.streamingAssetsPath, "/fontassets_webgl", false);
+            //AssetPromiseKeeper_Font.i.Keep(additionalFonts);
         }
     }
 }
