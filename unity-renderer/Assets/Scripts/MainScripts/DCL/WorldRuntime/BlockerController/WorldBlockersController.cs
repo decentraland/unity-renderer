@@ -198,6 +198,7 @@ namespace DCL.Controllers
 
                         if (!dontAddABlockerHere.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
                         {
+                            // We add a blocker here because it is either part of a World, or because it contains a scene that is loading
                             if (DataStore.i.common.isWorld.Get() || IsSceneKnown (checkedPosition))
                                 blockersCandidate.Add(checkedPosition);
                         }
@@ -221,6 +222,8 @@ namespace DCL.Controllers
 
         private bool IsSceneKnown(Vector2Int parcel)
         {
+            // Note: This returns false when the set of coordinates is about a parcel 
+            // where the kernel didn't provide yet any information to the renderer
             return sceneHandler.GetScene(parcel) != null;
         }
     }

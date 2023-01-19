@@ -336,17 +336,7 @@ namespace DCL.Controllers
             }
         }
 
-        public IDCLEntity GetEntityById(string entityId)
-        {
-            foreach (KeyValuePair<long, IDCLEntity> entry in entities)
-            {
-                long result;
-                long.TryParse (entityId, out result);
-                if (entry.Value.entityId == result)
-                    return entry.Value;
-            }
-            return null;
-        }
+        public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
         
         public Transform GetSceneTransform() { return transform; }
 
