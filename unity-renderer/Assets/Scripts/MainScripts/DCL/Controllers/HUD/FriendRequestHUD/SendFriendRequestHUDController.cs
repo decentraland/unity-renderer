@@ -8,9 +8,9 @@ namespace DCL.Social.Friends
     public class SendFriendRequestHUDController
     {
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
-        private const int AUTOMATIC_CLOSE_DELAY = 2000;
 
         private readonly ISendFriendRequestHUDView view;
+        private readonly FriendRequestHUDController friendRequestHUDController;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
@@ -18,17 +18,18 @@ namespace DCL.Social.Friends
 
         private string messageBody;
         private string recipientId;
-        private CancellationTokenSource hideCancellationToken = new ();
         private CancellationTokenSource friendOperationsCancellationToken = new ();
 
         public SendFriendRequestHUDController(
             ISendFriendRequestHUDView view,
+            FriendRequestHUDController friendRequestHUDController,
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IFriendsController friendsController,
             ISocialAnalytics socialAnalytics)
         {
             this.view = view;
+            this.friendRequestHUDController = friendRequestHUDController;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
@@ -46,12 +47,12 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             friendOperationsCancellationToken.Dispose();
-            hideCancellationToken.Dispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
             view.OnSend -= Send;
             view.OnCancel -= Hide;
             view.Dispose();
+            friendRequestHUDController.Dispose();
         }
 
         private void ShowOrHide(string current, string previous)
@@ -81,23 +82,11 @@ namespace DCL.Social.Friends
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken = new CancellationTokenSource();
 
-            try
-            {
-                hideCancellationToken.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-                // the view has already been hidden before, so ignore the exception
-            }
-
-            hideCancellationToken = new CancellationTokenSource();
-
-            SendAsync(friendOperationsCancellationToken.Token,
-                    hideCancellationToken.Token)
+            SendAsync(friendOperationsCancellationToken.Token)
                .Forget();
         }
 
-        private async UniTaskVoid SendAsync(CancellationToken cancellationToken, CancellationToken automaticCloseCancellationToken)
+        private async UniTaskVoid SendAsync(CancellationToken cancellationToken)
         {
             view.ShowPendingToSend();
 
@@ -111,10 +100,7 @@ namespace DCL.Social.Friends
 
                 view.ShowSendSuccess();
 
-                await UniTask.Delay(AUTOMATIC_CLOSE_DELAY,
-                    cancellationToken: automaticCloseCancellationToken);
-
-                view.Close();
+                await friendRequestHUDController.HideWithDelay();
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
@@ -129,9 +115,8 @@ namespace DCL.Social.Friends
 
         private void Hide()
         {
-            hideCancellationToken.Cancel();
             dataStore.HUDs.sendFriendRequest.Set(null, false);
-            view.Close();
+            friendRequestHUDController.Hide();
         }
 
         private void OnMessageBodyChanged(string body) =>

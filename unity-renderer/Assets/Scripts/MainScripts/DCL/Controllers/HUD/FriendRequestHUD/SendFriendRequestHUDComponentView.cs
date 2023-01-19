@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class SendFriendRequestHUDComponentView : BaseComponentView<SendFriendRequestHUDModel>, ISendFriendRequestHUDView
+    public class SendFriendRequestHUDComponentView : BaseComponentView<SendFriendRequestHUDModel>, ISendFriendRequestHUDView, IFriendRequestHUDView
     {
         [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
         [SerializeField] internal GameObject pendingToSendContainer;

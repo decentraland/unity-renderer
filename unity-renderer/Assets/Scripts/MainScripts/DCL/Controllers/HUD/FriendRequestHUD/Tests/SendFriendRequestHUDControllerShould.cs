@@ -23,6 +23,7 @@ namespace DCL.Social.Friends
         private UserProfile recipientProfile;
         private ISocialAnalytics socialAnalytics;
         private IFriendsController friendsController;
+        private IFriendRequestHUDView friendRequestHUDView;
 
         [SetUp]
         public void SetUp()
@@ -56,8 +57,11 @@ namespace DCL.Social.Friends
 
             friendsController = Substitute.For<IFriendsController>();
 
+            friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
+
             controller = new SendFriendRequestHUDController(
                 view,
+                new FriendRequestHUDController(friendRequestHUDView),
                 dataStore,
                 userProfileBridge,
                 friendsController,
@@ -88,7 +92,7 @@ namespace DCL.Social.Friends
 
             dataStore.HUDs.sendFriendRequest.Set(null, notifyEvent: true);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [TestCase("")]
@@ -141,11 +145,11 @@ namespace DCL.Social.Friends
 
             view.OnSend += Raise.Event<Action>();
 
-            view.Received(0).Close();
+            friendRequestHUDView.Received(0).Close();
 
             yield return new WaitForSeconds(3f);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
     }
 }

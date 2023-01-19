@@ -23,6 +23,7 @@ namespace DCL.Social.Friends
         private IUserProfileBridge userProfileBridge;
         private StringVariable openPassportVariable;
         private DataStore dataStore;
+        private IFriendRequestHUDView friendRequestHUDView;
 
         [SetUp]
         public void SetUp()
@@ -64,8 +65,11 @@ namespace DCL.Social.Friends
             openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
 
+            friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
+
             controller = new ReceivedFriendRequestHUDController(dataStore,
                 view,
+                new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
                 openPassportVariable,
@@ -99,7 +103,7 @@ namespace DCL.Social.Friends
             WhenShow();
             dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -109,7 +113,7 @@ namespace DCL.Social.Friends
 
             view.OnClose += Raise.Event<Action>();
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -138,7 +142,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 
@@ -180,7 +184,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 

@@ -8,11 +8,11 @@ namespace DCL.Social.Friends
 {
     public class ReceivedFriendRequestHUDController
     {
-        private const int TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING = 3000;
         private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
 
         private readonly DataStore dataStore;
         private readonly IReceivedFriendRequestHUDView view;
+        private readonly FriendRequestHUDController friendRequestHUDController;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly StringVariable openPassportVariable;
@@ -22,6 +22,7 @@ namespace DCL.Social.Friends
 
         public ReceivedFriendRequestHUDController(DataStore dataStore,
             IReceivedFriendRequestHUDView view,
+            FriendRequestHUDController friendRequestHUDController,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
             StringVariable openPassportVariable,
@@ -29,6 +30,7 @@ namespace DCL.Social.Friends
         {
             this.dataStore = dataStore;
             this.view = view;
+            this.friendRequestHUDController = friendRequestHUDController;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.openPassportVariable = openPassportVariable;
@@ -46,6 +48,7 @@ namespace DCL.Social.Friends
         public void Dispose()
         {
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange -= ShowOrHide;
+            friendRequestHUDController.Dispose();
         }
 
         private void ShowOrHide(string current, string previous)
@@ -90,7 +93,7 @@ namespace DCL.Social.Friends
         private void Hide()
         {
             dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, false);
-            view.Close();
+            friendRequestHUDController.Hide();
         }
 
         private void OpenProfile()
@@ -123,8 +126,7 @@ namespace DCL.Social.Friends
                 socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
-                view.Close();
+                await friendRequestHUDController.HideWithDelay();
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
@@ -151,8 +153,7 @@ namespace DCL.Social.Friends
                 socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
 
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
-                view.Close();
+                await friendRequestHUDController.HideWithDelay();
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
