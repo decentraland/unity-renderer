@@ -7,7 +7,7 @@ public class SentryPlugin : IPlugin
     private readonly SentryController controller;
     public SentryPlugin()
     {
-        controller = new SentryController(DataStore.i);
+        controller = new SentryController(DataStore.i.player, DataStore.i.realm);
     }
 
     public void Dispose()
