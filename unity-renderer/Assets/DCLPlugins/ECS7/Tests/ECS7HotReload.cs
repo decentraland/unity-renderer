@@ -93,8 +93,8 @@ namespace Tests
 
                     CRDTMessage crdtCreateBoxMessage = new CRDTMessage()
                     {
-                        key1 = ENTITY_ID,
-                        key2 = COMPONENT_ID,
+                        entityId = ENTITY_ID,
+                        componentId = COMPONENT_ID,
                         timestamp = 1,
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };
@@ -122,8 +122,8 @@ namespace Tests
 
                     crdtCreateBoxMessage = new CRDTMessage()
                     {
-                        key1 = ENTITY_ID,
-                        key2 = COMPONENT_ID,
+                        entityId = ENTITY_ID,
+                        componentId = COMPONENT_ID,
                         timestamp = 1,
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };

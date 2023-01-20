@@ -9,15 +9,16 @@ namespace Tests
     {
         [Test]
         [TestCase(0, 1, 100, null,
-            ExpectedResult = new byte[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 })]
-        [TestCase(32424, 67867, 2423423423, new byte[] { 42, 33, 67, 22 },
-            ExpectedResult = new byte[] { 0, 0, 126, 168, 0, 1, 9, 27, 0, 0, 0, 0, 144, 114, 129, 191, 0, 0, 0, 4, 42, 33, 67, 22 })]
-        public byte[] SerializeCorrectly(int entityId, int componentId, long timestamp, byte[] data)
+            ExpectedResult = new byte[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0 })]
+        [TestCase(32424, 67867, 606290484, new byte[] { 42, 33, 67, 22 },
+            ExpectedResult = new byte[] { 0, 0, 126, 168, 0, 1, 9, 27, 144, 114, 129, 191, 0, 0, 0, 4, 42, 33, 67, 22 })]
+        public byte[] SerializeCorrectlyPutComponent(int entityId, int componentId, int timestamp, byte[] data)
         {
             var message = new CRDTMessage()
             {
-                key1 = entityId,
-                key2 = componentId,
+                type = CrdtMessageType.PUT_COMPONENT,
+                entityId = entityId,
+                componentId = componentId,
                 timestamp = timestamp,
                 data = data
             };
@@ -29,10 +30,10 @@ namespace Tests
 
             CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
             int memoryPosition = 0;
-            CRDTMessage result = CRDTDeserializer.DeserializeSingle(bytes, crdtMessageType, ref memoryPosition);
+            CRDTMessage result = CRDTDeserializer.DeserializePutComponent(bytes, crdtMessageType, ref memoryPosition);
             object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
-            Assert.AreEqual(message.key1, result.key1);
+            Assert.AreEqual(message.entityId, result.entityId);
             Assert.AreEqual(message.timestamp, result.timestamp);
             Assert.IsTrue(AreEqual((byte[])expextedData, (byte[])result.data));
 

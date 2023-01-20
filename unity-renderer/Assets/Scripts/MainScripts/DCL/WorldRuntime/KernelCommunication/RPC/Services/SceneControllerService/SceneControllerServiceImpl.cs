@@ -12,6 +12,7 @@ using RPC.Context;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using BinaryWriter = KernelCommunication.BinaryWriter;
@@ -236,12 +237,16 @@ namespace RPC.Services
                 {
                     var state = sceneState.GetState();
 
-                    for (int i = 0; i < state.Count; i++)
+                    for (int i = 0; i < state.components.Count; i++)
                     {
-                        if (state[i].data != null)
+                        var component = state.components.ElementAt(i);
+                        for (int entityIndex = 0; i < component.Value.Count; i++)
                         {
-                            result.HasOwnEntities = true;
-                            break;
+                            if (component.Value.ElementAt(entityIndex).Value.data != null)
+                            {
+                                result.HasOwnEntities = true;
+                                break;
+                            }
                         }
                     }
 

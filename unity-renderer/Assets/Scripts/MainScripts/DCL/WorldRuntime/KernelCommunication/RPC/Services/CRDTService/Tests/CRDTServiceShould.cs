@@ -73,7 +73,7 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = 7693,
+                    entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
@@ -84,7 +84,7 @@ namespace Tests
                 void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
                 {
                     Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                    Assert.AreEqual(crdtMessage.entityId, incommingCrdtMessage.entityId);
                     Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
                     Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
@@ -148,7 +148,7 @@ namespace Tests
                     deserializer.MoveNext();
                     CRDTMessage message = (CRDTMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene1.key1, message.key1);
+                    Assert.AreEqual(messageToScene1.entityId, message.entityId);
                     Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
                     Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene1));
@@ -160,7 +160,7 @@ namespace Tests
                     deserializer.MoveNext();
                     message = (CRDTMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene2.key1, message.key1);
+                    Assert.AreEqual(messageToScene2.entityId, message.entityId);
                     Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
                     Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene2));
@@ -206,7 +206,7 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = 7693,
+                    entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };

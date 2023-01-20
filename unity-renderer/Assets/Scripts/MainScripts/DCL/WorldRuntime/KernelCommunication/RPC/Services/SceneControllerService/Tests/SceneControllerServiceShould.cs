@@ -205,8 +205,8 @@ namespace Tests
                 // Prepare entity creation CRDT message
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = ENTITY_ID,
-                    key2 = 0,
+                    entityId = ENTITY_ID,
+                    componentId = 0,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
 
@@ -214,8 +214,8 @@ namespace Tests
 
                 void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
                 {
-                    Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
-                    Assert.AreEqual(crdtMessage.key2, incomingCrdtMessage.key2);
+                    Assert.AreEqual(crdtMessage.entityId, incomingCrdtMessage.entityId);
+                    Assert.AreEqual(crdtMessage.componentId, incomingCrdtMessage.componentId);
                     Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
                 }
@@ -284,8 +284,8 @@ namespace Tests
                 while (iterator.MoveNext())
                 {
                     var responseCrdt = (CRDTMessage)iterator.Current;
-                    Assert.AreEqual(responseCrdt.key1, ENTITY_ID);
-                    Assert.AreEqual(responseCrdt.key2, COMPONENT_ID);
+                    Assert.AreEqual(responseCrdt.entityId, ENTITY_ID);
+                    Assert.AreEqual(responseCrdt.componentId, COMPONENT_ID);
                     Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
                 }
             }
@@ -301,16 +301,16 @@ namespace Tests
                 // outgoing crdt
                 new CRDTMessage()
                 {
-                    key1 = 1,
-                    key2 = 1,
+                    entityId = 1,
+                    componentId = 1,
                     data = new byte[] { 0, 0, 0, 0 },
                 },
 
                 // stored crdt
                 new CRDTMessage()
                 {
-                    key1 = 1,
-                    key2 = 2,
+                    entityId = 1,
+                    componentId = 2,
                     data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
                 }
             };
@@ -351,8 +351,8 @@ namespace Tests
                 while (iterator.MoveNext())
                 {
                     var responseCrdt = (CRDTMessage)iterator.Current;
-                    Assert.AreEqual(responseCrdt.key1, crdts[index].key1);
-                    Assert.AreEqual(responseCrdt.key2, crdts[index].key2);
+                    Assert.AreEqual(responseCrdt.entityId, crdts[index].entityId);
+                    Assert.AreEqual(responseCrdt.componentId, crdts[index].componentId);
                     Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
                     index++;
                 }

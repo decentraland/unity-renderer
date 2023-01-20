@@ -14,7 +14,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         public long entityId;
         public int componentId;
         public byte[] data;
-        public long minTimeStamp;
+        public int minTimeStamp;
         public ECSComponentWriteType writeType;
     }
 
@@ -40,7 +40,7 @@ public class ComponentCrdtWriteSystem : IDisposable
         sceneController.OnSceneRemoved -= OnSceneRemoved;
     }
 
-    public void WriteMessage(int sceneNumber, long entityId, int componentId, byte[] data, long minTimeStamp,
+    public void WriteMessage(int sceneNumber, long entityId, int componentId, byte[] data, int minTimeStamp,
         ECSComponentWriteType writeType)
     {
         MessageData messageData = messagesPool.Count > 0 ? messagesPool.Dequeue() : new MessageData();
@@ -89,7 +89,7 @@ public class ComponentCrdtWriteSystem : IDisposable
             }
             else if (message.writeType.HasFlag(ECSComponentWriteType.EXECUTE_LOCALLY))
             {
-                crdtExecutor.ExecuteWithoutStoringState(crdt.key1, crdt.key2, crdt.data);
+                crdtExecutor.ExecuteWithoutStoringState(crdt.entityId, crdt.componentId, crdt.data);
             }
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
