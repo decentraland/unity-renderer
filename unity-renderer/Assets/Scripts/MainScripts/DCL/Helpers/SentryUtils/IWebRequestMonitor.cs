@@ -1,4 +1,6 @@
 ﻿using DCL;
+using Sentry;
+using System;
 using UnityEngine.Networking;
 
 namespace MainScripts.DCL.Helpers.SentryUtils
@@ -12,6 +14,8 @@ namespace MainScripts.DCL.Helpers.SentryUtils
         /// <param name="endPointTemplate">Effective end point without the domain name</param>
         /// <param name="queryString">The query string component of the URL (e.g. query=foobar&page=2)</param>
         /// <param name="data">Submitted data in JSON, if omitted raw data is taken from `WebRequest`</param>
-        void TrackWebRequest(UnityWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null, string data = null);
+        /// <param name="finishTransactionOnWebRequestFinish">If 'true' finishes transaction automatically</param>
+        DisposableTransaction TrackWebRequest(UnityWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null,
+            string data = null, bool finishTransactionOnWebRequestFinish = false);
     }
 }

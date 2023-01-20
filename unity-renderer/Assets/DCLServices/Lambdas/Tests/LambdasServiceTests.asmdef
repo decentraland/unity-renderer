@@ -23,7 +23,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "NSubstitute.dll",
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Sentry.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

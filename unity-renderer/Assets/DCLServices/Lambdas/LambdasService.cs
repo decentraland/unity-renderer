@@ -1,12 +1,14 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using MainScripts.DCL.Helpers.SentryUtils;
+using Sentry;
 using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Pool;
+using Transaction = Sentry.Transaction;
 
 namespace DCLServices.Lambdas
 {
@@ -29,9 +31,9 @@ namespace DCLServices.Lambdas
             var postDataJson = JsonUtility.ToJson(postData);
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, data: postDataJson);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, urlEncodedParams);
+            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
         public UniTask<(TResponse response, bool success)> Get<TResponse>(
@@ -44,17 +46,19 @@ namespace DCLServices.Lambdas
         {
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, urlEncodedParams);
+            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(
             IWebRequestAsyncOperation webRequestAsyncOperation,
             CancellationToken cancellationToken,
             string endPoint,
+            DisposableTransaction transaction,
             (string paramName, string paramValue)[] urlEncodedParams)
         {
+            using var disposable = transaction;
             await webRequestAsyncOperation.WithCancellation(cancellationToken);
 
             if (!webRequestAsyncOperation.isSucceeded)
@@ -63,7 +67,8 @@ namespace DCLServices.Lambdas
             string textResponse = webRequestAsyncOperation.webRequest.downloadHandler.text;
             webRequestAsyncOperation.Dispose();
 
-            return !TryParseResponse(endPoint, urlEncodedParams, textResponse, out TResponse response) ? (default, false) : (response, true);
+            var res = !TryParseResponse(endPoint, transaction, textResponse, out TResponse response) ? (default, false) : (response, true);
+            return res;
         }
 
         internal string GetUrl(string endPoint, params (string paramName, string paramValue)[] urlEncodedParams)
@@ -104,7 +109,7 @@ namespace DCLServices.Lambdas
             return url;
         }
 
-        internal static bool TryParseResponse<TResponse>(string endPoint, (string paramName, string paramValue)[] urlEncodedParams,
+        internal static bool TryParseResponse<TResponse>(string endPoint, DisposableTransaction transaction,
             string textResponse, out TResponse response)
         {
             try
@@ -116,7 +121,7 @@ namespace DCLServices.Lambdas
             {
                 response = default;
                 PrintError<TResponse>(endPoint, e.Message);
-                AddSentryExtraData(urlEncodedParams);
+                transaction.SetStatus(SpanStatus.DataLoss);
                 return false;
             }
         }
@@ -125,11 +130,6 @@ namespace DCLServices.Lambdas
         {
             // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
             return "https://peer.decentraland.org/lambdas";
-        }
-
-        private static void AddSentryExtraData((string paramName, string paramValue)[] urlEncodedParams)
-        {
-            // TODO: once Sentry is integrated add urlEncodedParams to Extra Data or Breadcrumbs
         }
 
         private static void PrintError<TResponse>(string endPoint, string message)

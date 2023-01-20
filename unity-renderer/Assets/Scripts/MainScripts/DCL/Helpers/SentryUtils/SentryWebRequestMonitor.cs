@@ -9,7 +9,8 @@ namespace MainScripts.DCL.Helpers.SentryUtils
     {
         private const int DATA_LIMIT = 150;
 
-        public void TrackWebRequest(UnityWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null, string data = null)
+        public DisposableTransaction TrackWebRequest(UnityWebRequestAsyncOperation webRequestOp, string endPointTemplate, string queryString = null,
+            string data = null, bool finishTransactionOnWebRequestFinish = false)
         {
             var webRequest = webRequestOp.webRequest;
             var transaction = SentrySdk.StartTransaction(endPointTemplate, webRequest.method);
@@ -32,10 +33,12 @@ namespace MainScripts.DCL.Helpers.SentryUtils
                 // if we don't set the span status manually it will be inferred from the errors happening while the transaction
                 // is active: it's not correct
                 SetSpanStatus(transaction, webRequest);
-                transaction.Finish();
+                if (finishTransactionOnWebRequestFinish)
+                    transaction.Finish();
             }
 
             webRequestOp.completed += WebRequestOpCompleted;
+            return new DisposableTransaction(transaction);
         }
 
         private static void SetSpanStatus(ITransaction transaction, UnityWebRequest webRequest)

@@ -9,6 +9,7 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
+using Sentry;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -28,7 +29,12 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
-            result.Register<IWebRequestMonitor>(() => Substitute.For<IWebRequestMonitor>());
+            result.Register<IWebRequestMonitor>(() =>
+            {
+                var subs = Substitute.For<IWebRequestMonitor>();
+                subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
+                return subs;
+            });
 
             result.Register<IServiceProviders>(
                 () =>
