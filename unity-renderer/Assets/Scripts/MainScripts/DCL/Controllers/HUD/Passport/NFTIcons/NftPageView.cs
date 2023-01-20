@@ -47,9 +47,9 @@ public class NftPageView : BaseComponentView
     {
         nftElement.onMarketplaceButtonClick.RemoveAllListeners();
         nftElement.onDetailInfoButtonClick.RemoveAllListeners();
-        nftElement.onFocused -= FocusNftItem;
         nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(nftElement.model.nftId));
         nftElement.onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
+        nftElement.onFocused -= FocusNftItem;
         nftElement.onFocused += FocusNftItem;
     }
 

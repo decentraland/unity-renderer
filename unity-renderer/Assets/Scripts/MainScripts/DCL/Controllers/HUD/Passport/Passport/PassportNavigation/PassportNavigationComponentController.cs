@@ -126,14 +126,15 @@ namespace DCL.Social.Passports
             view.SetCollectibleWearablesLoadingActive(true);
             wearablesPromise = wearableCatalogBridge.RequestOwnedWearables(userProfile.userId).Then(wearables =>
             {
-                string[] wearableIds = wearables.GroupBy(i => i.id).Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
+                IGrouping<string, WearableItem>[] wearableItems = wearables.GroupBy(i => i.id).ToArray();
+                string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
                 userProfile.SetInventory(wearableIds);
                 loadedWearables.AddRange(wearableIds);
 
-                var containedWearables = wearables.GroupBy(i => i.id)
-                                                  .Select(g => g.First())
-                                                  .Take(MAX_NFT_COUNT)
-                                                  .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                var containedWearables = wearableItems
+                                        .Select(g => g.First())
+                                        .Take(MAX_NFT_COUNT)
+                                        .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
 
                 view.SetCollectibleWearables(containedWearables.ToArray());
                 view.SetCollectibleWearablesLoadingActive(false);
@@ -142,17 +143,14 @@ namespace DCL.Social.Passports
             wearablesPromise.Catch(Debug.LogError);
         }
 
-        private void LoadAndShowOwnedEmotes(UserProfile userProfile)
+        private async void LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
             view.SetCollectibleEmotesLoadingActive(true);
-            emotesPromise = emotesCatalogService.RequestOwnedEmotes(userProfile.userId)
-                                                .Then(emotes =>
-                                                 {
-                                                     WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
-                                                     view.SetCollectibleEmotes(emoteItems);
-                                                     view.SetCollectibleEmotesLoadingActive(false);
-                                                 });
-            emotesPromise.Catch(Debug.LogError);
+
+            WearableItem[] emotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfile.userId, cts.Token);
+            WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
+            view.SetCollectibleEmotes(emoteItems);
+            view.SetCollectibleEmotesLoadingActive(false);
         }
 
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile, CancellationToken ct)

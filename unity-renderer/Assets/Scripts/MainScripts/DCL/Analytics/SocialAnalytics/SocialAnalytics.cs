@@ -143,7 +143,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
         }
 
-        public void SendWalletCopy(PlayerActionSource source)
+        public void SendCopyWallet(PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("source", source.ToString());
@@ -151,7 +151,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
         }
 
-        public void SendUsernameCopy(PlayerActionSource source)
+        public void SendCopyUsername(PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("source", source.ToString());

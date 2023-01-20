@@ -74,13 +74,13 @@ namespace DCL.Social.Passports
         private void WalletCopy(string address)
         {
             clipboard.WriteText(address);
-            socialAnalytics.SendWalletCopy(PlayerActionSource.Passport);
+            socialAnalytics.SendCopyWallet(PlayerActionSource.Passport);
         }
 
         private void UsernameCopy(string username)
         {
             clipboard.WriteText(username);
-            socialAnalytics.SendWalletCopy(PlayerActionSource.Passport);
+            socialAnalytics.SendCopyWallet(PlayerActionSource.Passport);
         }
 
         private void JumpInUser()
