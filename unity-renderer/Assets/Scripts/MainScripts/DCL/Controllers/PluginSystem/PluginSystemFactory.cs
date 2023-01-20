@@ -51,6 +51,7 @@ namespace DCL
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
+            pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
 
 
             pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
