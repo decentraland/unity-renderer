@@ -1,9 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using MainScripts.DCL.Helpers.SentryUtils;
 using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Pool;
 
 namespace DCLServices.Lambdas
@@ -13,8 +15,10 @@ namespace DCLServices.Lambdas
         private ICatalyst catalyst;
 
         private Service<IWebRequestController> webRequestController;
+        private Service<IWebRequestMonitor> urlTransactionMonitor;
 
         public UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
+            string endPointTemplate,
             string endPoint,
             TBody postData,
             int timeout = ILambdasService.DEFAULT_TIMEOUT,
@@ -24,20 +28,23 @@ namespace DCLServices.Lambdas
         {
             var postDataJson = JsonUtility.ToJson(postData);
             var url = GetUrl(endPoint, urlEncodedParams);
-            var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout);
+            var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, data: postDataJson);
 
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, urlEncodedParams);
         }
 
         public UniTask<(TResponse response, bool success)> Get<TResponse>(
+            string endPointTemplate,
             string endPoint,
-            int timeout = ILambdasService.DEFAULT_TIMEOUT,
-            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            int timeout = 30,
+            int attemptsNumber = 3,
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate);
 
             return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, urlEncodedParams);
         }
@@ -59,14 +66,12 @@ namespace DCLServices.Lambdas
             return !TryParseResponse(endPoint, urlEncodedParams, textResponse, out TResponse response) ? (default, false) : (response, true);
         }
 
-        internal string GetUrl(string endPoint, (string paramName, string paramValue)[] urlEncodedParams)
+        internal string GetUrl(string endPoint, params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
-            //urlBuilder.Append(catalyst.lambdasUrl);
-            // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
-            urlBuilder.Append("https://peer.decentraland.org/lambdas");
-            urlBuilder.Append("/");
+            urlBuilder.Append(GetLambdasUrl());
+            urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
 
@@ -114,6 +119,12 @@ namespace DCLServices.Lambdas
                 AddSentryExtraData(urlEncodedParams);
                 return false;
             }
+        }
+
+        internal string GetLambdasUrl()
+        {
+            // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
+            return "https://peer.decentraland.org/lambdas";
         }
 
         private static void AddSentryExtraData((string paramName, string paramValue)[] urlEncodedParams)

@@ -1,9 +1,12 @@
 ﻿using DCL;
+using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
@@ -26,6 +29,7 @@ namespace DCLServices.Lambdas.Tests
 
         private LambdasService lambdasService;
         private ServiceLocator serviceLocator;
+        private IWebRequestMonitor transactionMonitor;
 
         [SetUp]
         public void Setup()
@@ -36,20 +40,38 @@ namespace DCLServices.Lambdas.Tests
             Environment.Setup(serviceLocator);
             var catalyst = serviceLocator.Get<IServiceProviders>().catalyst;
             catalyst.lambdasUrl.Returns(TEST_URL);
+
+            transactionMonitor = serviceLocator.Get<IWebRequestMonitor>();
         }
 
         [Test]
         public void ConstructUrlWithParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
             var url = lambdasService.GetUrl(testEndpoint, new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });
-            Assert.AreEqual($"{TEST_URL}/{testEndpoint.Trim('/').TrimEnd('?')}?param1=34&param2=value&param3=foo", url);
+            Assert.AreEqual($"{lambdasService.GetLambdasUrl()}/{testEndpoint.Trim('/').TrimEnd('?')}?param1=34&param2=value&param3=foo", url);
         }
 
         [Test]
         public void ConstructUrlWithoutParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
             var url = lambdasService.GetUrl(testEndpoint, Array.Empty<(string paramName, string paramValue)>());
-            Assert.AreEqual($"{TEST_URL}/{testEndpoint.Trim('/').TrimEnd('?')}", url);
+            Assert.AreEqual($"{lambdasService.GetLambdasUrl()}/{testEndpoint.Trim('/').TrimEnd('?')}", url);
+        }
+
+        [Test]
+        public void InvokeTransactionMonitorOnGet()
+        {
+            lambdasService.Get<TestClass>(END_POINT, END_POINT, timeout: 60, attemptsNumber: 5, cancellationToken: CancellationToken.None, urlEncodedParams: ("param1", "45"));
+            var url = lambdasService.GetUrl(END_POINT, ("param1", "45"));
+            transactionMonitor.Received(1).TrackWebRequest(Arg.Any<UnityWebRequestAsyncOperation>(), END_POINT);
+        }
+
+        [Test]
+        public void InvokeTransactionMonitorOnPost()
+        {
+            lambdasService.Post<TestClass, TestResponse>(END_POINT, END_POINT, new TestResponse(), 50, 4, CancellationToken.None, ("param2", "str"));
+            var url = lambdasService.GetUrl(END_POINT, ("param2", "str"));
+            transactionMonitor.Received(1).TrackWebRequest(Arg.Any<UnityWebRequestAsyncOperation>(), END_POINT, data: JsonUtility.ToJson(new TestResponse()));
         }
 
         [Test]
@@ -79,17 +101,17 @@ namespace DCLServices.Lambdas.Tests
         {
             var webRequestController = serviceLocator.Get<IWebRequestController>();
 
-            lambdasService.Get<TestClass>(END_POINT, 60, 5, CancellationToken.None, ("param1", "45"));
-            webRequestController.Received().Get($"{TEST_URL}/{END_POINT}?param1=45", requestAttemps: 5, timeout: 60);
+            lambdasService.Get<TestClass>(END_POINT, END_POINT, timeout: 60, attemptsNumber: 5, cancellationToken: CancellationToken.None, urlEncodedParams: ("param1", "45"));
+            webRequestController.Received().Get($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param1=45", requestAttemps: 5, timeout: 60, disposeOnCompleted: false);
         }
 
         [Test]
         public void InvokePostRequest()
         {
             var webRequestController = serviceLocator.Get<IWebRequestController>();
-            lambdasService.Post<TestClass, TestResponse>(END_POINT, new TestResponse(), 50, 4, CancellationToken.None, ("param2", "str"));
+            lambdasService.Post<TestClass, TestResponse>(END_POINT, END_POINT, new TestResponse(), 50, 4, CancellationToken.None, ("param2", "str"));
 
-            webRequestController.Received().Post($"{TEST_URL}/{END_POINT}?param2=str", "{\"value\":3}", requestAttemps: 4, timeout: 50);
+            webRequestController.Received().Post($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param2=str", "{\"value\":3}", requestAttemps: 4, timeout: 50, disposeOnCompleted: false);
         }
     }
 }

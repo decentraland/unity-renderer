@@ -7,6 +7,7 @@ using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,6 +28,7 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            result.Register<IWebRequestMonitor>(() => Substitute.For<IWebRequestMonitor>());
 
             result.Register<IServiceProviders>(
                 () =>

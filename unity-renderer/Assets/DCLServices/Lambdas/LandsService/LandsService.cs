@@ -17,7 +17,9 @@ namespace DCLServices.Lambdas.LandsService
             new (END_POINT + address, pageSize, ct, this);
 
         UniTask<(LandsResponse response, bool success)> ILambdaServiceConsumer<LandsResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
-            lambdasService.Ref.Get<LandsResponse>(endPoint,
+            lambdasService.Ref.Get<LandsResponse>(
+                END_POINT,
+                endPoint,
                 TIMEOUT,
                 ATTEMPTS_NUMBER,
                 cancellationToken,
