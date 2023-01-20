@@ -152,7 +152,7 @@ namespace DCL.ECSComponents
                     continue;
                 }
 
-                if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                if (!IsCollider(meshFilters[i]))
                     continue;
 
                 MeshCollider collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
@@ -164,6 +164,16 @@ namespace DCL.ECSComponents
             }
 
             return physicColliders;
+        }
+
+        // Compatibility layer for old GLTF importer and GLTFast
+        private static bool IsCollider(MeshFilter meshFilter)
+        {
+            string ownName = meshFilter.name.ToLower();
+            if (ownName.Contains("_collider")) return true;
+
+            string parentName = meshFilter.transform.parent.name.ToLower();
+            return parentName.Contains("_collider");
         }
 
         private static (List<Collider>, List<Renderer>) SetUpPointerCollidersAndRenderers(HashSet<Renderer> renderers)
@@ -196,7 +206,10 @@ namespace DCL.ECSComponents
                 GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
                 colliderGo.layer = PhysicsLayers.onPointerEventLayer;
                 MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
-                collider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+                MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+                if (meshFilter == null) continue;
+
+                collider.sharedMesh = meshFilter.sharedMesh;
                 colliderGo.transform.SetParent(renderer.transform);
                 colliderGo.transform.ResetLocalTRS();
                 pointerColliders.Add(collider);
