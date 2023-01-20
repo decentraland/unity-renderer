@@ -49,5 +49,10 @@ public class SentryPlugin : IPlugin
 
     public void Dispose()
     {
+        DataStore.i.player.playerGridPosition.OnChange -= PlayerGridPositionOnOnChange;
+        DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnChanged;
+        DataStore.i.player.otherPlayers.OnRemoved -= OtherPlayersOnChanged;
+        DataStore.i.player.lastTeleportPosition.OnChange -= LastTeleportPositionOnOnChange;
+        DataStore.i.realm.realmName.OnChange -= RealmNameOnOnChange;
     }
 }
