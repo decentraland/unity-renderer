@@ -17,7 +17,7 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable openPassportVariable;
 
-        private CancellationTokenSource cancellationToken = new ();
+        private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
 
         public SentFriendRequestHUDController(
@@ -44,7 +44,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            cancellationToken.Dispose();
+            friendRequestOperationsCancellationToken.Dispose();
             dataStore.HUDs.openSentFriendRequestDetail.OnChange -= ShowOrHide;
             view.OnCancel -= Cancel;
             view.OnClose -= Hide;
@@ -93,30 +93,31 @@ namespace DCL.Social.Friends
 
         private void Cancel()
         {
-            cancellationToken?.Cancel();
-            cancellationToken = new CancellationTokenSource();
-            CancelAsync(cancellationToken.Token).Forget();
-        }
+            friendRequestOperationsCancellationToken?.Cancel();
+            friendRequestOperationsCancellationToken = new CancellationTokenSource();
 
-        private async UniTask CancelAsync(CancellationToken cancellationToken = default)
-        {
-            view.ShowPendingToCancel();
-
-            try
+            async UniTask CancelAsync(CancellationToken cancellationToken = default)
             {
-                FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId, cancellationToken);
+                view.ShowPendingToCancel();
 
-                socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
+                try
+                {
+                    FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId, cancellationToken);
 
-                view.Close();
+                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
+
+                    view.Close();
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
+                    view.Show();
+                    dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                    throw;
+                }
             }
-            catch (Exception e) when (e is not OperationCanceledException)
-            {
-                e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
-                view.Show();
-                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
-                throw;
-            }
+
+            CancelAsync(friendRequestOperationsCancellationToken.Token).Forget();
         }
 
         private void Hide()

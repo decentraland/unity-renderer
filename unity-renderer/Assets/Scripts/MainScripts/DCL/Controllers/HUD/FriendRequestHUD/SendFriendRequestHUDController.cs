@@ -82,35 +82,35 @@ namespace DCL.Social.Friends
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken = new CancellationTokenSource();
 
+            async UniTaskVoid SendAsync(CancellationToken cancellationToken)
+            {
+                view.ShowPendingToSend();
+
+                try
+                {
+                    await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
+
+                    socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
+                        recipientId, messageBody.Length,
+                        (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
+
+                    view.ShowSendSuccess();
+
+                    await friendRequestHUDController.HideWithDelay();
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    e.ReportFriendRequestErrorToAnalyticsAsSender(recipientId, dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
+                        userProfileBridge, socialAnalytics);
+
+                    view.Show();
+                    dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                    throw;
+                }
+            }
+
             SendAsync(friendOperationsCancellationToken.Token)
                .Forget();
-        }
-
-        private async UniTaskVoid SendAsync(CancellationToken cancellationToken)
-        {
-            view.ShowPendingToSend();
-
-            try
-            {
-                await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
-
-                socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
-                    recipientId, messageBody.Length,
-                    (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
-
-                view.ShowSendSuccess();
-
-                await friendRequestHUDController.HideWithDelay();
-            }
-            catch (Exception e) when (e is not OperationCanceledException)
-            {
-                e.ReportFriendRequestErrorToAnalyticsAsSender(recipientId, dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
-                    userProfileBridge, socialAnalytics);
-
-                view.Show();
-                dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
-                throw;
-            }
         }
 
         private void Hide()
