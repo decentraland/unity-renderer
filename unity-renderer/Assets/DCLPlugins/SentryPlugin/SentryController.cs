@@ -9,10 +9,12 @@ namespace DCLPlugins.SentryPlugin
     {
         private readonly DataStore_Player playerStore;
         private readonly DataStore_Realm realmStore;
-        public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore)
+        private readonly IHub sentryHub;
+        public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore, IHub sentryHub)
         {
             this.playerStore = playerStore;
             this.realmStore = realmStore;
+            this.sentryHub = sentryHub;
 
             this.playerStore.playerGridPosition.OnChange += PlayerGridPositionOnOnChange;
             this.playerStore.otherPlayers.OnAdded += OtherPlayersOnChanged;
@@ -23,16 +25,16 @@ namespace DCLPlugins.SentryPlugin
 
         private void RealmNameOnOnChange(string current, string previous)
         {
-            SentrySdk.ConfigureScope(scope =>
+            sentryHub.ConfigureScope(scope =>
             {
                 scope.SetTag("Current Realm", current);
-                scope.SetTag("Previous realm", previous);
+                scope.SetTag("Previous Realm", previous);
             });
         }
 
         private void LastTeleportPositionOnOnChange(Vector3 current, Vector3 previous)
         {
-            SentrySdk.ConfigureScope(scope =>
+            sentryHub.ConfigureScope(scope =>
             {
                 scope.SetExtra("Current Teleport Position", $"{current.x},{current.y}");
                 scope.SetExtra("Last Teleport Position", $"{previous.x},{previous.y}");
@@ -41,15 +43,15 @@ namespace DCLPlugins.SentryPlugin
 
         private void OtherPlayersOnChanged(string _, Player __)
         {
-            SentrySdk.ConfigureScope(scope =>
+            sentryHub.ConfigureScope(scope =>
             {
-                scope.SetExtra("Total Other Players", $"{DataStore.i.player.otherPlayers.Count()}");
+                scope.SetExtra("Total Other Players", $"{this.playerStore.otherPlayers.Count()}");
             });
         }
 
         private void PlayerGridPositionOnOnChange(Vector2Int current, Vector2Int previous)
         {
-            SentrySdk.ConfigureScope(scope =>
+            sentryHub.ConfigureScope(scope =>
             {
                 scope.SetTag("Current Position", $"{current.x},{current.y}");
                 scope.SetTag("Previous Position", $"{previous.x},{previous.y}");
