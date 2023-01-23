@@ -12,6 +12,7 @@ using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
+using DCLPlugins.SentryPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL

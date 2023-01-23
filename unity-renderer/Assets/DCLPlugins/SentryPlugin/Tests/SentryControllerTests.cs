@@ -11,18 +11,26 @@ namespace DCLPlugins.SentryPlugin.Tests
 {
     public class SentryControllerTests
     {
-        [Test]
-        public void Player_Update_Updates_Sentry_Tags()
+        private DataStore_Player playerDataStore;
+        private DataStore_Realm realmDataStore;
+        private Scope capturedScope;
+
+        [SetUp]
+        public void SetUp()
         {
             // Arrange
             var sentryHubMock = Substitute.For<IHub>();
-            Scope capturedScope = new Scope(new SentryUnityOptions());
+            capturedScope = new Scope(new SentryUnityOptions());
             sentryHubMock.ConfigureScope(Arg.Do<Action<Scope>>(x => { x(capturedScope); }));
 
-            DataStore_Player playerDataStore = new DataStore_Player();
-            DataStore_Realm realmDataStore = new DataStore_Realm();
+            this.playerDataStore = new DataStore_Player();
+            this.realmDataStore = new DataStore_Realm();
             new SentryController(playerDataStore, realmDataStore, sentryHubMock);
+        }
 
+        [Test]
+        public void Player_Update_Updates_Sentry_Tags()
+        {
             // Act
             playerDataStore.playerGridPosition.Set(new Vector2Int(10, 10), true);
 
@@ -32,79 +40,43 @@ namespace DCLPlugins.SentryPlugin.Tests
         }
 
         [Test]
-        public void Teleporting_Updates_Sentry_Extra()
+        public void Teleporting_Updates_Sentry_Contexts()
         {
-            // Arrange
-            var sentryHubMock = Substitute.For<IHub>();
-            Scope capturedScope = new Scope(new SentryUnityOptions());
-            sentryHubMock.ConfigureScope(Arg.Do<Action<Scope>>(x => { x(capturedScope); }));
-
-            DataStore_Player playerDataStore = new DataStore_Player();
-            DataStore_Realm realmDataStore = new DataStore_Realm();
-            new SentryController(playerDataStore, realmDataStore, sentryHubMock);
-
             // Act
             playerDataStore.lastTeleportPosition.Set(new Vector3(25,25), true);
 
             // Assert
-            Assert.AreEqual("25,25", capturedScope.Extra.GetValueOrDefault("Current Teleport Position"));
-            Assert.AreEqual("0,0", capturedScope.Extra.GetValueOrDefault("Last Teleport Position"));
+            Assert.AreEqual("25,25", capturedScope.Contexts.GetValueOrDefault("Current Teleport Position"));
+            Assert.AreEqual("0,0", capturedScope.Contexts.GetValueOrDefault("Last Teleport Position"));
         }
 
         [Test]
-        public void Other_Players_Joining_Updates_Sentry_Extra()
+        public void Other_Players_Joining_Updates_Sentry_Contexts()
         {
-            // Arrange
-            var sentryHubMock = Substitute.For<IHub>();
-            Scope capturedScope = new Scope(new SentryUnityOptions());
-            sentryHubMock.ConfigureScope(Arg.Do<Action<Scope>>(x => { x(capturedScope); }));
-
-            DataStore_Player playerDataStore = new DataStore_Player();
-            DataStore_Realm realmDataStore = new DataStore_Realm();
-            new SentryController(playerDataStore, realmDataStore, sentryHubMock);
-
             // Act
             playerDataStore.otherPlayers.Add("Player 1", new Player() );
             playerDataStore.otherPlayers.Add("Player 2", new Player() );
             playerDataStore.otherPlayers.Add("Player 3", new Player() );
 
             // Assert
-            Assert.AreEqual("3", capturedScope.Extra.GetValueOrDefault("Total Other Players"));
+            Assert.AreEqual("3", capturedScope.Contexts.GetValueOrDefault("Total Other Players"));
         }
 
         [Test]
-        public void Other_Players_Leaving_Updates_Sentry_Extra()
+        public void Other_Players_Leaving_Updates_Sentry_Contexts()
         {
-            // Arrange
-            var sentryHubMock = Substitute.For<IHub>();
-            Scope capturedScope = new Scope(new SentryUnityOptions());
-            sentryHubMock.ConfigureScope(Arg.Do<Action<Scope>>(x => { x(capturedScope); }));
-
-            DataStore_Player playerDataStore = new DataStore_Player();
-            DataStore_Realm realmDataStore = new DataStore_Realm();
-            new SentryController(playerDataStore, realmDataStore, sentryHubMock);
-
             // Act
             playerDataStore.otherPlayers.Add("Player 1", new Player() );
             playerDataStore.otherPlayers.Add("Player 2", new Player() );
             playerDataStore.otherPlayers.Remove("Player 2" );
 
             // Assert
-            Assert.AreEqual("1", capturedScope.Extra.GetValueOrDefault("Total Other Players"));
+            Assert.AreEqual("1", capturedScope.Contexts.GetValueOrDefault("Total Other Players"));
         }
 
         [Test]
-        public void Realm_Name_Changing_Updates_Sentry_Extra()
+        public void Realm_Name_Changing_Updates_Sentry_Contexts()
         {
-            // Arrange
-            var sentryHubMock = Substitute.For<IHub>();
-            Scope capturedScope = new Scope(new SentryUnityOptions());
-            sentryHubMock.ConfigureScope(Arg.Do<Action<Scope>>(x => { x(capturedScope); }));
-
-            DataStore_Player playerDataStore = new DataStore_Player();
-            DataStore_Realm realmDataStore = new DataStore_Realm();
-            new SentryController(playerDataStore, realmDataStore, sentryHubMock);
-
             // Act
             realmDataStore.realmName.Set("Old Realm Name");
             realmDataStore.realmName.Set("New Realm Name");

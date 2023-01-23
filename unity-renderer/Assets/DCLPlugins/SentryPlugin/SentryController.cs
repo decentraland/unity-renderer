@@ -10,6 +10,7 @@ namespace DCLPlugins.SentryPlugin
         private readonly DataStore_Player playerStore;
         private readonly DataStore_Realm realmStore;
         private readonly IHub sentryHub;
+
         public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore, IHub sentryHub)
         {
             this.playerStore = playerStore;
@@ -36,17 +37,14 @@ namespace DCLPlugins.SentryPlugin
         {
             sentryHub.ConfigureScope(scope =>
             {
-                scope.SetExtra("Current Teleport Position", $"{current.x},{current.y}");
-                scope.SetExtra("Last Teleport Position", $"{previous.x},{previous.y}");
+                scope.Contexts["Current Teleport Position"] = $"{current.x},{current.y}";
+                scope.Contexts["Last Teleport Position"] = $"{previous.x},{previous.y}";
             });
         }
 
         private void OtherPlayersOnChanged(string _, Player __)
         {
-            sentryHub.ConfigureScope(scope =>
-            {
-                scope.SetExtra("Total Other Players", $"{this.playerStore.otherPlayers.Count()}");
-            });
+            sentryHub.ConfigureScope(scope => { scope.Contexts["Total Other Players"] = $"{playerStore.otherPlayers.Count()}"; });
         }
 
         private void PlayerGridPositionOnOnChange(Vector2Int current, Vector2Int previous)
@@ -60,11 +58,11 @@ namespace DCLPlugins.SentryPlugin
 
         public void Dispose()
         {
-            this.playerStore.playerGridPosition.OnChange -= PlayerGridPositionOnOnChange;
-            this.playerStore.otherPlayers.OnAdded -= OtherPlayersOnChanged;
-            this.playerStore.otherPlayers.OnRemoved -= OtherPlayersOnChanged;
-            this.playerStore.lastTeleportPosition.OnChange -= LastTeleportPositionOnOnChange;
-            this.realmStore.realmName.OnChange -= RealmNameOnOnChange;
+            playerStore.playerGridPosition.OnChange -= PlayerGridPositionOnOnChange;
+            playerStore.otherPlayers.OnAdded -= OtherPlayersOnChanged;
+            playerStore.otherPlayers.OnRemoved -= OtherPlayersOnChanged;
+            playerStore.lastTeleportPosition.OnChange -= LastTeleportPositionOnOnChange;
+            realmStore.realmName.OnChange -= RealmNameOnOnChange;
         }
     }
 }
