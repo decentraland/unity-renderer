@@ -135,8 +135,9 @@ public class UserProfileController : MonoBehaviour
             existingTask.TrySetCanceled();
 
         var task = new UniTaskCompletionSource<UserProfile>();
+        cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
         pendingUserProfileTasks[userId] = task;
 
-        return task.Task.AttachExternalCancellation(cancellationToken);
+        return task.Task;
     }
 }
