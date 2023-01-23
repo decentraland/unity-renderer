@@ -68,9 +68,6 @@ public class HUDController : IHUDController
     public SettingsPanelHUDController settingsPanelHud =>
         GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public PlayerInfoCardHUDController playerInfoCardHud =>
-        GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
-
     public AirdroppingHUDController airdroppingHud =>
         GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
 
@@ -207,9 +204,6 @@ public class HUDController : IHUDController
                 CreateHudElement(configuration, hudElementId);
                 if (settingsPanelHud != null)
                     settingsPanelHud.Initialize();
-                break;
-            case HUDElementID.PLAYER_INFO_CARD:
-                CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.AIRDROPPING:
                 CreateHudElement(configuration, hudElementId);
@@ -459,7 +453,6 @@ public class HUDController : IHUDController
 
     private void TaskbarHud_onAnyTaskbarButtonClicked()
     {
-        playerInfoCardHud?.CloseCard();
     }
 
     public void CreateHudElement(HUDConfiguration config, HUDElementID id)

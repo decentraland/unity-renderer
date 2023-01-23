@@ -13,4 +13,5 @@ public class NFTIconComponentModel : BaseComponentModel
     public string name;
     public string rarity;
     public string imageURI;
+    public (string, string) nftId;
 }
