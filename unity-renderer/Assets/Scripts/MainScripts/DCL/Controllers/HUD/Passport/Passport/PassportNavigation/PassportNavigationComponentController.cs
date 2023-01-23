@@ -112,7 +112,7 @@ namespace DCL.Social.Passports
                     view.InitializeView();
                     cachedAvatarEquippedWearables = new HashSet<string>(userProfile.avatar.wearables);
                     LoadAndShowOwnedWearables(userProfile);
-                    LoadAndShowOwnedEmotes(userProfile);
+                    LoadAndShowOwnedEmotes(userProfile).Forget();
 
                     WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
@@ -143,7 +143,7 @@ namespace DCL.Social.Passports
             wearablesPromise.Catch(Debug.LogError);
         }
 
-        private async void LoadAndShowOwnedEmotes(UserProfile userProfile)
+        private async UniTask LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
             view.SetCollectibleEmotesLoadingActive(true);
 
