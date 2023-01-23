@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IFavouritesSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
+public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.
@@ -37,36 +37,36 @@ public interface IFavouritesSubSectionComponentView : IPlacesAndEventsSubSection
     /// <summary>
     /// It will be triggered each time the view is enabled.
     /// </summary>
-    event Action OnFavouriteSubSectionEnable;
+    event Action OnFavoriteSubSectionEnable;
 
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
     /// </summary>
-    event Action OnShowMoreFavouritesClicked;
+    event Action OnShowMoreFavoritesClicked;
 
     /// <summary>
     /// Set the places component with a list of places.
     /// </summary>
     /// <param name="places">List of places (model) to be loaded.</param>
-    void SetFavourites(List<PlaceCardComponentModel> places);
+    void SetFavorites(List<PlaceCardComponentModel> places);
 
     /// <summary>
     /// Add a list of places in the places component.
     /// </summary>
     /// <param name="places">List of places (model) to be added.</param>
-    void AddFavourites(List<PlaceCardComponentModel> places);
+    void AddFavorites(List<PlaceCardComponentModel> places);
 
     /// <summary>
     /// Set the places component in loading mode.
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
-    void SetFavouritesAsLoading(bool isVisible);
+    void SetFavoritesAsLoading(bool isVisible);
 
     /// <summary>
     /// Activates/Deactivates the "Show More" button.
     /// </summary>
     /// <param name="isActive">True for activating it.</param>
-    void SetShowMoreFavouritesButtonActive(bool isActive);
+    void SetShowMoreFavoritesButtonActive(bool isActive);
 
     /// <summary>
     /// Shows the Place Card modal with the provided information.

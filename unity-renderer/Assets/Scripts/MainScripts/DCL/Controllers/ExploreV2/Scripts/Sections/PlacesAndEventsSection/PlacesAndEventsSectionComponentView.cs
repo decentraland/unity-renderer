@@ -35,6 +35,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     internal const int HIGHLIGHTS_SUB_SECTION_INDEX = 0;
     internal const int PLACES_SUB_SECTION_INDEX = 1;
     internal const int EVENTS_SUB_SECTION_INDEX = 2;
+    internal const int FAVORITES_SUB_SECTION_INDEX = 3;
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -43,7 +44,8 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal HighlightsSubSectionComponentView highlightsSubSection;
     [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
-    
+    [SerializeField] internal FavoritesSubSectionComponentView favoritesSubSection;
+
     private Canvas canvas;
     private int currentSelectedIndex = -1;
 
@@ -62,6 +64,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public IHighlightsSubSectionComponentView HighlightsSubSectionView => highlightsSubSection;
     public IPlacesSubSectionComponentView PlacesSubSectionView => placesSubSection;
     public IEventsSubSectionComponentView EventsSubSectionView => eventsSubSection;
+    public IFavoritesSubSectionComponentView FavoritesSubSectionView => favoritesSubSection;
 
     public void GoToSubsection(int subSectionIndex) =>
         subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(reselectIfAlreadyOn: true);
@@ -73,6 +76,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         highlightsSubSection.SetActive(isActive && currentSelectedIndex == HIGHLIGHTS_SUB_SECTION_INDEX);
         placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
         eventsSubSection.SetActive(isActive && currentSelectedIndex == EVENTS_SUB_SECTION_INDEX);
+        favoritesSubSection.SetActive(isActive && currentSelectedIndex == FAVORITES_SUB_SECTION_INDEX);
     }
 
     public override void RefreshControl()
@@ -80,6 +84,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         highlightsSubSection.RefreshControl();
         placesSubSection.RefreshControl();
         eventsSubSection.RefreshControl();
+        favoritesSubSection.RefreshControl();
     }
 
     public override void Dispose()
@@ -90,6 +95,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         highlightsSubSection.Dispose();
         placesSubSection.Dispose();
         eventsSubSection.Dispose();
+        favoritesSubSection.Dispose();
     }
 
     internal void CreateSubSectionSelectorMappings()
@@ -109,11 +115,17 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
             eventsSubSection.SetActive(isActive);
             currentSelectedIndex = EVENTS_SUB_SECTION_INDEX;
         });
+        subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
+        {
+            favoritesSubSection.SetActive(isActive);
+            currentSelectedIndex = FAVORITES_SUB_SECTION_INDEX;
+        });
 
         placesSubSection.SetActive(false);
         eventsSubSection.SetActive(false);
         highlightsSubSection.SetActive(false);
-           
+        favoritesSubSection.SetActive(false);
+
         subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
     }
 
@@ -122,5 +134,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
+        subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
     }
 }

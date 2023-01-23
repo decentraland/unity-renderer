@@ -76,6 +76,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 90d19c500d961c44f8941c69dcdae46a, type: 3}
   - {fileID: 21300000, guid: 91681e50568d84e93b76b1767abc283f, type: 3}
   - {fileID: 21300000, guid: 9ee0d9605c0e04a57946e54a0b997c90, type: 3}
+  - {fileID: 21300000, guid: 881fad601c25545beaf8ff83632e9ce2, type: 3}
   - {fileID: 21300000, guid: 8be7de606f9c7ca4cbc9d31a3a82dfd5, type: 3}
   - {fileID: 21300000, guid: b6b6bf6065bcc4d26939c4f9986de3da, type: 3}
   - {fileID: 21300000, guid: 0d72ee801259541e5a5a33c86e6efdb9, type: 3}
@@ -489,6 +490,7 @@ SpriteAtlas:
   - mc_hammer_256
   - Mic off
   - Spinner
+  - NoFavouritesImage
   - DclLogoBg
   - RectRadius8
   - EllipseOutline2
