@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
     {
         private const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
         private const string FEATURE_GLTFAST = "gltfast";
+        private const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
 
         internal RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
@@ -167,14 +168,9 @@ namespace DCL.ECSComponents
         }
 
         // Compatibility layer for old GLTF importer and GLTFast
-        private static bool IsCollider(MeshFilter meshFilter)
-        {
-            string ownName = meshFilter.name.ToLower();
-            if (ownName.Contains("_collider")) return true;
-
-            string parentName = meshFilter.transform.parent.name.ToLower();
-            return parentName.Contains("_collider");
-        }
+        private static bool IsCollider(MeshFilter meshFilter) =>
+            meshFilter.name.Contains("_collider", IGNORE_CASE)
+            || meshFilter.transform.parent.name.Contains("_collider", IGNORE_CASE);
 
         private static (List<Collider>, List<Renderer>) SetUpPointerCollidersAndRenderers(HashSet<Renderer> renderers)
         {
