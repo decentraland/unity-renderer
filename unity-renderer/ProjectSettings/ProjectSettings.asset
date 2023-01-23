@@ -689,7 +689,7 @@ PlayerSettings:
   webGLMemorySize: 512
   webGLExceptionSupport: 0
   webGLNameFilesAsHashes: 0
-  webGLDataCaching: 1
+  webGLDataCaching: 0
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: ' --profiling-funcs '
   webGLModulesDirectory: 
@@ -724,15 +724,13 @@ PlayerSettings:
     Standalone: 0
   il2cppCompilerConfiguration:
     WebGL: 2
-  managedStrippingLevel:
-    Standalone: 3
-    WebGL: 3
+  managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 1
   useDeterministicCompilation: 1
   enableRoslynAnalyzers: 1
-  selectedPlatform: 2
+  selectedPlatform: 0
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 0
