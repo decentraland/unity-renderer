@@ -82,7 +82,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 if (componentData.model.meshesDirty)
                 {
-                    // TODO: Deal with "safe" merged bounds...
                     // TODO: When will merged bounds be cleaned up? If entity did have meshes and now it doesn't, does the merged bounds get re-set/cleaned?
                     sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
                 }
