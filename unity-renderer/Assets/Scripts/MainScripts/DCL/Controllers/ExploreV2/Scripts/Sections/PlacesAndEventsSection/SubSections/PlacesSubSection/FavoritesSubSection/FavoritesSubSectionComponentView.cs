@@ -35,11 +35,11 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
 
     public Color[] currentFriendColors => friendColors;
 
-    public int currentPlacesPerRow => favorites.currentItemsPerRow;
+    public int currentFavoritePlacesPerRow => favorites.currentItemsPerRow;
 
     public void SetAllAsLoading() => SetFavoritesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMoreFavoritesButtonActive(isActive);
-    public int CurrentTilesPerRow => currentPlacesPerRow;
+    public int CurrentTilesPerRow => currentFavoritePlacesPerRow;
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;

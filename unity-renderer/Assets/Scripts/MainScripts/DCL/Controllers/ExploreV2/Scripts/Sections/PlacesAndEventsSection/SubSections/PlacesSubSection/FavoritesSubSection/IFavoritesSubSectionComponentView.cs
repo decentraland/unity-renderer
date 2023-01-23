@@ -12,7 +12,7 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     /// <summary>
     /// Number of places per row that fit with the current places grid configuration.
     /// </summary>
-    int currentPlacesPerRow { get; }
+    int currentFavoritePlacesPerRow { get; }
 
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
@@ -45,7 +45,7 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     event Action OnShowMoreFavoritesClicked;
 
     /// <summary>
-    /// Set the places component with a list of places.
+    /// Set the favorite component with a list of favorites.
     /// </summary>
     /// <param name="places">List of places (model) to be loaded.</param>
     void SetFavorites(List<PlaceCardComponentModel> places);
@@ -55,12 +55,6 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     /// </summary>
     /// <param name="places">List of places (model) to be added.</param>
     void AddFavorites(List<PlaceCardComponentModel> places);
-
-    /// <summary>
-    /// Set the places component in loading mode.
-    /// </summary>
-    /// <param name="isVisible">True for activating the loading mode.</param>
-    void SetFavoritesAsLoading(bool isVisible);
 
     /// <summary>
     /// Activates/Deactivates the "Show More" button.

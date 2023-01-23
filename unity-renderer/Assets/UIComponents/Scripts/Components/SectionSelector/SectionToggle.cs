@@ -56,6 +56,8 @@ public interface ISectionToggle
     /// </summary>
     /// <returns>True if it is actived.</returns>
     bool IsActive();
+
+    GameObject GetGameObject();
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
@@ -103,6 +105,11 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
             unselectedImageColor = unselectedImageColor,
             backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected
         };
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
     }
 
     public void SetInfo(SectionToggleModel model)

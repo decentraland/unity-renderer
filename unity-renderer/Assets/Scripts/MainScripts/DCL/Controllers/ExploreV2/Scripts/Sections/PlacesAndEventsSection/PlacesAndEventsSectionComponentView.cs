@@ -1,3 +1,4 @@
+using DCL;
 using UnityEngine;
 
 public interface IPlacesAndEventsSectionComponentView
@@ -16,6 +17,11 @@ public interface IPlacesAndEventsSectionComponentView
     /// Events sub-section component.
     /// </summary>
     IEventsSubSectionComponentView EventsSubSectionView { get; }
+
+    /// <summary>
+    /// Favorites sub-section component.
+    /// </summary>
+    IFavoritesSubSectionComponentView FavoritesSubSectionView { get; }
 
     /// <summary>
     /// Open a sub-section.
@@ -72,6 +78,9 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public void SetActive(bool isActive)
     {
         canvas.enabled = isActive;
+
+        //Temporary untill the full feature is released
+        subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.GetGameObject().SetActive(DataStore.i.HUDs.enableFavoritePlaces.Get());
 
         highlightsSubSection.SetActive(isActive && currentSelectedIndex == HIGHLIGHTS_SUB_SECTION_INDEX);
         placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
