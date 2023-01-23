@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,36 +7,30 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class FontLoaderAddressable : MonoBehaviour
 {
-    [SerializeField]
-    private List<AssetReferenceT<TMP_FontAsset>> fontAssetReference;
 
-    void Start()
+    private void Start()
     {
         Addressables.InitializeAsync().Completed += AddressablesInitiated;
     }
 
     private void AddressablesInitiated(AsyncOperationHandle<IResourceLocator> obj)
     {
-        foreach (AssetReferenceT<TMP_FontAsset> assetReferenceT in fontAssetReference)
-        {
-            assetReferenceT.LoadAssetAsync().Completed += FontLoadComplete;
-        }
+        Addressables.LoadAssetsAsync<TMP_FontAsset>("fonts", FontLoaded);
     }
 
-    private void FontLoadComplete(AsyncOperationHandle<TMP_FontAsset> obj)
+    private void FontLoaded(TMP_FontAsset obj)
     {
+        List<TMP_FontAsset> fallbackFontAssets = TMP_Settings.fallbackFontAssets;
 
-        var fallbackFontAssets = TMP_Settings.fallbackFontAssets;
+        if (fallbackFontAssets == null) { fallbackFontAssets = new List<TMP_FontAsset>(); }
 
-        if (fallbackFontAssets == null)
-        {
-            fallbackFontAssets = new List<TMP_FontAsset>();
-        }
-
-        fallbackFontAssets.Add(obj.Result);
-
-        Debug.Log($"Font {obj.Result.name} loaded successfully");
+        fallbackFontAssets.Add(obj);
 
         TMP_Settings.fallbackFontAssets = fallbackFontAssets;
+
+        Debug.Log($"Font {obj.name} loaded succesfully");
     }
+
 }
+
+

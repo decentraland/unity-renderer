@@ -15,38 +15,14 @@ MonoBehaviour:
   m_GroupName: Fonts
   m_Data:
     m_SerializedData: []
-  m_GUID: 002b211f4e3957c48a13c9f42bddfdba
+  m_GUID: 03787049e5024224093312ce055333db
   m_SerializeEntries:
-  - m_GUID: 82f86e6c95d775f4e8488447b6885323
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansJP-SemiBold
-      SDF.asset
+  - m_GUID: 3870de090b30f7b4bb9580f0802d62a0
+    m_Address: Assets/Fonts/Fonts Sources
     m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d099dcb408c7dcf499ea688b4e74fe09
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansJP-SemiBold.otf
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4cc5b9c92b8be214dbbd4f1f502110de
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansKR-SemiBold
-      SDF.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 16e3d6ebbb2afa8478140aa1fffd9d09
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansKR-SemiBold.otf
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1801d33e8e688a74ea5dd704a91cfac1
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansSC-SemiBold
-      SDF.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e942926d8b6dad246920ce7dd79a67d2
-    m_Address: Assets/TextMesh Pro/Resources_moved/Fonts Sources/NotoSansSC-SemiBold.otf
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - fonts
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: 3abe5f18fea1a5d4eabdd5d690c3c24d, type: 2}
-    - {fileID: 11400000, guid: 2f7972f7875d736469bc2abcd26c7e99, type: 2}
+    m_Schemas: []
