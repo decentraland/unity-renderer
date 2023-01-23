@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEditor.Build;
-using UnityEditor.Build.Content;
 using UnityEditor.Build.Reporting;
 
 // MacOS doesn't include Python anymore since macOS 12.3 (and removes the previously-existent version)
