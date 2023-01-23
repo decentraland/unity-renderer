@@ -40,7 +40,6 @@ namespace DCL
         public readonly BaseRefCounter<AvatarModifierAreaID> avatarAreaWarnings = new BaseRefCounter<AvatarModifierAreaID>();
         public readonly BaseVariable<Vector2Int> homePoint = new BaseVariable<Vector2Int>(new Vector2Int(0,0));
         public readonly BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapes = new BaseVariable<Dictionary<int, Queue<IUIRefreshable>>>(new Dictionary<int, Queue<IUIRefreshable>>());
-        public readonly BaseVariable<bool> enableNewPassport = new BaseVariable<bool>(false);
         public readonly BaseVariable<int> currentPassportSortingOrder = new BaseVariable<int>();
         public readonly BaseVariable<string> sendFriendRequest = new BaseVariable<string>();
         public readonly BaseVariable<int> sendFriendRequestSource = new BaseVariable<int>();
