@@ -92,7 +92,6 @@ namespace DCL.Components
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-
             LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
 
             switch (finalLoadingType)
@@ -293,7 +292,6 @@ namespace DCL.Components
 
             gltfastPromise.OnFailEvent += (asset, exception) =>
             {
-                Debug.LogException(exception);
                 OnFailWrapper(OnFail, exception, hasFallback);
             };
 
@@ -306,10 +304,14 @@ namespace DCL.Components
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
 
-            if (!hasFallback)
-                Debug.LogException(exception);
-            else if (VERBOSE)
-                Debug.Log($"Load Fail Detected, trying to use a fallback, error was: {exception.Message}");
+            // If the entity is destroyed while loading, the exception is expected to be null and no error should be thrown
+            if (exception != null)
+            {
+                if (!hasFallback)
+                    Debug.LogException(exception);
+                else if (VERBOSE)
+                    Debug.Log($"Load Fail Detected, trying to use a fallback, error was: {exception.Message}");
+            }
             OnFail?.Invoke(exception);
             ClearEvents();
         }
