@@ -86,10 +86,13 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out CRDTProtocol protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out List<CRDTMessage> protocol);
+            // not null or empty
             Assert.NotNull(protocol);
 
-            CRDTProtocol.EntityComponentData message = protocol.GetState(ENTITY_ID, COMPONENT_ID);
+            DataStore.i.rpc.context.crdt.CrdtExecutors.TryGetValue(SCENE_NUMBER, out ICRDTExecutor executor);
+
+            CRDTProtocol.EntityComponentData message = executor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
             Assert.NotNull(message);
             Assert.AreEqual(timeStamp, message.timestamp);
             Assert.IsTrue(AreEqual(componentData, (byte[])message.data));
@@ -106,7 +109,9 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out CRDTProtocol protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out List<CRDTMessage> protocol);
+
+            // null or empty
             Assert.IsNull(protocol);
         }
 

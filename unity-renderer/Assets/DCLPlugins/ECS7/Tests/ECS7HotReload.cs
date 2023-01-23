@@ -7,7 +7,6 @@ using DCL.ECSComponents;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -198,7 +197,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }

@@ -1,7 +1,7 @@
-using System.IO;
 using DCL.CRDT;
 using KernelCommunication;
 using NUnit.Framework;
+using System.IO;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
@@ -39,11 +39,11 @@ namespace Tests
             BinaryWriter allMsgsBinaryWriter = new BinaryWriter(allMsgsMemoryStream);
             for (int i = 0; i < msgs.Length; i++)
             {
-                KernelBinaryMessageSerializer.Serialize(allMsgsBinaryWriter, msgs[i]);
+                CRDTSerializer.Serialize(allMsgsBinaryWriter, msgs[i]);
 
                 MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-                KernelBinaryMessageSerializer.Serialize(binaryWriter, msgs[i]);
+                CRDTSerializer.Serialize(binaryWriter, msgs[i]);
                 var bytes = memoryStream.ToArray();
 
                 IBinaryReader reader = new ByteArrayReader(bytes);

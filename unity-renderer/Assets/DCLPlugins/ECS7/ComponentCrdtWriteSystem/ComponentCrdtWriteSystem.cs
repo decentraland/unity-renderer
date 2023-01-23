@@ -22,7 +22,7 @@ public class ComponentCrdtWriteSystem : IDisposable
     private readonly ISceneController sceneController;
     private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
 
-    private readonly Dictionary<int, CRDTProtocol> outgoingCrdt = new Dictionary<int, CRDTProtocol>(60);
+    private readonly Dictionary<int, List<CRDTMessage>> outgoingCrdt = new Dictionary<int, List<CRDTMessage>>(60);
     private readonly Queue<MessageData> queuedMessages = new Queue<MessageData>(60);
     private readonly Queue<MessageData> messagesPool = new Queue<MessageData>(60);
 
@@ -94,17 +94,17 @@ public class ComponentCrdtWriteSystem : IDisposable
 
             if (message.writeType.HasFlag(ECSComponentWriteType.SEND_TO_SCENE))
             {
-                if (!outgoingCrdt.TryGetValue(message.sceneNumber, out CRDTProtocol sceneCrdtState))
+                if (!outgoingCrdt.TryGetValue(message.sceneNumber, out List<CRDTMessage> sceneCrdtList))
                 {
-                    sceneCrdtState = new CRDTProtocol();
-                    outgoingCrdt[message.sceneNumber] = sceneCrdtState;
+                    sceneCrdtList = new List<CRDTMessage>();
+                    outgoingCrdt[message.sceneNumber] = sceneCrdtList;
                 }
 
-                sceneCrdtState.ProcessMessage(crdt);
+                sceneCrdtList.Add(crdt);
 
                 if (!rpcContext.crdt.scenesOutgoingCrdts.ContainsKey(message.sceneNumber))
                 {
-                    rpcContext.crdt.scenesOutgoingCrdts.Add(message.sceneNumber, sceneCrdtState);
+                    rpcContext.crdt.scenesOutgoingCrdts.Add(message.sceneNumber, sceneCrdtList);
                 }
             }
         }

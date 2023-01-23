@@ -6,7 +6,6 @@ using DCL.ECSRuntime;
 using Decentraland.Common;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -254,7 +253,7 @@ namespace Tests
                 const int TEST_SCENE_NUMBER = 666;
                 const int ENTITY_ID = 1;
                 const int COMPONENT_ID = 1;
-                byte[] outgoingCrdt = new byte[] { 0, 0, 0, 0 };
+                byte[] outgoingCrdtBytes = new byte[] { 0, 0, 0, 0 };
 
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
                 await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
@@ -272,8 +271,8 @@ namespace Tests
                           });
 
                 var protocol = new CRDTProtocol() { };
-                protocol.ProcessMessage(protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdt));
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, protocol);
+                var msg = protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new List<CRDTMessage>(){ msg });
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -287,7 +286,7 @@ namespace Tests
                         var responseCrdt = (CRDTMessage)iterator.Current;
                         Assert.AreEqual(responseCrdt.entityId, ENTITY_ID);
                         Assert.AreEqual(responseCrdt.componentId, COMPONENT_ID);
-                        Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
+                        Assert.IsTrue(AreEqual(outgoingCrdtBytes, (byte[])responseCrdt.data));
                     }
                 }
             });
@@ -340,7 +339,7 @@ namespace Tests
 
                 var outgoingCrdtProtocol = new CRDTProtocol() { };
                 outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, outgoingCrdtProtocol);
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new List<CRDTMessage>() { crdts[0] });
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -371,7 +370,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }

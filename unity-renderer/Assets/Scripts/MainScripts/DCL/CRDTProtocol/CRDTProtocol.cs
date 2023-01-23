@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DCL.CRDT
 {
@@ -181,6 +182,42 @@ namespace DCL.CRDT
             return state;
         }
 
+
+        public List<CRDTMessage> GetStateAsMessages()
+        {
+            List<CRDTMessage> crdtMessagesList = new List<CRDTMessage>();
+            for (int i = 0; i < state.components.Count; i++)
+            {
+                int componentId = state.components.ElementAt(i).Key;
+                Dictionary<long, EntityComponentData> component = state.components.ElementAt(i).Value;
+                for (int j = 0; j < component.Count; j++)
+                {
+                    var entityComponentData = component.ElementAt(j);
+                    crdtMessagesList.Add(new CRDTMessage(){
+                        type = entityComponentData.Value.data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
+                        entityId = entityComponentData.Key,
+                        componentId = componentId,
+                        timestamp = entityComponentData.Value.timestamp,
+                        data = entityComponentData.Value.data
+                    });
+                }
+            }
+
+            for (var i = 0; i < state.deletedEntitiesSet.Count; i++)
+            {
+                long entityNumber = state.deletedEntitiesSet.ElementAt(i).Key;
+                long entityVersion = state.deletedEntitiesSet.ElementAt(i).Value;
+                long entityId = entityNumber | (entityVersion << 16);
+                crdtMessagesList.Add(new CRDTMessage(){
+                    type = CrdtMessageType.DELETE_ENTITY,
+                    entityId = entityId
+                });
+            }
+
+
+            return crdtMessagesList;
+        }
+
         public CRDTMessage Create(int entityId, int componentId, byte[] data)
         {
             var result = new CRDTMessage()
@@ -188,7 +225,8 @@ namespace DCL.CRDT
                 entityId = entityId,
                 componentId = componentId,
                 data = data,
-                timestamp = 0
+                timestamp = 0,
+                type = data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
             };
             if (TryGetState(result.entityId, result.componentId, out EntityComponentData storedMessage))
             {

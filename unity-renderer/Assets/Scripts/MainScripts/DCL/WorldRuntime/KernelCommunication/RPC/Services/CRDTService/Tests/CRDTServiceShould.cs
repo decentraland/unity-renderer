@@ -5,7 +5,6 @@ using DCL.CRDT;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -14,6 +13,7 @@ using rpc_csharp.transport;
 using RPC.Services;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
@@ -133,8 +133,8 @@ namespace Tests
                 sceneState1.ProcessMessage(messageToScene1);
                 sceneState2.ProcessMessage(messageToScene2);
 
-                context.crdt.scenesOutgoingCrdts.Add(scene1, sceneState1);
-                context.crdt.scenesOutgoingCrdts.Add(scene2, sceneState2);
+                context.crdt.scenesOutgoingCrdts.Add(scene1, new List<CRDTMessage>() { messageToScene1 });
+                context.crdt.scenesOutgoingCrdts.Add(scene2, new List<CRDTMessage>() { messageToScene2 });
 
                 // Simulate client requesting scene's crdt
                 try
@@ -253,7 +253,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }

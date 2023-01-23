@@ -2,6 +2,7 @@ namespace DCL.CRDT
 {
     public enum CrdtMessageType
     {
+        NONE = 0,
         PUT_COMPONENT = 1,
         DELETE_COMPONENT = 2,
         DELETE_ENTITY = 3
@@ -21,7 +22,7 @@ namespace DCL.CRDT
     }
     public class CRDTMessage
     {
-        public CrdtMessageType type;
+        public CrdtMessageType type = CrdtMessageType.NONE;
         // the entityId is stored as 64bit integer, but in the protocol is serialized as 32bit (ADR-117)
         public long entityId;
         public int componentId;

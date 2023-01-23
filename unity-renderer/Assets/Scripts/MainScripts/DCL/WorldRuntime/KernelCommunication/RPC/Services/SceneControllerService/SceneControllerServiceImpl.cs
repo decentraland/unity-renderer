@@ -6,7 +6,6 @@ using DCL.Helpers;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using rpc_csharp;
 using RPC.Context;
 using System;
@@ -184,12 +183,17 @@ namespace RPC.Services
                     }
                 }
 
-                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out CRDTProtocol sceneCrdtState))
+                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out List<CRDTMessage> sceneCrdtState))
                 {
                     sendCrdtMemoryStream.SetLength(0);
                     crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                    KernelBinaryMessageSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtState);
-                    sceneCrdtState.ClearOnUpdated();
+
+                    for (int i = 0; i < sceneCrdtState.Count; i++)
+                    {
+                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtState[i]);
+                    }
+
+                    sceneCrdtState.Clear();
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
             }
@@ -203,7 +207,7 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            CRDTProtocol outgoingMessages = null;
+            List<CRDTMessage> outgoingMessages = null;
             CRDTProtocol sceneState = null;
             CRDTServiceContext crdtContext = context.crdt;
 
@@ -229,28 +233,29 @@ namespace RPC.Services
 
                 // serialize outgoing messages
                 crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, outgoingMessages);
-                outgoingMessages.ClearOnUpdated();
+                for (int i = 0; i < outgoingMessages.Count; i++)
+                {
+                    CRDTSerializer.Serialize(sendCrdtBinaryWriter, outgoingMessages[i]);
+                }
+                outgoingMessages.Clear();
 
                 // serialize scene state
                 if (sceneState != null)
                 {
-                    var state = sceneState.GetState();
+                    var crdtMessages = sceneState.GetStateAsMessages();
 
-                    for (int i = 0; i < state.components.Count; i++)
+                    for (int i = 0; i < crdtMessages.Count; i++)
                     {
-                        var component = state.components.ElementAt(i);
-                        for (int entityIndex = 0; i < component.Value.Count; i++)
-                        {
-                            if (component.Value.ElementAt(entityIndex).Value.data != null)
-                            {
-                                result.HasOwnEntities = true;
-                                break;
-                            }
+                        if (crdtMessages[i].data != null){
+                            result.HasOwnEntities = true;
+                            break;
                         }
                     }
 
-                    KernelBinaryMessageSerializer.Serialize(getStateBinaryWriter, sceneState);
+                    for (int i = 0; i < crdtMessages.Count; i++)
+                    {
+                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessages[i]);
+                    }
                 }
 
                 result.Payload = ByteString.CopyFrom(getStateMemoryStream.ToArray());
