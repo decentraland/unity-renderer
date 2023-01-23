@@ -42,6 +42,7 @@ public class TaskbarHUDController : IHUD
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
+    private CancellationTokenSource openPrivateChatCancellationToken = new ();
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -724,7 +725,10 @@ public class TaskbarHUDController : IHUD
                     OpenPrivateChat(chatId);
             }
 
-            OpenPrivateChatAsync(chatId).Forget();
+            openPrivateChatCancellationToken.Cancel();
+            openPrivateChatCancellationToken.Dispose();
+            openPrivateChatCancellationToken = new CancellationTokenSource();
+            OpenPrivateChatAsync(chatId, openPrivateChatCancellationToken.Token).Forget();
         }
     }
 
@@ -783,6 +787,9 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
+
+        openPrivateChatCancellationToken.Cancel();
+        openPrivateChatCancellationToken.Dispose();
     }
 
     private void SetVisibility(bool visible, bool previus)
