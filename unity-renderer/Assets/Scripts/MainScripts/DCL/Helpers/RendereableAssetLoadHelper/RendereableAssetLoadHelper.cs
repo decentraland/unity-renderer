@@ -39,6 +39,7 @@ namespace DCL.Components
         private AssetPromise_GLTF gltfPromise;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
+        private string currentLoadingSystem;
 
         public bool isFinished
         {
@@ -155,6 +156,8 @@ namespace DCL.Components
 
         void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = AB_GO_NAME_PREFIX;
+            
             if (abPromise != null)
             {
                 UnloadAB();
@@ -212,6 +215,8 @@ namespace DCL.Components
 
         void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = GLTF_GO_NAME_PREFIX;
+            
             if (gltfPromise != null)
             {
                 UnloadGLTF();
@@ -261,6 +266,8 @@ namespace DCL.Components
 
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
+            currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
+            
             if (gltfastPromise != null)
             {
                 UnloadGLTFast();
@@ -310,7 +317,10 @@ namespace DCL.Components
                 if (!hasFallback)
                     Debug.LogException(exception);
                 else if (VERBOSE)
-                    Debug.Log($"Load Fail Detected, trying to use a fallback, error was: {exception.Message}");
+                {
+                    Debug.Log($"Load Fail Detected, trying to use a fallback, " +
+                        $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
+                }
             }
             OnFail?.Invoke(exception);
             ClearEvents();
