@@ -1,6 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 
-public interface IProfanityFilter
+namespace DCL.ProfanityFiltering
 {
-    UniTask<string> Filter(string message);
+    public interface IProfanityFilter : IService
+    {
+        UniTask<string> Filter(string message);
+    }
 }

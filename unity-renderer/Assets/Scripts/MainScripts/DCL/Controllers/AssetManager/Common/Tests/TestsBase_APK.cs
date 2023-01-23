@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.Controllers.AssetManager;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;

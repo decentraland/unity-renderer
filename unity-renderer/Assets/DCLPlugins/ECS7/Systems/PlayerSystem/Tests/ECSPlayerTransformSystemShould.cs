@@ -44,13 +44,15 @@ namespace Tests
         public void TearDown()
         {
             DataStore.Clear();
+            CommonScriptableObjects.UnloadAll();
             Object.Destroy(avatarTransform.gameObject);
         }
 
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();
 
@@ -88,7 +90,8 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();
 

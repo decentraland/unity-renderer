@@ -1,0 +1,34 @@
+{
+    "name": "DCL.LoadingScreen.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:410d113a616fe7a46bdbf47941da22a4",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:81f3218b29e049144b175dad2ebbac1b",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:70aa308435753374584c7061e4b89ef2",
+        "GUID:3c7b57a14671040bd8c549056adc04f5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

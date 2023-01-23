@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Controllers;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace DCL
     /// </summary>
     public class LoadingFeedbackController
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+        private  bool isDecoupledLoadingScreenEnabled;
+
         private class SceneLoadingStatus
         {
             public int sceneInstanceId;
@@ -33,20 +37,35 @@ namespace DCL
 
         public LoadingFeedbackController()
         {
-            loadedScenes = new List<SceneLoadingStatus>();
+            DataStore.i.featureFlags.flags.OnChange += FeatureFlagsSet;
+        }
 
-            Environment.i.world.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
-            GLTFComponent.OnDownloadingProgressUpdate += GLTFComponent_OnDownloadingProgressUpdate;
-            AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
-            CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+        private void FeatureFlagsSet(FeatureFlag current, FeatureFlag _)
+        {
+            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsSet;
+
+            isDecoupledLoadingScreenEnabled = current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+            if (!isDecoupledLoadingScreenEnabled)
+            {
+                loadedScenes = new List<SceneLoadingStatus>();
+
+                //Add this null check is quite bad. But we are deleting this class soon, so it does not generate any tech debt
+                if(Environment.i.world.sceneController != null) Environment.i.world.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
+                GLTFComponent.OnDownloadingProgressUpdate += GLTFComponent_OnDownloadingProgressUpdate;
+                AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
+                CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+            }
         }
 
         public void Dispose()
         {
-            Environment.i.world.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
-            GLTFComponent.OnDownloadingProgressUpdate -= GLTFComponent_OnDownloadingProgressUpdate;
-            AssetPromise_AB.OnDownloadingProgressUpdate -= AssetPromise_AB_OnDownloadingProgressUpdate;
-            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            if (!isDecoupledLoadingScreenEnabled)
+            {
+                Environment.i.world.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
+                GLTFComponent.OnDownloadingProgressUpdate -= GLTFComponent_OnDownloadingProgressUpdate;
+                AssetPromise_AB.OnDownloadingProgressUpdate -= AssetPromise_AB_OnDownloadingProgressUpdate;
+                CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
+            }
         }
 
         private void SceneController_OnNewSceneAdded(IParcelScene scene)
@@ -103,7 +122,7 @@ namespace DCL
 
         private void RefreshFeedbackMessage()
         {
-            if (!DataStore.i.HUDs.loadingHUD.fadeIn.Get() && !DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Get() && !dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
                 return;
 
             string loadingText = string.Empty;
@@ -116,7 +135,7 @@ namespace DCL
             {
                 loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
                 messageToSend.loadPercentage = loadingComponentsPercentage;
-                DataStore.i.HUDs.loadingHUD.percentage.Set(loadingComponentsPercentage);
+                dataStoreLoadingScreen.Ref.loadingHUD.percentage.Set(loadingComponentsPercentage);
                 loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
             }
 
@@ -138,7 +157,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(loadingText))
             {
-                DataStore.i.HUDs.loadingHUD.message.Set(loadingText);
+                dataStoreLoadingScreen.Ref.loadingHUD.message.Set(loadingText);
                 messageToSend.message = loadingText;
                 WebInterface.ScenesLoadingFeedback(messageToSend);
             }

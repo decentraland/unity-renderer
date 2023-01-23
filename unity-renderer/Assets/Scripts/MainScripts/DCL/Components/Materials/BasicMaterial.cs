@@ -192,7 +192,7 @@ namespace DCL.Components
         {
             dclTexture?.DetachFrom(this);
 
-            while ( attachedEntities.Count > 0 )
+            while (attachedEntities != null && attachedEntities.Count > 0 )
             {
                 DetachFrom(attachedEntities.First());
             }
