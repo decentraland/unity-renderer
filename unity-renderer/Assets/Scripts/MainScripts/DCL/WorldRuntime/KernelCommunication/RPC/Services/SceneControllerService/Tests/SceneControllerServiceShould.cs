@@ -285,8 +285,8 @@ namespace Tests
                     while (iterator.MoveNext())
                     {
                         var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, ENTITY_ID);
-                        Assert.AreEqual(responseCrdt.key2, COMPONENT_ID);
+                        Assert.AreEqual(responseCrdt.entityId, ENTITY_ID);
+                        Assert.AreEqual(responseCrdt.componentId, COMPONENT_ID);
                         Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
                     }
                 }
@@ -298,41 +298,22 @@ namespace Tests
         {
             yield return UniTask.ToCoroutine(async () =>
             {
-// <<<<<<< feat/sdk7-crdt-adr-117-rev-2
-                // outgoing crdt
-                new CRDTMessage()
-                {
-                    entityId = 1,
-                    componentId = 1,
-                    data = new byte[] { 0, 0, 0, 0 },
-                },
-// =======
                 const int TEST_SCENE_NUMBER = 666;
-// >>>>>>> dev
-
                 CRDTMessage[] crdts = new CRDTMessage[]
                 {
-// <<<<<<< feat/sdk7-crdt-adr-117-rev-2
-                    entityId = 1,
-                    componentId = 2,
-                    data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
-                }
-            };
-// =======
                     // outgoing crdt
                     new CRDTMessage()
                     {
-                        key1 = 1,
-                        key2 = 1,
+                        entityId = 1,
+                        componentId = 1,
                         data = new byte[] { 0, 0, 0, 0 },
                     },
-// >>>>>>> dev
 
                     // stored crdt
                     new CRDTMessage()
                     {
-                        key1 = 1,
-                        key2 = 2,
+                        entityId = 1,
+                        componentId = 2,
                         data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
                     }
                 };
@@ -370,22 +351,14 @@ namespace Tests
 
                 using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
                 {
-// <<<<<<< feat/sdk7-crdt-adr-117-rev-2
-                    var responseCrdt = (CRDTMessage)iterator.Current;
-                    Assert.AreEqual(responseCrdt.entityId, crdts[index].entityId);
-                    Assert.AreEqual(responseCrdt.componentId, crdts[index].componentId);
-                    Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
-                    index++;
-// =======
                     while (iterator.MoveNext())
                     {
                         var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, crdts[index].key1);
-                        Assert.AreEqual(responseCrdt.key2, crdts[index].key2);
+                        Assert.AreEqual(responseCrdt.entityId, crdts[index].entityId);
+                        Assert.AreEqual(responseCrdt.componentId, crdts[index].componentId);
                         Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
                         index++;
                     }
-// >>>>>>> dev
                 }
 
                 Assert.AreEqual(crdts.Length, index);
