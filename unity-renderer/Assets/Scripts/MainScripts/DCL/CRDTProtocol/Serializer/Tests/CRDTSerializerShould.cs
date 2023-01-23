@@ -9,9 +9,10 @@ namespace Tests
     {
         [Test]
         [TestCase(0, 1, 100, null,
-            ExpectedResult = new byte[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0 })]
-        [TestCase(32424, 67867, 606290484, new byte[] { 42, 33, 67, 22 },
-            ExpectedResult = new byte[] { 0, 0, 126, 168, 0, 1, 9, 27, 144, 114, 129, 191, 0, 0, 0, 4, 42, 33, 67, 22 })]
+            ExpectedResult = new byte[] { 0,0,0,24,0,0,0,1,0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0 })]
+        [TestCase(32424, 67867, 2138996092, new byte[] { 42, 33, 67, 22 },
+            ExpectedResult = new byte[] { 0, 0, 0, 28, 0, 0, 0, 1, 0, 0, 126, 168, 0, 1, 9, 27, 127, 126, 125, 124, 0, 0, 0, 4, 42, 33, 67, 22 })]
+                                    //    msg_length |  msg_type |    entityId   | componentId|     timestamp     |data_length| data
         public byte[] SerializeCorrectlyPutComponent(int entityId, int componentId, int timestamp, byte[] data)
         {
             var message = new CRDTMessage()
@@ -29,7 +30,7 @@ namespace Tests
             var bytes = memoryStream.ToArray();
 
             CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
-            int memoryPosition = 0;
+            int memoryPosition = 8; // skip the CrdtMessageHeader
             CRDTMessage result = CRDTDeserializer.DeserializePutComponent(bytes, crdtMessageType, ref memoryPosition);
             object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
