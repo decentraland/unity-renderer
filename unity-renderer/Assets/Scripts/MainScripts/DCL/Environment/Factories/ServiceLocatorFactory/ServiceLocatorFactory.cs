@@ -71,6 +71,8 @@ namespace DCL
                 { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
             }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
 
+            result.Register<IAddressableResolver>(() => new AddressableResolver(DataStore.i.featureFlags));
+
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));

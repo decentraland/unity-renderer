@@ -33,6 +33,7 @@ namespace DCL
         private string src;
         private Coroutine fontCoroutine;
 
+        private Service<IAddressableResolver> addressableResolver;
         private Service<IAssetBundleResolver> assetBundleResolver;
         private CancellationTokenSource cancellationTokenSource;
         private readonly AssetSource permittedSources;
@@ -85,7 +86,7 @@ namespace DCL
         {
             try
             {
-                var assetBundle = await assetBundleResolver.Ref.GetAssetBundleAsync(permittedSources, contentUrl, hash, cancellationToken);
+                IList<TMP_FontAsset> fontsToAdd = await addressableResolver.Ref.GetAddressablesListByLabel<TMP_FontAsset>(src, cancellationToken);
 
                 var fallbackFontAssets = TMP_Settings.fallbackFontAssets;
 
@@ -94,11 +95,9 @@ namespace DCL
                     fallbackFontAssets = new List<TMP_FontAsset>();
                 }
 
-                var fonts = assetBundle.LoadAllAssets<TMP_FontAsset>();
-                fallbackFontAssets.AddRange(fonts);
+                fallbackFontAssets.AddRange(fontsToAdd);
 
                 TMP_Settings.fallbackFontAssets = fallbackFontAssets;
-
                 onSuccess?.Invoke();
             }
             catch (Exception e)
