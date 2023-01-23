@@ -22,6 +22,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - fonts
+    - cjk-fonts
+    - font-cjk
   - m_GUID: e942926d8b6dad246920ce7dd79a67d2
     m_Address: Assets/Fonts/Fonts Sources/NotoSansSC-SemiBold.otf
     m_ReadOnly: 0
@@ -31,6 +33,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - fonts
+    - font-cjk
   - m_GUID: 16e3d6ebbb2afa8478140aa1fffd9d09
     m_Address: Assets/Fonts/Fonts Sources/NotoSansKR-SemiBold.otf
     m_ReadOnly: 0
@@ -40,6 +43,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - fonts
+    - cjk-fonts
+    - font-cjk
   - m_GUID: d099dcb408c7dcf499ea688b4e74fe09
     m_Address: Assets/Fonts/Fonts Sources/NotoSansJP-SemiBold.otf
     m_ReadOnly: 0

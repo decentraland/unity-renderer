@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using AssetPromiseKeeper_Tests;
+﻿using AssetPromiseKeeper_Tests;
 using DCL;
-using DCL.Helpers;
-using UnityEngine;
+using MainScripts.DCL.Controllers.AssetManager;
 
 namespace AssetPromiseKeeper_Font_Tests
 {
@@ -12,10 +10,10 @@ namespace AssetPromiseKeeper_Font_Tests
         AssetLibrary_RefCounted<Asset_Font>>
     {
         private const string fontName = "SansSerif";
-        
+
         protected override AssetPromise_Font CreatePromise()
         {
-            var prom = new AssetPromise_Font(fontName);
+            var prom = new AssetPromise_Font(fontName, AssetSource.EMBEDDED);
             return prom;
         }
     }

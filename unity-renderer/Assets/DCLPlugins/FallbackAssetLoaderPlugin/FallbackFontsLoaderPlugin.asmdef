@@ -1,10 +1,10 @@
 {
-    "name": "FontLoaderAddressable",
+    "name": "FallbackFontsLoaderPlugin",
     "rootNamespace": "",
     "references": [
+        "GUID:a3ceb534947fac14da25035bc5c24788",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:9e24947de15b9834991c9d8411ea37cf",
-        "GUID:84651a3751eca9349aac36a66bba901b"
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

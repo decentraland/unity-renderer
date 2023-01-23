@@ -1,50 +1,27 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL.Providers;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.AssetManager.Font;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_Font : AssetPromise_WithUrl<Asset_Font>
+    public class AssetPromise_Font : AssetPromise<Asset_Font>
     {
-        private const string RESOURCE_FONT_FOLDER = "Fonts & Materials";
-        private const string DEFAULT_SANS_SERIF_HEAVY = "Inter-Heavy SDF";
-        private const string DEFAULT_SANS_SERIF_BOLD = "Inter-Bold SDF";
-        private const string DEFAULT_SANS_SERIF_SEMIBOLD = "Inter-SemiBold SDF";
-        private const string DEFAULT_SANS_SERIF = "Inter-Regular SDF";
+        private readonly bool fetchingEcsFonts;
+        private readonly AssetSource permittedSources;
+        private readonly string src;
+        private CancellationTokenSource cancellationTokenSource;
 
-        private readonly Dictionary<string, string> fontsMapping = new Dictionary<string, string>()
-        {
-            { "builtin:SF-UI-Text-Regular SDF", DEFAULT_SANS_SERIF },
-            { "builtin:SF-UI-Text-Heavy SDF", DEFAULT_SANS_SERIF_HEAVY },
-            { "builtin:SF-UI-Text-Semibold SDF", DEFAULT_SANS_SERIF_SEMIBOLD },
-            { "builtin:LiberationSans SDF", "LiberationSans SDF" },
-            { "SansSerif", DEFAULT_SANS_SERIF },
-            { "SansSerif_Heavy", DEFAULT_SANS_SERIF_HEAVY },
-            { "SansSerif_Bold", DEFAULT_SANS_SERIF_BOLD },
-            { "SansSerif_SemiBold", DEFAULT_SANS_SERIF_SEMIBOLD },
-        };
-
-        private string src;
         private Coroutine fontCoroutine;
 
-        private Service<IAddressableResolver> addressableResolver;
-        private Service<IAssetBundleResolver> assetBundleResolver;
-        private CancellationTokenSource cancellationTokenSource;
-        private readonly AssetSource permittedSources;
+        private Service<IFontAssetResolver> fontResolver;
 
-        private readonly bool fetchingEcsFonts;
-
-        public AssetPromise_Font(string src, string baseURL = "", string hash = "", bool fetchingECSFonts = true , AssetSource permittedSources = AssetSource.WEB) : base(baseURL, hash)
+        public AssetPromise_Font(string src, AssetSource permittedSources = AssetSource.ALL)
         {
             this.permittedSources = permittedSources;
             this.src = src;
-            this.fetchingEcsFonts = fetchingECSFonts;
         }
 
         protected override void OnAfterLoadOrReuse() { }
@@ -53,93 +30,53 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            CoroutineStarter.Stop(fontCoroutine);
+            CleanCT();
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
-            CoroutineStarter.Stop(fontCoroutine);
+            CleanCT();
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            if (fetchingEcsFonts)
+            cancellationTokenSource = new CancellationTokenSource();
+
+            async UniTaskVoid LaunchRequest()
             {
-                if (fontsMapping.TryGetValue(src, out string fontResourceName))
-                    fontCoroutine = CoroutineStarter.Start(GetFontFromResources(OnSuccess, OnFail, fontResourceName));
-                else
-                    OnFail?.Invoke(new Exception("Font doesn't correspond with any know font"));
-            }
-            else
-            {
-                if (cancellationTokenSource != null)
-                    return;
+                FontResponse result = await fontResolver.Ref.GetFontAsync(permittedSources, src, cancellationTokenSource.Token);
 
-                cancellationTokenSource = new CancellationTokenSource();
-                LoadFonts(OnSuccess, OnFail, cancellationTokenSource.Token).Forget();
-            }
-
-        }
-
-        private async UniTask LoadFonts(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationToken)
-        {
-            try
-            {
-                IList<TMP_FontAsset> fontsToAdd = await addressableResolver.Ref.GetAddressablesListByLabel<TMP_FontAsset>(src, cancellationToken);
-
-                var fallbackFontAssets = TMP_Settings.fallbackFontAssets;
-
-                if (fallbackFontAssets == null)
+                if (result.IsSuccess)
                 {
-                    fallbackFontAssets = new List<TMP_FontAsset>();
+                    FontSuccessResponse successResponse = result.GetSuccessResponse();
+                    asset.font = successResponse.Font;
+                    OnSuccess?.Invoke();
                 }
-
-                fallbackFontAssets.AddRange(fontsToAdd);
-
-                TMP_Settings.fallbackFontAssets = fallbackFontAssets;
-                onSuccess?.Invoke();
+                else { OnFail?.Invoke(result.GetFailResponse().Exception); }
             }
-            catch (Exception e)
-            {
-                Debug.Log("FAILED TO LOAD FONTS");
-                onFail?.Invoke(e);
-            }
+
+            LaunchRequest().Forget();
         }
 
         protected override bool AddToLibrary()
         {
-            if (!library.Add(asset))
-            {
-                return false;
-            }
+            if (!library.Add(asset)) { return false; }
 
             asset = library.Get(asset.id);
             return true;
         }
 
-        public override object GetId()
+        public override object GetId() =>
+            src;
+
+        private void CleanCT()
         {
-            return src;
-        }
-
-        IEnumerator GetFontFromResources(Action OnSuccess, Action<Exception> OnFail, string fontResourceName)
-        {
-            ResourceRequest request = Resources.LoadAsync($"{RESOURCE_FONT_FOLDER}/{fontResourceName}",
-                typeof(TMP_FontAsset));
-
-            yield return request;
-
-            if (request.asset != null)
+            if (cancellationTokenSource != null)
             {
-                asset.font = request.asset as TMP_FontAsset;
-                OnSuccess?.Invoke();
-            }
-            else
-            {
-                string message = $"couldn't fetch font from resources {fontResourceName}";
-                Debug.Log(message);
-                OnFail?.Invoke(new Exception(message));
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
             }
         }
     }

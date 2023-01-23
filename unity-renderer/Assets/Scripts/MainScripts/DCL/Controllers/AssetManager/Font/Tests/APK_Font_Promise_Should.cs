@@ -1,6 +1,7 @@
-﻿using System.Collections;
-using AssetPromiseKeeper_Tests;
+﻿using AssetPromiseKeeper_Tests;
 using DCL;
+using MainScripts.DCL.Controllers.AssetManager;
+using System.Collections;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -15,13 +16,7 @@ namespace AssetPromiseKeeper_Font_Tests
 
         protected AssetPromise_Font CreatePromise()
         {
-            var prom = new AssetPromise_Font(fontName);
-            return prom;
-        }
-
-        protected AssetPromise_Font CreatePromise(string name)
-        {
-            AssetPromise_Font prom = new AssetPromise_Font(name);
+            var prom = new AssetPromise_Font(fontName, AssetSource.EMBEDDED);
             return prom;
         }
 
@@ -30,9 +25,9 @@ namespace AssetPromiseKeeper_Font_Tests
         {
             // Check non-default-settings texture
             Asset_Font loadedAsset = null;
-            var prom = CreatePromise();
+            AssetPromise_Font prom = CreatePromise();
 
-            prom.OnSuccessEvent += (x) => loadedAsset = x;
+            prom.OnSuccessEvent += x => loadedAsset = x;
 
             keeper.Keep(prom);
 
@@ -45,7 +40,7 @@ namespace AssetPromiseKeeper_Font_Tests
             loadedAsset = null;
             prom = CreatePromise();
 
-            prom.OnSuccessEvent += (x) => loadedAsset = x;
+            prom.OnSuccessEvent += x => loadedAsset = x;
 
             keeper.Keep(prom);
 
@@ -59,17 +54,17 @@ namespace AssetPromiseKeeper_Font_Tests
         {
             // 2 non-default textures
             Asset_Font loadedAsset = null;
-            var prom = CreatePromise();
+            AssetPromise_Font prom = CreatePromise();
 
-            prom.OnSuccessEvent += (x) => loadedAsset = x;
+            prom.OnSuccessEvent += x => loadedAsset = x;
 
             keeper.Keep(prom);
             yield return prom;
 
             Asset_Font loadedAsset2 = null;
-            var prom2 = CreatePromise();
+            AssetPromise_Font prom2 = CreatePromise();
 
-            prom2.OnSuccessEvent += (x) => loadedAsset2 = x;
+            prom2.OnSuccessEvent += x => loadedAsset2 = x;
 
             keeper.Keep(prom2);
             yield return prom2;
@@ -85,14 +80,14 @@ namespace AssetPromiseKeeper_Font_Tests
         [UnityTest]
         public IEnumerator KeepRefCountCorrectly()
         {
-            var model = fontName;
-            var prom = new AssetPromise_Font(model);
+            string model = fontName;
+            var prom = new AssetPromise_Font(model, AssetSource.EMBEDDED);
             keeper.Keep(prom);
             yield return prom;
 
             Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
 
-            var prom2 = new AssetPromise_Font(model);
+            var prom2 = new AssetPromise_Font(model, AssetSource.EMBEDDED);
             keeper.Keep(prom2);
             yield return prom2;
 
@@ -101,7 +96,7 @@ namespace AssetPromiseKeeper_Font_Tests
             keeper.Forget(prom);
             Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
 
-            prom = new AssetPromise_Font(model);
+            prom = new AssetPromise_Font(model, AssetSource.EMBEDDED);
             keeper.Keep(prom);
             yield return prom;
 

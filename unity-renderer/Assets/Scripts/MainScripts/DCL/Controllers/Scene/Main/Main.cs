@@ -81,8 +81,6 @@ namespace DCL
 
             // We trigger the Decentraland logic once everything is initialized.
             WebInterface.StartDecentraland();
-
-            SetupAdditionalFonts();
         }
 
         protected virtual void Update()
@@ -190,11 +188,5 @@ namespace DCL
 
         protected virtual void CreateEnvironment() =>
             MainSceneFactory.CreateEnvironment();
-
-        private void SetupAdditionalFonts()
-        {
-            AssetPromise_Font additionalFonts = new AssetPromise_Font("fonts",  fetchingECSFonts: false);
-            AssetPromiseKeeper_Font.i.Keep(additionalFonts);
-        }
     }
 }
