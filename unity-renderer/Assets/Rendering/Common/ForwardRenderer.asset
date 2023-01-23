@@ -1,28 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7551554940414059620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
-  m_Name: NewScreenSpaceAmbientOcclusion
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
-  m_Settings:
-    Downsample: 0
-    AfterOpaque: 0
-    Source: 1
-    NormalSamples: 2
-    Intensity: 1.2
-    DirectLightingStrength: 0.6
-    Radius: 0.2
-    SampleCount: 4
 --- !u!114 &-5304858544757240251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,27 +43,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   renderers: {fileID: 11400000, guid: 58ea38ce62832a247bfe2698cf6129c3, type: 2}
---- !u!114 &-1568435901723723278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8059df5aa5f477b831dab00963a3499, type: 3}
-  m_Name: OutlineScreenEffectFeature
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  settings:
-    outlineSize: 0.5
-    blurSize: 1
-    blurSigma: 5
-    outlineColor: {r: 0, g: 1, b: 1, a: 1}
-    blurColor: {r: 0, g: 1, b: 1, a: 1}
-    innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.050980393}
-    effectFade: 0
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,14 +80,10 @@ MonoBehaviour:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
       type: 3}
-  m_RendererFeatures:
-  - {fileID: -7551554940414059620}
-  - {fileID: 4650022159256899313}
-  - {fileID: 1990522510072472895}
-  - {fileID: -1568435901723723278}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288403fe5493aadc19f1bf2b9c978dbcb3bea
+  m_RendererFeatures: []
+  m_RendererFeatureMap: 
   m_UseNativeRenderPass: 0
-  postProcessData: {fileID: 0}
+  postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -171,20 +123,6 @@ MonoBehaviour:
   m_ClusteredRendering: 0
   m_TileSize: 32
   m_IntermediateTextureMode: 1
---- !u!114 &1990522510072472895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f263be919b9b435ea31672ef6a3019d1, type: 3}
-  m_Name: OutlineMaskFeature
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  renderers: {fileID: 11400000, guid: 746661f82ad547e5bbfd5f0930ad7e02, type: 2}
 --- !u!114 &2857390719645321209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,25 +137,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   renderers: {fileID: 0}
---- !u!114 &4650022159256899313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66a80b0d120eb3b46b762126e8a1e6e5, type: 3}
-  m_Name: NewGaussianBlurHandler
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  settings:
-    renderPassEvent: 500
-    blurMaterial: {fileID: 2100000, guid: bd6d8afd42d202a4fb9db5a6ef1b377a, type: 2}
-    blurPasses: 3
-    downsample: 6
-    targetName: _blurTexture
 --- !u!114 &7597349767054881799
 MonoBehaviour:
   m_ObjectHideFlags: 0
