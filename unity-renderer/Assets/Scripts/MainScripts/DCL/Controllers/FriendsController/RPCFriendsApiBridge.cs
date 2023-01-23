@@ -125,10 +125,9 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread();
-                throw;
             }
         }
 
@@ -160,7 +159,8 @@ namespace DCl.Social.Friends
                                                                 SentSkip = sentSkip,
                                                                 ReceivedLimit = receivedLimit,
                                                                 ReceivedSkip = receivedSkip
-                                                            }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                            })
+                                                           .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -178,10 +178,9 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread();
-                throw;
             }
         }
 
@@ -204,7 +203,8 @@ namespace DCl.Social.Friends
                                                          {
                                                              MessageBody = messageBody,
                                                              UserId = userId,
-                                                         }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+                                                         })
+                                                        .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -219,10 +219,9 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread();
-                throw;
             }
         }
 
@@ -253,10 +252,9 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread(cancellationToken);
-                throw;
             }
         }
 
@@ -353,10 +351,9 @@ namespace DCl.Social.Friends
 
                 return payload;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread();
-                throw;
             }
         }
 
@@ -381,10 +378,9 @@ namespace DCl.Social.Friends
 
                 return status;
             }
-            catch (Exception)
+            finally
             {
                 await UniTask.SwitchToMainThread();
-                throw;
             }
         }
 
