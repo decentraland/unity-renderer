@@ -696,7 +696,7 @@ PlayerSettings:
   webGLTemplate: PROJECT:decentraland
   webGLAnalyzeBuildSize: 1
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 1
+  webGLCompressionFormat: 2
   webGLWasmArithmeticExceptions: 1
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
