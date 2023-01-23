@@ -134,8 +134,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            Debug.Log("EvaluateEntityPosition");
-
             // 1. Cheap outer-bounds check
             sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
 
@@ -147,8 +145,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void EvaluateMeshBounds(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            Debug.Log("EvaluateMeshBounds");
-
             Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
             Vector3 entityGlobalPosition = sbcComponentData.model.entityPosition;
             Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.max;
