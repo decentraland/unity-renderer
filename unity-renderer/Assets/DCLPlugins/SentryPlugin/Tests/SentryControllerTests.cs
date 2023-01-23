@@ -36,14 +36,14 @@ namespace DCLPlugins.SentryPlugin.Tests
 
             // Assert
             Assert.AreEqual("10,10", capturedScope.Tags.GetValueOrDefault("Current Position"));
-            Assert.AreEqual("0,0",capturedScope.Tags.GetValueOrDefault("Previous Position"));
+            Assert.AreEqual("0,0", capturedScope.Tags.GetValueOrDefault("Previous Position"));
         }
 
         [Test]
         public void Teleporting_Updates_Sentry_Contexts()
         {
             // Act
-            playerDataStore.lastTeleportPosition.Set(new Vector3(25,25), true);
+            playerDataStore.lastTeleportPosition.Set(new Vector3(25, 25), true);
 
             // Assert
             Assert.AreEqual("25,25", capturedScope.Contexts.GetValueOrDefault("Current Teleport Position"));
@@ -54,9 +54,9 @@ namespace DCLPlugins.SentryPlugin.Tests
         public void Other_Players_Joining_Updates_Sentry_Contexts()
         {
             // Act
-            playerDataStore.otherPlayers.Add("Player 1", new Player() );
-            playerDataStore.otherPlayers.Add("Player 2", new Player() );
-            playerDataStore.otherPlayers.Add("Player 3", new Player() );
+            playerDataStore.otherPlayers.Add("Player 1", new Player());
+            playerDataStore.otherPlayers.Add("Player 2", new Player());
+            playerDataStore.otherPlayers.Add("Player 3", new Player());
 
             // Assert
             Assert.AreEqual("3", capturedScope.Contexts.GetValueOrDefault("Total Other Players"));
@@ -66,9 +66,9 @@ namespace DCLPlugins.SentryPlugin.Tests
         public void Other_Players_Leaving_Updates_Sentry_Contexts()
         {
             // Act
-            playerDataStore.otherPlayers.Add("Player 1", new Player() );
-            playerDataStore.otherPlayers.Add("Player 2", new Player() );
-            playerDataStore.otherPlayers.Remove("Player 2" );
+            playerDataStore.otherPlayers.Add("Player 1", new Player());
+            playerDataStore.otherPlayers.Add("Player 2", new Player());
+            playerDataStore.otherPlayers.Remove("Player 2");
 
             // Assert
             Assert.AreEqual("1", capturedScope.Contexts.GetValueOrDefault("Total Other Players"));
@@ -85,7 +85,5 @@ namespace DCLPlugins.SentryPlugin.Tests
             Assert.AreEqual("New Realm Name", capturedScope.Tags.GetValueOrDefault("Current Realm"));
             Assert.AreEqual("Old Realm Name", capturedScope.Tags.GetValueOrDefault("Previous Realm"));
         }
-
-
     }
 }

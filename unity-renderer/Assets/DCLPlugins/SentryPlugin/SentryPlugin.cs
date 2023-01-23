@@ -6,6 +6,7 @@ namespace DCLPlugins.SentryPlugin
     public class SentryPlugin : IPlugin
     {
         private readonly SentryController controller;
+
         public SentryPlugin()
         {
             var sentryHub = DisabledHub.Instance;
