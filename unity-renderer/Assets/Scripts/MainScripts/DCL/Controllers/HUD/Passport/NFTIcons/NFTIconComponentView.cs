@@ -24,8 +24,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
     [SerializeField] internal NFTIconComponentModel model;
 
-    public Button.ButtonClickedEvent onMarketplaceButtonClick => marketplaceButton?.onClick;
-    public Button.ButtonClickedEvent onDetailInfoButtonClick => detailInfoButton?.onClick;
+    public Button.ButtonClickedEvent onMarketplaceButtonClick => marketplaceButton.onClick;
+    public Button.ButtonClickedEvent onDetailInfoButtonClick => detailInfoButton.onClick;
 
     private NFTItemInfo nftItemInfo;
     private NFTItemInfo.Model nftItemInfoCurrentModel;
@@ -130,7 +130,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         base.OnLoseFocus();
 
-        if (nftItemInfo == null || (nftItemInfo != null && !nftItemInfo.gameObject.activeSelf))
+        if (nftItemInfo == null || !nftItemInfo.gameObject.activeSelf)
             SetNFTIconAsSelected(false);
     }
 

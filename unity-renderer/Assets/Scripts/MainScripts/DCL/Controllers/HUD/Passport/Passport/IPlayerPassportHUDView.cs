@@ -9,7 +9,7 @@ namespace DCL.Social.Passports
 
         int PassportCurrentSortingOrder { get; }
 
-        void Initialize();
+        void Initialize(MouseCatcher mouseCatcher);
         void SetVisibility(bool visible);
         void SetPassportPanelVisibility(bool visible);
         void Dispose();
