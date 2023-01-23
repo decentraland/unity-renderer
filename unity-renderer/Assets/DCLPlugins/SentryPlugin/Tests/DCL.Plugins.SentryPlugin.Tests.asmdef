@@ -7,11 +7,17 @@
         "GUID:203a48519aead80408325875c74b7401",
         "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "Sentry.Unity.dll",
+        "Sentry.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
