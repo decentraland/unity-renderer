@@ -101,6 +101,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     [TestCase(false)]
     public void UpdateCanvasActiveProperly(bool cardActive)
     {
+        CommonScriptableObjects.playerInfoCardVisibleState.Set(cardActive);
         view.SetCardActive(cardActive);
         Assert.AreEqual(cardActive, view.cardCanvas.enabled);
     }
