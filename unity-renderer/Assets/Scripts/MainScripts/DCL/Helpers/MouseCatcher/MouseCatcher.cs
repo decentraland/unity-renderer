@@ -2,7 +2,9 @@
 #define WEB_PLATFORM
 #endif
 
+using DCL.Configuration;
 using DCL.Helpers;
+using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -66,8 +68,27 @@ namespace DCL
 #endif
         }
 
+        private Camera charCamera;
+
+        void RetrieveCamera()
+        {
+            if (charCamera == null) { charCamera = Camera.main; }
+        }
+
         public void OnPointerDown(PointerEventData eventData)
         {
+            RetrieveCamera();
+
+            if (charCamera != null)
+            {
+                Ray ray = charCamera.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter))
+                    if (hitInfo.collider.gameObject.GetComponentInChildren<IAvatarOnPointerDown>() != null)
+                        return;
+            }
+
+
             if (eventData.button == PointerEventData.InputButton.Right)
             {
                 LockCursor();

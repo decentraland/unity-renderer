@@ -119,7 +119,7 @@ namespace DCL.Components
 
         public PointerInputEventType GetEventType()
         {
-            return PointerInputEventType.DOWN;
+            return PointerInputEventType.UP;
         }
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
