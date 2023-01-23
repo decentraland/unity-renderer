@@ -131,7 +131,7 @@ MonoBehaviour:
   - {fileID: -1568435901723723278}
   m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288403fe5493aadc19f1bf2b9c978dbcb3bea
   m_UseNativeRenderPass: 0
-  postProcessData: {fileID: 11400000, guid: f3666fa857d118b4f807732fa6b749c6, type: 2}
+  postProcessData: {fileID: 0}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
