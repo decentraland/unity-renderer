@@ -234,6 +234,7 @@ public class PlayerInfoCardHUDController : IHUD
             if (playerInfoCardVisibleState.Get())
                 socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
 
+            CommonScriptableObjects.playerInfoCardVisibleState.Set(false);
             view.SetCardActive(false);
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
@@ -245,6 +246,7 @@ public class PlayerInfoCardHUDController : IHUD
             TaskUtils.Run(async () =>
                       {
                           await AsyncSetUserProfile(currentUserProfile);
+                          CommonScriptableObjects.playerInfoCardVisibleState.Set(true);
                           view.SetCardActive(true);
                           socialAnalytics.SendPassportOpen();
                       })

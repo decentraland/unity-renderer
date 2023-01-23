@@ -8,26 +8,18 @@ public class NftPageView : BaseComponentView
     public event Action OnFocusAnyNtf;
 
     [SerializeField] private NFTIconComponentView[] nftElements;
-    private (string, string)[] nftIds = new (string, string)[4];
 
     public bool IsNftInfoActived { get; set; } = false;
 
-    public void SetPageElementsContent(NFTIconComponentModel[] nftModels, (string, string)[] ids)
+    public void SetPageElementsContent(NFTIconComponentModel[] nftModels)
     {
-        nftIds = ids;
         for (int i = 0; i < nftModels.Length; i++)
         {
             if (nftModels[i] != null)
             {
                 nftElements[i].gameObject.SetActive(true);
                 nftElements[i].Configure(nftModels[i]);
-                nftElements[i].onMarketplaceButtonClick.RemoveAllListeners();
-                nftElements[i].onDetailInfoButtonClick.RemoveAllListeners();
-                nftElements[i].onFocused -= FocusNftItem;
-                int idIndex = i;
-                nftElements[i].onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(idIndex));
-                nftElements[i].onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
-                nftElements[i].onFocused += FocusNftItem;
+                RegisterNftElementActions(nftElements[i], i);
             }
             else
             {
@@ -51,9 +43,19 @@ public class NftPageView : BaseComponentView
             nftElements[i].SetNFTItemInfoActive(false);
     }
 
-    private void ClickOnBuyWearable(int index)
+    private void RegisterNftElementActions(NFTIconComponentView nftElement, int idIndex)
     {
-        OnClickBuyNft?.Invoke(nftIds[index].Item1, nftIds[index].Item2);
+        nftElement.onMarketplaceButtonClick.RemoveAllListeners();
+        nftElement.onDetailInfoButtonClick.RemoveAllListeners();
+        nftElement.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(nftElement.model.nftId));
+        nftElement.onDetailInfoButtonClick.AddListener(() => ClickOnDetailInfo(idIndex, showInLeftSide: idIndex == 3));
+        nftElement.onFocused -= FocusNftItem;
+        nftElement.onFocused += FocusNftItem;
+    }
+
+    private void ClickOnBuyWearable((string, string) ids)
+    {
+        OnClickBuyNft?.Invoke(ids.Item1, ids.Item2);
     }
 
     private void ClickOnDetailInfo(int index, bool showInLeftSide)

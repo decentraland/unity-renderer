@@ -24,5 +24,6 @@ namespace DCL.Social.Passports
         void SetCollectibleLandsLoadingActive(bool isActive);
         void SetHasBlockedOwnUser(bool isBlocked);
         void CloseAllNFTItemInfos();
+        void SetInitialPage();
     }
 }
