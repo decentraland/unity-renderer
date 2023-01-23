@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
-using System.Security.Cryptography;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
@@ -24,6 +23,8 @@ namespace AvatarSystem
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly IBaseAvatar baseAvatar;
+
+        public Action<Renderer> OnCombinedRendererUpdate { get; set; }
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
@@ -89,7 +90,10 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
-                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
+
+                MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
+                OnCombinedRendererUpdate?.Invoke(newCombinedRenderer);
+                await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
             }
             catch (OperationCanceledException)
             {

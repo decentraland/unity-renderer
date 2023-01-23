@@ -1,4 +1,3 @@
-
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
@@ -8,12 +7,12 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 {
     public class ECSSceneBoundsCheckerSystem
     {
-        private IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent;
-        private IInternalECSComponent<InternalVisibility> visibilityComponent;
-        private IInternalECSComponent<InternalRenderers> renderersComponent;
-        private IInternalECSComponent<InternalColliders> pointerCollidersComponent;
-        private IInternalECSComponent<InternalColliders> physicsCollidersComponent;
-        private IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent;
+        private readonly IInternalECSComponent<InternalVisibility> visibilityComponent;
+        private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
+        private readonly IInternalECSComponent<InternalColliders> pointerCollidersComponent;
+        private readonly IInternalECSComponent<InternalColliders> physicsCollidersComponent;
+        private readonly IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
             IInternalECSComponent<InternalVisibility> visibilityComponent,
@@ -39,7 +38,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             {
                 var componentData = rendererComponents[i].value;
 
-                if(!componentData.model.dirty) continue;
+                if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
 
                 sceneBoundsCheckComponent.SetRenderers(componentData.scene, componentData.entity, componentData.model.renderers);
             }
@@ -50,7 +49,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             {
                 var componentData = physicsColliderComponents[i].value;
 
-                if(!componentData.model.dirty) continue;
+                if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
 
                 sceneBoundsCheckComponent.SetPhysicsColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
@@ -61,7 +60,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             {
                 var componentData = pointerColliderComponents[i].value;
 
-                if(!componentData.model.dirty) continue;
+                if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
 
                 sceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
@@ -72,7 +71,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             {
                 var componentData = sbcComponentGroup[i].value;
 
-                if(!componentData.model.dirty) continue;
+                if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
 
                 if (sceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
                 {
@@ -100,14 +99,22 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
             if (sbcComponentData.model.entityLocalMeshBounds.size != Vector3.zero) // has a mesh/collider
-            {
                 EvaluateMeshBounds(sbcComponentData);
-            }
             else
-            {
                 EvaluateEntityPosition(sbcComponentData);
-            }
-            // TODO: case for AvatarShape evaluation...
+
+            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity);
+        }
+
+        private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        {
+            // 1. Cheap outer-bounds check
+            sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
+
+            // 2. Confirm with inner-bounds check only if entity is inside outer bounds
+            Vector3 entityWorldPosition = sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get();
+            sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
+                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(entityWorldPosition, entityWorldPosition.y);
         }
 
         private void EvaluateMeshBounds(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
@@ -181,18 +188,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
 
             return true;
-        }
-
-        private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
-        {
-            // 1. cheap outer-bounds check
-            sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
-
-            // 2. confirm with inner-bounds check only if entity is inside outer bounds
-            Vector3 entityWorldPosition = sbcComponentData.model.entityPosition + CommonScriptableObjects.worldOffset.Get();
-            sbcComponentData.entity.isInsideSceneBoundaries = sbcComponentData.entity.isInsideSceneOuterBoundaries
-                                                              && sbcComponentData.scene.IsInsideSceneBoundaries(entityWorldPosition, entityWorldPosition.y);
-            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity);
         }
 
         private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)

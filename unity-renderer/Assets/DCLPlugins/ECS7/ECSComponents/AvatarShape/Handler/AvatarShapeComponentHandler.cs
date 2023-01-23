@@ -1,6 +1,8 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -13,26 +15,38 @@ namespace DCL.ECSComponents
         internal IAvatarShape avatar;
         private readonly Pool pool;
         private readonly PoolableObject poolableObject;
+        private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
+        private IParcelScene scene;
+        private IDCLEntity entity;
 
         private bool isAvatarInitialized = false;
 
-        public AvatarShapeComponentHandler(Pool pool)
+        public AvatarShapeComponentHandler(Pool pool, IInternalECSComponent<InternalRenderers> renderersComponent)
         {
             this.pool = pool;
-            poolableObject = pool.Get(); 
+            poolableObject = pool.Get();
+            renderersInternalComponent = renderersComponent;
             avatar = poolableObject.gameObject.GetComponent<AvatarShape>();
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene;
+            this.entity = entity;
+
             avatar.transform.SetParent(entity.gameObject.transform, false);
+
+            avatar.internalAvatar.OnCombinedRendererUpdate += OnCombinedRendererUpdate;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             if (avatar == null)
                 return;
-            
+
+            avatar.internalAvatar.OnCombinedRendererUpdate -= OnCombinedRendererUpdate;
+            renderersInternalComponent.RemoveRenderer(scene, entity, avatar.internalAvatar.GetMainRenderer());
+
             avatar.Cleanup();
             pool.Release(poolableObject);
             avatar = null;
@@ -46,7 +60,13 @@ namespace DCL.ECSComponents
                 avatar.Init();
                 isAvatarInitialized = true;
             }
-            avatar.ApplyModel(scene,entity,model);
+            avatar.ApplyModel(scene, entity, model);
+        }
+
+        // TODO: Test with avatar dynamically changing its model in runtime (does it still use the same combined renderer or is it replaced?)
+        private void OnCombinedRendererUpdate(Renderer newRenderer)
+        {
+            renderersInternalComponent.AddRenderer(scene, entity, avatar.internalAvatar?.GetMainRenderer());
         }
     }
 }

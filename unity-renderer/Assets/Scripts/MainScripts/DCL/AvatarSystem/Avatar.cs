@@ -26,6 +26,7 @@ namespace AvatarSystem
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
+        public Action<Renderer> OnCombinedRendererUpdate { get; set; }
 
         internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
@@ -84,6 +85,8 @@ namespace AvatarSystem
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
+
+                OnCombinedRendererUpdate?.Invoke(loader.combinedRenderer);
             }
             catch (OperationCanceledException)
             {
