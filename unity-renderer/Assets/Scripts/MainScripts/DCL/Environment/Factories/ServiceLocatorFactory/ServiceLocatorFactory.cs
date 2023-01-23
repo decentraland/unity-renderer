@@ -10,7 +10,7 @@ using DCL.Services;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
-using DCLServices.Lambdas.WearablesCatalogService;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System.Collections.Generic;
@@ -36,9 +36,11 @@ namespace DCL
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
-            result.Register<IWearablesCatalogService>(() => new WearablesCatalogService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
+            result.Register<IWearablesCatalogService>(() => new WearablesCatalogService(
+                new LambdasWearablesCatalogService(DataStore.i.common.wearables),
+                WebInterfaceWearablesCatalogService.Instance));
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
