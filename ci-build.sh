@@ -7,7 +7,10 @@ echo "Building for $BUILD_TARGET at $PROJECT_PATH"
 export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
 
-[[ "$CIRCLE_BRANCH" == "main" ]] && disable_sentry # remove this line to enable sentry on prod
+if [[ "$CIRCLE_BRANCH" == "main" ]]; then
+    echo "Sentry disabled on prod!"
+    disable_sentry
+fi
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -quit \
