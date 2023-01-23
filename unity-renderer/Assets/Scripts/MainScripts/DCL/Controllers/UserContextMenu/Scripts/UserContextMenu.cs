@@ -127,6 +127,7 @@ public class UserContextMenu : MonoBehaviour
     public void Hide()
     {
         friendOperationsCancellationTokenSource.Cancel();
+        friendOperationsCancellationTokenSource.Dispose();
         friendOperationsCancellationTokenSource = new CancellationTokenSource();
         gameObject.SetActive(false);
         OnHide?.Invoke();
@@ -223,6 +224,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnCancelFriendRequestButtonPressed()
     {
         friendOperationsCancellationTokenSource.Cancel();
+        friendOperationsCancellationTokenSource.Dispose();
         friendOperationsCancellationTokenSource = new CancellationTokenSource();
         CancelFriendRequestAsync(userId, friendOperationsCancellationTokenSource.Token).Forget();
     }

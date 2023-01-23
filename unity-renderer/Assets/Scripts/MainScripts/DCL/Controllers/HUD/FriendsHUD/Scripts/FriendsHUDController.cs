@@ -117,6 +117,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationToken?.Cancel();
             friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = null;
 
@@ -179,6 +180,7 @@ namespace DCL.Social.Friends
                 else if (View.IsRequestListActive)
                 {
                     friendOperationsCancellationToken.Cancel();
+                    friendOperationsCancellationToken.Dispose();
                     friendOperationsCancellationToken = new CancellationTokenSource();
                     DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
                 }
@@ -212,6 +214,7 @@ namespace DCL.Social.Friends
                 else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                 {
                     friendOperationsCancellationToken.Cancel();
+                    friendOperationsCancellationToken.Dispose();
                     friendOperationsCancellationToken = new CancellationTokenSource();
                     DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
                 }
@@ -253,6 +256,7 @@ namespace DCL.Social.Friends
         private void HandleRequestFriendship(string userNameOrId)
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             HandleRequestFriendshipAsync(userNameOrId, friendOperationsCancellationToken.Token).Forget();
         }
@@ -508,6 +512,7 @@ namespace DCL.Social.Friends
         private void HandleRequestRejected(FriendRequestEntryModel entry)
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             HandleRequestRejectedAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
         }
@@ -577,6 +582,7 @@ namespace DCL.Social.Friends
         private void HandleRequestCancelled(FriendRequestEntryModel entry)
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             HandleRequestCancelledAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
         }
@@ -584,6 +590,7 @@ namespace DCL.Social.Friends
         private void HandleRequestAccepted(FriendRequestEntryModel entry)
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             HandleRequestAcceptedAsync(entry.userId, friendOperationsCancellationToken.Token).Forget();
         }
@@ -637,6 +644,8 @@ namespace DCL.Social.Friends
         {
             if (!friendsController.IsInitialized) return;
 
+            friendOperationsCancellationToken?.Cancel();
+            friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
 
             var friendsToAdd = await friendsController
@@ -657,6 +666,7 @@ namespace DCL.Social.Friends
         public void DisplayMoreFriendRequests()
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
         }
@@ -735,6 +745,7 @@ namespace DCL.Social.Friends
         {
             if (lastSkipForFriendRequests > 0) return;
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
             DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
         }
@@ -778,6 +789,8 @@ namespace DCL.Social.Friends
                 return;
             }
 
+            friendOperationsCancellationToken?.Cancel();
+            friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
 
             var friendsToAdd = await friendsController

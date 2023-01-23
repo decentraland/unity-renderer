@@ -46,6 +46,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken.Dispose();
             dataStore.HUDs.sendFriendRequest.OnChange -= ShowOrHide;
             view.OnMessageBodyChanged -= OnMessageBodyChanged;
@@ -80,6 +81,7 @@ namespace DCL.Social.Friends
         private void Send()
         {
             friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
 
             async UniTaskVoid SendAsync(CancellationToken cancellationToken)

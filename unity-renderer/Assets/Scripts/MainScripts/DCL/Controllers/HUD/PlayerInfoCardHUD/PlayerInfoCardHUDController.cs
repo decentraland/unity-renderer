@@ -84,6 +84,7 @@ public class PlayerInfoCardHUDController : IHUD
     public void CloseCard()
     {
         friendOperationsCancellationTokenSource.Cancel();
+        friendOperationsCancellationTokenSource.Dispose();
         friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
         currentPlayerId.Set(null);
@@ -118,6 +119,7 @@ public class PlayerInfoCardHUDController : IHUD
             try
             {
                 friendOperationsCancellationTokenSource.Cancel();
+                friendOperationsCancellationTokenSource.Dispose();
                 friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
                 FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId,
@@ -150,6 +152,7 @@ public class PlayerInfoCardHUDController : IHUD
             try
             {
                 friendOperationsCancellationTokenSource.Cancel();
+                friendOperationsCancellationTokenSource.Dispose();
                 friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
@@ -188,6 +191,7 @@ public class PlayerInfoCardHUDController : IHUD
             try
             {
                 friendOperationsCancellationTokenSource.Cancel();
+                friendOperationsCancellationTokenSource.Dispose();
                 friendOperationsCancellationTokenSource = new CancellationTokenSource();
 
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
