@@ -26,6 +26,8 @@ namespace DCl.Social.Friends
 {
     public class RPCFriendsApiBridge : IFriendsApiBridge, IFriendRequestRendererService<RPCContext>
     {
+        private const int REQUEST_TIMEOUT = 30;
+
         private static RPCFriendsApiBridge i;
 
         private readonly IRPC rpc;
@@ -108,7 +110,7 @@ namespace DCl.Social.Friends
                                                                    .RejectFriendRequest(new KernelRejectFriendRequestPayload
                                                                     {
                                                                         FriendRequestId = friendRequestId
-                                                                    });
+                                                                    }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -158,7 +160,7 @@ namespace DCl.Social.Friends
                                                                 SentSkip = sentSkip,
                                                                 ReceivedLimit = receivedLimit,
                                                                 ReceivedSkip = receivedSkip
-                                                            });
+                                                            }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -202,7 +204,7 @@ namespace DCl.Social.Friends
                                                          {
                                                              MessageBody = messageBody,
                                                              UserId = userId,
-                                                         });
+                                                         }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -236,7 +238,7 @@ namespace DCl.Social.Friends
                                                                 .CancelFriendRequest(new KernelCancelFriendRequestPayload
                                                                  {
                                                                      FriendRequestId = friendRequestId
-                                                                 });
+                                                                 }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -336,7 +338,7 @@ namespace DCl.Social.Friends
                                                              .AcceptFriendRequest(new AcceptFriendRequestPayload
                                                               {
                                                                   FriendRequestId = friendRequestId
-                                                              });
+                                                              }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
 
                 cancellationToken.ThrowIfCancellationRequested();
 
