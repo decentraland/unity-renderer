@@ -63,10 +63,10 @@ namespace DCL.ECSComponents
             avatar.ApplyModel(scene, entity, model);
         }
 
-        // TODO: Test with avatar dynamically changing its model in runtime (does it still use the same combined renderer or is it replaced?)
         private void OnCombinedRendererUpdate(Renderer newRenderer)
         {
-            renderersInternalComponent.AddRenderer(scene, entity, avatar.internalAvatar?.GetMainRenderer());
+            renderersInternalComponent.RemoveFor(scene, entity);
+            renderersInternalComponent.AddRenderer(scene, entity, newRenderer);
         }
     }
 }

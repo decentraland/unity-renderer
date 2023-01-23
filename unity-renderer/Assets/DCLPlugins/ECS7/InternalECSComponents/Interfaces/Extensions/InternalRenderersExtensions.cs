@@ -28,15 +28,15 @@ namespace DCL.ECS7.InternalComponents
             renderersInternalComponent.PutFor(scene, entity, model);
         }
 
-        public static void AddRenderer(this IInternalECSComponent<InternalRenderers> renderesInternalComponent,
+        public static void AddRenderer(this IInternalECSComponent<InternalRenderers> renderersInternalComponent,
             IParcelScene scene, IDCLEntity entity, Renderer renderer)
         {
             if (renderer == null)
                 return;
 
-            var model = renderesInternalComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
+            var model = renderersInternalComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
             model.renderers.Add(renderer);
-            renderesInternalComponent.PutFor(scene, entity, model);
+            renderersInternalComponent.PutFor(scene, entity, model);
         }
     }
 }
