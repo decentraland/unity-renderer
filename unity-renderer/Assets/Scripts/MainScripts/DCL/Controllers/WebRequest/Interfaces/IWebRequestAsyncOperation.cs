@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
-    public interface IWebRequestAsyncOperation : IEnumerator
+    public interface IWebRequestAsyncOperation : IEnumerator, IDisposable
     {
         /// <summary>
         /// Event that will be invoked when the request has been completed.
@@ -47,11 +47,6 @@ namespace DCL
         /// If in progress, halts the request as soon as possible.
         /// </summary>
         void Abort();
-
-        /// <summary>
-        /// Signals that this request is no longer being used, and should clean up any resources it is using (it aborts the request before disposing).
-        /// </summary>
-        void Dispose();
 
         /// <summary>
         /// Mark the request as completed and throw the corresponding event.

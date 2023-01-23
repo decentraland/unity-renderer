@@ -14,6 +14,7 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private RawImage rawImage;
+        [SerializeField] private GameObject betaTag;
         private RenderTexture renderTexture;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
@@ -26,10 +27,13 @@ namespace DCL.LoadingScreen
             base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
+            betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
+            
             SetupBlitTexture();
             rawImage.gameObject.SetActive(false);
             FadeIn(true, false);
         }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -84,5 +88,6 @@ namespace DCL.LoadingScreen
             renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
             rawImage.texture = renderTexture;
         }
+
     }
 }
