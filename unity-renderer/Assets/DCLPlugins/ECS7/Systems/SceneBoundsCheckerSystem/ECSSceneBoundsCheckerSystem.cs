@@ -73,6 +73,16 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
 
+                componentData.model.meshesDirty |= AnyRendererOrColliderComponentRemoved(componentData);
+                if (componentData.model.meshesDirty)
+                {
+                    sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
+
+                    // If all meshes were removed we need to reset the feedback.
+                    if (componentData.model.entityLocalMeshBounds.size == Vector3.zero)
+                        SetInsideBoundsStateForMeshComponents(componentData, true);
+                }
+
                 if (sceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
                 {
                     // Since no other component is using the internal SBC component, we remove it.
@@ -80,20 +90,37 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     continue;
                 }
 
-                if (componentData.model.meshesDirty)
-                {
-                    // TODO: When will merged bounds be cleaned up? If entity did have meshes and now it doesn't, does the merged bounds get re-set/cleaned?
-                    sceneBoundsCheckComponent.RecalculateEntityMeshBounds(componentData.scene, componentData.entity);
-                }
-
                 RunEntityEvaluation(componentData);
 
-                // This reset of the meshesDirty will trigger 1 extra check due to the sbcComponent dirty flag
+                // This reset of the meshesDirty will trigger 1 extra check due to the sbcComponent dirty flag being affected
                 componentData.model.meshesDirty = false;
                 sceneBoundsCheckComponent.PutFor(componentData.scene, componentData.entity, componentData.model);
             }
         }
 
+        private bool AnyRendererOrColliderComponentRemoved(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        {
+            bool returnValue = false;
+            if (sbcComponentData.model.renderers != null && renderersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.renderers = null;
+                returnValue = true;
+            }
+
+            if (sbcComponentData.model.physicsColliders != null && physicsCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.physicsColliders = null;
+                returnValue = true;
+            }
+
+            if (sbcComponentData.model.pointerColliders != null && pointerCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.pointerColliders = null;
+                returnValue = true;
+            }
+
+            return returnValue;
+        }
         private void RunEntityEvaluation(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
@@ -107,6 +134,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
+            Debug.Log("EvaluateEntityPosition");
+
             // 1. Cheap outer-bounds check
             sbcComponentData.entity.isInsideSceneOuterBoundaries = sbcComponentData.scene.IsInsideSceneOuterBoundaries(sbcComponentData.model.entityPosition);
 
@@ -118,6 +147,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void EvaluateMeshBounds(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
+            Debug.Log("EvaluateMeshBounds");
+
             Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
             Vector3 entityGlobalPosition = sbcComponentData.model.entityPosition;
             Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentData.model.entityLocalMeshBounds.max;
@@ -191,7 +222,12 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
-            outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), sbcComponentData.entity.isInsideSceneBoundaries);
+            SetInsideBoundsStateForMeshComponents(sbcComponentData, sbcComponentData.entity.isInsideSceneBoundaries);
+        }
+
+        private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, bool isInsideBounds)
+        {
+            outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), isInsideBounds);
         }
 
         private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity)

@@ -141,13 +141,8 @@ namespace DCL.ECS7.InternalComponents
         {
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
-            // TODO: Just check for bounds size instead of the 3 collections?
-            return model == null || (
-                model.entityPosition == Vector3.zero
-                && (model.renderers == null || model.renderers.Count == 0)
-                && (model.physicsColliders == null || model.physicsColliders.Count == 0)
-                && (model.pointerColliders == null || model.pointerColliders.Count == 0)
-            );
+            return model == null || (model.entityPosition == Vector3.zero
+                       && model.entityLocalMeshBounds.size == Vector3.zero);
         }
     }
 }
