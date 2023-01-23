@@ -286,8 +286,7 @@ namespace DCL.Social.Friends
                     if (userProfileBridge.Get(request.To) == null)
                     {
                         // TODO: make use of a service instead of the bridge itself
-                        await userProfileBridge.RequestFullUserProfileAsync(request.To, cancellationToken)
-                                               .Timeout(TimeSpan.FromSeconds(30));
+                        await userProfileBridge.RequestFullUserProfileAsync(request.To, cancellationToken);
 
                         await UniTask.SwitchToMainThread(cancellationToken);
                     }
