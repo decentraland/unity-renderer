@@ -28,7 +28,7 @@ namespace DCL.LoadingScreen
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
             betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
-            
+
             SetupBlitTexture();
             rawImage.gameObject.SetActive(false);
             FadeIn(true, false);
@@ -84,6 +84,10 @@ namespace DCL.LoadingScreen
 
         private void SetupBlitTexture()
         {
+            //Blit null works differently in WebGL than in desktop platform. We have to deal with it and rotate the resultant image accordingly
+            if (Application.isEditor || Application.platform != RuntimePlatform.WebGLPlayer)
+                rawImage.GetComponent<RectTransform>().eulerAngles = new Vector3(180, 0, 0);
+            
             if (renderTexture) renderTexture.Release();
             renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
             rawImage.texture = renderTexture;
