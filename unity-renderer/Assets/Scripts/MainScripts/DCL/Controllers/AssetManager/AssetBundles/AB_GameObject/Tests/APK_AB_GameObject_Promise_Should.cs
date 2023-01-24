@@ -19,7 +19,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         protected AssetPromise_AB_GameObject CreatePromise(string hash = null)
         {
             string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
-            hash = hash ?? "QmNS4K7GaH63T9rhAfkrra7ADLXSEeco8FTGknkPnAVmKM";
+            hash ??= "QmNS4K7GaH63T9rhAfkrra7ADLXSEeco8FTGknkPnAVmKM";
             var prom = new AssetPromise_AB_GameObject(contentUrl, hash);
             return prom;
         }
@@ -142,8 +142,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             yield return prom;
 
-            Assert.IsTrue(failed == true, "The broken paladin AssetBundle contains no GameObjects and should fail!");
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
+            Assert.IsTrue(failed, "The broken paladin AssetBundle contains no GameObjects and should fail!");
         }
         
         [UnityTest]
@@ -205,7 +204,6 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             Assert.AreEqual(0, loading, "Loading AB after failing");
             Assert.AreEqual(1, failed, "Failed AB after failing");
             Assert.AreEqual(0, cancelled, "Cancelled AB after failing");
-            LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
         }
     }
 }
