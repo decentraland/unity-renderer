@@ -162,14 +162,14 @@ namespace DCl.Social.Friends
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OWN_USER_ID, OTHER_USER_ID, "test message") }));
 
-            controller.DisplayMoreFriendRequests();
+            view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == false));
         }
 
         [Test]
-        public void DisplayFriendActionWhenReceivedRequest()
+        public void DisplayReceivedRequestWhenInitializes()
         {
             view.FriendRequestCount.Returns(5);
 
@@ -178,7 +178,7 @@ namespace DCl.Social.Friends
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
-            controller.DisplayMoreFriendRequests();
+            view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.isReceived == true));
@@ -282,7 +282,7 @@ namespace DCl.Social.Friends
                 .GetFriendRequestsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(UniTask.FromResult(new List<FriendRequest> { new FriendRequest("test", 0, OTHER_USER_ID, OWN_USER_ID, "test message") }));
 
-            controller.DisplayMoreFriendRequests();
+            view.OnRequireMoreFriendRequests += Raise.Event<Action>();
 
             view.Received(1).Set(OTHER_USER_ID,
                 Arg.Is<FriendRequestEntryModel>(f => f.userId == OTHER_USER_ID));

@@ -661,7 +661,7 @@ namespace DCL.Social.Friends
             ShowOrHideMoreFriendsToLoadHint();
         }
 
-        public void DisplayMoreFriendRequests()
+        private void DisplayMoreFriendRequests()
         {
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken.Dispose();
