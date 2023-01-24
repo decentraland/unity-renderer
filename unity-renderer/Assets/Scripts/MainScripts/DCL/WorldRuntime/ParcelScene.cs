@@ -337,6 +337,7 @@ namespace DCL.Controllers
         }
 
         public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
+        
         public Transform GetSceneTransform() { return transform; }
 
         public IDCLEntity CreateEntity(long id)

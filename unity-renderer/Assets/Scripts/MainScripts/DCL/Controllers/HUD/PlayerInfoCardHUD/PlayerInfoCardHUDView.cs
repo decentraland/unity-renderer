@@ -137,7 +137,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
 
         cardCanvas.enabled = active;
-        CommonScriptableObjects.playerInfoCardVisibleState.Set(active);
     }
 
     private void UpdateTabs()

@@ -182,6 +182,9 @@ public class PlayerName : MonoBehaviour, IPlayerName
         currentName = name;
         isNameClaimed = isClaimed;
         isUserGuest = isGuest;
+
+        if (name == null) return;
+
         name = await FilterName(currentName);
         nameText.text = GetNameWithColorCodes(isClaimed, isGuest, name);
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
@@ -215,7 +218,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal void Update(float deltaTime)
     {
-        if (hideConstraints.Count > 0)
+        if (hideConstraints.Count > 0 || currentName == null)
         {
             UpdateVisuals(0);
             return;

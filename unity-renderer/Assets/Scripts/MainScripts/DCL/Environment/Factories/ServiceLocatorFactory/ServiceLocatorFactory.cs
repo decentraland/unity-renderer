@@ -13,6 +13,7 @@ using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Helpers.SentryUtils;
 using System.Collections.Generic;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
@@ -38,6 +39,7 @@ namespace DCL
             result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
+            result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogService(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables),
                 WebInterfaceWearablesCatalogService.Instance));
