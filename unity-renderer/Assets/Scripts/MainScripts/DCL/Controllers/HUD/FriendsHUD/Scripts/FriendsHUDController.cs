@@ -13,7 +13,6 @@ namespace DCL.Social.Friends
         private const int MAX_SEARCHED_FRIENDS = 100;
         private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
         private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
-        private const int FRIEND_REQUEST_TIMEOUT = 10;
         private const int GET_FRIENDS_TIMEOUT = 10;
 
         private readonly Dictionary<string, FriendEntryModel> friends = new ();
@@ -176,14 +175,9 @@ namespace DCL.Social.Friends
                     View.Set(friend.Key, friend.Value);
 
                 if (View.IsFriendListActive)
-                    DisplayMoreFriendsAsync().Forget();
+                    DisplayMoreFriends();
                 else if (View.IsRequestListActive)
-                {
-                    friendOperationsCancellationToken.Cancel();
-                    friendOperationsCancellationToken.Dispose();
-                    friendOperationsCancellationToken = new CancellationTokenSource();
-                    DisplayMoreFriendRequestsAsync(friendOperationsCancellationToken.Token).Forget();
-                }
+                    DisplayMoreFriendRequests();
 
                 OnOpened?.Invoke();
             }
@@ -210,7 +204,12 @@ namespace DCL.Social.Friends
             if (View.IsActive())
             {
                 if (View.IsFriendListActive && lastSkipForFriends <= 0)
-                    DisplayMoreFriendsAsync().Forget();
+                {
+                    friendOperationsCancellationToken?.Cancel();
+                    friendOperationsCancellationToken?.Dispose();
+                    friendOperationsCancellationToken = new CancellationTokenSource();
+                    DisplayMoreFriendsAsync(friendOperationsCancellationToken.Token).Forget();
+                }
                 else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
                 {
                     friendOperationsCancellationToken.Cancel();
@@ -628,31 +627,30 @@ namespace DCL.Social.Friends
         private void DisplayFriendsIfAnyIsLoaded()
         {
             if (lastSkipForFriends > 0) return;
-            DisplayMoreFriendsAsync().Forget();
+            friendOperationsCancellationToken?.Cancel();
+            friendOperationsCancellationToken?.Dispose();
+            friendOperationsCancellationToken = new CancellationTokenSource();
+            DisplayMoreFriendsAsync(friendOperationsCancellationToken.Token).Forget();
         }
 
         private void DisplayMoreFriends()
         {
             friendOperationsCancellationToken?.Cancel();
             friendOperationsCancellationToken?.Dispose();
-            friendOperationsCancellationToken = null;
+            friendOperationsCancellationToken = new CancellationTokenSource();
 
-            DisplayMoreFriendsAsync().Forget();
+            DisplayMoreFriendsAsync(friendOperationsCancellationToken.Token).Forget();
         }
 
-        private async UniTask DisplayMoreFriendsAsync()
+        private async UniTask DisplayMoreFriendsAsync(CancellationToken cancellationToken)
         {
             if (!friendsController.IsInitialized) return;
 
-            friendOperationsCancellationToken?.Cancel();
-            friendOperationsCancellationToken?.Dispose();
-            friendOperationsCancellationToken = new CancellationTokenSource();
+            string[] friendsToAdd = await friendsController
+                                         .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, cancellationToken)
+                                         .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
 
-            var friendsToAdd = await friendsController
-                .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, friendOperationsCancellationToken.Token)
-                .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
-
-            for (int i = 0; i < friendsToAdd.Length; i++)
+            for (var i = 0; i < friendsToAdd.Length; i++)
                 HandleFriendshipUpdated(friendsToAdd[i], FriendshipAction.APPROVED);
 
             // We are not handling properly the case when the friends are not fetched correctly from server.
