@@ -55,6 +55,13 @@ references:
         #                          ~~~~~~~~~~~~~~~~ <- repo name
         #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
 
+  .image_kernel: &image_kernel
+    - image: cimg/node:14.19.3-browsers
+      environment:
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-webgl/
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                         ~~~~~~~~~~~~~~ <- folder name
+
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
     - ./unity-renderer/editmode-logs.txt
