@@ -56,9 +56,11 @@ namespace Tests
             Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
         }
 
-        [TearDown]
-        public void TearDown()
+        [UnityTearDown]
+        public IEnumerator TearDown()
         {
+            yield return textShapeComponentHandler.fontPromise;
+
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
