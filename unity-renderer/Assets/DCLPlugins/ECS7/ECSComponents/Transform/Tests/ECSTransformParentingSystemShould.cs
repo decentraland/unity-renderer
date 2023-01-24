@@ -66,5 +66,24 @@ namespace Tests
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
             Assert.AreEqual(scene.GetSceneTransform(), entity.gameObject.transform.parent);
         }
+
+        [Test]
+        public void RemoveEntityWithChildren()
+        {
+            var childEntity = scene.CreateEntity(43);
+
+            handler.OnComponentCreated(scene, entity);
+            handler.OnComponentCreated(scene, childEntity);
+
+            handler.OnComponentModelUpdated(scene, entity, new ECSTransform());
+            handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = entity.entityId });
+
+            ECSTransformParentingSystem.Update();
+
+            handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = 0 });
+            handler.OnComponentRemoved(scene, entity);
+            scene.RemoveEntity(entity.entityId, true);
+            ECSTransformParentingSystem.Update();
+        }
     }
 }

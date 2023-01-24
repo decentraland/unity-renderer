@@ -9,19 +9,16 @@ namespace DCL.Social.Passports
 {
     public class PlayerPassportHUDView : BaseComponentView, IPlayerPassportHUDView
     {
-        [SerializeField] private PassportPlayerInfoComponentView playerInfoView;
-        [SerializeField] private PassportPlayerPreviewComponentView playerPreviewView;
-        [SerializeField] private PassportNavigationComponentView passportNavigationView;
         [SerializeField] internal Button hideCardButton;
         [SerializeField] internal Button hideCardButtonGuest;
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal GameObject container;
         [SerializeField] internal RectTransform passportMask;
-        [SerializeField] internal CanvasGroup passportCanvas;
+        [SerializeField] internal Canvas passportCanvas;
+        [SerializeField] internal CanvasGroup passportCanvasGroup;
 
-        public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
-        public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
-        public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
+        public int PassportCurrentSortingOrder => passportCanvas.sortingOrder;
+
         public event Action OnClose;
 
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
@@ -30,7 +27,7 @@ namespace DCL.Social.Passports
         public static PlayerPassportHUDView CreateView() =>
             Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportHUDView>();
 
-        public void Initialize()
+        public void Initialize(MouseCatcher mouseCatcher)
         {
             hideCardButton.onClick.RemoveAllListeners();
             hideCardButton.onClick.AddListener(ClosePassport);
@@ -38,7 +35,7 @@ namespace DCL.Social.Passports
             hideCardButtonGuest.onClick.AddListener(ClosePassport);
             backgroundButton.onClick.RemoveAllListeners();
             backgroundButton.onClick.AddListener(ClosePassport);
-            mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
+            this.mouseCatcher = mouseCatcher;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseDown += ClosePassport;
@@ -55,7 +52,6 @@ namespace DCL.Social.Passports
             {
                 mouseCatcher.UnlockCursor();
             }
-            CommonScriptableObjects.playerInfoCardVisibleState.Set(visible);
 
             animationCancellationToken.Cancel();
             animationCancellationToken = new CancellationTokenSource();
@@ -67,7 +63,6 @@ namespace DCL.Social.Passports
             }
             else
             {
-                playerInfoView.ResetPanelOnClose();
                 HidePassportAnimation(animationCancellationToken.Token);
             }
 
@@ -77,8 +72,8 @@ namespace DCL.Social.Passports
         {
             cancellationToken.ThrowIfCancellationRequested();
             passportMask.anchoredPosition = new Vector2(0, -180);
-            passportCanvas.alpha = 0;
-            passportCanvas.DOFade(1, 0.3f)
+            passportCanvasGroup.alpha = 0;
+            passportCanvasGroup.DOFade(1, 0.3f)
                           .SetEase(Ease.Linear);
             try
             {
@@ -101,8 +96,8 @@ namespace DCL.Social.Passports
         {
             cancellationToken.ThrowIfCancellationRequested();
             passportMask.anchoredPosition = new Vector2(0, 0);
-            passportCanvas.alpha = 1;
-            passportCanvas.DOFade(0, 0.3f)
+            passportCanvasGroup.alpha = 1;
+            passportCanvasGroup.DOFade(0, 0.3f)
                           .SetEase(Ease.Linear);
             try
             {
@@ -130,11 +125,14 @@ namespace DCL.Social.Passports
         {
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseDown -= ClosePassport;
+
+            animationCancellationToken?.Cancel();
+            animationCancellationToken?.Dispose();
+            animationCancellationToken = null;
         }
 
         private void ClosePassport()
         {
-            passportNavigationView.SetInitialPage();
             OnClose?.Invoke();
         }
     }

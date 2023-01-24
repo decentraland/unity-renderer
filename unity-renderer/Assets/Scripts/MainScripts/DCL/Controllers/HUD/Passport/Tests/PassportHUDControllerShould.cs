@@ -1,5 +1,8 @@
 using AvatarSystem;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
@@ -46,7 +49,9 @@ namespace DCL.Social.Passports
                                 profanityFilter,
                                 friendsController,
                                 userProfileBridge,
-                                socialAnalytics);
+                                socialAnalytics,
+                                Substitute.For<IClipboard>(),
+                                passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
             playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
@@ -58,6 +63,8 @@ namespace DCL.Social.Passports
                                 wearableItemResolver,
                                 Substitute.For<IWearableCatalogBridge>(),
                                 Substitute.For<IEmotesCatalogService>(),
+                                Substitute.For<INamesService>(),
+                                Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
                                 dataStore);
 
@@ -70,7 +77,9 @@ namespace DCL.Social.Passports
                 userProfileBridge,
                 passportApiBridge,
                 socialAnalytics,
-                dataStore
+                dataStore,
+                Substitute.For<MouseCatcher>(),
+                Substitute.For<BooleanVariable>()
             );
         }
 

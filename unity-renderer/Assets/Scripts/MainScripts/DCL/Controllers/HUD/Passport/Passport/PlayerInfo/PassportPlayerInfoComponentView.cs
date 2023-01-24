@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using System;
 using System.Collections;
@@ -5,6 +6,9 @@ using UnityEngine;
 using TMPro;
 using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UIComponents.Scripts.Components;
 using UnityEngine.UI;
 
@@ -12,7 +16,7 @@ namespace DCL.Social.Passports
 {
     public class PassportPlayerInfoComponentView : BaseComponentView<PlayerPassportModel>, IPassportPlayerInfoComponentView
     {
-        private const float COPY_TOAST_VISIBLE_TIME = 3;
+        private const int COPY_TOAST_VISIBLE_TIME = 3000;
 
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI address;
@@ -41,6 +45,7 @@ namespace DCL.Social.Passports
         [SerializeField] private JumpInButton jumpInButton;
         [SerializeField] private ShowHideAnimator copyAddressToast;
         [SerializeField] private ShowHideAnimator copyUsernameToast;
+        [SerializeField] private GameObject actionsContainer;
 
         public event Action OnAddFriend;
         public event Action OnRemoveFriend;
@@ -51,13 +56,14 @@ namespace DCL.Social.Passports
         public event Action OnReportUser;
         public event Action<string> OnWhisperUser;
         public event Action OnJumpInUser;
-        public event Action OnWalletCopy;
+        public event Action<string> OnWalletCopy;
+        public event Action<string> OnUsernameCopy;
 
         private string fullWalletAddress;
         private bool areFriends;
         private bool isBlocked = false;
-        private Coroutine copyAddressRoutine = null;
-        private Coroutine copyNameRoutine = null;
+        private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
+        private CancellationTokenSource cts;
 
         public override void Start()
         {
@@ -74,6 +80,14 @@ namespace DCL.Social.Passports
             optionsButton.onClick.AddListener(OpenOptions);
             jumpInButton.OnClick += () => OnJumpInUser?.Invoke();
             alreadyFriendsButton.onFocused += RemoveFriendsFocused;
+
+            friendStatusButtonsMapping = new Dictionary<FriendshipStatus, GameObject>()
+            {
+                {FriendshipStatus.NOT_FRIEND, addFriendButton.gameObject},
+                {FriendshipStatus.FRIEND, alreadyFriendsButton.gameObject},
+                {FriendshipStatus.REQUESTED_FROM, acceptFriendButton.gameObject},
+                {FriendshipStatus.REQUESTED_TO, cancelFriendRequestButton.gameObject}
+            };
         }
 
         private void OnReport(string Obj)
@@ -107,12 +121,15 @@ namespace DCL.Social.Passports
 
             walletCopyButton.onClick.RemoveAllListeners();
             addFriendButton.onClick.RemoveAllListeners();
+
+            ResetCancellationToken();
         }
 
-        public void ResetPanelOnClose()
+        public void ResetCopyToast()
         {
             copyAddressToast.Hide(true);
             copyUsernameToast.Hide(true);
+            ResetCancellationToken();
         }
 
         public void InitializeJumpInButton(IFriendsController friendsController, string userId, ISocialAnalytics socialAnalytics)
@@ -128,6 +145,18 @@ namespace DCL.Social.Passports
             }
         }
 
+        public void SetFriendStatus(FriendshipStatus friendStatus)
+        {
+            areFriends = friendStatus == FriendshipStatus.FRIEND;
+
+            if(isBlocked)
+                return;
+
+            DisableAllFriendFlowButtons();
+            friendStatusButtonsMapping[friendStatus].SetActive(true);
+            whisperNonFriendsPopup.Hide(true);
+        }
+
         private void RemoveFriendsFocused(bool isFocused)
         {
             alreadyFriendsVariation.SetActive(!isFocused);
@@ -136,19 +165,12 @@ namespace DCL.Social.Passports
 
         private void SetName(string name)
         {
-            if (name.Contains('#'))
-            {
-                this.name.SetText(name.Split('#')[0]);
-                address.SetText($"#{name.Split('#')[1]}");
-            }
-            else
-            {
-                this.name.SetText(name);
-                address.SetText("");
-            }
-
+            string[] splitName = name.Split('#');
+            this.name.SetText(splitName[0]);
+            address.SetText($"{(splitName.Length == 2 ? "#" + splitName[1] : "")}");
+            //We are forced to use this due to the UI not being correctly responsive with the placing of the copy icon
+            //without the force rebuild it's not setting the elements as dirty and not replacing them correctly
             Utils.ForceRebuildLayoutImmediate(usernameRect);
-
             nameInOptionsPanel.text = name;
         }
 
@@ -172,6 +194,8 @@ namespace DCL.Social.Passports
                 SetFriendStatus(model.friendshipStatus);
             }
         }
+
+        public void SetActionsActive(bool isActive) => actionsContainer.SetActive(isActive);
 
         private void SetPresence(PresenceStatus status)
         {
@@ -197,37 +221,6 @@ namespace DCL.Social.Passports
             friendsFlowContainer.SetActive(!hasBlocked);
         }
 
-        private void SetFriendStatus(FriendshipStatus friendStatus)
-        {
-            areFriends = friendStatus == FriendshipStatus.FRIEND;
-
-            if(isBlocked)
-                return;
-
-            switch (friendStatus)
-            {
-                case FriendshipStatus.NOT_FRIEND:
-                    DisableAllFriendFlowButtons();
-                    addFriendButton.gameObject.SetActive(true);
-                break;
-                case FriendshipStatus.FRIEND:
-                    DisableAllFriendFlowButtons();
-                    alreadyFriendsButton.gameObject.SetActive(true);
-                break;
-                case FriendshipStatus.REQUESTED_FROM:
-                    DisableAllFriendFlowButtons();
-                    acceptFriendButton.gameObject.SetActive(true);
-                break;
-                case FriendshipStatus.REQUESTED_TO:
-                    DisableAllFriendFlowButtons();
-                    cancelFriendRequestButton.gameObject.SetActive(true);
-                break;
-                default:
-                break;
-            }
-            whisperNonFriendsPopup.Hide(true);
-        }
-
         private void DisableAllFriendFlowButtons()
         {
             alreadyFriendsButton.gameObject.SetActive(false);
@@ -242,14 +235,10 @@ namespace DCL.Social.Passports
             if(fullWalletAddress == null)
                 return;
 
-            OnWalletCopy?.Invoke();
-            Environment.i.platform.clipboard.WriteText(fullWalletAddress);
-            if (copyAddressRoutine != null)
-            {
-                StopCoroutine(copyAddressRoutine);
-            }
-
-            copyAddressRoutine = StartCoroutine(ShowCopyToast(copyAddressToast));
+            OnWalletCopy?.Invoke(fullWalletAddress);
+            ResetCopyToast();
+            cts = new CancellationTokenSource();
+            ShowCopyToast(copyAddressToast, cts.Token).Forget();
         }
 
         private void CopyUsernameToClipboard()
@@ -257,16 +246,13 @@ namespace DCL.Social.Passports
             if(string.IsNullOrEmpty(model.name))
                 return;
 
-            Environment.i.platform.clipboard.WriteText(model.name.Split('#')[0]);
-            if (copyNameRoutine != null)
-            {
-                StopCoroutine(copyNameRoutine);
-            }
-
-            copyNameRoutine = StartCoroutine(ShowCopyToast(copyUsernameToast));
+            OnUsernameCopy?.Invoke(model.name);
+            ResetCopyToast();
+            cts = new CancellationTokenSource();
+            ShowCopyToast(copyUsernameToast, cts.Token).Forget();
         }
 
-        private IEnumerator ShowCopyToast(ShowHideAnimator toast)
+        private async UniTaskVoid ShowCopyToast(ShowHideAnimator toast, CancellationToken ct)
         {
             if (!toast.gameObject.activeSelf)
             {
@@ -274,8 +260,15 @@ namespace DCL.Social.Passports
             }
 
             toast.Show();
-            yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
+            await Task.Delay(COPY_TOAST_VISIBLE_TIME, ct);
             toast.Hide();
+        }
+
+        private void ResetCancellationToken()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
         }
 
         private void WhisperActionFlow()

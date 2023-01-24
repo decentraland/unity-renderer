@@ -16,6 +16,7 @@ namespace DCL
     /// </summary>
     public class Main : MonoBehaviour
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private bool disableSceneDependencies;
         public static Main i { get; private set; }
 
@@ -40,6 +41,7 @@ namespace DCL
                 InitializeSceneDependencies();
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
+
             // TODO: migrate chat controller singleton into a service in the service locator
             ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
 
@@ -48,11 +50,13 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 SetupServices();
 
-                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
             // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
             WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = GetComponent<WebInterfaceFriendsApiBridge>();
+
             FriendsController.CreateSharedInstance(new WebInterfaceFriendsApiBridgeProxy(
                 webInterfaceFriendsApiBridge,
                 RPCFriendsApiBridge.CreateSharedInstance(Environment.i.serviceLocator.Get<IRPC>(), webInterfaceFriendsApiBridge),
@@ -78,16 +82,13 @@ namespace DCL
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = false;
 
             kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
 #else
+
             // TODO(Brian): Remove this branching once we finish migrating all tests out of the
             //              IntegrationTestSuite_Legacy base class.
-            if (!EnvironmentSettings.RUNNING_TESTS)
-            {
-                kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
-            }
+            if (!EnvironmentSettings.RUNNING_TESTS) { kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL); }
 #endif
         }
 
@@ -97,7 +98,8 @@ namespace DCL
             {
                 // Prewarm shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+                dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             }
         }
 
@@ -134,6 +136,7 @@ namespace DCL
         {
             Application.wantsToQuit += ApplicationWantsToQuit;
         }
+
         private static bool ApplicationWantsToQuit()
         {
             if (i != null)
@@ -144,9 +147,11 @@ namespace DCL
 
         protected virtual void Dispose()
         {
-            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
 
             DataStore.i.common.isApplicationQuitting.Set(true);
+            Settings.i.SaveSettings();
 
             pluginSystem?.Dispose();
 
@@ -181,6 +186,7 @@ namespace DCL
             MainSceneFactory.CreateEventSystem();
         }
 
-        protected virtual void CreateEnvironment() => MainSceneFactory.CreateEnvironment();
+        protected virtual void CreateEnvironment() =>
+            MainSceneFactory.CreateEnvironment();
     }
 }

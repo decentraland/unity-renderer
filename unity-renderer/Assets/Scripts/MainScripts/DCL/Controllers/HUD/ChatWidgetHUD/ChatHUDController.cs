@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL.Chat;
+using DCL.ProfanityFiltering;
 
 public class ChatHUDController : IDisposable
 {

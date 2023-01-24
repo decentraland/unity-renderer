@@ -86,6 +86,7 @@ namespace DCL.Social.Friends
             var ownProfile = userProfileBridge.GetOwn();
             view.SetSenderProfilePicture(ownProfile.snapshotObserver);
 
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
             view.Show();
         }
 
@@ -144,6 +145,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.To);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }
 }

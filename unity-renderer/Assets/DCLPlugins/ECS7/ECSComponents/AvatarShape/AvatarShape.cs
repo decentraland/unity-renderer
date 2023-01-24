@@ -121,6 +121,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport += PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport += PlayerPointerExit;
         }
 
         public void Init()
@@ -216,12 +218,12 @@ namespace DCL.ECSComponents
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "view profile"
+                    hoverText = "View Profile"
                 },
                 entity, player
             );
 
-            outlineOnHover.Initialize(entity, player.avatar);
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -447,6 +449,8 @@ namespace DCL.ECSComponents
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            outlineOnHover.OnPointerEnterReport -= PlayerPointerEnter;
+            outlineOnHover.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

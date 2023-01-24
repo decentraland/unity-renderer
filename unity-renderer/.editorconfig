@@ -258,7 +258,7 @@ csharp_prefer_simple_using_statement = true:suggestion # IDE0063
 csharp_using_directive_placement = outside_namespace:warning # 🟢 IDE0065
 
 # Require file header
-file_header_template = unset:none # 🟢 IDE0073
+#file_header_template = unset:none # 🟢 IDE0073
 
 
 ###############################   Unnecessary code rules   ###############################

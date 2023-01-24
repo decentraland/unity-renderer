@@ -103,6 +103,11 @@ namespace DCL
 
         public LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
+            if (entity == null)
+            {
+                Debug.LogWarning("NULL entity at GetLoaderForEntity()");
+                return null;
+            }    
             if (entity.meshRootGameObject == null)
             {
                 Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
