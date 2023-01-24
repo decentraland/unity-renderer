@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -10,21 +11,57 @@ namespace DCLServices.WearablesCatalogService
     {
         public static WebInterfaceWearablesCatalogService Instance { get; private set; }
 
-        private void Awake() =>
+        public BaseDictionary<string, WearableItem> WearablesCatalog { get; } = new ();
+
+        private void Awake()
+        {
             Instance = this;
+        }
 
         public void Initialize() { }
 
-        public void Dispose() =>
+        public void Dispose()
+        {
             Destroy(gameObject);
+        }
 
-        public UniTask<WearableItem> GetWearablesById(string wearableId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem> RequestWearable(string wearableId, int pageNumber, int pageSize, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        public UniTask<WearableItem[]> GetWearablesByCollection(string collectionId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem[]> RequestWearablesByOwner(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        public UniTask<WearableItem[]> GetWearablesByOwner(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem[]> RequestWearablesByCollection(string collectionId, int pageNumber, int pageSize, CancellationToken ct) =>
             throw new NotImplementedException();
+
+        public void AddWearablesToCatalog(WearableItem[] wearableItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveWearablesInUse(List<string> wearablesInUseToRemove)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EmbedWearables(IEnumerable<WearableItem> wearables)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
