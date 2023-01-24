@@ -12,6 +12,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly IInternalECSComponent<InternalColliders> pointerCollidersComponent;
         private readonly IInternalECSComponent<InternalColliders> physicsCollidersComponent;
+        private readonly IInternalECSComponent<InternalAudioSource> audioSourceComponent;
         private readonly IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
@@ -19,6 +20,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
+            IInternalECSComponent<InternalAudioSource> audioSourceComponent,
             bool previewMode = false)
         {
             this.sceneBoundsCheckComponent = sbcComponent;
@@ -26,6 +28,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             this.renderersComponent = renderersComponent;
             this.pointerCollidersComponent = pointerColliderComponent;
             this.physicsCollidersComponent = physicsColliderComponent;
+            this.audioSourceComponent = audioSourceComponent;
 
             outOfBoundsVisualFeedback = previewMode ? new ECSOutOfSceneBoundsFeedback_RedWireframe() : new ECSOutOfSceneBoundsFeedback_EnabledToggle();
         }
@@ -65,6 +68,17 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 sceneBoundsCheckComponent.SetPointerColliders(componentData.scene, componentData.entity, componentData.model.colliders);
             }
 
+            // Update audio sources
+            var audioSourceComponents = audioSourceComponent.GetForAll();
+            for (int i = 0; i < audioSourceComponents.Count; i++)
+            {
+                var componentData = audioSourceComponents[i].value;
+
+                if(!componentData.model.dirty || componentData.scene.isPersistent) continue;
+
+                sceneBoundsCheckComponent.SetAudioSource(componentData.scene, componentData.entity, componentData.model.audioSource);
+            }
+
             // Note: the components are traversed backwards as we may free the 'fully defaulted' entities from the component
             var sbcComponentGroup = sceneBoundsCheckComponent.GetForAll();
             for (int i = sbcComponentGroup.Count-1; i >= 0 ; i--)
@@ -98,29 +112,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
         }
 
-        private bool AnyRendererOrColliderComponentRemoved(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
-        {
-            bool returnValue = false;
-            if (sbcComponentData.model.renderers != null && renderersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
-            {
-                sbcComponentData.model.renderers = null;
-                returnValue = true;
-            }
-
-            if (sbcComponentData.model.physicsColliders != null && physicsCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
-            {
-                sbcComponentData.model.physicsColliders = null;
-                returnValue = true;
-            }
-
-            if (sbcComponentData.model.pointerColliders != null && pointerCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
-            {
-                sbcComponentData.model.pointerColliders = null;
-                returnValue = true;
-            }
-
-            return returnValue;
-        }
         private void RunEntityEvaluation(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
@@ -129,7 +120,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             else
                 EvaluateEntityPosition(sbcComponentData);
 
-            SetInsideBoundsStateForNonMeshComponents(sbcComponentData.entity);
+            SetInsideBoundsStateForNonMeshComponents(sbcComponentData);
         }
 
         private void EvaluateEntityPosition(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
@@ -216,6 +207,30 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             return true;
         }
 
+        private bool AnyRendererOrColliderComponentRemoved(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        {
+            bool returnValue = false;
+            if (sbcComponentData.model.renderers != null && renderersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.renderers = null;
+                returnValue = true;
+            }
+
+            if (sbcComponentData.model.physicsColliders != null && physicsCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.physicsColliders = null;
+                returnValue = true;
+            }
+
+            if (sbcComponentData.model.pointerColliders != null && pointerCollidersComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity) == null)
+            {
+                sbcComponentData.model.pointerColliders = null;
+                returnValue = true;
+            }
+
+            return returnValue;
+        }
+
         private void SetInsideBoundsStateForMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
             SetInsideBoundsStateForMeshComponents(sbcComponentData, sbcComponentData.entity.isInsideSceneBoundaries);
@@ -226,8 +241,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             outOfBoundsVisualFeedback.ApplyFeedback(sbcComponentData, visibilityComponent.GetFor(sbcComponentData.scene, sbcComponentData.entity), isInsideBounds);
         }
 
-        private void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity)
+        private void SetInsideBoundsStateForNonMeshComponents(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
         {
+            if(sbcComponentData.model.audioSource != null)
+                sbcComponentData.model.audioSource.enabled = sbcComponentData.entity.isInsideSceneBoundaries;
         }
     }
 }

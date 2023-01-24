@@ -14,4 +14,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
     IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
     IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
+    IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
 }

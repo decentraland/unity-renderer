@@ -10,5 +10,6 @@ public enum InternalECSComponentsId
     INPUT_EVENTS_RESULT = 8,
     UI_CONTAINER = 9,
     UI_INPUT_EVENTS_RESULT = 10,
-    SCENE_BOUNDS_CHECK = 11
+    SCENE_BOUNDS_CHECK = 11,
+    AUDIO_SOURCE = 12
 }

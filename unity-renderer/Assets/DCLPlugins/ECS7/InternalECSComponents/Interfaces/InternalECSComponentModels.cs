@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using DCL.ECSComponents;
-using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -34,14 +33,20 @@ namespace DCL.ECS7.InternalComponents
         public IList<Renderer> renderers = new List<Renderer>();
     }
 
+    public class InternalAudioSource : InternalComponent
+    {
+        public AudioSource audioSource;
+    }
+
     public class InternalSceneBoundsCheck : InternalComponent
     {
         public Vector3 entityPosition = Vector3.zero;
+        public Bounds entityLocalMeshBounds = new Bounds();
+        public bool meshesDirty = false;
         public IList<Renderer> renderers;
         public IList<Collider> physicsColliders;
         public IList<Collider> pointerColliders;
-        public Bounds entityLocalMeshBounds = new Bounds();
-        public bool meshesDirty = false;
+        public AudioSource audioSource;
     }
 
     public class InternalVisibility : InternalComponent

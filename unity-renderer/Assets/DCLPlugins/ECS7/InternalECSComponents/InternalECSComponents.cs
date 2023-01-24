@@ -17,6 +17,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalUiContainer> uiContainerComponent { get; }
     public IInternalECSComponent<InternalUIInputResults> uiInputResultsComponent { get; }
     public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
+    public IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
     {
@@ -90,6 +91,14 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
 
         sceneBoundsCheckComponent = new InternalECSComponent<InternalSceneBoundsCheck>(
             InternalECSComponentsId.SCENE_BOUNDS_CHECK,
+            componentsManager,
+            componentsFactory,
+            null,
+            scheduledWrite
+        );
+
+        audioSourceComponent = new InternalECSComponent<InternalAudioSource>(
+            InternalECSComponentsId.AUDIO_SOURCE,
             componentsManager,
             componentsFactory,
             null,

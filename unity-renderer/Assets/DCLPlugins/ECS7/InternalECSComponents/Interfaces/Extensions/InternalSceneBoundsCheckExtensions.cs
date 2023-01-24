@@ -65,6 +65,15 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
         }
 
+        public static void SetAudioSource(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
+            IParcelScene scene, IDCLEntity entity, AudioSource audioSource)
+        {
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            model.audioSource = audioSource;
+
+            sbcInternalComponent.PutFor(scene, entity, model);
+        }
+
         public static void RecalculateEntityMeshBounds(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
@@ -142,7 +151,8 @@ namespace DCL.ECS7.InternalComponents
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
             return model == null || (model.entityPosition == Vector3.zero
-                       && model.entityLocalMeshBounds.size == Vector3.zero);
+                       && model.entityLocalMeshBounds.size == Vector3.zero
+                       && model.audioSource == null);
         }
     }
 }
