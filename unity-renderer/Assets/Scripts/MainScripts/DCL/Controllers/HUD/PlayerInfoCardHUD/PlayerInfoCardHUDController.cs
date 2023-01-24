@@ -243,9 +243,7 @@ public class PlayerInfoCardHUDController : IHUD
         {
             currentUserProfile.OnUpdate += SetUserProfile;
 
-            setUserProfileCancellationToken.Cancel();
-            setUserProfileCancellationToken.Dispose();
-            setUserProfileCancellationToken = new CancellationTokenSource();
+            setUserProfileCancellationToken = setUserProfileCancellationToken.SafeRestart();
 
             TaskUtils.Run(async () =>
                       {
@@ -264,9 +262,7 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        setUserProfileCancellationToken.Cancel();
-        setUserProfileCancellationToken.Dispose();
-        setUserProfileCancellationToken = new CancellationTokenSource();
+        setUserProfileCancellationToken = setUserProfileCancellationToken.SafeRestart();
 
         TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile, setUserProfileCancellationToken.Token)).Forget();
     }
@@ -332,10 +328,8 @@ public class PlayerInfoCardHUDController : IHUD
 
     public void Dispose()
     {
-        friendOperationsCancellationToken.Cancel();
-        friendOperationsCancellationToken.Dispose();
-        setUserProfileCancellationToken.Cancel();
-        setUserProfileCancellationToken.Dispose();
+        friendOperationsCancellationToken.SafeCancelAndDispose();
+        setUserProfileCancellationToken.SafeCancelAndDispose();
 
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
