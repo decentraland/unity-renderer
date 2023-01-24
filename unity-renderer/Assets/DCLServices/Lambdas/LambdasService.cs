@@ -39,8 +39,8 @@ namespace DCLServices.Lambdas
         public UniTask<(TResponse response, bool success)> Get<TResponse>(
             string endPointTemplate,
             string endPoint,
-            int timeout = 30,
-            int attemptsNumber = 3,
+            int timeout = ILambdasService.DEFAULT_TIMEOUT,
+            int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
