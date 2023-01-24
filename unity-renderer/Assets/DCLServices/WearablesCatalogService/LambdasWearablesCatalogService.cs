@@ -18,11 +18,11 @@ namespace DCLServices.WearablesCatalogService
         private const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
         private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
 
-        private readonly Dictionary<string, int> wearablesInUseCounters = new ();
         private Service<ILambdasService> lambdasService;
-        private Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByIdPagePointer;
-        private Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByCollectionPointer;
-        private Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByOwnerPointer;
+        private readonly Dictionary<string, int> wearablesInUseCounters = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByIdPagePointer = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByCollectionPointer = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByOwnerPointer = new ();
         private CancellationTokenSource checkForUnusedWearablesCts;
 
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
@@ -102,7 +102,7 @@ namespace DCLServices.WearablesCatalogService
                     continue;
 
                 wearableItem.SanitizeHidesLists();
-                WearablesCatalog.Add(wearableItem.id, wearableItem);
+                WearablesCatalog[wearableItem.id] = wearableItem;
 
                 if (!wearablesInUseCounters.ContainsKey(wearableItem.id))
                     wearablesInUseCounters.Add(wearableItem.id, 1);
@@ -152,7 +152,8 @@ namespace DCLServices.WearablesCatalogService
                 REQUESTS_TIME_OUT_SECONDS,
                 ATTEMPTS_NUMBER,
                 cancellationToken,
-                LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize), LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
+                LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
+                LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
         private async UniTaskVoid CheckForUnusedWearablesAsync(CancellationToken ct)
         {
