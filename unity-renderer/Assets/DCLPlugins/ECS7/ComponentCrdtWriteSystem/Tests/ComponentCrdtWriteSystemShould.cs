@@ -90,12 +90,9 @@ namespace Tests
             // not null or empty
             Assert.NotNull(protocol);
 
-            DataStore.i.rpc.context.crdt.CrdtExecutors.TryGetValue(SCENE_NUMBER, out ICRDTExecutor executor);
-
-            CRDTProtocol.EntityComponentData message = executor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
-            Assert.NotNull(message);
-            Assert.AreEqual(timeStamp, message.timestamp);
-            Assert.IsTrue(AreEqual(componentData, (byte[])message.data));
+            // The state doesn't sync with only SEND_TO_SCENE
+            CRDTProtocol.EntityComponentData message = crdtExecutor.crdtProtocol.GetState(ENTITY_ID, COMPONENT_ID);
+            Assert.IsNull(message);
         }
 
         [Test]
