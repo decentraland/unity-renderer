@@ -34,7 +34,8 @@ namespace DCL
         private int downloadingAssetsPercentage = 0;
         private int maxDownloadingAssetsRef = 0;
         private int maxDownloadingCalculatedPercentage = 0;
-        private string lastSentLoadingString = string.Empty;
+        
+        private DCL.Interface.WebInterface.LoadingFeedbackMessage messageToSend = new WebInterface.LoadingFeedbackMessage();
 
         public LoadingFeedbackController()
         {
@@ -126,18 +127,11 @@ namespace DCL
             if (!dataStoreLoadingScreen.Ref.loadingHUD.fadeIn.Get() && !dataStoreLoadingScreen.Ref.loadingHUD.visible.Get())
                 return;
 
-            string loadingText = string.Empty;
-            string secondLoadingText = string.Empty;
-            DCL.Interface.WebInterface.LoadingFeedbackMessage messageToSend = new WebInterface.LoadingFeedbackMessage();
-            messageToSend.loadPercentage = 0;
-
             currentComponentsLoading = loadedScenes.Sum(x => x.componentsLoading);
             if (currentComponentsLoading > 0)
             {
                 loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
-                messageToSend.loadPercentage = loadingComponentsPercentage;
                 dataStoreLoadingScreen.Ref.loadingHUD.percentage.Set(loadingComponentsPercentage);
-                loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
             }
 
             totalActiveDownloads = AssetPromiseKeeper_GLTF.i.waitingPromisesCount +
@@ -145,22 +139,21 @@ namespace DCL
             if (totalActiveDownloads > 0)
             {
                 downloadingAssetsPercentage = GetDownloadingAssetsPercentage(totalActiveDownloads);
-                secondLoadingText = string.Format("Downloading images, 3D models, and sounds {0}%",
-                    downloadingAssetsPercentage);
-
-                if (!string.IsNullOrEmpty(loadingText))
-                {
-                    loadingText += "\n";
-                }
-
-                loadingText += secondLoadingText;
             }
-
-            if (!string.IsNullOrEmpty(loadingText) && !lastSentLoadingString.Equals(loadingText))
+            
+            // loadingComponentsPercentage tends to increase very fast initially, while downloadingAssetsPercentage has more
+            // granularity as the scene is almost fully downloaded. By averaging both we expect to get a better estimate of
+            // how many assets have we really loaded already.
+            int averagePercentageLoaded = (loadingComponentsPercentage + downloadingAssetsPercentage) / 2;
+            
+            // Using the cached messageToSend instance to store the last value, checking if we need to update it
+            if (messageToSend.loadPercentage != averagePercentageLoaded)
             {
+                string loadingText = string.Format("Downloading required resources... {0}%", averagePercentageLoaded);
                 dataStoreLoadingScreen.Ref.loadingHUD.message.Set(loadingText);
+                
+                messageToSend.loadPercentage = averagePercentageLoaded;
                 messageToSend.message = loadingText;
-                lastSentLoadingString = loadingText;
                 WebInterface.ScenesLoadingFeedback(messageToSend);
             }
         }
