@@ -210,7 +210,7 @@ namespace DCL.Social.Friends
                     friendOperationsCancellationToken = new CancellationTokenSource();
                     DisplayMoreFriendsAsync(friendOperationsCancellationToken.Token).Forget();
                 }
-                else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0)
+                else if (View.IsRequestListActive && lastSkipForFriendRequests <= 0 && !searchingFriends)
                 {
                     friendOperationsCancellationToken.Cancel();
                     friendOperationsCancellationToken.Dispose();
@@ -627,6 +627,7 @@ namespace DCL.Social.Friends
         private void DisplayFriendsIfAnyIsLoaded()
         {
             if (lastSkipForFriends > 0) return;
+            if (!friendsController.IsInitialized) return;
             friendOperationsCancellationToken?.Cancel();
             friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
@@ -635,6 +636,8 @@ namespace DCL.Social.Friends
 
         private void DisplayMoreFriends()
         {
+            if (!friendsController.IsInitialized) return;
+
             friendOperationsCancellationToken?.Cancel();
             friendOperationsCancellationToken?.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
@@ -644,8 +647,6 @@ namespace DCL.Social.Friends
 
         private async UniTask DisplayMoreFriendsAsync(CancellationToken cancellationToken)
         {
-            if (!friendsController.IsInitialized) return;
-
             string[] friendsToAdd = await friendsController
                                          .GetFriendsAsync(LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriends, cancellationToken)
                                          .Timeout(TimeSpan.FromSeconds(GET_FRIENDS_TIMEOUT));
@@ -663,6 +664,8 @@ namespace DCL.Social.Friends
 
         private void DisplayMoreFriendRequests()
         {
+            if (!friendsController.IsInitialized) return;
+            if (searchingFriends) return;
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
@@ -671,9 +674,6 @@ namespace DCL.Social.Friends
 
         private async UniTask DisplayMoreFriendRequestsAsync(CancellationToken cancellationToken)
         {
-            if (!friendsController.IsInitialized) return;
-            if (searchingFriends) return;
-
             if (isNewFriendRequestsEnabled)
             {
                 var allFriendRequests = await friendsController.GetFriendRequestsAsync(
@@ -742,6 +742,8 @@ namespace DCL.Social.Friends
         private void DisplayFriendRequestsIfAnyIsLoaded()
         {
             if (lastSkipForFriendRequests > 0) return;
+            if (!friendsController.IsInitialized) return;
+            if (searchingFriends) return;
             friendOperationsCancellationToken.Cancel();
             friendOperationsCancellationToken.Dispose();
             friendOperationsCancellationToken = new CancellationTokenSource();
