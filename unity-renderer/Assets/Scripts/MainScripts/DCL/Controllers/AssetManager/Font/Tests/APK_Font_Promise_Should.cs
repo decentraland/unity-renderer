@@ -1,6 +1,5 @@
 ﻿using AssetPromiseKeeper_Tests;
 using DCL;
-using MainScripts.DCL.Controllers.AssetManager;
 using System.Collections;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -16,7 +15,7 @@ namespace AssetPromiseKeeper_Font_Tests
 
         protected AssetPromise_Font CreatePromise()
         {
-            var prom = new AssetPromise_Font(fontName, AssetSource.EMBEDDED);
+            var prom = new AssetPromise_Font(fontName);
             return prom;
         }
 
@@ -81,13 +80,13 @@ namespace AssetPromiseKeeper_Font_Tests
         public IEnumerator KeepRefCountCorrectly()
         {
             string model = fontName;
-            var prom = new AssetPromise_Font(model, AssetSource.EMBEDDED);
+            var prom = new AssetPromise_Font(model);
             keeper.Keep(prom);
             yield return prom;
 
             Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
 
-            var prom2 = new AssetPromise_Font(model, AssetSource.EMBEDDED);
+            var prom2 = new AssetPromise_Font(model);
             keeper.Keep(prom2);
             yield return prom2;
 
@@ -96,7 +95,7 @@ namespace AssetPromiseKeeper_Font_Tests
             keeper.Forget(prom);
             Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
 
-            prom = new AssetPromise_Font(model, AssetSource.EMBEDDED);
+            prom = new AssetPromise_Font(model);
             keeper.Keep(prom);
             yield return prom;
 

@@ -6,6 +6,6 @@ using TMPro;
 
 public class AddressableFontProvider : AddressableResourceProvider<TMP_FontAsset>, IFontAssetProvider
 {
-    public UniTask<TMP_FontAsset> GetFontAsync(string url, CancellationToken cancellationToken = default) =>
+    public UniTask<TMP_FontAsset> GetFontAsync(string url, CancellationToken cancellationToken = default)  =>
         GetAddressable(url, cancellationToken);
 }

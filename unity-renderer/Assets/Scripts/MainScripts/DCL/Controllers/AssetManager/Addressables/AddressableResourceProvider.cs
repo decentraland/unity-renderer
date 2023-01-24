@@ -34,13 +34,13 @@ namespace DCL.Providers
         {
             await UniTask.WaitUntil(() => areAddressablesInitialized, cancellationToken: cancellationToken);
 
-            AsyncOperationHandle<T> handler = Addressables.LoadAssetAsync<T>(key);
-            await handler.WithCancellation(cancellationToken);
-
-            if (!handler.Status.Equals(AsyncOperationStatus.Succeeded))
-                throw new Exception($"Addressable failed fetch with key {key} with reason {handler.OperationException.Message}");
-
-            return handler.Result;
+            try
+            {
+                AsyncOperationHandle<T> handler = Addressables.LoadAssetAsync<T>(key);
+                await handler.WithCancellation(cancellationToken);
+                return handler.Result;
+            }
+            catch (Exception e) { throw new Exception($"Addressable with {key} failed with message {e.Message}"); }
         }
 
         private void AddressablesInitiated(AsyncOperationHandle<IResourceLocator> obj)

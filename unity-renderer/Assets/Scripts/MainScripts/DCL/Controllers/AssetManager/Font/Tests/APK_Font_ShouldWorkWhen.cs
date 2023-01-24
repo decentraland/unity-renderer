@@ -1,6 +1,5 @@
 ﻿using AssetPromiseKeeper_Tests;
 using DCL;
-using MainScripts.DCL.Controllers.AssetManager;
 
 namespace AssetPromiseKeeper_Font_Tests
 {
@@ -13,7 +12,7 @@ namespace AssetPromiseKeeper_Font_Tests
 
         protected override AssetPromise_Font CreatePromise()
         {
-            var prom = new AssetPromise_Font(fontName, AssetSource.EMBEDDED);
+            var prom = new AssetPromise_Font(fontName);
             return prom;
         }
     }
