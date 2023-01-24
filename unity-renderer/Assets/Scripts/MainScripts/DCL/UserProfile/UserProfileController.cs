@@ -13,7 +13,7 @@ public class UserProfileController : MonoBehaviour
 
     private static UserProfileDictionary userProfilesCatalogValue;
 
-    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new ();
+    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
     private bool baseWearablesAlreadyRequested = false;
 
     public static UserProfileDictionary userProfilesCatalog
@@ -126,10 +126,6 @@ public class UserProfileController : MonoBehaviour
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
-        // TODO: the renderer should not alter the userId nor ethAddress
-        // There is a problem in case management of addresses that we cannot handle from renderer only
-        userId = userId?.ToLower();
 
         if (pendingUserProfileTasks.TryGetValue(userId, out var existingTask))
             existingTask.TrySetCanceled();
