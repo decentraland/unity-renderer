@@ -110,21 +110,22 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void CancelInvitation() =>
-        CancelInvitationAsync().Forget();
+    private void CancelInvitation()
+    {
+        friendOperationsCancellationToken.Cancel();
+        friendOperationsCancellationToken.Dispose();
+        friendOperationsCancellationToken = new CancellationTokenSource();
+        CancelInvitationAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-    private async UniTaskVoid CancelInvitationAsync()
+    private async UniTaskVoid CancelInvitationAsync(CancellationToken cancellationToken)
     {
         if (isNewFriendRequestsEnabled)
         {
             try
             {
-                friendOperationsCancellationToken.Cancel();
-                friendOperationsCancellationToken.Dispose();
-                friendOperationsCancellationToken = new CancellationTokenSource();
-
                 FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId,
-                    friendOperationsCancellationToken.Token);
+                    cancellationToken);
 
                 socialAnalytics.SendFriendRequestCancelled(request.From, request.To, PlayerActionSource.Passport.ToString());
             }
@@ -143,23 +144,24 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void AcceptFriendRequest() =>
-        AcceptFriendRequestAsync().Forget();
+    private void AcceptFriendRequest()
+    {
+        friendOperationsCancellationToken.Cancel();
+        friendOperationsCancellationToken.Dispose();
+        friendOperationsCancellationToken = new CancellationTokenSource();
+        AcceptFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-    private async UniTaskVoid AcceptFriendRequestAsync()
+    private async UniTaskVoid AcceptFriendRequestAsync(CancellationToken cancellationToken)
     {
         if (isNewFriendRequestsEnabled)
         {
             try
             {
-                friendOperationsCancellationToken.Cancel();
-                friendOperationsCancellationToken.Dispose();
-                friendOperationsCancellationToken = new CancellationTokenSource();
-
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationToken.Token);
+                    cancellationToken);
 
                 socialAnalytics.SendFriendRequestApproved(request.From, request.To, PlayerActionSource.Passport.ToString(),
                     request.HasBodyMessage);
@@ -182,23 +184,24 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void RejectFriendRequest() =>
-        RejectFriendRequestAsync().Forget();
+    private void RejectFriendRequest()
+    {
+        friendOperationsCancellationToken.Cancel();
+        friendOperationsCancellationToken.Dispose();
+        friendOperationsCancellationToken = new CancellationTokenSource();
+        RejectFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-    private async UniTaskVoid RejectFriendRequestAsync()
+    private async UniTaskVoid RejectFriendRequestAsync(CancellationToken cancellationToken)
     {
         if (isNewFriendRequestsEnabled)
         {
             try
             {
-                friendOperationsCancellationToken.Cancel();
-                friendOperationsCancellationToken.Dispose();
-                friendOperationsCancellationToken = new CancellationTokenSource();
-
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.RejectFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationToken.Token);
+                    cancellationToken);
 
                 socialAnalytics.SendFriendRequestRejected(request.From, request.To,
                     PlayerActionSource.Passport.ToString(), request.HasBodyMessage);
