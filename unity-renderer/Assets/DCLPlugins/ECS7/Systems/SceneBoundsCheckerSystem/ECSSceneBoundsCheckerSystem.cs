@@ -95,6 +95,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     // If all meshes were removed we need to reset the feedback.
                     if (componentData.model.entityLocalMeshBounds.size == Vector3.zero)
                         SetInsideBoundsStateForMeshComponents(componentData, true);
+
+                    componentData.model.meshesDirty = false;
+                    sceneBoundsCheckComponent.PutFor(componentData.scene, componentData.entity, componentData.model);
                 }
 
                 if (sceneBoundsCheckComponent.IsFullyDefaulted(componentData.scene, componentData.entity))
@@ -105,10 +108,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 }
 
                 RunEntityEvaluation(componentData);
-
-                // This reset of the meshesDirty will trigger 1 extra check due to the sbcComponent dirty flag being affected
-                componentData.model.meshesDirty = false;
-                sceneBoundsCheckComponent.PutFor(componentData.scene, componentData.entity, componentData.model);
             }
         }
 
