@@ -98,7 +98,7 @@ namespace DCL.Social.Friends
 
                     view.ShowSendSuccess();
 
-                    await friendRequestHUDController.HideWithDelay();
+                    await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {

@@ -18,6 +18,7 @@ namespace DCL.Social.Friends
         private readonly StringVariable openPassportVariable;
         private readonly ISocialAnalytics socialAnalytics;
 
+        private CancellationTokenSource rejectCancellationToken = new ();
         private string friendRequestId;
 
         public ReceivedFriendRequestHUDController(DataStore dataStore,
@@ -47,6 +48,8 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            rejectCancellationToken.Cancel();
+            rejectCancellationToken.Dispose();
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange -= ShowOrHide;
             friendRequestHUDController.Dispose();
         }
@@ -125,7 +128,7 @@ namespace DCL.Social.Friends
                     socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
 
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                    await friendRequestHUDController.HideWithDelay();
+                    await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
@@ -136,7 +139,10 @@ namespace DCL.Social.Friends
                 }
             }
 
-            RejectAsync().Forget();
+            rejectCancellationToken.Cancel();
+            rejectCancellationToken.Dispose();
+            rejectCancellationToken = new CancellationTokenSource();
+            RejectAsync(rejectCancellationToken.Token).Forget();
         }
 
         private void Confirm()
@@ -154,7 +160,7 @@ namespace DCL.Social.Friends
                     socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
 
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                    await friendRequestHUDController.HideWithDelay();
+                    await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {

@@ -23,7 +23,7 @@ namespace DCL.Social.Friends
             hideCancellationToken = null;
         }
 
-        public async UniTask HideWithDelay(int delayMs = AUTOMATIC_CLOSE_DELAY)
+        public async UniTask HideWithDelay(int delayMs = AUTOMATIC_CLOSE_DELAY, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace DCL.Social.Friends
                 // the view has already been hidden before, so ignore the exception
             }
 
-            hideCancellationToken = new CancellationTokenSource();
+            hideCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             await UniTask.Delay(delayMs, cancellationToken: hideCancellationToken.Token);
 
