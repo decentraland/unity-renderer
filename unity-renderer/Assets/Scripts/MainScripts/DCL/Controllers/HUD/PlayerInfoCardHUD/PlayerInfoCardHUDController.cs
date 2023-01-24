@@ -277,7 +277,7 @@ public class PlayerInfoCardHUDController : IHUD
         view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
-        LoadAndShowWearables(userProfile);
+        LoadAndShowWearables(userProfile, CancellationToken.None /*TODO add CancellationToken to the whole function */).Forget();
         UpdateFriendshipInteraction();
 
         if (viewingUserProfile != null)
@@ -383,23 +383,26 @@ public class PlayerInfoCardHUDController : IHUD
         return friendsController != null && friendsController.IsInitialized && currentUserProfile.hasConnectedWeb3;
     }
 
-    private void LoadAndShowWearables(UserProfile userProfile)
+    private async UniTaskVoid LoadAndShowWearables(UserProfile userProfile, CancellationToken cancellationToken)
     {
-        wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
-                             .Then(wearables =>
-                              {
-                                  var wearableIds = wearables.Select(x => x.id).ToArray();
-                                  userProfile.SetInventory(wearableIds);
-                                  loadedWearables.AddRange(wearableIds);
+        try
+        {
+            var wearables = await wearableCatalogBridge.RequestOwnedWearables(userProfile.userId).WithCancellation(cancellationToken);
+            var wearableIds = wearables.Select(x => x.id).ToArray();
+            userProfile.SetInventory(wearableIds);
+            loadedWearables.AddRange(wearableIds);
 
-                                  var containedWearables = wearables
+            var containedWearables = wearables
 
-                                      // this makes any sense?
-                                     .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+                // this makes any sense?
+               .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
 
-                                  view.SetWearables(containedWearables);
-                              })
-                             .Catch(Debug.LogError);
+            view.SetWearables(containedWearables);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
     }
 
     private bool IsBlocked(string userId)
