@@ -22,7 +22,6 @@ namespace DCL.Social.Friends
         [SerializeField] internal ImageComponentView profileImage;
         [SerializeField] internal Color bodyMaxLimitColor;
 
-        private readonly SendFriendRequestHUDModel model = new ();
         private ILazyTextureObserver lastProfilePictureObserver;
         private Color messageBodyLengthOriginalColor;
 
@@ -37,6 +36,8 @@ namespace DCL.Social.Friends
         public override void Awake()
         {
             base.Awake();
+
+            SetModel(new SendFriendRequestHUDModel());
 
             foreach (var button in cancelButtons)
                 button.onClick.AddListener(() => OnCancel?.Invoke());
