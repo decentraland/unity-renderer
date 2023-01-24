@@ -80,9 +80,10 @@ namespace DCL
             Type typeToUse = typeof(IPointerEvent);
 
             uiGraphicRaycastPointerEventData.position = Utils.IsCursorLocked ? new Vector2(Screen.width / 2, Screen.height / 2) : Input.mousePosition;
+
             if (!Utils.IsCursorLocked)
             {
-                //New interaction model
+                // New interaction model
                 if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
                 {
                     UnhoverLastHoveredObject();
@@ -277,10 +278,7 @@ namespace DCL
 
             if (dataStoreEcs7.isEcs7Enabled)
             {
-                if (buttonId >= 0 && (int)buttonId < dataStoreEcs7.inputActionState.Length)
-                {
-                    dataStoreEcs7.inputActionState[(int)buttonId] = evt == InputController_Legacy.EVENT.BUTTON_DOWN;
-                }
+                if (buttonId >= 0 && (int)buttonId < dataStoreEcs7.inputActionState.Length) { dataStoreEcs7.inputActionState[(int)buttonId] = evt == InputController_Legacy.EVENT.BUTTON_DOWN; }
             }
         }
 
@@ -507,34 +505,27 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo)
-        {
-            return pointerInputEvent != null && colliderInfo.entity != null &&
-                   pointerInputEvent.entity == colliderInfo.entity;
-        }
+        private static bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo) =>
+            pointerInputEvent != null && colliderInfo.entity != null &&
+            pointerInputEvent.entity == colliderInfo.entity;
 
-        bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
-        {
-            return
-                potentialBlockerHit.hit.collider != null // Does a potential blocker hit exist?
-                && targetOnClickHit.hit.collider != null // Was a target entity with a pointer event component hit?
-                && potentialBlockerHit.hit.distance <=
-                targetOnClickHit.hit.distance // Is potential blocker nearer than target entity?
-                && !AreCollidersFromSameEntity(potentialBlockerHit,
-                    targetOnClickHit); // Does potential blocker belong to other entity rather than target entity?
-        }
+        private bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit) =>
+            potentialBlockerHit.hit.collider != null // Does a potential blocker hit exist?
+            && targetOnClickHit.hit.collider != null // Was a target entity with a pointer event component hit?
+            && potentialBlockerHit.hit.distance <= targetOnClickHit.hit.distance // Is potential blocker nearer than target entity?
+            && !AreCollidersFromSameEntity(potentialBlockerHit, targetOnClickHit); // Does potential blocker belong to other entity rather than target entity?
 
-        bool EntityHasPointerEvent(IDCLEntity entity)
+        private static bool EntityHasPointerEvent(IDCLEntity entity)
         {
             var componentsManager = entity.scene.componentsManagerLegacy;
 
-            return componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_CALLBACK) ||
-                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_UP) ||
-                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_DOWN) ||
-                   componentsManager.HasComponent(entity, Models.CLASS_ID_COMPONENT.UUID_ON_CLICK);
+            return componentsManager.HasComponent(entity, CLASS_ID_COMPONENT.UUID_CALLBACK) ||
+                   componentsManager.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP) ||
+                   componentsManager.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN) ||
+                   componentsManager.HasComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK);
         }
 
-        bool AreCollidersFromSameEntity(RaycastHitInfo hitInfoA, RaycastHitInfo hitInfoB)
+        private bool AreCollidersFromSameEntity(RaycastHitInfo hitInfoA, RaycastHitInfo hitInfoB)
         {
             CollidersManager.i.GetColliderInfo(hitInfoA.hit.collider, out ColliderInfo colliderInfoA);
             CollidersManager.i.GetColliderInfo(hitInfoB.hit.collider, out ColliderInfo colliderInfoB);
@@ -546,13 +537,15 @@ namespace DCL
             bool entityBHasEvent = entityB != null && EntityHasPointerEvent(entityB);
 
             // If both entities has OnClick/PointerEvent component
-            if (entityAHasEvent && entityBHasEvent) { return entityA == entityB; }
+            if (entityAHasEvent && entityBHasEvent)
+                return entityA == entityB;
 
             // If only one of them has OnClick/PointerEvent component
-            else if (entityAHasEvent ^ entityBHasEvent) { return false; }
+            if (entityAHasEvent ^ entityBHasEvent)
+                return false;
 
             // None of them has OnClick/PointerEvent component
-            else { return colliderInfoA.entity == colliderInfoB.entity; }
+            return colliderInfoA.entity == colliderInfoB.entity;
         }
 
         private void HandleCursorLockChanges(bool isLocked)
@@ -563,33 +556,23 @@ namespace DCL
                 UnhoverLastHoveredObject();
         }
 
-        private void HideOrShowCursor(bool isCursorLocked)
-        {
+        private static void HideOrShowCursor(bool isCursorLocked) =>
             DataStore.i.Get<DataStore_Cursor>().cursorVisible.Set(isCursorLocked);
-        }
 
-        private void SetHoverCursor()
-        {
+        private static void SetHoverCursor() =>
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.HOVER);
-        }
 
-        private void SetNormalCursor()
-        {
+        private static void SetNormalCursor() =>
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
-        }
 
         private bool CanRaycastWhileUnlocked()
         {
             dclHUDsRaycastResults.Clear();
             EventSystem.current.RaycastAll(uiGraphicRaycastPointerEventData, dclHUDsRaycastResults);
 
-            for (var i = 0; i < dclHUDsRaycastResults.Count; i++)
-            {
-                if (mouseCatcher.IsEqualsToRaycastTarget(dclHUDsRaycastResults[i].gameObject))
-                    continue;
-
-                return false;
-            }
+            foreach (var raycastResult in dclHUDsRaycastResults)
+                if (!mouseCatcher.IsEqualsToRaycastTarget(raycastResult.gameObject))
+                    return false;
 
             return true;
         }
