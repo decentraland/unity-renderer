@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using Decentraland.Renderer.KernelServices;
 using Decentraland.Renderer.RendererServices;
@@ -268,31 +269,27 @@ namespace DCl.Social.Friends
             fallbackApiBridge.AcceptFriendship(userId);
 
         [PublicAPI]
-        public async UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread(ct);
-
-            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.APPROVED,
                 userId = request.UserId
             });
 
-            return new ApproveFriendRequestReply();
+            return UniTask.FromResult(new ApproveFriendRequestReply());
         }
 
         [PublicAPI]
-        public async UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        public UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread(ct);
-
-            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REJECTED,
                 userId = request.UserId
             });
 
-            return new RendererRejectFriendRequestReply();
+            return UniTask.FromResult(new RendererRejectFriendRequestReply());
         }
 
         [PublicAPI]
