@@ -235,7 +235,7 @@ namespace RPC.Services
                 crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
                 for (int i = 0; i < outgoingMessages.Count; i++)
                 {
-                    CRDTSerializer.Serialize(sendCrdtBinaryWriter, outgoingMessages[i]);
+                    CRDTSerializer.Serialize(getStateBinaryWriter, outgoingMessages[i]);
                 }
                 outgoingMessages.Clear();
 
@@ -254,7 +254,7 @@ namespace RPC.Services
 
                     for (int i = 0; i < crdtMessages.Count; i++)
                     {
-                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessages[i]);
+                        CRDTSerializer.Serialize(getStateBinaryWriter, crdtMessages[i]);
                     }
                 }
 

@@ -203,6 +203,7 @@ namespace Tests
                 // Prepare entity creation CRDT message
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
+                    type = CrdtMessageType.PUT_COMPONENT,
                     entityId = ENTITY_ID,
                     componentId = 0,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
@@ -303,6 +304,7 @@ namespace Tests
                     // outgoing crdt
                     new CRDTMessage()
                     {
+                        type = CrdtMessageType.PUT_COMPONENT,
                         entityId = 1,
                         componentId = 1,
                         data = new byte[] { 0, 0, 0, 0 },
@@ -311,6 +313,7 @@ namespace Tests
                     // stored crdt
                     new CRDTMessage()
                     {
+                        type = CrdtMessageType.PUT_COMPONENT,
                         entityId = 1,
                         componentId = 2,
                         data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }

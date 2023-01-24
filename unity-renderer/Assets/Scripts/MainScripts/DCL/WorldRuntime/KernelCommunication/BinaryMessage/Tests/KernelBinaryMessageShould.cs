@@ -15,6 +15,7 @@ namespace Tests
             {
                 new CRDTMessage()
                 {
+                    type = CrdtMessageType.DELETE_COMPONENT,
                     entityId = 34465673,
                     componentId = 5858585,
                     timestamp = 95987474,
@@ -22,13 +23,14 @@ namespace Tests
                 },
                 new CRDTMessage()
                 {
+                    type = CrdtMessageType.PUT_COMPONENT,
                     entityId = 7693,
                     componentId = 6,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 },
-                new CRDTMessage()
-                {
+                new CRDTMessage(){
+                    type = CrdtMessageType.PUT_COMPONENT,
                     entityId = 0,
                     componentId = 1,
                     timestamp = 0,

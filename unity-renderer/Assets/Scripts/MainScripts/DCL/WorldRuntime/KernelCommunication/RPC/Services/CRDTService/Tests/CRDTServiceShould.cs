@@ -73,6 +73,7 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
+                    type = CrdtMessageType.PUT_COMPONENT,
                     entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
@@ -206,6 +207,7 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
+                    type = CrdtMessageType.PUT_COMPONENT,
                     entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }

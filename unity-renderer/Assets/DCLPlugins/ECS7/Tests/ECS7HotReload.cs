@@ -92,6 +92,7 @@ namespace Tests
 
                     CRDTMessage crdtCreateBoxMessage = new CRDTMessage()
                     {
+                        type = CrdtMessageType.PUT_COMPONENT,
                         entityId = ENTITY_ID,
                         componentId = COMPONENT_ID,
                         timestamp = 1,
@@ -121,6 +122,7 @@ namespace Tests
 
                     crdtCreateBoxMessage = new CRDTMessage()
                     {
+                        type = CrdtMessageType.PUT_COMPONENT,
                         entityId = ENTITY_ID,
                         componentId = COMPONENT_ID,
                         timestamp = 1,
