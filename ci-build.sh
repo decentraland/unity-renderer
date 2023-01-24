@@ -16,7 +16,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -quit \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
-  -logFile "$PROJECT_PATH/build-logs.txt" \
+  -logFile "$BUILD_TARGET/build-logs.txt" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
@@ -24,9 +24,6 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -executeMethod BuildCommand.PerformBuild
 
 UNITY_EXIT_CODE=$?
-
-cat "$PROJECT_PATH/build-logs.txt"
-find "$BUILD_PATH"
 
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
   echo "Run succeeded, no failures occurred";

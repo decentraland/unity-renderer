@@ -86,6 +86,17 @@ commands:
           command: |
             apt-get update
             apt-get install -y zip jq gpg
+      - run: &HASH_UNITY_FILES
+          name: Get the hash of source files
+          command: |
+            # hash unity files
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+
+            # hash pipeline files
+            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+      - restore_cache:
+          keys:
+            - unity-build-${DCL_OUTPUT_NAME} # - unity-build-${DCL_OUTPUT_NAME}-{{ checksum "../.unitysources-checksum" }}
       - run:
           name: Build Unity Project
           no_output_timeout: 30m
@@ -101,6 +112,11 @@ commands:
           name: Print build logs
           command: cat ${BUILD_PATH}/build-logs.txt
           when: always
+
+      - save_cache:
+          name: Store test cache
+          key: unity-build-${DCL_OUTPUT_NAME}
+          paths: *CACHED_PATHS
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
