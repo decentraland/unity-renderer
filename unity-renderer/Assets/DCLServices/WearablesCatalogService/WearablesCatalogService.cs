@@ -27,22 +27,6 @@ namespace DCLServices.WearablesCatalogService
             KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
-        {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
-
-            if (currentKernelConfig.usingUrlParamsForDebug)
-            {
-                wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;
-                lambdasWearablesCatalogService.Dispose();
-            }
-            else
-            {
-                wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
-                webInterfaceWearablesCatalogService.Dispose();
-            }
-        }
-
         public void Dispose()
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
@@ -71,5 +55,21 @@ namespace DCLServices.WearablesCatalogService
 
         public void Clear() =>
             wearablesCatalogServiceInUse.Clear();
+
+        private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
+        {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+
+            if (currentKernelConfig.usingUrlParamsForDebug)
+            {
+                wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;
+                lambdasWearablesCatalogService.Dispose();
+            }
+            else
+            {
+                wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
+                webInterfaceWearablesCatalogService.Dispose();
+            }
+        }
     }
 }
