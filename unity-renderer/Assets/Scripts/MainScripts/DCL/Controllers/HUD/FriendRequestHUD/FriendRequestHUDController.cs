@@ -18,8 +18,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            hideCancellationToken.Cancel();
-            hideCancellationToken.Dispose();
+            hideCancellationToken.SafeCancelAndDispose();
             hideCancellationToken = null;
         }
 
@@ -34,8 +33,7 @@ namespace DCL.Social.Friends
 
         public void Hide()
         {
-            hideCancellationToken.Cancel();
-            hideCancellationToken.Dispose();
+            hideCancellationToken.SafeCancelAndDispose();
             view.Close();
         }
     }

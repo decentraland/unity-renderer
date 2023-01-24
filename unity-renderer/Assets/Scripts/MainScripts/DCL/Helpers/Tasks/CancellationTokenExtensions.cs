@@ -35,5 +35,18 @@ namespace DCL.Tasks
 
             return CancellationTokenSource.CreateLinkedTokenSource(cancellationTokens);
         }
+
+        public static void SafeCancelAndDispose(this CancellationTokenSource cancellationToken)
+        {
+            try
+            {
+                cancellationToken?.Cancel();
+                cancellationToken?.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+                // ignore
+            }
+        }
     }
 }
