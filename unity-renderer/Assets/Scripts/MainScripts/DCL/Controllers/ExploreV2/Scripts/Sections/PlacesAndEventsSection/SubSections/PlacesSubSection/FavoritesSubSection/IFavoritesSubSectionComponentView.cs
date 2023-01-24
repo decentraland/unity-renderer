@@ -45,13 +45,13 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     event Action OnShowMoreFavoritesClicked;
 
     /// <summary>
-    /// Set the favorite component with a list of favorites.
+    /// Set the favorite places component with a list of favorites.
     /// </summary>
-    /// <param name="places">List of places (model) to be loaded.</param>
+    /// <param name="places">List of favorite places (model) to be loaded.</param>
     void SetFavorites(List<PlaceCardComponentModel> places);
 
     /// <summary>
-    /// Add a list of places in the places component.
+    /// Add a list of favorite places in the places component.
     /// </summary>
     /// <param name="places">List of places (model) to be added.</param>
     void AddFavorites(List<PlaceCardComponentModel> places);
@@ -65,7 +65,7 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     /// <summary>
     /// Shows the Place Card modal with the provided information.
     /// </summary>
-    /// <param name="placeInfo">Place (model) to be loaded in the card.</param>
+    /// <param name="placeInfo">Favorite place (model) to be loaded in the card.</param>
     void ShowPlaceModal(PlaceCardComponentModel placeInfo);
 
     /// <summary>

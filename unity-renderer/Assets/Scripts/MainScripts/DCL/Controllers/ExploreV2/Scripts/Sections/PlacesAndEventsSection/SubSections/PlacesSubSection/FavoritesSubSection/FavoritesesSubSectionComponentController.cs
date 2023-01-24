@@ -28,27 +28,20 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     public FavoritesesSubSectionComponentController(IFavoritesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
-        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
-
-        this.view = view;
-
-        this.view.OnReady += FirstLoading;
-
-        this.view.OnInfoClicked += ShowPlaceDetailedInfo;
-        this.view.OnJumpInClicked += OnJumpInToPlace;
-
-        this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
-
-        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
-
+        this.view = view;
+        this.exploreV2Analytics = exploreV2Analytics;
         placesAPIApiController = placesAPI;
 
+        this.view.OnReady += FirstLoading;
+        this.view.OnInfoClicked += ShowPlaceDetailedInfo;
+        this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
+        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
-
-        this.exploreV2Analytics = exploreV2Analytics;
+        cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         view.ConfigurePools();
     }
