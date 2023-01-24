@@ -22,7 +22,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Dispose()
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
 
         public UniTask<WearableItem> RequestWearable(string wearableId, int pageNumber, int pageSize, CancellationToken ct) =>
