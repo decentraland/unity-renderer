@@ -136,7 +136,7 @@ static class BuildCommand
         if (branchName == "test/reduce-build-size")
         {
             PlayerSettings.WebGL.debugSymbolMode = WebGLDebugSymbolMode.Off;
-            PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.ExplicitlyThrownExceptionsOnly;
+            PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.None;
         }
 
         if (buildTarget.ToString().ToLower().Contains("webgl"))
