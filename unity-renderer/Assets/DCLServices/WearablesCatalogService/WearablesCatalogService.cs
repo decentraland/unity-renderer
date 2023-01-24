@@ -63,12 +63,12 @@ namespace DCLServices.WearablesCatalogService
             if (currentKernelConfig.usingUrlParamsForDebug)
             {
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;
-                lambdasWearablesCatalogService.Dispose();
+                lambdasWearablesCatalogService?.Dispose();
             }
             else
             {
                 wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
-                webInterfaceWearablesCatalogService.Dispose();
+                webInterfaceWearablesCatalogService?.Dispose();
             }
         }
     }
