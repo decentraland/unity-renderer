@@ -37,8 +37,6 @@ namespace DCL.Social.Friends
         {
             base.Awake();
 
-            SetModel(new SendFriendRequestHUDModel());
-
             foreach (var button in cancelButtons)
                 button.onClick.AddListener(() => OnCancel?.Invoke());
 

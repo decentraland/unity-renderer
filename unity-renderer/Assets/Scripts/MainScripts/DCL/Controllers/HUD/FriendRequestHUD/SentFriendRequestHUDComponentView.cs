@@ -26,7 +26,6 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button rejectOperationButton;
         [SerializeField] internal Canvas currentCanvas;
 
-        private readonly SentFriendRequestHUDViewModel model = new ();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
         private ILazyTextureObserver lastSenderProfilePictureObserver;
 
