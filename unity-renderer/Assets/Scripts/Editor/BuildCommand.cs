@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sentry.Unity;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -137,6 +138,10 @@ static class BuildCommand
         {
             PlayerSettings.WebGL.debugSymbolMode = WebGLDebugSymbolMode.Off;
             PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.None;
+
+            var sentryOptions = AssetDatabase.LoadAssetAtPath<ScriptableSentryUnityOptions>("Assets/Resources/Sentry/SentryOptions.asset");
+            sentryOptions.Enabled = false;
+            EditorUtility.SetDirty(sentryOptions);
         }
 
         if (buildTarget.ToString().ToLower().Contains("webgl"))
