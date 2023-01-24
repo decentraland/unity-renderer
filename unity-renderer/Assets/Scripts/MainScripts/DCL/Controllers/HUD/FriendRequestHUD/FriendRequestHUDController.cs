@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using System;
+using DCL.Tasks;
 using System.Threading;
 
 namespace DCL.Social.Friends
@@ -25,17 +25,7 @@ namespace DCL.Social.Friends
 
         public async UniTask HideWithDelay(int delayMs = AUTOMATIC_CLOSE_DELAY, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                hideCancellationToken.Cancel();
-                hideCancellationToken.Dispose();
-            }
-            catch (ObjectDisposedException)
-            {
-                // the view has already been hidden before, so ignore the exception
-            }
-
-            hideCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            hideCancellationToken = hideCancellationToken.SafeRestartLinked(cancellationToken);
 
             await UniTask.Delay(delayMs, cancellationToken: hideCancellationToken.Token);
 

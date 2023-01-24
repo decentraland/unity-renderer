@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -80,9 +81,7 @@ namespace DCL.Social.Friends
 
         private void Send()
         {
-            friendOperationsCancellationToken.Cancel();
-            friendOperationsCancellationToken.Dispose();
-            friendOperationsCancellationToken = new CancellationTokenSource();
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
 
             async UniTaskVoid SendAsync(CancellationToken cancellationToken)
             {

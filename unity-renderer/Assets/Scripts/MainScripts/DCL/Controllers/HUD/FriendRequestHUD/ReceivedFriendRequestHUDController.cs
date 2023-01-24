@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace DCL.Social.Friends
         private readonly StringVariable openPassportVariable;
         private readonly ISocialAnalytics socialAnalytics;
 
-        private CancellationTokenSource rejectCancellationToken = new ();
+        private CancellationTokenSource friendOperationsCancellationToken = new ();
         private string friendRequestId;
 
         public ReceivedFriendRequestHUDController(DataStore dataStore,
@@ -48,8 +49,8 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
-            rejectCancellationToken.Cancel();
-            rejectCancellationToken.Dispose();
+            friendOperationsCancellationToken.Cancel();
+            friendOperationsCancellationToken.Dispose();
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange -= ShowOrHide;
             friendRequestHUDController.Dispose();
         }
@@ -143,10 +144,8 @@ namespace DCL.Social.Friends
                 }
             }
 
-            rejectCancellationToken.Cancel();
-            rejectCancellationToken.Dispose();
-            rejectCancellationToken = new CancellationTokenSource();
-            RejectAsync(rejectCancellationToken.Token).Forget();
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+            RejectAsync(friendOperationsCancellationToken.Token).Forget();
         }
 
         private void Confirm()
@@ -179,7 +178,8 @@ namespace DCL.Social.Friends
                 }
             }
 
-            ConfirmAsync().Forget();
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+            ConfirmAsync(friendOperationsCancellationToken.Token).Forget();
         }
     }
 }

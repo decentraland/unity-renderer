@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -82,12 +83,9 @@ public class PlayerInfoCardHUDController : IHUD
         friendsController.OnUpdateFriendship += OnFriendStatusUpdated;
     }
 
-    public void CloseCard()
+    private void CloseCard()
     {
-        friendOperationsCancellationToken.Cancel();
-        friendOperationsCancellationToken.Dispose();
-        friendOperationsCancellationToken = new CancellationTokenSource();
-
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         currentPlayerId.Set(null);
     }
 
@@ -112,9 +110,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void CancelInvitation()
     {
-        friendOperationsCancellationToken.Cancel();
-        friendOperationsCancellationToken.Dispose();
-        friendOperationsCancellationToken = new CancellationTokenSource();
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         CancelInvitationAsync(friendOperationsCancellationToken.Token).Forget();
     }
 
@@ -146,9 +142,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AcceptFriendRequest()
     {
-        friendOperationsCancellationToken.Cancel();
-        friendOperationsCancellationToken.Dispose();
-        friendOperationsCancellationToken = new CancellationTokenSource();
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         AcceptFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
     }
 
@@ -186,9 +180,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void RejectFriendRequest()
     {
-        friendOperationsCancellationToken.Cancel();
-        friendOperationsCancellationToken.Dispose();
-        friendOperationsCancellationToken = new CancellationTokenSource();
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         RejectFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
     }
 

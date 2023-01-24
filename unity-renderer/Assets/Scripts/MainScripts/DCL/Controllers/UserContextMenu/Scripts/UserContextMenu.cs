@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using DCL.Social.Friends;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ public class UserContextMenu : MonoBehaviour
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
-    private CancellationTokenSource friendOperationsCancellationTokenSource = new ();
+    private CancellationTokenSource friendOperationsCancellationToken = new ();
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     internal ISocialAnalytics socialAnalytics;
 
@@ -126,9 +127,7 @@ public class UserContextMenu : MonoBehaviour
     /// </summary>
     public void Hide()
     {
-        friendOperationsCancellationTokenSource.Cancel();
-        friendOperationsCancellationTokenSource.Dispose();
-        friendOperationsCancellationTokenSource = new CancellationTokenSource();
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         gameObject.SetActive(false);
         OnHide?.Invoke();
     }
@@ -223,10 +222,8 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnCancelFriendRequestButtonPressed()
     {
-        friendOperationsCancellationTokenSource.Cancel();
-        friendOperationsCancellationTokenSource.Dispose();
-        friendOperationsCancellationTokenSource = new CancellationTokenSource();
-        CancelFriendRequestAsync(userId, friendOperationsCancellationTokenSource.Token).Forget();
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+        CancelFriendRequestAsync(userId, friendOperationsCancellationToken.Token).Forget();
     }
 
     private async UniTaskVoid CancelFriendRequestAsync(string userId, CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -781,17 +782,7 @@ namespace DCL.Social.Friends
 
         private CancellationToken RestartFriendsOperationsCancellationToken()
         {
-            try
-            {
-                friendOperationsCancellationToken?.Cancel();
-                friendOperationsCancellationToken?.Dispose();
-            }
-            catch (ObjectDisposedException)
-            {
-                // ignore disposed cancellation token
-            }
-
-            friendOperationsCancellationToken = new CancellationTokenSource();
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
             return friendOperationsCancellationToken.Token;
         }
     }
