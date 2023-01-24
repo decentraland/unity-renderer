@@ -4,8 +4,7 @@ source ci-setup.sh
 
 echo "Running editmode tests for $PROJECT_PATH"
 
-# Disable Sentry
-sed -i 's/<Enabled>k__BackingField: 1/<Enabled>k__BackingField: 0/' unity-renderer/Assets/Resources/Sentry/SentryOptions.asset
+disable_sentry
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
