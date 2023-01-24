@@ -13,6 +13,10 @@ namespace AssetPromiseKeeper_AudioClip_Tests
         protected override IEnumerator SetUp()
         {
             ServiceLocator serviceLocator = DCL.ServiceLocatorTestFactory.CreateMocked();
+
+            //Setting the AssetResolverLogger.VERBOSE_LOG_FLAG to false since the singleton crashes a couple of subsequent test.
+            DataStore.i.featureFlags.flags.Set(new FeatureFlag { } );
+
             serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
             Environment.Setup(serviceLocator);
             return base.SetUp();
