@@ -125,12 +125,11 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal void OnJumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
+        //TODO define if this will be integrated and how
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
@@ -144,31 +143,5 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         view.HidePlaceModal();
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-    }
-
-    /// <summary>
-    /// Makes a jump in to the place defined by the given place data from API.
-    /// </summary>
-    /// <param name="placeFromAPI">Place data from API.</param>
-    public static void JumpInToPlace(HotSceneInfo placeFromAPI)
-    {
-        HotSceneInfo.Realm realm = new HotSceneInfo.Realm() { layer = null, serverName = null };
-        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
-
-        for (int i = 0; i < placeFromAPI.realms.Length; i++)
-        {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
-
-            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
-            {
-                realm = placeFromAPI.realms[i];
-                break;
-            }
-        }
-
-        if (string.IsNullOrEmpty(realm.serverName))
-            Environment.i.world.teleportController.Teleport(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
-        else
-            Environment.i.world.teleportController.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
     }
 }
