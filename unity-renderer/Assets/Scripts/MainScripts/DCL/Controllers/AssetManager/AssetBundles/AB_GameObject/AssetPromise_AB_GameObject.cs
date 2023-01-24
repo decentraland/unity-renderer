@@ -17,7 +17,6 @@ namespace DCL
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string AB_LOAD_ANIMATION = "ab_load_animation";
-        private const string GPU_ONLY_MESHES = "use_gpu_only_meshes_variant:enabled";
         private bool doTransitionAnimation;
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
@@ -127,7 +126,6 @@ namespace DCL
             {
                 PerformanceAnalytics.ABTracker.TrackFailed();
                 loadingException ??= new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}");
-                Debug.LogException(loadingException);
                 OnFail?.Invoke(loadingException);
             }
         }
@@ -189,8 +187,6 @@ namespace DCL
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
         {
-            var uploadToGPU = featureFlags.Get().IsFeatureEnabled(GPU_ONLY_MESHES);
-
             foreach ( Mesh mesh in meshesList )
             {
                 if ( !mesh.isReadable )
@@ -199,11 +195,8 @@ namespace DCL
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
 
-                if (uploadToGPU)
-                {
-                    Physics.BakeMesh(mesh.GetInstanceID(), false);
-                    mesh.UploadMeshData(true);
-                }
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
+                mesh.UploadMeshData(true);
             }
         }
 

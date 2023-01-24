@@ -46,58 +46,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
                 break;
-            case HUDElementID.PLAYER_INFO_CARD:
-                if(DataStore.i.HUDs.enableNewPassport.Get())
-                {
-                    //TODO: this is temporary, once the old passport flow is removed
-                    //this can be moved to the passport plugin
-                    PlayerPassportHUDView view = PlayerPassportHUDView.CreateView();
-                    hudElement = new PlayerPassportHUDController(
-                        view,
-                        new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                            view.PlayerInfoView,
-                            DataStore.i,
-                            Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                            FriendsController.i,
-                            new UserProfileWebInterfaceBridge(),
-                            new SocialAnalytics(
-                                Environment.i.platform.serviceProviders.analytics,
-                                new UserProfileWebInterfaceBridge())),
-                        new PassportPlayerPreviewComponentController(view.PlayerPreviewView),
-                        new PassportNavigationComponentController(
-                            view.PassportNavigationView,
-                            Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                            new WearableItemResolver(),
-                            new WearablesCatalogControllerBridge(),
-                            Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
-                            Environment.i.serviceLocator.Get<INamesService>(),
-                            Environment.i.serviceLocator.Get<ILandsService>(),
-                            new UserProfileWebInterfaceBridge(),
-                            DataStore.i),
-                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                        new UserProfileWebInterfaceBridge(),
-                        new WebInterfacePassportApiBridge(),
-                        new SocialAnalytics(
-                            Environment.i.platform.serviceProviders.analytics,
-                            new UserProfileWebInterfaceBridge()),
-                        DataStore.i);
-                }
-                else
-                {
-                    hudElement = new PlayerInfoCardHUDController(
-                        FriendsController.i,
-                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                        new UserProfileWebInterfaceBridge(),
-                        new WearablesCatalogControllerBridge(),
-                        new SocialAnalytics(
-                            Environment.i.platform.serviceProviders.analytics,
-                            new UserProfileWebInterfaceBridge()),
-                        Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                        DataStore.i,
-                        CommonScriptableObjects.playerInfoCardVisibleState);
-                }
-                break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
                 break;
