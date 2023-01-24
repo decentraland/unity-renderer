@@ -80,7 +80,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         canvas.enabled = isActive;
 
         //Temporary untill the full feature is released
-        subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.GetGameObject().SetActive(DataStore.i.HUDs.enableFavoritePlaces.Get());
+        subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.GameObject.SetActive(DataStore.i.HUDs.enableFavoritePlaces.Get());
 
         highlightsSubSection.SetActive(isActive && currentSelectedIndex == HIGHLIGHTS_SUB_SECTION_INDEX);
         placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
