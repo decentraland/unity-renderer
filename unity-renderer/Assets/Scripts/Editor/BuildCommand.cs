@@ -111,6 +111,21 @@ static class BuildCommand
         return (TEnum) Enum.Parse(typeof(TEnum), strEnumValue);
     }
 
+    static bool IsDevelopmentBuild()
+    {
+        string[] args = Environment.GetCommandLineArgs();
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i].Contains("-customDevelopmentBuild"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static string getEnv(string key, bool secret = false, bool verbose = true)
     {
         var env_var = Environment.GetEnvironmentVariable(key);
@@ -149,6 +164,13 @@ static class BuildCommand
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
+        }
+
+        if (IsDevelopmentBuild())
+        {
+            EditorUserBuildSettings.development = true;
+            EditorUserBuildSettings.allowDebugging = true;
+            EditorUserBuildSettings.connectProfiler = true;
         }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
