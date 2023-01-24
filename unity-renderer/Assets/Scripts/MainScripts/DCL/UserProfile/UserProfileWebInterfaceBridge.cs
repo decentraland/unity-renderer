@@ -23,6 +23,7 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public UserProfile Get(string userId)
     {
+        if (userId == null) return null;
         return UserProfileController.userProfilesCatalog.Get(userId);
     }
 
