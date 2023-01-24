@@ -34,6 +34,7 @@ namespace DCL
         private int downloadingAssetsPercentage = 0;
         private int maxDownloadingAssetsRef = 0;
         private int maxDownloadingCalculatedPercentage = 0;
+        private string lastSentLoadingString = string.Empty;
 
         public LoadingFeedbackController()
         {
@@ -155,10 +156,11 @@ namespace DCL
                 loadingText += secondLoadingText;
             }
 
-            if (!string.IsNullOrEmpty(loadingText))
+            if (!string.IsNullOrEmpty(loadingText) && !lastSentLoadingString.Equals(loadingText))
             {
                 dataStoreLoadingScreen.Ref.loadingHUD.message.Set(loadingText);
                 messageToSend.message = loadingText;
+                lastSentLoadingString = loadingText;
                 WebInterface.ScenesLoadingFeedback(messageToSend);
             }
         }
