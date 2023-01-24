@@ -34,7 +34,8 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly List<string> loadedWearables = new ();
     private readonly ISocialAnalytics socialAnalytics;
 
-    private CancellationTokenSource friendOperationsCancellationTokenSource = new ();
+    private CancellationTokenSource friendOperationsCancellationToken = new ();
+    private CancellationTokenSource setUserProfileCancellationToken = new ();
     private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private double passportOpenStartTime;
 
@@ -83,9 +84,9 @@ public class PlayerInfoCardHUDController : IHUD
 
     public void CloseCard()
     {
-        friendOperationsCancellationTokenSource.Cancel();
-        friendOperationsCancellationTokenSource.Dispose();
-        friendOperationsCancellationTokenSource = new CancellationTokenSource();
+        friendOperationsCancellationToken.Cancel();
+        friendOperationsCancellationToken.Dispose();
+        friendOperationsCancellationToken = new CancellationTokenSource();
 
         currentPlayerId.Set(null);
     }
@@ -118,12 +119,12 @@ public class PlayerInfoCardHUDController : IHUD
         {
             try
             {
-                friendOperationsCancellationTokenSource.Cancel();
-                friendOperationsCancellationTokenSource.Dispose();
-                friendOperationsCancellationTokenSource = new CancellationTokenSource();
+                friendOperationsCancellationToken.Cancel();
+                friendOperationsCancellationToken.Dispose();
+                friendOperationsCancellationToken = new CancellationTokenSource();
 
                 FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId,
-                    friendOperationsCancellationTokenSource.Token);
+                    friendOperationsCancellationToken.Token);
 
                 socialAnalytics.SendFriendRequestCancelled(request.From, request.To, PlayerActionSource.Passport.ToString());
             }
@@ -151,14 +152,14 @@ public class PlayerInfoCardHUDController : IHUD
         {
             try
             {
-                friendOperationsCancellationTokenSource.Cancel();
-                friendOperationsCancellationTokenSource.Dispose();
-                friendOperationsCancellationTokenSource = new CancellationTokenSource();
+                friendOperationsCancellationToken.Cancel();
+                friendOperationsCancellationToken.Dispose();
+                friendOperationsCancellationToken = new CancellationTokenSource();
 
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationTokenSource.Token);
+                                                      friendOperationsCancellationToken.Token);
 
                 socialAnalytics.SendFriendRequestApproved(request.From, request.To, PlayerActionSource.Passport.ToString(),
                     request.HasBodyMessage);
@@ -190,14 +191,14 @@ public class PlayerInfoCardHUDController : IHUD
         {
             try
             {
-                friendOperationsCancellationTokenSource.Cancel();
-                friendOperationsCancellationTokenSource.Dispose();
-                friendOperationsCancellationTokenSource = new CancellationTokenSource();
+                friendOperationsCancellationToken.Cancel();
+                friendOperationsCancellationToken.Dispose();
+                friendOperationsCancellationToken = new CancellationTokenSource();
 
                 FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
                 request = await friendsController.RejectFriendshipAsync(request.FriendRequestId,
-                                                      friendOperationsCancellationTokenSource.Token);
+                                                      friendOperationsCancellationToken.Token);
 
                 socialAnalytics.SendFriendRequestRejected(request.From, request.To,
                     PlayerActionSource.Passport.ToString(), request.HasBodyMessage);
@@ -247,9 +248,13 @@ public class PlayerInfoCardHUDController : IHUD
         {
             currentUserProfile.OnUpdate += SetUserProfile;
 
+            setUserProfileCancellationToken.Cancel();
+            setUserProfileCancellationToken.Dispose();
+            setUserProfileCancellationToken = new CancellationTokenSource();
+
             TaskUtils.Run(async () =>
                       {
-                          await AsyncSetUserProfile(currentUserProfile);
+                          await AsyncSetUserProfile(currentUserProfile, setUserProfileCancellationToken.Token);
                           CommonScriptableObjects.playerInfoCardVisibleState.Set(true);
                           view.SetCardActive(true);
                           socialAnalytics.SendPassportOpen();
@@ -264,20 +269,25 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
+        setUserProfileCancellationToken.Cancel();
+        setUserProfileCancellationToken.Dispose();
+        setUserProfileCancellationToken = new CancellationTokenSource();
+
+        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile, setUserProfileCancellationToken.Token)).Forget();
     }
 
-    private async UniTask AsyncSetUserProfile(UserProfile userProfile)
+    private async UniTask AsyncSetUserProfile(UserProfile userProfile, CancellationToken cancellationToken = default)
     {
+        // TODO: pass cancellation tokens to profanity filtering
         string filterName = await FilterName(userProfile);
         string filterDescription = await FilterDescription(userProfile);
-        await UniTask.SwitchToMainThread();
+        await UniTask.SwitchToMainThread(cancellationToken);
 
         view.SetName(filterName);
         view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
-        LoadAndShowWearables(userProfile, CancellationToken.None /*TODO add CancellationToken to the whole function */).Forget();
+        LoadAndShowWearables(userProfile, cancellationToken).Forget();
         UpdateFriendshipInteraction();
 
         if (viewingUserProfile != null)
@@ -327,8 +337,10 @@ public class PlayerInfoCardHUDController : IHUD
 
     public void Dispose()
     {
-        friendOperationsCancellationTokenSource.Cancel();
-        friendOperationsCancellationTokenSource.Dispose();
+        friendOperationsCancellationToken.Cancel();
+        friendOperationsCancellationToken.Dispose();
+        setUserProfileCancellationToken.Cancel();
+        setUserProfileCancellationToken.Dispose();
 
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
@@ -410,6 +422,7 @@ public class PlayerInfoCardHUDController : IHUD
         return ownUserProfile != null && ownUserProfile.IsBlocked(userId);
     }
 
+    // TODO: support cancellation tokens on profanity filtering
     private async UniTask<string> FilterName(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
@@ -417,6 +430,7 @@ public class PlayerInfoCardHUDController : IHUD
             : userProfile.userName;
     }
 
+    // TODO: support cancellation tokens on profanity filtering
     private async UniTask<string> FilterDescription(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
