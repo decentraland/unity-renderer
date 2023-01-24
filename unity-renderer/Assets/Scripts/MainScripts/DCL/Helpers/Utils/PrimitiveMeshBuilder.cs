@@ -231,10 +231,10 @@ namespace DCL.Helpers
             uvs[2] = new Vector2(1f, 1f);
             uvs[3] = new Vector2(1f, 0f);
 
-            uvs[4] = new Vector2(0f, 0f);
-            uvs[5] = new Vector2(0f, 1f);
-            uvs[6] = new Vector2(1f, 1f);
-            uvs[7] = new Vector2(1f, 0f);
+            uvs[4] = new Vector2(1f, 0f);
+            uvs[5] = new Vector2(1f, 1f);
+            uvs[6] = new Vector2(0f, 1f);
+            uvs[7] = new Vector2(0f, 0f);
 
             int[] tris = new int[4 * 3];
             tris[0] = 0;
