@@ -127,7 +127,6 @@ namespace DCL
             {
                 PerformanceAnalytics.ABTracker.TrackFailed();
                 loadingException ??= new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}");
-                Debug.LogException(loadingException);
                 OnFail?.Invoke(loadingException);
             }
         }
