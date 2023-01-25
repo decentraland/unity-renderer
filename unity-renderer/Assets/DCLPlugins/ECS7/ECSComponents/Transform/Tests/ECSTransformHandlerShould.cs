@@ -28,7 +28,10 @@ namespace Tests
 
             worldState = Substitute.For<IWorldState>();
             playerTeleportPosition = Substitute.For<IBaseVariable<Vector3>>();
-            handler = new ECSTransformHandler(worldState, playerTeleportPosition, Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
+
+            var sbcInternalComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
+            ECSTransformParentingSystem.internalSceneBoundsCheckComponent = sbcInternalComponent;
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition, sbcInternalComponent);
         }
 
         [TearDown]
