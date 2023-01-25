@@ -88,7 +88,7 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
       throw new Error(`Error triggering pipeline. status: ${r.status}`)
     }
   } catch (e) {
-    throw new Error(`Error triggering pipeline. Unhandled error.`)
+    throw new Error(`Error triggering pipeline. ${JSON.stringify(e)}`)
   }
 }
 
