@@ -30,6 +30,7 @@ namespace DCLServices.WearablesCatalogService
         public void Dispose()
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            wearablesCatalogServiceInUse?.Dispose();
         }
 
         public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
@@ -70,6 +71,8 @@ namespace DCLServices.WearablesCatalogService
                 wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
                 webInterfaceWearablesCatalogService?.Dispose();
             }
+
+            wearablesCatalogServiceInUse.Initialize();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace DCLServices.WearablesCatalogService
 
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?wearableId={wearableId}/";
-        private const string WEARABLES_BY_OWNER_END_POINT = "collections/wearables-by-owner/{userId}?includeDefinitions=true/";
+        private const string WEARABLES_BY_OWNER_END_POINT = "nfts/wearables/{userId}/";
         private const string WEARABLES_BY_COLLECTION_END_POINT = "collections/wearables?collectionId={collectionId}/";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
@@ -21,9 +21,9 @@ namespace DCLServices.WearablesCatalogService
 
         private Service<ILambdasService> lambdasService;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByIdPagePointer = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByCollectionPointer = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> getWearablesByOwnerPointer = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByIdPagePointers = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByCollectionPagePointers = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByOwnerPagePointers = new ();
         private CancellationTokenSource checkForUnusedWearablesCts;
 
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
@@ -42,6 +42,7 @@ namespace DCLServices.WearablesCatalogService
             checkForUnusedWearablesCts?.Cancel();
             checkForUnusedWearablesCts?.Dispose();
             checkForUnusedWearablesCts = null;
+            Clear();
         }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
@@ -52,14 +53,14 @@ namespace DCLServices.WearablesCatalogService
                 return wearable;
             }
 
-            if (!getWearablesByIdPagePointer.ContainsKey(wearableId))
+            if (!wearablesByIdPagePointers.ContainsKey(wearableId))
             {
-                getWearablesByIdPagePointer[wearableId] = new (
+                wearablesByIdPagePointers[wearableId] = new (
                     WEARABLES_BY_ID_END_POINT.Replace("{wearableId}", wearableId),
                     1, ct, this);
             }
 
-            var pageResponse = await getWearablesByIdPagePointer[wearableId].GetPageAsync(1, ct);
+            var pageResponse = await wearablesByIdPagePointers[wearableId].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.Count > 0 ? pageResponse.response.wearables[0] : null;
@@ -67,14 +68,14 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
-            if (!getWearablesByOwnerPointer.ContainsKey(userId))
+            if (!wearablesByOwnerPagePointers.ContainsKey(userId))
             {
-                getWearablesByOwnerPointer[userId] = new (
+                wearablesByOwnerPagePointers[userId] = new (
                     WEARABLES_BY_OWNER_END_POINT.Replace("{userId}", userId),
                     pageSize, ct, this);
             }
 
-            var pageResponse = await getWearablesByOwnerPointer[userId].GetPageAsync(pageNumber, ct);
+            var pageResponse = await wearablesByOwnerPagePointers[userId].GetPageAsync(pageNumber, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.ToArray();
@@ -82,14 +83,14 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            if (!getWearablesByCollectionPointer.ContainsKey(BASE_WEARABLES_COLLECTION_ID))
+            if (!wearablesByCollectionPagePointers.ContainsKey(BASE_WEARABLES_COLLECTION_ID))
             {
-                getWearablesByCollectionPointer[BASE_WEARABLES_COLLECTION_ID] = new (
+                wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID] = new (
                     WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
                     1, ct, this);
             }
 
-            var pageResponse = await getWearablesByCollectionPointer[BASE_WEARABLES_COLLECTION_ID].GetPageAsync(1, ct);
+            var pageResponse = await wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.ToArray();
