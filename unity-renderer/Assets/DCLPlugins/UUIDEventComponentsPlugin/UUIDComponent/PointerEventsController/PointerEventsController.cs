@@ -11,6 +11,7 @@ using System.Linq;
 using DCL.Controllers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using MainScripts.DCL.Helpers.UIHelpers;
 using Ray = UnityEngine.Ray;
 
 namespace DCL
@@ -40,12 +41,14 @@ namespace DCL
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
         private DataStore_HUDs dataStoreHuds = DataStore.i.HUDs;
         private DataStore_ExploreV2 dataStoreExploreV2 = DataStore.i.exploreV2;
+        private StandaloneInputModuleDCL eventSystemInputModule;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
             InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
         {
             this.inputControllerLegacy = inputControllerLegacy;
             this.mouseCatcher = mouseCatcher;
+            eventSystemInputModule = (StandaloneInputModuleDCL) EventSystem.current.currentInputModule;
             pointerHoverController = new PointerHoverController(inputControllerLegacy, hoverCanvas);
 
             pointerHoverController.OnPointerHoverStarts += SetHoverCursor;
@@ -249,15 +252,25 @@ namespace DCL
                 if (!renderingEnabled)
                     return;
 
-                if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
+                if (Utils.LockedThisFrame())
                 {
-                    //New interaction model
+                    // New interaction model
+                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhenLockedThisFrame())
+                    {
+                        UnhoverLastHoveredObject();
+                        return;
+                    }
+                }
+                else if(!Utils.IsCursorLocked)
+                {
+                    // New interaction model
                     if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
                     {
                         UnhoverLastHoveredObject();
                         return;
                     }
                 }
+
             }
 
             if (charCamera == null)
@@ -565,7 +578,7 @@ namespace DCL
         private static void SetNormalCursor() =>
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
 
-        private bool CanRaycastWhileUnlocked()
+        private bool CanRaycastWhenLockedThisFrame()
         {
             dclHUDsRaycastResults.Clear();
             EventSystem.current.RaycastAll(uiGraphicRaycastPointerEventData, dclHUDsRaycastResults);
@@ -574,8 +587,12 @@ namespace DCL
                    {
                        0 => true,
                        1 => mouseCatcher.IsEqualsToRaycastTarget(dclHUDsRaycastResults[0].gameObject),
-                       _ => false // at least one of more than 1 raycasts will not hit mouseCatcher
+                       _ => false,
                    };
         }
+
+        private bool CanRaycastWhileUnlocked() =>
+            mouseCatcher.IsEqualsToRaycastTarget(
+                eventSystemInputModule.GetPointerData().pointerCurrentRaycast.gameObject);
     }
 }
