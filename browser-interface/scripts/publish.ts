@@ -2,8 +2,7 @@ import { exec } from "child_process"
 import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
-import { fetch } from "undici"
-import FormData from "form-data"
+import { fetch, FormData } from "undici"
 
 // Temporal!
 process.env.CIRCLE_BRANCH = "dev"
