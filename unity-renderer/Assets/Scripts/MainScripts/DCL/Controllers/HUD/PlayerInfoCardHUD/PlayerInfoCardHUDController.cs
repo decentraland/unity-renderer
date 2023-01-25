@@ -388,21 +388,24 @@ public class PlayerInfoCardHUDController : IHUD
     {
         try
         {
-            var wearables = await wearableCatalogBridge.RequestOwnedWearables(userProfile.userId).WithCancellation(cancellationToken);
-            var wearableIds = wearables.Select(x => x.id).ToArray();
+            var request = wearableCatalogBridge.RequestOwnedWearables(userProfile.userId);
+            await request.WithCancellation(cancellationToken);
+
+            var wearableIds = request.value.Select(x => x.id).ToArray();
             userProfile.SetInventory(wearableIds);
             loadedWearables.AddRange(wearableIds);
 
-            var containedWearables = wearables
+            var containedWearables = request.value
 
                 // this makes any sense?
                .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
 
             view.SetWearables(containedWearables);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Debug.LogException(e);
+            // Exception was ignored in the previous version
+            // Debug.LogException(e);
         }
     }
 

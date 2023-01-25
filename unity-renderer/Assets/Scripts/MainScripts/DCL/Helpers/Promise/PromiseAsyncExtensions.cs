@@ -6,11 +6,12 @@ namespace DCL.Helpers
 {
     public static class PromiseAsyncExtensions
     {
-        public static UniTask<T>.Awaiter GetAwaiter<T>(this Promise<T> promise) =>
+        // TODO Wearables are not loaded, fix needed
+        /*public static UniTask<T>.Awaiter GetAwaiter<T>(this Promise<T> promise) =>
             promise.ToUniTask().GetAwaiter();
 
         public static UniTask<T> WithCancellation<T>(this Promise<T> promise, CancellationToken cancellationToken) =>
-            promise.ToUniTask(cancellationToken);
+            promise.ToUniTask(cancellationToken);*/
 
         public static UniTask<T> ToUniTask<T>(this Promise<T> promise, CancellationToken cancellationToken = default)
         {
