@@ -20,6 +20,7 @@ namespace DCLServices.Lambdas
         /// <param name="postData">Post Data that will be converted to JSON</param>
         /// <inheritdoc cref="Get{TResponse}"/>
         UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
+            string endPointTemplate,
             string endPoint,
             TBody postData,
             int timeout = DEFAULT_TIMEOUT,
@@ -30,8 +31,9 @@ namespace DCLServices.Lambdas
         /// <summary>
         /// Make a Get request to Lambdas2.
         /// </summary>
+        /// <param name="endPointTemplate">Endpoint without slashes (e.g. "nfts/emotes/")</param>
         /// <param name="endPoint">Endpoint without slashes but with path variables embedded
-        /// (e.g. "nfts/emotes/0xddf1eec586d8f8f0eb8c5a3bf51fb99379a55684")</param>
+        ///     (e.g. "nfts/emotes/0xddf1eec586d8f8f0eb8c5a3bf51fb99379a55684")</param>
         /// <param name="timeout">Timeout for each attempt</param>
         /// <param name="attemptsNumber">Attempts number</param>
         /// <param name="cancellationToken">Cancellation token attacked to the web request</param>
@@ -44,6 +46,7 @@ namespace DCLServices.Lambdas
         /// <exception cref="OperationCanceledException"></exception>
         /// </returns>
         UniTask<(TResponse response, bool success)> Get<TResponse>(
+            string endPointTemplate,
             string endPoint,
             int timeout = DEFAULT_TIMEOUT,
             int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
