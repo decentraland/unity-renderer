@@ -177,7 +177,7 @@ namespace DCL.CRDT
             return false;
         }
 
-        public CrdtState GetState()
+        internal CrdtState GetState()
         {
             return state;
         }
