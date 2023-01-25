@@ -12,7 +12,7 @@ public class ShowHideAnimator : MonoBehaviour
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
 
-    public bool isVisible;
+    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
 
     [SerializeField] private CanvasGroup canvasGroup;
 
@@ -69,8 +69,6 @@ public class ShowHideAnimator : MonoBehaviour
 
     private void SetVisibility(bool visible, TweenCallback onComplete, bool instant = false)
     {
-        isVisible = visible;
-
         if (canvasGroup == null)
         {
             Debug.LogError($"Show Hide Animator in GameObject: {gameObject.name} has no canvasGroup assigned", gameObject);
@@ -78,17 +76,17 @@ public class ShowHideAnimator : MonoBehaviour
         }
 
         if (raycaster != null)
-            raycaster.enabled = isVisible;
+            raycaster.enabled = visible;
 
         // When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
         float duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
 
-        canvasGroup.interactable = isVisible;
-        canvasGroup.blocksRaycasts = isVisible;
+        canvasGroup.interactable = visible;
+        canvasGroup.blocksRaycasts = visible;
 
         canvasGroup.DOKill();
 
-        canvasGroup.DOFade(isVisible ? 1 : 0, duration)
+        canvasGroup.DOFade(visible ? 1 : 0, duration)
                    .SetEase(Ease.InOutQuad)
                    .OnComplete(onComplete)
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
