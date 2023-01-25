@@ -40,7 +40,7 @@ namespace DCL
         private IRaycastPointerClickHandler clickHandler;
 
         private StandaloneInputModuleDCL eventSystemInputModule;
-        private StandaloneInputModuleDCL eventSystemInputModuleLazy => eventSystemInputModule ??= (StandaloneInputModuleDCL)EventSystem.current.currentInputModule;
+        private StandaloneInputModuleDCL eventSystemInputModuleLazy => eventSystemInputModule ??= (StandaloneInputModuleDCL)EventSystem.current?.currentInputModule;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy, InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
         {
