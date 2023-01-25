@@ -570,11 +570,12 @@ namespace DCL
             dclHUDsRaycastResults.Clear();
             EventSystem.current.RaycastAll(uiGraphicRaycastPointerEventData, dclHUDsRaycastResults);
 
-            foreach (var raycastResult in dclHUDsRaycastResults)
-                if (!mouseCatcher.IsEqualsToRaycastTarget(raycastResult.gameObject))
-                    return false;
-
-            return true;
+            return dclHUDsRaycastResults.Count switch
+                   {
+                       0 => true,
+                       1 => mouseCatcher.IsEqualsToRaycastTarget(dclHUDsRaycastResults[0].gameObject),
+                       _ => false // at least one of more than 1 raycasts will not hit mouseCatcher
+                   };
         }
     }
 }
