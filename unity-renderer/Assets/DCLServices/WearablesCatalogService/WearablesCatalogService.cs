@@ -33,9 +33,6 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
-        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
-            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
-
         public UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, ct);
 
@@ -44,6 +41,12 @@ namespace DCLServices.WearablesCatalogService
 
         public UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
+
+        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
+
+        public UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
 
         public void AddWearablesToCatalog(WearableItem[] wearableItems) =>
             wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);
