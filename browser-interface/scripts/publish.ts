@@ -91,6 +91,7 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
       throw new Error(`Error triggering pipeline. status: ${r.status}`)
     }
   } catch (e) {
+    console.dir(e)
     let message = 'Unknown Error'
     if (e instanceof Error) message = e.message
     throw new Error(`Error triggering pipeline. ${message} ${e} ${String(e)}`)
