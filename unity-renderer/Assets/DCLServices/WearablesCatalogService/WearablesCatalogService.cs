@@ -42,6 +42,9 @@ namespace DCLServices.WearablesCatalogService
         public UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
 
+        public UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
+
         public void AddWearablesToCatalog(WearableItem[] wearableItems) =>
             wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);
 

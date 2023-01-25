@@ -15,6 +15,7 @@ namespace DCLServices.WearablesCatalogService
         private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?wearableId={wearableId}/";
         private const string WEARABLES_BY_OWNER_END_POINT = "nfts/wearables/{userId}/";
         private const string WEARABLES_BY_COLLECTION_END_POINT = "collections/wearables?collectionId={collectionId}/";
+        private const string WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT = "nfts/thirpartywearables/{userId}?collectionId={collectionId}/";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
         private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
@@ -24,6 +25,7 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByIdPagePointers = new ();
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByCollectionPagePointers = new ();
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByOwnerPagePointers = new ();
+        private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableResponse>> wearablesByThirdPartyCollectionPagePointers = new ();
         private CancellationTokenSource checkForUnusedWearablesCts;
 
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
@@ -33,6 +35,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Initialize()
         {
+            // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
             checkForUnusedWearablesCts = new ();
             CheckForUnusedWearablesAsync(checkForUnusedWearablesCts.Token).Forget();
         }
@@ -91,6 +94,23 @@ namespace DCLServices.WearablesCatalogService
             }
 
             var pageResponse = await wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID].GetPageAsync(1, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
+
+            return pageResponse.response.wearables.ToArray();
+        }
+
+        public async UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
+        {
+            if (!wearablesByThirdPartyCollectionPagePointers.ContainsKey((userId, collectionId)))
+            {
+                wearablesByThirdPartyCollectionPagePointers[(userId, collectionId)] = new (
+                    WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
+                       .Replace($"{userId}", userId)
+                       .Replace("{collectionId}", collectionId),
+                    1, ct, this);
+            }
+
+            var pageResponse = await wearablesByThirdPartyCollectionPagePointers[(userId, collectionId)].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.ToArray();
@@ -163,22 +183,22 @@ namespace DCLServices.WearablesCatalogService
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(TIME_TO_CHECK_FOR_UNUSED_WEARABLES), cancellationToken: ct);
 
-                if (wearablesInUseCounters.Count > 0)
-                {
-                    List<string> wearablesToDestroy = new ();
-                    foreach (var wearableInUse in wearablesInUseCounters)
-                    {
-                        if (wearableInUse.Value <= 0)
-                        {
-                            wearablesToDestroy.Add(wearableInUse.Key);
-                        }
-                    }
+                if (wearablesInUseCounters.Count <= 0)
+                    continue;
 
-                    foreach (string wearableToDestroy in wearablesToDestroy)
+                List<string> wearablesToDestroy = new ();
+                foreach (var wearableInUse in wearablesInUseCounters)
+                {
+                    if (wearableInUse.Value <= 0)
                     {
-                        WearablesCatalog.Remove(wearableToDestroy);
-                        wearablesInUseCounters.Remove(wearableToDestroy);
+                        wearablesToDestroy.Add(wearableInUse.Key);
                     }
+                }
+
+                foreach (string wearableToDestroy in wearablesToDestroy)
+                {
+                    WearablesCatalog.Remove(wearableToDestroy);
+                    wearablesInUseCounters.Remove(wearableToDestroy);
                 }
             }
         }
