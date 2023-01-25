@@ -43,7 +43,7 @@ namespace DCLServices.WearablesCatalogService
             checkForUnusedWearablesCts = null;
         }
 
-        public async UniTask<WearableItem> RequestWearable(string wearableId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem> RequestWearableAsync(string wearableId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -64,7 +64,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.Count > 0 ? pageResponse.response.wearables[0] : null;
         }
 
-        public async UniTask<WearableItem[]> RequestWearablesByOwner(string userId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem[]> RequestWearablesByOwnerAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (!getWearablesByOwnerPointer.ContainsKey(userId))
             {
@@ -79,7 +79,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
-        public async UniTask<WearableItem[]> RequestWearablesByCollection(string collectionId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem[]> RequestWearablesByCollectionAsync(string collectionId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (!getWearablesByCollectionPointer.ContainsKey(collectionId))
             {
