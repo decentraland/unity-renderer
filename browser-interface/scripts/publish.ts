@@ -68,7 +68,7 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
 
   const body = new FormData()
   body.append("token", GITLAB_STATIC_PIPELINE_TOKEN)
-  body.append("ref", "master")
+  body.append("ref", "main")
   body.append("variables[PACKAGE_NAME]", packageName)
   body.append("variables[PACKAGE_VERSION]", packageVersion)
   body.append("variables[PACKAGE_TAG]", npmTag)
@@ -88,7 +88,9 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
       throw new Error(`Error triggering pipeline. status: ${r.status}`)
     }
   } catch (e) {
-    throw new Error(`Error triggering pipeline. ${JSON.stringify(e)}`)
+    let message = 'Unknown Error'
+    if (e instanceof Error) message = e.message
+    throw new Error(`Error triggering pipeline. ${message} ${e} ${String(e)}`)
   }
 }
 
