@@ -163,12 +163,14 @@ namespace DCL
                 {
                     if (mouseIsDown)
                         down.OnPointerDown();
+
                     break;
                 }
                 case IRaycastPointerUpHandler up:
                 {
                     if (mouseIsUp)
                         up.OnPointerUp();
+
                     break;
                 }
                 case IRaycastPointerClickHandler click:
@@ -534,8 +536,13 @@ namespace DCL
         private static void SetNormalCursor() =>
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
 
-        private bool CanRaycastWhileUnlocked() =>
-            mouseCatcher.IsEqualsToRaycastTarget(
+        private bool CanRaycastWhileUnlocked()
+        {
+            if (eventSystemInputModuleLazy == null)
+                return true;
+
+            return mouseCatcher.IsEqualsToRaycastTarget(
                 eventSystemInputModuleLazy.GetPointerData().pointerCurrentRaycast.gameObject);
+        }
     }
 }
