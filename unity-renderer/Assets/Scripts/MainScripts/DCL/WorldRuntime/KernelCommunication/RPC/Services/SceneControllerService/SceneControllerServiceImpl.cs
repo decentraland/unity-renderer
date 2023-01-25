@@ -188,9 +188,9 @@ namespace RPC.Services
                     sendCrdtMemoryStream.SetLength(0);
                     crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
 
-                    foreach (var msg in sceneCrdtOutgoing)
+                    for (int i = 0; i < sceneCrdtOutgoing.Count; i++)
                     {
-                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, msg.value);
+                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtOutgoing.Pairs[i].value);
                     }
 
 
