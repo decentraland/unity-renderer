@@ -8,6 +8,7 @@ export const OFFLINE_REALM = 'offline'
 
 export type RealmState = {
   realmAdapter: IRealmAdapter | undefined
+  previousAdapter: IRealmAdapter | undefined
 }
 
 export type RootRealmState = {

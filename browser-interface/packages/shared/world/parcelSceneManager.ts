@@ -7,7 +7,7 @@ import { ParcelSceneLoadingState } from './types'
 import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
 import { Transport } from '@dcl/rpc'
 import { defaultParcelPermissions } from 'shared/apis/host/Permissions'
-import { getClientPort } from 'shared/renderer/selectors'
+import { getClient } from 'shared/renderer/selectors'
 
 declare const globalThis: any
 
@@ -78,15 +78,15 @@ export function getLoadedParcelSceneByParcel(parcelPosition: string) {
 /**
  * Creates a worker for the ParcelSceneAPI
  */
-export function loadParcelSceneWorker(loadableScene: LoadableScene, transport?: Transport) {
+export async function loadParcelSceneWorker(loadableScene: LoadableScene, transport?: Transport) {
   const sceneId = loadableScene.id
   let parcelSceneWorker = loadedSceneWorkers.get(sceneId)
 
   if (!parcelSceneWorker) {
-    const rendererPort = getClientPort(store.getState())
-    if (!rendererPort) throw new Error('Cannot create a scene because there is no clientPort')
+    const rpcClient = getClient(store.getState())
+    if (!rpcClient) throw new Error('Cannot create a scene because there is no rpcClient')
 
-    parcelSceneWorker = new SceneWorker(loadableScene, rendererPort, transport)
+    parcelSceneWorker = await SceneWorker.createSceneWorker(loadableScene, rpcClient, transport)
     setNewParcelScene(parcelSceneWorker)
     queueMicrotask(() => store.dispatch(scenesChanged()))
   }
@@ -175,12 +175,14 @@ async function loadParcelSceneByIdIfMissing(sceneId: string, entity: LoadableSce
     const denyListed = isParcelDenyListed(entity.entity.metadata.scene.parcels)
     const usedEntity = denyListed ? generateBannedLoadableScene(entity) : entity
 
-    const worker = loadParcelSceneWorker(usedEntity)
+    const worker = await loadParcelSceneWorker({
+      ...usedEntity,
+      // and enablle FPS throttling, it will lower the frame-rate based on the distance
+      useFPSThrottling: true
+    })
 
     // add default permissions for Parcel based scenes
     defaultParcelPermissions.forEach(($) => worker.rpcContext.permissionGranted.add($))
-    // and enablle FPS throttling, it will lower the frame-rate based on the distance
-    worker.rpcContext.sceneData.useFPSThrottling = true
 
     setNewParcelScene(worker)
   }

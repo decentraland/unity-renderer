@@ -29,6 +29,7 @@ import { WorldConfig } from 'shared/meta/types'
 import {
   getFeatureFlagEnabled,
   getFeatureFlags,
+  getFeatureFlagVariantName,
   getFeatureFlagVariantValue,
   getWorldConfig
 } from 'shared/meta/selectors'
@@ -149,7 +150,7 @@ globalThis.DecentralandKernel = {
         store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
       } else {
         // 3. fallback to 0,0
-        const { x, y } = { x: -116, y: 105 } // '0,0'
+        const { x, y } = { x: 0, y: 0 } // '0,0'
         store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
       }
 
@@ -269,28 +270,29 @@ async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
     return
   }
 
-  const NEEDS_TUTORIAL =
-    RESET_TUTORIAL ||
-    // those who didn't do the tutorial yet
-    (!profile.tutorialStep &&
-      // skip the tutorial for people coming from a link with a position
-      !HAS_INITIAL_POSITION_MARK)
+  const NEEDS_TUTORIAL = RESET_TUTORIAL || !profile.tutorialStep
 
   // only enable the old tutorial if the feature flag new_tutorial is off
   // this code should be removed once the "hardcoded" tutorial is removed
   // from the renderer
   if (NEEDS_TUTORIAL) {
-    if (!getFeatureFlagEnabled(store.getState(), 'new_tutorial')) {
+    const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
+    const IS_NEW_TUTORIAL_DISABLED =
+      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined'
+    if (IS_NEW_TUTORIAL_DISABLED) {
       const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
       const tutorialConfig = {
-        fromDeepLink: HAS_INITIAL_POSITION_MARK,
+        //TODO: hardcoding this value to true since currently default scene is the xmas scnee.
+        // If this is no hardcoded, the tutorial will never start on a default scene that is not genesis plaza
+        // We should plan a way which allows different default scenes
+        fromDeepLink: true,
         enableNewTutorialCamera: enableNewTutorialCamera
       }
 
       i.ConfigureTutorial(profile.tutorialStep, tutorialConfig)
     } else {
       try {
-        const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial')
+        const realm: string | undefined = getFeatureFlagVariantValue(store.getState(), 'new_tutorial_variant')
         if (realm) {
           await changeRealm(realm)
           trackEvent('onboarding_started', { onboardingRealm: realm })

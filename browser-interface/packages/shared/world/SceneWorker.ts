@@ -8,15 +8,17 @@ import {
   WSS_ENABLED
 } from 'config'
 import { PositionReport } from './positionThings'
-import { createRpcServer, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
+import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
 import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics'
-import { getSceneNameFromJsonData, normalizeContentMappings } from 'shared/selectors'
-import { ContentMapping, Scene } from '@dcl/schemas'
+import { getSceneNameFromJsonData } from 'shared/selectors'
+import { Scene } from '@dcl/schemas'
+import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
+import * as codegen from '@dcl/rpc/dist/codegen'
 import {
   signalSceneLoad,
   signalSceneStart,
@@ -31,7 +33,7 @@ import {
   SCENE_FAIL,
   SCENE_START
 } from 'shared/loading/actions'
-import { EntityAction, LoadableParcelScene, LoadableScene } from 'shared/types'
+import { EntityAction, LoadableScene } from 'shared/types'
 import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'shared/logger'
 import { gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
@@ -113,19 +115,27 @@ export class SceneWorker {
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
   private readonly startLoadingTime = performance.now()
+  // this is the transport for the worker
   public readonly transport: Transport
 
   metadata: Scene
   logger: ILogger
 
-  constructor(
-    public readonly loadableScene: Readonly<LoadableScene>,
-    rendererPort: RpcClientPort,
-    _transport?: Transport
-  ) {
+  static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient, _transport?: Transport) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter
+    const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
+    const worker = new SceneWorker(loadableScene, sceneNumber, scenePort, _transport)
+    await worker.attachTransport()
+    return worker
+  }
 
+  protected constructor(
+    public readonly loadableScene: Readonly<LoadableScene>,
+    sceneNumber: number,
+    scenePort: RpcClientPort,
+    _transport?: Transport
+  ) {
     const skipErrors = ['Transport closed while waiting the ACK']
 
     this.metadata = loadableScene.entity.metadata
@@ -145,10 +155,12 @@ export class SceneWorker {
 
     this.transport = _transport || buildWebWorkerTransport(this.loadableScene, IS_SDK7)
 
+    const rpcSceneControllerService = codegen.loadService<any>(scenePort, RpcSceneControllerServiceDefinition)
+
     this.rpcContext = {
       sdk7: IS_SDK7,
-      __hack_sentInitialEventToUnity: false,
-      rendererPort,
+      scenePort,
+      rpcSceneControllerService,
       sceneData: {
         isPortableExperience: false,
         useFPSThrottling: false,
@@ -181,6 +193,7 @@ export class SceneWorker {
     if (loadableScene.entity.metadata.scene?.base) {
       const metadata: Scene = loadableScene.entity.metadata
       const basePosition = parseParcelPosition(metadata.scene?.base)
+
       gridToWorld(basePosition.x, basePosition.y, this.position)
     }
 
@@ -206,11 +219,6 @@ export class SceneWorker {
         }
       }
     }
-
-    // attachTransport is executed in a microtask to defer its execution stack
-    // and enable external customizations to this.rpcContext as it could be the
-    // permissions of the scene or the FPS limit
-    queueMicrotask(() => this.attachTransport())
   }
 
   dispose() {
@@ -222,20 +230,19 @@ export class SceneWorker {
       sceneEvents.emit(SCENE_UNLOAD, signalSceneUnload(this.loadableScene))
     })
 
+    void this.rpcContext.rpcSceneControllerService.unloadScene({})
+
     if ((this.ready & disposingFlags) === 0) {
       this.ready |= SceneWorkerReadyState.DISPOSING
 
       this.transport.close()
+    }
 
-      this.ready |= SceneWorkerReadyState.DISPOSED
-    }
-    try {
-      getUnityInstance().UnloadSceneV2(this.rpcContext.sceneData.sceneNumber)
-    } catch (err: any) {
-      defaultLogger.error(err)
-      getUnityInstance().UnloadScene(this.loadableScene.id)
-    }
     this.ready |= SceneWorkerReadyState.DISPOSED
+
+    queueMicrotask(() => {
+      this.rpcContext.scenePort.close()
+    })
   }
 
   // when the engine says "the scene is ready" or it did fail to load. it is of
@@ -278,25 +285,30 @@ export class SceneWorker {
     return !!(this.ready & SceneWorkerReadyState.STARTED)
   }
 
-  private attachTransport() {
-    // ensure that the scenes will load when workers are created.
-    if (this.rpcContext.sceneData.isPortableExperience) {
-      const showAsPortableExperience = this.rpcContext.sceneData.id.startsWith('urn:')
+  // attachTransport is executed in a microtask to defer its execution stack
+  // and enable external customizations to this.rpcContext as it could be the
+  // permissions of the scene or the FPS limit
+  protected async attachTransport() {
+    const isGlobalScene = this.loadableScene.isGlobalScene || this.loadableScene.isPortableExperience || false
+    const showAsPortableExperience = (isGlobalScene && this.loadableScene.isPortableExperience) || false
 
-      getUnityInstance().CreateGlobalScene({
-        id: this.rpcContext.sceneData.id,
-        sceneNumber: this.rpcContext.sceneData.sceneNumber,
-        baseUrl: this.loadableScene.baseUrl,
-        contents: this.loadableScene.entity.content,
-        // ---------------------------------------------------------------------
-        name: getSceneNameFromJsonData(this.loadableScene.entity.metadata),
-        icon: this.metadata.menuBarIcon || '',
-        isPortableExperience: showAsPortableExperience,
-        sdk7: this.rpcContext.sdk7
-      })
-    } else {
-      getUnityInstance().LoadParcelScenes([sceneWorkerToLoadableParcelScene(this)])
-    }
+    // first initialize the scene in the renderer
+    await this.rpcContext.rpcSceneControllerService.loadScene({
+      baseUrl: this.loadableScene.baseUrl,
+      baseUrlAssetBundles: getAssetBundlesBaseUrl(ETHEREUM_NETWORK.MAINNET) + '/',
+      entity: {
+        content: this.loadableScene.entity.content,
+        pointers: this.loadableScene.entity.pointers,
+        timestamp: this.loadableScene.entity.timestamp,
+        metadata: JSON.stringify(this.loadableScene.entity.metadata || null),
+        id: this.loadableScene.id
+      },
+      isGlobalScene,
+      isPortableExperience: showAsPortableExperience,
+      sceneNumber: this.rpcContext.sceneData.sceneNumber,
+      sceneName: getSceneNameFromJsonData(this.loadableScene.entity.metadata),
+      sdk7: this.rpcContext.sdk7
+    })
 
     // from now on, the sceneData object is read-only
     Object.freeze(this.rpcContext.sceneData)
@@ -307,7 +319,7 @@ export class SceneWorker {
 
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
 
-    const WORKER_TIMEOUT = 30_000 // thirty seconds to mars
+    const WORKER_TIMEOUT = 90_000 // ninety seconds to mars
     setTimeout(() => this.onLoadTimeout(), WORKER_TIMEOUT)
   }
 
@@ -448,27 +460,5 @@ export class SceneWorker {
         this.lastSentRotation.copyFrom(positionReport.cameraQuaternion)
       }
     }
-  }
-}
-
-/**
- * This is the format of scenes that needs to be sent to Unity to create its counterpart
- * of a SceneWorker
- */
-function sceneWorkerToLoadableParcelScene(worker: SceneWorker): LoadableParcelScene {
-  const entity = worker.loadableScene.entity
-  const mappings: ContentMapping[] = normalizeContentMappings(entity.content)
-
-  return {
-    id: worker.loadableScene.id,
-    sceneNumber: worker.rpcContext.sceneData.sceneNumber,
-    basePosition: parseParcelPosition(entity.metadata?.scene?.base || '0,0'),
-    name: getSceneNameFromJsonData(entity.metadata),
-    parcels: entity.metadata?.scene?.parcels?.map(parseParcelPosition) || [],
-    baseUrl: worker.loadableScene.baseUrl,
-    baseUrlBundles: getAssetBundlesBaseUrl(ETHEREUM_NETWORK.MAINNET) + '/',
-    contents: mappings,
-    loadableScene: worker.loadableScene,
-    sdk7: worker.rpcContext.sdk7
   }
 }

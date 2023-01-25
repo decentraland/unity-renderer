@@ -80,7 +80,11 @@ import {
   getChannels,
   getAllFriendsConversationsWithMessages,
   getOwnId,
-  getMessageBody
+  getMessageBody,
+  isToPendingRequest,
+  getNumberOfFriendRequests,
+  getCoolDownOfFriendRequests,
+  isFromPendingRequest
 } from 'shared/friends/selectors'
 import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import { SEND_PRIVATE_MESSAGE, SendPrivateMessage } from 'shared/chat/actions'
@@ -129,7 +133,10 @@ import {
   encodeFriendRequestId,
   isNewFriendRequestEnabled,
   decodeFriendRequestId,
-  validateFriendRequestId
+  validateFriendRequestId,
+  COOLDOWN_TIME_MS,
+  isBlocked,
+  getAntiSpamLimits
 } from './utils'
 import { AuthChain } from '@dcl/kernel-interface/dist/dcl-crypto'
 import { mutePlayers, unmutePlayers } from 'shared/social/actions'
@@ -157,6 +164,13 @@ import {
   FriendshipErrorCode,
   FriendRequestInfo
 } from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { getRendererModules } from 'shared/renderer/selectors'
+import { RendererModules } from 'shared/renderer/types'
+import {
+  FriendshipStatus,
+  GetFriendshipStatusRequest
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -572,7 +586,7 @@ function* refreshFriends() {
 
     const requestedFromIds = fromFriendRequests.map(
       (request): FriendRequest => ({
-        friendRequestId: encodeFriendRequestId(ownId, request.from),
+        friendRequestId: encodeFriendRequestId(ownId, request.from, true, FriendshipAction.REQUESTED_FROM),
         createdAt: request.createdAt,
         userId: getUserIdFromMatrix(request.from),
         message: request.message
@@ -580,7 +594,7 @@ function* refreshFriends() {
     )
     const requestedToIds = toFriendRequests.map(
       (request): FriendRequest => ({
-        friendRequestId: encodeFriendRequestId(ownId, request.to),
+        friendRequestId: encodeFriendRequestId(ownId, request.to, false, FriendshipAction.REQUESTED_TO),
         createdAt: request.createdAt,
         userId: getUserIdFromMatrix(request.to),
         message: request.message
@@ -618,6 +632,12 @@ function* refreshFriends() {
     const lastStatusOfFriends: Map<string, CurrentUserStatus> = yield getLastStatusOfFriends(store.getState()) ??
       new Map()
 
+    // Check if numberOfFriendRequests has values. If so, we keep them. If not, we initialize an empty map.
+    const numberOfFriendRequests: Map<string, number> = yield select(getNumberOfFriendRequests) ?? new Map()
+
+    // Check if coolDownOfFriendRequests has values. If so, we keep them. If not, we initialize an empty map.
+    const coolDownOfFriendRequests: Map<string, number> = yield select(getCoolDownOfFriendRequests) ?? new Map()
+
     yield put(
       updatePrivateMessagingState({
         client,
@@ -625,7 +645,9 @@ function* refreshFriends() {
         friends: friendIds,
         fromFriendRequests: requestedFromIds,
         toFriendRequests: requestedToIds,
-        lastStatusOfFriends
+        lastStatusOfFriends,
+        numberOfFriendRequests,
+        coolDownOfFriendRequests
       })
     )
 
@@ -712,6 +734,18 @@ export async function getFriends(request: GetFriendsPayload) {
   updateUserStatus(client, ...friendsSocialIds)
 }
 
+export function getFriendshipStatus(request: GetFriendshipStatusRequest) {
+  // The userId is expected to always come from Renderer and follow the pattern `0x1111ada11111`
+  const userId = request.userId
+  const state = store.getState()
+
+  // Check user status
+  if (isFriend(state, userId)) return FriendshipStatus.APPROVED
+  if (isToPendingRequest(state, userId)) return FriendshipStatus.REQUESTED_TO
+  if (isFromPendingRequest(state, userId)) return FriendshipStatus.REQUESTED_FROM
+  return FriendshipStatus.NONE
+}
+
 // @TODO! @deprecated
 export async function getFriendRequests(request: GetFriendRequestsPayload) {
   const friends: FriendsState = getPrivateMessaging(store.getState())
@@ -752,6 +786,14 @@ export async function getFriendRequestsProtocol(request: GetFriendRequestsPayloa
   try {
     // Get friends
     const friends: FriendsState = getPrivateMessaging(store.getState())
+
+    // Reject blocked users
+    const blockedUsers = await handleBlockedUsers(friends.fromFriendRequests)
+    blockedUsers
+      .filter((blockedUser) => blockedUser.error)
+      .forEach((blockedUser) =>
+        defaultLogger.warn(`Failed while processing friend request from blocked user ${blockedUser.userId}`)
+      )
 
     const realmAdapter = await ensureRealmAdapterPromise()
     const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
@@ -803,30 +845,26 @@ export async function getFriendRequestsProtocol(request: GetFriendRequestsPayloa
  * Map FriendRequest to FriendRequestInfo
  * @param friend a FriendRequest type we want to map to FriendRequestInfo
  * @param incoming boolean indicating whether a request is an incoming one (requestedFrom) or not (requestedTo)
- *
  */
 function getFriendRequestInfo(friend: FriendRequest, incoming: boolean) {
-  if (incoming) {
-    const ownId = store.getState().friends.client?.getUserId() ?? ''
-    const friendRequest: FriendRequestInfo = {
-      friendRequestId: friend.friendRequestId,
-      timestamp: friend.createdAt,
-      from: friend.userId,
-      to: getUserIdFromMatrix(ownId),
-      messageBody: friend.message
-    }
-    return friendRequest
-  } else {
-    const ownId = store.getState().friends.client?.getUserId() ?? ''
-    const friendRequest: FriendRequestInfo = {
-      friendRequestId: friend.friendRequestId,
-      timestamp: friend.createdAt,
-      from: getUserIdFromMatrix(ownId),
-      to: friend.userId,
-      messageBody: friend.message
-    }
-    return friendRequest
-  }
+  const ownId = store.getState().friends.client?.getUserId() ?? ''
+  const friendRequest: FriendRequestInfo = incoming
+    ? {
+        friendRequestId: friend.friendRequestId,
+        timestamp: friend.createdAt,
+        from: friend.userId,
+        to: getUserIdFromMatrix(ownId),
+        messageBody: friend.message
+      }
+    : {
+        friendRequestId: friend.friendRequestId,
+        timestamp: friend.createdAt,
+        from: getUserIdFromMatrix(ownId),
+        to: friend.userId,
+        messageBody: friend.message
+      }
+
+  return friendRequest
 }
 
 export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPayload) {
@@ -1169,12 +1207,26 @@ function* handleSendPrivateMessage(action: SendPrivateMessage) {
 }
 
 function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
-  const { action, userId, future } = payload
+  const { action, userId, future, messageBody } = payload
 
   const client: SocialAPI | undefined = yield select(getSocialClient)
 
   // Get feature flag value
   const newFriendRequestFlow = isNewFriendRequestEnabled()
+
+  // Get renderer modules
+  const rendererModules: RendererModules | undefined = yield select(getRendererModules)
+  if (!rendererModules) {
+    yield call(future.resolve, { userId, error: FriendshipErrorCode.FEC_UNKNOWN })
+    return
+  }
+
+  // Get friend request module
+  const friendRequestModule = rendererModules.friendRequest
+  if (!friendRequestModule) {
+    yield call(future.resolve, { userId, error: FriendshipErrorCode.FEC_UNKNOWN })
+    return
+  }
 
   if (!client) {
     yield call(future.resolve, { userId, error: FriendshipErrorCode.FEC_UNKNOWN })
@@ -1203,11 +1255,11 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       return
     }
 
-    const ownId = client.getUserId()
-    const friendRequestId = encodeFriendRequestId(ownId, userId)
-
     const incoming = meta.incoming
     const hasSentFriendshipRequest = state.toFriendRequests.some((request) => request.userId === userId)
+
+    const ownId = client.getUserId()
+    const friendRequestId = encodeFriendRequestId(ownId, userId, incoming, action)
 
     const friendRequestTypeSelector = hasSentFriendshipRequest ? 'toFriendRequests' : 'fromFriendRequests'
     const updateTotalFriendRequestsPayloadSelector: keyof UpdateTotalFriendRequestsPayload = hasSentFriendshipRequest
@@ -1224,6 +1276,17 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       }
       case FriendshipAction.APPROVED: {
         totalFriends += 1
+
+        // TODO!: remove FF validation once the new flow is the only one
+        if (newFriendRequestFlow && incoming) {
+          // Build message
+          const approveFriendRequest = {
+            userId: getUserIdFromMatrix(userId)
+          }
+
+          // Send message to renderer via rpc
+          yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
+        }
       }
       // The approved should not have a break since it should execute all the code as the rejected case
       // Also the rejected needs to be directly after the Approved to make sure this works
@@ -1259,6 +1322,17 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
             updateTotalFriendRequestsPayload[updateTotalFriendRequestsPayloadSelector] - 1
         }
 
+        // TODO!: remove FF validation once the new flow is the only one
+        if (newFriendRequestFlow && incoming && action === FriendshipAction.REJECTED) {
+          // Build message
+          const rejectFriendRequest = {
+            userId: getUserIdFromMatrix(userId)
+          }
+
+          // Send message to renderer via rpc
+          yield apply(friendRequestModule, friendRequestModule.rejectFriendRequest, [rejectFriendRequest])
+        }
+
         break
       }
 
@@ -1279,6 +1353,17 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
             updateTotalFriendRequestsPayload[updateTotalFriendRequestsPayloadSelector] - 1
         }
 
+        // TODO!: remove FF validation once the new flow is the only one
+        if (newFriendRequestFlow && incoming) {
+          // Build message
+          const cancelFriendRequest = {
+            userId: getUserIdFromMatrix(userId)
+          }
+
+          // Send message to renderer via rpc
+          yield apply(friendRequestModule, friendRequestModule.cancelFriendRequest, [cancelFriendRequest])
+        }
+
         break
       }
       case FriendshipAction.REQUESTED_FROM: {
@@ -1287,13 +1372,35 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
         if (!request) {
           newState = {
             ...state,
-            fromFriendRequests: [...state.fromFriendRequests, { createdAt: Date.now(), userId, friendRequestId }]
+            fromFriendRequests: [
+              ...state.fromFriendRequests,
+              { createdAt: Date.now(), userId, friendRequestId, message: messageBody }
+            ]
           }
         }
 
         updateTotalFriendRequestsPayload = {
           ...updateTotalFriendRequestsPayload,
           totalReceivedRequests: updateTotalFriendRequestsPayload.totalReceivedRequests + 1
+        }
+
+        // TODO!: remove FF validation once the new flow is the only one
+        if (newFriendRequestFlow && incoming) {
+          if (!isBlocked(userId)) {
+            // Build message
+            const receiveFriendRequest: ReceiveFriendRequestPayload = {
+              friendRequest: {
+                friendRequestId,
+                timestamp: Date.now(),
+                to: getUserIdFromMatrix(ownId),
+                from: getUserIdFromMatrix(userId),
+                messageBody
+              }
+            }
+
+            // Send messsage to renderer via rpc
+            yield apply(friendRequestModule, friendRequestModule.receiveFriendRequest, [receiveFriendRequest])
+          }
         }
 
         break
@@ -1304,7 +1411,10 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
         if (!request) {
           newState = {
             ...state,
-            toFriendRequests: [...state.toFriendRequests, { createdAt: Date.now(), userId, friendRequestId }]
+            toFriendRequests: [
+              ...state.toFriendRequests,
+              { createdAt: Date.now(), userId, friendRequestId, message: messageBody }
+            ]
           }
         }
 
@@ -1355,6 +1465,11 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
     if (!incoming) {
       // refresh self & renderer friends status if update was triggered by renderer
       yield call(refreshFriends)
+    }
+
+    // Updates the friendship status of a blocked user to rejected after processing their incoming friend request.
+    if (FriendshipAction.REQUESTED_FROM === action && isBlocked(userId) && newFriendRequestFlow && incoming) {
+      yield call(handleBlockedUser, userId, messageBody)
     }
 
     yield call(future.resolve, { userId, error: null })
@@ -2119,6 +2234,28 @@ export async function requestFriendship(request: SendFriendRequestPayload) {
       return buildFriendRequestErrorResponse(FriendshipErrorCode.FEC_NON_EXISTING_USER)
     }
 
+    // Check if the user is trying to send a friend request to themself
+    if (getUserIdFromMatrix(ownId) === userId) {
+      return buildFriendRequestErrorResponse(FriendshipErrorCode.FEC_INVALID_REQUEST)
+    }
+
+    // Check if the users are already friends or if a friend request has already been sent.
+    if (isFriend(store.getState(), userId) || isToPendingRequest(store.getState(), userId)) {
+      return buildFriendRequestErrorResponse(FriendshipErrorCode.FEC_INVALID_REQUEST)
+    }
+
+    // Check whether the user has reached the max number of sent requests to a given user
+    const maxNumberOfRequests = reachedMaxNumberOfRequests(userId)
+    if (maxNumberOfRequests) {
+      return buildFriendRequestErrorResponse(FriendshipErrorCode.FEC_TOO_MANY_REQUESTS_SENT)
+    }
+
+    // Check whether there is a remaining cooldown time to send a friend request to a given user.
+    const cooldown = hasRemainingCooldown(userId)
+    if (cooldown) {
+      return buildFriendRequestErrorResponse(FriendshipErrorCode.FEC_NOT_ENOUGH_TIME_PASSED)
+    }
+
     // Update user data
     store.dispatch(updateUserData(userId.toLowerCase(), getMatrixIdFromUser(userId)))
 
@@ -2133,13 +2270,16 @@ export async function requestFriendship(request: SendFriendRequestPayload) {
     if (!response.error) {
       const sendFriendRequest: SendFriendRequestReplyOk = {
         friendRequest: {
-          friendRequestId: encodeFriendRequestId(ownId, userId),
+          friendRequestId: encodeFriendRequestId(ownId, userId, false, FriendshipAction.REQUESTED_TO),
           timestamp: Date.now(),
           from: getUserIdFromMatrix(ownId),
           to: userId,
           messageBody: request.messageBody
         }
       }
+
+      // Update state
+      updateFriendsState(userId)
 
       // Return response
       return buildFriendRequestReply(sendFriendRequest)
@@ -2184,7 +2324,7 @@ export async function cancelFriendRequest(request: CancelFriendRequestPayload) {
     const userId = decodeFriendRequestId(request.friendRequestId, ownId)
 
     // Search in the store for the message body
-    const messageBody = getMessageBody(store.getState(), userId)
+    const messageBody = getMessageBody(store.getState(), request.friendRequestId)
 
     // Update user data
     store.dispatch(updateUserData(userId.toLowerCase(), getMatrixIdFromUser(userId)))
@@ -2235,7 +2375,7 @@ export async function rejectFriendRequest(request: RejectFriendRequestPayload) {
     const userId = decodeFriendRequestId(request.friendRequestId, ownId)
 
     // Search in the store for the message body
-    const messageBody = getMessageBody(store.getState(), userId)
+    const messageBody = getMessageBody(store.getState(), request.friendRequestId)
 
     // Update user data
     store.dispatch(updateUserData(userId.toLowerCase(), getMatrixIdFromUser(userId)))
@@ -2286,7 +2426,7 @@ export async function acceptFriendRequest(request: AcceptFriendRequestPayload) {
     const userId = decodeFriendRequestId(request.friendRequestId, ownId)
 
     // Search in the store for the message body
-    const messageBody = getMessageBody(store.getState(), userId)
+    const messageBody = getMessageBody(store.getState(), request.friendRequestId)
 
     // Update user data
     store.dispatch(updateUserData(userId.toLowerCase(), getMatrixIdFromUser(userId)))
@@ -2413,4 +2553,86 @@ function buildFriendRequestErrorResponse(error: FriendshipErrorCode) {
  */
 function buildFriendRequestReply<T>(reply: NonNullable<T>) {
   return { reply, error: undefined }
+}
+
+/**
+ * Check whether the user has reached the max number allowed of sent requests to a given user.
+ * @param userId - the user to check the number of requests for.
+ * @returns true if the user has reached the max number of sent requests, false otherwise
+ */
+function reachedMaxNumberOfRequests(userId: string) {
+  // Get number friend requests sent in the current session to the given user
+  const sentRequests = getNumberOfFriendRequests(store.getState())
+  const number = sentRequests.get(userId) ?? 0
+
+  // Get the maximum number of requests allowed
+  const maxNumber = getAntiSpamLimits(store.getState()).maxNumberRequest
+
+  // Check if the current number of requests is less than the maximum allowed
+  return number >= maxNumber
+}
+
+/**
+ * Check whether there is a remaining cooldown time to send a friend request to a given user.
+ * @param userId - the user to check the cooldown time for.
+ * @returns true if there is a remaining cooldown time and it hasn't expired yet, false otherwise
+ */
+function hasRemainingCooldown(userId: string) {
+  const currentTime = Date.now()
+
+  // Get the remaining cooldown time for the given user
+  const coolDownTimer = getCoolDownOfFriendRequests(store.getState())
+  const remainingCooldownTime = coolDownTimer.get(userId)
+
+  // If there is a remaining cooldown time and it hasn't expired yet, return false
+  return remainingCooldownTime && currentTime < remainingCooldownTime
+}
+
+/**
+ * Filters and processes (update their friendship status as rejected) friend requests from blocked users.
+ * @param fromFriendRequests - an array of from friend requests.
+ */
+function handleBlockedUsers(fromFriendRequests: FriendRequest[]) {
+  // Get the ids of users who have been blocked
+  const blockedIds = fromFriendRequests.filter((fromFriendRequest) => isBlocked(fromFriendRequest.userId))
+
+  // For each blocked user, update their friendship status as rejected
+  const promises = blockedIds.map(async (fromFriendRequest) =>
+    handleBlockedUser(fromFriendRequest.userId, fromFriendRequest.message)
+  )
+
+  // Wait for all Promises to resolve
+  return Promise.all(promises)
+}
+
+/**
+ * Processes (update their friendship status as rejected) a friend request from a blocked user.
+ * @param id - the id of the user whose friend request is being processed.
+ */
+async function handleBlockedUser(id: string, message?: string) {
+  // Update their friendship status as rejected
+  return await UpdateFriendshipAsPromise(FriendshipAction.REJECTED, id.toLowerCase(), false, message)
+}
+
+/**
+ * Updates the friends state { numberOfFriendRequests, coolDownOfFriendRequests } in the store with the given user id.
+ * @param userId - the id of the user to update the friends state for.
+ */
+function updateFriendsState(userId: string) {
+  // Get the current state from the store
+  const state = store.getState()
+
+  const { numberOfFriendRequests, coolDownOfFriendRequests } = getPrivateMessaging(state)
+
+  // Update the number of sent requests and return false
+  const number = numberOfFriendRequests.get(userId) ?? 0
+  numberOfFriendRequests.set(userId, number + 1)
+
+  // Update the cooldown timer and return false
+  const currentTime = Date.now()
+  coolDownOfFriendRequests.set(userId, currentTime + COOLDOWN_TIME_MS)
+
+  const newState = { ...state.friends, numberOfFriendRequests, coolDownOfFriendRequests }
+
+  store.dispatch(updatePrivateMessagingState(newState))
 }

@@ -5,7 +5,14 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
-import { DEBUG, ethereumConfigurations, parcelLimits, playerConfigurations, WORLD_EXPLORER } from 'config'
+import {
+  DEBUG,
+  ethereumConfigurations,
+  parcelLimits,
+  playerConfigurations,
+  WORLD_EXPLORER,
+  timeBetweenLoadingUpdatesInMillis
+} from 'config'
 import { trackEvent } from 'shared/analytics'
 import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
 import { defaultLogger } from 'shared/logger'
@@ -71,6 +78,7 @@ import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
 import { EmotesRequestFilters, WearablesRequestFilters } from 'shared/catalogs/types'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
+import { getLastUpdateTime } from 'shared/loading/selectors'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { globalObservable } from 'shared/observables'
 import { store } from 'shared/store/isolatedStore'
@@ -227,6 +235,11 @@ const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>
 
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
+
+// Returns the current time in millis
+function now() {
+  return new Date().getTime()
+}
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -907,7 +920,12 @@ export class BrowserInterface {
 
   public ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
     const { message, loadPercentage } = data
-    store.dispatch(updateStatusMessage(message, loadPercentage))
+    const currentTime = now()
+    const last = getLastUpdateTime(store.getState())
+    const elapsed = currentTime - (last || 0)
+    if (elapsed > timeBetweenLoadingUpdatesInMillis) {
+      store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
+    }
   }
 
   public FetchHotScenes() {

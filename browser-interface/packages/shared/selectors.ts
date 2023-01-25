@@ -1,24 +1,6 @@
 import { ContentMapping, Scene } from '@dcl/schemas'
 import { SceneFeatureToggle } from './types'
 
-export function normalizeContentMappings(
-  mappings: Record<string, string> | Array<ContentMapping>
-): Array<ContentMapping> {
-  const ret: Array<ContentMapping> = []
-
-  if (typeof mappings.length === 'number' || mappings instanceof Array) {
-    ret.push(...(mappings as any))
-  } else {
-    for (const key in mappings) {
-      const file = key.toLowerCase()
-
-      ret.push({ file, hash: mappings[key] })
-    }
-  }
-
-  return ret
-}
-
 export function getOwnerNameFromJsonData(jsonData?: Scene) {
   let ownerName = jsonData?.contact?.name
   if (ownerName === 'author-name') {

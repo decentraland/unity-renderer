@@ -31,6 +31,7 @@ export type FeatureFlagsName =
   | 'max_joined_channels' // the max amount of joined channels allowed per user
   | 'users_allowed_to_create_channels' // users who are allowed to create channels
   | 'new_friend_requests' // enables the new friends request flow
+  | 'friend_request_anti_spam_config' // json with anti-spam config values
   | 'avatar_lods'
   | 'asset_bundles'
   | 'explorev2'
@@ -42,9 +43,10 @@ export type FeatureFlagsName =
   | 'web_cap_fps' // caps the web client FPS
   | 'disabled-catalyst'
   | 'livekit-voicechat'
+  | 'gif-web'
   | 'ping_enabled'
   | 'use-synapse-server'
-  | 'new_tutorial'
+  | 'new_tutorial_variant'
 
 export type BannedUsers = Record<string, Ban[]>
 

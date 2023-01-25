@@ -8,11 +8,11 @@ import { RendererModules, RENDERER_INITIALIZE } from './types'
 import { trackEvent } from 'shared/analytics'
 import {
   SendProfileToRenderer,
-  addedProfileToCatalog,
   SEND_PROFILE_TO_RENDERER,
-  sendProfileToRenderer
+  sendProfileToRenderer,
+  addProfileToLastSentProfileVersionAndCatalog
 } from 'shared/profiles/actions'
-import { getProfileFromStore } from 'shared/profiles/selectors'
+import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { isCurrentUserId, getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
@@ -49,10 +49,11 @@ import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { getVoiceHandler } from 'shared/voiceChat/selectors'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
-import { RpcClientPort, Transport } from '@dcl/rpc'
+import { RpcClient, RpcClientPort, Transport } from '@dcl/rpc'
 import { createRendererRpcClient } from 'renderer-protocol/rpcClient'
 import { registerEmotesService } from 'renderer-protocol/services/emotesService'
 import { createRpcTransportService } from 'renderer-protocol/services/transportService'
+import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
 
 export function* rendererSaga() {
   yield takeEvery(SEND_PROFILE_TO_RENDERER, handleSubmitProfileToRenderer)
@@ -83,7 +84,8 @@ function* handleRegisterRpcPort() {
 
   if (createRpcTransportService(port)) {
     const modules: RendererModules = {
-      emotes: registerEmotesService(port)
+      emotes: registerEmotesService(port),
+      friendRequest: registerFriendRequestRendererService(port)
     }
 
     yield put(registerRendererModules(modules))
@@ -221,8 +223,11 @@ function* initializeRenderer(action: InitializeRenderer) {
     trackEvent('renderer_initializing_start', {})
 
     // register the RPC port
-    const rpcClientPort: RpcClientPort = yield call(createRendererRpcClient, transport)
-    yield put(registerRendererPort(rpcClientPort))
+    const rpcHandles: {
+      rpcClient: RpcClient
+      rendererInterfacePort: RpcClientPort
+    } = yield call(createRendererRpcClient, transport)
+    yield put(registerRendererPort(rpcHandles.rpcClient, rpcHandles.rendererInterfacePort))
 
     // wire the kernel to the renderer, at some point, the `initializeEngine`
     // function _MUST_ send the `signalRendererInitializedCorrectly` action
@@ -257,19 +262,18 @@ function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
 }
 
 let lastSentProfile: NewProfileForRenderer | null = null
-function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): any {
+export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): any {
   const { userId } = action.payload
 
   yield call(waitForRendererInstance)
 
   const profile: ProfileUserInfo | null = yield select(getProfileFromStore, userId)
   if (!profile || !profile.data) {
-    debugger
     return
   }
 
   const bff: IRealmAdapter = yield call(waitForRealmAdapter)
-  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
+  const fetchContentServerWithPrefix = yield call(getFetchContentUrlPrefixFromRealmAdapter, bff)
 
   if (yield select(isCurrentUserId, userId)) {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
@@ -290,11 +294,19 @@ function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): any {
       getUnityInstance().LoadProfile(forRenderer)
     }
   } else {
-    const forRenderer = profileToRendererFormat(profile.data, {
-      baseUrl: fetchContentServerWithPrefix
-    })
-    getUnityInstance().AddUserProfileToCatalog(forRenderer)
-    yield put(addedProfileToCatalog(userId, profile.data))
+    const lastSentProfileVersion: number | undefined = yield select(getLastSentProfileVersion, userId)
+
+    // Add version check before submitting profile to renderer
+    // Technically profile version might be `0` and make `!lastSentProfileVersion` always true
+    if (typeof lastSentProfileVersion !== 'number' || lastSentProfileVersion < profile.data.version) {
+      const forRenderer = profileToRendererFormat(profile.data, {
+        baseUrl: fetchContentServerWithPrefix
+      })
+
+      getUnityInstance().AddUserProfileToCatalog(forRenderer)
+      // Update catalog and last sent profile version
+      yield put(addProfileToLastSentProfileVersionAndCatalog(userId, forRenderer.version))
+    }
 
     // send to Avatars scene
     receivePeerUserData(profile.data, fetchContentServerWithPrefix)

@@ -33,9 +33,17 @@ export type FriendsState = {
    */
   fromFriendRequests: FriendRequest[]
   /**
-   * Last status sent of friends so that we don't send duplicated states to renderer
+   * Last status sent of friends so that we don't send duplicated states to renderer.
    */
   lastStatusOfFriends: Map<string, CurrentUserStatus>
+  /**
+   * Number of friend requests sent in a session (in-memory) per requested user.
+   */
+  numberOfFriendRequests: Map<string, number>
+  /**
+   * Cooldown time between friend requests sent in a session (in-memory) per requested user.
+   */
+  coolDownOfFriendRequests: Map<string, number>
 }
 
 export type RootFriendsState = {

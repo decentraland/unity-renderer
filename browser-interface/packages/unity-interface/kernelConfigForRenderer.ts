@@ -5,6 +5,7 @@ import { getWorld } from '@dcl/schemas'
 import { injectVersions } from 'shared/rolloutVersions'
 import { store } from 'shared/store/isolatedStore'
 import { getSelectedNetwork } from 'shared/dao/selectors'
+import { isGifWebSupported } from 'shared/meta/selectors'
 
 export function kernelConfigForRenderer(): KernelConfigForRenderer {
   const versions = injectVersions({})
@@ -30,7 +31,8 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     gifSupported:
       typeof (window as any).OffscreenCanvas !== 'undefined' &&
       typeof (window as any).OffscreenCanvasRenderingContext2D === 'function' &&
-      !WSS_ENABLED,
+      !WSS_ENABLED &&
+      isGifWebSupported(globalState),
     network,
     validWorldRanges: getWorld().validWorldRanges,
     kernelVersion: versions['@dcl/kernel'] || 'unknown-kernel-version',

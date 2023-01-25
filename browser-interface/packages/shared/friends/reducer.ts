@@ -16,7 +16,9 @@ const FRIENDS_INITIAL_STATE: FriendsState = {
   friends: [],
   toFriendRequests: [],
   fromFriendRequests: [],
-  lastStatusOfFriends: new Map()
+  lastStatusOfFriends: new Map(),
+  numberOfFriendRequests: new Map(),
+  coolDownOfFriendRequests: new Map()
 }
 
 type State = FriendsState

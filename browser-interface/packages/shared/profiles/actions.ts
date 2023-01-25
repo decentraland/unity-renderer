@@ -56,6 +56,13 @@ export const addedProfileToCatalog = (userId: string, profile: Avatar) =>
   action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
 export type AddedProfileToCatalog = ReturnType<typeof addedProfileToCatalog>
 
+export const ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG = 'Add profile to last sent profile version and catalog'
+export const addProfileToLastSentProfileVersionAndCatalog = (userId: string, version: number) =>
+  action(ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, { userId, version })
+export type AddProfileToLastSentProfileVersionAndCatalog = ReturnType<
+  typeof addProfileToLastSentProfileVersionAndCatalog
+>
+
 export const ADDED_PROFILES_TO_CATALOG = '[Success] Added profiles to catalog'
 export const addedProfilesToCatalog = (profiles: Avatar[]) => action(ADDED_PROFILES_TO_CATALOG, { profiles })
 export type AddedProfilesToCatalog = ReturnType<typeof addedProfilesToCatalog>

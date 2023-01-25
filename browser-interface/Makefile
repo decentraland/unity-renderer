@@ -8,12 +8,10 @@ CWD = $(shell pwd)
 .SUFFIXES:
 
 # SDK Files
-
-
-EMPTY_SCENES := public/empty-scenes/xmas
+EMPTY_SCENES := public/empty-scenes/common
 
 empty-parcels:
-	cd public/empty-scenes/xmas && (node generate_all.js || true)
+	cd public/empty-scenes/common && (node generate_all.js || true)
 	mkdir -p static/loader/empty-scenes || true
 	rm -rf static/loader/empty-scenes/*
 	cp $(EMPTY_SCENES)/mappings.json static/loader/empty-scenes/mappings.json
@@ -82,7 +80,7 @@ touch-local:
 	touch static/unity.data
 	touch static/unity.wasm
 
-watch: build-essentials static/index.js touch-local ## Watch the files required for hacking the explorer
+watch: touch-local build-essentials static/index.js ## Watch the files required for hacking the explorer
 	@NODE_ENV=development ./build.js -watch
 
 update-renderer:  ## Update the renderer

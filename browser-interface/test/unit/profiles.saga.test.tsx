@@ -1,18 +1,31 @@
-import { expectSaga } from 'redux-saga-test-plan'
-import { call, select } from 'redux-saga/effects'
-import { profileRequest, profileSuccess } from 'shared/profiles/actions'
-import { handleFetchProfile, profileServerRequest } from 'shared/profiles/sagas'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { getCurrentUserId, isCurrentUserId, getIsGuestLogin } from 'shared/session/selectors'
-import { profileSaga } from '../../packages/shared/profiles/sagas'
-import { dynamic } from 'redux-saga-test-plan/providers'
-import { expect } from 'chai'
-import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
-import { sleep } from 'atomicHelpers/sleep'
-import { getRealmAdapter } from 'shared/realm/selectors'
 import { Avatar } from '@dcl/schemas'
-import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
+import { sleep } from 'atomicHelpers/sleep'
+import { expect } from 'chai'
 import future from 'fp-future'
+import { expectSaga } from 'redux-saga-test-plan'
+import { dynamic } from 'redux-saga-test-plan/providers'
+import { call, select } from 'redux-saga/effects'
+import { getCommsRoom } from 'shared/comms/selectors'
+import {
+  addProfileToLastSentProfileVersionAndCatalog,
+  profileRequest,
+  profileSuccess,
+  ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG
+} from 'shared/profiles/actions'
+import { handleFetchProfile, profileServerRequest } from 'shared/profiles/sagas'
+import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
+import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
+import { ProfileUserInfo } from 'shared/profiles/types'
+import * as realmSelectors from 'shared/realm/selectors'
+import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { getCurrentUserId, getIsGuestLogin, isCurrentUserId } from 'shared/session/selectors'
+import sinon from 'sinon'
+import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
+import { profileSaga } from '../../packages/shared/profiles/sagas'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { buildStore } from 'shared/store/store'
+import { IRealmAdapter } from 'shared/realm/types'
 
 const profile: Avatar = { data: 'profile' } as any
 
@@ -64,22 +77,21 @@ describe('fetchProfile behavior', () => {
     } as any)
   })
 
- it.skip('completes once for more than one request of same user',
-    () => {
-      return expectSaga(profileSaga)
-        .put(profileSuccess('passport' as any))
-        .not.put(profileSuccess('passport' as any))
-        .dispatch(profileRequest('user|1', future()))
-        .dispatch(profileRequest('user|1', future()))
-        .dispatch(profileRequest('user|1', future()))
-        .provide([
-          [select(getRealmAdapter), {}],
-          [call(profileServerRequest, 'user|1'), delayedProfile],
-          [select(getCurrentUserId), 'myid'],
-          [call(ensureAvatarCompatibilityFormat, profile), 'passport']
-        ])
-        .run()
-    })
+  it.skip('completes once for more than one request of same user', () => {
+    return expectSaga(profileSaga)
+      .put(profileSuccess('passport' as any))
+      .not.put(profileSuccess('passport' as any))
+      .dispatch(profileRequest('user|1', future()))
+      .dispatch(profileRequest('user|1', future()))
+      .dispatch(profileRequest('user|1', future()))
+      .provide([
+        [select(realmSelectors.getRealmAdapter), {}],
+        [call(profileServerRequest, 'user|1'), delayedProfile],
+        [select(getCurrentUserId), 'myid'],
+        [call(ensureAvatarCompatibilityFormat, profile), 'passport']
+      ])
+      .run()
+  })
 
   it.skip('runs one request for each user', () => {
     return expectSaga(profileSaga)
@@ -92,7 +104,7 @@ describe('fetchProfile behavior', () => {
       .dispatch(profileRequest('user|2', future()))
       .dispatch(profileRequest('user|2', future()))
       .provide([
-        [select(getRealmAdapter), {}],
+        [select(realmSelectors.getRealmAdapter), {}],
         [call(profileServerRequest, 'user|1'), delayedProfile],
         [select(getCurrentUserId), 'myid'],
         [call(ensureAvatarCompatibilityFormat, profile), 'passport1'],
@@ -127,3 +139,135 @@ describe('fetchProfile behavior', () => {
       })
   })
 })
+
+describe('Handle submit profile to renderer', () => {
+  sinon.mock()
+
+  const unityInstance = getUnityInstance()
+  const unityMock = sinon.mock(unityInstance)
+
+  beforeEach(() => {
+    sinon.reset()
+    sinon.restore()
+    buildStore()
+  })
+
+  afterEach(() => {
+    sinon.restore()
+    sinon.reset()
+  })
+
+  context('When the profile has already been sent, and it doesnt have any updates', () => {
+    it('Does not send the AddUserProfileToCatalog message.', async () => {
+      const userId = '0x11pizarnik00'
+
+      const profile = getMockedProfileUserInfo(userId, '')
+
+      const realmAdapter = {} as IRealmAdapter
+
+      unityMock.expects('AddUserProfilesToCatalog').never()
+
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+        .provide([
+          [call(waitForRendererInstance), true],
+          [select(getProfileFromStore, userId), profile],
+          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [select(isCurrentUserId, userId), false],
+          [select(getLastSentProfileVersion, userId), 1]
+        ])
+        .run()
+        .then((response) => {
+          const putEffects = response.effects.put
+          expect(putEffects).to.be.undefined
+        })
+
+      unityMock.verify()
+    })
+  })
+
+  context('When the profile has already been sent, the version is 0 and it doesnt have any updates', () => {
+    it('Does not send the AddUserProfileToCatalog message.', async () => {
+      const userId = '0x11pizarnik00'
+
+      const profile = getMockedProfileUserInfo(userId, '', 0)
+
+      const realmAdapter = {} as IRealmAdapter
+
+      unityMock.expects('AddUserProfilesToCatalog').never()
+
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+        .provide([
+          [call(waitForRendererInstance), true],
+          [select(getProfileFromStore, userId), profile],
+          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [select(isCurrentUserId, userId), false],
+          [select(getLastSentProfileVersion, userId), 0]
+        ])
+        .run()
+        .then((response) => {
+          const putEffects = response.effects.put
+          expect(putEffects).to.be.undefined
+        })
+
+      unityMock.verify()
+    })
+  })
+
+  context('When the profile has already been sent, and it has updates', () => {
+    it('Sends the AddUserProfileToCatalog message.', async () => {
+      const userId = '0x11pizarnik00'
+
+      const profile = getMockedProfileUserInfo(userId, '', 3)
+
+      const realmAdapter = {} as IRealmAdapter
+
+      unityMock.expects('AddUserProfileToCatalog').once()
+
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+        .provide([
+          [call(waitForRendererInstance), true],
+          [select(getProfileFromStore, userId), profile],
+          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [select(isCurrentUserId, userId), false],
+          [select(getLastSentProfileVersion, userId), 1]
+        ])
+        .dispatch(addProfileToLastSentProfileVersionAndCatalog(userId, 3))
+        .run()
+        .then((response) => {
+          const putEffects = response.effects.put
+          const lastPut = putEffects[putEffects.length - 1].payload.action
+          expect(lastPut.type).to.eq(ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG)
+        })
+
+      unityMock.verify()
+    })
+  })
+})
+
+function getMockedProfileUserInfo(userId: string, name: string, version: number = 1): ProfileUserInfo {
+  return {
+    data: {
+      avatar: {
+        snapshots: {
+          face256: '',
+          body: ''
+        },
+        eyes: { color: '' },
+        hair: { color: '' },
+        skin: { color: '' }
+      } as any,
+      description: '',
+      ethAddress: userId,
+      hasClaimedName: false,
+      name,
+      tutorialStep: 1,
+      userId,
+      version
+    },
+    status: 'ok',
+    addedToCatalog: false
+  }
+}

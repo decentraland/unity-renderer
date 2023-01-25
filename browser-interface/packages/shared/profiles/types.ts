@@ -10,6 +10,7 @@ export type ProfileState = {
   userInfo: {
     [key: string]: ProfileUserInfo
   }
+  lastSentProfileVersion: Map<string, number>
 }
 
 export type RootProfileState = {

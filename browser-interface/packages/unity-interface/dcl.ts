@@ -1,4 +1,4 @@
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, rootURLPreviewMode, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
+import { DEBUG, ENGINE_DEBUG_PANEL, rootURLPreviewMode, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
 import './UnityInterface'
 import {
   allScenesEvent,
@@ -77,9 +77,7 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
     getUnityInstance().SetEngineDebugPanel()
   }
 
-  if (!EDITOR) {
-    await startGlobalScene('dcl-gs-avatars', 'Avatars', hudWorkerUrl)
-  }
+  await startGlobalScene('dcl-gs-avatars', 'Avatars', hudWorkerUrl)
 }
 
 type GlobalSceneOptions = {
@@ -107,7 +105,7 @@ async function startGlobalScene(cid: string, title: string, fileContentUrl: stri
     metadata.ecs7 = true
   }
 
-  const scene = loadParcelSceneWorker({
+  return await loadParcelSceneWorker({
     id: cid,
     baseUrl,
     entity: {
@@ -117,12 +115,11 @@ async function startGlobalScene(cid: string, title: string, fileContentUrl: stri
       type: EntityType.SCENE,
       metadata,
       version: 'v3'
-    }
+    },
+    isGlobalScene: true,
+    // global scenes have no FPS limit
+    useFPSThrottling: false
   })
-
-  scene.rpcContext.sceneData.isPortableExperience = true
-  // portable experiences have no FPS limit
-  scene.rpcContext.sceneData.useFPSThrottling = false
 }
 
 export async function getPreviewSceneId(): Promise<{ sceneId: string | null; sceneBase: string }> {

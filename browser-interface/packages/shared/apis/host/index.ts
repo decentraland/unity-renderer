@@ -11,6 +11,7 @@ import { registerParcelIdentityServiceServerImplementation } from './ParcelIdent
 import { registerUserActionModuleServiceServerImplementation } from './UserActionModule'
 import { registerSocialControllerServiceServerImplementation } from './SocialController'
 import { registerRestrictedActionsServiceServerImplementation } from './RestrictedActions'
+import { registerRuntimeServiceServerImplementation } from './Runtime'
 import { registerCommunicationsControllerServiceServerImplementation } from './CommunicationsController'
 import { registerPlayersServiceServerImplementation } from './Players'
 import { registerPortableExperiencesServiceServerImplementation } from './PortableExperiences'
@@ -27,6 +28,7 @@ export async function registerServices(serverPort: RpcServerPort<PortContext>) {
   registerParcelIdentityServiceServerImplementation(serverPort)
   registerSocialControllerServiceServerImplementation(serverPort)
   registerRestrictedActionsServiceServerImplementation(serverPort)
+  registerRuntimeServiceServerImplementation(serverPort)
   registerCommunicationsControllerServiceServerImplementation(serverPort)
   registerPlayersServiceServerImplementation(serverPort)
   registerPortableExperiencesServiceServerImplementation(serverPort)

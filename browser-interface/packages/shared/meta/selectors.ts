@@ -59,6 +59,9 @@ export const getDisabledCatalystConfig = (store: RootMetaState): string[] => {
 export const isLiveKitVoiceChatFeatureFlag = (store: RootMetaState): boolean =>
   getFeatureFlagEnabled(store, 'livekit-voicechat') as boolean
 
+// Enable the gif processor on the web instead of processing it in Unity (just for WebGL build)
+export const isGifWebSupported = (store: RootMetaState): boolean => getFeatureFlagEnabled(store, 'gif-web') as boolean
+
 export function getMaxVisiblePeers(store: RootMetaState): number {
   return (
     QS_MAX_VISIBLE_PEERS ||
@@ -98,6 +101,21 @@ export function getFeatureFlagEnabled(store: RootMetaState, featureName: Feature
     return ff.flags[featureName] || false
   }
   return false
+}
+
+/**
+ * Returns the feature flag variant name
+ */
+export function getFeatureFlagVariantName(store: RootMetaState, featureName: FeatureFlagsName): string {
+  const ff = getFeatureFlags(store)
+  if (getFeatureFlagEnabled(store, featureName)) {
+    const variant = ff.variants[featureName]
+    if (variant && variant.enabled) {
+      return variant.name
+    }
+    return 'undefined'
+  }
+  return 'undefined'
 }
 
 export function getFeatureFlags(store: RootMetaState): FeatureFlag {

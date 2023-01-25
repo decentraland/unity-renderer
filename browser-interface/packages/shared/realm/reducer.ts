@@ -4,7 +4,8 @@ import { RealmState } from './types'
 import { SET_REALM_ADAPTER } from './actions'
 
 const INITIAL_COMMS: RealmState = {
-  realmAdapter: undefined
+  realmAdapter: undefined,
+  previousAdapter: undefined
 }
 
 export function realmReducer(state?: RealmState, action?: AnyAction): RealmState {
@@ -19,7 +20,7 @@ export function realmReducer(state?: RealmState, action?: AnyAction): RealmState
       if (state.realmAdapter === action.payload) {
         return state
       }
-      return { ...state, realmAdapter: action.payload }
+      return { ...state, realmAdapter: action.payload, previousAdapter: state.realmAdapter }
     default:
       return state
   }

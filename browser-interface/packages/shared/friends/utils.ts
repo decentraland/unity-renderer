@@ -1,7 +1,8 @@
 import { getFeatureFlagEnabled, getFeatureFlagVariantValue } from 'shared/meta/selectors'
 import { RootMetaState } from 'shared/meta/types'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { store } from 'shared/store/isolatedStore'
-import { UsersAllowed } from 'shared/types'
+import { FriendshipAction, AntiSpamConfig, UsersAllowed } from 'shared/types'
 
 /**
  * Get the local part of the userId from matrixUserId
@@ -28,7 +29,7 @@ export function getUserIdFromMatrix(userId: string) {
  * to: '@0x1111ada11111:decentraland.org'
  *
  * @example
- * from: @0x1111ada11111:decentraland.org'
+ * from: '@0x1111ada11111:decentraland.org'
  * to: '@0x1111ada11111:decentraland.org'
  * */
 export function getMatrixIdFromUser(userId: string) {
@@ -87,16 +88,39 @@ export function isNewFriendRequestEnabled(): boolean {
 
 /**
  * Encode friendRequestId from the user IDs involved in the friendship event.
- * The rule is: `ownId` < `otherUserId` ? `ownId_otherUserId` : `otherUserId_ownId`
+ * **It is important to send the ownId as the first parameter, otherwise it will cause bugs.**
+ * The rule is: `ownId` < `otherUserId` ? `ownId_otherUserId_requester` : `otherUserId_ownId_requester`
+ *
+ * If the friend request is incoming and the action is either CANCELED or REQUESTED_FROM or
+ * if the friend request is outgoing and the action is either APPROVED or REJECTED,
+ * set the requester to the last 4 characters of the otherUserId.
+ * Otherwise set the requester to the last 4 characters of the ownId.
+ *
  * @param ownId
  * @param otherUserId
+ * @param incoming indicates whether the action was incoming (true) or outgoing (false)
+ * @param action represents the action being taken
  */
-export function encodeFriendRequestId(ownId: string, otherUserId: string) {
+export function encodeFriendRequestId(ownId: string, otherUserId: string, incoming: boolean, action: FriendshipAction) {
   // We always want the friendRequestId to be formed with the pattern '0x1111ada11111'
   ownId = getUserIdFromMatrix(ownId)
   otherUserId = getUserIdFromMatrix(otherUserId)
 
-  return ownId < otherUserId ? `${ownId}_${otherUserId}` : `${otherUserId}_${ownId}`
+  let requester = ''
+
+  if (incoming) {
+    requester =
+      action === FriendshipAction.CANCELED || action === FriendshipAction.REQUESTED_FROM
+        ? otherUserId.substring(otherUserId.length - 4)
+        : ownId.substring(ownId.length - 4)
+  } else {
+    requester =
+      action === FriendshipAction.APPROVED || action === FriendshipAction.REJECTED
+        ? otherUserId.substring(otherUserId.length - 4)
+        : ownId.substring(ownId.length - 4)
+  }
+
+  return ownId < otherUserId ? `${ownId}_${otherUserId}_${requester}` : `${otherUserId}_${ownId}_${requester}`
 }
 
 /**
@@ -131,4 +155,35 @@ export function validateFriendRequestId(friendRequestId: string, ownId: string) 
   ownId = getUserIdFromMatrix(ownId)
 
   return friendRequestId.includes(ownId)
+}
+
+/**
+ * Check whether a user is blocked by the current user
+ * @param userId - the ID of the user to check
+ * @returns true if the user is blocked, false otherwise
+ */
+export function isBlocked(userId: string) {
+  // Get the user's profile
+  const profile = getCurrentUserProfile(store.getState())
+
+  // Check whether the user is blocked
+  return profile?.blocked?.includes(userId) ?? false
+}
+
+export const DEFAULT_MAX_NUMBER_OF_REQUESTS = 5
+
+export const COOLDOWN_TIME_MS = 10000 // 10 seconds
+
+/**
+ * Returns the anti-spam config, that is, the max number allowed of sent requests to a given user and
+ * the cooldown timer in ms to send a friend request to a given user.
+ */
+export function getAntiSpamLimits(store: RootMetaState): AntiSpamConfig {
+  // Set default config
+  const config: AntiSpamConfig = {
+    maxNumberRequest: DEFAULT_MAX_NUMBER_OF_REQUESTS,
+    cooldownTimeMs: COOLDOWN_TIME_MS
+  }
+
+  return (getFeatureFlagVariantValue(store, 'friend_request_anti_spam_config') as AntiSpamConfig) ?? config
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type { Vector3Component, Vector2Component } from '../atomicHelpers/landHelpers'
-import { Entity, ContentMapping } from '@dcl/schemas'
+import { Entity } from '@dcl/schemas'
 export { WearableId, Wearable, WearableV2 } from './catalogs/types'
 
 export interface MessageDict {
@@ -97,25 +97,6 @@ export type EntityAction = {
 
 export type OpenNFTDialogPayload = { assetContractAddress: string; tokenId: string; comment: string | null }
 
-/** THIS INTERFACE CANNOT CHANGE, IT IS USED IN THE UNITY BUILD */
-export type LoadableParcelScene = {
-  id: string
-  name: string
-  basePosition: { x: number; y: number }
-  parcels: Array<{ x: number; y: number }>
-  contents: Array<ContentMapping>
-  baseUrl: string
-  baseUrlBundles: string
-  loadableScene: LoadableScene
-  sceneNumber: number
-  sdk7: boolean
-}
-
-/** THIS INTERFACE CANNOT CHANGE, IT IS USED IN THE UNITY BUILD */
-export type LoadablePortableExperienceScene = LoadableParcelScene & {
-  icon?: string
-}
-
 export const BillboardModes = {
   BILLBOARDMODE_NONE: 0,
   BILLBOARDMODE_X: 1,
@@ -207,6 +188,9 @@ export type LoadableScene = {
   readonly id: string
   /** Id of the parent scene that spawned this scene experience */
   readonly parentCid?: string
+  readonly isGlobalScene?: boolean
+  readonly isPortableExperience?: boolean
+  readonly useFPSThrottling?: boolean
 }
 
 export type SceneSpawnPoint = {
@@ -780,4 +764,9 @@ export type UpdateChannelMembersPayload = {
 export type UsersAllowed = {
   mode: number
   allowList: string[]
+}
+
+export type AntiSpamConfig = {
+  maxNumberRequest: number
+  cooldownTimeMs: number
 }

@@ -7,7 +7,6 @@ import { AirdropInfo } from '../shared/airdrops/interface'
 import {
   RenderProfile,
   InstancedSpawnPoint,
-  LoadableParcelScene,
   WearableV2,
   HUDElementID,
   HUDConfiguration,
@@ -122,12 +121,6 @@ export interface IUnityInterface {
     rotateIfTargetIsNotSet?: boolean
   ): void
 
-  /** Tells the engine which scenes to load */
-
-  LoadParcelScenes(parcelsToLoad: LoadableParcelScene[]): void
-  /** @deprecated */
-  UnloadScene(sceneId: string): void
-  UnloadSceneV2(sceneNumber: number): void
   SendSceneMessage(messages: string): void
   /** @deprecated send it with the kernelConfigForRenderer instead. */
   SetSceneDebugPanel(): void

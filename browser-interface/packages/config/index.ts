@@ -10,6 +10,11 @@ export namespace interactionLimits {
   export const clickDistance = 10
 }
 
+/**
+ * Time between consecutive updates to the loading screen, in millis
+ */
+export const timeBetweenLoadingUpdatesInMillis = 100
+
 export namespace parcelLimits {
   // Maximum numbers for parcelScenes to prevent performance problems
   // Note that more limitations may be added to this with time

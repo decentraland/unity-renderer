@@ -3,7 +3,6 @@ import {
   RemoveEntityPayload,
   EntityAction,
   QueryPayload,
-  LoadableParcelScene,
   SetEntityParentPayload,
   OpenNFTDialogPayload,
   ComponentUpdatedPayload,
@@ -65,8 +64,8 @@ export class NativeMessagesBridge {
   private callOpenExternalUrl!: (url: string) => void
   private callQuery!: (payload: number) => void
 
-  private callLoadParcelScene!: (scene: LoadableParcelScene) => void
-  private callUpdateParcelScene!: (scene: LoadableParcelScene) => void
+  private callLoadParcelScene!: (scene: never) => void
+  private callUpdateParcelScene!: (scene: never) => void
   private callUnloadParcelScene!: (sceneId: string) => void
 
   private callBinaryMessage!: (ptr: number, length: number, sceneId: string) => void
@@ -234,11 +233,11 @@ export class NativeMessagesBridge {
     this.callEntityComponentCreateOrUpdate(payload.classId, payload.json)
   }
 
-  public loadParcelScene(loadableParcelScene: LoadableParcelScene) {
+  public loadParcelScene(loadableParcelScene: never) {
     this.callLoadParcelScene(loadableParcelScene)
   }
 
-  public updateParcelScene(loadableParcelScene: LoadableParcelScene) {
+  public updateParcelScene(loadableParcelScene: never) {
     this.callUpdateParcelScene(loadableParcelScene)
   }
 

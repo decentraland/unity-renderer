@@ -55,7 +55,7 @@
     "@dcl/hashing": "^1.1.2",
     "@dcl/kernel-interface": "^2.0.0-20210922153939.commit-017905d",
     "@dcl/legacy-ecs": "^6.11.8",
-    "@dcl/protocol": "^1.0.0-3766287015.commit-7d88411",
+    "@dcl/protocol": "^1.0.0-3939040004.commit-2c2721f",
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "^7.0.3-20221223152034.commit-23102ad",
     "@dcl/schemas": "^5.29.0",
@@ -95,9 +95,6 @@
     "undici": "^5.13.0",
     "util": "^0.12.5"
   },
-  "bundleDependencies": [
-    "@dcl/unity-renderer"
-  ],
   "prettier": {
     "printWidth": 120,
     "semi": false,

@@ -7,9 +7,10 @@ import {
   GetFriendsPayload,
   GetFriendsWithDirectMessagesPayload,
   GetPrivateMessagesPayload,
-  PresenceStatus
+  PresenceStatus,
+  FriendshipAction
 } from 'shared/types'
-import sinon from 'sinon'
+import sinon, { assert } from 'sinon'
 import * as friendsSagas from '../../packages/shared/friends/sagas'
 import { setMatrixClient } from 'shared/friends/actions'
 import * as friendsSelectors from 'shared/friends/selectors'
@@ -35,6 +36,12 @@ import { StoreEnhancer } from 'redux'
 import { reducers } from 'shared/store/rootReducer'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { encodeFriendRequestId } from 'shared/friends/utils'
+import {
+  FriendshipStatus,
+  GetFriendshipStatusRequest
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import { SendFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { FriendshipErrorCode } from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {
@@ -80,13 +87,13 @@ const textMessages: TextMessage[] = [
 const friendIds = ['0xa1', '0xb1', '0xc1', '0xd1']
 
 const fromFriendRequest: FriendRequest = {
-  friendRequestId: encodeFriendRequestId('ownId', '0xa1'),
+  friendRequestId: encodeFriendRequestId('ownId', '0xa1', true, FriendshipAction.REQUESTED_FROM),
   userId: '0xa1',
   createdAt: 123123132
 }
 
 const toFriendRequest: FriendRequest = {
-  friendRequestId: encodeFriendRequestId('ownId', '0xa1'),
+  friendRequestId: encodeFriendRequestId('ownId', '0xa1', false, FriendshipAction.REQUESTED_TO),
   userId: '0xa2',
   createdAt: 123123132
 }
@@ -155,7 +162,8 @@ const stubClient = {
     return m
   },
   getDomain: () => 'decentraland.org',
-  setStatus: () => Promise.resolve()
+  setStatus: () => Promise.resolve(),
+  getOwnId: () => '0xa2'
 } as unknown as SocialAPI
 
 const friendsFromStore: FriendsState = {
@@ -164,7 +172,9 @@ const friendsFromStore: FriendsState = {
   friends: friendIds,
   fromFriendRequests: [fromFriendRequest],
   toFriendRequests: [toFriendRequest],
-  lastStatusOfFriends: new Map()
+  lastStatusOfFriends: new Map(),
+  numberOfFriendRequests: new Map(),
+  coolDownOfFriendRequests: new Map()
 }
 
 const FETCH_CONTENT_SERVER = 'base-url'
@@ -212,7 +222,8 @@ function mockStoreCalls(
         parcelPosition: { x: 1, y: 2 }
       },
       profiles: {
-        userInfo
+        userInfo,
+        lastSentProfileVersion: new Map()
       }
     }
 
@@ -554,6 +565,86 @@ describe('Friends sagas', () => {
         .dispatch(setMatrixClient(stubClient))
         .silentRun()
       unityMock.verify()
+    })
+  })
+
+  describe('Get friendship status', () => {
+    beforeEach(() => {
+      const { store } = buildStore(mockStoreCalls())
+      globalThis.globalStore = store
+    })
+
+    afterEach(() => {
+      sinon.restore()
+      sinon.reset()
+    })
+
+    context('When the given user id is not a friend and it is not a pending request', () => {
+      it('Should return FriendshipStatus.NONE', () => {
+        const request: GetFriendshipStatusRequest = {
+          userId: 'some_user_id'
+        }
+
+        const expectedResponse = FriendshipStatus.NONE
+
+        const response = friendsSagas.getFriendshipStatus(request)
+        assert.match(response, expectedResponse)
+      })
+    })
+
+    context('When the given user id is a friend', () => {
+      it('Should return FriendshipStatus.APPROVED', () => {
+        const request: GetFriendshipStatusRequest = {
+          userId: '0xa1'
+        }
+
+        const expectedResponse = FriendshipStatus.APPROVED
+
+        const response = friendsSagas.getFriendshipStatus(request)
+        assert.match(response, expectedResponse)
+      })
+    })
+
+    context('When the given user id is a to pending request', () => {
+      it('Should return FriendshipStatus.REQUESTED_TO', () => {
+        const request: GetFriendshipStatusRequest = {
+          userId: '0xa2'
+        }
+
+        const expectedResponse = FriendshipStatus.REQUESTED_TO
+
+        const response = friendsSagas.getFriendshipStatus(request)
+        assert.match(response, expectedResponse)
+      })
+    })
+  })
+
+  describe('Send friend request via protocol', () => {
+    beforeEach(() => {
+      const { store } = buildStore(mockStoreCalls())
+      globalThis.globalStore = store
+    })
+
+    afterEach(() => {
+      sinon.restore()
+      sinon.reset()
+    })
+
+    context('When the user tries to send a friend request to themself', () => {
+      it('Should return FriendshipStatus.FEC_INVALID_REQUEST', async () => {
+        const request: SendFriendRequestPayload = {
+          userId: '0xa2',
+          messageBody: 'u r so cool'
+        }
+
+        const expectedResponse = {
+          reply: undefined,
+          error: FriendshipErrorCode.FEC_INVALID_REQUEST
+        }
+
+        const response = await friendsSagas.requestFriendship(request)
+        assert.match(response, expectedResponse)
+      })
     })
   })
 })

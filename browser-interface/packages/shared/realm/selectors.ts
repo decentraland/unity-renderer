@@ -5,6 +5,14 @@ import { SET_REALM_ADAPTER } from './actions'
 import { realmToConnectionString, urlWithProtocol } from './resolver'
 import { IRealmAdapter, RootRealmState, OFFLINE_REALM } from './types'
 
+export const isWorldLoaderActive = (realmAdapter: IRealmAdapter) =>
+  !!realmAdapter?.about.configurations?.scenesUrn?.length ||
+  realmAdapter?.about.configurations?.cityLoaderContentServer === ''
+
+export function isPreviousAdapterWorld(state: RootRealmState) {
+  return state.realm.previousAdapter && isWorldLoaderActive(state.realm.previousAdapter)
+}
+
 export const getRealmAdapter = (state: RootRealmState): IRealmAdapter | undefined => state.realm.realmAdapter
 export const getRealmConnectionString = (state: RootRealmState): string =>
   state.realm.realmAdapter ? realmToConnectionString(state.realm.realmAdapter) : OFFLINE_REALM

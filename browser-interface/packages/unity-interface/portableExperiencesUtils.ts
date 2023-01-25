@@ -87,24 +87,30 @@ export async function declareWantedPortableExperiences(pxs: LoadableScene[]) {
   // then load all the missing scenes
   for (const sceneData of pxs) {
     if (!getRunningPortableExperience(sceneData.id)) {
-      spawnPortableExperience(sceneData)
+      await spawnPortableExperience(sceneData)
     }
   }
 }
 
-function spawnPortableExperience(spawnData: LoadableScene): PortableExperienceHandle {
+async function spawnPortableExperience(spawnData: LoadableScene): Promise<PortableExperienceHandle> {
   const sceneId = spawnData.id
   if (currentPortableExperiences.has(sceneId) || getSceneWorkerBySceneID(sceneId)) {
     throw new Error(`Portable Experience: "${sceneId}" is already running.`)
   }
   if (!sceneId) debugger
 
-  const scene = loadParcelSceneWorker(spawnData, undefined)
+  const scene = await loadParcelSceneWorker(
+    {
+      ...spawnData,
+      isPortableExperience: true,
+      isGlobalScene: true,
+      // portable experiences have no FPS limit
+      useFPSThrottling: false
+    },
+    undefined
+  )
   // add default permissions for portable experience based scenes
   defaultPortableExperiencePermissions.forEach(($) => scene.rpcContext.permissionGranted.add($))
-  scene.rpcContext.sceneData.isPortableExperience = true
-  // portable experiences have no FPS limit
-  scene.rpcContext.sceneData.useFPSThrottling = false
 
   currentPortableExperiences.set(sceneId, scene)
 
