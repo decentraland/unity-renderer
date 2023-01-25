@@ -20,6 +20,24 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 RemoveInvalidMeshEffect(sbcComponentData);
             else
                 AddInvalidMeshEffect(sbcComponentData);
+
+            if (sbcComponentData.model.physicsColliders != null)
+            {
+                int count = sbcComponentData.model.physicsColliders.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    sbcComponentData.model.physicsColliders[i].enabled = isInsideBounds;
+                }
+            }
+
+            if (sbcComponentData.model.pointerColliders != null)
+            {
+                int count = sbcComponentData.model.pointerColliders.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    sbcComponentData.model.pointerColliders[i].enabled = isInsideBounds;
+                }
+            }
         }
 
         private void AddInvalidMeshEffect(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
