@@ -5,6 +5,9 @@ import { ensureFileExists } from "./utils"
 import { fetch } from "undici"
 import FormData from "form-data"
 
+// Temporal!
+process.env.CIRCLE_BRANCH = "dev"
+
 const DIST_ROOT = resolve(__dirname, "../static")
 
 async function main() {

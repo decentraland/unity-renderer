@@ -397,9 +397,6 @@ jobs:
     steps:
       - <<: *attach_root
       - run:
-          name: TEST DEV
-          command: export CIRCLE_BRANCH=dev
-      - run:
           working_directory: &node_workspace browser-interface
           name: clean install
           command: npm ci
@@ -424,9 +421,6 @@ jobs:
 
     steps:
       - <<: *attach_root
-      - run:
-          name: TEST DEV
-          command: export CIRCLE_BRANCH=dev
       - run:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
