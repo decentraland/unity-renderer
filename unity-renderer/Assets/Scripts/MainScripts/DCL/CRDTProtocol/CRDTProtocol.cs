@@ -186,27 +186,26 @@ namespace DCL.CRDT
         public List<CRDTMessage> GetStateAsMessages()
         {
             List<CRDTMessage> crdtMessagesList = new List<CRDTMessage>();
-            for (int i = 0; i < state.components.Count; i++)
+
+            foreach (var component in state.components)
             {
-                int componentId = state.components.ElementAt(i).Key;
-                Dictionary<long, EntityComponentData> component = state.components.ElementAt(i).Value;
-                for (int j = 0; j < component.Count; j++)
+                foreach (var entityComponentData in component.Value)
                 {
-                    var entityComponentData = component.ElementAt(j);
                     crdtMessagesList.Add(new CRDTMessage(){
                         type = entityComponentData.Value.data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
                         entityId = entityComponentData.Key,
-                        componentId = componentId,
+                        componentId = component.Key,
                         timestamp = entityComponentData.Value.timestamp,
                         data = entityComponentData.Value.data
                     });
                 }
+
             }
 
-            for (var i = 0; i < state.deletedEntitiesSet.Count; i++)
+            foreach (var entity in state.deletedEntitiesSet)
             {
-                long entityNumber = state.deletedEntitiesSet.ElementAt(i).Key;
-                long entityVersion = state.deletedEntitiesSet.ElementAt(i).Value;
+                long entityNumber = entity.Key;
+                long entityVersion = entity.Value;
                 long entityId = entityNumber | (entityVersion << 16);
                 crdtMessagesList.Add(new CRDTMessage(){
                     type = CrdtMessageType.DELETE_ENTITY,
