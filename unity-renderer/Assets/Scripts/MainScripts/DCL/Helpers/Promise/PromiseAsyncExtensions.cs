@@ -6,12 +6,11 @@ namespace DCL.Helpers
 {
     public static class PromiseAsyncExtensions
     {
-        // TODO Wearables are not loaded, fix needed
-        /*public static UniTask<T>.Awaiter GetAwaiter<T>(this Promise<T> promise) =>
+        public static UniTask<T>.Awaiter GetAwaiter<T>(this Promise<T> promise) =>
             promise.ToUniTask().GetAwaiter();
 
         public static UniTask<T> WithCancellation<T>(this Promise<T> promise, CancellationToken cancellationToken) =>
-            promise.ToUniTask(cancellationToken);*/
+            promise.ToUniTask(cancellationToken);
 
         public static UniTask<T> ToUniTask<T>(this Promise<T> promise, CancellationToken cancellationToken = default)
         {
@@ -44,7 +43,9 @@ namespace DCL.Helpers
                 TaskPool.RegisterSizeGetter(typeof(PromiseCompletionSource<T>), () => pool.Size);
             }
 
-            private PromiseCompletionSource(Promise<T> innerPromise, CancellationToken cancellationToken)
+            private PromiseCompletionSource() { }
+
+            private void SetData(Promise<T> innerPromise, CancellationToken cancellationToken)
             {
                 this.innerPromise = innerPromise;
                 this.cancellationToken = cancellationToken;
@@ -85,9 +86,9 @@ namespace DCL.Helpers
             {
                 if (cancellationToken.IsCancellationRequested) { return AutoResetUniTaskCompletionSource<T>.CreateFromCanceled(cancellationToken, out token); }
 
-                if (!pool.TryPop(out var result)) { result = new PromiseCompletionSource<T>(promise, cancellationToken); }
+                if (!pool.TryPop(out var result)) result = new PromiseCompletionSource<T>();
 
-                result.cancellationToken = cancellationToken;
+                result.SetData(promise, cancellationToken);
 
                 TaskTracker.TrackActiveTask(result, 3);
 
