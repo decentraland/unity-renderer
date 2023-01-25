@@ -65,8 +65,7 @@ namespace DCL.ECSComponents
                 entity.childrenId.Clear();
             }
 
-            // Clean SBC internal component
-            // TODO: Is it OK that this cleanup updates the entity children???
+            // Reset value in SBC internal component
             sbcInternalComponent.SetPosition(scene, entity, Vector3.zero, false);
         }
 
@@ -90,7 +89,6 @@ namespace DCL.ECSComponents
                 ProcessNewParent(scene, entity, model.parentId);
             }
 
-            // sbcInternalComponent.SetPosition(scene, entity, transform.position, !scene.isPersistent);
             sbcInternalComponent.SetPosition(scene, entity, transform.position);
         }
 
