@@ -281,14 +281,23 @@ namespace Tests
             Assert.AreEqual(outlineColor.g, textShapeComponentHandler.textComponent.outlineColor.g / 255f);
         }
 
-        [Test]
-        public void AddRendererOnCreated()
+        [UnityTest]
+        public IEnumerator AddRendererOnTextMeshUpdated()
         {
+            textShapeComponentHandler.OnComponentModelUpdated(scene, entity, new PBTextShape()
+            {
+                Text = "test"
+            });
+
+            // TMPro takes a frame to update the text mesh
+            yield return null;
+
             renderersInternalComponent.Received(1)
                                       .PutFor(scene, entity,
                                           Arg.Is<InternalRenderers>(
-                                              i => i.renderers.Contains(textShapeComponentHandler.textComponent.GetComponent<MeshRenderer>())));
+                                              i => i.renderers.Contains(textShapeComponentHandler.textComponent.renderer)));
         }
+
 
         [Test]
         public void RemoveRendererOnRemoved()
