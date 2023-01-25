@@ -341,6 +341,7 @@ namespace DCL.Controllers
 
         public IDCLEntity CreateEntity(long id)
         {
+            Debug.Log ("FD:: ParcelScene::CreateEntity id = " + id, this);
             if (entities.ContainsKey(id))
             {
                 return entities[id];

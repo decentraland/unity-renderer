@@ -17,7 +17,8 @@ namespace DCL.ECSComponents
 
         public static bool GetCastShadows(this PBMaterial self)
         {
-            if (self.Pbr != null)
+            // FD:: Gets whether the "cast_shadows" field is set in the SDK editor
+            if (self.Pbr != null )
                 return !self.Pbr.HasCastShadows || self.Pbr.CastShadows;
 
             if (self.Unlit != null)

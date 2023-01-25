@@ -171,5 +171,7 @@ namespace DCL
             sceneData.animationClipSize.Set(sceneData.animationClipSize.Get() - rendereable.animationClipSize);
             sceneData.meshDataSize.Set(sceneData.meshDataSize.Get() - rendereable.meshDataSize);
         }
+
+
     }
 }

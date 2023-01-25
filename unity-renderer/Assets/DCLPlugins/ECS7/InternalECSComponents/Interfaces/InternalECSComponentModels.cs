@@ -21,7 +21,7 @@ namespace DCL.ECS7.InternalComponents
     public class InternalMaterial : InternalComponent
     {
         public Material material = null;
-        public bool castShadows = true;
+        public bool castShadows = true; // FD:: test this
     }
 
     public class InternalColliders : InternalComponent

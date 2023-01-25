@@ -143,7 +143,7 @@ namespace DCL.Components
                 return;
 
             Model model = (Model) this.model;
-
+            // FD:: here the renderer sets the shadow
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
             if (meshRenderer.sharedMaterial == material)

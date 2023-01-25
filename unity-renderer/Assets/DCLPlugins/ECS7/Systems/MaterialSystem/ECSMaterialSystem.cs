@@ -22,7 +22,7 @@ namespace ECSSystems.MaterialSystem
         {
             var state = new State()
             {
-                componentsGroup = componentsGroup,
+                componentsGroup = componentsGroup, // FD:: note --> this is the componentGroup that contains the shadow value
                 texturizableComponent = texturizableComponent,
                 materialComponent = materialComponent
             };
@@ -53,6 +53,8 @@ namespace ECSSystems.MaterialSystem
                     {
                         renderer.sharedMaterial = material;
                     }
+                    // FD:: note --> state.componentsGroup.group[i].componentData1.model.castShadows
+                    // FD:: here is where we use the shadow material from the default value from materialModel.castShadows -- InternalECSComponentModels line 2
                     renderer.shadowCastingMode = materialModel.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                 }
             }

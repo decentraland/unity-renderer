@@ -34,7 +34,7 @@ public class ECSSystemsController : IDisposable
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
 
-    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
+    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context) // FD:: context.componentGroups here contains the shadow value
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
@@ -78,7 +78,7 @@ public class ECSSystemsController : IDisposable
         updateSystems = new ECS7System[]
         {
             ECSTransformParentingSystem.Update,
-            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
+            ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup, // FD:: note --> context.componentGroups is the first argument and contains the shadow value
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),

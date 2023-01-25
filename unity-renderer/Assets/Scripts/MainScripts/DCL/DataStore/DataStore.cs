@@ -46,7 +46,7 @@ namespace DCL
         public DataStore_VirtualAudioMixer virtualAudioMixer => i.Get<DataStore_VirtualAudioMixer>();
         public DataStore_Screen screen => i.Get<DataStore_Screen>();
         public DataStore_WSCommunication wsCommunication => i.Get<DataStore_WSCommunication>();
-        public DataStore_WorldObjects sceneWorldObjects => i.Get<DataStore_WorldObjects>();
+        public DataStore_WorldObjects sceneWorldObjects => i.Get<DataStore_WorldObjects>(); // FD:: <-----
         public DataStore_ExploreV2 exploreV2 => i.Get<DataStore_ExploreV2>();
         public DataStore_FeatureFlag featureFlags => i.Get<DataStore_FeatureFlag>();
         public DataStore_Camera camera => i.Get<DataStore_Camera>();

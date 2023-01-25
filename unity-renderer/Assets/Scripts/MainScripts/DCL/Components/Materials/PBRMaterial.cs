@@ -88,6 +88,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            Debug.Log ("FD:: PBRMat - BaseDictionary<Renderer, bool> ");
             Model model = (Model) newModel;
 
             LoadMaterial(PBR_MATERIAL_NAME);
@@ -238,7 +239,7 @@ namespace DCL.Components
                 return;
 
             Model model = (Model) this.model;
-
+            // FD:: here the renderer sets the shadow
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
             if (meshRenderer.sharedMaterial == material)
@@ -263,6 +264,7 @@ namespace DCL.Components
 
         private void OnShapeUpdated(IDCLEntity entity)
         {
+            Debug.Log ("FD:: PBRMat - OnShapeUpdated ");
             if (entity != null)
                 InitMaterial(entity);
         }
