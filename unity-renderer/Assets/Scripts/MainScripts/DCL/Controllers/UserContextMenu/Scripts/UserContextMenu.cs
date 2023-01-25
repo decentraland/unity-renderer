@@ -86,6 +86,7 @@ public class UserContextMenu : MonoBehaviour
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
+    private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
     internal ISocialAnalytics socialAnalytics;
 
     /// <summary>
@@ -304,8 +305,8 @@ public class UserContextMenu : MonoBehaviour
     {
         headerContainer.SetActive((flags & headerFlags) != 0);
         userName.gameObject.SetActive((flags & MenuConfigFlags.Name) != 0);
-        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0);
-        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0);
+        friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
+        deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled);
         passportButton.gameObject.SetActive((flags & MenuConfigFlags.Passport) != 0);
         blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0);
         reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0);

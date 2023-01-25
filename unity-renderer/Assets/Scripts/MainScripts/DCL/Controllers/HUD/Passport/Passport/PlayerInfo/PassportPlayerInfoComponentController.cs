@@ -23,6 +23,7 @@ namespace DCL.Social.Passports
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
+        private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
         public event Action OnClosePassport;
         private CancellationTokenSource cancellationTokenSource;
 
@@ -129,6 +130,7 @@ namespace DCL.Social.Passports
                     isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
                     hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
                     friendshipStatus = await friendsController.GetFriendshipStatus(userProfile.userId),
+                    isFriendshipVisible = isFriendsEnabled,
                 };
             }
 
