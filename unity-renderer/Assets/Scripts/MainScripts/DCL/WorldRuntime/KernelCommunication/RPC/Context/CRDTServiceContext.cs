@@ -7,7 +7,8 @@ namespace RPC.Context
 {
     public class CRDTServiceContext
     {
-        public readonly Dictionary<int, List<CRDTMessage>> scenesOutgoingCrdts = new Dictionary<int, List<CRDTMessage>>(24);
+        public readonly Dictionary<int, DualKeyValueSet<int, long, CRDTMessage>> scenesOutgoingCrdts =
+            new Dictionary<int, DualKeyValueSet<int, long, CRDTMessage>>(24);
         public IMessagingControllersManager MessagingControllersManager;
         public IWorldState WorldState;
         public ISceneController SceneController;

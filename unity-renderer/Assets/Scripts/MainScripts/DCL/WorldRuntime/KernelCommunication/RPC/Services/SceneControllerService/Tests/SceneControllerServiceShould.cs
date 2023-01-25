@@ -273,7 +273,8 @@ namespace Tests
 
                 var protocol = new CRDTProtocol() { };
                 var msg = protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new List<CRDTMessage>(){ msg });
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CRDTMessage>());
+                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(msg.componentId, msg.entityId, msg);
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -342,7 +343,8 @@ namespace Tests
 
                 var outgoingCrdtProtocol = new CRDTProtocol() { };
                 outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new List<CRDTMessage>() { crdts[0] });
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CRDTMessage>());
+                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(crdts[0].componentId, crdts[0].entityId, crdts[0]);
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);

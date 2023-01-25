@@ -134,8 +134,11 @@ namespace Tests
                 sceneState1.ProcessMessage(messageToScene1);
                 sceneState2.ProcessMessage(messageToScene2);
 
-                context.crdt.scenesOutgoingCrdts.Add(scene1, new List<CRDTMessage>() { messageToScene1 });
-                context.crdt.scenesOutgoingCrdts.Add(scene2, new List<CRDTMessage>() { messageToScene2 });
+                context.crdt.scenesOutgoingCrdts.Add(scene1, new DualKeyValueSet<int, long, CRDTMessage> { });
+                context.crdt.scenesOutgoingCrdts.Add(scene2, new DualKeyValueSet<int, long, CRDTMessage> { });
+
+                context.crdt.scenesOutgoingCrdts[scene1].Add(messageToScene1.componentId, messageToScene1.entityId, messageToScene1);
+                context.crdt.scenesOutgoingCrdts[scene2].Add(messageToScene2.componentId, messageToScene2.entityId, messageToScene2);
 
                 // Simulate client requesting scene's crdt
                 try

@@ -183,17 +183,18 @@ namespace RPC.Services
                     }
                 }
 
-                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out List<CRDTMessage> sceneCrdtState))
+                if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CRDTMessage> sceneCrdtOutgoing))
                 {
                     sendCrdtMemoryStream.SetLength(0);
                     crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
 
-                    for (int i = 0; i < sceneCrdtState.Count; i++)
+                    foreach (var msg in sceneCrdtOutgoing)
                     {
-                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtState[i]);
+                        CRDTSerializer.Serialize(sendCrdtBinaryWriter, msg.value);
                     }
 
-                    sceneCrdtState.Clear();
+
+                    sceneCrdtOutgoing.Clear();
                     reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
                 }
             }
@@ -207,7 +208,7 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            List<CRDTMessage> outgoingMessages = null;
+            DualKeyValueSet<int, long, CRDTMessage> outgoingMessages = null;
             CRDTProtocol sceneState = null;
             CRDTServiceContext crdtContext = context.crdt;
 
@@ -233,9 +234,9 @@ namespace RPC.Services
 
                 // serialize outgoing messages
                 crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                for (int i = 0; i < outgoingMessages.Count; i++)
+                foreach (var msg in outgoingMessages)
                 {
-                    CRDTSerializer.Serialize(getStateBinaryWriter, outgoingMessages[i]);
+                    CRDTSerializer.Serialize(getStateBinaryWriter, msg.value);
                 }
                 outgoingMessages.Clear();
 

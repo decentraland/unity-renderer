@@ -7,7 +7,6 @@ using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
 using rpc_csharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
@@ -84,7 +83,7 @@ namespace RPC.Services
         {
             try
             {
-                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out List<CRDTMessage> sceneCrdtState))
+                if (!context.crdt.scenesOutgoingCrdts.TryGetValue(request.SceneNumber, out DualKeyValueSet<int, long, CRDTMessage> sceneCrdtOutgoingMessage))
                 {
                     return emptyResponse;
                 }
@@ -92,11 +91,12 @@ namespace RPC.Services
                 memoryStream.SetLength(0);
 
                 context.crdt.scenesOutgoingCrdts.Remove(request.SceneNumber);
-                for (int i = 0; i < sceneCrdtState.Count; i++)
+
+                foreach (var msg in sceneCrdtOutgoingMessage)
                 {
-                    CRDTSerializer.Serialize(binaryWriter, sceneCrdtState[i]);
+                    CRDTSerializer.Serialize(binaryWriter, msg.value);
                 }
-                sceneCrdtState.Clear();
+                sceneCrdtOutgoingMessage.Clear();
 
                 reusableCrdtMessage.SceneId = request.SceneId;
                 reusableCrdtMessage.SceneNumber = request.SceneNumber;

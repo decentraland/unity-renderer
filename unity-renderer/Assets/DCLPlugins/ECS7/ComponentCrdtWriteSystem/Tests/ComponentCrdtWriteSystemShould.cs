@@ -86,7 +86,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_SCENE);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out List<CRDTMessage> protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CRDTMessage> protocol);
             // not null or empty
             Assert.NotNull(protocol);
 
@@ -106,7 +106,7 @@ namespace Tests
             crdtWriteSystem.WriteMessage(SCENE_NUMBER, ENTITY_ID, COMPONENT_ID, componentData, -1, ECSComponentWriteType.SEND_TO_LOCAL);
             crdtWriteSystem.LateUpdate();
 
-            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out List<CRDTMessage> protocol);
+            DataStore.i.rpc.context.crdt.scenesOutgoingCrdts.TryGetValue(SCENE_NUMBER, out DualKeyValueSet<int, long, CRDTMessage> protocol);
 
             // null or empty
             Assert.IsNull(protocol);
