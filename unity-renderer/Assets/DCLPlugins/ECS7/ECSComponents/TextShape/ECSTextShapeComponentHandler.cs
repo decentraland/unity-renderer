@@ -61,7 +61,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
         textComponent.OnPreRenderText -= OnTextRendererUpdated;
-        renderersInternalComponent.RemoveRenderer(scene, entity, textRenderer);
+        renderersInternalComponent.RemoveFor(scene, entity);
 
         fontPromiseKeeper.Forget(fontPromise);
 

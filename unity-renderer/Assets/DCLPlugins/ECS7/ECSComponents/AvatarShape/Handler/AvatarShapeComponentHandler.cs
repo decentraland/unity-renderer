@@ -45,7 +45,7 @@ namespace DCL.ECSComponents
                 return;
 
             avatar.internalAvatar.OnCombinedRendererUpdate -= OnCombinedRendererUpdate;
-            renderersInternalComponent.RemoveRenderer(scene, entity, avatar.internalAvatar.GetMainRenderer());
+            renderersInternalComponent.RemoveFor(scene, entity);
 
             avatar.Cleanup();
             pool.Release(poolableObject);
