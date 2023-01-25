@@ -23,8 +23,6 @@ public class ShowHideAnimator : MonoBehaviour
 
     private void Awake()
     {
-        RemoveOldAnimator();
-
         if (canvasGroup == null)
             canvasGroup = GetComponent<CanvasGroup>();
 
@@ -35,15 +33,6 @@ public class ShowHideAnimator : MonoBehaviour
     {
         if (hideOnEnable)
             Hide(instant: true);
-    }
-
-    private void RemoveOldAnimator()
-    {
-        if (TryGetComponent(out Animator animator))
-        {
-            Debug.LogWarning($"Removing old Animator on UI {gameObject.name}. Consider to remove it on the prefab level!", gameObject);
-            Destroy(animator);
-        }
     }
 
     public void Show(bool instant = false)
