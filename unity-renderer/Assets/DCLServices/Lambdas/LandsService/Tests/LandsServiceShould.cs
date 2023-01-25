@@ -34,6 +34,7 @@ namespace DCLServices.Lambdas.LandsService.Tests
 
             lambdasService.Received(1)
                           .Get<LandsResponse>(
+                               LandsService.END_POINT,
                                LandsService.END_POINT + ADDRESS,
                                LandsService.TIMEOUT,
                                LandsService.ATTEMPTS_NUMBER,

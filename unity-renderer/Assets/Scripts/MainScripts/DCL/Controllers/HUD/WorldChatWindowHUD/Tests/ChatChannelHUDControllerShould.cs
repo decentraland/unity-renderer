@@ -1,6 +1,7 @@
 using System;
 using DCL.Chat.Channels;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;

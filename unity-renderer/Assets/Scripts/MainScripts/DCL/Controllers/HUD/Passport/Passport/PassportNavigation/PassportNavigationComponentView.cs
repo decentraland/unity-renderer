@@ -14,9 +14,20 @@ namespace DCL.Social.Passports
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string linksRegex = @"\[(.*?)\)";
-        private const string linkTitleRegex = @"(?<=\[).+?(?=\])";
-        private const string linkRegex = @"(?<=\().+?(?=\))";
+        private const string LINKS_REGEX = @"\[(.*?)\)";
+        private const string LINK_TITLE_REGEX = @"(?<=\[).+?(?=\])";
+        private const string LINK_REGEX = @"(?<=\().+?(?=\))";
+        private const string OWN_PLAYER = "\n         You don't ";
+        private const string OTHER_PLAYERS = "\n         This person doesn't ";
+        private const string NO_WEARABLES_TEXT = "own any Wearables yet.";
+        private const string NO_EMOTES_TEXT = "own any Emotes yet.";
+        private const string NO_NAMES_TEXT = "own any NAMEs yet.";
+        private const string NO_LANDS_TEXT = "own any LANDs yet.";
+        private const string NAME_TYPE = "name";
+        private const string EMOTE_TYPE = "emote";
+        private const string LEGENDARY_RARITY = "legendary";
+        private const string LAND_RARITY = "land";
+        private const int PAGE_SIZE = 4;
 
         [SerializeField] private GameObject aboutPanel;
         [SerializeField] private GameObject wearablesPanel;
@@ -31,16 +42,16 @@ namespace DCL.Social.Passports
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private GameObject emptyDescriptionGO;
         [SerializeField] private CarouselComponentView nftWearablesCarousel;
-        [SerializeField] private GameObject emptyWearablesText;
+        [SerializeField] private TMP_Text emptyWearablesText;
         [SerializeField] private GameObject nftWearablesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftEmotesCarousel;
-        [SerializeField] private GameObject emptyEmotesText;
+        [SerializeField] private TMP_Text emptyEmotesText;
         [SerializeField] private GameObject nftEmotesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftNamesCarousel;
-        [SerializeField] private GameObject emptyNamesText;
+        [SerializeField] private TMP_Text emptyNamesText;
         [SerializeField] private GameObject nftNamesLoadingSpinner;
         [SerializeField] private CarouselComponentView nftLandsCarousel;
-        [SerializeField] private GameObject emptyLandsText;
+        [SerializeField] private TMP_Text emptyLandsText;
         [SerializeField] private GameObject nftLandsLoadingSpinner;
         [SerializeField] private Transform nftWearablesCarouselContent;
         [SerializeField] private Transform nftEmotesCarouselContent;
@@ -146,9 +157,18 @@ namespace DCL.Social.Passports
             blockedUsernameText.text = $"{username} {BLOCKED_TEXT}";
         }
 
+        public void SetOwnUserTexts(bool isOwnUser)
+        {
+            string prefix = isOwnUser ? OWN_PLAYER : OTHER_PLAYERS;
+            emptyWearablesText.text = $"{prefix}{NO_WEARABLES_TEXT}";
+            emptyEmotesText.text = $"{prefix}{NO_EMOTES_TEXT}";
+            emptyNamesText.text = $"{prefix}{NO_NAMES_TEXT}";
+            emptyLandsText.text = $"{prefix}{NO_LANDS_TEXT}";
+        }
+
         public void SetDescription(string description)
         {
-            MatchCollection matchCollection = Regex.Matches(description, linksRegex, RegexOptions.IgnoreCase);
+            MatchCollection matchCollection = Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase);
             List<string> links = new List<string>();
 
             foreach (Match link in matchCollection)
@@ -183,8 +203,8 @@ namespace DCL.Social.Passports
             {
                 PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
                 newLink.OnClickLink -= ClickedLink;
-                newLink.SetLinkTitle(Regex.Matches(link, linkTitleRegex, RegexOptions.IgnoreCase)[0].Value);
-                newLink.SetLink(Regex.Matches(link, linkRegex, RegexOptions.IgnoreCase)[0].Value);
+                newLink.SetLinkTitle(Regex.Matches(link, LINK_TITLE_REGEX, RegexOptions.IgnoreCase)[0].Value);
+                newLink.SetLink(Regex.Matches(link, LINK_REGEX, RegexOptions.IgnoreCase)[0].Value);
                 newLink.OnClickLink += ClickedLink;
             }
         }
@@ -239,10 +259,10 @@ namespace DCL.Social.Passports
         {
             nftWearablesCarousel.gameObject.SetActive(wearables.Length > 0);
             nftWearablesCarousel.CleanInstantiatedItems();
-            emptyWearablesText.SetActive(wearables.Length <= 0);
+            emptyWearablesText.gameObject.SetActive(wearables.Length <= 0);
             ownedNftWearablePageViews.Clear();
 
-            for (int i = 0; i < wearables.Length; i += 4)
+            for (int i = 0; i < wearables.Length; i += PAGE_SIZE)
             {
                 NftPageView nftPageView = CreateWearablePageView(wearables, i);
                 ownedNftWearablePageViews.Add(nftPageView);
@@ -257,9 +277,9 @@ namespace DCL.Social.Passports
         {
             nftEmotesCarousel.gameObject.SetActive(wearables.Length > 0);
             nftEmotesCarousel.CleanInstantiatedItems();
-            emptyEmotesText.SetActive(wearables.Length <= 0);
+            emptyEmotesText.gameObject.SetActive(wearables.Length <= 0);
 
-            for (int i = 0; i < wearables.Length; i += 4)
+            for (int i = 0; i < wearables.Length; i += PAGE_SIZE)
             {
                 NftPageView nftPageView = CreateEmotePageView(wearables, i);
                 ownedNftEmotePageViews.Add(nftPageView);
@@ -274,9 +294,9 @@ namespace DCL.Social.Passports
         {
             nftNamesCarousel.gameObject.SetActive(names.Length > 0);
             nftNamesCarousel.CleanInstantiatedItems();
-            emptyNamesText.SetActive(names.Length <= 0);
+            emptyNamesText.gameObject.SetActive(names.Length <= 0);
 
-            for (int i = 0; i < names.Length; i += 4)
+            for (int i = 0; i < names.Length; i += PAGE_SIZE)
             {
                 PoolableObject nftPagePoolElement = nftPagesEntryPool.Get();
                 nftPagesPoolableQueue.Add(nftPagePoolElement);
@@ -293,9 +313,9 @@ namespace DCL.Social.Passports
         {
             nftLandsCarousel.gameObject.SetActive(lands.Length > 0);
             nftLandsCarousel.CleanInstantiatedItems();
-            emptyLandsText.SetActive(lands.Length <= 0);
+            emptyLandsText.gameObject.SetActive(lands.Length <= 0);
 
-            for (int i = 0; i < lands.Length; i += 4)
+            for (int i = 0; i < lands.Length; i += PAGE_SIZE)
             {
                 NftPageView nftPageView = CreateLandPageView(lands, i);
                 nftLandsCarousel.AddItem(nftPageView);
@@ -392,16 +412,16 @@ namespace DCL.Social.Passports
         public override void RefreshControl() { }
 
         public void SetCollectibleWearablesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftWearablesCarousel, emptyWearablesText, nftWearablesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftWearablesCarousel, emptyWearablesText.gameObject, nftWearablesLoadingSpinner);
 
         public void SetCollectibleEmotesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftEmotesCarousel, emptyEmotesText, nftEmotesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftEmotesCarousel, emptyEmotesText.gameObject, nftEmotesLoadingSpinner);
 
         public void SetCollectibleNamesLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftNamesCarousel, emptyNamesText, nftNamesLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftNamesCarousel, emptyNamesText.gameObject, nftNamesLoadingSpinner);
 
         public void SetCollectibleLandsLoadingActive(bool isActive) =>
-            SetCollectibleSectionLoadingActive(isActive, nftLandsCarousel, emptyLandsText, nftLandsLoadingSpinner);
+            SetCollectibleSectionLoadingActive(isActive, nftLandsCarousel, emptyLandsText.gameObject, nftLandsLoadingSpinner);
 
         private void SetCollectibleSectionLoadingActive(
             bool isActive,
@@ -423,20 +443,19 @@ namespace DCL.Social.Passports
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-            NFTIconComponentModel[] pageElements = CreateNamePageElements(names, i, out (string, string)[] nftIds);
-            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            NFTIconComponentModel[] pageElements = CreateNamePageElements(names, i);
+            nftPageView.SetPageElementsContent(pageElements);
             nftPageView.IsNftInfoActived = false;
             nftPageView.OnClickBuyNft += ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;
             return nftPageView;
         }
 
-        private static NFTIconComponentModel[] CreateNamePageElements(NamesResponse.NameEntry[] names, int i, out (string, string)[] nftIds)
+        private static NFTIconComponentModel[] CreateNamePageElements(NamesResponse.NameEntry[] names, int i)
         {
-            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-            nftIds = new (string, string)[4];
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[PAGE_SIZE];
 
-            for (var j = 0; j < 4; j++)
+            for (var j = 0; j < PAGE_SIZE; j++)
             {
                 if (names.Length > i + j && names[i + j] != null)
                 {
@@ -444,19 +463,17 @@ namespace DCL.Social.Passports
                     {
                         showMarketplaceButton = true,
                         showType = true,
-                        type = "name",
+                        type = NAME_TYPE,
                         marketplaceURI = "",
                         name = names[i + j].Name,
-                        rarity = "legendary",
-                        imageURI = ""
+                        rarity = LEGENDARY_RARITY,
+                        imageURI = "",
+                        nftId = (names[i + j].ContractAddress, NAME_TYPE)
                     };
-
-                    nftIds[j] = (names[i + j].ContractAddress, "name");
                 }
                 else
                 {
                     pageElements[j] = null;
-                    nftIds[j] = ("", "");
                 }
             }
 
@@ -471,11 +488,10 @@ namespace DCL.Social.Passports
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-            (string, string)[] nftIds = new (string, string)[4];
-            WearableItem[] wearableItemsForThisPage = new WearableItem[4];
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[PAGE_SIZE];
+            WearableItem[] wearableItemsForThisPage = new WearableItem[PAGE_SIZE];
 
-            for (int j = 0; j < 4; j++)
+            for (int j = 0; j < PAGE_SIZE; j++)
             {
                 if (wearables.Length > i + j && wearables[i + j] != null)
                 {
@@ -487,21 +503,19 @@ namespace DCL.Social.Passports
                         marketplaceURI = "",
                         name = wearables[i + j].GetName(),
                         rarity = wearables[i + j].rarity,
-                        imageURI = wearables[i + j].ComposeThumbnailUrl()
+                        imageURI = wearables[i + j].ComposeThumbnailUrl(),
+                        nftId = (wearables[i + j].id, wearables[i + j].data.category)
                     };
-
-                    nftIds[j] = (wearables[i + j].id, wearables[i + j].data.category);
                     wearableItemsForThisPage[j] = wearables[i + j];
                 }
                 else
                 {
                     pageElements[j] = null;
-                    nftIds[j] = ("", "");
                     wearableItemsForThisPage[j] = null;
                 }
             }
 
-            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.SetPageElementsContent(pageElements);
             nftPageView.IsNftInfoActived = true;
             nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, true);
             nftPageView.OnClickBuyNft += ClickOnBuyWearable;
@@ -517,11 +531,10 @@ namespace DCL.Social.Passports
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-            (string, string)[] nftIds = new (string, string)[4];
-            WearableItem[] wearableItemsForThisPage = new WearableItem[4];
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[PAGE_SIZE];
+            WearableItem[] wearableItemsForThisPage = new WearableItem[PAGE_SIZE];
 
-            for (var j = 0; j < 4; j++)
+            for (var j = 0; j < PAGE_SIZE; j++)
             {
                 if (wearables.Length > i + j && wearables[i + j] != null)
                 {
@@ -529,25 +542,24 @@ namespace DCL.Social.Passports
                     {
                         showMarketplaceButton = true,
                         showType = true,
-                        type = "emote",
+                        type = EMOTE_TYPE,
                         marketplaceURI = "",
                         name = wearables[i + j].GetName(),
                         rarity = wearables[i + j].rarity,
-                        imageURI = wearables[i + j].ComposeThumbnailUrl()
+                        imageURI = wearables[i + j].ComposeThumbnailUrl(),
+                        nftId = (wearables[i + j].id, EMOTE_TYPE)
                     };
 
-                    nftIds[j] = (wearables[i + j].id, "emote");
                     wearableItemsForThisPage[j] = wearables[i + j];
                 }
                 else
                 {
                     pageElements[j] = null;
-                    nftIds[j] = ("", "");
                     wearableItemsForThisPage[j] = null;
                 }
             }
 
-            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.SetPageElementsContent(pageElements);
             nftPageView.IsNftInfoActived = true;
             nftPageView.ConfigureNFTItemInfo(nftItemInfo, wearableItemsForThisPage, false);
             nftPageView.OnClickBuyNft += ClickOnBuyWearable;
@@ -563,10 +575,9 @@ namespace DCL.Social.Passports
             NftPageView nftPageView = nftPagePoolElement.gameObject.GetComponent<NftPageView>();
             nftPageView.OnClickBuyNft -= ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf -= FocusAnyNtfItem;
-            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[4];
-            (string, string)[] nftIds = new (string, string)[4];
+            NFTIconComponentModel[] pageElements = new NFTIconComponentModel[PAGE_SIZE];
 
-            for (int j = 0; j < 4; j++)
+            for (int j = 0; j < PAGE_SIZE; j++)
             {
                 if (lands.Length > i + j && lands[i + j] != null)
                 {
@@ -577,20 +588,18 @@ namespace DCL.Social.Passports
                         type = lands[i + j].Category,
                         marketplaceURI = "",
                         name = !string.IsNullOrEmpty(lands[i + j].Name) ? lands[i + j].Name : lands[i + j].Category,
-                        rarity = "land",
-                        imageURI = lands[i + j].Image
+                        rarity = LAND_RARITY,
+                        imageURI = lands[i + j].Image,
+                        nftId = (lands[i + j].ContractAddress, lands[i + j].Category)
                     };
-
-                    nftIds[j] = (lands[i + j].ContractAddress, lands[i + j].Category);
                 }
                 else
                 {
                     pageElements[j] = null;
-                    nftIds[j] = ("", "");
                 }
             }
 
-            nftPageView.SetPageElementsContent(pageElements, nftIds);
+            nftPageView.SetPageElementsContent(pageElements);
             nftPageView.IsNftInfoActived = false;
             nftPageView.OnClickBuyNft += ClickOnBuyWearable;
             nftPageView.OnFocusAnyNtf += FocusAnyNtfItem;

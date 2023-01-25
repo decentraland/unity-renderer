@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using System;
@@ -216,6 +217,7 @@ public class PlayerInfoCardHUDController : IHUD
             if (playerInfoCardVisibleState.Get())
                 socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
 
+            CommonScriptableObjects.playerInfoCardVisibleState.Set(false);
             view.SetCardActive(false);
             wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
@@ -227,6 +229,7 @@ public class PlayerInfoCardHUDController : IHUD
             TaskUtils.Run(async () =>
                      {
                          await AsyncSetUserProfile(currentUserProfile);
+                         CommonScriptableObjects.playerInfoCardVisibleState.Set(true);
                          view.SetCardActive(true);
                          socialAnalytics.SendPassportOpen();
                      })

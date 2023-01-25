@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;

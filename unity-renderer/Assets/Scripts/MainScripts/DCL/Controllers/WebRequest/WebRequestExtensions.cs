@@ -17,6 +17,10 @@ namespace DCL
                    request.responseCode < 600;
         }
 
+        public static bool WebRequestTimedOut(this UnityWebRequest request) =>
+            request != null &&
+            request.error == "Request timeout";
+
         public static bool WebRequestAborted(this UnityWebRequest request)
         {
             return request != null &&

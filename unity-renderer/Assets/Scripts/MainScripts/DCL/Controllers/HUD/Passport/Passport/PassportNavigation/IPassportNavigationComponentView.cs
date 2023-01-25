@@ -11,6 +11,7 @@ namespace DCL.Social.Passports
         void InitializeView();
         void SetGuestUser(bool isGuest);
         void SetName(string username);
+        void SetOwnUserTexts(bool isOwnUser);
         void SetDescription(string description);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
@@ -23,5 +24,6 @@ namespace DCL.Social.Passports
         void SetCollectibleLandsLoadingActive(bool isActive);
         void SetHasBlockedOwnUser(bool isBlocked);
         void CloseAllNFTItemInfos();
+        void SetInitialPage();
     }
 }

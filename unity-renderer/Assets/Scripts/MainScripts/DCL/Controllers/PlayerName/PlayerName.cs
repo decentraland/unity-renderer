@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ProfanityFiltering;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
@@ -42,6 +44,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     private bool renderersVisible;
     private bool isNameClaimed;
     private bool isUserGuest;
+    private IProfanityFilter profanityFilter;
 
     // TODO: remove this property, is only used on tests
     internal float Alpha
@@ -179,15 +182,22 @@ public class PlayerName : MonoBehaviour, IPlayerName
         currentName = name;
         isNameClaimed = isClaimed;
         isUserGuest = isGuest;
+
+        if (name == null) return;
+
         name = await FilterName(currentName);
         nameText.text = GetNameWithColorCodes(isClaimed, isGuest, name);
         background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
     }
 
-    private async UniTask<string> FilterName(string name) =>
-        IsProfanityFilteringEnabled()
-            ? await ProfanityFilterSharedInstances.regexFilter.Filter(name)
+    private async UniTask<string> FilterName(string name)
+    {
+        profanityFilter ??= Environment.i.serviceLocator.Get<IProfanityFilter>();
+
+        return IsProfanityFilteringEnabled()
+            ? await profanityFilter.Filter(name)
             : name;
+    }
 
     private bool IsProfanityFilteringEnabled() =>
         DataStore.i.settings.profanityChatFilteringEnabled.Get();
@@ -208,7 +218,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal void Update(float deltaTime)
     {
-        if (hideConstraints.Count > 0)
+        if (hideConstraints.Count > 0 || currentName == null)
         {
             UpdateVisuals(0);
             return;

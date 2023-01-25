@@ -10,7 +10,9 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
+using DCLPlugins.SentryPlugin;
 using DCLPlugins.UIRefresherPlugin;
 
 namespace DCL
@@ -50,7 +52,10 @@ namespace DCL
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
+            pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
 
+
+            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 

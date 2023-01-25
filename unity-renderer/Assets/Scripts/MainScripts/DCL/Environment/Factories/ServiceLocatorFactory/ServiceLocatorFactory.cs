@@ -3,12 +3,17 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
+using DCL.Providers;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.Services;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Helpers.SentryUtils;
+using System.Collections.Generic;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
 
@@ -33,6 +38,7 @@ namespace DCL
             result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
+            result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
@@ -52,9 +58,24 @@ namespace DCL
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
 
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
+
+            // Asset Providers
+            result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
+                { AssetSource.WEB, new AssetTextureWebLoader() }
+            }, DataStore.i.featureFlags));
+
+            result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
+            {
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
+            }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
+
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 

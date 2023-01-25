@@ -344,6 +344,11 @@ namespace DCL.Components
                 if ( coroutine != null )
                     CoroutineStarter.Stop(coroutine);
             }
+            
+            albedoDCLTexture = null;
+            alphaDCLTexture = null;
+            emissiveDCLTexture = null;
+            bumpDCLTexture = null;
 
             base.Dispose();
         }
