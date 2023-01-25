@@ -110,7 +110,9 @@ namespace DCLServices.WearablesCatalogService
         {
             if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
-                wearablesInUseCounters[wearableId]++;
+                if (wearablesInUseCounters.ContainsKey(wearableId))
+                    wearablesInUseCounters[wearableId]++;
+
                 return wearable;
             }
 
@@ -191,7 +193,9 @@ namespace DCLServices.WearablesCatalogService
             foreach (WearableItem wearableItem in wearables)
             {
                 WearablesCatalog[wearableItem.id] = wearableItem;
-                wearablesInUseCounters[wearableItem.id] = 10000; //A high value to ensure they are not removed
+
+                if (wearablesInUseCounters.ContainsKey(wearableItem.id))
+                    wearablesInUseCounters[wearableItem.id] = 10000; //A high value to ensure they are not removed
             }
         }
 
