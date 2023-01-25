@@ -98,11 +98,7 @@ namespace DCL.Social.Friends
 
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
-                catch (OperationCanceledException)
-                {
-                    view.Show();
-                }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     e.ReportFriendRequestErrorToAnalyticsAsSender(recipientId, dataStore.HUDs.sendFriendRequestSource.Get().ToString(),
                         userProfileBridge, socialAnalytics);

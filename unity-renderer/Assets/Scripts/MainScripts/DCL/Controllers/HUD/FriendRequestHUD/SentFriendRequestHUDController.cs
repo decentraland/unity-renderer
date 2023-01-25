@@ -108,11 +108,7 @@ namespace DCL.Social.Friends
 
                     view.Close();
                 }
-                catch (OperationCanceledException)
-                {
-                    view.Show();
-                }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
                     view.Show();

@@ -130,10 +130,6 @@ namespace DCL.Social.Friends
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
-                catch (OperationCanceledException)
-                {
-                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
-                }
                 catch (Exception e)
                 {
                     e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
@@ -164,11 +160,7 @@ namespace DCL.Social.Friends
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
-                catch (OperationCanceledException)
-                {
-                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
-                }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
                     dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
