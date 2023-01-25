@@ -128,7 +128,7 @@ public class UserProfileController : MonoBehaviour
         cancellationToken.ThrowIfCancellationRequested();
 
         if (pendingUserProfileTasks.TryGetValue(userId, out var existingTask))
-            existingTask.TrySetCanceled();
+            return existingTask.Task;
 
         var task = new UniTaskCompletionSource<UserProfile>();
         cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
