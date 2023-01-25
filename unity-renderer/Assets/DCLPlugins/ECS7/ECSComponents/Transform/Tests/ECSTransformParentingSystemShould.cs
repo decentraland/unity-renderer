@@ -22,8 +22,9 @@ namespace Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>(),
-                Substitute.For<BaseVariable<Vector3>>(), Substitute.For<InternalECSComponent<InternalSceneBoundsCheck>>());
+            var sbcInternalComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
+            ECSTransformParentingSystem.internalSceneBoundsCheckComponent = sbcInternalComponent;
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>(), sbcInternalComponent);
         }
 
         [TearDown]
