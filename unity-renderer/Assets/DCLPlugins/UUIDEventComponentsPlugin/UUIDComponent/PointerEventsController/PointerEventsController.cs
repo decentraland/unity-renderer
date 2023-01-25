@@ -31,7 +31,6 @@ namespace DCL
         RaycastHit hitInfo;
         PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
         List<RaycastResult> uiGraphicRaycastResults = new List<RaycastResult>();
-        private readonly List<RaycastResult> dclHUDsRaycastResults = new List<RaycastResult>();
         GraphicRaycaster uiGraphicRaycaster;
 
         private IRaycastPointerClickHandler clickHandler;
@@ -39,16 +38,16 @@ namespace DCL
         private readonly MouseCatcher mouseCatcher;
 
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
-        private DataStore_HUDs dataStoreHuds = DataStore.i.HUDs;
-        private DataStore_ExploreV2 dataStoreExploreV2 = DataStore.i.exploreV2;
+
         private StandaloneInputModuleDCL eventSystemInputModule;
+
+        private StandaloneInputModuleDCL eventSystemInputModuleLazy => eventSystemInputModule ??= (StandaloneInputModuleDCL) EventSystem.current.currentInputModule;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy,
             InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
         {
             this.inputControllerLegacy = inputControllerLegacy;
             this.mouseCatcher = mouseCatcher;
-            eventSystemInputModule = (StandaloneInputModuleDCL) EventSystem.current.currentInputModule;
             pointerHoverController = new PointerHoverController(inputControllerLegacy, hoverCanvas);
 
             pointerHoverController.OnPointerHoverStarts += SetHoverCursor;
@@ -81,8 +80,6 @@ namespace DCL
                 return;
 
             Type typeToUse = typeof(IPointerEvent);
-
-            uiGraphicRaycastPointerEventData.position = Utils.IsCursorLocked ? new Vector2(Screen.width / 2, Screen.height / 2) : Input.mousePosition;
 
             if (!Utils.IsCursorLocked)
             {
@@ -252,16 +249,7 @@ namespace DCL
                 if (!renderingEnabled)
                     return;
 
-                if (Utils.LockedThisFrame())
-                {
-                    // New interaction model
-                    if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhenLockedThisFrame())
-                    {
-                        UnhoverLastHoveredObject();
-                        return;
-                    }
-                }
-                else if(!Utils.IsCursorLocked)
+                if (Utils.LockedThisFrame() || !Utils.IsCursorLocked)
                 {
                     // New interaction model
                     if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("avatar_outliner") || !CanRaycastWhileUnlocked())
@@ -270,7 +258,6 @@ namespace DCL
                         return;
                     }
                 }
-
             }
 
             if (charCamera == null)
@@ -578,21 +565,8 @@ namespace DCL
         private static void SetNormalCursor() =>
             DataStore.i.Get<DataStore_Cursor>().cursorType.Set(DataStore_Cursor.CursorType.NORMAL);
 
-        private bool CanRaycastWhenLockedThisFrame()
-        {
-            dclHUDsRaycastResults.Clear();
-            EventSystem.current.RaycastAll(uiGraphicRaycastPointerEventData, dclHUDsRaycastResults);
-
-            return dclHUDsRaycastResults.Count switch
-                   {
-                       0 => true,
-                       1 => mouseCatcher.IsEqualsToRaycastTarget(dclHUDsRaycastResults[0].gameObject),
-                       _ => false,
-                   };
-        }
-
         private bool CanRaycastWhileUnlocked() =>
             mouseCatcher.IsEqualsToRaycastTarget(
-                eventSystemInputModule.GetPointerData().pointerCurrentRaycast.gameObject);
+                eventSystemInputModuleLazy.GetPointerData().pointerCurrentRaycast.gameObject);
     }
 }
