@@ -11,6 +11,7 @@ namespace DCLServices.WearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
+        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?wearableId={wearableId}/";
         private const string WEARABLES_BY_OWNER_END_POINT = "collections/wearables-by-owner/{userId}?includeDefinitions=true/";
         private const string WEARABLES_BY_COLLECTION_END_POINT = "collections/wearables?collectionId={collectionId}/";
@@ -43,7 +44,7 @@ namespace DCLServices.WearablesCatalogService
             checkForUnusedWearablesCts = null;
         }
 
-        public async UniTask<WearableItem> RequestWearableAsync(string wearableId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
             if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -55,16 +56,16 @@ namespace DCLServices.WearablesCatalogService
             {
                 getWearablesByIdPagePointer[wearableId] = new (
                     WEARABLES_BY_ID_END_POINT.Replace("{wearableId}", wearableId),
-                    pageSize, ct, this);
+                    1, ct, this);
             }
 
-            var pageResponse = await getWearablesByIdPagePointer[wearableId].GetPageAsync(pageNumber, ct);
+            var pageResponse = await getWearablesByIdPagePointer[wearableId].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.Count > 0 ? pageResponse.response.wearables[0] : null;
         }
 
-        public async UniTask<WearableItem[]> RequestWearablesByOwnerAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (!getWearablesByOwnerPointer.ContainsKey(userId))
             {
@@ -79,16 +80,16 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
-        public async UniTask<WearableItem[]> RequestWearablesByCollectionAsync(string collectionId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            if (!getWearablesByCollectionPointer.ContainsKey(collectionId))
+            if (!getWearablesByCollectionPointer.ContainsKey(BASE_WEARABLES_COLLECTION_ID))
             {
-                getWearablesByCollectionPointer[collectionId] = new (
-                    WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", collectionId),
-                    pageSize, ct, this);
+                getWearablesByCollectionPointer[BASE_WEARABLES_COLLECTION_ID] = new (
+                    WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
+                    1, ct, this);
             }
 
-            var pageResponse = await getWearablesByCollectionPointer[collectionId].GetPageAsync(pageNumber, ct);
+            var pageResponse = await getWearablesByCollectionPointer["urn:decentraland:off-chain:base-avatars"].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.ToArray();

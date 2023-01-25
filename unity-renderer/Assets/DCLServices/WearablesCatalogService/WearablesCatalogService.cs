@@ -32,14 +32,14 @@ namespace DCLServices.WearablesCatalogService
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
 
-        public UniTask<WearableItem> RequestWearableAsync(string wearableId, int pageNumber, int pageSize, CancellationToken ct) =>
-            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, pageNumber, pageSize, ct);
+        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
 
-        public UniTask<WearableItem[]> RequestWearablesByOwnerAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
-            wearablesCatalogServiceInUse.RequestWearablesByOwnerAsync(userId, pageNumber, pageSize, ct);
+        public UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, ct);
 
-        public UniTask<WearableItem[]> RequestWearablesByCollectionAsync(string collectionId, int pageNumber, int pageSize, CancellationToken ct) =>
-            wearablesCatalogServiceInUse.RequestWearablesByCollectionAsync(collectionId, pageNumber, pageSize, ct);
+        public UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
 
         public void AddWearablesToCatalog(WearableItem[] wearableItems) =>
             wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);

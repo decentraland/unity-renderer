@@ -9,9 +9,9 @@ namespace DCLServices.WearablesCatalogService
     {
         BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        UniTask<WearableItem> RequestWearableAsync(string wearableId, int pageNumber, int pageSize, CancellationToken ct);
-        UniTask<WearableItem[]> RequestWearablesByOwnerAsync(string userId, int pageNumber, int pageSize, CancellationToken ct);
-        UniTask<WearableItem[]> RequestWearablesByCollectionAsync(string collectionId, int pageNumber, int pageSize, CancellationToken ct);
+        UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct);
+        UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct);
+        UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct);
         void AddWearablesToCatalog(WearableItem[] wearableItems);
         void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds);
         void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove);

@@ -25,13 +25,13 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
-        public UniTask<WearableItem> RequestWearableAsync(string wearableId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        public UniTask<WearableItem[]> RequestWearablesByOwnerAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
             throw new NotImplementedException();
 
-        public UniTask<WearableItem[]> RequestWearablesByCollectionAsync(string collectionId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct) =>
             throw new NotImplementedException();
 
         public void AddWearablesToCatalog(WearableItem[] wearableItems)
