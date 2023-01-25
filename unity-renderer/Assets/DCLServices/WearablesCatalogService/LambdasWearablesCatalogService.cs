@@ -89,7 +89,7 @@ namespace DCLServices.WearablesCatalogService
                     1, ct, this);
             }
 
-            var pageResponse = await getWearablesByCollectionPointer["urn:decentraland:off-chain:base-avatars"].GetPageAsync(1, ct);
+            var pageResponse = await getWearablesByCollectionPointer[BASE_WEARABLES_COLLECTION_ID].GetPageAsync(1, ct);
             AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
 
             return pageResponse.response.wearables.ToArray();
@@ -103,7 +103,7 @@ namespace DCLServices.WearablesCatalogService
                     continue;
 
                 wearableItem.SanitizeHidesLists();
-                WearablesCatalog[wearableItem.id] = wearableItem;
+                WearablesCatalog.Add(wearableItem.id, wearableItem);
 
                 if (!wearablesInUseCounters.ContainsKey(wearableItem.id))
                     wearablesInUseCounters.Add(wearableItem.id, 1);
