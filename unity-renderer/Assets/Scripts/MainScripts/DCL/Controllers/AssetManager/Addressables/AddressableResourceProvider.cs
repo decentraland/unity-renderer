@@ -1,52 +1,35 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace DCL.Providers
 {
-    public class AddressableResourceProvider<T> : IAddressableResourceProvider<T>
+    public class AddressableResourceProvider : IAddressableResourceProvider
     {
-        private bool areAddressablesInitialized;
-
-        public AddressableResourceProvider()
+        public async UniTask<IList<T>> GetAddressablesList<T>(string key, CancellationToken cancellationToken = default)
         {
-            Addressables.InitializeAsync().Completed += AddressablesInitiated;
+            //This function does nothing if initialization has already occurred
+            await Addressables.InitializeAsync().WithCancellation(cancellationToken);
+
+            AsyncOperationHandle<IList<T>> request = Addressables.LoadAssetsAsync<T>(key, null);
+            await request.WithCancellation(cancellationToken);
+            return request.Result;
         }
 
-        public async UniTask<IList<T>> GetAddressablesList(string key, CancellationToken cancellationToken = default)
+        public async UniTask<T> GetAddressable<T>(string key, CancellationToken cancellationToken = default)
         {
-            await UniTask.WaitUntil(() => areAddressablesInitialized, cancellationToken: cancellationToken);
+            //This function does nothing if initialization has already occurred
+            await Addressables.InitializeAsync().WithCancellation(cancellationToken);
 
-            AsyncOperationHandle<IList<T>> handler = Addressables.LoadAssetsAsync<T>(key, null);
-            await handler.Task;
-
-            if (handler.Status.Equals(AsyncOperationStatus.Succeeded))
-                return handler.Result;
-
-            return null;
+            AsyncOperationHandle<T> request = Addressables.LoadAssetAsync<T>(key);
+            await request.WithCancellation(cancellationToken);
+            return request.Result;
         }
 
-        public async UniTask<T> GetAddressable(string key, CancellationToken cancellationToken = default)
-        {
-            await UniTask.WaitUntil(() => areAddressablesInitialized, cancellationToken: cancellationToken);
+        public void Dispose() { }
 
-            try
-            {
-                AsyncOperationHandle<T> handler = Addressables.LoadAssetAsync<T>(key);
-                await handler.WithCancellation(cancellationToken);
-                return handler.Result;
-            }
-            catch (Exception e) { throw new Exception($"Addressable with {key} failed with message {e.Message}"); }
-        }
-
-        private void AddressablesInitiated(AsyncOperationHandle<IResourceLocator> obj)
-        {
-            Addressables.InitializeAsync().Completed -= AddressablesInitiated;
-            areAddressablesInitialized = true;
-        }
+        public void Initialize() { }
     }
 }

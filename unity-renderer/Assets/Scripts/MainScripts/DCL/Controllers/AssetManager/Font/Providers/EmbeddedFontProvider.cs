@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class EmbeddedFontProvider : IFontAssetProvider
 {
@@ -13,7 +14,7 @@ public class EmbeddedFontProvider : IFontAssetProvider
     private const string DEFAULT_SANS_SERIF_SEMIBOLD = "Inter-SemiBold SDF";
     private const string DEFAULT_SANS_SERIF = "Inter-Regular SDF";
 
-    private readonly Dictionary<string, string> fontsMapping = new Dictionary<string, string>()
+    private static readonly Dictionary<string, string> fontsMapping = new ()
     {
         { "builtin:SF-UI-Text-Regular SDF", DEFAULT_SANS_SERIF },
         { "builtin:SF-UI-Text-Heavy SDF", DEFAULT_SANS_SERIF_HEAVY },
@@ -25,20 +26,12 @@ public class EmbeddedFontProvider : IFontAssetProvider
         { "SansSerif_SemiBold", DEFAULT_SANS_SERIF_SEMIBOLD },
     };
 
-
     public async UniTask<TMP_FontAsset> GetFontAsync(string src, CancellationToken cancellationToken = default)
     {
         if (!fontsMapping.TryGetValue(src, out string fontResourceName))
             throw new Exception("Font doesn't correspond with any know font");
 
-        ResourceRequest request = Resources.LoadAsync($"{RESOURCE_FONT_FOLDER}/{fontResourceName}", typeof(TMP_FontAsset));
-
-        await request.WithCancellation(cancellationToken);
-
-        if (request.asset != null)
-            return request.asset as TMP_FontAsset;
-        else
-            return null;
+        Object result = await Resources.LoadAsync<TMP_FontAsset>($"{RESOURCE_FONT_FOLDER}/{fontResourceName}").WithCancellation(cancellationToken);
+        return (TMP_FontAsset)result;
     }
-
 }

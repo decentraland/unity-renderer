@@ -59,6 +59,10 @@ namespace DCL
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
 
+            //Addressable Resource Provider
+            var addressableResourceProvider = new AddressableResourceProvider();
+            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
+
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
@@ -74,7 +78,7 @@ namespace DCL
             result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
             {
                 { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
-                { AssetSource.ADDRESSABLE, new AddressableFontProvider() },
+                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
             }, DataStore.i.featureFlags));
 
             // HUD

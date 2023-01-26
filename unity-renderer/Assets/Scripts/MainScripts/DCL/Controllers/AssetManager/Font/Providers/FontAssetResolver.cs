@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.AssetManager.Font;
-using MainScripts.DCL.Controllers.AssetManager.Texture;
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,7 +12,6 @@ namespace DCL
 {
     public class FontAssetResolver : AssetResolverBase, IFontAssetResolver
     {
-
         private readonly IReadOnlyDictionary<AssetSource, IFontAssetProvider> providers;
 
         public FontAssetResolver(IReadOnlyDictionary<AssetSource, IFontAssetProvider> providers, DataStore_FeatureFlag featureFlags)
@@ -23,14 +22,13 @@ namespace DCL
 
         public async UniTask<FontResponse> GetFontAsync(AssetSource permittedSources, string url, CancellationToken cancellationToken = default)
         {
-             Exception lastException = null;
-             TMP_FontAsset font = null;
+            Exception lastException = null;
+            TMP_FontAsset font = null;
 
+            using PoolUtils.ListPoolRent<IFontAssetProvider> permittedSourcesRent = GetPermittedProviders(providers, permittedSources);
+            List<IFontAssetProvider> permittedProviders = permittedSourcesRent.GetList();
 
-            using var permittedSourcesRent = GetPermittedProviders(this.providers, permittedSources);
-            var permittedProviders = permittedSourcesRent.GetList();
-
-            foreach (var provider in permittedProviders)
+            foreach (IFontAssetProvider provider in permittedProviders)
             {
                 try
                 {
@@ -39,11 +37,11 @@ namespace DCL
                     if (font)
                     {
                         // The valid font is retrieved
-                        AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Texture {url} loaded from {provider}");
+                        AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Font {url} loaded from {provider}");
                         break;
                     }
 
-                    AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Texture {url} loaded from {provider} is null");
+                    AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Font {url} loaded from {provider} is null");
                 }
                 catch (Exception e)
                 {

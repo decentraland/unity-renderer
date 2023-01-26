@@ -1,11 +1,19 @@
 using Cysharp.Threading.Tasks;
-using DCL.Providers;
-using System;
 using System.Threading;
 using TMPro;
 
-public class AddressableFontProvider : AddressableResourceProvider<TMP_FontAsset>, IFontAssetProvider
+namespace DCL.Providers
 {
-    public UniTask<TMP_FontAsset> GetFontAsync(string url, CancellationToken cancellationToken = default)  =>
-        GetAddressable(url, cancellationToken);
+    public class AddressableFontProvider : IFontAssetProvider
+    {
+        private readonly AddressableResourceProvider addressableProvider;
+
+        public AddressableFontProvider(AddressableResourceProvider provider)
+        {
+            addressableProvider = provider;
+        }
+
+        public UniTask<TMP_FontAsset> GetFontAsync(string url, CancellationToken cancellationToken = default) =>
+            addressableProvider.GetAddressable<TMP_FontAsset>(url, cancellationToken);
+    }
 }

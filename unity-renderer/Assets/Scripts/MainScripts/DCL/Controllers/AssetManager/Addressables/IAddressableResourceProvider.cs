@@ -4,10 +4,10 @@ using System.Threading;
 
 namespace DCL.Providers
 {
-    public interface IAddressableResourceProvider<T>
+    public interface IAddressableResourceProvider : IService
     {
-        UniTask<IList<T>> GetAddressablesList(string key, CancellationToken cancellationToken = default);
+        UniTask<IList<T>> GetAddressablesList<T>(string key, CancellationToken cancellationToken = default);
 
-        UniTask<T> GetAddressable(string key, CancellationToken cancellationToken = default);
+        UniTask<T> GetAddressable<T>(string key, CancellationToken cancellationToken = default);
     }
 }
