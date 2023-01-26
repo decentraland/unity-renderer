@@ -41,7 +41,10 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            if (cancellationTokenSource != null) return;
+
             cancellationTokenSource = new CancellationTokenSource();
+            LaunchRequest().Forget();
 
             async UniTaskVoid LaunchRequest()
             {
@@ -55,8 +58,6 @@ namespace DCL
                 }
                 else { OnFail?.Invoke(result.GetFailResponse().Exception); }
             }
-
-            LaunchRequest().Forget();
         }
 
         protected override bool AddToLibrary()

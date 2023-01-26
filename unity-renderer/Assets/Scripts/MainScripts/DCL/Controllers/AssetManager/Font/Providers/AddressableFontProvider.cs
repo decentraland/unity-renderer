@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using TMPro;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DCL.Providers
 {
@@ -11,6 +13,7 @@ namespace DCL.Providers
         public AddressableFontProvider(AddressableResourceProvider provider)
         {
             addressableProvider = provider;
+            Debug.Log("AAAA " + Addressables.RuntimePath);
         }
 
         public UniTask<TMP_FontAsset> GetFontAsync(string url, CancellationToken cancellationToken = default) =>
