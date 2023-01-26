@@ -39,6 +39,7 @@ public class PlayerInfoCardHUDController : IHUD
     private CancellationTokenSource setUserProfileCancellationToken = new ();
     private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private double passportOpenStartTime;
+    private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
@@ -381,7 +382,7 @@ public class PlayerInfoCardHUDController : IHUD
 
     private bool CanBeFriends()
     {
-        return friendsController != null && friendsController.IsInitialized && currentUserProfile.hasConnectedWeb3;
+        return friendsController != null && friendsController.IsInitialized && currentUserProfile.hasConnectedWeb3 && isFriendsEnabled;
     }
 
     private async UniTaskVoid LoadAndShowWearables(UserProfile userProfile, CancellationToken cancellationToken)

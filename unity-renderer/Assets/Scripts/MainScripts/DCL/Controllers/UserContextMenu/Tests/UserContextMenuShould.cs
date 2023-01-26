@@ -1,3 +1,4 @@
+using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -31,6 +32,8 @@ public class UserContextMenuShould
             name = TEST_USER_ID,
             userId = TEST_USER_ID
         });
+
+        DataStore.i.featureFlags.flags.Set(new FeatureFlag { flags = { ["friends_enabled"] = true } });
 
         yield break;
     }
@@ -156,7 +159,7 @@ public class UserContextMenuShould
         Assert.IsFalse(contextMenu.friendRequestedContainer.activeSelf,
             "friendRequestedContainer should not be active");
         Assert.IsTrue(contextMenu.deleteFriendButton.gameObject.activeSelf, "deleteFriendButton should be active");
-        
+
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
         {
             userId = TEST_USER_ID,
@@ -184,7 +187,7 @@ public class UserContextMenuShould
         });
 
         Assert.IsFalse(contextMenu.messageButton.gameObject.activeSelf, "messageButton should not be active");
-        
+
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
         {
             userId = TEST_USER_ID,
@@ -192,7 +195,7 @@ public class UserContextMenuShould
         });
 
         Assert.IsTrue(contextMenu.messageButton.gameObject.activeSelf, "messageButton should be active");
-        
+
         WhenFriendshipStatusUpdates(new FriendshipUpdateStatusMessage
         {
             userId = TEST_USER_ID,
@@ -201,7 +204,7 @@ public class UserContextMenuShould
 
         Assert.IsFalse(contextMenu.messageButton.gameObject.activeSelf, "messageButton should not be active");
     }
-    
+
     private void WhenFriendshipStatusUpdates(FriendshipUpdateStatusMessage status)
     {
         friendsApiBridge.OnFriendshipStatusUpdated += Raise.Event<Action<FriendshipUpdateStatusMessage>>(

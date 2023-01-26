@@ -82,7 +82,8 @@ namespace DCL.ECSComponents
             {
                 materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                 {
-                    material = materialAsset.material
+                    material = materialAsset.material,
+                    castShadows = promiseModel.castShadows // FD:: added castShadow set
                 });
 
                 // Run task to forget previous material after update to avoid forgetting a
@@ -118,7 +119,7 @@ namespace DCL.ECSComponents
             AssetPromise_Material_Model.Texture? emissiveTexture, AssetPromise_Material_Model.Texture? bumpTexture)
         {
             return AssetPromise_Material_Model.CreatePBRMaterial(albedoTexture, alphaTexture, emissiveTexture, bumpTexture,
-                model.GetAlphaTest(), model.GetAlbedoColor().ToUnityColor(), model.GetEmissiveColor().ToUnityColor(),
+                model.GetAlphaTest(), model.GetCastShadows(), model.GetAlbedoColor().ToUnityColor(), model.GetEmissiveColor().ToUnityColor(),
                 model.GetReflectiveColor().ToUnityColor(), (AssetPromise_Material_Model.TransparencyMode)model.GetTransparencyMode(), model.GetMetallic(),
                 model.GetRoughness(), model.GetGlossiness(), model.GetSpecularIntensity(),
                 model.GetEmissiveIntensity(), model.GetDirectIntensity());

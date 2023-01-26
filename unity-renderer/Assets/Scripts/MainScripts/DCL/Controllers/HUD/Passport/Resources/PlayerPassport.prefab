@@ -9339,6 +9339,7 @@ MonoBehaviour:
     isBlocked: 0
     hasBlocked: 0
     friendshipStatus: 0
+    isFriendshipVisible: 0
   name: {fileID: 1750995632636747991}
   address: {fileID: 3431385152357898269}
   nameInOptionsPanel: {fileID: 2313361900714903975}
@@ -9352,6 +9353,7 @@ MonoBehaviour:
   cancelFriendRequestButton: {fileID: 3539354935361854780}
   acceptFriendButton: {fileID: 1556928558984779415}
   blockedFriendButton: {fileID: 6329467860429900791}
+  friendshipContainer: {fileID: 3257621660973361290}
   whisperButton: {fileID: 3884232551266363028}
   whisperNonFriendsPopup: {fileID: 2036723919353643394}
   onlineStatus: {fileID: 5036442527997073431}
