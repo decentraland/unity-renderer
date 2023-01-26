@@ -4,6 +4,7 @@ using DCL;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
 using DCL.Social.Friends;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -40,6 +41,7 @@ public class TaskbarHUDController : IHUD
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
+    private CancellationTokenSource openPrivateChatCancellationToken = new ();
 
     private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
@@ -715,15 +717,18 @@ public class TaskbarHUDController : IHUD
             OpenChatList();
         else
         {
-            async UniTaskVoid OpenPrivateChatAsync(string chatId)
+            async UniTaskVoid OpenPrivateChatAsync(string chatId, CancellationToken cancellationToken = default)
             {
-                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId);
+                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId, cancellationToken);
 
                 if (friendshipStatus == FriendshipStatus.FRIEND)
                     OpenPrivateChat(chatId);
             }
 
-            OpenPrivateChatAsync(chatId).Forget();
+            openPrivateChatCancellationToken.Cancel();
+            openPrivateChatCancellationToken.Dispose();
+            openPrivateChatCancellationToken = new CancellationTokenSource();
+            OpenPrivateChatAsync(chatId, openPrivateChatCancellationToken.Token).Forget();
         }
     }
 
@@ -782,6 +787,9 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
+
+        openPrivateChatCancellationToken.Cancel();
+        openPrivateChatCancellationToken.Dispose();
     }
 
     private void SetVisibility(bool visible, bool previus)
