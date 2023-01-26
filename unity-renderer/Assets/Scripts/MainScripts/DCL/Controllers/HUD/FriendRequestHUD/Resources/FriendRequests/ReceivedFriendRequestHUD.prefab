@@ -228,7 +228,6 @@ GameObject:
   - component: {fileID: 7339382428807018271}
   - component: {fileID: 7292645684685969132}
   - component: {fileID: 351237635069208207}
-  - component: {fileID: 7389418098635427799}
   - component: {fileID: 6404728534490617638}
   - component: {fileID: 1761717266965195563}
   - component: {fileID: 9033983865204291292}
@@ -347,26 +346,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!95 &7389418098635427799
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 361094936883607509}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!225 &6404728534490617638
 CanvasGroup:
   m_ObjectHideFlags: 0
