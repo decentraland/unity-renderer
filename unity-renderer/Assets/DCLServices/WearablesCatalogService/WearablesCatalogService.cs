@@ -11,14 +11,17 @@ namespace DCLServices.WearablesCatalogService
 
         private readonly IWearablesCatalogService lambdasWearablesCatalogService;
         private readonly IWearablesCatalogService webInterfaceWearablesCatalogService;
+        private readonly BaseDictionary<string, WearableItem> wearablesCatalog;
         private IWearablesCatalogService wearablesCatalogServiceInUse;
 
         public WearablesCatalogService(
             IWearablesCatalogService lambdasWearablesCatalogService,
-            IWearablesCatalogService webInterfaceWearablesCatalogService)
+            IWearablesCatalogService webInterfaceWearablesCatalogService,
+            BaseDictionary<string, WearableItem> wearablesCatalog)
         {
             this.lambdasWearablesCatalogService = lambdasWearablesCatalogService;
             this.webInterfaceWearablesCatalogService = webInterfaceWearablesCatalogService;
+            this.wearablesCatalog = wearablesCatalog;
         }
 
         public void Initialize()
@@ -42,11 +45,11 @@ namespace DCLServices.WearablesCatalogService
         public UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
 
-        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
-            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
-
         public UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
+
+        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
+            wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
 
         public void AddWearablesToCatalog(WearableItem[] wearableItems) =>
             wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);
@@ -69,16 +72,16 @@ namespace DCLServices.WearablesCatalogService
 
             if (currentKernelConfig.usingUrlParamsForDebug)
             {
+                WebInterfaceWearablesCatalogService.Instance.Initialize(new WearablesWebInterfaceBridge(), wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;
                 lambdasWearablesCatalogService?.Dispose();
             }
             else
             {
+                lambdasWearablesCatalogService.Initialize();
                 wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
                 webInterfaceWearablesCatalogService?.Dispose();
             }
-
-            wearablesCatalogServiceInUse.Initialize();
         }
     }
 }

@@ -42,7 +42,8 @@ namespace DCL
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogService(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables),
-                WebInterfaceWearablesCatalogService.Instance));
+                WebInterfaceWearablesCatalogService.Instance,
+                DataStore.i.common.wearables));
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());

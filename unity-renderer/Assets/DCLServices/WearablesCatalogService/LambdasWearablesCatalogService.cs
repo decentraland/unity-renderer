@@ -106,6 +106,19 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
+        public async UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
+        {
+            LambdaResponsePagePointer<WearableResponse> wearablesPagePointers = new (
+                WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
+                1, ct, this);
+
+            var pageResponse = await wearablesPagePointers.GetPageAsync(1, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
+            wearablesPagePointers.Dispose();
+
+            return pageResponse.response.wearables.ToArray();
+        }
+
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
             if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
@@ -136,19 +149,6 @@ namespace DCLServices.WearablesCatalogService
                 return taskResult != null ? await taskResult.Task : null;
             }
             catch (Exception e) when (e is not OperationCanceledException) { throw; }
-        }
-
-        public async UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
-        {
-            LambdaResponsePagePointer<WearableResponse> wearablesPagePointers = new (
-                WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
-                1, ct, this);
-
-            var pageResponse = await wearablesPagePointers.GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
-            wearablesPagePointers.Dispose();
-
-            return pageResponse.response.wearables.ToArray();
         }
 
         public void AddWearablesToCatalog(WearableItem[] wearableItems)
@@ -251,11 +251,11 @@ namespace DCLServices.WearablesCatalogService
                 foreach (WearableItem wearable in requestedWearables)
                 {
                     wearablesNotFound.Remove(wearable.id);
-                    ResolvePendingWearable(wearable.id, wearable);
+                    ResolvePendingWearableById(wearable.id, wearable);
                 }
 
                 foreach (string wearableNotFound in wearablesNotFound)
-                    ResolvePendingWearable(wearableNotFound, null);
+                    ResolvePendingWearableById(wearableNotFound, null);
             }
         }
 
@@ -275,7 +275,7 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string expiredRequestId in expiredRequests)
                 {
                     pendingWearableRequestedTimes.Remove(expiredRequestId);
-                    ResolvePendingWearable(expiredRequestId, null,
+                    ResolvePendingWearableById(expiredRequestId, null,
                         $"The request for the wearable '{expiredRequestId}' has exceed the set timeout!");
                 }
             }
@@ -298,7 +298,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        private void ResolvePendingWearable(string wearableId, WearableItem result, string errorMessage = "")
+        private void ResolvePendingWearableById(string wearableId, WearableItem result, string errorMessage = "")
         {
             if (!awaitingWearableTasks.TryGetValue(wearableId, out var task))
                 return;
