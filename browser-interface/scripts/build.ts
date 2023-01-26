@@ -47,11 +47,8 @@ async function main() {
 }
 
 async function copyBuiltFiles() {
-  const streamingAssetsPath = path.resolve(process.env.BUILD_PATH!, "StreamingAssets")
-  const streamingAssetsDistPath = path.resolve(DIST_PATH, "StreamingAssets")
-  for (let file of glob.sync("**/*", { cwd: streamingAssetsPath, absolute: true })) {
-    copyFile(file, path.resolve(streamingAssetsDistPath, file.replace(streamingAssetsPath + "/", "./")))
-  }
+  for (let file of glob.sync("**/*", { cwd: process.env.BUILD_PATH!, absolute: true })) {
+    copyFile(file, path.resolve(DIST_PATH, file.replace(process.env.BUILD_PATH! + "/", "./")))
   
   const basePath = path.resolve(process.env.BUILD_PATH!, "Build")
 
