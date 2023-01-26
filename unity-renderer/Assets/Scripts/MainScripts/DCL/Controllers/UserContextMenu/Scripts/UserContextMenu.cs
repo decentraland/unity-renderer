@@ -350,8 +350,8 @@ public class UserContextMenu : MonoBehaviour
 
     private void SetupFriendship(FriendshipStatus friendshipStatus)
     {
-        bool friendshipEnabled = (currentConfigFlags & MenuConfigFlags.Friendship) != 0;
-        bool messageEnabled = (currentConfigFlags & MenuConfigFlags.Message) != 0;
+        bool friendshipEnabled = (currentConfigFlags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled;
+        bool messageEnabled = (currentConfigFlags & MenuConfigFlags.Message) != 0 && isFriendsEnabled;
 
         if (friendshipStatus == FriendshipStatus.FRIEND)
         {
