@@ -163,8 +163,6 @@ namespace DCLServices.WearablesCatalogService
 
                 if (!wearablesInUseCounters.ContainsKey(wearableItem.id))
                     wearablesInUseCounters.Add(wearableItem.id, 1);
-
-                pendingWearableRequestedTimes.Remove(wearableItem.id);
             }
         }
 
@@ -249,14 +247,15 @@ namespace DCLServices.WearablesCatalogService
                 }
 
                 var requestedWearables = await RequestWearablesAsync(wearablesToRequest, ct);
+                List<string> wearablesNotFound = wearablesToRequest.ToList();
                 foreach (WearableItem wearable in requestedWearables)
                 {
-                    if (!awaitingWearableTasks.TryGetValue(wearable.id, out var task))
-                        continue;
-
-                    task.TrySetResult(wearable);
-                    awaitingWearableTasks.Remove(wearable.id);
+                    wearablesNotFound.Remove(wearable.id);
+                    ResolvePendingWearable(wearable.id, wearable);
                 }
+
+                foreach (string wearableNotFound in wearablesNotFound)
+                    ResolvePendingWearable(wearableNotFound, null);
             }
         }
 
@@ -276,11 +275,8 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string expiredRequestId in expiredRequests)
                 {
                     pendingWearableRequestedTimes.Remove(expiredRequestId);
-                    if (!awaitingWearableTasks.TryGetValue(expiredRequestId, out var task))
-                        continue;
-
-                    awaitingWearableTasks.Remove(expiredRequestId);
-                    task.TrySetException(new Exception($"The request for the wearable '{expiredRequestId}' has exceed the set timeout!"));
+                    ResolvePendingWearable(expiredRequestId, null,
+                        $"The request for the wearable '{expiredRequestId}' has exceed the set timeout!");
                 }
             }
         }
@@ -304,6 +300,20 @@ namespace DCLServices.WearablesCatalogService
                     wearablesInUseCounters.Remove(wearableToRemoveId);
                 }
             }
+        }
+
+        private void ResolvePendingWearable(string wearableId, WearableItem result, string errorMessage = "")
+        {
+            if (!awaitingWearableTasks.TryGetValue(wearableId, out var task))
+                return;
+
+            if (string.IsNullOrEmpty(errorMessage))
+                task.TrySetResult(result);
+            else
+                task.TrySetException(new Exception(errorMessage));
+
+            awaitingWearableTasks.Remove(wearableId);
+            pendingWearableRequestedTimes.Remove(wearableId);
         }
     }
 }
