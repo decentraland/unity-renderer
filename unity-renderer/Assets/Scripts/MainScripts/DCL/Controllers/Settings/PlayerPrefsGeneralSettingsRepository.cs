@@ -47,6 +47,7 @@ namespace DCL.SettingsCommon
 
         public void Save()
         {
+            Debug.Log($"SCENE LOAD RADIUS SAVED {currentSettings.scenesLoadRadius}");
             settingsByKey.SetBool(PROFANITY_CHAT_FILTERING, currentSettings.profanityChatFiltering);
             settingsByKey.SetFloat(MOUSE_SENSITIVITY, currentSettings.mouseSensitivity);
             settingsByKey.SetFloat(NAMES_OPACITY, currentSettings.namesOpacity);
@@ -71,6 +72,7 @@ namespace DCL.SettingsCommon
 
             try
             {
+                Debug.Log($"SCENE LOAD RADIUS LOADED {settingsByKey.GetFloat(SCENES_LOAD_RADIUS, defaultSettings.scenesLoadRadius)}");
                 settings.profanityChatFiltering = settingsByKey.GetBool(PROFANITY_CHAT_FILTERING,
                     defaultSettings.profanityChatFiltering);
                 settings.mouseSensitivity = settingsByKey.GetFloat(MOUSE_SENSITIVITY, defaultSettings.mouseSensitivity);
