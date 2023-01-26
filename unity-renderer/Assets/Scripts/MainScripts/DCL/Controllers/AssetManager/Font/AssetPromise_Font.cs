@@ -41,6 +41,7 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            //Adding a null-check here. If the promise is kept while active, we should not fire it up again
             if (cancellationTokenSource != null) return;
 
             cancellationTokenSource = new CancellationTokenSource();
