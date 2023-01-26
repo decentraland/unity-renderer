@@ -1,5 +1,6 @@
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
+using DCL.ConfirmationPopup;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -73,6 +74,8 @@ namespace DCL
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
+
+            pluginSystem.Register<ConfirmationPopupPlugin>(() => new ConfirmationPopupPlugin());
 
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 
