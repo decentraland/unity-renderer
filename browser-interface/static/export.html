@@ -567,22 +567,22 @@
         containerElement.style.display = 'block'
       }
 
-      async function getRendererBaseUrl() {
+      async function getExplorerBaseUrl() {
         const qs = new URLSearchParams(document.location.search)
 
-        if (qs.has('renderer')) {
-          return qs.get('renderer')
+        if (qs.has('explorer')) {
+          return qs.get('explorer')
         }
 
-        if (qs.has('renderer-branch')) {
-          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('renderer-branch')}`
+        if (qs.has('explorer-branch')) {
+          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('explorer-branch')}`
         }
 
-        if (qs.has('renderer-version')) {
-          return `https://cdn.decentraland.org/@dcl/unity-renderer/${qs.get('renderer-version')}`
+        if (qs.has('explorer-version')) {
+          return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
         }
 
-        return new URL(rootURL() + 'unity-renderer').toString()
+        return new URL(rootURL() + 'explorer').toString()
       }
 
       async function initKernel() {
@@ -599,7 +599,7 @@
           },
           rendererOptions: {
             container,
-            baseUrl: await getRendererBaseUrl()
+            baseUrl: await getExplorerBaseUrl()
           }
         })
 
