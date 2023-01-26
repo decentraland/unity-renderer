@@ -174,10 +174,7 @@ namespace DCLServices.WearablesCatalogService
             AddWearablesToCatalog(request.wearables);
 
             if (!string.IsNullOrEmpty(request.context))
-            {
                 ResolvePendingWearablesByContext(request.context, request.wearables);
-                pendingWearablesByContextRequestedTimes.Remove(request.context);
-            }
         }
 
         [UsedImplicitly]
