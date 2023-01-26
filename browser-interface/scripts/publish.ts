@@ -4,9 +4,6 @@ import { resolve } from "path"
 import { ensureFileExists } from "./utils"
 import { fetch, FormData } from "undici"
 
-// Temporal!
-process.env.CIRCLE_BRANCH = "dev"
-
 const DIST_ROOT = resolve(__dirname, "../static")
 
 async function main() {
@@ -90,10 +87,7 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
       throw new Error(`Error triggering pipeline. status: ${r.status}`)
     }
   } catch (e) {
-    console.dir(e)
-    let message = 'Unknown Error'
-    if (e instanceof Error) message = e.message
-    throw new Error(`Error triggering pipeline. ${message} ${e} ${String(e)}`)
+    throw new Error(`Error triggering pipeline. Unhandled error.`)
   }
 }
 
