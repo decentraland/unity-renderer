@@ -27,7 +27,7 @@ namespace DCL.SettingsCommon
 
         public float GetFloat(string fieldName, float defaultValue)
         {
-            if (fieldName.Equals("SCENES_LOAD_RADIUS"))
+            if (fieldName.Equals("scenesLoadRadius"))
             {
                 Debug.Log($"THE VALUE HAS_KEY FOR SCENE_LOAD_RADIUS IS {PlayerPrefs.HasKey(GetFieldKey(fieldName))}");
                 Debug.Log($"THE VALUE FOR SCENE_LOAD_RADIUS IS {PlayerPrefs.GetFloat(GetFieldKey(fieldName))}");
