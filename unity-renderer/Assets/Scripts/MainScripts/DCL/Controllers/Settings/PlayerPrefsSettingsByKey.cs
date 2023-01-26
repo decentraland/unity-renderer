@@ -12,7 +12,7 @@ namespace DCL.SettingsCommon
         {
             this.prefixPrefsKey = prefixPrefsKey;
         }
-        
+
         public T GetEnum<T>(string fieldName, T defaultValue) where T : struct
         {
             if (!Enum.TryParse<T>(PlayerPrefs.GetString(GetFieldKey(fieldName), ""), out var result))
@@ -27,9 +27,15 @@ namespace DCL.SettingsCommon
 
         public float GetFloat(string fieldName, float defaultValue)
         {
+            if (fieldName.Equals("SCENES_LOAD_RADIUS"))
+            {
+                Debug.Log($"THE VALUE HAS_KEY FOR SCENE_LOAD_RADIUS IS {PlayerPrefs.HasKey(GetFieldKey(fieldName))}");
+                Debug.Log($"THE VALUE FOR SCENE_LOAD_RADIUS IS {PlayerPrefs.GetFloat(GetFieldKey(fieldName))}");
+
+            }
             return PlayerPrefs.GetFloat(GetFieldKey(fieldName), defaultValue);
         }
-        
+
         public int GetInt(string fieldName, int defaultValue)
         {
             return PlayerPrefs.GetInt(GetFieldKey(fieldName), defaultValue);
