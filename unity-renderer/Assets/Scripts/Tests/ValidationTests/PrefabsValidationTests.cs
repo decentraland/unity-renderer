@@ -11,21 +11,16 @@ namespace Tests.ValidationTests
         private static readonly string[] PREFAB_PATHS = { "Assets" };
 
         [TestCaseSource(nameof(AllPrefabPaths))]
-        public void ValidateShowHideAnimator(string prefabPath)
+        public void ValidateShowHideAnimators(string prefabPath)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
 
-            IEnumerable<ShowHideAnimator> oldAnimators =
-                prefab.GetComponentsInChildren<ShowHideAnimator>()
-                      .Where(HasShowHideAnimator);
+            var unityAnimators =
+                from showHideAnimator in prefab.GetComponentsInChildren<ShowHideAnimator>()
+                where showHideAnimator.GetComponent<Animator>() != null
+                select $"{showHideAnimator.gameObject.name}";
 
-            Assert.That(oldAnimators, Is.Empty);
-        }
-
-        private static bool HasShowHideAnimator(ShowHideAnimator showHideAnimator)
-        {
-            var unityAnimator = showHideAnimator.GetComponent<Animator>();
-            return unityAnimator != null && unityAnimator.runtimeAnimatorController.name.Contains("ShowHide");
+            Assert.That(unityAnimators, Is.Empty, "Unity animator is presented on several child objects that have DCL ShowHideAnimator component (DOTween-based)");
         }
 
         private static IEnumerable<string> AllPrefabPaths() =>
