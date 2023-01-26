@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-public interface IPlacesSubSectionComponentController : IDisposable
+public interface IFavoritesSubSectionComponentController : IDisposable
 {
     /// <summary>
     /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.

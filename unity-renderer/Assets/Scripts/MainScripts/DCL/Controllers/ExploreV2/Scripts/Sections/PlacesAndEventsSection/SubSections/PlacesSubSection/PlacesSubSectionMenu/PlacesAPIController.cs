@@ -11,6 +11,12 @@ public interface IPlacesAPIController
     /// </summary>
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
     void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted);
+
+    /// <summary>
+    /// Request all favorite places from the server.
+    /// </summary>
+    /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
+    void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted);
 }
 
 [ExcludeFromCodeCoverage]
@@ -20,7 +26,6 @@ public class PlacesAPIController : IPlacesAPIController
 
     internal event Action<List<HotSceneInfo>> OnGetOperationCompleted;
 
-
     public void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted)
     {
         OnGetOperationCompleted += OnCompleted;
@@ -28,6 +33,11 @@ public class PlacesAPIController : IPlacesAPIController
 
         hotScenesController.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
         hotScenesController.OnHotSceneListFinishUpdating += OnFetchHotScenes;
+    }
+
+    public void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted)
+    {
+        OnCompleted?.Invoke(new List<HotSceneInfo>());
     }
 
     private void OnFetchHotScenes()
