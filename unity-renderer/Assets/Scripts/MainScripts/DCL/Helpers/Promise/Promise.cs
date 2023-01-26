@@ -5,22 +5,23 @@ namespace DCL.Helpers
 {
     public class Promise<T> : CustomYieldInstruction, IDisposable
     {
-        private bool resolved = false;
-        private bool failed = false;
+        internal bool resolved { get; private set; }
+        internal bool failed { get; private set; }
+        internal PromiseException exception { get; private set; }
 
-        private Action<T> onSuccess;
-        private Action<string> onError;
+        internal Action<T> onSuccess;
+        internal Action<string> onError;
 
         public override bool keepWaiting => !resolved;
         public T value { private set; get; }
-        public string error { private set; get; }
+        public string error => exception?.Message;
 
         public void Resolve(T result)
         {
             failed = false;
             resolved = true;
             value = result;
-            error = null;
+            exception = null;
             onSuccess?.Invoke(result);
         }
 
@@ -28,34 +29,22 @@ namespace DCL.Helpers
         {
             failed = true;
             resolved = true;
-            error = errorMessage;
+            exception = new PromiseException(errorMessage);
             onError?.Invoke(error);
         }
 
         public Promise<T> Then(Action<T> successCallback)
         {
-            if (!resolved)
-            {
-                onSuccess = successCallback;
-            }
-            else if (!failed)
-            {
-                successCallback?.Invoke(value);
-            }
+            if (!resolved) { onSuccess = successCallback; }
+            else if (!failed) { successCallback?.Invoke(value); }
 
             return this;
         }
 
         public void Catch(Action<string> errorCallback)
         {
-            if (!resolved)
-            {
-                onError = errorCallback;
-            }
-            else if (failed)
-            {
-                errorCallback?.Invoke(this.error);
-            }
+            if (!resolved) { onError = errorCallback; }
+            else if (failed) { errorCallback?.Invoke(this.error); }
         }
 
         public void Dispose()
