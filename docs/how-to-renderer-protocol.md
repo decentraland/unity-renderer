@@ -2,38 +2,33 @@
 
 ## What?
 
-Renderer Protocol is the messages that are sent between the [Kernel](http://github.com/decentraland/kernel) and the [Renderer](http://github.com/decentraland/unity-renderer).
-
-Those messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) in proto3 format.
+The Renderer Protocol consists of messages that are sent between the [Kernel](http://github.com/decentraland/kernel) and the [Renderer](http://github.com/decentraland/unity-renderer). These messages are defined in the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) using the proto3 format.
 
 ## Types of messages
 
-The messages exchange are defined by RPC calls. There are defined as Services. Those Services are bidirectional.
-You can have `RendererServices` where `Kernel` calls `Renderer`. Or `KernelService` where `Renderer` calls `Kernel`
+The message exchange is defined by RPC calls, which are bi-directional Services. For example, the `Renderer` can call the `Kernel` using a `KernelService`, or the `Kernel` can call the `Renderer` using a `RendererService`.
+
 ## How to add a message
 
-To add a message in the Renderer Protocol, you must change the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol), and then update the package in the `protocol-gen` of the `unity-renderer` repository [here](https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen).
+To add a message to the Renderer Protocol, you must first modify the [Decentraland Protocol](https://github.com/decentraland/protocol/tree/main/renderer-protocol) and then update the `protocol-gen` package in the [unity-renderer repository]((https://github.com/decentraland/unity-renderer/tree/dev/protocol-gen)).
 
-Example of `RendererService`: https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto
+[Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/renderer_services/emotes_renderer.proto) of `RendererService`.
 
-Example of `KernelService`: https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto
+[Example](https://github.com/decentraland/protocol/blob/9fcad98380eb95544e50490cc1213b55e0df1f17/proto/decentraland/renderer/kernel_services/analytics.proto) of `KernelService`.
 
-After adding a `KernelService` or `RendererService`
-You must install the package in the `protocol-gen` just run `npm run build` and the Renderer Protocol will be re-generated.
+After adding a `KernelService` or `RendererService`, you must install the package in `protocol-gen` by running `npm run build`. This will regenerate the Renderer Protocol.
 
 ## RPC
 
-The Renderer works as a `RPC Server` that is connected by the Kernel, the `RPC Client`.
-And the Renderer implements a service called `TransportService` which is used to create a RPC Transport which is used as a InverseRPC where we can use the Kernel as a `RPC Server` and the Renderer as `RPC Client`.
-
-So the services can be implemented both ways. We have Kernel services an Renderer service for the Renderer protocol.
+The Renderer acts as an `RPC Server`, while the Kernel is the `RPC Client`. The Renderer implements a service called TransportService which allows it to create an RPC Transport that functions as an InverseRPC. This allows the Kernel to act as an`RPC Server` and the Renderer to act as an `RPC Client`. As a result, services can be implemented in either direction. There are both Kernel services and Renderer services for the Renderer protocol.
 
 > **_NOTE:_**  You can read the following articles to understand RPC [article 1](https://www.techtarget.com/searchapparchitecture/definition/Remote-Procedure-Call-RPC); [article 2](https://grpc.io/docs/what-is-grpc/introduction/)
 
-### Implement Renderer Service
+## Implement Renderer Service
+### **Renderer Side:**
 
-In the example, we're going to implement the following service from the protobuf above:
-```
+In the next example, we will implement the service described in the protobuf below:
+```protobuf
 // Service implemented in Renderer and used in Kernel
 service EmotesRendererService {
   // Triggers an expression in our own avatar (use example: SDK triggers a expression)
@@ -41,16 +36,13 @@ service EmotesRendererService {
 }
 ```
 
-After we generated the code, need to create a folder named `EmotesService` in the following path:
-`Assets\Scripts\MainScripts\DCL\WorldRuntime\KernelCommunication\RPC\Services\EmotesService`
-
-Inside it, we create the following files:
+Once we've generated the code, we need first to create a folder named `EmotesService` in the path `Assets\Scripts\MainScripts\DCL\WorldRuntime\KernelCommunication\RPC\Services` and then create the following files:
 ```
 RPC.Service.Emotes.asmdef
-EmotesServiceImpl.cs
+EmotesRendererServiceImpl.cs
 ```
 
-And the `EmotesRendererServiceImpl.cs` we add the following code:
+In the `EmotesRendererServiceImpl.cs` file, we need to add the code:
 
 ```csharp
 using System.Threading;
@@ -80,63 +72,64 @@ namespace RPC.Services
 }
 ```
 
-To execute this code in the Kernel, we need to go to the Kernel, create the following file:
-`packages/renderer-protocol/services/emotesRendererService.ts`
-with this code:
+### **Kernel Side:**
+To run this code in the Kernel, we need first create the file `packages/renderer-protocol/services/emotesRendererService.ts` and then paste this code:
+
 ```ts
 import { RpcClientPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { EmotesRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/emotes.gen'
+import { EmotesRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/emotes_renderer.gen'
+import defaultLogger from 'shared/logger'
 
-export function registerEmotesRendererService<Context>(
+export function registerEmotesService<Context>(
   clientPort: RpcClientPort
-): codegen.RpcClientModule<EmotesRendererServiceDefinition, Context> {
-  return codegen.loadService<Context, EmotesRendererServiceDefinition>(clientPort, EmotesRendererServiceDefinition)
+): codegen.RpcClientModule<EmotesRendererServiceDefinition, Context> | undefined {
+  try {
+    return codegen.loadService<Context, EmotesRendererServiceDefinition>(clientPort, EmotesRendererServiceDefinition)
+  } catch (e) {
+    defaultLogger.error('EmotesService could not be loaded')
+    return undefined
+  }
 }
 ```
 
-in `packages/renderer-protocol/rpcClient.ts`
+Then, in `packages/shared/renderer/sagas.ts` we need to add the following line:
 
-we add the following lines:
 ```ts
   ...
-  const emotesService = registerEmotesService(clientPort) // add this line
-
-  rendererProtocol.resolve({
-    ...,
-    emotesService // and this line
-  })
+  const emotesService = registerEmotesService(clientPort) // add this line here.
+  ...
 ```
 
-and finally in `packages/renderer-protocol/types.ts`
-we add the service in the RendererProtocol type:
+Finally, in `packages/shared/renderer/types.ts` we need to add the service in the RendererModules type:
 ```ts
-export type RendererProtocol = {
+export type RendererModules = {
   ...
-  emotesService: codegen.RpcClientModule<EmotesRendererServiceDefinition, any> // here
+  emotesService: codegen.RpcClientModule<EmotesRendererServiceDefinition, any> | undefined // add this line here.
 }
 ```
 
-and to use it, we call it as:
+To use it, we call it as:
 ```ts
-void rendererProtocol.then(async (protocol) => {
-  await protocol.emotesService.triggerSelfUserExpression({ id: req.predefinedEmote })
-})
+getRendererModules(store.getState())
+  ?.emotesService?.triggerSelfUserExpression({ id: req.predefinedEmote })
+  .catch(defaultLogger.error)
 ```
-> Note: When you're migrating messages, remember that the Kernel must send the message with the renderer protocol and must maintain for a good period of time the old way (with JSONs) to avoid compatibility issues.
+> Note of caution: When you're migrating messages, remember that the Kernel must send the message with the renderer protocol and must keep the old way (with JSON based mechanism) for a good period of time to avoid compatibility issues.
 
-### Implement Kernel Services
+## Implement Kernel Services
 
 #### Example with PR
 
-protocol: https://github.com/decentraland/protocol/pull/81
-unity-renderer: https://github.com/decentraland/unity-renderer/pull/3605
-kernel: https://github.com/decentraland/kernel/pull/728
+- protocol: https://github.com/decentraland/protocol/pull/81
+- unity-renderer: https://github.com/decentraland/unity-renderer/pull/3605
+- kernel: https://github.com/decentraland/kernel/pull/728
 
+### **Kernel Side:**
 #### Step by step
 Create the service:
 
-in: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
+In: `packages/renderer-protocol/inverseRpc/services/emotesService.ts`
 ```ts
 import { RpcServerPort } from '@dcl/rpc'
 import { RendererProtocolContext } from '../context'
@@ -164,9 +157,7 @@ export function registerEmotesKernelService(port: RpcServerPort<RendererProtocol
 }
 ```
 
-Add the service to the registering list:
-
-in: `packages/renderer-protocol/inverseRpc/rpcServer.ts`
+Add the service to the registering list in: `packages/renderer-protocol/inverseRpc/rpcServer.ts`
 ```ts
 async function registerKernelServices(serverPort: RpcServerPort<RendererProtocolContext>) {
   ...
@@ -174,11 +165,10 @@ async function registerKernelServices(serverPort: RpcServerPort<RendererProtocol
 }
 ```
 
-And done! We implemented the Kernel Service.
+And done! We've implemented the Kernel Service.
 
-To use it from the Renderer we add the Client Service to the `IRPC`:
-
-in `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/Interfaces/IRPC.cs`
+### **Renderer Side:**
+To use it from the Renderer we need to add the Client Service to the `IRPC` in: `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/Interfaces/IRPC.cs`
 ```csharp
 public interface IRPC : IService
 {
@@ -188,14 +178,11 @@ public interface IRPC : IService
 }
 ```
 
-And we load the module:
-
-in: `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/RPC.cs`
+Then we load the module in: `Assets/Scripts/MainScripts/DCL/WorldRuntime/KernelCommunication/RPC/RPC.cs`
 ```csharp
 private ClientEmotesKernelService emotes;
 
-public ClientEmotesKernelService Emotes() =>
-    emotes;
+public ClientEmotesKernelService Emotes() => emotes;
 
 private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
 {
@@ -205,7 +192,7 @@ private async UniTaskVoid LoadRpcModulesAsync(RpcClientPort port)
 }
 ```
 
-And finally we can use it with the following code:
+Finally, we can use it with the following code:
 ```csharp
 ClientEmotesKernelService emotes = DCL.Environment.i.serviceLocator.Get<IRPC>().emotes;
 emotes?.TriggerExpression(new TriggerExpressionRequest()
