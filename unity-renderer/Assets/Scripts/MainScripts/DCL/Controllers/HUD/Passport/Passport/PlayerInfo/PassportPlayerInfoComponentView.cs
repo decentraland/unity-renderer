@@ -1,15 +1,14 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
-using System;
-using System.Collections;
-using UnityEngine;
-using TMPro;
-using SocialFeaturesAnalytics;
 using DCL.Social.Friends;
+using SocialFeaturesAnalytics;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
 using UIComponents.Scripts.Components;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
@@ -31,6 +30,7 @@ namespace DCL.Social.Passports
         [SerializeField] private ButtonComponentView cancelFriendRequestButton;
         [SerializeField] private ButtonComponentView acceptFriendButton;
         [SerializeField] private ButtonComponentView blockedFriendButton;
+        [SerializeField] private GameObject friendshipContainer;
         [SerializeField] private Button whisperButton;
         [SerializeField] private TooltipComponentView whisperNonFriendsPopup;
         [SerializeField] private GameObject onlineStatus;
@@ -69,12 +69,12 @@ namespace DCL.Social.Passports
         {
             walletCopyButton.onClick.AddListener(CopyWalletToClipboard);
             usernameCopyButton.onClick.AddListener(CopyUsernameToClipboard);
-            addFriendButton.onClick.AddListener(()=>OnAddFriend?.Invoke());
-            alreadyFriendsButton.onClick.AddListener(()=>OnRemoveFriend?.Invoke());
-            cancelFriendRequestButton.onClick.AddListener(()=>OnCancelFriendRequest?.Invoke());
-            acceptFriendButton.onClick.AddListener(()=>OnAcceptFriendRequest?.Invoke());
+            addFriendButton.onClick.AddListener(() => OnAddFriend?.Invoke());
+            alreadyFriendsButton.onClick.AddListener(() => OnRemoveFriend?.Invoke());
+            cancelFriendRequestButton.onClick.AddListener(() => OnCancelFriendRequest?.Invoke());
+            acceptFriendButton.onClick.AddListener(() => OnAcceptFriendRequest?.Invoke());
             userContextMenu.OnBlock += OnBlock;
-            blockedFriendButton.onClick.AddListener(()=>OnUnblockUser?.Invoke());
+            blockedFriendButton.onClick.AddListener(() => OnUnblockUser?.Invoke());
             userContextMenu.OnReport += OnReport;
             whisperButton.onClick.AddListener(WhisperActionFlow);
             optionsButton.onClick.AddListener(OpenOptions);
@@ -83,10 +83,10 @@ namespace DCL.Social.Passports
 
             friendStatusButtonsMapping = new Dictionary<FriendshipStatus, GameObject>()
             {
-                {FriendshipStatus.NOT_FRIEND, addFriendButton.gameObject},
-                {FriendshipStatus.FRIEND, alreadyFriendsButton.gameObject},
-                {FriendshipStatus.REQUESTED_FROM, acceptFriendButton.gameObject},
-                {FriendshipStatus.REQUESTED_TO, cancelFriendRequestButton.gameObject}
+                { FriendshipStatus.NOT_FRIEND, addFriendButton.gameObject },
+                { FriendshipStatus.FRIEND, alreadyFriendsButton.gameObject },
+                { FriendshipStatus.REQUESTED_FROM, acceptFriendButton.gameObject },
+                { FriendshipStatus.REQUESTED_TO, cancelFriendRequestButton.gameObject }
             };
         }
 
@@ -113,6 +113,7 @@ namespace DCL.Social.Passports
             SetIsBlocked(model.isBlocked);
             SetHasBlockedOwnUser(model.hasBlocked);
             SetFriendStatus(model.friendshipStatus);
+            SetFriendshipVisibility(model.isFriendshipVisible);
         }
 
         public override void Dispose()
@@ -139,23 +140,23 @@ namespace DCL.Social.Passports
                 jumpInButton.gameObject.SetActive(true);
                 jumpInButton.Initialize(friendsController, userId, socialAnalytics);
             }
-            else
-            {
-                jumpInButton.gameObject.SetActive(false);
-            }
+            else { jumpInButton.gameObject.SetActive(false); }
         }
 
         public void SetFriendStatus(FriendshipStatus friendStatus)
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
 
-            if(isBlocked)
+            if (isBlocked)
                 return;
 
             DisableAllFriendFlowButtons();
             friendStatusButtonsMapping[friendStatus].SetActive(true);
             whisperNonFriendsPopup.Hide(true);
         }
+
+        private void SetFriendshipVisibility(bool visible) =>
+            friendshipContainer.SetActive(visible);
 
         private void RemoveFriendsFocused(bool isFocused)
         {
@@ -168,6 +169,7 @@ namespace DCL.Social.Passports
             string[] splitName = name.Split('#');
             this.name.SetText(splitName[0]);
             address.SetText($"{(splitName.Length == 2 ? "#" + splitName[1] : "")}");
+
             //We are forced to use this due to the UI not being correctly responsive with the placing of the copy icon
             //without the force rebuild it's not setting the elements as dirty and not replacing them correctly
             Utils.ForceRebuildLayoutImmediate(usernameRect);
@@ -180,7 +182,7 @@ namespace DCL.Social.Passports
                 return;
 
             fullWalletAddress = wallet;
-            this.wallet.text = $"{wallet.Substring(0,5)}...{wallet.Substring(wallet.Length - 5)}";
+            this.wallet.text = $"{wallet.Substring(0, 5)}...{wallet.Substring(wallet.Length - 5)}";
         }
 
         public void SetIsBlocked(bool isBlocked)
@@ -189,17 +191,15 @@ namespace DCL.Social.Passports
             DisableAllFriendFlowButtons();
             blockedFriendButton.gameObject.SetActive(isBlocked);
 
-            if (!isBlocked)
-            {
-                SetFriendStatus(model.friendshipStatus);
-            }
+            if (!isBlocked) { SetFriendStatus(model.friendshipStatus); }
         }
 
-        public void SetActionsActive(bool isActive) => actionsContainer.SetActive(isActive);
+        public void SetActionsActive(bool isActive) =>
+            actionsContainer.SetActive(isActive);
 
         private void SetPresence(PresenceStatus status)
         {
-            if(status == PresenceStatus.ONLINE)
+            if (status == PresenceStatus.ONLINE)
             {
                 onlineStatus.SetActive(true);
                 offlineStatus.SetActive(false);
@@ -232,7 +232,7 @@ namespace DCL.Social.Passports
 
         private void CopyWalletToClipboard()
         {
-            if(fullWalletAddress == null)
+            if (fullWalletAddress == null)
                 return;
 
             OnWalletCopy?.Invoke(fullWalletAddress);
@@ -243,7 +243,7 @@ namespace DCL.Social.Passports
 
         private void CopyUsernameToClipboard()
         {
-            if(string.IsNullOrEmpty(model.name))
+            if (string.IsNullOrEmpty(model.name))
                 return;
 
             OnUsernameCopy?.Invoke(model.name);
@@ -254,10 +254,7 @@ namespace DCL.Social.Passports
 
         private async UniTaskVoid ShowCopyToast(ShowHideAnimator toast, CancellationToken ct)
         {
-            if (!toast.gameObject.activeSelf)
-            {
-                toast.gameObject.SetActive(true);
-            }
+            if (!toast.gameObject.activeSelf) { toast.gameObject.SetActive(true); }
 
             toast.Show();
             await Task.Delay(COPY_TOAST_VISIBLE_TIME, ct);
@@ -273,20 +270,11 @@ namespace DCL.Social.Passports
 
         private void WhisperActionFlow()
         {
-            if (areFriends)
-            {
-                OnWhisperUser?.Invoke(model.userId);
-            }
+            if (areFriends) { OnWhisperUser?.Invoke(model.userId); }
             else
             {
-                if (areFriends)
-                {
-                    whisperNonFriendsPopup.Hide();
-                }
-                else
-                {
-                    whisperNonFriendsPopup.Show();
-                }
+                if (areFriends) { whisperNonFriendsPopup.Hide(); }
+                else { whisperNonFriendsPopup.Show(); }
             }
         }
 
