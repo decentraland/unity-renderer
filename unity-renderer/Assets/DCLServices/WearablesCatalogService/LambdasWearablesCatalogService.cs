@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace DCLServices.WearablesCatalogService
 {
+    /// <summary>
+    /// This service implement a direct way of getting wearables sending the requests directly to lambdas.
+    /// </summary>
     public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableResponse>
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }

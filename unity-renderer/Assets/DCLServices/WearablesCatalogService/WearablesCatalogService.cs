@@ -4,6 +4,11 @@ using System.Threading;
 
 namespace DCLServices.WearablesCatalogService
 {
+    /// <summary>
+    /// This service will choose LambdasWearablesCatalogService or WebInterfaceWearablesCatalogService for requesting
+    /// wearables depending on the flag 'usingUrlParamsForDebug' received in the kernel configuration.
+    /// This will be temporal while we have to live with both services.
+    /// </summary>
     public class WearablesCatalogService : IWearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog =>

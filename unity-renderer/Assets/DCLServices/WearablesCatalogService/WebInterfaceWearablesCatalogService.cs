@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace DCLServices.WearablesCatalogService
 {
+    /// <summary>
+    /// This service keep the same logic of the old CatalogController so all the wearables requests will pass through kernel.
+    /// It will be deprecated once we move all the kernel's logic related to requesting wearables to Unity.
+    /// </summary>
     [Obsolete("This service will be deprecated by LambdasWearablesCatalogService in the future.")]
     public class WebInterfaceWearablesCatalogService : MonoBehaviour, IWearablesCatalogService
     {
