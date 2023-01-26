@@ -70,7 +70,7 @@ async function triggerPipeline(packageName: string, packageVersion: string, npmT
 
   const body = new FormData()
   body.append("token", GITLAB_STATIC_PIPELINE_TOKEN)
-  body.append("ref", "main")
+  body.append("ref", "master")
   body.append("variables[PACKAGE_NAME]", packageName)
   body.append("variables[PACKAGE_VERSION]", packageVersion)
   body.append("variables[PACKAGE_TAG]", npmTag)
