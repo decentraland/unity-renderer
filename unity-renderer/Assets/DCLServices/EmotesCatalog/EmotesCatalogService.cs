@@ -36,14 +36,14 @@ public class EmotesCatalogService : IEmotesCatalogService
                 continue;
 
             emotes[emote.id] = emote;
-            
+
             if (promises.TryGetValue(emote.id, out var emotePromises))
             {
                 foreach (Promise<WearableItem> promise in emotePromises)
                 {
                     promise.Resolve(emote);
                 }
-                
+
                 promises.Remove(emote.id);
             }
         }
@@ -118,7 +118,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         {
             ct.ThrowIfCancellationRequested();
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-            await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
+            await promise.WithCancellation(linkedCt.Token);
         }
         catch (OperationCanceledException e)
         {
@@ -175,7 +175,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         try
         {
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-            await promise.WithCancellation(linkedCt.Token).AttachExternalCancellation(linkedCt.Token);
+            await promise.WithCancellation(linkedCt.Token);
         }
         catch (OperationCanceledException ex)
         {
