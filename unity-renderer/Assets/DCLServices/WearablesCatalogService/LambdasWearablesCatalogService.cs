@@ -294,11 +294,7 @@ namespace DCLServices.WearablesCatalogService
                     where wearableInUse.Value <= 0
                     select wearableInUse.Key).ToList();
 
-                foreach (string wearableToRemoveId in wearablesToRemove)
-                {
-                    WearablesCatalog.Remove(wearableToRemoveId);
-                    wearablesInUseCounters.Remove(wearableToRemoveId);
-                }
+                RemoveWearablesFromCatalog(wearablesToRemove);
             }
         }
 
