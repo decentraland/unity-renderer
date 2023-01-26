@@ -21,6 +21,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IHighlightsSubSectionComponentController highlightsSubSectionComponentController;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
+    internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
     private DataStore dataStore;
 
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
@@ -61,6 +62,14 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             dataStore);
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
+        favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(
+            view.FavoritesSubSectionView,
+            placesAPI,
+            FriendsController.i,
+            exploreV2Analytics,
+            dataStore);
+        favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
     }
@@ -80,6 +89,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.Dispose();
+
+        favoritesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+        favoritesSubSectionComponentController.Dispose();
 
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }

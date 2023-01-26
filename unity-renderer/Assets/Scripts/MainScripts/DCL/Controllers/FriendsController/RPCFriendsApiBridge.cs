@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Social.Friends;
 using Decentraland.Renderer.KernelServices;
 using Decentraland.Renderer.RendererServices;
@@ -26,6 +27,8 @@ namespace DCl.Social.Friends
 {
     public class RPCFriendsApiBridge : IFriendsApiBridge, IFriendRequestRendererService<RPCContext>
     {
+        private const int REQUEST_TIMEOUT = 30;
+
         private static RPCFriendsApiBridge i;
 
         private readonly IRPC rpc;
@@ -97,20 +100,36 @@ namespace DCl.Social.Friends
         public void RejectFriendship(string userId) =>
             fallbackApiBridge.RejectFriendship(userId);
 
-        public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId)
+        public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
-            KernelRejectFriendRequestReply response = await rpc.FriendRequests()
-                                                               .RejectFriendRequest(new KernelRejectFriendRequestPayload
-                                                                {
-                                                                    FriendRequestId = friendRequestId
-                                                                });
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            return response.MessageCase == KernelRejectFriendRequestReply.MessageOneofCase.Reply
-                ? new RejectFriendshipPayload
-                {
-                    FriendRequestPayload = ToFriendRequestPayload(response.Reply.FriendRequest),
-                }
-                : throw new FriendshipException(ToErrorCode(response.Error));
+                // TODO: pass cancellation token to rpc client when is supported
+                KernelRejectFriendRequestReply response = await rpc.FriendRequests()
+                                                                   .RejectFriendRequest(new KernelRejectFriendRequestPayload
+                                                                    {
+                                                                        FriendRequestId = friendRequestId
+                                                                    }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                RejectFriendshipPayload payload = response.MessageCase == KernelRejectFriendRequestReply.MessageOneofCase.Reply
+                    ? new RejectFriendshipPayload
+                    {
+                        FriendRequestPayload = ToFriendRequestPayload(response.Reply.FriendRequest),
+                    }
+                    : throw new FriendshipException(ToErrorCode(response.Error));
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return payload;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
         }
 
         public void RemoveFriend(string userId) =>
@@ -125,26 +144,45 @@ namespace DCl.Social.Friends
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip)
+        public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip,
+            int receivedLimit, int receivedSkip,
+            CancellationToken cancellationToken)
         {
-            GetFriendRequestsReply response = await rpc.FriendRequests()
-                                                       .GetFriendRequests(new KernelGetFriendRequestsPayload
-                                                        {
-                                                            SentLimit = sentLimit,
-                                                            SentSkip = sentSkip,
-                                                            ReceivedLimit = receivedLimit,
-                                                            ReceivedSkip = receivedSkip
-                                                        });
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            return response.MessageCase == GetFriendRequestsReply.MessageOneofCase.Error
-                ? throw new FriendshipException(ToErrorCode(response.Error))
-                : new AddFriendRequestsV2Payload
-                {
-                    requestedTo = response.Reply.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
-                    requestedFrom = response.Reply.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
-                    totalReceivedFriendRequests = response.Reply.TotalReceivedFriendRequests,
-                    totalSentFriendRequests = response.Reply.TotalSentFriendRequests,
-                };
+                // TODO: pass cancellation token to rpc client when is supported
+                GetFriendRequestsReply response = await rpc.FriendRequests()
+                                                           .GetFriendRequests(new KernelGetFriendRequestsPayload
+                                                            {
+                                                                SentLimit = sentLimit,
+                                                                SentSkip = sentSkip,
+                                                                ReceivedLimit = receivedLimit,
+                                                                ReceivedSkip = receivedSkip
+                                                            })
+                                                           .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                AddFriendRequestsV2Payload payload = response.MessageCase == GetFriendRequestsReply.MessageOneofCase.Error
+                    ? throw new FriendshipException(ToErrorCode(response.Error))
+                    : new AddFriendRequestsV2Payload
+                    {
+                        requestedTo = response.Reply.RequestedTo.Select(ToFriendRequestPayload).ToArray(),
+                        requestedFrom = response.Reply.RequestedFrom.Select(ToFriendRequestPayload).ToArray(),
+                        totalReceivedFriendRequests = response.Reply.TotalReceivedFriendRequests,
+                        totalSentFriendRequests = response.Reply.TotalSentFriendRequests,
+                    };
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return payload;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
         }
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
@@ -153,41 +191,76 @@ namespace DCl.Social.Friends
         public void RequestFriendship(string friendUserId) =>
             fallbackApiBridge.RequestFriendship(friendUserId);
 
-        public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody)
+        public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody,
+            CancellationToken cancellationToken)
         {
-            SendFriendRequestReply reply = await rpc.FriendRequests()
-                                                    .SendFriendRequest(new SendFriendRequestPayload
-                                                     {
-                                                         MessageBody = messageBody,
-                                                         UserId = userId,
-                                                     });
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            return reply.MessageCase == SendFriendRequestReply.MessageOneofCase.Reply
-                ? new RequestFriendshipConfirmationPayload
-                {
-                    friendRequest = ToFriendRequestPayload(reply.Reply.FriendRequest),
-                }
-                : throw new FriendshipException(ToErrorCode(reply.Error));
+                // TODO: pass cancellation token to rpc client when is supported
+                SendFriendRequestReply reply = await rpc.FriendRequests()
+                                                        .SendFriendRequest(new SendFriendRequestPayload
+                                                         {
+                                                             MessageBody = messageBody,
+                                                             UserId = userId,
+                                                         })
+                                                        .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                RequestFriendshipConfirmationPayload payload = reply.MessageCase == SendFriendRequestReply.MessageOneofCase.Reply
+                    ? new RequestFriendshipConfirmationPayload
+                    {
+                        friendRequest = ToFriendRequestPayload(reply.Reply.FriendRequest),
+                    }
+                    : throw new FriendshipException(ToErrorCode(reply.Error));
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return payload;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
         }
 
-        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId)
+        public async UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string friendRequestId,
+            CancellationToken cancellationToken)
         {
-            KernelCancelFriendRequestReply reply = await rpc.FriendRequests()
-                                                            .CancelFriendRequest(new KernelCancelFriendRequestPayload
-                                                             {
-                                                                 FriendRequestId = friendRequestId
-                                                             });
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            return reply.MessageCase == KernelCancelFriendRequestReply.MessageOneofCase.Reply
-                ? new CancelFriendshipConfirmationPayload
-                {
-                    friendRequest = ToFriendRequestPayload(reply.Reply.FriendRequest),
-                }
-                : throw new FriendshipException(ToErrorCode(reply.Error));
+                // TODO: pass cancellation token to rpc client when is supported
+                KernelCancelFriendRequestReply reply = await rpc.FriendRequests()
+                                                                .CancelFriendRequest(new KernelCancelFriendRequestPayload
+                                                                 {
+                                                                     FriendRequestId = friendRequestId
+                                                                 }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                CancelFriendshipConfirmationPayload payload = reply.MessageCase == KernelCancelFriendRequestReply.MessageOneofCase.Reply
+                    ? new CancelFriendshipConfirmationPayload
+                    {
+                        friendRequest = ToFriendRequestPayload(reply.Reply.FriendRequest),
+                    }
+                    : throw new FriendshipException(ToErrorCode(reply.Error));
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return payload;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread(cancellationToken);
+            }
         }
 
-        public UniTask CancelRequestByUserIdAsync(string userId) =>
-            fallbackApiBridge.CancelRequestByUserIdAsync(userId);
+        public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken) =>
+            fallbackApiBridge.CancelRequestByUserIdAsync(userId, cancellationToken);
 
         public void CancelRequestByUserId(string userId) =>
             fallbackApiBridge.CancelRequestByUserId(userId);
@@ -196,37 +269,33 @@ namespace DCl.Social.Friends
             fallbackApiBridge.AcceptFriendship(userId);
 
         [PublicAPI]
-        public async UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread();
-
-            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.APPROVED,
                 userId = request.UserId
             });
 
-            return new ApproveFriendRequestReply();
+            return UniTask.FromResult(new ApproveFriendRequestReply());
         }
 
         [PublicAPI]
-        public async UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
+        public UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread();
-
-            OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
+            OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
             {
                 action = FriendshipAction.REJECTED,
                 userId = request.UserId
             });
 
-            return new RendererRejectFriendRequestReply();
+            return UniTask.FromResult(new RendererRejectFriendRequestReply());
         }
 
         [PublicAPI]
         public async UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(ct);
 
             OnFriendshipStatusUpdated?.Invoke(new FriendshipUpdateStatusMessage
             {
@@ -240,7 +309,7 @@ namespace DCl.Social.Friends
         [PublicAPI]
         public async UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
-            await UniTask.SwitchToMainThread();
+            await UniTask.SwitchToMainThread(ct);
 
             OnFriendRequestReceived?.Invoke(ToFriendRequestPayload(request.FriendRequest));
 
@@ -253,35 +322,63 @@ namespace DCl.Social.Friends
             return new ReceiveFriendRequestReply();
         }
 
-        public async UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId)
+        public async UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
-            AcceptFriendRequestReply response = await rpc.FriendRequests()
-                                                         .AcceptFriendRequest(new AcceptFriendRequestPayload
-                                                          {
-                                                              FriendRequestId = friendRequestId
-                                                          });
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            return response.MessageCase == AcceptFriendRequestReply.MessageOneofCase.Reply
-                ? new AcceptFriendshipPayload
-                {
-                    FriendRequest = ToFriendRequestPayload(response.Reply.FriendRequest)
-                }
-                : throw new FriendshipException(ToErrorCode(response.Error));
+                // TODO: pass cancellation token to rpc client when is supported
+                AcceptFriendRequestReply response = await rpc.FriendRequests()
+                                                             .AcceptFriendRequest(new AcceptFriendRequestPayload
+                                                              {
+                                                                  FriendRequestId = friendRequestId
+                                                              }).Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                AcceptFriendshipPayload payload = response.MessageCase == AcceptFriendRequestReply.MessageOneofCase.Reply
+                    ? new AcceptFriendshipPayload
+                    {
+                        FriendRequest = ToFriendRequestPayload(response.Reply.FriendRequest)
+                    }
+                    : throw new FriendshipException(ToErrorCode(response.Error));
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return payload;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
         }
 
-        public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId)
+        public async UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken)
         {
-            ClientFriendsKernelService friends = rpc.Friends();
-            // TODO: remove this check when the kernel service is implemented
-            if (friends == null) return FriendshipStatus.NOT_FRIEND;
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            GetFriendshipStatusResponse response = await friends
-                                                            .GetFriendshipStatus(new GetFriendshipStatusRequest
-                                                             {
-                                                                 UserId = userId
-                                                             });
+                // TODO: pass cancellation token to rpc client when is supported
+                GetFriendshipStatusResponse response = await rpc.Friends()
+                                                                .GetFriendshipStatus(new GetFriendshipStatusRequest
+                                                                 {
+                                                                     UserId = userId
+                                                                 });
 
-            return ToFriendshipStatus(response.Status);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                FriendshipStatus status = ToFriendshipStatus(response.Status);
+
+                await UniTask.SwitchToMainThread(cancellationToken);
+
+                return status;
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
         }
 
         private FriendshipStatus ToFriendshipStatus(RPCFriendshipStatus status)

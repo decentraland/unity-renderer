@@ -76,6 +76,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 90d19c500d961c44f8941c69dcdae46a, type: 3}
   - {fileID: 21300000, guid: 91681e50568d84e93b76b1767abc283f, type: 3}
   - {fileID: 21300000, guid: 9ee0d9605c0e04a57946e54a0b997c90, type: 3}
+  - {fileID: 21300000, guid: 881fad601c25545beaf8ff83632e9ce2, type: 3}
   - {fileID: 21300000, guid: 8be7de606f9c7ca4cbc9d31a3a82dfd5, type: 3}
   - {fileID: 21300000, guid: b6b6bf6065bcc4d26939c4f9986de3da, type: 3}
   - {fileID: 21300000, guid: 0d72ee801259541e5a5a33c86e6efdb9, type: 3}
@@ -401,6 +402,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: 21fb0bbc6fe494c8789ea7221ac96c59, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
+  - {fileID: 21300000, guid: 62e36ecc446144b6ba635e3b52b54f33, type: 3}
   - {fileID: 21300000, guid: a6f0d6dcdab344ad88af35e7ed9071b5, type: 3}
   - {fileID: 21300000, guid: cfa089dc4012b4f59964c220fbf31fba, type: 3}
   - {fileID: 21300000, guid: 3576a9dcb9ec94ac1b908b89c3571e75, type: 3}
@@ -489,6 +491,7 @@ SpriteAtlas:
   - mc_hammer_256
   - Mic off
   - Spinner
+  - NoFavoritesImage
   - DclLogoBg
   - RectRadius8
   - EllipseOutline2
@@ -814,6 +817,7 @@ SpriteAtlas:
   - HelpIcon
   - SettingsOff
   - VoiceChatPlayer
+  - FavoritesIcon
   - HideNameIcon
   - ChatOff
   - LinearGradientNFTs
