@@ -80,6 +80,9 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     throw new Error("HTTP Live Streaming is not supported in your browser")
   }
 
+  const resolveWithBaseUrlNoV = (file: string) =>
+      new URL(file, baseUrl).toString()
+
   const rendererVersion = options.versionQueryParam
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) =>
@@ -94,7 +97,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl + postfix),
     frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl + postfix),
     codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl + postfix),
-    streamingAssetsUrl: resolveWithBaseUrl("StreamingAssets"),
+    streamingAssetsUrl: resolveWithBaseUrlNoV("StreamingAssets"),
     companyName: "Decentraland",
     productName: "Decentraland World Client",
     productVersion: "0.1",
