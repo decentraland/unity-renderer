@@ -3,18 +3,14 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.AssetManager.Font;
 using System;
 using System.Threading;
-using UnityEngine;
 
 namespace DCL
 {
     public class AssetPromise_Font : AssetPromise<Asset_Font>
     {
-        private readonly bool fetchingEcsFonts;
         private readonly AssetSource permittedSources;
         private readonly string src;
         private CancellationTokenSource cancellationTokenSource;
-
-        private Coroutine fontCoroutine;
 
         private Service<IFontAssetResolver> fontResolver;
 
