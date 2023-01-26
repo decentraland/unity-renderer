@@ -35,6 +35,7 @@ namespace DCLServices.Lambdas.NamesService.Tests
 
             lambdasService.Received(1)
                           .Get<NamesResponse>(
+                               NamesService.END_POINT,
                                NamesService.END_POINT + ADDRESS,
                                NamesService.TIMEOUT,
                                NamesService.ATTEMPTS_NUMBER,
