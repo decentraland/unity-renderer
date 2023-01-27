@@ -17,7 +17,9 @@ namespace DCLServices.Lambdas.NamesService
 
         UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
-            lambdasService.Ref.Get<NamesResponse>(endPoint,
+            lambdasService.Ref.Get<NamesResponse>(
+                END_POINT,
+                endPoint,
                 TIMEOUT,
                 ATTEMPTS_NUMBER,
                 cancellationToken,
