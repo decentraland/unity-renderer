@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -119,7 +117,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         if (SceneReferences.i != null)
         {
-            var mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
+            var mouseCatcher = SceneReferences.i.mouseCatcher;
 
             if (mouseCatcher != null)
             {
@@ -137,7 +135,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
 
         cardCanvas.enabled = active;
-        CommonScriptableObjects.playerInfoCardVisibleState.Set(active);
     }
 
     private void UpdateTabs()

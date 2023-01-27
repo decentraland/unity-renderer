@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class ReceivedFriendRequestHUDComponentView : BaseComponentView<ReceivedFriendRequestHUDModel>, IReceivedFriendRequestHUDView
+    public class ReceivedFriendRequestHUDComponentView : BaseComponentView<ReceivedFriendRequestHUDModel>,
+        IReceivedFriendRequestHUDView, IFriendRequestHUDView
     {
         [SerializeField] internal GameObject bodyMessageContainer;
         [SerializeField] internal TMP_InputField bodyMessageInput;

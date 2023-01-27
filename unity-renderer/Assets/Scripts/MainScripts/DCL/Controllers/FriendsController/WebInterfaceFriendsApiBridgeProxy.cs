@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using System;
+using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -39,9 +40,6 @@ namespace DCL.Social.Friends
             this.fallbackApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
             this.newFriendsApiBridge.OnFriendNotFound += x => OnFriendNotFound?.Invoke(x);
 
-            this.fallbackApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
-            this.newFriendsApiBridge.OnFriendsAdded += x => OnFriendsAdded?.Invoke(x);
-
             this.fallbackApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
             this.newFriendsApiBridge.OnFriendWithDirectMessagesAdded += x => OnFriendWithDirectMessagesAdded?.Invoke(x);
 
@@ -67,23 +65,25 @@ namespace DCL.Social.Friends
         public void RejectFriendship(string userId) =>
             apiBridgeInUse.RejectFriendship(userId);
 
-        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId) =>
-            apiBridgeInUse.RejectFriendshipAsync(friendRequestId);
+        public UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
+            apiBridgeInUse.RejectFriendshipAsync(friendRequestId, cancellationToken);
 
         public void RemoveFriend(string userId) =>
             apiBridgeInUse.RemoveFriend(userId);
 
-        public void GetFriends(int limit, int skip) =>
-            apiBridgeInUse.GetFriends(limit, skip);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default) =>
+            apiBridgeInUse.GetFriendsAsync(limit, skip, cancellationToken);
 
-        public void GetFriends(string usernameOrId, int limit) =>
-            apiBridgeInUse.GetFriends(usernameOrId, limit);
+        public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
+            apiBridgeInUse.GetFriendsAsync(usernameOrId, limit, cancellationToken);
 
         public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
             apiBridgeInUse.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
-        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
-            apiBridgeInUse.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip);
+        public UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip,
+            int receivedLimit, int receivedSkip,
+            CancellationToken cancellationToken) =>
+            apiBridgeInUse.GetFriendRequestsAsync(sentLimit, sentSkip, receivedLimit, receivedSkip, cancellationToken);
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             apiBridgeInUse.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
@@ -91,14 +91,15 @@ namespace DCL.Social.Friends
         public void RequestFriendship(string friendUserId) =>
             apiBridgeInUse.RequestFriendship(friendUserId);
 
-        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody) =>
-            apiBridgeInUse.RequestFriendshipAsync(userId, messageBody);
+        public UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody,
+            CancellationToken cancellationToken) =>
+            apiBridgeInUse.RequestFriendshipAsync(userId, messageBody, cancellationToken);
 
-        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId) =>
-            apiBridgeInUse.CancelRequestAsync(userId);
+        public UniTask<CancelFriendshipConfirmationPayload> CancelRequestAsync(string userId, CancellationToken cancellationToken) =>
+            apiBridgeInUse.CancelRequestAsync(userId, cancellationToken);
 
-        public UniTask CancelRequestByUserIdAsync(string userId) =>
-            apiBridgeInUse.CancelRequestByUserIdAsync(userId);
+        public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken) =>
+            apiBridgeInUse.CancelRequestByUserIdAsync(userId, cancellationToken);
 
         public void CancelRequestByUserId(string userId) =>
             apiBridgeInUse.CancelRequestByUserId(userId);
@@ -106,10 +107,10 @@ namespace DCL.Social.Friends
         public void AcceptFriendship(string userId) =>
             apiBridgeInUse.AcceptFriendship(userId);
 
-        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId) =>
-            apiBridgeInUse.AcceptFriendshipAsync(friendRequestId);
+        public UniTask<AcceptFriendshipPayload> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken) =>
+            apiBridgeInUse.AcceptFriendshipAsync(friendRequestId, cancellationToken);
 
-        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId) =>
-            newFriendsApiBridge.GetFriendshipStatus(userId);
+        public UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken) =>
+            newFriendsApiBridge.GetFriendshipStatus(userId, cancellationToken);
     }
 }
