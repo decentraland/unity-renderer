@@ -4,12 +4,31 @@ namespace DCL.Helpers
 {
     public static class PlayerPrefsUtils
     {
-        public static int GetInt(string key) { return PlayerPrefs.GetInt(key); }
+        public static int GetInt(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            string value = LoadFromLocalStorage(key: key);
+            return int.Parse(value);
+#else
+            return PlayerPrefs.GetInt(key);
+#endif
+        }
 
-        public static int GetInt(string key, int defaultValue) { return PlayerPrefs.GetInt(key, defaultValue); }
-        
-        public static bool GetBool(string key, bool defaultValue) => PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
-        
+        public static int GetInt(string key, int defaultValue)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            string value = LoadFromLocalStorage(key: key);
+            return int.Parse(value);
+#else
+            return PlayerPrefs.GetInt(key, defaultValue);
+#endif
+        }
+
+        public static bool GetBool(string key, bool defaultValue)
+        {
+            return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
+        }
+
         public static void SetBool(string key, bool value)
         {
             PlayerPrefs.SetInt(key, value ? 1 : 0);
@@ -19,7 +38,11 @@ namespace DCL.Helpers
         {
             try
             {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                SaveStringToLocalStorage(key: key, value: value.ToString());
+#else
                 PlayerPrefs.SetInt(key, value);
+#endif
             }
             catch (PlayerPrefsException e)
             {
@@ -27,15 +50,33 @@ namespace DCL.Helpers
             }
         }
 
-        public static bool HasKey(string key) { return PlayerPrefs.HasKey(key); }
+        public static bool HasKey(string key)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return (HasKeyInLocalStorage(key) == 1);
+#else
+            return PlayerPrefs.HasKey(key);
+#endif
+        }
 
-        public static string GetString(string key, string defaultValue = null) { return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue); }
+        public static string GetString(string key, string defaultValue = null)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return LoadFromLocalStorage(key: key);
+#else
+            return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
+#endif
+        }
 
         public static void SetString(string key, string value)
         {
             try
             {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                SaveStringToLocalStorage(key: key, value: value);
+#else
                 PlayerPrefs.SetString(key, value);
+#endif
             }
             catch (PlayerPrefsException e)
             {
@@ -45,10 +86,38 @@ namespace DCL.Helpers
 
         public static void Save() { PlayerPrefs.Save(); }
 
-        public static float GetFloat(string key, float defaultValue = 0f) =>
-            PlayerPrefs.GetFloat(key, defaultValue);
+        public static float GetFloat(string key, float defaultValue = 0f)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            string value = LoadFromLocalStorage(key: key);
+            Debug.Log($"GETTING FLOAT FROM LOCAL STORAGE {float.Parse(value)}");
+            return float.Parse(value);
+#else
+            return PlayerPrefs.GetFloat(key, defaultValue);
+#endif
+        }
 
-        public static void SetFloat(string key, float value) =>
+
+        public static void SetFloat(string key, float value)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            Debug.Log($"SETTING FLOAT IN LOCAL STORAGE {value.ToString()}");
+            SaveStringToLocalStorage(key: key, value: value.ToString());
+#else
             PlayerPrefs.SetFloat(key, value);
+#endif
+        }
+
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+      [DllImport("__Internal")]
+      private static extern void SaveStringToLocalStorage(string key, string value);
+
+      [DllImport("__Internal")]
+      private static extern string LoadStringFromLocalStorage(string key);
+
+      [DllImport("__Internal")]
+      private static extern int HasKeyInLocalStorage(string key);
+#endif
     }
 }
