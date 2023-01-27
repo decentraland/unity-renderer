@@ -182,8 +182,6 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDeleteUserButtonPressed()
     {
-        OnUnfriend?.Invoke(userId);
-
         DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             UnfriendUser), true);
@@ -195,6 +193,7 @@ public class UserContextMenu : MonoBehaviour
     private void UnfriendUser()
     {
         FriendsController.i.RemoveFriend(userId);
+        OnUnfriend?.Invoke(userId);
     }
 
     private void OnAddFriendButtonPressed()
@@ -263,7 +262,6 @@ public class UserContextMenu : MonoBehaviour
     private void OnBlockUserButtonPressed()
     {
         bool blockUser = !isBlocked;
-        OnBlock?.Invoke(userId, blockUser);
 
         if (blockUser)
         {
@@ -273,12 +271,14 @@ public class UserContextMenu : MonoBehaviour
                 {
                     WebInterface.SendBlockPlayer(userId);
                     GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    OnBlock?.Invoke(userId, blockUser);
                 }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
             GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            OnBlock?.Invoke(userId, blockUser);
         }
 
         Hide();
