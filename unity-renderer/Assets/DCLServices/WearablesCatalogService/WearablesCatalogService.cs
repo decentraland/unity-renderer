@@ -14,30 +14,35 @@ namespace DCLServices.WearablesCatalogService
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
             wearablesCatalogServiceInUse.WearablesCatalog;
 
+        private IWearablesCatalogService wearablesCatalogServiceInUse;
         private readonly IWearablesCatalogService lambdasWearablesCatalogService;
         private readonly IWearablesCatalogService webInterfaceWearablesCatalogService;
         private readonly BaseDictionary<string, WearableItem> wearablesCatalog;
-        private IWearablesCatalogService wearablesCatalogServiceInUse;
+        private readonly KernelConfig kernelConfig;
 
         public WearablesCatalogService(
             IWearablesCatalogService lambdasWearablesCatalogService,
             IWearablesCatalogService webInterfaceWearablesCatalogService,
-            BaseDictionary<string, WearableItem> wearablesCatalog)
+            BaseDictionary<string, WearableItem> wearablesCatalog,
+            KernelConfig kernelConfig)
         {
             this.lambdasWearablesCatalogService = lambdasWearablesCatalogService;
             this.webInterfaceWearablesCatalogService = webInterfaceWearablesCatalogService;
             this.wearablesCatalog = wearablesCatalog;
+            this.kernelConfig = kernelConfig;
         }
 
         public void Initialize()
         {
-            KernelConfig.i.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
-            KernelConfig.i.OnChange += OnKernelConfigChanged;
+            kernelConfig.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
+            kernelConfig.OnChange += OnKernelConfigChanged;
         }
 
         public void Dispose()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            if (kernelConfig != null)
+                kernelConfig.OnChange -= OnKernelConfigChanged;
+
             wearablesCatalogServiceInUse?.Dispose();
         }
 
@@ -73,9 +78,9 @@ namespace DCLServices.WearablesCatalogService
 
         private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            kernelConfig.OnChange -= OnKernelConfigChanged;
 
-            if (currentKernelConfig.usingUrlParamsForDebug)
+            if (currentKernelConfig.urlParamsForWearablesDebug)
             {
                 WebInterfaceWearablesCatalogService.Instance.Initialize(new WearablesWebInterfaceBridge(), wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;

@@ -10,7 +10,8 @@ using UnityEngine;
 namespace DCLServices.WearablesCatalogService
 {
     /// <summary>
-    /// This service keep the same logic of the old CatalogController so all the wearables requests will pass through kernel.
+    /// This service keep the same logic of the old CatalogController (but managed with UniTasks instead of Promises)
+    /// so all the wearables requests will pass through kernel.
     /// It will be deprecated once we move all the kernel's logic related to requesting wearables to Unity.
     /// </summary>
     [Obsolete("This service will be deprecated by LambdasWearablesCatalogService in the future.")]
@@ -92,24 +93,21 @@ namespace DCLServices.WearablesCatalogService
 
             ct.ThrowIfCancellationRequested();
 
-            try
+            UniTaskCompletionSource<WearableItem> taskResult;
+
+            if (!awaitingWearableTasks.ContainsKey(wearableId))
             {
-                UniTaskCompletionSource<WearableItem> taskResult;
+                taskResult = new UniTaskCompletionSource<WearableItem>();
+                awaitingWearableTasks.Add(wearableId, taskResult);
 
-                if (!awaitingWearableTasks.ContainsKey(wearableId))
-                {
-                    taskResult = new UniTaskCompletionSource<WearableItem>();
-                    awaitingWearableTasks.Add(wearableId, taskResult);
-
-                    // We accumulate all the requests during the same frames interval to send them all together
-                    pendingWearablesToRequest.Add(wearableId);
-                }
-                else
-                    awaitingWearableTasks.TryGetValue(wearableId, out taskResult);
-
-                return taskResult != null ? await taskResult.Task : null;
+                // We accumulate all the requests during the same frames interval to send them all together
+                pendingWearablesToRequest.Add(wearableId);
             }
-            catch (Exception e) when (e is not OperationCanceledException) { throw; }
+            else
+                taskResult = awaitingWearableTasks[wearableId];
+
+            ct.RegisterWithoutCaptureExecutionContext(() => taskResult.TrySetCanceled());
+            return await taskResult.Task;
         }
 
         private async UniTask<WearableItem[]> RequestWearablesByContextAsync(
@@ -122,40 +120,32 @@ namespace DCLServices.WearablesCatalogService
         {
             ct.ThrowIfCancellationRequested();
 
-            try
+            UniTaskCompletionSource<WearableItem[]> taskResult;
+
+            if (!awaitingWearablesByContextTasks.ContainsKey(context))
             {
-                UniTaskCompletionSource<WearableItem[]> taskResult;
+                taskResult = new UniTaskCompletionSource<WearableItem[]>();
+                awaitingWearablesByContextTasks.Add(context, taskResult);
 
-                if (!awaitingWearablesByContextTasks.ContainsKey(context))
-                {
-                    taskResult = new UniTaskCompletionSource<WearableItem[]>();
-                    awaitingWearablesByContextTasks.Add(context, taskResult);
+                if (!pendingWearablesByContextRequestedTimes.ContainsKey(context))
+                    pendingWearablesByContextRequestedTimes.Add(context, Time.realtimeSinceStartup);
 
-                    if (!pendingWearablesByContextRequestedTimes.ContainsKey(context))
-                        pendingWearablesByContextRequestedTimes.Add(context, Time.realtimeSinceStartup);
-
-                    if (!isThirdParty)
-                        webInterfaceBridge.RequestWearables(userId, wearableIds, collectionIds, context);
-                    else
-                        webInterfaceBridge.RequestThirdPartyWearables(userId, collectionIds[0], context);
-                }
+                if (!isThirdParty)
+                    webInterfaceBridge.RequestWearables(userId, wearableIds, collectionIds, context);
                 else
-                    awaitingWearablesByContextTasks.TryGetValue(context, out taskResult);
-
-                WearableItem[] wearablesResult = Array.Empty<WearableItem>();
-
-                if (taskResult != null)
-                {
-                    wearablesResult = await taskResult.Task;
-                    AddWearablesToCatalog(wearablesResult);
-                }
-
-                return wearablesResult;
+                    webInterfaceBridge.RequestThirdPartyWearables(userId, collectionIds[0], context);
             }
-            catch (Exception e) when (e is not OperationCanceledException) { throw; }
+            else
+                taskResult = awaitingWearablesByContextTasks[context];
+
+            ct.RegisterWithoutCaptureExecutionContext(() => taskResult.TrySetCanceled());
+            var wearablesResult = await taskResult.Task;
+            AddWearablesToCatalog(wearablesResult);
+
+            return wearablesResult;
         }
 
-        [UsedImplicitly]
+        [PublicAPI]
         public void AddWearablesToCatalog(string payload)
         {
             WearablesRequestResponse request = null;
@@ -175,13 +165,11 @@ namespace DCLServices.WearablesCatalogService
             if (request == null)
                 return;
 
-            AddWearablesToCatalog(request.wearables);
-
             if (!string.IsNullOrEmpty(request.context))
                 ResolvePendingWearablesByContext(request.context, request.wearables);
         }
 
-        [UsedImplicitly]
+        [PublicAPI]
         public void WearablesRequestFailed(string payload)
         {
             WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);

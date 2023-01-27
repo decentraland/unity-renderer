@@ -17,7 +17,7 @@ public class KernelConfigModel
     public Debugging debugConfig = new Debugging();
     public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
     public string avatarTextureAPIBaseUrl = string.Empty;
-    public bool usingUrlParamsForDebug = false;
+    public bool urlParamsForWearablesDebug = false;
 
     public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
@@ -45,7 +45,7 @@ public class KernelConfigModel
                && debugConfig.Equals(other.debugConfig)
                && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig)
                && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl
-               && usingUrlParamsForDebug == other.usingUrlParamsForDebug;
+               && urlParamsForWearablesDebug == other.urlParamsForWearablesDebug;
     }
 
     public KernelConfigModel Clone()
@@ -63,7 +63,7 @@ public class KernelConfigModel
         clone.debugConfig = debugConfig.Clone();
         clone.proceduralSkyboxConfig = proceduralSkyboxConfig.Clone();
         clone.avatarTextureAPIBaseUrl = avatarTextureAPIBaseUrl;
-        clone.usingUrlParamsForDebug = usingUrlParamsForDebug;
+        clone.urlParamsForWearablesDebug = urlParamsForWearablesDebug;
         return clone;
     }
 }

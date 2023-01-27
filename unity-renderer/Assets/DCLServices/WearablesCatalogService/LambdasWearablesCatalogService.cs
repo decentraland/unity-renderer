@@ -1,12 +1,12 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Tasks;
 using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using UnityEngine;
 
 namespace DCLServices.WearablesCatalogService
 {
@@ -19,7 +19,7 @@ namespace DCLServices.WearablesCatalogService
 
         private const string WEARABLES_BY_OWNER_END_POINT = "nfts/wearables/{userId}/";
         private const string WEARABLES_BY_COLLECTION_END_POINT = "collections/wearables?collectionId={collectionId}/";
-        private const string WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT = "nfts/thirpartywearables/{userId}?collectionId={collectionId}/";
+        private const string WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT = "nfts/wearables/{userId}?collectionId={collectionId}/";
         private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?{wearableIdsQuery}/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
@@ -34,7 +34,6 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<WearableItem>> awaitingWearableTasks = new ();
-        private readonly Dictionary<string, float> pendingWearableRequestedTimes = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
 
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
@@ -44,11 +43,10 @@ namespace DCLServices.WearablesCatalogService
 
         public void Initialize()
         {
-            serviceCts = new CancellationTokenSource();
+            serviceCts = serviceCts.SafeRestart();
 
             // All the requests happened during the same frames interval are sent together
             CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
-            CheckForRequestsTimeOuts(serviceCts.Token).Forget();
 
             // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
             CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
@@ -56,8 +54,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Dispose()
         {
-            serviceCts?.Cancel();
-            serviceCts?.Dispose();
+            serviceCts.SafeCancelAndDispose();
             serviceCts = null;
             Clear();
         }
@@ -206,7 +203,6 @@ namespace DCLServices.WearablesCatalogService
             wearablesInUseCounters.Clear();
             awaitingWearableTasks.Clear();
             pendingWearablesToRequest.Clear();
-            pendingWearableRequestedTimes.Clear();
         }
 
         UniTask<(WearableResponse response, bool success)> ILambdaServiceConsumer<WearableResponse>.CreateRequest
@@ -243,12 +239,6 @@ namespace DCLServices.WearablesCatalogService
                 string[] wearablesToRequest = pendingWearablesToRequest.ToArray();
                 pendingWearablesToRequest.Clear();
 
-                foreach (string wearablesToRequestId in wearablesToRequest)
-                {
-                    if (!pendingWearableRequestedTimes.ContainsKey(wearablesToRequestId))
-                        pendingWearableRequestedTimes.Add(wearablesToRequestId, Time.realtimeSinceStartup);
-                }
-
                 var requestedWearables = await RequestWearablesAsync(wearablesToRequest, ct);
                 List<string> wearablesNotFound = wearablesToRequest.ToList();
                 foreach (WearableItem wearable in requestedWearables)
@@ -259,28 +249,6 @@ namespace DCLServices.WearablesCatalogService
 
                 foreach (string wearableNotFound in wearablesNotFound)
                     ResolvePendingWearableById(wearableNotFound, null);
-            }
-        }
-
-        private async UniTaskVoid CheckForRequestsTimeOuts(CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested)
-            {
-                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
-
-                if (pendingWearableRequestedTimes.Count <= 0)
-                    continue;
-
-                List<string> expiredRequests = (from taskRequestedTime in pendingWearableRequestedTimes
-                    where Time.realtimeSinceStartup - taskRequestedTime.Value > REQUESTS_TIME_OUT_SECONDS
-                    select taskRequestedTime.Key).ToList();
-
-                foreach (string expiredRequestId in expiredRequests)
-                {
-                    pendingWearableRequestedTimes.Remove(expiredRequestId);
-                    ResolvePendingWearableById(expiredRequestId, null,
-                        $"The request for the wearable '{expiredRequestId}' has exceed the set timeout!");
-                }
             }
         }
 
@@ -312,7 +280,6 @@ namespace DCLServices.WearablesCatalogService
                 task.TrySetException(new Exception(errorMessage));
 
             awaitingWearableTasks.Remove(wearableId);
-            pendingWearableRequestedTimes.Remove(wearableId);
         }
     }
 }
