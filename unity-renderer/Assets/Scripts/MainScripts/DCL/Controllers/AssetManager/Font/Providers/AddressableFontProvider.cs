@@ -8,9 +8,9 @@ namespace DCL.Providers
 {
     public class AddressableFontProvider : IFontAssetProvider
     {
-        private readonly AddressableResourceProvider addressableProvider;
+        private readonly IAddressableResourceProvider addressableProvider;
 
-        public AddressableFontProvider(AddressableResourceProvider provider)
+        public AddressableFontProvider(IAddressableResourceProvider provider)
         {
             addressableProvider = provider;
         }
