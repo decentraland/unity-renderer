@@ -62,8 +62,6 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(FIRST_PERSON_CAMERA_FOV, currentSettings.firstPersonCameraFOV);
             settingsByKey.SetBool(SHOW_AVATAR_NAMES, currentSettings.showAvatarNames);
             settingsByKey.SetBool(CAMERA_MOVEMENT_MODE, currentSettings.leftMouseButtonCursorLock);
-            Debug.Log($"SCENE LOAD RADIUS SAVED {settingsByKey.GetFloat(SCENES_LOAD_RADIUS, defaultSettings.scenesLoadRadius)}");
-
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);

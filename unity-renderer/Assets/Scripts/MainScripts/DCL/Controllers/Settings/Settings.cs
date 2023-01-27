@@ -123,6 +123,7 @@ namespace DCL.SettingsCommon
             qualitySettings.Save();
             audioSettings.Save();
             PlayerPrefsUtils.Save();
+            Debug.Log($"SCENE LOAD RADIUS SAVED {PlayerPrefs.GetFloat("Settings.General.scenesLoadRadius")}");
         }
     }
 }
