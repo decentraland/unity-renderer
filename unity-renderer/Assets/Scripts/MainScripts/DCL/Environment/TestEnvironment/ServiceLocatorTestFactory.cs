@@ -2,8 +2,8 @@
 using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
-using DCL.Providers;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
@@ -39,7 +39,7 @@ namespace DCL
             result.Register<IServiceProviders>(
                 () =>
                 {
-                    var mockedProviders = Substitute.For<IServiceProviders>();
+                    IServiceProviders mockedProviders = Substitute.For<IServiceProviders>();
                     mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
                     mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
                     mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
@@ -51,9 +51,9 @@ namespace DCL
 
             result.Register<ICharacterPreviewFactory>(() =>
             {
-                var mockedFactory = Substitute.For<ICharacterPreviewFactory>();
+                ICharacterPreviewFactory mockedFactory = Substitute.For<ICharacterPreviewFactory>();
 
-                mockedFactory.Create(default, default, default, default)
+                mockedFactory.Create(default(CharacterPreviewMode), default(RenderTexture), default(bool))
                              .ReturnsForAnyArgs(Substitute.For<ICharacterPreviewController>());
 
                 return mockedFactory;
@@ -61,13 +61,13 @@ namespace DCL
 
             result.Register<IAvatarFactory>(() =>
                 {
-                    var mockedFactory = Substitute.For<IAvatarFactory>();
+                    IAvatarFactory mockedFactory = Substitute.For<IAvatarFactory>();
 
-                    mockedFactory.CreateAvatar(default, default, default, default)
+                    mockedFactory.CreateAvatar(default(GameObject), default(IAnimator), default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 
-                    mockedFactory.CreateAvatarWithHologram(default, default, default, default,
-                                      default, default)
+                    mockedFactory.CreateAvatarWithHologram(default(GameObject), default(Transform), default(GameObject), default(IAnimator),
+                                      default(ILOD), default(IVisibility))
                                  .ReturnsForAnyArgs(Substitute.For<IAvatar>());
 
                     return mockedFactory;
@@ -76,7 +76,7 @@ namespace DCL
 
             result.Register<IProfanityFilter>(() => Substitute.For<IProfanityFilter>());
 
-            var editorBundleProvider = Substitute.For<IAssetBundleProvider>();
+            IAssetBundleProvider editorBundleProvider = Substitute.For<IAssetBundleProvider>();
 
             editorBundleProvider.GetAssetBundleAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
                                 .Returns(UniTask.FromResult<AssetBundle>(null));
@@ -85,12 +85,17 @@ namespace DCL
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
             }, editorBundleProvider, DataStore.i.featureFlags));
 
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
-                { AssetSource.WEB, new AssetTextureWebLoader() }
+                { AssetSource.WEB, new AssetTextureWebLoader() },
+            }, DataStore.i.featureFlags));
+
+            result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
             }, DataStore.i.featureFlags));
 
             // World runtime
