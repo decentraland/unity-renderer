@@ -161,8 +161,13 @@ namespace DCL.Social.Passports
 
         private void RemoveFriend()
         {
-            friendsController.RemoveFriend(currentPlayerId);
-            socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
+            dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+                UserProfileController.userProfilesCatalog.Get(currentPlayerId)?.userName,
+                () =>
+                {
+                    friendsController.RemoveFriend(currentPlayerId);
+                    socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
+                }));
         }
 
         private void CancelFriendRequest()

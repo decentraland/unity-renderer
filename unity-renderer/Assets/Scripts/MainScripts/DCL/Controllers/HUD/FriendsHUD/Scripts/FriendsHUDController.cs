@@ -75,6 +75,7 @@ namespace DCL.Social.Friends
             view.OnSearchFriendsRequested += SearchFriends;
             view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
             view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
+            view.OnDeleteConfirmation += HandleUnfriend;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += HandleViewClosed;
@@ -493,8 +494,12 @@ namespace DCL.Social.Friends
         private void HandleOpenWhisperChat(FriendEntryModel entry) =>
             OnPressWhisper?.Invoke(entry.userId);
 
-        private void HandleUnfriend(string userId) =>
-            friendsController.RemoveFriend(userId);
+        private void HandleUnfriend(string userId)
+        {
+            dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+                () => friendsController.RemoveFriend(userId)));
+        }
 
         private void HandleRequestRejected(FriendRequestEntryModel entry)
         {

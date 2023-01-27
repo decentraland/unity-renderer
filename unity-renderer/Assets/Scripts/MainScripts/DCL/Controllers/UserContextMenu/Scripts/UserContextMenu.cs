@@ -184,12 +184,9 @@ public class UserContextMenu : MonoBehaviour
     {
         OnUnfriend?.Invoke(userId);
 
-        if (currentConfirmationDialog != null)
-        {
-            currentConfirmationDialog.SetText(string.Format(DELETE_MSG_PATTERN, UserProfileController.userProfilesCatalog.Get(userId)?.userName));
-            currentConfirmationDialog.Show(() => { UnfriendUser(); });
-        }
-        else { UnfriendUser(); }
+        DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+            UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+            UnfriendUser));
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
         Hide();

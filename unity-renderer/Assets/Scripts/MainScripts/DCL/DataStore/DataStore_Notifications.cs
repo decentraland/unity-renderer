@@ -21,6 +21,15 @@ namespace DCL
             CancelAction = cancelAction;
             ConfirmAction = confirmAction;
         }
+
+        public static ConfirmationPopupData CreateUnFriendData(string userName, Action confirmationAction) =>
+            new (
+                $"Are you sure you want to unfriend {userName}?",
+                "This player and you will no longer be friends, meaning you won't be able to send each other private messages.",
+                "CANCEL",
+                "UNFRIEND",
+                null,
+                confirmationAction);
     }
 
     public class DataStore_Notifications
