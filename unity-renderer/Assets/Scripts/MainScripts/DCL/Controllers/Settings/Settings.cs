@@ -1,6 +1,8 @@
 using System;
 using DCL.Helpers;
 using DCL.Interface;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Audio;
 
 namespace DCL.SettingsCommon
@@ -10,13 +12,13 @@ namespace DCL.SettingsCommon
         public static Settings i { get; private set; }
 
         public event Action OnResetAllSettings;
-        
+
         public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
 
         public readonly ISettingsRepository<QualitySettings> qualitySettings;
         public readonly ISettingsRepository<GeneralSettings> generalSettings;
         public readonly ISettingsRepository<AudioSettings> audioSettings;
-        
+
         private readonly QualitySettingsData qualitySettingsPreset;
         private readonly AudioMixer audioMixer;
 
@@ -41,6 +43,20 @@ namespace DCL.SettingsCommon
             audioSettings = audioSettingsRepository;
 
             SubscribeToVirtualAudioMixerEvents();
+
+            CoroutineStarter.Start(ManualRefresh());
+        }
+
+        private IEnumerator ManualRefresh()
+        {
+            while (true)
+            {
+                if (Input.GetKeyDown(KeyCode.H))
+                {
+                    SaveSettings();
+                }
+                yield return null;
+            }
         }
 
         public void Dispose()
