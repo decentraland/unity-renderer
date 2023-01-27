@@ -5,6 +5,7 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -22,6 +23,7 @@ namespace DCL.Social.Friends
         private IUserProfileBridge userProfileBridge;
         private StringVariable openPassportVariable;
         private DataStore dataStore;
+        private IFriendRequestHUDView friendRequestHUDView;
 
         [SetUp]
         public void SetUp()
@@ -63,8 +65,11 @@ namespace DCL.Social.Friends
             openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
 
+            friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
+
             controller = new ReceivedFriendRequestHUDController(dataStore,
                 view,
+                new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
                 openPassportVariable,
@@ -98,7 +103,7 @@ namespace DCL.Social.Friends
             WhenShow();
             dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -108,7 +113,7 @@ namespace DCL.Social.Friends
 
             view.OnClose += Raise.Event<Action>();
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [Test]
@@ -125,7 +130,7 @@ namespace DCL.Social.Friends
         public IEnumerator RejectFriendRequest()
         {
             WhenShow();
-            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
 
@@ -137,7 +142,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 
@@ -146,7 +151,7 @@ namespace DCL.Social.Friends
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
 
-            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromException<FriendRequest>(new TimeoutException()));
 
@@ -165,7 +170,7 @@ namespace DCL.Social.Friends
         [UnityTest]
         public IEnumerator ConfirmFriendship()
         {
-            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
             WhenShow();
@@ -179,7 +184,7 @@ namespace DCL.Social.Friends
             {
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
                 view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                view.Close();
+                friendRequestHUDView.Close();
             });
         }
 
@@ -188,7 +193,7 @@ namespace DCL.Social.Friends
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
 
-            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID)
+            friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
                                   UniTask.FromException<FriendRequest>(new TimeoutException()));
 

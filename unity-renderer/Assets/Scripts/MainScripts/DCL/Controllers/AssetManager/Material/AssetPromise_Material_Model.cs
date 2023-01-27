@@ -30,6 +30,7 @@ namespace DCL
         public readonly bool isPbrMaterial;
         public readonly Texture? albedoTexture;
         public readonly float alphaTest;
+        public readonly bool castShadows;
 
         public readonly Texture? alphaTexture;
         public readonly Texture? emissiveTexture;
@@ -52,24 +53,25 @@ namespace DCL
         public static AssetPromise_Material_Model CreateBasicMaterial(Texture? albedoTexture, float alphaTest)
         {
             Color defaultColor = Color.white;
+            bool defaultShadow = true;
             return new AssetPromise_Material_Model(false, albedoTexture, null, null, null,
-                alphaTest, defaultColor, defaultColor, defaultColor, TransparencyMode.Auto,
+                alphaTest, defaultShadow, defaultColor, defaultColor, defaultColor, TransparencyMode.Auto,
                 0, 0, 0, 0, 0, 0);
         }
 
         public static AssetPromise_Material_Model CreatePBRMaterial(Texture? albedoTexture, Texture? alphaTexture,
-            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, Color albedoColor, Color emissiveColor,
+            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color emissiveColor,
             Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
             return new AssetPromise_Material_Model(true, albedoTexture, alphaTexture,
-                emissiveTexture, bumpTexture, alphaTest, albedoColor, emissiveColor,
+                emissiveTexture, bumpTexture, alphaTest, castShadows, albedoColor, emissiveColor,
                 reflectivityColor, transparencyMode, metallic, roughness, glossiness,
                 specularIntensity, emissiveIntensity, directIntensity);
         }
 
         public AssetPromise_Material_Model(bool isPbrMaterial, Texture? albedoTexture, Texture? alphaTexture,
-            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, Color albedoColor, Color emissiveColor,
+            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color emissiveColor,
             Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
@@ -79,6 +81,7 @@ namespace DCL
             this.emissiveTexture = emissiveTexture;
             this.bumpTexture = bumpTexture;
             this.alphaTest = alphaTest;
+            this.castShadows = castShadows;
             this.albedoColor = albedoColor;
             this.emissiveColor = emissiveColor;
             this.reflectivityColor = reflectivityColor;

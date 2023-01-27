@@ -5,9 +5,9 @@ using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Threading;
 
 namespace DCL.Social.Friends
 {
@@ -62,67 +62,70 @@ namespace DCL.Social.Friends
             var totalReceivedCount = 0;
             var totalSentCount = 0;
             var friendsUpdated = new Dictionary<string, FriendshipAction>();
+
             controller.OnTotalFriendRequestUpdated += (received, sent) =>
             {
                 totalReceivedCount = received;
                 totalSentCount = sent;
             };
+
             controller.OnUpdateFriendship += (s, action) => friendsUpdated[s] = action;
 
-            _ = apiBridge.GetFriendRequestsAsync(0, 0, 0, 0).Returns(UniTask.FromResult(
-                new AddFriendRequestsV2Payload
-                {
-                    totalReceivedFriendRequests = 3,
-                    totalSentFriendRequests = 2,
-                    requestedFrom = new FriendRequestPayload[]
-                    {
-                        new FriendRequestPayload
-                        {
-                            friendRequestId = "test1",
-                            from = "rcv1",
-                            to = "me",
-                            messageBody = "",
-                            timestamp = 0
-                        },
-                        new FriendRequestPayload
-                        {
-                            friendRequestId = "test2",
-                            from = "rcv2",
-                            to = "me",
-                            messageBody = "",
-                            timestamp = 0
-                        },
-                        new FriendRequestPayload
-                        {
-                            friendRequestId = "test3",
-                            from = "rcv3",
-                            to = "me",
-                            messageBody = "",
-                            timestamp = 0
-                        }
-                    },
-                    requestedTo = new FriendRequestPayload[]
-                    {
-                        new FriendRequestPayload
-                        {
-                            friendRequestId = "test1",
-                            from = "me",
-                            to = "snt1",
-                            messageBody = "",
-                            timestamp = 0
-                        },
-                        new FriendRequestPayload
-                        {
-                            friendRequestId = "test2",
-                            from = "me",
-                            to = "snt2",
-                            messageBody = "",
-                            timestamp = 0
-                        }
-                    }
-                }));
+            apiBridge.GetFriendRequestsAsync(0, 0, 0, 0, Arg.Any<CancellationToken>())
+                     .Returns(UniTask.FromResult(
+                          new AddFriendRequestsV2Payload
+                          {
+                              totalReceivedFriendRequests = 3,
+                              totalSentFriendRequests = 2,
+                              requestedFrom = new FriendRequestPayload[]
+                              {
+                                  new FriendRequestPayload
+                                  {
+                                      friendRequestId = "test1",
+                                      from = "rcv1",
+                                      to = "me",
+                                      messageBody = "",
+                                      timestamp = 0
+                                  },
+                                  new FriendRequestPayload
+                                  {
+                                      friendRequestId = "test2",
+                                      from = "rcv2",
+                                      to = "me",
+                                      messageBody = "",
+                                      timestamp = 0
+                                  },
+                                  new FriendRequestPayload
+                                  {
+                                      friendRequestId = "test3",
+                                      from = "rcv3",
+                                      to = "me",
+                                      messageBody = "",
+                                      timestamp = 0
+                                  }
+                              },
+                              requestedTo = new FriendRequestPayload[]
+                              {
+                                  new FriendRequestPayload
+                                  {
+                                      friendRequestId = "test1",
+                                      from = "me",
+                                      to = "snt1",
+                                      messageBody = "",
+                                      timestamp = 0
+                                  },
+                                  new FriendRequestPayload
+                                  {
+                                      friendRequestId = "test2",
+                                      from = "me",
+                                      to = "snt2",
+                                      messageBody = "",
+                                      timestamp = 0
+                                  }
+                              }
+                          }));
 
-            controller.GetFriendRequestsAsync(0, 0, 0, 0).Forget();
+            controller.GetFriendRequestsAsync(0, 0, 0, 0, default(CancellationToken)).Forget();
 
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt1"]);
             Assert.AreEqual(FriendshipAction.REQUESTED_TO, friendsUpdated["snt2"]);
@@ -243,6 +246,7 @@ namespace DCL.Social.Friends
         {
             var totalReceived = 0;
             var totalSent = 0;
+
             controller.OnTotalFriendRequestUpdated += (received, sent) =>
             {
                 totalReceived = received;
@@ -329,7 +333,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
-                apiBridge.CancelRequestAsync("fr")
+                apiBridge.CancelRequestAsync("fr", Arg.Any<CancellationToken>())
                          .Returns(UniTask.FromResult(new CancelFriendshipConfirmationPayload
                           {
                               friendRequest = new FriendRequestPayload
@@ -342,7 +346,7 @@ namespace DCL.Social.Friends
                               }
                           }));
 
-                FriendRequest request = await controller.CancelRequestAsync("fr");
+                FriendRequest request = await controller.CancelRequestAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
@@ -365,7 +369,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
-                apiBridge.RequestFriendshipAsync("receiverId", "bleh")
+                apiBridge.RequestFriendshipAsync("receiverId", "bleh", Arg.Any<CancellationToken>())
                          .Returns(
                               UniTask.FromResult(new RequestFriendshipConfirmationPayload
                               {
@@ -379,7 +383,9 @@ namespace DCL.Social.Friends
                                   },
                               }));
 
-                FriendRequest request = await controller.RequestFriendshipAsync("receiverId", "bleh");
+                FriendRequest request = await controller.RequestFriendshipAsync("receiverId", "bleh",
+                    default(CancellationToken));
+
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
@@ -402,7 +408,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
-                apiBridge.AcceptFriendshipAsync("fr")
+                apiBridge.AcceptFriendshipAsync("fr", Arg.Any<CancellationToken>())
                          .Returns(UniTask.FromResult(new AcceptFriendshipPayload
                           {
                               FriendRequest = new FriendRequestPayload
@@ -415,7 +421,7 @@ namespace DCL.Social.Friends
                               },
                           }));
 
-                FriendRequest request = await controller.AcceptFriendshipAsync("fr");
+                FriendRequest request = await controller.AcceptFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
@@ -438,7 +444,7 @@ namespace DCL.Social.Friends
                     Assert.AreEqual("bleh", request.MessageBody);
                 }
 
-                apiBridge.RejectFriendshipAsync("fr")
+                apiBridge.RejectFriendshipAsync("fr", Arg.Any<CancellationToken>())
                          .Returns(UniTask.FromResult(new RejectFriendshipPayload
                           {
                               FriendRequestPayload = new FriendRequestPayload
@@ -451,7 +457,7 @@ namespace DCL.Social.Friends
                               },
                           }));
 
-                FriendRequest request = await controller.RejectFriendshipAsync("fr");
+                FriendRequest request = await controller.RejectFriendshipAsync("fr", default(CancellationToken));
                 VerifyRequest(request);
 
                 request = controller.GetAllocatedFriendRequest("fr");
@@ -474,8 +480,9 @@ namespace DCL.Social.Friends
                     Assert.AreEqual(payload.messageBody, request.MessageBody);
                 }
 
-                FriendRequestPayload[] requestedTo = {
-                    new()
+                FriendRequestPayload[] requestedTo =
+                {
+                    new ()
                     {
                         from = "ownId",
                         friendRequestId = "fr3",
@@ -483,7 +490,7 @@ namespace DCL.Social.Friends
                         to = "usr3",
                         messageBody = "bleh",
                     },
-                    new()
+                    new ()
                     {
                         from = "ownId",
                         friendRequestId = "fr4",
@@ -493,8 +500,9 @@ namespace DCL.Social.Friends
                     },
                 };
 
-                FriendRequestPayload[] requestedFrom = {
-                    new()
+                FriendRequestPayload[] requestedFrom =
+                {
+                    new ()
                     {
                         from = "usr1",
                         friendRequestId = "fr1",
@@ -502,7 +510,7 @@ namespace DCL.Social.Friends
                         to = "ownId",
                         messageBody = "bleh",
                     },
-                    new()
+                    new ()
                     {
                         from = "usr2",
                         friendRequestId = "fr2",
@@ -512,15 +520,17 @@ namespace DCL.Social.Friends
                     },
                 };
 
-                apiBridge.GetFriendRequestsAsync(5, 0, 5, 0).Returns(UniTask.FromResult<AddFriendRequestsV2Payload>(new AddFriendRequestsV2Payload
-                {
-                    totalReceivedFriendRequests = 2,
-                    totalSentFriendRequests = 2,
-                    requestedFrom = requestedFrom,
-                    requestedTo = requestedTo,
-                }));
+                apiBridge.GetFriendRequestsAsync(5, 0, 5, 0, Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(new AddFriendRequestsV2Payload
+                          {
+                              totalReceivedFriendRequests = 2,
+                              totalSentFriendRequests = 2,
+                              requestedFrom = requestedFrom,
+                              requestedTo = requestedTo,
+                          }));
 
-                List<FriendRequest> requests = await controller.GetFriendRequestsAsync(5, 0, 5, 0);
+                List<FriendRequest> requests = await controller.GetFriendRequestsAsync(5, 0, 5, 0,
+                    default(CancellationToken));
 
                 Verify(requests[0], requestedFrom[0]);
                 Verify(requests[1], requestedFrom[1]);

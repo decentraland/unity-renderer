@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -92,7 +93,7 @@ namespace DCL.Social.Friends
         [Test]
         public void CancelFriendship()
         {
-            friendsController.CancelRequestAsync(FRIEND_REQ_ID)
+            friendsController.CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
                                   new FriendRequest("friendReqId", 200, OWN_ID, RECIPIENT_ID, "woah")));
             WhenRequestedToShow();
@@ -100,20 +101,20 @@ namespace DCL.Social.Friends
 
             view.Received(1).ShowPendingToCancel();
             view.Received(1).Close();
-            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
+            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>());
         }
 
         [Test]
         public void ShowFailWhenTimeout()
         {
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
-            friendsController.CancelRequestAsync(FRIEND_REQ_ID)
+            friendsController.CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
             WhenRequestedToShow();
             view.OnCancel += Raise.Event<Action>();
 
             view.Received(1).ShowPendingToCancel();
-            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID);
+            friendsController.Received(1).CancelRequestAsync(FRIEND_REQ_ID, Arg.Any<CancellationToken>());
         }
 
         private void WhenRequestedToShow()
