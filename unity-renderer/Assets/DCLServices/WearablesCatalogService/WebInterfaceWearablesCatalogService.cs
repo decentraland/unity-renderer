@@ -10,7 +10,7 @@ using UnityEngine;
 namespace DCLServices.WearablesCatalogService
 {
     /// <summary>
-    /// This service keep the same logic of the old CatalogController (but managed with UniTasks instead of Promises)
+    /// This service keeps the same logic of the old CatalogController (but managed with UniTasks instead of Promises)
     /// so all the wearables requests will pass through kernel.
     /// It will be deprecated once we move all the kernel's logic related to requesting wearables to Unity.
     /// </summary>

@@ -11,7 +11,7 @@ using System.Threading;
 namespace DCLServices.WearablesCatalogService
 {
     /// <summary>
-    /// This service implement a direct way of getting wearables sending the requests directly to lambdas.
+    /// This service implements a direct way of getting wearables sending the requests directly to lambdas.
     /// </summary>
     public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableResponse>
     {
@@ -46,7 +46,7 @@ namespace DCLServices.WearablesCatalogService
             serviceCts = serviceCts.SafeRestart();
 
             // All the requests happened during the same frames interval are sent together
-            //CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
+            CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
 
             // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
             CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
