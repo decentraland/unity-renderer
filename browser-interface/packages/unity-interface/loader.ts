@@ -99,7 +99,7 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
     dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl + postfix),
     frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl + postfix),
     codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl + postfix),
-    streamingAssetsUrl: resolveWithBaseUrl('StreamingAssets'),
+    streamingAssetsUrl: new URL("StreamingAssets", baseUrl).toString(),
     companyName: 'Decentraland',
     productName: 'Decentraland World Client',
     productVersion: '0.1',

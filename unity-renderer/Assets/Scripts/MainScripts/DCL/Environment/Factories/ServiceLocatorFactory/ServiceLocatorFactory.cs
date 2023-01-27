@@ -67,21 +67,32 @@ namespace DCL
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
 
+            //Addressable Resource Provider
+            var addressableResourceProvider = new AddressableResourceProvider();
+            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
+
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
             {
                 { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
-                { AssetSource.WEB, new AssetTextureWebLoader() }
+                { AssetSource.WEB, new AssetTextureWebLoader() },
             }, DataStore.i.featureFlags));
 
             result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
             {
-                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) }
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
             }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
+
+            result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
+                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
+            }, DataStore.i.featureFlags));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
             result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
+
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 
