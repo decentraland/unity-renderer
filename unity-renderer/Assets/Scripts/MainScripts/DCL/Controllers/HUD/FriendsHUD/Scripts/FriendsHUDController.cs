@@ -498,7 +498,7 @@ namespace DCL.Social.Friends
         {
             dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
                 UserProfileController.userProfilesCatalog.Get(userId)?.userName,
-                () => friendsController.RemoveFriend(userId)));
+                () => friendsController.RemoveFriend(userId)), true);
         }
 
         private void HandleRequestRejected(FriendRequestEntryModel entry)

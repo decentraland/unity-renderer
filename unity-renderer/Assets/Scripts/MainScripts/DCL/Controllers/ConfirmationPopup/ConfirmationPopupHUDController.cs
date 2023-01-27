@@ -20,6 +20,8 @@ namespace DCL.ConfirmationPopup
             this.view.OnCancel += OnCancelFromView;
 
             this.dataStore.ConfirmationPopup.OnChange += ShowOrHide;
+
+            view.Hide(true);
         }
 
         public void Dispose()
@@ -63,7 +65,7 @@ namespace DCL.ConfirmationPopup
         {
             externalCancelAction = data.CancelAction;
             externalConfirmationAction = data.ConfirmAction;
-            view.SetModel(new ConfirmationPopupHUDViewModel(data.Title, data.CancelButton, data.CancelButton, data.ConfirmButton));
+            view.SetModel(new ConfirmationPopupHUDViewModel(data.Title, data.Body, data.CancelButton, data.ConfirmButton));
             view.Show();
         }
     }

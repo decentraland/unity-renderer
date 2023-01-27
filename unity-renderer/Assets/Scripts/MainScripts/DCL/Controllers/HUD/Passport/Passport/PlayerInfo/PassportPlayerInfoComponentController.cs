@@ -167,7 +167,7 @@ namespace DCL.Social.Passports
                 {
                     friendsController.RemoveFriend(currentPlayerId);
                     socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
-                }));
+                }), true);
         }
 
         private void CancelFriendRequest()
@@ -252,7 +252,7 @@ namespace DCL.Social.Passports
                     view.SetIsBlocked(true);
                     passportApiBridge.SendBlockPlayer(currentPlayerId);
                     socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
-                }));
+                }), true);
         }
 
         private void UnblockUser()

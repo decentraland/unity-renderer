@@ -315,7 +315,7 @@ public class PlayerInfoCardHUDController : IHUD
                 view.SetIsBlocked(true);
                 WebInterface.SendBlockPlayer(currentUserProfile.userId);
                 socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
-            }));
+            }), true);
     }
 
     private void UnblockPlayer()

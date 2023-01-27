@@ -249,7 +249,7 @@ public class PrivateChatWindowController : IHUD
             {
                 friendsController.RemoveFriend(friendId);
                 Hide();
-            }));
+            }), true);
     }
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)

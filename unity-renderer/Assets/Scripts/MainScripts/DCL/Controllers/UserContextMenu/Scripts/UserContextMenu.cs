@@ -186,7 +186,7 @@ public class UserContextMenu : MonoBehaviour
 
         DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
-            UnfriendUser));
+            UnfriendUser), true);
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
         Hide();
@@ -273,7 +273,7 @@ public class UserContextMenu : MonoBehaviour
                 {
                     WebInterface.SendBlockPlayer(userId);
                     GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
-                }));
+                }), true);
         }
         else
         {
