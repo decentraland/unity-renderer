@@ -340,6 +340,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 96af52ba6c86845beb91f068f1cabe94, type: 3}
   - {fileID: 21300000, guid: ee4612caf84054bbb9282917b25c1bfc, type: 3}
   - {fileID: 21300000, guid: 6c9da2cade77947d3bc10b1ad5c4f532, type: 3}
+  - {fileID: 21300000, guid: 65e7f4ca46dbf46a1804d5c1509f3482, type: 3}
   - {fileID: 21300000, guid: 0b8573ead118a4e798b4fa5d8c93fe8c, type: 3}
   - {fileID: 21300000, guid: 25fc93ea61d7241618036a9a4bb5adfa, type: 3}
   - {fileID: 21300000, guid: 216900fa018f342a69776d45c54fd4cb, type: 3}
@@ -755,6 +756,7 @@ SpriteAtlas:
   - MarketIcon
   - WheelBackground
   - PassportIcon
+  - LANDsIcon
   - ContainerRadius6Shadow
   - RectRadius16Bottom
   - PlusIcon2
