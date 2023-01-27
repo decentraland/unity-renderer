@@ -184,16 +184,14 @@ public class UserContextMenu : MonoBehaviour
     {
         DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
-            UnfriendUser), true);
+            () =>
+            {
+                FriendsController.i.RemoveFriend(userId);
+                OnUnfriend?.Invoke(userId);
+            }), true);
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
         Hide();
-    }
-
-    private void UnfriendUser()
-    {
-        FriendsController.i.RemoveFriend(userId);
-        OnUnfriend?.Invoke(userId);
     }
 
     private void OnAddFriendButtonPressed()
