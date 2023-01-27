@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
+        private const float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
+        
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
         public bool playing => GetState() == VideoState.PLAYING;
@@ -37,12 +39,12 @@ namespace DCL.Components.Video.Plugin
             {
                 case VideoState.ERROR:
                     string newError = plugin.GetError(videoPlayerId);
+                    if (newError == lastError)
+                        break;
 
-                    if ( newError != lastError )
-                    {
-                        lastError = newError;
-                        Debug.LogError(lastError);
-                    }
+                    UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>("Textures/VideoFailed"), true);
+                    lastError = newError;
+                    Debug.LogError(lastError);
 
                     break;
                 case VideoState.READY:
@@ -155,12 +157,49 @@ namespace DCL.Components.Video.Plugin
 
         public VideoState GetState()
         {
-            return (VideoState)plugin.GetState(videoPlayerId);
+            return plugin.GetState(videoPlayerId);
         }
 
         public void Dispose()
         {
             plugin.Remove(videoPlayerId);
+        }
+
+
+        private void UpdateTextureConservingAspectRatio(Texture2D textureToCenter, bool fillBackground)
+        {
+            // Avoiding Memory leaks as textures are never destroyed by Unity
+            if (texture != null)
+            {
+                UnityEngine.Object.Destroy(texture);
+                texture = null;
+            }
+
+            // Fix textureToCenter in the center of a 16:9 texture
+            int xOffset = 0;
+            int yOffset = 0;
+            if ((float)textureToCenter.width / textureToCenter.height >= DEFAULT_ASPECT_RATIO)
+            {
+                texture = new Texture2D(textureToCenter.width, Mathf.RoundToInt(textureToCenter.width / DEFAULT_ASPECT_RATIO));
+                yOffset = (texture.height - textureToCenter.height) / 2;
+            }
+            else
+            {
+                texture = new Texture2D(Mathf.RoundToInt(textureToCenter.height * DEFAULT_ASPECT_RATIO), textureToCenter.height);
+                xOffset = (texture.width - textureToCenter.width) / 2;
+            }
+
+            if (fillBackground)
+            {
+                Color32[] backgroundPixels = new Color32[texture.width * texture.height];
+                Color32 color = textureToCenter.GetPixel(0, 0);
+                Array.Fill(backgroundPixels, color);
+                texture.SetPixels32(backgroundPixels);
+            }
+
+            Color32[] pixels = textureToCenter.GetPixels32(0);
+            texture.SetPixels32(xOffset, yOffset, textureToCenter.width, textureToCenter.height, pixels);
+            texture.Apply();
         }
     }
 }
