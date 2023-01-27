@@ -60,7 +60,8 @@ namespace DCL.LoadingScreen
 
         private void StatusUpdate(float percentage)
         {
-            loadingScreenPercentageView.SetLoadingPercentage((int)percentage);
+            float clampedPercentage = Mathf.Clamp(percentage, 0, 100);
+            loadingScreenPercentageView.SetLoadingPercentage((int)clampedPercentage);
 
             if (currentSceneBeingLoaded != null && percentage >= 100)
             {
