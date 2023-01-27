@@ -127,9 +127,9 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           return { data: [response.payload] }
         },
 
-        // TODO: implement
-        async crdtGetState() {
-          return { data: [] }
+        async crdtGetState(_, ctx) {
+          const response = await ctx.rpcSceneControllerService.getCurrentState({})
+          return { hasEntities: response.hasOwnEntities, data: [response.payload] }
         }
       }
     }

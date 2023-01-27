@@ -3,8 +3,8 @@ import {
   getPortableExperiencesLoaded,
   getRunningPortableExperience
 } from '../../../unity-interface/portableExperiencesUtils'
-import { store } from '../../store/isolatedStore'
-import { removeScenePortableExperience } from '../../portableExperiences/actions'
+import { store } from '../../../shared/store/isolatedStore'
+import { removeScenePortableExperience } from '../../../shared/portableExperiences/actions'
 
 import { RpcServerPort } from '@dcl/rpc'
 import { PortContext } from './context'

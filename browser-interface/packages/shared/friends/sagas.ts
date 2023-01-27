@@ -400,7 +400,8 @@ function* configureMatrixClient(action: SetMatrixClient) {
       }
 
       // send total unseen messages update
-      const totalUnreadMessages = getTotalUnseenMessages(client, ownId, getFriendIds(client))
+      const friends = await getFriendIds(client)
+      const totalUnreadMessages = getTotalUnseenMessages(client, ownId, friends)
       const updateTotalUnseenMessages: UpdateTotalUnseenMessagesPayload = {
         total: totalUnreadMessages
       }
@@ -445,7 +446,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
   )
 
-  client.onChannelMembership((conversation, membership) => {
+  client.onChannelMembership(async (conversation, membership) => {
     if (!areChannelsEnabled()) return
 
     switch (membership) {
@@ -483,7 +484,8 @@ function* configureMatrixClient(action: SetMatrixClient) {
         }
 
         // send total unseen messages update
-        const totalUnreadMessages = getTotalUnseenMessages(client, client.getUserId(), getFriendIds(client))
+        const friends = await getFriendIds(client)
+        const totalUnreadMessages = getTotalUnseenMessages(client, client.getUserId(), friends)
         const updateTotalUnseenMessages: UpdateTotalUnseenMessagesPayload = {
           total: totalUnreadMessages
         }
@@ -657,10 +659,22 @@ function* refreshFriends() {
   }
 }
 
-function getFriendIds(client: SocialAPI): string[] {
-  const friends: string[] = client.getAllFriends()
+async function getFriendIds(client: SocialAPI): Promise<string[]> {
+  let friends: string[]
+  if (shouldUseSocialServiceForFriendships()) {
+    friends = await client.getAllFriendsAddresses()
+  } else {
+    friends = client.getAllFriends()
+  }
 
   return friends.map(($) => parseUserId($)).filter(Boolean) as string[]
+}
+
+function shouldUseSocialServiceForFriendships() {
+  return (
+    !getFeatureFlagEnabled(store.getState(), 'use-synapse-server') &&
+    getFeatureFlagEnabled(store.getState(), 'use-social-server-friendships')
+  )
 }
 
 function getTotalUnseenMessages(client: SocialAPI, ownId: string, friendIds: string[]): number {
@@ -883,7 +897,8 @@ export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPa
   }
 
   // get total user unread messages
-  const totalUnreadMessages = getTotalUnseenMessages(client, client.getUserId(), getFriendIds(client))
+  const friends = await getFriendIds(client)
+  const totalUnreadMessages = getTotalUnseenMessages(client, client.getUserId(), friends)
 
   const updateUnseenMessages: UpdateUserUnseenMessagesPayload = {
     userId: userId.userId,
@@ -1856,7 +1871,8 @@ export async function markAsSeenChannelMessages(request: MarkChannelMessagesAsSe
   }
 
   // get total user unread messages
-  const totalUnreadMessages = getTotalUnseenMessages(client, ownId, getFriendIds(client))
+  const friends = await getFriendIds(client)
+  const totalUnreadMessages = getTotalUnseenMessages(client, ownId, friends)
   const updateTotalUnseenMessages: UpdateTotalUnseenMessagesPayload = {
     total: totalUnreadMessages
   }

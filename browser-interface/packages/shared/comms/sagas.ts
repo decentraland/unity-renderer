@@ -16,7 +16,7 @@ import {
 import { notifyStatusThroughChat } from 'shared/chat'
 import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER } from 'shared/profiles/actions'
+import { DEPLOY_PROFILE_SUCCESS, SendProfileToRenderer, SEND_PROFILE_TO_RENDERER } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { Avatar, IPFSv2, Snapshots } from '@dcl/schemas'
 import { commConfigurations, COMMS_GRAPH, DEBUG_COMMS, genericAvatarSnapshots, PREFERED_ISLAND } from 'config'
@@ -34,9 +34,7 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { WebSocketAdapter } from './adapters/WebSocketAdapter'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
-import { PeerToPeerAdapter } from './adapters/PeerToPeerAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
-import { Position3D } from './v3/types'
 import { IRealmAdapter } from 'shared/realm/types'
 import { CommsConfig } from 'shared/meta/types'
 import { Authenticator } from '@dcl/crypto'
@@ -58,9 +56,17 @@ import {
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { NotificationType } from 'shared/types'
 import { trackEvent } from 'shared/analytics'
+import { getCatalystCandidates } from 'shared/dao/selectors'
+import { setCatalystCandidates } from 'shared/dao/actions'
+import { signedFetch } from 'atomicHelpers/signedFetch'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
-const INTERVAL_ANNOUNCE_PROFILE = 1000
+// this interval should be fast because this will be the delay other people around
+// you will experience to fully show your avatar. i.e. if we set it to 10sec, people
+// in the genesis plaza will have to wait up to 10 seconds (if already connected) to
+// see you. if they missed the report by one second, then they will wait 19seconds to
+// see you.
+const INTERVAL_ANNOUNCE_PROFILE = 2_000 // 2 seconds
 
 export function* commsSaga() {
   yield takeLatest(HANDLE_ROOM_DISCONNECTION, handleRoomDisconnectionSaga)
@@ -199,57 +205,9 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
   try {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
 
-    const ix = action.payload.event.connStr.indexOf(':')
-    const protocol = action.payload.event.connStr.substring(0, ix)
-    const url = action.payload.event.connStr.substring(ix + 1)
-
     yield put(setCommsIsland(action.payload.event.islandId))
 
-    let adapter: RoomConnection | undefined = undefined
-
-    // TODO: move this to a saga
-    overrideCommsProtocol(protocol)
-    switch (protocol) {
-      case 'offline': {
-        adapter = new Rfc4RoomConnection(new OfflineAdapter())
-        break
-      }
-      case 'ws-room': {
-        const finalUrl = !url.startsWith('ws:') && !url.startsWith('wss:') ? 'wss://' + url : url
-
-        adapter = new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity))
-        break
-      }
-      case 'simulator': {
-        adapter = new SimulationRoom(url)
-        break
-      }
-      case 'livekit': {
-        const theUrl = new URL(url)
-        const token = theUrl.searchParams.get('access_token')
-        if (!token) {
-          throw new Error('No access token')
-        }
-        adapter = new Rfc4RoomConnection(
-          new LivekitAdapter({
-            logger: commsLogger,
-            url: theUrl.origin + theUrl.pathname,
-            token
-          })
-        )
-        break
-      }
-      case 'p2p': {
-        adapter = new Rfc4RoomConnection(yield call(createP2PAdapter, action.payload.event.islandId))
-        break
-      }
-      case 'lighthouse': {
-        adapter = yield call(createLighthouseConnection, url)
-        break
-      }
-    }
-
-    if (!adapter) throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
+    const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
 
     globalThis.__DEBUG_ADAPTER = adapter
 
@@ -258,46 +216,108 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     yield put(setRoomConnection(adapter))
   } catch (error: any) {
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
+
+    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
+    const candidates = yield select(getCatalystCandidates)
+    for (const candidate of candidates) {
+      if (candidate.domain === realmAdapter!.baseUrl) {
+        candidate.lastConnectionAttempt = Date.now()
+        break
+      }
+    }
+    store.dispatch(setCatalystCandidates(candidates))
+
     yield put(setRealmAdapter(undefined))
     yield put(setRoomConnection(undefined))
   }
 }
 
-function* createP2PAdapter(islandId: string) {
-  const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-  const realmAdapter: IRealmAdapter = yield select(getRealmAdapter)
-  if (!realmAdapter) throw new Error('p2p transport requires a valid realm adapter')
-  const peers = new Map<string, Position3D>()
-  const commsConfig: CommsConfig = yield select(getCommsConfig)
-  // for (const [id, p] of Object.entries(islandChangedMessage.peers)) {
-  //   if (peerId !== id) {
-  //     peers.set(id, [p.x, p.y, p.z])
-  //   }
-  // }
-  return new PeerToPeerAdapter(
-    {
-      logger: commsLogger,
-      bff: realmAdapter,
-      logConfig: {
-        debugWebRtcEnabled: !!DEBUG_COMMS,
-        debugUpdateNetwork: !!DEBUG_COMMS,
-        debugIceCandidates: !!DEBUG_COMMS,
-        debugMesh: !!DEBUG_COMMS
-      },
-      relaySuspensionConfig: {
-        relaySuspensionInterval: commsConfig.relaySuspensionInterval ?? 750,
-        relaySuspensionDuration: commsConfig.relaySuspensionDuration ?? 5000
-      },
-      islandId,
-      // TODO: is this peerId correct?
-      peerId: identity.address
-    },
-    peers
-  )
+async function connectAdapter(connStr: string, identity: ExplorerIdentity): Promise<RoomConnection> {
+  const ix = connStr.indexOf(':')
+  const protocol = connStr.substring(0, ix)
+  const url = connStr.substring(ix + 1)
+
+  // TODO: move this to a saga
+  overrideCommsProtocol(protocol)
+
+  switch (protocol) {
+    case 'signed-login': {
+      // this communications protocol signals a "required handshake" to connect
+      // to a server which requires a signature from part of the user in order
+      // to authenticate them
+      const result = await signedFetch(
+        url,
+        identity,
+        { method: 'POST', responseBodyType: 'json' },
+        {
+          intent: 'dcl:explorer:comms-handshake',
+          signer: 'dcl:explorer',
+          isGuest: !identity.hasConnectedWeb3
+        }
+      )
+
+      const response: SignedLoginResult = result.json
+      if (!result.ok || typeof response !== 'object') {
+        throw new Error(
+          'There was an error acquiring the communications connection. Decentraland will try to connect to another realm'
+        )
+      }
+
+      type SignedLoginResult = {
+        fixedAdapter?: string
+        message?: string
+      }
+
+      if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
+        return connectAdapter(response.fixedAdapter, identity)
+      }
+
+      if (typeof response.message === 'string') {
+        throw new Error(`There was an error acquiring the communications connection: ${response.message}`)
+      }
+
+      trackEvent('error', {
+        message: 'Error in signed-login response: ' + JSON.stringify(response),
+        context: 'comms',
+        stack: 'connectAdapter'
+      })
+
+      throw new Error(`An unknown error was detected while trying to connect to the selected realm.`)
+    }
+    case 'offline': {
+      return new Rfc4RoomConnection(new OfflineAdapter())
+    }
+    case 'ws-room': {
+      const finalUrl = !url.startsWith('ws:') && !url.startsWith('wss:') ? 'wss://' + url : url
+
+      return new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity))
+    }
+    case 'simulator': {
+      return new SimulationRoom(url)
+    }
+    case 'livekit': {
+      const theUrl = new URL(url)
+      const token = theUrl.searchParams.get('access_token')
+      if (!token) {
+        throw new Error('No access token')
+      }
+      return new Rfc4RoomConnection(
+        new LivekitAdapter({
+          logger: commsLogger,
+          url: theUrl.origin + theUrl.pathname,
+          token
+        })
+      )
+    }
+    case 'lighthouse': {
+      return createLighthouseConnection(url, identity)
+    }
+  }
+  throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
 }
-function* createLighthouseConnection(url: string) {
-  const commsConfig: CommsConfig = yield select(getCommsConfig)
-  const identity: ExplorerIdentity = yield select(getCurrentIdentity)
+
+function createLighthouseConnection(url: string, identity: ExplorerIdentity) {
+  const commsConfig: CommsConfig = getCommsConfig(store.getState())
   const peerConfig: LighthouseConnectionConfig = {
     connectionConfig: {
       iceServers: commConfigurations.defaultIceServers
@@ -503,18 +523,33 @@ function* handleCommsReconnectionInterval() {
  */
 function* handleAnnounceProfile() {
   while (true) {
-    yield race({
-      SEND_PROFILE_TO_RENDERER: take(SEND_PROFILE_TO_RENDERER),
+    // We notify the network of our profile's latest version when:
+    const reason: { sendProfileToRenderer?: SendProfileToRenderer } = yield race({
+      // A local profile is updated in the renderer
+      sendProfileToRenderer: take(SEND_PROFILE_TO_RENDERER),
+      // The profile got updated on a catalyst
       DEPLOY_PROFILE_SUCCESS: take(DEPLOY_PROFILE_SUCCESS),
+      // The current user's island changed
       SET_COMMS_ISLAND: take(SET_COMMS_ISLAND),
-      timeout: delay(INTERVAL_ANNOUNCE_PROFILE),
-      SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION)
+      // The current user's realm/catalyst changed
+      SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
+      // Periodically just in case other users did not notice the current user
+      timeout: delay(INTERVAL_ANNOUNCE_PROFILE)
     })
 
-    const roomConnection: RoomConnection | undefined = yield select(getCommsRoom)
     const profile: Avatar | null = yield select(getCurrentUserProfile)
 
-    if (roomConnection && profile) {
+    // skip this process when there is no local profile
+    if (!profile) continue
+
+    if (reason.sendProfileToRenderer && profile.userId !== reason.sendProfileToRenderer.payload.userId) {
+      // skip this process when sendProfileToRenderer is called for a different avatar
+      continue
+    }
+
+    const roomConnection: RoomConnection | undefined = yield select(getCommsRoom)
+
+    if (roomConnection) {
       roomConnection.sendProfileMessage({ profileVersion: profile.version }).catch(commsLogger.error)
     }
   }

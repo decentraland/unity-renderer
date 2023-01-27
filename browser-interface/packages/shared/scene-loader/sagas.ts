@@ -30,7 +30,11 @@ import {
   getSceneLoader,
   getPositionSettled
 } from './selectors'
-import { getFetchContentServerFromRealmAdapter } from 'shared/realm/selectors'
+import {
+  getFetchContentServerFromRealmAdapter,
+  isPreviousAdapterWorld,
+  isWorldLoaderActive
+} from 'shared/realm/selectors'
 import { ISceneLoader, SceneLoaderPositionReport, SetDesiredScenesCommand } from './types'
 import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
 import { BEFORE_UNLOAD } from 'shared/actions'
@@ -108,8 +112,10 @@ function* waitForSceneLoader() {
 // We teleport the user to its current position on every change of scene loader
 // to unsettle the position.
 function* unsettlePositionOnSceneLoader() {
-  const lastPosition: ReadOnlyVector2 = yield select(getParcelPosition)
-  yield put(teleportToAction({ position: gridToWorld(lastPosition.x, lastPosition.y) }))
+  const fromWorld = yield select(isPreviousAdapterWorld)
+  const unsettledPosition: ReadOnlyVector2 = fromWorld ? new Vector2(0, 0) : yield select(getParcelPosition)
+
+  yield put(teleportToAction({ position: gridToWorld(unsettledPosition.x, unsettledPosition.y) }))
 }
 
 /*
@@ -197,8 +203,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
   } else {
     // if the /about endpoint returns scenesUrn(s) then those need to be loaded
     // and the genesis city should not start
-    const loadFixedWorld =
-      !!adapter.about.configurations?.scenesUrn?.length || adapter.about.configurations?.cityLoaderContentServer === ''
+    const loadFixedWorld = isWorldLoaderActive(adapter)
 
     if (loadFixedWorld) {
       // TODO: disable green blockers here

@@ -88,7 +88,7 @@ function getMockedAvatar(userId: string, name: string, muted: string[]): Avatar 
     description: '',
     ethAddress: userId,
     hasClaimedName: false,
-    muted: muted,
+    muted,
     name,
     tutorialStep: 1,
     userId,

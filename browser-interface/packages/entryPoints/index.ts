@@ -278,14 +278,11 @@ async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
   if (NEEDS_TUTORIAL) {
     const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
     const IS_NEW_TUTORIAL_DISABLED =
-      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined'
+      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (IS_NEW_TUTORIAL_DISABLED) {
       const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
       const tutorialConfig = {
-        //TODO: hardcoding this value to true since currently default scene is the xmas scnee.
-        // If this is no hardcoded, the tutorial will never start on a default scene that is not genesis plaza
-        // We should plan a way which allows different default scenes
-        fromDeepLink: true,
+        fromDeepLink: HAS_INITIAL_POSITION_MARK,
         enableNewTutorialCamera: enableNewTutorialCamera
       }
 

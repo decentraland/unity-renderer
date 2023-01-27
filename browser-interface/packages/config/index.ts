@@ -66,8 +66,7 @@ export namespace playerConfigurations {
 
 // Entry points
 export const PREVIEW: boolean = !!(globalThis as any).preview
-export const EDITOR: boolean = !!(globalThis as any).isEditor
-export const WORLD_EXPLORER = !EDITOR && !PREVIEW
+export const WORLD_EXPLORER = !PREVIEW
 
 export const RENDERER_WS = location.search.includes('ws')
 
@@ -110,7 +109,7 @@ export const TRACE_RENDERER = ensureSingleString(qs.get('TRACE_RENDERER'))
 
 export const LOS = ensureSingleString(qs.get('LOS'))
 
-export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW || EDITOR
+export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW
 export const DEBUG_COMMS = qs.has('DEBUG_COMMS')
 export const COMMS_GRAPH = qs.has('COMMS_GRAPH')
 export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')

@@ -66,21 +66,13 @@ function* updateLoadingScreenInternal() {
 
     if (!state.comms.context) msgs.push('Connecting to comms...')
 
-    if (state.loading.pendingScenes && state.loading.totalScenes > 1) {
-      msgs.push(
-        `Initializing scenes ${state.loading.totalScenes - state.loading.pendingScenes}/${state.loading.totalScenes}...`
-      )
-    } else if (state.loading.renderingWasActivated) {
-      msgs.push(`Waiting for initial render...`)
-    }
-
     msgs.push(loadingState.message)
     return msgs.join('\n')
   })
 
   const loadingScreen = {
     isVisible,
-    message: loadingMessage || loadingState.message || loadingState.status || '',
+    message: loadingMessage || loadingState.message || '',
     showTips: loadingState.initialLoad || !parcelLoadingStarted
   }
   getUnityInstance().SetLoadingScreen(loadingScreen)

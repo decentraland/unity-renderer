@@ -21,6 +21,7 @@ type BaseCandidate = {
   catalystName: string
   elapsed: number
   status: ServerConnectionStatus
+  lastConnectionAttempt?: number
 }
 
 export type Candidate = {
