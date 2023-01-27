@@ -314,7 +314,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Check the volume
-            Assert.AreEqual(0f, videoTexture.texturePlayer.volume);
+            Assert.AreEqual(0f, videoTexture.texturePlayer.Volume);
         }
 
         [UnityTest]
@@ -332,19 +332,19 @@ namespace Tests
 
             yield return component.routine;
             
-            Assert.AreApproximatelyEqual(1f, component.texturePlayer.volume, 0.01f);
+            Assert.AreApproximatelyEqual(1f, component.texturePlayer.Volume, 0.01f);
 
             AudioSettings settings = Settings.i.audioSettings.Data;
             settings.sceneSFXVolume = 0.5f;
             Settings.i.audioSettings.Apply(settings);
 
             var expectedVolume = Utils.ToVolumeCurve(0.5f);
-            Assert.AreApproximatelyEqual(expectedVolume, component.texturePlayer.volume, 0.01f);
+            Assert.AreApproximatelyEqual(expectedVolume, component.texturePlayer.Volume, 0.01f);
 
             settings.sceneSFXVolume = 1f;
             Settings.i.audioSettings.Apply(settings);
 
-            Assert.AreApproximatelyEqual(1, component.texturePlayer.volume, 0.01f);
+            Assert.AreApproximatelyEqual(1, component.texturePlayer.Volume, 0.01f);
 
             DCLVideoTexture.videoPluginWrapperBuilder = originalVideoPluginBuilder;
         }
@@ -373,7 +373,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Check the volume
-            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
+            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.Volume);
         }
 
         [UnityTest]
@@ -410,7 +410,7 @@ namespace Tests
             yield return null;
 
             // Check the volume
-            Assert.AreEqual(0f, videoTexture.texturePlayer.volume);
+            Assert.AreEqual(0f, videoTexture.texturePlayer.Volume);
         }
 
         [UnityTest]
@@ -445,7 +445,7 @@ namespace Tests
             yield return null;
 
             // Check the volume
-            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
+            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.Volume);
         }
 
         static DCLVideoClip CreateDCLVideoClip(ParcelScene scn, string url)
