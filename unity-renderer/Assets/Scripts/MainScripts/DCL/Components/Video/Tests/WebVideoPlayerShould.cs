@@ -89,7 +89,7 @@ namespace Tests
             webVideoPlayer.Pause();
 
             plugin.Received(1).Pause(ID);
-            Assert.IsFalse(webVideoPlayer.Playing);
+            Assert.IsFalse(webVideoPlayer.playing);
         }
 
         [Test]
@@ -160,7 +160,7 @@ namespace Tests
             webVideoPlayer.Update();
 
             plugin.Received(1).GetError(ID);
-            Assert.IsTrue(webVideoPlayer.IsError);
+            Assert.IsTrue(webVideoPlayer.isError);
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
         }
 

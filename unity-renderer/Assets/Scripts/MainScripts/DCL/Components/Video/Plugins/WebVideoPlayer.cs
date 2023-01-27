@@ -7,6 +7,13 @@ namespace DCL.Components.Video.Plugin
     {
         private const float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
         
+        public Texture2D texture { private set; get; }
+        public float volume { private set; get; }
+        public bool playing => GetState() == VideoState.PLAYING;
+        public bool isError => GetState() == VideoState.ERROR;
+        public bool visible { get; set; } = true;
+        public bool isReady { get; private set; } = false;
+
         public readonly string url;
 
         private string videoPlayerId;
@@ -18,22 +25,14 @@ namespace DCL.Components.Video.Plugin
 
         private string lastError = "";
 
-        
-        public Texture2D Texture { private set; get; }
-        public float Volume { private set; get; }
-        public bool Playing => GetState() == VideoState.PLAYING;
-        public bool IsError => GetState() == VideoState.ERROR;
-        public bool Visible { get; set; } = true;
-        public bool Loading { get; private set; } = false;
-        public bool IsReady { get; private set; } = false;
-        
-
         public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
             this.url = url;
             plugin.Create(id, url, useHls);
+
+            UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>("Textures/VideoLoading"), true);
         }
 
         public void Update()
@@ -49,20 +48,13 @@ namespace DCL.Components.Video.Plugin
                     lastError = newError;
                     Debug.LogError(lastError);
 
-                    Loading = false;
-                    break;
-                case VideoState.LOADING:
-                    if (Loading)
-                        break;
-
-                    UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>("Textures/VideoLoading"), true);
-                    Loading = true;
                     break;
                 case VideoState.READY:
-                    if (!IsReady)
+                    if (!isReady)
                     {
-                        IsReady = true;
-                        Texture = plugin.PrepareTexture(videoPlayerId);
+                        isReady = true;
+
+                        texture = plugin.PrepareTexture(videoPlayerId);
                     }
 
                     if (playWhenReady)
@@ -71,21 +63,21 @@ namespace DCL.Components.Video.Plugin
                         playWhenReady = false;
                     }
 
-                    Loading = false;
                     break;
                 case VideoState.PLAYING:
-                    if (Visible)
+                    if (visible)
                         plugin.TextureUpdate(videoPlayerId);
+
                     break;
             }
         }
 
         public void Play()
         {
-            if (IsError)
+            if (isError)
                 return;
 
-            if (!IsReady)
+            if (!isReady)
             {
                 playWhenReady = true;
                 return;
@@ -102,7 +94,7 @@ namespace DCL.Components.Video.Plugin
 
         public void Pause()
         {
-            if (IsError)
+            if (isError)
                 return;
 
             playStartTime = plugin.GetTime(videoPlayerId);
@@ -112,16 +104,16 @@ namespace DCL.Components.Video.Plugin
 
         public void SetVolume(float volume)
         {
-            if (IsError)
+            if (isError)
                 return;
 
             plugin.SetVolume(videoPlayerId, volume);
-            this.Volume = volume;
+            this.volume = volume;
         }
 
         public void SetTime(float timeSecs)
         {
-            if (IsError)
+            if (isError)
                 return;
 
             playStartTime = timeSecs;
@@ -130,7 +122,7 @@ namespace DCL.Components.Video.Plugin
 
         public void SetLoop(bool loop)
         {
-            if (IsError)
+            if (isError)
                 return;
 
             plugin.SetLoop(videoPlayerId, loop);
@@ -138,7 +130,7 @@ namespace DCL.Components.Video.Plugin
 
         public void SetPlaybackRate(float playbackRate)
         {
-            if (IsError)
+            if (isError)
                 return;
 
             plugin.SetPlaybackRate(videoPlayerId, playbackRate);
@@ -146,7 +138,7 @@ namespace DCL.Components.Video.Plugin
 
         public float GetTime()
         {
-            if (IsError)
+            if (isError)
                 return 0;
 
             return plugin.GetTime(videoPlayerId);
@@ -154,7 +146,7 @@ namespace DCL.Components.Video.Plugin
 
         public float GetDuration()
         {
-            if (IsError)
+            if (isError)
                 return 0;
 
             float duration = plugin.GetDuration(videoPlayerId);
@@ -179,10 +171,10 @@ namespace DCL.Components.Video.Plugin
         private void UpdateTextureConservingAspectRatio(Texture2D textureToCenter, bool fillBackground)
         {
             // Avoiding Memory leaks as textures are never destroyed by Unity
-            if (Texture != null)
+            if (texture != null)
             {
-                UnityEngine.Object.Destroy(Texture);
-                Texture = null;
+                UnityEngine.Object.Destroy(texture);
+                texture = null;
             }
 
             // Fix textureToCenter in the center of a 16:9 texture
@@ -190,26 +182,26 @@ namespace DCL.Components.Video.Plugin
             int yOffset = 0;
             if ((float)textureToCenter.width / textureToCenter.height >= DEFAULT_ASPECT_RATIO)
             {
-                Texture = new Texture2D(textureToCenter.width, Mathf.RoundToInt(textureToCenter.width / DEFAULT_ASPECT_RATIO));
-                yOffset = (Texture.height - textureToCenter.height) / 2;
+                texture = new Texture2D(textureToCenter.width, Mathf.RoundToInt(textureToCenter.width / DEFAULT_ASPECT_RATIO));
+                yOffset = (texture.height - textureToCenter.height) / 2;
             }
             else
             {
-                Texture = new Texture2D(Mathf.RoundToInt(textureToCenter.height * DEFAULT_ASPECT_RATIO), textureToCenter.height);
-                xOffset = (Texture.width - textureToCenter.width) / 2;
+                texture = new Texture2D(Mathf.RoundToInt(textureToCenter.height * DEFAULT_ASPECT_RATIO), textureToCenter.height);
+                xOffset = (texture.width - textureToCenter.width) / 2;
             }
 
             if (fillBackground)
             {
-                Color32[] backgroundPixels = new Color32[Texture.width * Texture.height];
+                Color32[] backgroundPixels = new Color32[texture.width * texture.height];
                 Color32 color = textureToCenter.GetPixel(0, 0);
                 Array.Fill(backgroundPixels, color);
-                Texture.SetPixels32(backgroundPixels);
+                texture.SetPixels32(backgroundPixels);
             }
 
             Color32[] pixels = textureToCenter.GetPixels32(0);
-            Texture.SetPixels32(xOffset, yOffset, textureToCenter.width, textureToCenter.height, pixels);
-            Texture.Apply();
+            texture.SetPixels32(xOffset, yOffset, textureToCenter.width, textureToCenter.height, pixels);
+            texture.Apply();
         }
     }
 }
