@@ -46,7 +46,7 @@ namespace DCLServices.WearablesCatalogService
             serviceCts = serviceCts.SafeRestart();
 
             // All the requests happened during the same frames interval are sent together
-            CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
+            //CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
 
             // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
             CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
@@ -231,8 +231,7 @@ namespace DCLServices.WearablesCatalogService
         {
             while (!ct.IsCancellationRequested)
             {
-                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct)
-                             .AttachExternalCancellation(ct);
+                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
 
                 if (pendingWearablesToRequest.Count <= 0)
                     continue;
