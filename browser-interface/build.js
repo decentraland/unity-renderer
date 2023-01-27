@@ -31,13 +31,6 @@ async function main() {
 async function copyBuiltFiles() {
   await mkdir(DIST_PATH, { recursive: true })
 
-  const streamingAssetsDistPath = path.resolve(DIST_PATH, "StreamingAssets")
-  await mkdir(streamingAssetsDistPath, { recursive: true })
-  const streamingAssetsPath = path.resolve(process.env.BUILD_PATH, "StreamingAssets")
-  for (let file of glob.sync("**/*", { cwd: streamingAssetsPath, absolute: true })) {
-    copyFile(file, path.resolve(streamingAssetsDistPath, file.replace(streamingAssetsPath + "/", "./")))
-  }
-
   const basePath = path.resolve(process.env.BUILD_PATH, 'Build')
 
   for (let file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
