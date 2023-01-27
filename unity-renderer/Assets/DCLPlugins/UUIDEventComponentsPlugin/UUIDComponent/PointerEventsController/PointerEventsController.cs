@@ -37,9 +37,11 @@ namespace DCL
         private RaycastHitInfo lastPointerDownEventHitInfo;
         private GraphicRaycaster uiGraphicRaycaster;
         private RaycastHit hitInfo;
+
         private IRaycastPointerClickHandler clickHandler;
 
         private StandaloneInputModuleDCL eventSystemInputModule;
+
         private StandaloneInputModuleDCL eventSystemInputModuleLazy => eventSystemInputModule ??= (StandaloneInputModuleDCL)EventSystem.current?.currentInputModule;
 
         public PointerEventsController(InputController_Legacy inputControllerLegacy, InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
@@ -51,13 +53,8 @@ namespace DCL
             pointerHoverController.OnPointerHoverStarts += SetHoverCursor;
             pointerHoverController.OnPointerHoverEnds += SetNormalCursor;
 
-            for (var id = 0; id < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; id++)
-            {
-                var buttonId = (WebInterface.ACTION_BUTTON)id;
-
-                if (buttonId != WebInterface.ACTION_BUTTON.ANY)
-                    inputControllerLegacy.AddListener(buttonId, OnButtonEvent);
-            }
+            foreach (var actionButton in WebInterface.ConcreteActionButtons)
+                inputControllerLegacy.AddListener(actionButton, OnButtonEvent);
 
             RetrieveCamera();
 
@@ -65,6 +62,18 @@ namespace DCL
             Utils.OnCursorLockChanged += HandleCursorLockChanges;
 
             HideOrShowCursor(Utils.IsCursorLocked);
+        }
+
+        public void Dispose()
+        {
+            foreach (var actionButton in WebInterface.ConcreteActionButtons)
+                inputControllerLegacy.RemoveListener(actionButton, OnButtonEvent);
+
+            pointerHoverController.OnPointerHoverStarts -= SetHoverCursor;
+            pointerHoverController.OnPointerHoverEnds -= SetNormalCursor;
+
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            Utils.OnCursorLockChanged -= HandleCursorLockChanges;
         }
 
         private void Update()
@@ -193,25 +202,6 @@ namespace DCL
 
         private void UnhoverLastHoveredObject() =>
             pointerHoverController.ResetHoveredObject();
-
-        public void Dispose()
-        {
-            for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
-            {
-                var buttonId = (WebInterface.ACTION_BUTTON)i;
-
-                if (buttonId == WebInterface.ACTION_BUTTON.ANY)
-                    continue;
-
-                inputControllerLegacy.RemoveListener(buttonId, OnButtonEvent);
-            }
-
-            pointerHoverController.OnPointerHoverStarts -= SetHoverCursor;
-            pointerHoverController.OnPointerHoverEnds -= SetNormalCursor;
-
-            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-            Utils.OnCursorLockChanged -= HandleCursorLockChanges;
-        }
 
         private void RetrieveCamera()
         {
