@@ -243,10 +243,16 @@ namespace DCL.Social.Passports
         private void BlockUser()
         {
             if (ownUserProfile.IsBlocked(currentPlayerId)) return;
-            ownUserProfile.Block(currentPlayerId);
-            view.SetIsBlocked(true);
-            passportApiBridge.SendBlockPlayer(currentPlayerId);
-            socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
+
+            dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateBlockUserData(
+                userProfileBridge.Get(currentPlayerId)?.userName,
+                () =>
+                {
+                    ownUserProfile.Block(currentPlayerId);
+                    view.SetIsBlocked(true);
+                    passportApiBridge.SendBlockPlayer(currentPlayerId);
+                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
+                }));
         }
 
         private void UnblockUser()

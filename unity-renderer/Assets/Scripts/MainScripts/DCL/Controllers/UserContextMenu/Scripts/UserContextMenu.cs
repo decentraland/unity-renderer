@@ -267,8 +267,13 @@ public class UserContextMenu : MonoBehaviour
 
         if (blockUser)
         {
-            WebInterface.SendBlockPlayer(userId);
-            GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateBlockUserData(
+                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+                () =>
+                {
+                    WebInterface.SendBlockPlayer(userId);
+                    GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                }));
         }
         else
         {

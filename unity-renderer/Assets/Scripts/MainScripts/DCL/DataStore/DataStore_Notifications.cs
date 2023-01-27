@@ -30,6 +30,15 @@ namespace DCL
                 "UNFRIEND",
                 null,
                 confirmationAction);
+
+        public static ConfirmationPopupData CreateBlockUserData(string userName, Action confirmationAction) =>
+            new (
+                $"Are you sure you want to block {userName}?",
+                "Blocking will prevent you from seeing their chat messages in public or private conversations.",
+                "CANCEL",
+                "BLOCK",
+                null,
+                confirmationAction);
     }
 
     public class DataStore_Notifications
