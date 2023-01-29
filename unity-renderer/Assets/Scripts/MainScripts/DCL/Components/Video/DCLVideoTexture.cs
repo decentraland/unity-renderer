@@ -115,6 +115,7 @@ namespace DCL.Components
                         texturePlayerUpdateRoutine = null;
                     }
 
+                    texturePlayer.SetAsError();
                     yield break;
                 }
 

@@ -53,7 +53,6 @@ namespace DCL.Components.Video.Plugin
                     if (!isReady)
                     {
                         isReady = true;
-
                         texture = plugin.PrepareTexture(videoPlayerId);
                     }
 
@@ -160,6 +159,11 @@ namespace DCL.Components.Video.Plugin
         public VideoState GetState()
         {
             return plugin.GetState(videoPlayerId);
+        }
+
+        public void SetAsError()
+        {
+            UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>("Textures/VideoFailed"), true);
         }
 
         public void Dispose()
