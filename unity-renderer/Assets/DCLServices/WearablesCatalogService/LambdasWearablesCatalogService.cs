@@ -61,62 +61,62 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
-            if (!ownerWearablesPagePointers.ContainsKey(userId))
+            if (!ownerWearablesPagePointers.TryGetValue(userId, out var pagePointer))
             {
-                ownerWearablesPagePointers[userId] = new (
+                ownerWearablesPagePointers[userId] = pagePointer = new (
                     WEARABLES_BY_OWNER_END_POINT.Replace("{userId}", userId),
                     pageSize, ct, this);
             }
 
-            var pageResponse = await ownerWearablesPagePointers[userId].GetPageAsync(pageNumber, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
+            var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables);
 
-            return pageResponse.response.wearables.ToArray();
+            return pageResponse.response.wearables;
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            if (!wearablesByCollectionPagePointers.ContainsKey(BASE_WEARABLES_COLLECTION_ID))
+            if (!wearablesByCollectionPagePointers.TryGetValue(BASE_WEARABLES_COLLECTION_ID, out var pagePointer))
             {
-                wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID] = new (
+                wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID] = pagePointer = new (
                     WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
                     1, ct, this);
             }
 
-            var pageResponse = await wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID].GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
+            var pageResponse = await pagePointer.GetPageAsync(1, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables);
 
-            return pageResponse.response.wearables.ToArray();
+            return pageResponse.response.wearables;
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
         {
-            if (!thirdPartyCollectionPagePointers.ContainsKey((userId, collectionId)))
+            if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId), out var pagePointer))
             {
-                thirdPartyCollectionPagePointers[(userId, collectionId)] = new (
+                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new (
                     WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
                        .Replace($"{userId}", userId)
                        .Replace("{collectionId}", collectionId),
                     1, ct, this);
             }
 
-            var pageResponse = await thirdPartyCollectionPagePointers[(userId, collectionId)].GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
+            var pageResponse = await pagePointer.GetPageAsync(1, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables);
 
-            return pageResponse.response.wearables.ToArray();
+            return pageResponse.response.wearables;
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
-            LambdaResponsePagePointer<WearableResponse> wearablesPagePointers = new (
+            LambdaResponsePagePointer<WearableResponse> pagePointer = new (
                 WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
                 1, ct, this);
 
-            var pageResponse = await wearablesPagePointers.GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables.ToArray());
-            wearablesPagePointers.Dispose();
+            var pageResponse = await pagePointer.GetPageAsync(1, ct);
+            AddWearablesToCatalog(pageResponse.response.wearables);
+            pagePointer.Dispose();
 
-            return pageResponse.response.wearables.ToArray();
+            return pageResponse.response.wearables;
         }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
