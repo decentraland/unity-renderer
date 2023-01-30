@@ -89,7 +89,7 @@ namespace DCLServices.Lambdas
 
             if (urlEncodedParams.Length > 0)
             {
-                urlBuilder.Append(urlBuilder.ToString().Contains('?') ? '&' : '?');
+                urlBuilder.Append(endPointSpan[^1] == '?' ? '&' : '?');
 
                 for (var i = 0; i < urlEncodedParams.Length; i++)
                 {
