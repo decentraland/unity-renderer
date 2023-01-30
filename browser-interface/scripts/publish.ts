@@ -68,7 +68,7 @@ async function checkFileSizes() {
     const stats = await stat(file)
     if (stats.size > MAX_FILE_SIZE) {
       console.error(`Warning, the file ${file} exceeds the maximum cacheable file (uncompressed) size: ${(stats.size / 1024 / 1024).toFixed(2)}MB`)
-      const buffer = await zlib.brotliCompress.__promisify__(await readFile(file))
+      const buffer = zlib.brotliCompressSync(await readFile(file))
       if (buffer.byteLength > MAX_FILE_SIZE) {
         console.error(`The file ${file} exceeds the maximum cacheable file size: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)
         process.exitCode = 1
