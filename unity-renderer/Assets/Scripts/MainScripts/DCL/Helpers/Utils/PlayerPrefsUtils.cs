@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace DCL.Helpers
 {
@@ -8,7 +8,7 @@ namespace DCL.Helpers
         public static int GetInt(string key)
         {
 #if UNITY_WEBGL
-            string value = LoadStringFromLocalStorage(key: key);
+            string value = LoadStringFromLocalStorage(key);
             return int.Parse(value);
 #else
             return PlayerPrefs.GetInt(key);
@@ -18,17 +18,15 @@ namespace DCL.Helpers
         public static int GetInt(string key, int defaultValue)
         {
 #if UNITY_WEBGL
-            string value = LoadStringFromLocalStorage(key: key);
+            string value = GetString(key, defaultValue.ToString());
             return int.Parse(value);
 #else
-            return PlayerPrefs.GetInt(key, defaultValue);
+            return PlayerPrefs.GetInt(key)
 #endif
         }
 
-        public static bool GetBool(string key, bool defaultValue)
-        {
-            return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
-        }
+        public static bool GetBool(string key, bool defaultValue) =>
+            PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
 
         public static void SetBool(string key, bool value)
         {
@@ -40,15 +38,12 @@ namespace DCL.Helpers
             try
             {
 #if UNITY_WEBGL
-                SaveStringToLocalStorage(key: key, value: value.ToString());
+                SaveStringToLocalStorage(key, value.ToString());
 #else
                 PlayerPrefs.SetInt(key, value);
 #endif
             }
-            catch (PlayerPrefsException e)
-            {
-                Debug.Log("There was an issue setting PlayerPrefs int!");
-            }
+            catch (PlayerPrefsException e) { Debug.Log("There was an issue setting PlayerPrefs int!"); }
         }
 
         public static bool HasKey(string key)
@@ -63,7 +58,10 @@ namespace DCL.Helpers
         public static string GetString(string key, string defaultValue = null)
         {
 #if UNITY_WEBGL
-            return LoadStringFromLocalStorage(key: key);
+            if (HasKey(key))
+                return LoadStringFromLocalStorage(key);
+            else
+                return defaultValue;
 #else
             return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
 #endif
@@ -74,23 +72,23 @@ namespace DCL.Helpers
             try
             {
 #if UNITY_WEBGL
-                SaveStringToLocalStorage(key: key, value: value);
+                SaveStringToLocalStorage(key, value);
 #else
                 PlayerPrefs.SetString(key, value);
 #endif
             }
-            catch (PlayerPrefsException e)
-            {
-                Debug.Log("There was an issue setting PlayerPrefs string!");
-            }
+            catch (PlayerPrefsException e) { Debug.Log("There was an issue setting PlayerPrefs string!"); }
         }
 
-        public static void Save() { PlayerPrefs.Save(); }
+        public static void Save()
+        {
+            PlayerPrefs.Save();
+        }
 
         public static float GetFloat(string key, float defaultValue = 0f)
         {
 #if UNITY_WEBGL
-            string value = LoadStringFromLocalStorage(key: key);
+            string value = GetString(key, defaultValue.ToString());
             Debug.Log($"GETTING FLOAT FROM LOCAL STORAGE {float.Parse(value)}");
             return float.Parse(value);
 #else
@@ -98,17 +96,15 @@ namespace DCL.Helpers
 #endif
         }
 
-
         public static void SetFloat(string key, float value)
         {
 #if UNITY_WEBGL
             Debug.Log($"SETTING FLOAT IN LOCAL STORAGE {value.ToString()}");
-            SaveStringToLocalStorage(key: key, value: value.ToString());
+            SaveStringToLocalStorage(key, value.ToString());
 #else
             PlayerPrefs.SetFloat(key, value);
 #endif
         }
-
 
 #if UNITY_WEBGL
       [DllImport("__Internal")]
