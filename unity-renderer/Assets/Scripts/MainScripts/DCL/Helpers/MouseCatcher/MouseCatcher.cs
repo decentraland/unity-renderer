@@ -108,14 +108,10 @@ namespace DCL
         }
 #endregion
 
-        public bool IsEqualsToRaycastTarget(GameObject gameObject)
-        {
-            return gameObject == this.gameObject || raycastTarget.gameObject == gameObject;
-        }
+        public bool IsEqualsToRaycastTarget(GameObject gameObject) =>
+            raycastTarget.gameObject == gameObject;
 
-        private void HandleUnlockInput(DCLAction_Trigger action)
-        {
+        private void HandleUnlockInput(DCLAction_Trigger action) =>
             UnlockCursor();
-        }
     }
 }
