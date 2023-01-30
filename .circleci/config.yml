@@ -129,6 +129,7 @@ jobs:
           name: Restore library if exists
           keys:
             - library-2020-3-{{ .Branch }}
+            - library-2020-3-dev
       - run:
           name: Run editmode tests
           command: |
