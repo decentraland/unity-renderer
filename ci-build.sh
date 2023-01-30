@@ -16,7 +16,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -quit \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
-  -logFile "$BUILD_TARGET/build-logs.txt" \
+  -logFile "${BUILD_PATH}build-logs.txt" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \

@@ -96,7 +96,7 @@ commands:
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
       - restore_cache:
           keys:
-            - unity-build-${DCL_OUTPUT_NAME} # - unity-build-${DCL_OUTPUT_NAME}-{{ checksum "../.unitysources-checksum" }}
+            - unity-build-{{ $DCL_OUTPUT_NAME }} # - unity-build-${DCL_OUTPUT_NAME}-{{ checksum "../.unitysources-checksum" }}
       - run:
           name: Build Unity Project
           no_output_timeout: 30m
@@ -115,7 +115,7 @@ commands:
 
       - save_cache:
           name: Store test cache
-          key: unity-build-${DCL_OUTPUT_NAME}
+          key: unity-build-{{ $DCL_OUTPUT_NAME }}
           paths: *CACHED_PATHS
 
       # persist to workspace to use in downstream jobs
@@ -227,11 +227,12 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-2020-3-{{ .Branch }}
+            - library-{{ .Branch }}
+            - library-dev
       - run:
           name: Prepare image
           command: |
@@ -270,7 +271,7 @@ jobs:
           path: ./unity-renderer/playmode-results.xml
       - save_cache:
           name: Store test cache
-          key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
           paths: *CACHED_PATHS
       - store_artifacts: &STORE_VISUAL_TESTS
           name: Store visual tests result as artifacts
@@ -347,20 +348,20 @@ workflows:
       - checkout:
           <<: *all_branches_and_tags
 
-      - build-unity-for-linux:
-          <<: *all_branches_and_tags
-          requires:
-            - checkout
+      # - build-unity-for-linux:
+      #     <<: *all_branches_and_tags
+      #     requires:
+      #       - checkout
 
       - build-unity-for-windows:
           <<: *all_branches_and_tags
           requires:
             - checkout
 
-      - build-unity-for-mac:
-          <<: *all_branches_and_tags
-          requires:
-            - checkout
+      # - build-unity-for-mac:
+      #     <<: *all_branches_and_tags
+      #     requires:
+      #       - checkout
 
       - build-unity-for-webgl:
           <<: *all_branches_and_tags
