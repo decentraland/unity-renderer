@@ -155,6 +155,7 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeCleanup/Profiles/=test/@EntryIndexRemoved">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/RecentlyUsedProfile/@EntryValue">Built-in: Reformat &amp; Apply Syntax Style</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">Reformat Code DCL</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=DCL/@EntryIndexedValue">DCL</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SFX/@EntryIndexedValue">SFX</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UISFX/@EntryIndexedValue">UISFX</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Decentraland/@EntryIndexedValue">True</s:Boolean>

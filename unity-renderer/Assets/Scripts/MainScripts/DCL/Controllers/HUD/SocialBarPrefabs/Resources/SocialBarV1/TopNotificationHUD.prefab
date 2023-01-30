@@ -1292,7 +1292,6 @@ GameObject:
   - component: {fileID: 2695689785089021433}
   - component: {fileID: 9063049889030303323}
   - component: {fileID: 1103127886671198530}
-  - component: {fileID: 8574527259982328522}
   - component: {fileID: 1322517478845266751}
   m_Layer: 5
   m_Name: ChatNotificationMessage
@@ -1420,26 +1419,6 @@ MonoBehaviour:
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!95 &8574527259982328522
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7213877166700188245}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1322517478845266751
 MonoBehaviour:
   m_ObjectHideFlags: 0
