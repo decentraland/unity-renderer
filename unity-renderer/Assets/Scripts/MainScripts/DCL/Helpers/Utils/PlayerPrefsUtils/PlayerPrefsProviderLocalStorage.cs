@@ -3,13 +3,27 @@ using UnityEngine;
 
 namespace DCL.Helpers
 {
+    /// <summary>
+    ///     Provider class to use LocalStorage instead of IndexedDB because it was not reliably saving settings.
+    ///     For all the gets, we have to check that the PlayerPref key does exist. We may lose information that was
+    ///     succesfully stored in IndexedDB. That check should only go once per user per key.
+    /// </summary>
     public class PlayerPrefsProviderLocalStorage : IPlayerPrefsProvider
     {
         public int GetInt(string key) =>
-            int.Parse(GetLocalStorageValue(key, "0"));
+            GetInt(key, 0);
 
-        public int GetInt(string key, int defaultValue) =>
-            int.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
+        public int GetInt(string key, int defaultValue)
+        {
+            var valueGotFromLocalStorage = int.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
+
+            if (valueGotFromLocalStorage.Equals(defaultValue))
+            {
+                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetInt(key);
+            }
+
+            return valueGotFromLocalStorage;
+        }
 
         public void SetInt(string key, int value)
         {
@@ -22,8 +36,17 @@ namespace DCL.Helpers
         public void SetBool(string key, bool value) =>
             SetInt(key, value ? 1 : 0);
 
-        public string GetString(string key, string defaultValue) =>
-            GetLocalStorageValue(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
+        public string GetString(string key, string defaultValue)
+        {
+            string valueGotFromLocalStorage = GetLocalStorageValue(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
+
+            if (!string.IsNullOrEmpty(valueGotFromLocalStorage) && valueGotFromLocalStorage.Equals(defaultValue))
+            {
+                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetString(key);
+            }
+
+            return valueGotFromLocalStorage;
+        }
 
         public void SetString(string key, string value)
         {
@@ -35,13 +58,18 @@ namespace DCL.Helpers
 
         public float GetFloat(string key, float defaultValue)
         {
-            Debug.Log($"GETTING FLOAT FROM LOCAL STORAGE {float.Parse(GetLocalStorageValue(key, defaultValue.ToString()))}");
-            return float.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
+            var valueGotFromLocalStorage = float.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
+
+            if (valueGotFromLocalStorage.Equals(defaultValue))
+            {
+                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetFloat(key);
+            }
+
+            return valueGotFromLocalStorage;
         }
 
         public void SetFloat(string key, float value)
         {
-            Debug.Log($"SETTING FLOAT IN LOCAL STORAGE {value.ToString()}");
             SaveStringToLocalStorage(key, value.ToString());
         }
 
