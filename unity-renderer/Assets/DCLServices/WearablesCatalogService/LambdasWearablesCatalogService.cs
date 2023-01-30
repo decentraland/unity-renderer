@@ -5,7 +5,6 @@ using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace DCLServices.WearablesCatalogService
@@ -215,16 +214,8 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
-        private string GetWearablesQuery(IReadOnlyList<string> wearableIds)
-        {
-            StringBuilder wearableIdsQuery = new StringBuilder();
-
-            foreach (string wearableId in wearableIds)
-                wearableIdsQuery.Append($"wearableId={wearableId}&");
-
-            wearableIdsQuery.Remove(wearableIdsQuery.Length - 1, 1);
-            return wearableIdsQuery.ToString();
-        }
+        private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
+            string.Join("&wearableId=", wearableIds).Remove(0, 1);
 
         private async UniTaskVoid CheckForSendingPendingRequestsAsync(CancellationToken ct)
         {
