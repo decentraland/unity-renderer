@@ -48,85 +48,50 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            return wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, ct);
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, ct);
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            return wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
         {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            return wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            return wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
         }
 
-        public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
+        public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            return wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
         }
 
-        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
-        {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
+        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems) =>
+            wearablesCatalogServiceInUse?.AddWearablesToCatalog(wearableItems);
 
-            wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);
-        }
+        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds) =>
+            wearablesCatalogServiceInUse?.RemoveWearablesFromCatalog(wearableIds);
 
-        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
-        {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
+        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove) =>
+            wearablesCatalogServiceInUse?.RemoveWearablesInUse(wearablesInUseToRemove);
 
-            wearablesCatalogServiceInUse.RemoveWearablesFromCatalog(wearableIds);
-        }
+        public void EmbedWearables(IEnumerable<WearableItem> wearables) =>
+            wearablesCatalogServiceInUse?.EmbedWearables(wearables);
 
-        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
-        {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            wearablesCatalogServiceInUse.RemoveWearablesInUse(wearablesInUseToRemove);
-        }
-
-        public void EmbedWearables(IEnumerable<WearableItem> wearables)
-        {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            wearablesCatalogServiceInUse.EmbedWearables(wearables);
-        }
-
-        public void Clear()
-        {
-            if (!isInitialized)
-                throw new Exception(NOT_INITIALIZED_EXCEPTION_MESSAGE);
-
-            wearablesCatalogServiceInUse.Clear();
-        }
+        public void Clear() =>
+            wearablesCatalogServiceInUse?.Clear();
 
         private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
         {
