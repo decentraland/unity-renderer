@@ -15,7 +15,7 @@ namespace DCL.Skybox
 
         public SkyboxElements()
         {
-            references = SkyboxElementsReferences.Create();
+            references = SkyboxElementsReferences.Create().Result;
 
             domeElements = new SkyboxDomeElements(references.domeElementsGO);
             satelliteElements = new SkyboxSatelliteElements(references.satelliteElementsGO);
@@ -33,7 +33,7 @@ namespace DCL.Skybox
         {
             if (currentTransform == null)
                 return;
-            
+
             domeElements.ResolveCameraDependency(currentTransform);
             satelliteElements.ResolveCameraDependency(currentTransform);
             planarElements.ResolveCameraDependency(currentTransform);

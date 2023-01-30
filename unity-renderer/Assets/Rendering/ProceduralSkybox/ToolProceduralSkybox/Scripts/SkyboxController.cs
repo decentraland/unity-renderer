@@ -1,8 +1,10 @@
+using DCL.Providers;
 using System;
 using System.Linq;
 using UnityEngine;
 using DCL.ServerTime;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DCL.Skybox
 {
@@ -47,6 +49,8 @@ namespace DCL.Skybox
 
         // Report to kernel
         private ITimeReporter timeReporter { get; set; } = new TimeReporter();
+
+        private Service<IAddressableResourceProvider> addresableResolver;
 
         public SkyboxController()
         {
@@ -142,7 +146,7 @@ namespace DCL.Skybox
             }
         }
 
-        private void GetOrCreateEnvironmentProbe()
+        private async Task GetOrCreateEnvironmentProbe()
         {
             // Get Reflection Probe Object
             skyboxProbe = GameObject.FindObjectsOfType<ReflectionProbe>().Where(s => s.name == "SkyboxProbe").FirstOrDefault();
@@ -162,7 +166,7 @@ namespace DCL.Skybox
             if (skyboxProbe == null)
             {
                 // Instantiate new probe from the resources
-                GameObject temp = Resources.Load<GameObject>("SkyboxReflectionProbe/SkyboxProbe");
+                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab");
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
                 probe.name = "SkyboxProbe";
                 skyboxProbe = probe.GetComponent<ReflectionProbe>();
@@ -307,7 +311,7 @@ namespace DCL.Skybox
                 return false;
             }
 
-            if (!SelectSkyboxConfiguration())
+            if (!SelectSkyboxConfiguration().Result)
             {
                 return false;
             }
@@ -357,7 +361,7 @@ namespace DCL.Skybox
         /// <summary>
         /// Select Configuration to load.
         /// </summary>
-        private bool SelectSkyboxConfiguration()
+        private async Task<bool> SelectSkyboxConfiguration()
         {
             bool tempConfigLoaded = true;
 
@@ -380,7 +384,8 @@ namespace DCL.Skybox
                 return tempConfigLoaded;
             }
 
-            SkyboxConfiguration newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+
+            SkyboxConfiguration newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset");
 
             if (newConfiguration == null)
             {
@@ -389,7 +394,7 @@ namespace DCL.Skybox
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
-                newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+                newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset");
 
                 if (newConfiguration == null)
                 {
