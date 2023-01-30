@@ -89,7 +89,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId), out var pagePointer))
             {
@@ -97,10 +97,10 @@ namespace DCLServices.WearablesCatalogService
                     WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
                        .Replace($"{userId}", userId)
                        .Replace("{collectionId}", collectionId),
-                    1, ct, this);
+                    pageSize, ct, this);
             }
 
-            var pageResponse = await pagePointer.GetPageAsync(1, ct);
+            var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
             AddWearablesToCatalog(pageResponse.response.wearables);
 
             return pageResponse.response.wearables;
