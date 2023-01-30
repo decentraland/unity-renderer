@@ -37,7 +37,7 @@ namespace DCL.Social.Passports
 
         public void SetAsLoading(bool isLoading) => view.SetAsLoading(isLoading);
 
-        private bool TutorialEnabled => PlayerPrefsUtils.GetBool(TUTORIAL_ENABLED_KEY, true);
+        private bool TutorialEnabled => PlayerPrefsBridge.GetBool(TUTORIAL_ENABLED_KEY, true);
 
         private void RotateCharacterPreview(float angularVelocity)
         {
@@ -50,8 +50,8 @@ namespace DCL.Social.Passports
             if (!TutorialEnabled)
                 return;
 
-            PlayerPrefsUtils.SetBool(TUTORIAL_ENABLED_KEY, false);
-            PlayerPrefsUtils.Save();
+            PlayerPrefsBridge.SetBool(TUTORIAL_ENABLED_KEY, false);
+            PlayerPrefsBridge.Save();
             view.HideTutorial();
 
             view.SetModel(new (false));
