@@ -9,7 +9,7 @@ namespace DCLServices.WearablesCatalogService
     /// wearables depending on the flag 'usingUrlParamsForDebug' received in the kernel configuration.
     /// This will be temporal while we have to live with both services.
     /// </summary>
-    public class WearablesCatalogService : IWearablesCatalogService
+    public class WearablesCatalogServiceProxy : IWearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
             wearablesCatalogServiceInUse.WearablesCatalog;
@@ -20,7 +20,7 @@ namespace DCLServices.WearablesCatalogService
         private readonly BaseDictionary<string, WearableItem> wearablesCatalog;
         private readonly KernelConfig kernelConfig;
 
-        public WearablesCatalogService(
+        public WearablesCatalogServiceProxy(
             IWearablesCatalogService lambdasWearablesCatalogService,
             IWearablesCatalogService webInterfaceWearablesCatalogService,
             BaseDictionary<string, WearableItem> wearablesCatalog,

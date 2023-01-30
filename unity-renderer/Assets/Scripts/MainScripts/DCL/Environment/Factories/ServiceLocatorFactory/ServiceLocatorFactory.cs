@@ -40,7 +40,7 @@ namespace DCL
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
-            result.Register<IWearablesCatalogService>(() => new WearablesCatalogService(
+            result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
