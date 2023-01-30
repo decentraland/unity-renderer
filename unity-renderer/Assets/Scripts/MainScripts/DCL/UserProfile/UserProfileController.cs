@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using DCL;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -12,7 +13,7 @@ public class UserProfileController : MonoBehaviour
 
     private static UserProfileDictionary userProfilesCatalogValue;
 
-    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new ();
+    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
     private bool baseWearablesAlreadyRequested = false;
 
     public static UserProfileDictionary userProfilesCatalog
@@ -122,16 +123,15 @@ public class UserProfileController : MonoBehaviour
 
     public void ClearProfilesCatalog() { userProfilesCatalog?.Clear(); }
 
-    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId)
+    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default)
     {
-        // TODO: the renderer should not alter the userId nor ethAddress
-        // There is a problem in case management of addresses that we cannot handle from renderer only
-        userId = userId?.ToLower();
+        cancellationToken.ThrowIfCancellationRequested();
 
         if (pendingUserProfileTasks.TryGetValue(userId, out var existingTask))
-            existingTask.TrySetCanceled();
+            return existingTask.Task;
 
         var task = new UniTaskCompletionSource<UserProfile>();
+        cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
         pendingUserProfileTasks[userId] = task;
 
         return task.Task;

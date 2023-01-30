@@ -1,0 +1,22 @@
+{
+    "name": "FontProvidersTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

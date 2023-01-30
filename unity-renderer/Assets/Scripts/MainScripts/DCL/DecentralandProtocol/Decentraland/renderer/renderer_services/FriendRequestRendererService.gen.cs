@@ -29,7 +29,7 @@ public static class FriendRequestRendererServiceCodeGen
   public static void RegisterService<Context>(RpcServerPort<Context> port, IFriendRequestRendererService<Context> service)
   {
     var result = new ServerModuleDefinition<Context>();
-      
+
     result.definition.Add("ApproveFriendRequest", async (payload, context, ct) => { var res = await service.ApproveFriendRequest(ApproveFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("RejectFriendRequest", async (payload, context, ct) => { var res = await service.RejectFriendRequest(RejectFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("CancelFriendRequest", async (payload, context, ct) => { var res = await service.CancelFriendRequest(CancelFriendRequestPayload.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });

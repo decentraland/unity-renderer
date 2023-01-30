@@ -56,7 +56,7 @@ references:
         #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .image_kernel: &image_kernel
-    - image: cimg/node:14.19.3-browsers
+    - image: cimg/node:16.18.1-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-webgl/
         #                          ~~~~~~~~~~~~~~ <- repo name
@@ -157,7 +157,7 @@ jobs:
   checkout:
     <<: *working_directory_root
     docker:
-      - image: cimg/node:14.19.3-browsers
+      - image: cimg/node:16.18.1-browsers
     steps:
       - run:
           name: Prepare image
@@ -300,17 +300,12 @@ jobs:
       - <<: *attach_root
       - run:
           working_directory: &node_workspace browser-interface
-          name: npm clean install
+          name: clean install
           command: npm ci
       - run:
           working_directory: *node_workspace
-          name: npm run build
-          command: npm run build
-      - run:
-          working_directory: *node_workspace
-          name: npm run test
-          command: npm run test
-      - run: sudo apt-get update && sudo apt-get -y -qq install awscli
+          name: run build
+          command: make build-essentials build-release build-deploy
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
@@ -335,7 +330,7 @@ jobs:
       - run:
           working_directory: *node_workspace
           name: print files to publish
-          command: find .
+          command: find static
       - run:
           working_directory: *node_workspace
           name: npm run publish
@@ -384,6 +379,11 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - build-unity-for-webgl
+
+      - test-js-interface:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
 
       - publish-webgl-artifacts:
           requires:
