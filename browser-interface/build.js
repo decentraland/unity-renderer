@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { build, cliopts } = require('estrella')
-const { readFileSync, writeFileSync, copyFileSync } = require('fs')
+const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('fs')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -65,18 +65,12 @@ function copyFile(from, to) {
     throw new Error(`${from} does not exist`)
   }
 
-  // if it is not a file, remove it to avoid conflict with symbolic links
-  if (fs.existsSync(to)) {
-    const type = fs.lstatSync(to)
-    if (!type.isFile()) {
-      fs.removeSync(to)
-    }
+  const type = fs.lstatSync(from)
+  if (type.isFile()) {
+    copyFileSync(from, to)
+  } else {
+    mkdirSync(to, { recursive: true })
   }
-
-  if (fs.statSync(from).isFile())
-    fs.copyFileSync(from, to)
-  else
-    fs.mkdirSync(to, { recursive: true })
 
   if (!fs.existsSync(to)) {
     throw new Error(`${to} does not exist`)
