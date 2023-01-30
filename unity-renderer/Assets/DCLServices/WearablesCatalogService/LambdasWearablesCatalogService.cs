@@ -133,9 +133,7 @@ namespace DCLServices.WearablesCatalogService
 
             try
             {
-                UniTaskCompletionSource<WearableItem> taskResult;
-
-                if (!awaitingWearableTasks.ContainsKey(wearableId))
+                if (!awaitingWearableTasks.TryGetValue(wearableId, out var taskResult))
                 {
                     taskResult = new UniTaskCompletionSource<WearableItem>();
                     awaitingWearableTasks.Add(wearableId, taskResult);
@@ -143,10 +141,8 @@ namespace DCLServices.WearablesCatalogService
                     // We accumulate all the requests during the same frames interval to send them all together
                     pendingWearablesToRequest.Add(wearableId);
                 }
-                else
-                    awaitingWearableTasks.TryGetValue(wearableId, out taskResult);
 
-                return taskResult != null ? await taskResult.Task : null;
+                return await taskResult.Task;
             }
             catch (Exception e) when (e is not OperationCanceledException) { throw; }
         }
