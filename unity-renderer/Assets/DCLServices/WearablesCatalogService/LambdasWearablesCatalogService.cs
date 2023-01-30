@@ -144,7 +144,7 @@ namespace DCLServices.WearablesCatalogService
                     pendingWearablesToRequest.Add(wearableId);
                 }
 
-                return await taskResult.Task;
+                return await taskResult.Task.AttachExternalCancellation(ct);
             }
             catch (Exception e) when (e is not OperationCanceledException) { throw; }
         }
