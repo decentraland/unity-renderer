@@ -7,8 +7,8 @@ namespace DCL.Helpers
     {
         public static int GetInt(string key)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            string value = LoadFromLocalStorage(key: key);
+#if UNITY_WEBGL
+            string value = LoadStringFromLocalStorage(key: key);
             return int.Parse(value);
 #else
             return PlayerPrefs.GetInt(key);
@@ -17,8 +17,8 @@ namespace DCL.Helpers
 
         public static int GetInt(string key, int defaultValue)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            string value = LoadFromLocalStorage(key: key);
+#if UNITY_WEBGL
+            string value = LoadStringFromLocalStorage(key: key);
             return int.Parse(value);
 #else
             return PlayerPrefs.GetInt(key, defaultValue);
@@ -39,7 +39,7 @@ namespace DCL.Helpers
         {
             try
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_WEBGL
                 SaveStringToLocalStorage(key: key, value: value.ToString());
 #else
                 PlayerPrefs.SetInt(key, value);
@@ -53,7 +53,7 @@ namespace DCL.Helpers
 
         public static bool HasKey(string key)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_WEBGL
             return (HasKeyInLocalStorage(key) == 1);
 #else
             return PlayerPrefs.HasKey(key);
@@ -62,8 +62,8 @@ namespace DCL.Helpers
 
         public static string GetString(string key, string defaultValue = null)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            return LoadFromLocalStorage(key: key);
+#if UNITY_WEBGL
+            return LoadStringFromLocalStorage(key: key);
 #else
             return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
 #endif
@@ -73,7 +73,7 @@ namespace DCL.Helpers
         {
             try
             {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_WEBGL
                 SaveStringToLocalStorage(key: key, value: value);
 #else
                 PlayerPrefs.SetString(key, value);
@@ -89,8 +89,8 @@ namespace DCL.Helpers
 
         public static float GetFloat(string key, float defaultValue = 0f)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            string value = LoadFromLocalStorage(key: key);
+#if UNITY_WEBGL
+            string value = LoadStringFromLocalStorage(key: key);
             Debug.Log($"GETTING FLOAT FROM LOCAL STORAGE {float.Parse(value)}");
             return float.Parse(value);
 #else
@@ -101,7 +101,7 @@ namespace DCL.Helpers
 
         public static void SetFloat(string key, float value)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_WEBGL
             Debug.Log($"SETTING FLOAT IN LOCAL STORAGE {value.ToString()}");
             SaveStringToLocalStorage(key: key, value: value.ToString());
 #else
@@ -110,7 +110,7 @@ namespace DCL.Helpers
         }
 
 
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_WEBGL
       [DllImport("__Internal")]
       private static extern void SaveStringToLocalStorage(string key, string value);
 
