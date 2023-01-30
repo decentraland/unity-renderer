@@ -44,9 +44,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Dispose()
         {
-            if (kernelConfig != null)
-                kernelConfig.OnChange -= OnKernelConfigChanged;
-
+            kernelConfig.OnChange -= OnKernelConfigChanged;
             wearablesCatalogServiceInUse?.Dispose();
         }
 
