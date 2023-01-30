@@ -8,7 +8,7 @@
 set -u # no unbound variables
 
 # Dump version
-ARTIFACTS_PATH=/tmp/workspace/explorer-desktop/unity-desktop-artifacts/
+ARTIFACTS_PATH=/tmp/workspace/unity-renderer/unity-artifacts/
 echo "{\"version\":\"${CIRCLE_SHA1}\"}" > ${ARTIFACTS_PATH}/version.json
 
 # Upload artifacts

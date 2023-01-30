@@ -48,17 +48,17 @@ references:
     - image: unityci/editor:2021.3.14f1-webgl-1
       environment:
         DCL_OUTPUT_NAME: webgl
-        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer-webgl
+        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
         BUILD_TARGET: WebGL
-        BUILD_NAME: unity-renderer-webgl
-        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-webgl/
+        BUILD_NAME: unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
         #                          ~~~~~~~~~~~~~~~~ <- repo name
         #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .image_kernel: &image_kernel
     - image: cimg/node:16.18.1-browsers
       environment:
-        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-webgl/
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
         #                          ~~~~~~~~~~~~~~ <- repo name
         #                                         ~~~~~~~~~~~~~~ <- folder name
 
@@ -71,7 +71,7 @@ references:
     - ./unity-renderer/playmode-results.xml
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
-    - ./unity-renderer/Builds/
+    - ./Builds/
 
   .all_branches_and_tags: &all_branches_and_tags
     filters:
@@ -90,18 +90,30 @@ commands:
           name: Get the hash of source files
           command: |
             # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
 
             # hash pipeline files
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+
+            cat ../.unitysources-checksum
+      - run: &STORE_TARGET
+          name: Save target to file
+          command: |
+            echo $DCL_OUTPUT_NAME > /tmp/target
       - restore_cache:
           keys:
-            - unity-build-{{ $DCL_OUTPUT_NAME }} # - unity-build-${DCL_OUTPUT_NAME}-{{ checksum "../.unitysources-checksum" }}
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev
+      - restore_cache: &RESTORE_LIBRARY_CACHE
+          name: Restore library if exists
+          keys:
+            - library-{{ checksum "/tmp/target" }}-{{ .Branch }}
+            - library-{{ checksum "/tmp/target" }}-dev
       - run:
           name: Build Unity Project
-          no_output_timeout: 30m
+          no_output_timeout: 45m
           command: |
-            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "${BUILD_PATH}/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "${PROJECT_PATH}/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
 
                 ./ci-build.sh
@@ -110,48 +122,50 @@ commands:
             fi;
       - run:
           name: Print build logs
-          command: cat ${BUILD_PATH}/build-logs.txt
+          command: cat ${PROJECT_PATH}/build-logs.txt
           when: always
 
       - save_cache:
-          name: Store test cache
-          key: unity-build-{{ $DCL_OUTPUT_NAME }}
+          name: Store build cache
+          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
           paths: *CACHED_PATHS
-
-      # persist to workspace to use in downstream jobs
-      - persist_to_workspace:
-          root: *working_directory
+      - save_cache:
+          name: Store library
+          key: library-{{ checksum "/tmp/target" }}-{{ .Branch }}
           paths:
-            - Builds
+            - ./unity-renderer/Library
       - run:
           name: Check there are build artifacts
           command: |
             if [ -z "$(ls -A "${BUILD_PATH}")" ]; then
-              echo "directory ${BUILD_PATH}/Builds is empty"
+              echo "directory ${BUILD_PATH} is empty"
               exit 1
             fi
       - run:
-          environment:
-            ARTIFACT_PATH: /tmp/workspace/unity-renderer/unity-artifacts/
+          name: Print all files
+          command: |
+            find "${BUILD_PATH}"
+  persist-unity-desktop:
+    steps:
+      - run:
           name: Compress artifacts
           command: |
-            if [ $DCL_OUTPUT_NAME != "webgl" ]; then
-              mkdir -p unity-artifacts
-              cd ${BUILD_PATH}
-              zip -r unity-renderer-${DCL_OUTPUT_NAME}.zip ./
-              mv unity-renderer-${DCL_OUTPUT_NAME}.zip ${ARTIFACT_PATH}
-            else
-              echo "Skip compress artifacts for WebGL"
-            fi
+            pushd ${BUILD_PATH}
+            zip -r unity-renderer-${DCL_OUTPUT_NAME}.zip ./
+            popd
+            mkdir -p unity-artifacts
+            mv ${BUILD_PATH}/unity-renderer-${DCL_OUTPUT_NAME}.zip unity-artifacts
       - persist_to_workspace:
           root: *working_directory
           paths:
             - ./unity-artifacts/
-      - run:
-          name: Print all files (in failure)
-          when: on_fail
-          command: |
-            find "${BUILD_PATH}"
+  persist-unity-web:
+    steps:
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - Builds
+
 
 jobs:
   checkout:
@@ -190,6 +204,7 @@ jobs:
     steps:
       - <<: *attach_root
       - build-unity-generic
+      - persist-unity-desktop
   build-unity-for-windows:
     <<: *working_directory_root
     resource_class: xlarge
@@ -197,6 +212,7 @@ jobs:
     steps:
       - <<: *attach_root
       - build-unity-generic
+      - persist-unity-desktop
   build-unity-for-mac:
     <<: *working_directory_root
     resource_class: xlarge
@@ -204,6 +220,7 @@ jobs:
     steps:
       - <<: *attach_root
       - build-unity-generic
+      - persist-unity-desktop
   build-unity-for-webgl:
     <<: *working_directory_root
     resource_class: xlarge
@@ -211,6 +228,7 @@ jobs:
     steps:
       - <<: *attach_root
       - build-unity-generic
+      - persist-unity-web
   playmode-tests:
     <<: *working_directory_root
     resource_class: xlarge
@@ -224,15 +242,12 @@ jobs:
             find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
             # hash pipeline files
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+      - run: *STORE_TARGET
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: &RESTORE_LIBRARY_CACHE
-          name: Restore library if exists
-          keys:
-            - library-{{ .Branch }}
-            - library-dev
+            - unity-playmode- # {{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
           command: |
@@ -291,6 +306,23 @@ jobs:
           name: Upload artifacts
           command: |
             ./ci-publish-preview-artifacts.sh
+
+  test-js-interface:
+    <<: *working_directory_root
+    docker: *image_kernel
+
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: &node_workspace browser-interface
+          name: clean install
+          command: |
+            sudo apt-get install xvfb
+            npm ci
+      - run:
+          working_directory: *node_workspace
+          name: test
+          command: make test-ci
 
   build-js-interface:
     <<: *working_directory_root
@@ -371,9 +403,9 @@ workflows:
       - publish-desktop-artifacts:
           <<: *all_branches_and_tags
           requires:
-            - build-unity-for-linux
+      #      - build-unity-for-linux
             - build-unity-for-windows
-            - build-unity-for-mac
+      #      - build-unity-for-mac
 
       - build-js-interface:
           <<: *all_branches_and_tags
@@ -389,5 +421,6 @@ workflows:
           requires:
             - build-unity-for-webgl
             - build-js-interface
+            - test-js-interface
             - playmode-tests
             # - editmode-tests

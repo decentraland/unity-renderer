@@ -2,9 +2,8 @@
 
 source ci-setup.sh
 
-echo "Building for $BUILD_TARGET at $PROJECT_PATH"
+echo "Building for $BUILD_TARGET at $PROJECT_PATH in $BUILD_PATH"
 
-export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
 
 if [[ "$CIRCLE_BRANCH" == "main" ]]; then
@@ -16,7 +15,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -quit \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
-  -logFile "${BUILD_PATH}build-logs.txt" \
+  -logFile "$PROJECT_PATH/build-logs.txt" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
@@ -34,8 +33,6 @@ elif [ $UNITY_EXIT_CODE -eq 3 ]; then
 else
   echo "Unexpected exit code $UNITY_EXIT_CODE";
 fi
-
-ls -la "$BUILD_PATH"
 
 if [ -z "$(ls -A "$BUILD_PATH")" ]; then
   echo "directory BUILD_PATH $BUILD_PATH is empty"
