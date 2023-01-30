@@ -29,5 +29,5 @@ public class GraphicCardNotification : Notification
         base.Dismiss();
     }
 
-    public static bool CanShowGraphicCardPopup() => PlayerPrefs.GetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, 0) == 0;
+    public static bool CanShowGraphicCardPopup() => PlayerPrefsUtils.GetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, 0) == 0;
 }

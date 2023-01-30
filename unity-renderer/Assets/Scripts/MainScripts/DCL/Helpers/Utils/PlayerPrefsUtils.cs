@@ -5,7 +5,7 @@ namespace DCL.Helpers
 {
     public static class PlayerPrefsUtils
     {
-        private static readonly PlayerPrefsProvider PROVIDER = Application.platform.Equals(RuntimePlatform.WebGLPlayer) && !Application.isEditor
+        private static readonly PlayerPrefsProvider PROVIDER = Application.platform.Equals(RuntimePlatform.WebGLPlayer)
             ? new PlayerPrefsProviderLocalStorage()
             : new PlayerPrefsProviderUnity();
 

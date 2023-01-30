@@ -12,10 +12,10 @@ namespace DCL.SettingsCommon
         {
             this.prefixPrefsKey = prefixPrefsKey;
         }
-        
+
         public T GetEnum<T>(string fieldName, T defaultValue) where T : struct
         {
-            if (!Enum.TryParse<T>(PlayerPrefs.GetString(GetFieldKey(fieldName), ""), out var result))
+            if (!Enum.TryParse<T>(PlayerPrefsUtils.GetString(GetFieldKey(fieldName), ""), out var result))
                 return defaultValue;
             return result;
         }
@@ -27,17 +27,17 @@ namespace DCL.SettingsCommon
 
         public float GetFloat(string fieldName, float defaultValue)
         {
-            return PlayerPrefs.GetFloat(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsUtils.GetFloat(GetFieldKey(fieldName), defaultValue);
         }
-        
+
         public int GetInt(string fieldName, int defaultValue)
         {
-            return PlayerPrefs.GetInt(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsUtils.GetInt(GetFieldKey(fieldName), defaultValue);
         }
 
         public string GetString(string fieldName, string defaultValue)
         {
-            return PlayerPrefs.GetString(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsUtils.GetString(GetFieldKey(fieldName), defaultValue);
         }
 
         public void SetBool(string fieldName, bool value)
@@ -47,22 +47,22 @@ namespace DCL.SettingsCommon
 
         public void SetFloat(string fieldName, float value)
         {
-            PlayerPrefs.SetFloat(GetFieldKey(fieldName), value);
+            PlayerPrefsUtils.SetFloat(GetFieldKey(fieldName), value);
         }
 
         public void SetEnum<T>(string fieldName, T value) where T : struct
         {
-            PlayerPrefs.SetString(GetFieldKey(fieldName), value.ToString());
+            PlayerPrefsUtils.SetString(GetFieldKey(fieldName), value.ToString());
         }
 
         public void SetInt(string fieldName, int value)
         {
-            PlayerPrefs.SetInt(GetFieldKey(fieldName), value);
+            PlayerPrefsUtils.SetInt(GetFieldKey(fieldName), value);
         }
 
         public void SetString(string fieldName, string value)
         {
-            PlayerPrefs.SetString(GetFieldKey(fieldName), value);
+            PlayerPrefsUtils.SetString(GetFieldKey(fieldName), value);
         }
 
         private string GetFieldKey(string fieldName)
