@@ -73,7 +73,10 @@ function copyFile(from, to) {
     }
   }
 
-  copyFileSync(from, to)
+  if (fs.statSync(from).isFile())
+    fs.copyFileSync(from, to)
+  else
+    fs.mkdirSync(to, { recursive: true })
 
   if (!fs.existsSync(to)) {
     throw new Error(`${to} does not exist`)
