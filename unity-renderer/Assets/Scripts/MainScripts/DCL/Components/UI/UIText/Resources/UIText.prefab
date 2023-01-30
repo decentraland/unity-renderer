@@ -29,6 +29,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4577512276136032512}
   m_Father: {fileID: 0}
@@ -57,7 +58,6 @@ MonoBehaviour:
   layoutElement: {fileID: 1745810645414158340}
   layoutElementRT: {fileID: 4577512276136032512}
   childHookRectTransform: {fileID: 4577512276136032512}
-  forceRefresh: 0
   text: {fileID: 2265338682705848464}
   textRectTransform: {fileID: 4577512276136032512}
 --- !u!114 &1705150512210581689
@@ -127,6 +127,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1231610846333877600}
   m_RootOrder: 0
