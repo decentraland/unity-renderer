@@ -182,7 +182,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDeleteUserButtonPressed()
     {
-        DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+        DataStore.i.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             () =>
             {
@@ -263,7 +263,7 @@ public class UserContextMenu : MonoBehaviour
 
         if (blockUser)
         {
-            DataStore.i.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateBlockUserData(
+            DataStore.i.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
                 UserProfileController.userProfilesCatalog.Get(userId)?.userName,
                 () =>
                 {

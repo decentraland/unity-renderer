@@ -2,7 +2,7 @@ using System;
 
 namespace DCL
 {
-    public record ConfirmationPopupData
+    public record GenericConfirmationNotificationData
     {
         public readonly string Title;
         public readonly string Body;
@@ -11,7 +11,7 @@ namespace DCL
         public readonly Action CancelAction;
         public readonly Action ConfirmAction;
 
-        public ConfirmationPopupData(string title, string body, string cancelButton, string confirmButton,
+        public GenericConfirmationNotificationData(string title, string body, string cancelButton, string confirmButton,
             Action cancelAction, Action confirmAction)
         {
             Title = title;
@@ -22,7 +22,7 @@ namespace DCL
             ConfirmAction = confirmAction;
         }
 
-        public static ConfirmationPopupData CreateUnFriendData(string userName, Action confirmationAction) =>
+        public static GenericConfirmationNotificationData CreateUnFriendData(string userName, Action confirmationAction) =>
             new (
                 $"Are you sure you want to unfriend {userName}?",
                 "This player and you will no longer be friends, meaning you won't be able to send each other private messages.",
@@ -31,7 +31,7 @@ namespace DCL
                 null,
                 confirmationAction);
 
-        public static ConfirmationPopupData CreateBlockUserData(string userName, Action confirmationAction) =>
+        public static GenericConfirmationNotificationData CreateBlockUserData(string userName, Action confirmationAction) =>
             new (
                 $"Are you sure you want to block {userName}?",
                 "Blocking will prevent you from seeing their chat messages in public or private conversations.",
@@ -44,6 +44,6 @@ namespace DCL
     public class DataStore_Notifications
     {
         public readonly BaseVariable<string> DefaultErrorNotification = new ();
-        public readonly BaseVariable<ConfirmationPopupData> ConfirmationPopup = new ();
+        public readonly BaseVariable<GenericConfirmationNotificationData> GenericConfirmation = new ();
     }
 }

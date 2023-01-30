@@ -19,14 +19,14 @@ namespace DCL.ConfirmationPopup
             this.view.OnConfirm += OnConfirmFromView;
             this.view.OnCancel += OnCancelFromView;
 
-            this.dataStore.ConfirmationPopup.OnChange += ShowOrHide;
+            this.dataStore.GenericConfirmation.OnChange += ShowOrHide;
 
             view.Hide(true);
         }
 
         public void Dispose()
         {
-            dataStore.ConfirmationPopup.OnChange -= ShowOrHide;
+            dataStore.GenericConfirmation.OnChange -= ShowOrHide;
             view.OnConfirm -= OnConfirmFromView;
             view.OnCancel -= OnCancelFromView;
             view.Dispose();
@@ -46,7 +46,7 @@ namespace DCL.ConfirmationPopup
             Hide();
         }
 
-        private void ShowOrHide(ConfirmationPopupData current, ConfirmationPopupData previous)
+        private void ShowOrHide(GenericConfirmationNotificationData current, GenericConfirmationNotificationData previous)
         {
             if (current == null)
                 Hide();
@@ -61,7 +61,7 @@ namespace DCL.ConfirmationPopup
             view.Hide();
         }
 
-        private void Show(ConfirmationPopupData data)
+        private void Show(GenericConfirmationNotificationData data)
         {
             externalCancelAction = data.CancelAction;
             externalConfirmationAction = data.ConfirmAction;

@@ -307,7 +307,7 @@ public class PlayerInfoCardHUDController : IHUD
     {
         if (ownUserProfile.IsBlocked(currentUserProfile.userId)) return;
 
-        dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateBlockUserData(
+        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
             userProfileBridge.Get(currentPlayerId)?.userName,
             () =>
             {

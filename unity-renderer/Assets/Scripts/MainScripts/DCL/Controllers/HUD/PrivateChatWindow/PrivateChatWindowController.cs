@@ -243,7 +243,7 @@ public class PrivateChatWindowController : IHUD
 
     private void Unfriend(string friendId)
     {
-        dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
             UserProfileController.userProfilesCatalog.Get(friendId)?.userName,
             () =>
             {

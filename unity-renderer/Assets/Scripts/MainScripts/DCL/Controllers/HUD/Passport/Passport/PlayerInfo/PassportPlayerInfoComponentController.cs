@@ -161,7 +161,7 @@ namespace DCL.Social.Passports
 
         private void RemoveFriend()
         {
-            dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateUnFriendData(
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
                 UserProfileController.userProfilesCatalog.Get(currentPlayerId)?.userName,
                 () =>
                 {
@@ -244,7 +244,7 @@ namespace DCL.Social.Passports
         {
             if (ownUserProfile.IsBlocked(currentPlayerId)) return;
 
-            dataStore.notifications.ConfirmationPopup.Set(ConfirmationPopupData.CreateBlockUserData(
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
                 userProfileBridge.Get(currentPlayerId)?.userName,
                 () =>
                 {

@@ -31,7 +31,7 @@ namespace DCL.ConfirmationPopup
         [Test]
         public void ShowWhenDataHasValidValue()
         {
-            dataStore.ConfirmationPopup.Set(new ConfirmationPopupData("title", "description",
+            dataStore.GenericConfirmation.Set(new GenericConfirmationNotificationData("title", "description",
                 "cancel", "confirm", null, null), true);
 
             view.Received(1).SetModel(Arg.Is<ConfirmationPopupHUDViewModel>(c => c.Title == "title"
@@ -42,7 +42,7 @@ namespace DCL.ConfirmationPopup
         [Test]
         public void HideWhenDataHasInvalidValue()
         {
-            dataStore.ConfirmationPopup.Set(null, true);
+            dataStore.GenericConfirmation.Set(null, true);
 
             view.Received(1).Hide();
         }
@@ -52,7 +52,7 @@ namespace DCL.ConfirmationPopup
         {
             var called = false;
 
-            dataStore.ConfirmationPopup.Set(new ConfirmationPopupData("tt", "bb",
+            dataStore.GenericConfirmation.Set(new GenericConfirmationNotificationData("tt", "bb",
                 "c", "cc", null, () => called = true), true);
 
             view.OnConfirm += Raise.Event<Action>();
@@ -65,7 +65,7 @@ namespace DCL.ConfirmationPopup
         {
             var called = false;
 
-            dataStore.ConfirmationPopup.Set(new ConfirmationPopupData("tt", "bb",
+            dataStore.GenericConfirmation.Set(new GenericConfirmationNotificationData("tt", "bb",
                 "c", "cc", () => called = true, null), true);
 
             view.OnCancel += Raise.Event<Action>();
