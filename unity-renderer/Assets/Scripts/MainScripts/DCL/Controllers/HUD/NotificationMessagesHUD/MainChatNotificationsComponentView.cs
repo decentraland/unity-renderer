@@ -227,6 +227,9 @@ namespace DCL.Chat.Notifications
 
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
             CheckNotificationCountAndRelease();
+
+            // TODO: refactor sfx usage into non-static
+            AudioScriptableObjects.FriendRequestEvent.Play();
         }
 
         private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
