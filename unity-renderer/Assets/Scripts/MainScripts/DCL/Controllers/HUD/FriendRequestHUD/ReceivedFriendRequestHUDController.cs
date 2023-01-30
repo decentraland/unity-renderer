@@ -130,7 +130,7 @@ namespace DCL.Social.Friends
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is not OperationCanceledException)
                 {
                     e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
                     dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
