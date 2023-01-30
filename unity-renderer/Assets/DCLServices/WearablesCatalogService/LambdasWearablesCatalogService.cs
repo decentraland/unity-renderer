@@ -30,7 +30,6 @@ namespace DCLServices.WearablesCatalogService
         private Service<ILambdasService> lambdasService;
         private CancellationTokenSource serviceCts;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> wearablesByCollectionPagePointers = new ();
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly Dictionary<string, UniTaskCompletionSource<WearableItem>> awaitingWearableTasks = new ();
@@ -76,17 +75,18 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            if (!wearablesByCollectionPagePointers.TryGetValue(BASE_WEARABLES_COLLECTION_ID, out var pagePointer))
-            {
-                wearablesByCollectionPagePointers[BASE_WEARABLES_COLLECTION_ID] = pagePointer = new (
-                    WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
-                    1, ct, this);
-            }
+            var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
+                "",
+                WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
+                REQUESTS_TIME_OUT_SECONDS,
+                ATTEMPTS_NUMBER,
+                ct,
+                LambdaPaginatedResponseHelper.GetPageSizeParam(1),
+                LambdaPaginatedResponseHelper.GetPageNumParam(1));
 
-            var pageResponse = await pagePointer.GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables);
+            AddWearablesToCatalog(serviceResponse.response.wearables);
 
-            return pageResponse.response.wearables;
+            return serviceResponse.response.wearables;
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct)
@@ -108,15 +108,18 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
-            LambdaResponsePagePointer<WearableResponse> pagePointer = new (
+            var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
+                "",
                 WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
-                1, ct, this);
+                REQUESTS_TIME_OUT_SECONDS,
+                ATTEMPTS_NUMBER,
+                ct,
+                LambdaPaginatedResponseHelper.GetPageSizeParam(1),
+                LambdaPaginatedResponseHelper.GetPageNumParam(1));
 
-            var pageResponse = await pagePointer.GetPageAsync(1, ct);
-            AddWearablesToCatalog(pageResponse.response.wearables);
-            pagePointer.Dispose();
+            AddWearablesToCatalog(serviceResponse.response.wearables);
 
-            return pageResponse.response.wearables;
+            return serviceResponse.response.wearables;
         }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
