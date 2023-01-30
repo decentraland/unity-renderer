@@ -28,6 +28,7 @@ namespace DCL
 
         private readonly InputController_Legacy inputControllerLegacy;
         private readonly MouseCatcher mouseCatcher;
+        private readonly BaseVariable<GraphicRaycaster> worldDataRaycaster;
 
         private DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
 
@@ -44,8 +45,10 @@ namespace DCL
 
         private StandaloneInputModuleDCL eventSystemInputModuleLazy => eventSystemInputModule ??= (StandaloneInputModuleDCL)EventSystem.current?.currentInputModule;
 
-        public PointerEventsController(InputController_Legacy inputControllerLegacy, InteractionHoverCanvasController hoverCanvas, MouseCatcher mouseCatcher)
+        public PointerEventsController(InputController_Legacy inputControllerLegacy, InteractionHoverCanvasController hoverCanvas,
+            MouseCatcher mouseCatcher, BaseVariable<GraphicRaycaster>  worldDataRaycaster)
         {
+            this.worldDataRaycaster = worldDataRaycaster;
             this.inputControllerLegacy = inputControllerLegacy;
             this.mouseCatcher = mouseCatcher;
             pointerHoverController = new PointerHoverController(inputControllerLegacy, hoverCanvas);
@@ -104,7 +107,7 @@ namespace DCL
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
             if (didHit && IsValidCurrentScene())
             {
-                GraphicRaycaster raycaster = DataStore.i.Get<DataStore_World>().currentRaycaster.Get();
+                GraphicRaycaster raycaster = worldDataRaycaster.Get();
 
                 if (raycaster != null)
                 {
