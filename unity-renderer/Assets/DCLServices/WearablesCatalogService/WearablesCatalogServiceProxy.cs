@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -12,8 +11,6 @@ namespace DCLServices.WearablesCatalogService
     /// </summary>
     public class WearablesCatalogServiceProxy : IWearablesCatalogService
     {
-        private const string NOT_INITIALIZED_EXCEPTION_MESSAGE = "The proxy was not yet initialized!";
-
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
             wearablesCatalogServiceInUse.WearablesCatalog;
 
@@ -66,7 +63,7 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, pageNumber, pageSize, ct);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
             return await wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
@@ -81,13 +78,13 @@ namespace DCLServices.WearablesCatalogService
         public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems) =>
             wearablesCatalogServiceInUse?.AddWearablesToCatalog(wearableItems);
 
-        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds) =>
+        public void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds) =>
             wearablesCatalogServiceInUse?.RemoveWearablesFromCatalog(wearableIds);
 
-        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove) =>
+        public void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove) =>
             wearablesCatalogServiceInUse?.RemoveWearablesInUse(wearablesInUseToRemove);
 
-        public void EmbedWearables(IEnumerable<WearableItem> wearables) =>
+        public void EmbedWearables(IReadOnlyList<WearableItem> wearables) =>
             wearablesCatalogServiceInUse?.EmbedWearables(wearables);
 
         public void Clear() =>

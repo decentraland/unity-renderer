@@ -12,12 +12,12 @@ namespace DCLServices.WearablesCatalogService
         UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct);
-        UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct);
+        UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct);
         UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct);
         void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems);
-        void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds);
-        void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove);
-        void EmbedWearables(IEnumerable<WearableItem> wearables); // This temporary until the emotes are in the content server
+        void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds);
+        void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove);
+        void EmbedWearables(IReadOnlyList<WearableItem> wearables); // This temporary until the emotes are in the content server
         void Clear();
     }
 }

@@ -106,7 +106,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct)
         {
             var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
                 "",
@@ -165,7 +165,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
+        public void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds)
         {
             foreach (string wearableId in wearableIds)
             {
@@ -174,7 +174,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
+        public void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove)
         {
             foreach (string wearableToRemove in wearablesInUseToRemove)
             {
@@ -185,7 +185,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void EmbedWearables(IEnumerable<WearableItem> wearables)
+        public void EmbedWearables(IReadOnlyList<WearableItem> wearables)
         {
             foreach (WearableItem wearableItem in wearables)
             {
@@ -215,7 +215,7 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
-        private string GetWearablesQuery(string[] wearableIds)
+        private string GetWearablesQuery(IReadOnlyList<string> wearableIds)
         {
             StringBuilder wearableIdsQuery = new StringBuilder();
 
