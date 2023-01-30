@@ -59,7 +59,7 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
-        public async UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
         {
             if (!ownerWearablesPagePointers.ContainsKey(userId))
             {
@@ -74,7 +74,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
-        public async UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
             if (!wearablesByCollectionPagePointers.ContainsKey(BASE_WEARABLES_COLLECTION_ID))
             {
@@ -89,7 +89,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
-        public async UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct)
         {
             if (!thirdPartyCollectionPagePointers.ContainsKey((userId, collectionId)))
             {
@@ -106,7 +106,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables.ToArray();
         }
 
-        public async UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
             LambdaResponsePagePointer<WearableResponse> wearablesPagePointers = new (
                 WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
@@ -151,7 +151,7 @@ namespace DCLServices.WearablesCatalogService
             catch (Exception e) when (e is not OperationCanceledException) { throw; }
         }
 
-        public void AddWearablesToCatalog(WearableItem[] wearableItems)
+        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
         {
             foreach (WearableItem wearableItem in wearableItems)
             {

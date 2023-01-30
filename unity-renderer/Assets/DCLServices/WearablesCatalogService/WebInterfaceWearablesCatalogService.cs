@@ -69,16 +69,16 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
-        public async UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
             await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
 
-        public async UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct) =>
+        public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, new [] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
-        public async UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, null, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
 
-        public async UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, wearableIds, null, string.Join(",", wearableIds.ToArray()), false, ct);
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
@@ -193,7 +193,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void AddWearablesToCatalog(WearableItem[] wearableItems)
+        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
         {
             foreach (WearableItem wearableItem in wearableItems)
             {

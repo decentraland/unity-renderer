@@ -46,22 +46,22 @@ namespace DCLServices.WearablesCatalogService
             wearablesCatalogServiceInUse?.Dispose();
         }
 
-        public UniTask<WearableItem[]> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, ct);
 
-        public UniTask<WearableItem[]> RequestBaseWearablesAsync(CancellationToken ct) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestBaseWearablesAsync(ct);
 
-        public UniTask<WearableItem[]> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, ct);
 
-        public UniTask<WearableItem[]> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
 
         public UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct) =>
             wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
 
-        public void AddWearablesToCatalog(WearableItem[] wearableItems) =>
+        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems) =>
             wearablesCatalogServiceInUse.AddWearablesToCatalog(wearableItems);
 
         public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds) =>
