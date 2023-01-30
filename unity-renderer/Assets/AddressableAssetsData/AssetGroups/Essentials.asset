@@ -12,11 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: Essentials
   m_EditorClassIdentifier: 
-  m_GroupName: Packed Assets
+  m_GroupName: sd
   m_Data:
     m_SerializedData: []
   m_GUID: ed2dee1e0840c49fcb5e0fe77c990616
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: fc948706d8d335241a2349aa97f0767d
+    m_Address: Skybox Elements.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c8b11fb3e63ab6f41b65f3cb2035d5d7
+    m_Address: SkyboxProbe.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6745a35c8e98aa2499b4b7d6372c581a
+    m_Address: Generic_Skybox.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 347583cec6e664542b4808c87b6c1279
+    m_Address: Weird_Skybox.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e42e43d2fa0a25344a145edf0e562209
+    m_Address: Generic_Skybox 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

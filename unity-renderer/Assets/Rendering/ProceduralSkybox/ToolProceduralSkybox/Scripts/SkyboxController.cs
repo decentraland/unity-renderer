@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using System;
 using System.Linq;
 using UnityEngine;
 using DCL.ServerTime;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DCL.Skybox
@@ -74,8 +76,11 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            GetOrCreateEnvironmentProbe();
+            GetOrCreateEnvironmentProbe().ContinueWith((t) => ContinueInitialization());
+        }
 
+        private void ContinueInitialization()
+        {
             skyboxElements = new SkyboxElements();
 
             // Create skybox Camera
@@ -91,9 +96,9 @@ namespace DCL.Skybox
             // Change as Kernel config is initialized or updated
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
-                        {
-                            KernelConfig_OnChange(config, null);
-                        });
+                         {
+                             KernelConfig_OnChange(config, null);
+                         });
 
             KernelConfig.i.OnChange += KernelConfig_OnChange;
 
@@ -165,8 +170,10 @@ namespace DCL.Skybox
 
             if (skyboxProbe == null)
             {
+                CancellationTokenSource cts = new CancellationTokenSource();
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(5));
                 // Instantiate new probe from the resources
-                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab");
+                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab", cts.Token);
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
                 probe.name = "SkyboxProbe";
                 skyboxProbe = probe.GetComponent<ReflectionProbe>();
@@ -385,7 +392,9 @@ namespace DCL.Skybox
             }
 
 
-            SkyboxConfiguration newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset");
+            CancellationTokenSource ct = new CancellationTokenSource();
+            ct.CancelAfterSlim(TimeSpan.FromSeconds(5));
+            SkyboxConfiguration newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset", ct.Token);
 
             if (newConfiguration == null)
             {
@@ -394,7 +403,9 @@ namespace DCL.Skybox
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
-                newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset");
+                CancellationTokenSource ct2 = new CancellationTokenSource();
+                ct2.CancelAfterSlim(TimeSpan.FromSeconds(5));
+                newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset", ct2.Token);
 
                 if (newConfiguration == null)
                 {
