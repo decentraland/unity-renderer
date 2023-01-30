@@ -1,0 +1,37 @@
+{
+    "name": "HUDDesktop",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:9d475ab28d70a5a399fc98ae8845969e",
+        "GUID:012093226beb0234c97a809109f7086d",
+        "GUID:69d6f2dcc90814e5a89a06138c216dd8",
+        "GUID:eee78afb8bb175c46bd6c5112e6c105c",
+        "GUID:3a4406077951343c391c684d9a9881b8",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:9a1d7e67f710d724584ebbbd5614bcf1",
+        "GUID:692b6c9fa5079416bb81826fb3806890",
+        "GUID:55e59fab5b4394ec7b7e1960c6f1453f",
+        "GUID:ddbcaa1d8ce9f489bb115e9daa589565",
+        "GUID:8ea35c85a2f0dc44788f8c3945cee408",
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:2f3b53e8380cc4aae947b17780173adb",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
