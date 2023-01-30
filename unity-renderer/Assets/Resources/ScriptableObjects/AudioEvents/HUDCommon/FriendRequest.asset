@@ -16,7 +16,7 @@ MonoBehaviour:
   initialVolume: 1
   initialPitch: 1
   randomPitch: 0
-  cooldownSeconds: 0.1
+  cooldownSeconds: 0
   clips:
     array:
     - {fileID: 8300000, guid: 62aca731384d74e58bf39d79806c9a5a, type: 3}
