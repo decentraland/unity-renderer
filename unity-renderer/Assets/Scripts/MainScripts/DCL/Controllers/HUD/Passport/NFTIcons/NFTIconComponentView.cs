@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     private NFTItemInfo.Model nftItemInfoCurrentModel;
     private bool showCategoryInfoOnNftItem;
     private string nftItemInfoRarity;
+    private List<string> landTypes = new List<string>() { "parcel", "estate" };
+    private static Vector3 LAND_IMAGE_SCALE = new Vector3(5, 5, 5);
+    private static Vector3 NORMAL_IMAGE_SCALE = new Vector3(5, 5, 5);
 
     public void Configure(NFTIconComponentModel newModel)
     {
@@ -49,9 +53,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         SetName(model.name);
         SetShowMarketplaceButton(model.showMarketplaceButton);
         SetMarketplaceURI(model.marketplaceURI);
+        SetType(model.type);
         SetImageURI(model.imageURI);
         SetShowType(model.showType);
-        SetType(model.type);
         SetRarity(model.rarity);
     }
 
@@ -77,6 +81,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
         if (nftImage != null)
         {
+            nftImage.gameObject.transform.localScale = landTypes.Contains(model.type) ? LAND_IMAGE_SCALE : NORMAL_IMAGE_SCALE;
+
             nftImage.SetImage(imageURI);
             nftImage.gameObject.SetActive(!string.IsNullOrEmpty(imageURI));
         }
