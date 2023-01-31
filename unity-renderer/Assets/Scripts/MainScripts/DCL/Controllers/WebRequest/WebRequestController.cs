@@ -13,8 +13,6 @@ namespace DCL
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
 
-        private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new ();
-
         private WebRequestController(
             IWebRequestFactory getWebRequestFactory,
             IWebRequestAssetBundleFactory assetBundleFactory,
@@ -57,11 +55,11 @@ namespace DCL
             this.audioClipWebRequestFactory = audioClipWebRequest;
         }
 
-        public IWebRequestAsyncOperation Get(
+        public UnityWebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -70,12 +68,12 @@ namespace DCL
             return SendWebRequest(getWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
-        public IWebRequestAsyncOperation Post(
+        public UnityWebRequestAsyncOperation Post(
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -85,10 +83,10 @@ namespace DCL
             return SendWebRequest(postWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
-        public IWebRequestAsyncOperation GetAssetBundle(
+        public UnityWebRequestAsyncOperation GetAssetBundle(
             string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -96,11 +94,11 @@ namespace DCL
             return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 
-        public IWebRequestAsyncOperation GetAssetBundle(
+        public UnityWebRequestAsyncOperation GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -109,10 +107,10 @@ namespace DCL
             return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 
-        public IWebRequestAsyncOperation GetTexture(
+        public UnityWebRequestAsyncOperation GetTexture(
             string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -123,11 +121,11 @@ namespace DCL
             return SendWebRequest(textureFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
-        public IWebRequestAsyncOperation GetAudioClip(
+        public UnityWebRequestAsyncOperation GetAudioClip(
             string url,
             AudioType audioType,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -136,17 +134,16 @@ namespace DCL
             return SendWebRequest(audioClipWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 
-        private WebRequestAsyncOperation SendWebRequest<T>(
+        private UnityWebRequestAsyncOperation SendWebRequest<T>(
             T requestFactory,
             string url,
             DownloadHandler downloadHandler,
-            Action<IWebRequestAsyncOperation> OnSuccess,
-            Action<IWebRequestAsyncOperation> OnFail,
+            Action<UnityWebRequestAsyncOperation> OnSuccess,
+            Action<UnityWebRequestAsyncOperation> OnFail,
             int requestAttemps,
             int timeout,
             bool disposeOnCompleted,
-            Dictionary<string, string> headers = null,
-            WebRequestAsyncOperation asyncOp = null
+            Dictionary<string, string> headers = null
         ) where T: IWebRequestFactory
         {
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
@@ -156,64 +153,60 @@ namespace DCL
 
             if (headers != null)
             {
-                foreach (var item in headers) { request.SetRequestHeader(item.Key, item.Value); }
+                foreach (var item in headers)
+                    request.SetRequestHeader(item.Key, item.Value);
             }
 
             if (downloadHandler != null)
                 request.downloadHandler = downloadHandler;
 
-            WebRequestAsyncOperation resultOp = asyncOp;
-
-            if (resultOp == null)
-                resultOp = new WebRequestAsyncOperation(request);
-            else
-                resultOp.SetNewWebRequest(request);
-
-            resultOp.disposeOnCompleted = disposeOnCompleted;
-            ongoingWebRequests.Add(resultOp);
-
-            UnityWebRequestAsyncOperation requestOp = resultOp.SendWebRequest();
+            UnityWebRequestAsyncOperation requestOp = request.SendWebRequest();
 
             requestOp.completed += (asyncOp) =>
             {
-                if (!resultOp.isDisposed)
+                if (request != null)
                 {
-                    if (resultOp.webRequest.WebRequestSucceded())
+                    if (request.WebRequestSucceded())
                     {
-                        OnSuccess?.Invoke(resultOp);
-                        resultOp.SetAsCompleted(true);
+                        OnSuccess?.Invoke(requestOp);
+                        DisposeRequestIfNeeded(ref request, disposeOnCompleted);
                     }
-                    else if (!resultOp.webRequest.WebRequestAborted() && resultOp.webRequest.WebRequestServerError())
+                    else if (!request.WebRequestAborted() && request.WebRequestServerError())
                     {
                         remainingAttemps--;
 
                         if (remainingAttemps > 0)
                         {
-                            resultOp.Dispose();
-                            resultOp = SendWebRequest(requestFactory, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers, resultOp);
+                            DisposeRequestIfNeeded(ref request, true);
+                            requestOp = SendWebRequest(requestFactory, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers);
                         }
                         else
                         {
-                            OnFail?.Invoke(resultOp);
-                            resultOp.SetAsCompleted(false);
+                            OnFail?.Invoke(requestOp);
+                            DisposeRequestIfNeeded(ref request, disposeOnCompleted);
                         }
                     }
                     else
                     {
-                        OnFail?.Invoke(resultOp);
-                        resultOp.SetAsCompleted(false);
+                        OnFail?.Invoke(requestOp);
+                        DisposeRequestIfNeeded(ref request, disposeOnCompleted);
                     }
                 }
-
-                ongoingWebRequests.Remove(resultOp);
             };
 
-            return resultOp;
+            return requestOp;
         }
 
-        public void Dispose()
+        public void Dispose() { }
+        
+
+        private void DisposeRequestIfNeeded(ref UnityWebRequest request, bool shouldBeDisposed)
         {
-            foreach (var webRequest in ongoingWebRequests) { webRequest.Dispose(); }
+            if (!shouldBeDisposed)
+                return;
+            
+            request.Dispose();
+            request = null;
         }
     }
 }

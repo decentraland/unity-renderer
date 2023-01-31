@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -34,11 +34,11 @@ namespace DCL
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         /// <param name="headers">This will set the headers for the request</param>
-        IWebRequestAsyncOperation Get(
+        UnityWebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -56,12 +56,12 @@ namespace DCL
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         /// <param name="headers">This will set the headers for the request</param>
-        IWebRequestAsyncOperation Post(
+        UnityWebRequestAsyncOperation Post(
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -76,10 +76,10 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetAssetBundle(
+        UnityWebRequestAsyncOperation GetAssetBundle(
             string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
@@ -94,11 +94,11 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetAssetBundle(
+        UnityWebRequestAsyncOperation GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
@@ -112,10 +112,10 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetTexture(
+        UnityWebRequestAsyncOperation GetTexture(
             string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -132,11 +132,11 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetAudioClip(
+        UnityWebRequestAsyncOperation GetAudioClip(
             string url,
             AudioType audioType,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
+            Action<UnityWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
