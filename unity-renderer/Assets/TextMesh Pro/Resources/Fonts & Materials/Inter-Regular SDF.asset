@@ -6913,10 +6913,7 @@ MonoBehaviour:
     m_MarkToBaseAdjustmentRecords: []
     m_MarkToMarkAdjustmentRecords: []
   m_ShouldReimportFontFeatures: 0
-  m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 82f86e6c95d775f4e8488447b6885323, type: 2}
-  - {fileID: 11400000, guid: 4cc5b9c92b8be214dbbd4f1f502110de, type: 2}
-  - {fileID: 11400000, guid: 1801d33e8e688a74ea5dd704a91cfac1, type: 2}
+  m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 09b97968322d548d48263701ed418976

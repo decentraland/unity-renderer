@@ -215,6 +215,7 @@ MonoBehaviour:
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
     msgStepByStep: 0
+    logWs: 0
   OpenBrowserOnStart: 1
   webSocketSSL: 0
   kernelVersion: 
@@ -230,6 +231,7 @@ MonoBehaviour:
   builderInWorld: 0
   soloScene: 0
   disableAssetBundles: 0
+  enableGLTFast: 0
   enableDebugMode: 0
   debugPanelMode: 0
   disableGLTFDownloadThrottle: 0
@@ -245,6 +247,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.5098898, y: -0.5752002, z: 7.8599234}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1

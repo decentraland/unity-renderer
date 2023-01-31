@@ -1,20 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &1323953455831319416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171146819627042931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4f89c9ed7d4714ca4d1fbbdee6721f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  coords: {x: 100, y: 100}
-  serverName: fenrir
-  layerName: amber
 --- !u!1001 &6601945259168165492
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -60,7 +45,7 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 140
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -163,6 +148,11 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
@@ -219,6 +209,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 877d19aa5b7d74c25862a30311503ed4,
         type: 3}
+    - target: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Spacing
@@ -272,3 +267,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6601945259168165492}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1323953455831319416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171146819627042931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4f89c9ed7d4714ca4d1fbbdee6721f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coords: {x: 100, y: 100}
+  serverName: fenrir
+  layerName: amber
