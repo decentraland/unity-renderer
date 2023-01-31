@@ -10,6 +10,12 @@ namespace DCL.Helpers
     /// </summary>
     public class PlayerPrefsProviderLocalStorage : IPlayerPrefsProvider
     {
+        //Nothing to save when using local storage
+        public void Save() { }
+
+        public bool HasKey(string key) =>
+            HasKeyInLocalStorage(key) == 1;
+
         public int GetInt(string key) =>
             GetInt(key, 0);
 
@@ -17,9 +23,11 @@ namespace DCL.Helpers
         {
             var valueGotFromLocalStorage = int.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
 
-            if (valueGotFromLocalStorage.Equals(defaultValue))
+            if (valueGotFromLocalStorage.Equals(defaultValue) && PlayerPrefs.HasKey(key))
             {
-                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetInt(key);
+                // We get the saved value in PlayerPrefs and move it to LocalStorage
+                valueGotFromLocalStorage = PlayerPrefs.GetInt(key);
+                SetInt(key, valueGotFromLocalStorage);
             }
 
             return valueGotFromLocalStorage;
@@ -40,9 +48,11 @@ namespace DCL.Helpers
         {
             string valueGotFromLocalStorage = GetLocalStorageValue(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
 
-            if (!string.IsNullOrEmpty(valueGotFromLocalStorage) && valueGotFromLocalStorage.Equals(defaultValue))
+            if (!string.IsNullOrEmpty(valueGotFromLocalStorage) && valueGotFromLocalStorage.Equals(defaultValue) && PlayerPrefs.HasKey(key))
             {
-                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetString(key);
+                // We get the saved value in PlayerPrefs and move it to LocalStorage
+                valueGotFromLocalStorage = PlayerPrefs.GetString(key);
+                SetString(key, valueGotFromLocalStorage);
             }
 
             return valueGotFromLocalStorage;
@@ -53,16 +63,15 @@ namespace DCL.Helpers
             SaveStringToLocalStorage(key, value);
         }
 
-        //Nothing to save when using local storage
-        public void Save() { }
-
         public float GetFloat(string key, float defaultValue)
         {
             var valueGotFromLocalStorage = float.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
 
-            if (valueGotFromLocalStorage.Equals(defaultValue))
+            if (valueGotFromLocalStorage.Equals(defaultValue) && PlayerPrefs.HasKey(key))
             {
-                if (PlayerPrefs.HasKey(key)) return PlayerPrefs.GetFloat(key);
+                // We get the saved value in PlayerPrefs and move it to LocalStorage
+                valueGotFromLocalStorage = PlayerPrefs.GetFloat(key);
+                SetFloat(key, valueGotFromLocalStorage);
             }
 
             return valueGotFromLocalStorage;
@@ -72,9 +81,6 @@ namespace DCL.Helpers
         {
             SaveStringToLocalStorage(key, value.ToString());
         }
-
-        public bool HasKey(string key) =>
-            HasKeyInLocalStorage(key) == 1;
 
         private string GetLocalStorageValue(string key, string defaultValue)
         {

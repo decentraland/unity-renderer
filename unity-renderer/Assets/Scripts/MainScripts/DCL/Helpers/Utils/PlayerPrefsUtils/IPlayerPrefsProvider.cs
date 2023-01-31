@@ -2,6 +2,10 @@ namespace DCL.Helpers
 {
     internal interface IPlayerPrefsProvider
     {
+        void Save();
+
+        bool HasKey(string key);
+
         int GetInt(string key);
 
         int GetInt(string key, int defaultValue);
@@ -16,12 +20,8 @@ namespace DCL.Helpers
 
         void SetString(string key, string value);
 
-        void Save();
-
         float GetFloat(string key, float defaultValue);
 
         void SetFloat(string key, float value);
-
-        bool HasKey(string key);
     }
 }

@@ -4,6 +4,14 @@ namespace DCL.Helpers
 {
     public class PlayerPrefsProviderDefault : IPlayerPrefsProvider
     {
+        public void Save()
+        {
+            PlayerPrefs.Save();
+        }
+
+        public bool HasKey(string key) =>
+            PlayerPrefs.HasKey(key);
+
         public int GetInt(string key) =>
             PlayerPrefs.GetInt(key);
 
@@ -31,11 +39,6 @@ namespace DCL.Helpers
             PlayerPrefs.SetString(key, value);
         }
 
-        public void Save()
-        {
-            PlayerPrefs.Save();
-        }
-
         public float GetFloat(string key, float defaultValue) =>
             PlayerPrefs.GetFloat(key, defaultValue);
 
@@ -43,8 +46,5 @@ namespace DCL.Helpers
         {
             PlayerPrefs.SetFloat(key, value);
         }
-
-        public bool HasKey(string key) =>
-            PlayerPrefs.HasKey(key);
     }
 }

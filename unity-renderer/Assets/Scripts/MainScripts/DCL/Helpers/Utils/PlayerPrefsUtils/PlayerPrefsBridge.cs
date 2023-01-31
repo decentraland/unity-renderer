@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DCL.Helpers
 {
@@ -19,13 +20,12 @@ namespace DCL.Helpers
 
         public static void SetBool(string key, bool value)
         {
-            PROVIDER.SetBool(key, value);
+            SetPlayerPref(() => PROVIDER.SetBool(key, value), key, "bool");
         }
 
         public static void SetInt(string key, int value)
         {
-            try { PROVIDER.SetInt(key, value); }
-            catch (PlayerPrefsException e) { Debug.Log($"There was an issue setting {key} PlayerPrefs int!"); }
+            SetPlayerPref(() => PROVIDER.SetInt(key, value), key, "int");
         }
 
         public static bool HasKey(string key) =>
@@ -36,8 +36,7 @@ namespace DCL.Helpers
 
         public static void SetString(string key, string value)
         {
-            try { PROVIDER.SetString(key, value); }
-            catch (PlayerPrefsException e) { Debug.Log($"There was an issue setting {key} PlayerPrefs string!"); }
+            SetPlayerPref(() => PROVIDER.SetString(key, value), key, "string");
         }
 
         public static void Save()
@@ -50,8 +49,13 @@ namespace DCL.Helpers
 
         public static void SetFloat(string key, float value)
         {
-            try { PROVIDER.SetFloat(key, value); }
-            catch (PlayerPrefsException e) { Debug.Log($"There was an issue setting {key} PlayerPrefs float!"); }
+            SetPlayerPref(() => PROVIDER.SetFloat(key, value), key, "float");
+        }
+
+        private static void SetPlayerPref(Action setFunc, string key, string typeName)
+        {
+            try { setFunc(); }
+            catch (PlayerPrefsException e) { Debug.Log($"There was an issue setting {key} PlayerPrefs {typeName}!"); }
         }
     }
 }
