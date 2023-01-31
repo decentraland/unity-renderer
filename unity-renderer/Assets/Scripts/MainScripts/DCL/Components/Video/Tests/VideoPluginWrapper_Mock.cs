@@ -62,7 +62,7 @@ namespace Tests
             wasRemoved = true;
         }
 
-        public void TextureUpdate(string id)
+        public void TextureUpdate(string id, bool flipY)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
         }

@@ -17,7 +17,7 @@ var WebVideoPlayer = {
         const vid = document.createElement("video");
 
         vid.autoplay = false;
-        
+
         var textureObject = GLctx.createTexture();
         const texId = GL.getNewId(textureObject);
         textureObject.name = texId
@@ -31,16 +31,16 @@ var WebVideoPlayer = {
             newFrame: false,
             useUpdateOptimization: true
         };
-        
+
         videos[UTF8ToString(videoId)] = videoData;
-        
+
         // this function is not supported by Firefox
-        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {     
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
             const onNewFrame = function (now, metadata) {
                 videoData.newFrame = true;
                 vid.requestVideoFrameCallback(onNewFrame);
             };
-                    
+
             vid.requestVideoFrameCallback(onNewFrame);
         } else {
             videoData.useUpdateOptimization = false; // we ignore optimization if not supported
@@ -145,17 +145,21 @@ var WebVideoPlayer = {
         return videos[id].textureId;
     },
 
-    WebVideoPlayerTextureUpdate: function (videoId) {
+    WebVideoPlayerTextureUpdate: function (videoId, flipY) {
         const videoData = videos[UTF8ToString(videoId)];
-        
+
         if (videoData.state !== 4) return; //PLAYING
-        
-        if (videoData.useUpdateOptimization && !videoData.newFrame) 
+
+        if (videoData.useUpdateOptimization && !videoData.newFrame)
             return; // No new frame to update
         else
             videoData.newFrame = false;
-        
+
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
+
+        if (flipY)
+            GLctx.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
@@ -167,6 +171,9 @@ var WebVideoPlayer = {
             GLctx.UNSIGNED_BYTE,
             videoData.video
         );
+
+        if (flipY)
+            GLctx.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {

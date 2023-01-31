@@ -31,14 +31,14 @@ namespace DCL.Components.Video.Plugin
             plugin.Create(id, url, useHls);
         }
 
-        public void Update()
+        public void Update(bool flipY)
         {
             switch (plugin.GetState(videoPlayerId))
             {
                 case VideoState.ERROR:
                     string newError = plugin.GetError(videoPlayerId);
 
-                    if ( newError != lastError )
+                    if (newError != lastError)
                     {
                         lastError = newError;
                         Debug.LogError(lastError);
@@ -62,7 +62,7 @@ namespace DCL.Components.Video.Plugin
                     break;
                 case VideoState.PLAYING:
                     if (visible)
-                        plugin.TextureUpdate(videoPlayerId);
+                        plugin.TextureUpdate(videoPlayerId, flipY);
 
                     break;
             }
