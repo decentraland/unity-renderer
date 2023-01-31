@@ -16,21 +16,24 @@ namespace DCLServices.WearablesCatalogService
 
         private IWearablesCatalogService wearablesCatalogServiceInUse;
         private readonly IWearablesCatalogService lambdasWearablesCatalogService;
-        private readonly IWearablesCatalogService webInterfaceWearablesCatalogService;
+        private readonly WebInterfaceWearablesCatalogService webInterfaceWearablesCatalogService;
         private readonly BaseDictionary<string, WearableItem> wearablesCatalog;
         private readonly KernelConfig kernelConfig;
+        private readonly WearablesWebInterfaceBridge wearablesWebInterfaceBridge;
         private bool isInitialized;
 
         public WearablesCatalogServiceProxy(
             IWearablesCatalogService lambdasWearablesCatalogService,
-            IWearablesCatalogService webInterfaceWearablesCatalogService,
+            WebInterfaceWearablesCatalogService webInterfaceWearablesCatalogService,
             BaseDictionary<string, WearableItem> wearablesCatalog,
-            KernelConfig kernelConfig)
+            KernelConfig kernelConfig,
+            WearablesWebInterfaceBridge wearablesWebInterfaceBridge)
         {
             this.lambdasWearablesCatalogService = lambdasWearablesCatalogService;
             this.webInterfaceWearablesCatalogService = webInterfaceWearablesCatalogService;
             this.wearablesCatalog = wearablesCatalog;
             this.kernelConfig = kernelConfig;
+            this.wearablesWebInterfaceBridge = wearablesWebInterfaceBridge;
         }
 
         public void Initialize()
@@ -92,7 +95,7 @@ namespace DCLServices.WearablesCatalogService
         {
             if (currentKernelConfig.urlParamsForWearablesDebug)
             {
-                WebInterfaceWearablesCatalogService.Instance.Initialize(new WearablesWebInterfaceBridge(), wearablesCatalog);
+                webInterfaceWearablesCatalogService.Initialize(wearablesWebInterfaceBridge, wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;
             }
             else

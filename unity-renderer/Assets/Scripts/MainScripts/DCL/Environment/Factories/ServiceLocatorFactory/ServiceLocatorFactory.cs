@@ -44,7 +44,8 @@ namespace DCL
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
-                KernelConfig.i));
+                KernelConfig.i,
+                new WearablesWebInterfaceBridge()));
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
