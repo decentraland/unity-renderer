@@ -243,7 +243,7 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
         private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
-            string.Join("&wearableId=", wearableIds).Remove(0, 1);
+            string.Concat("wearableId=", string.Join("&wearableId=", wearableIds));
 
         private async UniTaskVoid CheckForSendingPendingRequestsAsync(CancellationToken ct)
         {
