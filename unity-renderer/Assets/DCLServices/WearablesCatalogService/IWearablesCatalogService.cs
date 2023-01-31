@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -17,7 +18,8 @@ namespace DCLServices.WearablesCatalogService
         void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems);
         void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds);
         void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove);
-        void EmbedWearables(IReadOnlyList<WearableItem> wearables); // This temporary until the emotes are in the content server
+        [Obsolete("Will be removed in the future, when emotes are in the content server.")]
+        void EmbedWearables(IReadOnlyList<WearableItem> wearables);
         void Clear();
     }
 }
