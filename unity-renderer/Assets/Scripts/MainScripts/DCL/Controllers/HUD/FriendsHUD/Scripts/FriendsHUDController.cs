@@ -34,6 +34,7 @@ namespace DCL.Social.Friends
         private int lastSkipForFriends;
         private int lastSkipForFriendRequests;
 
+        public bool IsVisible { get; private set; } = true;
         public IFriendsHUDComponentView View { get; private set; }
 
         public event Action<string> OnPressWhisper;
@@ -91,7 +92,8 @@ namespace DCL.Social.Friends
                 friendsController.OnFriendNotFound += OnFriendNotFound;
                 friendsController.OnFriendRequestReceived += ShowFriendRequest;
 
-                if (friendsController.IsInitialized) { view.HideLoadingSpinner(); }
+                if (friendsController.IsInitialized)
+                    view.HideLoadingSpinner();
                 else
                 {
                     view.ShowLoadingSpinner();
@@ -163,6 +165,10 @@ namespace DCL.Social.Friends
 
         public void SetVisibility(bool visible)
         {
+            if (IsVisible == visible)
+                return;
+
+            IsVisible = visible;
             SetVisiblePanelList(visible);
 
             if (visible)
