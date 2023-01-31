@@ -6,9 +6,7 @@ using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.Pool;
-using Transaction = Sentry.Transaction;
 
 namespace DCLServices.Lambdas
 {
@@ -89,7 +87,7 @@ namespace DCLServices.Lambdas
 
             if (urlEncodedParams.Length > 0)
             {
-                urlBuilder.Append(endPointSpan[^1] == '?' ? '&' : '?');
+                urlBuilder.Append(endPoint.Contains('?') ? '&' : '?');
 
                 for (var i = 0; i < urlEncodedParams.Length; i++)
                 {
