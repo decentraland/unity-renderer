@@ -182,22 +182,16 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnDeleteUserButtonPressed()
     {
-        OnUnfriend?.Invoke(userId);
-
-        if (currentConfirmationDialog != null)
-        {
-            currentConfirmationDialog.SetText(string.Format(DELETE_MSG_PATTERN, UserProfileController.userProfilesCatalog.Get(userId)?.userName));
-            currentConfirmationDialog.Show(() => { UnfriendUser(); });
-        }
-        else { UnfriendUser(); }
+        DataStore.i.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
+            UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+            () =>
+            {
+                FriendsController.i.RemoveFriend(userId);
+                OnUnfriend?.Invoke(userId);
+            }), true);
 
         GetSocialAnalytics().SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.ProfileContextMenu);
         Hide();
-    }
-
-    private void UnfriendUser()
-    {
-        FriendsController.i.RemoveFriend(userId);
     }
 
     private void OnAddFriendButtonPressed()
@@ -266,17 +260,23 @@ public class UserContextMenu : MonoBehaviour
     private void OnBlockUserButtonPressed()
     {
         bool blockUser = !isBlocked;
-        OnBlock?.Invoke(userId, blockUser);
 
         if (blockUser)
         {
-            WebInterface.SendBlockPlayer(userId);
-            GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            DataStore.i.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
+                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+                () =>
+                {
+                    WebInterface.SendBlockPlayer(userId);
+                    GetSocialAnalytics().SendPlayerBlocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    OnBlock?.Invoke(userId, blockUser);
+                }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
             GetSocialAnalytics().SendPlayerUnblocked(FriendsController.i.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            OnBlock?.Invoke(userId, blockUser);
         }
 
         Hide();
