@@ -1,8 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL.Chat;
+using DCL.Chat.Channels;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Linq;
+using System.Threading;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Social.Chat.Channels
@@ -16,6 +19,7 @@ namespace DCL.Social.Chat.Channels
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
+        private CancellationTokenSource joinChannelCancellationToken = new ();
         private string channelId;
 
         public JoinChannelComponentController(
@@ -41,6 +45,7 @@ namespace DCL.Social.Chat.Channels
 
         public void Dispose()
         {
+            joinChannelCancellationToken.SafeCancelAndDispose();
             channelsDataStore.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
             view.OnCancelJoin -= OnCancelJoin;
             view.OnConfirmJoin -= OnConfirmJoin;
@@ -75,39 +80,49 @@ namespace DCL.Social.Chat.Channels
                          .Replace("~", "")
                          .ToLower();
 
-            async UniTaskVoid JoinAsync(string channelName)
+            async UniTaskVoid JoinAsync(string channelName, CancellationToken cancellationToken = default)
             {
-                Channel alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
-
-                if (alreadyJoinedChannel != null)
+                try
                 {
-                    if (!alreadyJoinedChannel.Joined)
-                        alreadyJoinedChannel = await chatController.JoinOrCreateChannelAsync(alreadyJoinedChannel.ChannelId);
+                    Channel alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
 
-                    OpenChannelWindow(alreadyJoinedChannel);
-                }
-                else
-                {
-                    (string pageToken, Channel[] channels) = await chatController.GetChannelsByNameAsync(1, channelName);
-                    Channel channelToJoin = channels.FirstOrDefault(channel => channel.Name == channelName);
-
-                    if (channelToJoin != null)
+                    if (alreadyJoinedChannel != null)
                     {
-                        channelToJoin = await chatController.JoinOrCreateChannelAsync(channelToJoin.ChannelId);
-                        OpenChannelWindow(channelToJoin);
+                        if (!alreadyJoinedChannel.Joined)
+                            alreadyJoinedChannel = await chatController.JoinOrCreateChannelAsync(alreadyJoinedChannel.ChannelId, cancellationToken);
+
+                        OpenChannelWindow(alreadyJoinedChannel);
                     }
                     else
-                        ShowErrorToast("The channel you are trying to access do not exist");
+                    {
+                        (string pageToken, Channel[] channels) = await chatController.GetChannelsByNameAsync(1, channelName, cancellationToken: cancellationToken);
+                        Channel channelToJoin = channels.FirstOrDefault(channel => channel.Name == channelName);
+
+                        if (channelToJoin != null)
+                        {
+                            channelToJoin = await chatController.JoinOrCreateChannelAsync(channelToJoin.ChannelId, cancellationToken);
+                            OpenChannelWindow(channelToJoin);
+                        }
+                        else
+                            ShowErrorToast("The channel you are trying to access do not exist");
+                    }
                 }
+                catch (ChannelException)
+                {
+                    ShowErrorToast("There was a problem trying to process the channel, try again later");
+                }
+                finally
+                {
+                    if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
+                        socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
 
-                if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
-                    socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
-
-                view.Hide();
-                channelsDataStore.currentJoinChannelModal.Set(null);
+                    view.Hide();
+                    channelsDataStore.currentJoinChannelModal.Set(null);
+                }
             }
 
-            JoinAsync(channelName).Forget();
+            joinChannelCancellationToken = joinChannelCancellationToken.SafeRestart();
+            JoinAsync(channelName, joinChannelCancellationToken.Token).Forget();
         }
 
         private void ShowErrorToast(string message)
