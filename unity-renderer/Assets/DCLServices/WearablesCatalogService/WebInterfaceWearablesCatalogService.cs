@@ -78,7 +78,7 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, null, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct) =>
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, wearableIds, null, string.Join(",", wearableIds), false, ct);
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
@@ -110,9 +110,9 @@ namespace DCLServices.WearablesCatalogService
             return await taskResult.Task;
         }
 
-        private async UniTask<WearableItem[]> RequestWearablesByContextAsync(
+        private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(
             string userId,
-            IReadOnlyList<string> wearableIds,
+            IEnumerable<string> wearableIds,
             IReadOnlyList<string> collectionIds,
             string context,
             bool isThirdParty,
@@ -193,7 +193,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
+        public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
         {
             foreach (WearableItem wearableItem in wearableItems)
             {
@@ -208,7 +208,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds)
+        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
         {
             foreach (string wearableId in wearableIds)
             {
@@ -217,7 +217,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove)
+        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
         {
             foreach (string wearableToRemove in wearablesInUseToRemove)
             {
@@ -228,7 +228,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void EmbedWearables(IReadOnlyList<WearableItem> wearables)
+        public void EmbedWearables(IEnumerable<WearableItem> wearables)
         {
             foreach (WearableItem wearableItem in wearables)
             {

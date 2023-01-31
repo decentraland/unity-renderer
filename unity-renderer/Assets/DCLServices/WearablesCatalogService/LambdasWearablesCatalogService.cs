@@ -105,7 +105,7 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
             var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
                 "",
@@ -149,7 +149,7 @@ namespace DCLServices.WearablesCatalogService
             catch (OperationCanceledException) { return null; }
         }
 
-        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
+        public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
         {
             foreach (WearableItem wearableItem in wearableItems)
             {
@@ -164,7 +164,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds)
+        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
         {
             foreach (string wearableId in wearableIds)
             {
@@ -173,7 +173,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove)
+        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
         {
             foreach (string wearableToRemove in wearablesInUseToRemove)
             {
@@ -184,7 +184,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void EmbedWearables(IReadOnlyList<WearableItem> wearables)
+        public void EmbedWearables(IEnumerable<WearableItem> wearables)
         {
             foreach (WearableItem wearableItem in wearables)
             {
@@ -251,9 +251,9 @@ namespace DCLServices.WearablesCatalogService
                 if (wearablesInUseCounters.Count <= 0)
                     continue;
 
-                List<string> wearablesToRemove = (from wearableInUse in wearablesInUseCounters
+                var wearablesToRemove = from wearableInUse in wearablesInUseCounters
                     where wearableInUse.Value <= 0
-                    select wearableInUse.Key).ToList();
+                    select wearableInUse.Key;
 
                 RemoveWearablesFromCatalog(wearablesToRemove);
             }

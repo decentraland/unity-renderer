@@ -13,13 +13,13 @@ namespace DCLServices.WearablesCatalogService
         UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct);
         UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct);
-        UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct);
+        UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct);
         UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct);
-        void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems);
-        void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds);
-        void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove);
+        void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems);
+        void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds);
+        void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove);
         [Obsolete("Will be removed in the future, when emotes are in the content server.")]
-        void EmbedWearables(IReadOnlyList<WearableItem> wearables);
+        void EmbedWearables(IEnumerable<WearableItem> wearables);
         void Clear();
     }
 }

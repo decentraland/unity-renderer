@@ -61,7 +61,7 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, pageNumber, pageSize, ct);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(IReadOnlyList<string> wearableIds, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
             return await wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
@@ -73,16 +73,16 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
         }
 
-        public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems) =>
+        public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems) =>
             wearablesCatalogServiceInUse?.AddWearablesToCatalog(wearableItems);
 
-        public void RemoveWearablesFromCatalog(IReadOnlyList<string> wearableIds) =>
+        public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds) =>
             wearablesCatalogServiceInUse?.RemoveWearablesFromCatalog(wearableIds);
 
-        public void RemoveWearablesInUse(IReadOnlyList<string> wearablesInUseToRemove) =>
+        public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove) =>
             wearablesCatalogServiceInUse?.RemoveWearablesInUse(wearablesInUseToRemove);
 
-        public void EmbedWearables(IReadOnlyList<WearableItem> wearables) =>
+        public void EmbedWearables(IEnumerable<WearableItem> wearables) =>
             wearablesCatalogServiceInUse?.EmbedWearables(wearables);
 
         public void Clear() =>
