@@ -26,6 +26,7 @@ namespace DCLPlugins.SentryPlugin
 
         private void RealmNameOnOnChange(string current, string previous)
         {
+            if (current == previous) return;
             sentryHub.ConfigureScope(scope =>
             {
                 scope.SetTag("Current Realm", current);
@@ -49,6 +50,7 @@ namespace DCLPlugins.SentryPlugin
 
         private void PlayerGridPositionOnOnChange(Vector2Int current, Vector2Int previous)
         {
+            if (current == previous) return;
             sentryHub.ConfigureScope(scope =>
             {
                 scope.SetTag("Current Position", $"{current.x},{current.y}");

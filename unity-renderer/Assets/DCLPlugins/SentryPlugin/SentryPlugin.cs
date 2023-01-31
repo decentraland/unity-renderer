@@ -1,5 +1,9 @@
 using DCL;
+using Sentry;
 using Sentry.Extensibility;
+using System;
+using System.Reflection;
+using UnityEngine;
 
 namespace DCLPlugins.SentryPlugin
 {
@@ -9,8 +13,21 @@ namespace DCLPlugins.SentryPlugin
 
         public SentryPlugin()
         {
-            var sentryHub = DisabledHub.Instance;
-            controller = new SentryController(DataStore.i.player, DataStore.i.realm, sentryHub);
+            // Sentry doesn't provide a public getter accessor to its instance
+            // So we unfortunately need a bit of magic
+            Type type = typeof(SentrySdk);
+            FieldInfo info = type.GetField("CurrentHub", BindingFlags.NonPublic | BindingFlags.Static);
+            if (info == null)
+            {
+                Debug.LogError("SentrySdk field could not be reflected. Sentry will not be initialized.");
+                return;
+            }
+
+            SentrySdk.ConfigureScope(scope =>
+            {
+                scope.SetTag("TestingTag", "SomeValue");
+            });
+            controller = new SentryController(DataStore.i.player, DataStore.i.realm, info.GetValue(null) as IHub);
         }
 
         public void Dispose()
