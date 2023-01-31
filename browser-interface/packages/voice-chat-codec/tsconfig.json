@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2020",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "declaration": false,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "newLine": "LF",
+    "stripInternal": true,
+    "strict": true,
+    "removeComments": true,
+    "pretty": true,
+    "outDir": "../../static/voice-chat-codec",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "baseUrl": ".."
+  },
+  "include": ["."]
+}

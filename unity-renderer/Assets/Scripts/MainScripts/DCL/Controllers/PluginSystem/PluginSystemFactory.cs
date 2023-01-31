@@ -1,5 +1,6 @@
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
+using DCL.ConfirmationPopup;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -10,6 +11,7 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
+using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
 using DCLPlugins.SentryPlugin;
@@ -52,8 +54,8 @@ namespace DCL
             pluginSystem.Register<UIRefresherPlugin>(() => new UIRefresherPlugin());
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
+            pluginSystem.Register<FallbackFontsLoaderPlugin>(() => new FallbackFontsLoaderPlugin());
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
-
 
             pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
@@ -65,6 +67,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
+            pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
@@ -72,6 +75,8 @@ namespace DCL
                 NotificationScriptableObjects.pendingFriendRequests,
                 NotificationScriptableObjects.newApprovedFriends,
                 DataStore.i));
+
+            pluginSystem.Register<ConfirmationPopupPlugin>(() => new ConfirmationPopupPlugin());
 
             pluginSystem.Register<ABDetectorPlugin>(() => new ABDetectorPlugin());
 

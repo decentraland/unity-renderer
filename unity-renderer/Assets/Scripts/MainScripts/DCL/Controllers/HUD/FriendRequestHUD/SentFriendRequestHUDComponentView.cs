@@ -2,12 +2,13 @@ using DCL.Helpers;
 using System;
 using System.Globalization;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
+    public class SentFriendRequestHUDComponentView : BaseComponentView<SentFriendRequestHUDViewModel>, ISentFriendRequestHUDView
     {
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
@@ -25,7 +26,6 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button rejectOperationButton;
         [SerializeField] internal Canvas currentCanvas;
 
-        private readonly Model model = new Model();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
         private ILazyTextureObserver lastSenderProfilePictureObserver;
 
@@ -69,13 +69,13 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            cancelButton.interactable = model.State != Model.LayoutState.Pending;
-            tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
-            cancelButtonsContainer.SetActive(model.State != Model.LayoutState.Pending);
-            pendingToCancelContainer.SetActive(model.State == Model.LayoutState.Pending);
+            cancelButton.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
+            tryCancelButton.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
+            cancelButtonsContainer.SetActive(model.State != SentFriendRequestHUDViewModel.LayoutState.Pending);
+            pendingToCancelContainer.SetActive(model.State == SentFriendRequestHUDViewModel.LayoutState.Pending);
 
             foreach (Button button in closeButtons)
-                button.interactable = model.State != Model.LayoutState.Pending;
+                button.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
 
             nameLabel.text = model.Name;
             messageBodyInput.text = model.BodyMessage;
@@ -111,7 +111,7 @@ namespace DCL.Social.Friends
             base.Show(instant);
             HideConfirmationToast();
             SwitchToTryCancelButton();
-            model.State = Model.LayoutState.Default;
+            model.State = SentFriendRequestHUDViewModel.LayoutState.Default;
             RefreshControl();
         }
 
@@ -129,7 +129,7 @@ namespace DCL.Social.Friends
 
         public void ShowPendingToCancel()
         {
-            model.State = Model.LayoutState.Pending;
+            model.State = SentFriendRequestHUDViewModel.LayoutState.Pending;
             HideConfirmationToast();
             RefreshControl();
         }
@@ -169,22 +169,6 @@ namespace DCL.Social.Friends
         {
             tryCancelButton.gameObject.SetActive(true);
             cancelButton.gameObject.SetActive(false);
-        }
-
-        private class Model
-        {
-            public string Name;
-            public LayoutState State;
-            public ILazyTextureObserver RecipientProfilePictureObserver;
-            public ILazyTextureObserver SenderProfilePictureObserver;
-            public string BodyMessage;
-
-            public enum LayoutState
-            {
-                Default,
-                Pending,
-                Failed
-            }
         }
     }
 }
