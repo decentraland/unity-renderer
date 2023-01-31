@@ -146,7 +146,7 @@ namespace DCLServices.WearablesCatalogService
 
                 return await taskResult.Task.AttachExternalCancellation(ct);
             }
-            catch (Exception e) when (e is not OperationCanceledException) { throw; }
+            catch (OperationCanceledException) { return null; }
         }
 
         public void AddWearablesToCatalog(IReadOnlyList<WearableItem> wearableItems)
