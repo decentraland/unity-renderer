@@ -35,6 +35,8 @@ namespace DCL.Social.Passports
         private double passportOpenStartTime;
         private CancellationTokenSource cts = new CancellationTokenSource();
 
+        private bool isOpen;
+
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
             PassportPlayerInfoComponentController playerInfoController,
@@ -89,6 +91,11 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
+            if(!isOpen)
+                return;
+
+            isOpen = false;
+
             passportNavigationController.CloseAllNFTItemInfos();
             passportNavigationController.SetViewInitialPage();
             playerInfoController.ClosePassport();
