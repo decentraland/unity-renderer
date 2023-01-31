@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GLTFast.Loading;
@@ -28,19 +28,18 @@ namespace DCL.GLTFast.Wrappers
         {
             string finalUrl = GetFinalUrl(uri);
 
-            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
+            UnityWebRequest uwr = await webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 30,
                 disposeOnCompleted: false,
                 requestAttemps: 3);
 
-            GltfDownloaderWrapper wrapper = new GltfDownloaderWrapper(asyncOp);
+            GltfDownloaderWrapper wrapper = new GltfDownloaderWrapper(uwr);
             disposables.Add(wrapper);
 
-            while (wrapper.MoveNext()) { await Task.Yield(); }
-
-            if (!wrapper.Success) { Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {asyncOp.asyncOp.webRequest.url} {asyncOp.asyncOp.webRequest.error}"); }
+            if (!wrapper.Success)
+                Debug.LogError($"<color=Red>[GLTFast WebRequest Failed]</color> {uwr.url} {uwr.error}");
 
             return wrapper;
         }
@@ -58,18 +57,17 @@ namespace DCL.GLTFast.Wrappers
         {
             string finalUrl = GetFinalUrl(uri);
 
-            var asyncOp = webRequestController.GetTexture(
+            UnityWebRequest uwr = await webRequestController.GetTexture(
                 url: finalUrl,
                 timeout: 30,
                 disposeOnCompleted: false,
                 requestAttemps: 3);
 
-            GltfTextureDownloaderWrapper wrapper = new GltfTextureDownloaderWrapper(asyncOp);
+            GltfTextureDownloaderWrapper wrapper = new GltfTextureDownloaderWrapper(uwr);
             disposables.Add(wrapper);
 
-            while (wrapper.MoveNext()) { await Task.Yield(); }
-
-            if (!wrapper.Success) { Debug.LogError("[GLTFast Texture WebRequest Failed] " + asyncOp.asyncOp.webRequest.url); }
+            if (!wrapper.Success)
+                Debug.LogError("[GLTFast Texture WebRequest Failed] " + uwr.url);
 
             return wrapper;
         }

@@ -68,7 +68,7 @@ public class EventsSubSectionComponentControllerTests
     }
 
     [Test]
-    public void RequestAllEventsCorrectly()
+    public async void RequestAllEventsCorrectly()
     {
         // Arrange
         eventsSubSectionComponentController.availableUISlots = -1;

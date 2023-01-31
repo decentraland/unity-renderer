@@ -16,6 +16,7 @@ using Categories = WearableLiterals.Categories;
 using Environment = DCL.Environment;
 using Random = UnityEngine.Random;
 using Type = DCL.NotificationModel.Type;
+using UnityEditor.PackageManager;
 
 public class AvatarEditorHUDController : IHUD
 {
@@ -940,19 +941,18 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    private void LoadCollections()
+    private async UniTaskVoid LoadCollections()
     {
         if (!isThirdPartyCollectionsEnabled || collectionsAlreadyLoaded)
             return;
 
-        WearablesFetchingHelper.GetThirdPartyCollections()
-            .Then((collections) =>
-            {
-                view.LoadCollectionsDropdown(collections);
-                collectionsAlreadyLoaded = true;
-                LoadUserThirdPartyWearables();
-            })
-            .Catch((error) => Debug.LogError(error));
+        WearableCollectionsAPIData.Collection[] collections = await WearablesFetchingHelper.GetThirdPartyCollections();
+        if (collections != null)
+        {
+            view.LoadCollectionsDropdown(collections);
+            collectionsAlreadyLoaded = true;
+            LoadUserThirdPartyWearables();
+        }
     }
 
     private void LoadUserThirdPartyWearables()

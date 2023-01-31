@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ namespace DCL
 {
     public class AssetPromise_AudioClip : AssetPromise<Asset_AudioClip>
     {
-
         struct QueueItem
         {
             public AssetPromise_AudioClip promise;
@@ -21,7 +21,7 @@ namespace DCL
         private readonly string id;
         private readonly AudioType audioType;
         private readonly IWebRequestController webRequestController;
-        private IWebRequestAsyncOperation webRequestAsyncOperation;
+        private UnityWebRequest uwr;
         private Action OnSuccess;
         private Coroutine coroutineQueueLoader;
         private static Queue<QueueItem> requestQueue = new Queue<QueueItem>();
@@ -37,7 +37,7 @@ namespace DCL
             this.webRequestController = webRequestController;
         }
 
-        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
+        protected async override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             this.OnSuccess = OnSuccess;
 
@@ -46,24 +46,25 @@ namespace DCL
                 OnFail?.Invoke(new Exception("Audio clip url is null or empty"));
                 return;
             }
-            webRequestAsyncOperation = webRequestController.GetAudioClip(url, audioType,
-                request =>
+            
+            uwr = await webRequestController.GetAudioClip(url, audioType, disposeOnCompleted: false);
+            if (uwr.result == UnityWebRequest.Result.Success)
+            {
+                if (renderState.Get())
                 {
-                    if (renderState.Get())
-                    {
-                        queueItem = new QueueItem { promise = this, request = request.webRequest};
-                        requestQueue.Enqueue(queueItem);
-                        coroutineQueueLoader = CoroutineStarter.Start(CoroutineQueueLoader());
-                    }
-                    else
-                    {
-                        GetAudioClipFromRequest(this, request.webRequest);
-                    }
-                },
-                request =>
+                    queueItem = new QueueItem { promise = this, request = uwr };
+                    requestQueue.Enqueue(queueItem);
+                    coroutineQueueLoader = CoroutineStarter.Start(CoroutineQueueLoader());
+                }
+                else
                 {
-                    OnFail?.Invoke(new Exception($"Audio clip failed to fetch: {request?.webRequest?.error}"));
-                }, disposeOnCompleted: false);
+                    GetAudioClipFromRequest(this, uwr);
+                }
+            }
+            else
+            {
+                OnFail?.Invoke(new Exception($"Audio clip failed to fetch: {uwr.error}"));
+            }
         }
 
         /// <summary>
@@ -92,15 +93,15 @@ namespace DCL
 
             promise.asset.audioClip = DownloadHandlerAudioClip.GetContent(www);
             promise.OnSuccess?.Invoke();
-            promise.webRequestAsyncOperation?.Dispose();
+            promise.uwr?.Dispose();
         }
 
         protected override void OnCancelLoading()
         {
             requestQueue = new Queue<QueueItem>(requestQueue.Where(i => i.promise != this));
             CoroutineStarter.Stop(coroutineQueueLoader);
-            webRequestAsyncOperation?.Dispose();
-            webRequestAsyncOperation = null;
+            uwr?.Dispose();
+            uwr = null;
         }
 
         protected override bool AddToLibrary()

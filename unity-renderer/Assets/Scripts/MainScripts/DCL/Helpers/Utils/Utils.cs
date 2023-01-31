@@ -18,6 +18,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using UnityEngine.Rendering.Universal;
+using Cysharp.Threading.Tasks;
 
 namespace DCL.Helpers
 {
@@ -327,18 +328,13 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static IWebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
+        public static async UniTask<UnityWebRequest> FetchTexture(string textureURL, bool isReadable)
         {
-            //NOTE(Brian): This closure is called when the download is a success.
-            void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
-
-            var asyncOp = Environment.i.platform.webRequest.GetTexture(
+            UnityWebRequest uwr = await Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
-                OnSuccess: SuccessInternal,
-                OnFail: OnFail,
                 isReadable: isReadable);
 
-            return asyncOp;
+            return uwr;
         }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)

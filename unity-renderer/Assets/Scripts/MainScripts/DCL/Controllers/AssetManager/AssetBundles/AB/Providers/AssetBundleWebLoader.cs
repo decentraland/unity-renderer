@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.AssetManager;
 using System;
 using System.Text;
@@ -38,11 +38,11 @@ namespace DCL.Providers
                 if (cachingEnabled)
                     AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
 
-                using var webRequest = cachingEnabled
+                var webRequest = cachingEnabled
                     ? webRequestController.Ref.GetAssetBundle(url, hash: hash128, disposeOnCompleted: false)
                     : webRequestController.Ref.GetAssetBundle(url, disposeOnCompleted: false);
 
-                return await FromWebRequestAsync(webRequest, url, cancellationToken);
+                return await FromWebRequestAsync(webRequest, url);
             }
             finally
             {

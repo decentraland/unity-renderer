@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public static class AssetBundleDepMapLoadHelper
 {
@@ -58,19 +59,18 @@ public static class AssetBundleDepMapLoadHelper
 
         downloadingDepmap.Add(hash);
 
-        await DCL.Environment.i.platform.webRequest.Get(
-            url: url,
-            OnSuccess: (depmapRequest) =>
-            {
-                LoadDepMapFromJSON(depmapRequest.webRequest.downloadHandler.text, hash);
+        UnityWebRequest uwr = await DCL.Environment.i.platform.webRequest.Get(url: url, cancellationToken: cancellationToken);
 
-                downloadingDepmap.Remove(hash);
-            },
-            OnFail: _ =>
-            {
-                failedRequests.Add(hash);
-                downloadingDepmap.Remove(hash);
-            }).WithCancellation(cancellationToken);
+        if (uwr.result == UnityWebRequest.Result.Success)
+        {
+            LoadDepMapFromJSON(uwr.downloadHandler.text, hash);
+            downloadingDepmap.Remove(hash);
+        }
+        else
+        {
+            failedRequests.Add(hash);
+            downloadingDepmap.Remove(hash);
+        }
     }
 
     public static void LoadDepMapFromJSON(string metadataJSON, string hash)

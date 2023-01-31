@@ -1,13 +1,9 @@
-using DCL.Components;
-using DCL.Controllers;
-using DCL.Models;
 using System;
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections.Generic;
-using DCL;
+using Cysharp.Threading.Tasks;
 
 namespace DCL.Components
 {
@@ -93,16 +89,18 @@ namespace DCL.Components
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 10,
-                disposeOnCompleted: false,
-                OnFail: (webRequest) =>
+                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
                 {
-                    Debug.LogWarning($"Request error! profile data couldn't be fetched! -- {webRequest.webRequest.error}");
-                },
-                OnSuccess: (webRequest) =>
-                {
-                    ProfileRequestData[] data = DCL.Helpers.Utils.ParseJsonArray<ProfileRequestData[]>(webRequest.webRequest.downloadHandler.text);
-                    string face256Url = data[0]?.avatars[0]?.avatar.snapshots.face256;
-                    onURLSuccess?.Invoke(face256Url);
+                    if (uwr.result == UnityWebRequest.Result.Success)
+                    {
+                        ProfileRequestData[] data = Utils.ParseJsonArray<ProfileRequestData[]>(uwr.downloadHandler.text);
+                        string face256Url = data[0]?.avatars[0]?.avatar.snapshots.face256;
+                        onURLSuccess?.Invoke(face256Url);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Request error! profile data couldn't be fetched! -- {uwr.error}");
+                    }
                 });
         }
     }

@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -12,6 +14,7 @@ namespace DCL
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
+
 
         private WebRequestController(
             IWebRequestFactory getWebRequestFactory,
@@ -49,164 +52,187 @@ namespace DCL
             IWebRequestTextureFactory textureFactoryWebRequest,
             IWebRequestAudioFactory audioClipWebRequest)
         {
-            this.getWebRequestFactory = genericWebRequest;
-            this.assetBundleFactory = assetBundleFactoryWebRequest;
-            this.textureFactory = textureFactoryWebRequest;
-            this.audioClipWebRequestFactory = audioClipWebRequest;
+            getWebRequestFactory = genericWebRequest;
+            assetBundleFactory = assetBundleFactoryWebRequest;
+            textureFactory = textureFactoryWebRequest;
+            audioClipWebRequestFactory = audioClipWebRequest;
         }
 
-        public UnityWebRequestAsyncOperation Get(
+        public async UniTask<UnityWebRequest> Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
-            return SendWebRequest(getWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
+            return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken, headers);
         }
 
-        public UnityWebRequestAsyncOperation Post(
+        public async UniTask<UnityWebRequest> Post(
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
             postWebRequestFactory.SetBody(postData);
-            return SendWebRequest(postWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
+            return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken, headers);
         }
 
-        public UnityWebRequestAsyncOperation GetAssetBundle(
+        public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default)
         {
-            return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
+            return await SendWebRequest(assetBundleFactory, url, null, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken);
         }
 
-        public UnityWebRequestAsyncOperation GetAssetBundle(
+        public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default)
         {
             assetBundleFactory.SetHash(hash);
-            return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
+            return await SendWebRequest(assetBundleFactory, url, null, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken);
         }
 
-        public UnityWebRequestAsyncOperation GetTexture(
+        public async UniTask<UnityWebRequest> GetTexture(
             string url,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
             bool isReadable = true,
+            CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
             textureFactory.isReadable = isReadable;
-            return SendWebRequest(textureFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
+            return await SendWebRequest(textureFactory, url, null, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken, headers);
         }
 
-        public UnityWebRequestAsyncOperation GetAudioClip(
+        public async UniTask<UnityWebRequest> GetAudioClip(
             string url,
             AudioType audioType,
-            Action<UnityWebRequestAsyncOperation> OnSuccess = null,
-            Action<UnityWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequestAsyncOperation> onSuccess = null,
+            Action<UnityWebRequestAsyncOperation> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default)
         {
             audioClipWebRequestFactory.SetAudioType(audioType);
-            return SendWebRequest(audioClipWebRequestFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
+            return await SendWebRequest(audioClipWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
+                timeout, disposeOnCompleted, cancellationToken);
         }
 
-        private UnityWebRequestAsyncOperation SendWebRequest<T>(
+        private async UniTask<UnityWebRequest> SendWebRequest<T>(
             T requestFactory,
             string url,
             DownloadHandler downloadHandler,
-            Action<UnityWebRequestAsyncOperation> OnSuccess,
-            Action<UnityWebRequestAsyncOperation> OnFail,
+            Action<UnityWebRequestAsyncOperation> onSuccess,
+            Action<UnityWebRequestAsyncOperation> onFail,
             int requestAttemps,
             int timeout,
             bool disposeOnCompleted,
-            Dictionary<string, string> headers = null
-        ) where T: IWebRequestFactory
+            CancellationToken cancellationToken,
+            Dictionary<string, string> headers = null) where T : IWebRequestFactory
         {
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
 
-            UnityWebRequest request = requestFactory.CreateWebRequest(url);
-            request.timeout = timeout;
-
-            if (headers != null)
+            for (int i = 0; i < requestAttemps; i++)
             {
-                foreach (var item in headers)
-                    request.SetRequestHeader(item.Key, item.Value);
-            }
+                UnityWebRequest request = requestFactory.CreateWebRequest(url);
+                request.timeout = timeout;
 
-            if (downloadHandler != null)
-                request.downloadHandler = downloadHandler;
-
-            UnityWebRequestAsyncOperation requestOp = request.SendWebRequest();
-
-            requestOp.completed += (asyncOp) =>
-            {
-                if (request != null)
+                if (headers != null)
                 {
-                    if (request.WebRequestSucceded())
-                    {
-                        OnSuccess?.Invoke(requestOp);
-                        DisposeRequestIfNeeded(ref request, disposeOnCompleted);
-                    }
-                    else if (!request.WebRequestAborted() && request.WebRequestServerError())
-                    {
-                        remainingAttemps--;
+                    foreach (var item in headers)
+                        request.SetRequestHeader(item.Key, item.Value);
+                }
 
-                        if (remainingAttemps > 0)
-                        {
-                            DisposeRequestIfNeeded(ref request, true);
-                            requestOp = SendWebRequest(requestFactory, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers);
-                        }
-                        else
-                        {
-                            OnFail?.Invoke(requestOp);
-                            DisposeRequestIfNeeded(ref request, disposeOnCompleted);
-                        }
+                if (downloadHandler != null)
+                    request.downloadHandler = downloadHandler;
+
+                UnityWebRequestAsyncOperation asyncOp = request.SendWebRequest();
+                while (!asyncOp.isDone)
+                {
+                    await UniTask.Yield();
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        request.Abort();
+                        break;
+                    }
+                }
+
+                if (asyncOp.webRequest == null)
+                    continue;
+
+                if (request.WebRequestSucceded())
+                {
+                    onSuccess?.Invoke(asyncOp);
+                    DisposeRequestIfNeeded(request, disposeOnCompleted);
+                    return asyncOp.webRequest;
+                }
+                else if (!request.WebRequestAborted() && request.WebRequestServerError())
+                {
+                    remainingAttemps--;
+
+                    if (remainingAttemps > 0)
+                    {
+                        DisposeRequestIfNeeded(request, true);
+                        continue;
                     }
                     else
                     {
-                        OnFail?.Invoke(requestOp);
-                        DisposeRequestIfNeeded(ref request, disposeOnCompleted);
+                        onFail?.Invoke(asyncOp);
+                        DisposeRequestIfNeeded(request, disposeOnCompleted);
+                        return asyncOp.webRequest;
                     }
                 }
-            };
+                else
+                {
+                    onFail?.Invoke(asyncOp);
+                    DisposeRequestIfNeeded(request, disposeOnCompleted);
+                    return asyncOp.webRequest;
+                }
+            }
 
-            return requestOp;
+            return null;
         }
 
         public void Dispose() { }
-        
 
-        private void DisposeRequestIfNeeded(ref UnityWebRequest request, bool shouldBeDisposed)
+
+        private void DisposeRequestIfNeeded(UnityWebRequest request, bool shouldBeDisposed)
         {
             if (!shouldBeDisposed)
                 return;
-            
+
             request.Dispose();
-            request = null;
         }
     }
 }

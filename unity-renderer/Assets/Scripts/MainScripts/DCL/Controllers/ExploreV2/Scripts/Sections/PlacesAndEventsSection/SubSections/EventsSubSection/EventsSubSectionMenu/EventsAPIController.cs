@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ public interface IEventsAPIController
     /// <param name="OnSuccess">It will be triggered if the operation finishes successfully.</param>
     /// <param name="OnFail">It will be triggered if the operation fails.</param>
     /// <returns></returns>
-    WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
+    UniTask<UnityWebRequest> GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
 
     /// <summary>
     /// Register/Unregister your user in a specific event.
@@ -35,19 +36,16 @@ public class EventsAPIController : IEventsAPIController
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
-    public WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
+    public async UniTask<UnityWebRequest> GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
     {
-        return (WebRequestAsyncOperation) DCL.Environment.i.platform.webRequest.Get(
-            URL_GET_ALL_EVENTS,
-            OnSuccess: (webRequestResult) =>
-            {
-                EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.webRequest.downloadHandler.text);
-                OnSuccess?.Invoke(upcomingEventsResult.data);
-            },
-            OnFail: (webRequestResult) =>
-            {
-                OnFail?.Invoke(webRequestResult.webRequest.error);
-            });
+        UnityWebRequest uwr = await DCL.Environment.i.platform.webRequest.Get(URL_GET_ALL_EVENTS);
+        
+        if (uwr.result == UnityWebRequest.Result.Success)
+            OnSuccess?.Invoke(JsonUtility.FromJson<EventListFromAPIModel>(uwr.downloadHandler.text).data);
+        else
+            OnFail?.Invoke(uwr.error);
+
+        return uwr;
     }
 
     public UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail)

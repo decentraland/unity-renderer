@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using DCL.Helpers;
 using DCL;
+using UnityEngine.Networking;
+using Cysharp.Threading.Tasks;
 
 public class TeleportPromptHUDView : MonoBehaviour
 {
@@ -50,8 +52,8 @@ public class TeleportPromptHUDView : MonoBehaviour
     public event Action OnCloseEvent;
     public event Action OnTeleportEvent;
 
-    IWebRequestAsyncOperation fetchParcelImageOp;
-    Texture2D downloadedBanner;
+    private UnityWebRequest uwr;
+    private Texture2D downloadedBanner;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
     private void Awake()
@@ -115,24 +117,26 @@ public class TeleportPromptHUDView : MonoBehaviour
     {
         content.SetActive(false);
 
-        if (fetchParcelImageOp != null)
-            fetchParcelImageOp.Dispose();
+        uwr?.Dispose();
 
         if (downloadedBanner != null)
         {
-            UnityEngine.Object.Destroy(downloadedBanner);
+            Destroy(downloadedBanner);
             downloadedBanner = null;
         }
     }
 
-    private void FetchScenePreviewImage(string previewImageUrl)
+    private async UniTaskVoid FetchScenePreviewImage(string previewImageUrl)
     {
         if (string.IsNullOrEmpty(previewImageUrl))
             return;
 
         spinnerImage.SetActive(true);
-        fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, false, (texture) =>
+        uwr = await Utils.FetchTexture(previewImageUrl, false);
+        if (uwr.result == UnityWebRequest.Result.Success)
         {
+            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+
             downloadedBanner = texture;
             imageSceneThumbnail.texture = texture;
 
@@ -143,7 +147,7 @@ public class TeleportPromptHUDView : MonoBehaviour
 
             spinnerImage.SetActive(false);
             imageSceneThumbnail.gameObject.SetActive(true);
-        });
+        }
     }
 
     private void OnClosePressed()
@@ -169,7 +173,7 @@ public class TeleportPromptHUDView : MonoBehaviour
             downloadedBanner = null;
         }
 
-        if (fetchParcelImageOp != null)
-            fetchParcelImageOp.Dispose();
+        if (uwr != null)
+            uwr.Dispose();
     }
 }

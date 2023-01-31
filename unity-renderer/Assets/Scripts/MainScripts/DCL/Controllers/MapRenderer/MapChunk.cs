@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL
@@ -17,31 +19,32 @@ namespace DCL
         [System.NonSerialized] public MapAtlas owner;
         protected RectTransform rt;
         protected bool isLoadingOrLoaded = false;
-        private IWebRequestAsyncOperation loadOp;
+        private UnityWebRequest uwr;
 
-        public virtual IWebRequestAsyncOperation LoadChunkImage()
+        public async virtual UniTask<UnityWebRequest> LoadChunkImage()
         {
             isLoadingOrLoaded = true;
 
             string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
 
-            Texture2D result = null;
-
-            return Utils.FetchTexture(url, false, (x) =>
+            UnityWebRequest uwr = await Utils.FetchTexture(url, false);
+            if (uwr.result == UnityWebRequest.Result.Success)
             {
-                result = x;
+                Texture2D result = DownloadHandlerTexture.GetContent(uwr);
 
                 if (result == null)
-                    return;
+                    return uwr;
 
                 targetImage.texture = result;
                 targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
-            });
+            }
+
+            return uwr;
         }
 
-        public void UpdateCulling()
+        public async UniTask UpdateCulling()
         {
             if (owner == null)
                 return;
@@ -82,14 +85,14 @@ namespace DCL
 
             if (!isLoadingOrLoaded)
             {
-                loadOp = LoadChunkImage();
+                uwr = await LoadChunkImage();
             }
         }
 
         private void OnDestroy()
         {
-            if (loadOp != null)
-                loadOp.Dispose();
+            if (uwr != null)
+                uwr.Dispose();
         }
     }
 }

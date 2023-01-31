@@ -12,7 +12,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         private const string EDITOR_USER_AGENT =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
 
-        private const string EDITOR_REFERRER = "https://play.decentraland.org"; 
+        private const string EDITOR_REFERRER = "https://play.decentraland.org";
 
         internal readonly RequestScheduler requestScheduler = new RequestScheduler();
         private readonly Dictionary<string, RequestBase<AssetResponse>> cacheAssetResponses = new Dictionary<string, RequestBase<AssetResponse>>();
@@ -87,7 +87,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             return newRequest;
         }
 
-        private void SendRequest(IRequestHandler requestHandler)
+        private async void SendRequest(IRequestHandler requestHandler)
         {
             string url = requestHandler.GetUrl();
 
@@ -100,57 +100,51 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             headers.Add("User-Agent", EDITOR_USER_AGENT);
             headers.Add("referrer", EDITOR_REFERRER);
 #endif
-            
-            // NOTE: In this case, as this code is implementing a very specific retries system (including delays), we use our
-            //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
-            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation) Environment.i.platform.webRequest.Get(
+
+            UnityWebRequest uwr = await Environment.i.platform.webRequest.Get(
                 url,
                 requestAttemps: 1,
                 disposeOnCompleted: true,
                 headers: headers);
 
-            asyncOp.completed += operation =>
+            bool shouldTryToRetry = true;
+            string serverResponse = uwr.downloadHandler.text;
+
+            if (VERBOSE)
+                Debug.Log($"RequestController: Request completed: success? {uwr.result == UnityWebRequest.Result.Success} {serverResponse}");
+
+            if (uwr.result == UnityWebRequest.Result.Success)
             {
-                UnityWebRequest unityWebRequest = operation.webRequest;
-                bool shouldTryToRetry = true;
-                string serverResponse = unityWebRequest.downloadHandler.text;
-
-                if (VERBOSE)
-                    Debug.Log($"RequestController: Request completed: success? {unityWebRequest.result == UnityWebRequest.Result.Success} {serverResponse}");
-
-                if (unityWebRequest.result == UnityWebRequest.Result.Success)
-                {
-                    requestHandler.SetApiResponse(serverResponse,
-                        () =>
-                        {
-                            if (VERBOSE)
-                                Debug.Log($"RequestController: Request Succeeded: {url}");
-
-                            shouldTryToRetry = false;
-                        },
-                        error =>
-                        {
-                            serverResponse = $"RequestController: Parse Request Error: {url}: {error}";
-
-                            if (VERBOSE)
-                                Debug.Log(serverResponse);
-                        });
-                }
-
-                if (shouldTryToRetry)
-                {
-                    if (requestHandler.CanRetry())
+                requestHandler.SetApiResponse(serverResponse,
+                    () =>
                     {
-                        requestHandler.Retry();
-                    }
-                    else
-                    {
-                        requestHandler.SetApiResponseError(serverResponse);
-                    }
-                }
+                        if (VERBOSE)
+                            Debug.Log($"RequestController: Request Succeeded: {url}");
 
-                unityWebRequest.Dispose();
-            };
+                        shouldTryToRetry = false;
+                    },
+                    error =>
+                    {
+                        serverResponse = $"RequestController: Parse Request Error: {url}: {error}";
+
+                        if (VERBOSE)
+                            Debug.Log(serverResponse);
+                    });
+            }
+
+            if (shouldTryToRetry)
+            {
+                if (requestHandler.CanRetry())
+                {
+                    requestHandler.Retry();
+                }
+                else
+                {
+                    requestHandler.SetApiResponseError(serverResponse);
+                }
+            }
+
+            uwr.Dispose();
         }
 
         private void OnRequestFailed(RequestBase<AssetResponse> request)

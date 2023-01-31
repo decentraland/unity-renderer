@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 using Collection = WearableCollectionsAPIData.Collection;
+using Cysharp.Threading.Tasks;
 
 namespace DCL.Helpers
 {
@@ -29,13 +30,13 @@ namespace DCL.Helpers
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 60,
                 disposeOnCompleted: false,
-                OnFail: (webRequest) =>
+                onFail: (requestOp) =>
                 {
-                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {webRequest.webRequest.error}");
+                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {requestOp.webRequest.error}");
                 },
-                OnSuccess: (webRequest) =>
+                onSuccess: (requestOp) =>
                 {
-                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
+                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(requestOp.webRequest.downloadHandler.text);
                     collections = collectionsApiData.data;
                 });
         }
@@ -101,13 +102,13 @@ namespace DCL.Helpers
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 60,
                 disposeOnCompleted: false,
-                OnFail: (webRequest) =>
+                onFail: (requestOp) =>
                 {
-                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {webRequest.webRequest.error}");
+                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {requestOp.webRequest.error}");
                 },
-                OnSuccess: (webRequest) =>
+                onSuccess: (requestOp) =>
                 {
-                    var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
+                    var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(requestOp.webRequest.downloadHandler.text);
                     var wearableItemsList = wearablesApiData.GetWearableItems();
                     finalWearableItemsList.AddRange(wearableItemsList);
 
@@ -124,25 +125,23 @@ namespace DCL.Helpers
             }
         }
 
-        public static Promise<Collection[]> GetThirdPartyCollections()
+        public async static UniTask<Collection[]> GetThirdPartyCollections()
         {
             Promise<Collection[]> promiseResult = new Promise<Collection[]>();
-
-            Environment.i.platform.webRequest.Get(
+            
+            UnityWebRequest uwr = await Environment.i.platform.webRequest.Get(
                 url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 60,
-                OnFail: (webRequest) =>
-                {
-                    promiseResult.Reject($"Request error! third party collections couldn't be fetched! -- {webRequest.webRequest.error}");
-                },
-                OnSuccess: (webRequest) =>
-                {
-                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
-                    promiseResult.Resolve(collectionsApiData.data);
-                });
+                timeout: 60);
 
-            return promiseResult;
+            if (uwr.result == UnityWebRequest.Result.Success)
+            {
+                WearableCollectionsAPIData collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(uwr.downloadHandler.text);
+                return collectionsApiData.data;
+            }
+
+            Debug.LogError($"Error fetching third party collections: {uwr.error}");
+            return null;
         }
     }
 }

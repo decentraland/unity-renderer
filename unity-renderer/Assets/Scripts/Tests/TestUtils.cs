@@ -63,8 +63,8 @@ namespace DCL.Helpers
             mockedRequestController.Configure()
                                    .Get(Arg.Any<string>(),
                                        Arg.Any<DownloadHandler>(),
-                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
-                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<Action<UnityWebRequest>>(),
+                                       Arg.Any<Action<UnityWebRequest>>(),
                                        Arg.Any<int>(),
                                        Arg.Any<int>(),
                                        Arg.Any<bool>(),
@@ -73,13 +73,13 @@ namespace DCL.Helpers
 
             mockedRequestController.When(x => x.Get(Arg.Any<string>(),
                                        Arg.Any<DownloadHandler>(),
-                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
-                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<Action<UnityWebRequest>>(),
+                                       Arg.Any<Action<IWebRequestAsyUnityWebRequestncOperation>>(),
                                        Arg.Any<int>(),
                                        Arg.Any<int>(),
                                        Arg.Any<bool>(),
                                        Arg.Any<Dictionary<string, string>>()))
-                                   .Do(x => x.ArgAt<Action<IWebRequestAsyncOperation>>(successParamIndex).Invoke(operation));
+                                   .Do(x => x.ArgAt<Action<UnityWebRequest>>(successParamIndex).Invoke(operation));
 
             return operation;
         }

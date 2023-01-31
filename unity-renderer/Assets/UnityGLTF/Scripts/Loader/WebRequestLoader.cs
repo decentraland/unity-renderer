@@ -76,18 +76,16 @@ namespace UnityGLTF.Loader
             
             token.ThrowIfCancellationRequested();
 
-            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
+            UnityWebRequest uwr = await webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: TIMEOUT_IN_SECONDS,
                 disposeOnCompleted: false,
                 requestAttemps: 3);
 
-            Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
+            Assert.IsNotNull(uwr, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
             
             token.ThrowIfCancellationRequested();
-            
-            await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceeded, cancellationToken: token);
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
@@ -99,14 +97,14 @@ namespace UnityGLTF.Loader
             bool error = false;
             string errorMessage = null;
 
-            if (!asyncOp.isSucceeded)
+            if (uwr.result != UnityWebRequest.Result.Success)
             {
-                Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
-                errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
+                Debug.Log($"{uwr.error} - {finalUrl} - responseCode: {uwr.responseCode}");
+                errorMessage = $"{uwr.error} {uwr.downloadHandler.text}";
                 error = true;
             }
 
-            if (!error && asyncOp.webRequest.downloadedBytes > int.MaxValue)
+            if (!error && uwr.downloadedBytes > int.MaxValue)
             {
                 Debug.Log("Stream is too big for a byte array");
                 errorMessage = "Stream is too big for a byte array";
@@ -118,7 +116,7 @@ namespace UnityGLTF.Loader
                 //NOTE(Brian): Caution, webRequestResult.downloadHandler.data returns a COPY of the data, if accessed twice,
                 //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
                 //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
-                byte[] data = asyncOp.webRequest.downloadHandler.data;
+                byte[] data = uwr.downloadHandler.data;
 
                 if (data != null)
                 {
@@ -141,7 +139,7 @@ namespace UnityGLTF.Loader
                     });
             }
 
-            asyncOp.Dispose();
+            uwr.Dispose();
         }
     }
 }

@@ -6,9 +6,7 @@ using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.Pool;
-using Transaction = Sentry.Transaction;
 
 namespace DCLServices.Lambdas
 {
@@ -31,9 +29,9 @@ namespace DCLServices.Lambdas
             var postDataJson = JsonUtility.ToJson(postData);
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(null, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return SendRequestAsync<TResponse>(null, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
         public UniTask<(TResponse response, bool success)> Get<TResponse>(
@@ -46,9 +44,9 @@ namespace DCLServices.Lambdas
         {
             var url = GetUrl(endPoint, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr.asyncOp, endPointTemplate, finishTransactionOnWebRequestFinish: false);
+            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(null, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction, urlEncodedParams);
+            return SendRequestAsync<TResponse>(null, cancellationToken, endPoint, transaction, urlEncodedParams);
         }
 
         private async UniTask<(TResponse response, bool success)> SendRequestAsync<TResponse>(

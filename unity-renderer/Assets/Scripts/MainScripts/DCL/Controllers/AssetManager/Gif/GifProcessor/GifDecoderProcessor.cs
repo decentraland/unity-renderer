@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using DCL.Helpers;
 using ThreeDISevenZeroR.UnityGifDecoder;
 using ThreeDISevenZeroR.UnityGifDecoder.Model;
 using UnityEngine;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
 namespace DCL
@@ -48,14 +49,14 @@ namespace DCL
         }
 
         public GifDecoderProcessor(Stream stream) { this.stream = stream; }
-        
+
         public void DisposeGif()
         {
             gifFrameData = null;
             webRequestController.Dispose();
             stream?.Dispose();
         }
-        
+
         public async UniTask Load(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -68,7 +69,7 @@ namespace DCL
                 fail(e);
             }
         }
-        
+
         private async UniTask StartDecoding(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -93,7 +94,7 @@ namespace DCL
                 }
                 else
                 {
-                    gifStream = new GifStream( await DownloadGifAndReadStream(token));
+                    gifStream = new GifStream(await DownloadGifAndReadStream(token));
                 }
 
                 var images = await ReadStream(gifStream, token);
@@ -146,20 +147,16 @@ namespace DCL
 
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
-            var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
-            await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceeded, cancellationToken: token);
+            UnityWebRequest uwr = await webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
 
-            if (!operation.isSucceeded)
-            {
+            return uwr.result == UnityWebRequest.Result.Success ?
+                uwr.downloadHandler.data :
                 throw new GifWebRequestException(url);
-            }
-
-            return operation.webRequest.downloadHandler.data;
         }
 
         private static UniTask<List<RawImage>> ReadStream(GifStream gifStream, CancellationToken token)
         {
-            return TaskUtils.Run( () =>
+            return TaskUtils.Run(() =>
             {
                 var rawImages = new List<RawImage>();
 
