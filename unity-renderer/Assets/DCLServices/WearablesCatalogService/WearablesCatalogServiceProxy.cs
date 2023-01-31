@@ -36,12 +36,10 @@ namespace DCLServices.WearablesCatalogService
         public void Initialize()
         {
             kernelConfig.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
-            kernelConfig.OnChange += OnKernelConfigChanged;
         }
 
         public void Dispose()
         {
-            kernelConfig.OnChange -= OnKernelConfigChanged;
             wearablesCatalogServiceInUse?.Dispose();
         }
 
@@ -92,8 +90,6 @@ namespace DCLServices.WearablesCatalogService
 
         private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
         {
-            kernelConfig.OnChange -= OnKernelConfigChanged;
-
             if (currentKernelConfig.urlParamsForWearablesDebug)
             {
                 WebInterfaceWearablesCatalogService.Instance.Initialize(new WearablesWebInterfaceBridge(), wearablesCatalog);
