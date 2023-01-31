@@ -10,6 +10,7 @@ namespace DCLPlugins.SentryPlugin
         private readonly DataStore_Player playerStore;
         private readonly DataStore_Realm realmStore;
         private readonly IHub sentryHub;
+        private static string prefix = "explorer.";
 
         public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore, IHub sentryHub)
         {
@@ -29,8 +30,8 @@ namespace DCLPlugins.SentryPlugin
             if (current == previous) return;
             sentryHub.ConfigureScope(scope =>
             {
-                scope.SetTag("Current Realm", current);
-                scope.SetTag("Previous Realm", previous);
+                scope.SetTag($"{prefix}current_realm", current);
+                scope.SetTag($"{prefix}previous_realm", previous);
             });
         }
 
@@ -38,14 +39,14 @@ namespace DCLPlugins.SentryPlugin
         {
             sentryHub.ConfigureScope(scope =>
             {
-                scope.Contexts["Current Teleport Position"] = $"{current.x},{current.y}";
-                scope.Contexts["Last Teleport Position"] = $"{previous.x},{previous.y}";
+                scope.Contexts[$"{prefix}current_teleport_position"] = $"{current.x},{current.y}";
+                scope.Contexts[$"{prefix}last_teleport_position"] = $"{previous.x},{previous.y}";
             });
         }
 
         private void OtherPlayersOnChanged(string _, Player __)
         {
-            sentryHub.ConfigureScope(scope => { scope.Contexts["Total Other Players"] = $"{playerStore.otherPlayers.Count()}"; });
+            sentryHub.ConfigureScope(scope => { scope.Contexts[$"{prefix}total_other_players"] = $"{playerStore.otherPlayers.Count()}"; });
         }
 
         private void PlayerGridPositionOnOnChange(Vector2Int current, Vector2Int previous)
@@ -53,8 +54,8 @@ namespace DCLPlugins.SentryPlugin
             if (current == previous) return;
             sentryHub.ConfigureScope(scope =>
             {
-                scope.SetTag("Current Position", $"{current.x},{current.y}");
-                scope.SetTag("Previous Position", $"{previous.x},{previous.y}");
+                scope.SetTag($"{prefix}current_position", $"{current.x},{current.y}");
+                scope.SetTag($"{prefix}previous_position", $"{previous.x},{previous.y}");
             });
         }
 
