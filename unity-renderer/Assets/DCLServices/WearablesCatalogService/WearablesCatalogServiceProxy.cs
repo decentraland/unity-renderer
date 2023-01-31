@@ -35,7 +35,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Initialize()
         {
-            kernelConfig.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
+            kernelConfig.EnsureConfigInitialized().Then(config => SetServiceInUse(config, null));
         }
 
         public void Dispose()
@@ -88,7 +88,7 @@ namespace DCLServices.WearablesCatalogService
         public void Clear() =>
             wearablesCatalogServiceInUse?.Clear();
 
-        private void OnKernelConfigChanged(KernelConfigModel currentKernelConfig, KernelConfigModel previous)
+        private void SetServiceInUse(KernelConfigModel currentKernelConfig, KernelConfigModel _)
         {
             if (currentKernelConfig.urlParamsForWearablesDebug)
             {
