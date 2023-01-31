@@ -110,6 +110,7 @@ namespace DCL.Social.Chat.Channels
                 catch (ChannelException)
                 {
                     ShowErrorToast("There was a problem trying to process the channel, try again later");
+                    throw;
                 }
                 finally
                 {
