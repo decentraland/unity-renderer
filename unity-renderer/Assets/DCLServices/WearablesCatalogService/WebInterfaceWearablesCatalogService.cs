@@ -46,13 +46,17 @@ namespace DCLServices.WearablesCatalogService
         {
             serviceCts = new CancellationTokenSource();
 
-            // All the requests happened during the same frames interval are sent together
-            CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
-            CheckForRequestsTimeOutsAsync(serviceCts.Token).Forget();
-            CheckForRequestsByContextTimeOutsAsync(serviceCts.Token).Forget();
+            try
+            {
+                // All the requests happened during the same frames interval are sent together
+                CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
+                CheckForRequestsTimeOutsAsync(serviceCts.Token).Forget();
+                CheckForRequestsByContextTimeOutsAsync(serviceCts.Token).Forget();
 
-            // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
-            CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
+                // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
+                CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
+            }
+            catch (OperationCanceledException) { }
         }
 
         public void Initialize(
