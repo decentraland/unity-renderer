@@ -94,7 +94,7 @@ namespace DCLServices.WearablesCatalogService
             {
                 thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new (
                     WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
-                       .Replace($"{userId}", userId)
+                       .Replace("{userId}", userId)
                        .Replace("{collectionId}", collectionId),
                     pageSize, ct, this);
             }
