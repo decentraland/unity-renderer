@@ -9,7 +9,7 @@ namespace DCL.Social.Chat.Channels
 {
     public class JoinChannelComponentController : IDisposable
     {
-        internal readonly IJoinChannelComponentView joinChannelView;
+        internal readonly IJoinChannelComponentView view;
         internal readonly IChatController chatController;
         private readonly DataStore dataStore;
         internal readonly DataStore_Channels channelsDataStore;
@@ -19,14 +19,14 @@ namespace DCL.Social.Chat.Channels
         private string channelId;
 
         public JoinChannelComponentController(
-            IJoinChannelComponentView joinChannelView,
+            IJoinChannelComponentView view,
             IChatController chatController,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
             StringVariable currentPlayerInfoCardId,
             IChannelsFeatureFlagService channelsFeatureFlagService)
         {
-            this.joinChannelView = joinChannelView;
+            this.view = view;
             this.chatController = chatController;
             this.dataStore = dataStore;
             channelsDataStore = dataStore.channels;
@@ -35,15 +35,15 @@ namespace DCL.Social.Chat.Channels
             this.channelsFeatureFlagService = channelsFeatureFlagService;
 
             channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
-            this.joinChannelView.OnCancelJoin += OnCancelJoin;
-            this.joinChannelView.OnConfirmJoin += OnConfirmJoin;
+            this.view.OnCancelJoin += OnCancelJoin;
+            this.view.OnConfirmJoin += OnConfirmJoin;
         }
 
         public void Dispose()
         {
             channelsDataStore.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
-            joinChannelView.OnCancelJoin -= OnCancelJoin;
-            joinChannelView.OnConfirmJoin -= OnConfirmJoin;
+            view.OnCancelJoin -= OnCancelJoin;
+            view.OnConfirmJoin -= OnConfirmJoin;
         }
 
         private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
@@ -55,8 +55,8 @@ namespace DCL.Social.Chat.Channels
                 return;
 
             channelId = currentChannelId;
-            joinChannelView.SetChannel(currentChannelId);
-            joinChannelView.Show();
+            view.SetChannel(currentChannelId);
+            view.Show();
         }
 
         private void OnCancelJoin()
@@ -64,7 +64,7 @@ namespace DCL.Social.Chat.Channels
             if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
                 socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
 
-            joinChannelView.Hide();
+            view.Hide();
             channelsDataStore.currentJoinChannelModal.Set(null);
         }
 
@@ -103,7 +103,7 @@ namespace DCL.Social.Chat.Channels
                 if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
                     socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
 
-                joinChannelView.Hide();
+                view.Hide();
                 channelsDataStore.currentJoinChannelModal.Set(null);
             }
 
