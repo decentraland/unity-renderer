@@ -28,8 +28,7 @@ namespace DCL.Helpers
             yield return Environment.i.platform.webRequest.Get(
                 url: GetCollectionsFetchURL(),
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 60,
-                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
+                timeout: 60).ContinueWith((UnityWebRequest uwr) =>
                 {
                     if (uwr.result == UnityWebRequest.Result.Success)
                     {
@@ -101,8 +100,7 @@ namespace DCL.Helpers
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 60,
-                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
+                timeout: 60).ContinueWith((UnityWebRequest uwr) =>
                 {
                     if (uwr.result == UnityWebRequest.Result.Success)
                     {

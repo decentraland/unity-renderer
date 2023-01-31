@@ -28,7 +28,7 @@ namespace DCLServices.Lambdas
         {
             var postDataJson = JsonUtility.ToJson(postData);
             var url = GetUrl(endPoint, urlEncodedParams);
-            var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(null, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
             return SendRequestAsync<TResponse>(null, cancellationToken, endPoint, transaction, urlEncodedParams);
@@ -43,7 +43,7 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var url = GetUrl(endPoint, urlEncodedParams);
-            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
+            var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(null, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
             return SendRequestAsync<TResponse>(null, cancellationToken, endPoint, transaction, urlEncodedParams);

@@ -147,7 +147,7 @@ namespace DCL
 
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
-            UnityWebRequest uwr = await webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
+            UnityWebRequest uwr = await webRequestController.Get(url, timeout: 15, cancellationToken: token);
 
             return uwr.result == UnityWebRequest.Result.Success ?
                 uwr.downloadHandler.data :

@@ -47,6 +47,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
                 src = TestAssetsUtils.GetPath() + "/OBJ/teapot.obj"
             }));
 
+        Debug.Log("Waiting for the shape to be updated...");
         LoadWrapper objShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => objShape.alreadyLoaded);
 

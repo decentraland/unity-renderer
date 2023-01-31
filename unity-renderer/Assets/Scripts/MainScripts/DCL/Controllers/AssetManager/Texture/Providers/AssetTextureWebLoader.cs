@@ -13,8 +13,7 @@ namespace DCL
     {
         public async UniTask<Texture2D> GetTextureAsync(string url, CancellationToken cancellationToken = default)
         {
-            UnityWebRequest uwr = await Environment.i.platform.webRequest.GetTexture(
-                url, disposeOnCompleted: false, cancellationToken: cancellationToken);
+            UnityWebRequest uwr = await Environment.i.platform.webRequest.GetTexture(url, cancellationToken: cancellationToken);
 
             if (uwr.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Texture promise failed: {uwr.error}");

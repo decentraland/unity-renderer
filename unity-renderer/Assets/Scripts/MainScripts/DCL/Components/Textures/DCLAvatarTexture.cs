@@ -88,8 +88,7 @@ namespace DCL.Components
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 10,
-                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
+                timeout: 10).ContinueWith((UnityWebRequest uwr) =>
                 {
                     if (uwr.result == UnityWebRequest.Result.Success)
                     {

@@ -65,12 +65,11 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
             return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken, headers);
+                timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> Post(
@@ -81,13 +80,12 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
             postWebRequestFactory.SetBody(postData);
             return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken, headers);
+                timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> GetAssetBundle(
@@ -96,11 +94,10 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default)
         {
             return await SendWebRequest(assetBundleFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken);
+                timeout, cancellationToken);
         }
 
         public async UniTask<UnityWebRequest> GetAssetBundle(
@@ -110,12 +107,11 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default)
         {
             assetBundleFactory.SetHash(hash);
             return await SendWebRequest(assetBundleFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken);
+                timeout, cancellationToken);
         }
 
         public async UniTask<UnityWebRequest> GetTexture(
@@ -124,14 +120,13 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             bool isReadable = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
         {
             textureFactory.isReadable = isReadable;
             return await SendWebRequest(textureFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken, headers);
+                timeout, cancellationToken, headers);
         }
 
         public async UniTask<UnityWebRequest> GetAudioClip(
@@ -141,12 +136,11 @@ namespace DCL
             Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default)
         {
             audioClipWebRequestFactory.SetAudioType(audioType);
             return await SendWebRequest(audioClipWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
-                timeout, disposeOnCompleted, cancellationToken);
+                timeout, cancellationToken);
         }
 
         private async UniTask<UnityWebRequest> SendWebRequest<T>(
@@ -157,13 +151,11 @@ namespace DCL
             Action<UnityWebRequest> onFail,
             int requestAttemps,
             int timeout,
-            bool disposeOnCompleted,
             CancellationToken cancellationToken,
             Dictionary<string, string> headers = null) where T : IWebRequestFactory
         {
-            int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
-
-            for (int i = 0; i < requestAttemps; i++)
+            requestAttemps = Mathf.Max(1, requestAttemps);
+            for (int i = requestAttemps - 1; i >= 0; i--)
             {
                 UnityWebRequest request = requestFactory.CreateWebRequest(url);
                 request.timeout = timeout;
@@ -194,29 +186,21 @@ namespace DCL
                 if (request.WebRequestSucceded())
                 {
                     onSuccess?.Invoke(asyncOp.webRequest);
-                    DisposeRequestIfNeeded(request, disposeOnCompleted);
                     return asyncOp.webRequest;
                 }
                 else if (!request.WebRequestAborted() && request.WebRequestServerError())
                 {
-                    remainingAttemps--;
-
-                    if (remainingAttemps > 0)
-                    {
-                        DisposeRequestIfNeeded(request, true);
+                    if (requestAttemps > 0)
                         continue;
-                    }
                     else
                     {
                         onFail?.Invoke(asyncOp.webRequest);
-                        DisposeRequestIfNeeded(request, disposeOnCompleted);
                         return asyncOp.webRequest;
                     }
                 }
                 else
                 {
                     onFail?.Invoke(asyncOp.webRequest);
-                    DisposeRequestIfNeeded(request, disposeOnCompleted);
                     return asyncOp.webRequest;
                 }
             }
@@ -225,14 +209,5 @@ namespace DCL
         }
 
         public void Dispose() { }
-
-
-        private void DisposeRequestIfNeeded(UnityWebRequest request, bool shouldBeDisposed)
-        {
-            if (!shouldBeDisposed)
-                return;
-
-            request.Dispose();
-        }
     }
 }

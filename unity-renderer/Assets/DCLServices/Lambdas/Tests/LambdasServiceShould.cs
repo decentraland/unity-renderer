@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
@@ -113,7 +113,7 @@ namespace DCLServices.Lambdas.Tests
             var webRequestController = serviceLocator.Get<IWebRequestController>();
 
             lambdasService.Get<TestClass>(END_POINT, END_POINT, timeout: 60, attemptsNumber: 5, cancellationToken: CancellationToken.None, urlEncodedParams: ("param1", "45"));
-            webRequestController.Received().Get($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param1=45", requestAttemps: 5, timeout: 60, disposeOnCompleted: false);
+            webRequestController.Received().Get($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param1=45", requestAttemps: 5, timeout: 60);
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace DCLServices.Lambdas.Tests
             var webRequestController = serviceLocator.Get<IWebRequestController>();
             lambdasService.Post<TestClass, TestResponse>(END_POINT, END_POINT, new TestResponse(), 50, 4, CancellationToken.None, ("param2", "str"));
 
-            webRequestController.Received().Post($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param2=str", "{\"value\":3}", requestAttemps: 4, timeout: 50, disposeOnCompleted: false);
+            webRequestController.Received().Post($"{lambdasService.GetLambdasUrl()}/{END_POINT}?param2=str", "{\"value\":3}", requestAttemps: 4, timeout: 50);
         }
     }
 }

@@ -39,8 +39,8 @@ namespace DCL.Providers
                     AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
 
                 var webRequest = cachingEnabled
-                    ? webRequestController.Ref.GetAssetBundle(url, hash: hash128, disposeOnCompleted: false)
-                    : webRequestController.Ref.GetAssetBundle(url, disposeOnCompleted: false);
+                    ? webRequestController.Ref.GetAssetBundle(url, hash: hash128)
+                    : webRequestController.Ref.GetAssetBundle(url);
 
                 return await FromWebRequestAsync(webRequest, url);
             }

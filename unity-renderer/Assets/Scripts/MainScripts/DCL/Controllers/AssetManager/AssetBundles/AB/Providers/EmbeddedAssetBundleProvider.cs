@@ -13,7 +13,7 @@ namespace DCL.Providers
         {
             var streamingPath = GetUrl(hash);
             // For WebGL the only way to load assets from `StreamingFolder` is via `WebRequest`
-            var webRequestTask = webRequestController.Ref.GetAssetBundle(streamingPath, requestAttemps: 1, disposeOnCompleted: false);
+            var webRequestTask = webRequestController.Ref.GetAssetBundle(streamingPath, requestAttemps: 1);
             return await FromWebRequestAsync(webRequestTask, streamingPath);
         }
 

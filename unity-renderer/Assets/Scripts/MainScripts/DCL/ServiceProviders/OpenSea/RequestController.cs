@@ -104,7 +104,6 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             UnityWebRequest uwr = await Environment.i.platform.webRequest.Get(
                 url,
                 requestAttemps: 1,
-                disposeOnCompleted: true,
                 headers: headers);
 
             bool shouldTryToRetry = true;

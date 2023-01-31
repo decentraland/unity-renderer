@@ -47,7 +47,7 @@ namespace DCL
                 return;
             }
             
-            uwr = await webRequestController.GetAudioClip(url, audioType, disposeOnCompleted: false);
+            uwr = await webRequestController.GetAudioClip(url, audioType);
             if (uwr.result == UnityWebRequest.Result.Success)
             {
                 if (renderState.Get())

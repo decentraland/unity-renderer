@@ -43,7 +43,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null);
 
@@ -67,7 +66,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null);
 
@@ -86,7 +84,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -106,7 +103,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -124,7 +120,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             bool isReadable = true,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null);
@@ -146,7 +141,6 @@ namespace DCL
             Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
             CancellationToken cancellationToken = default);
     }
 }

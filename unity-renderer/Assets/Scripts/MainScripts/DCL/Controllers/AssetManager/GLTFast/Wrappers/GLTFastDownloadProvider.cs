@@ -32,7 +32,6 @@ namespace DCL.GLTFast.Wrappers
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 30,
-                disposeOnCompleted: false,
                 requestAttemps: 3);
 
             GltfDownloaderWrapper wrapper = new GltfDownloaderWrapper(uwr);
@@ -60,7 +59,6 @@ namespace DCL.GLTFast.Wrappers
             UnityWebRequest uwr = await webRequestController.GetTexture(
                 url: finalUrl,
                 timeout: 30,
-                disposeOnCompleted: false,
                 requestAttemps: 3);
 
             GltfTextureDownloaderWrapper wrapper = new GltfTextureDownloaderWrapper(uwr);
