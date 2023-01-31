@@ -23,10 +23,6 @@ namespace DCLPlugins.SentryPlugin
                 return;
             }
 
-            SentrySdk.ConfigureScope(scope =>
-            {
-                scope.SetTag("TestingTag", "SomeValue");
-            });
             controller = new SentryController(DataStore.i.player, DataStore.i.realm, info.GetValue(null) as IHub);
         }
 
