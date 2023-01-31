@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <title>{{ scene.display.title }}</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        touch-action: none;
+
+        background: #74a4d5;
+      }
+
+      #gameContainer {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      #gameContainer.loaded {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+      }
+
+      #gameContainer.loaded,
+      body {
+        background: #000 url(images/decentraland-connect/decentraland-loading.gif) no-repeat 50% 50% !important;
+        background-size: 150px 150px !important;
+      }
+      @media screen and (min-height: 500px) {
+        body {
+          background: #000 url(images/decentraland-connect/decentraland-loading.gif) no-repeat 50% 50% !important;
+          background-size: 150px 150px !important;
+        }
+      }
+      @media screen and (min-height: 800px) {
+        #gameContainer.loaded,
+        body {
+          background: #000 url(images/decentraland-connect/decentraland-loading.gif) no-repeat 50% 50% !important;
+          background-size: 150px 150px !important;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        color: #fff;
+        font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
+        font-size: 0.8em;
+      }
+
+      canvas {
+        position: relative;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+      }
+
+      .dcl-loading .progress {
+        display: block;
+      }
+
+      #overlay {
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+
+        background: #74a4d5;
+        background-position: center center;
+
+        opacity: 0.15;
+      }
+
+      .progress {
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-style: solid;
+        border-width: thick;
+        border-left: none;
+        border-right: none;
+        border-top: 3px solid #000;
+        border-bottom: 3px solid #000;
+        text-align: center;
+        border-color: #000;
+        background: #000;
+        display: none;
+      }
+
+      .progress .full {
+        float: left;
+        width: 0%;
+        height: 100%;
+        display: inline-flex;
+        background: linear-gradient(270deg, #fc9965 4.62%, #ff5273 58.77%, #de3959 100%);
+      }
+
+      .progress.loaded {
+        z-index: 9;
+      }
+
+      .progress.ingame .full {
+        animation: none;
+      }
+
+      #progress-bar-inner {
+        width: 0%;
+        transition: width 0.2s;
+        animation: none;
+      }
+
+      .hidden-error {
+        display: none !important;
+      }
+
+      body.error {
+        background: black !important;
+        background-image: none !important;
+      }
+
+      body.error #gameContainer {
+        display: none !important;
+      }
+
+      body.error #progress-bar {
+        display: none !important;
+        z-index: 10;
+      }
+
+      body.error #gameContainer {
+        background: black !important;
+        background-image: none !important;
+      }
+
+      @keyframes progress_30 {
+        from {
+          width: 0;
+        }
+
+        to {
+          width: 30%;
+        }
+      }
+
+      @keyframes progress_50 {
+        from {
+          width: 30%;
+        }
+
+        to {
+          width: 50%;
+        }
+      }
+
+      body.dcl-loading #load-messages-wrapper {
+        display: flex;
+      }
+      #load-messages-wrapper {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 8;
+
+        position: fixed;
+        top: 80px;
+
+        min-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+
+        color: white;
+        text-align: center;
+        font-size: 1.25em;
+        font-family: sfsemibold, 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      #load-messages-wrapper div {
+        max-width: 820px;
+      }
+
+      @media screen and (min-height: 500px) {
+        #load-messages-wrapper {
+          top: 20%;
+
+          padding-left: 20%;
+          padding-right: 20%;
+        }
+      }
+      @media screen and (min-height: 800px) {
+        #load-messages-wrapper {
+          top: 35%;
+
+          padding-left: 10%;
+          padding-right: 10%;
+        }
+      }
+
+      @media screen and (min-height: 1000px) {
+        #load-messages-wrapper {
+          top: 38%;
+
+          padding-left: 10%;
+          padding-right: 10%;
+        }
+      }
+
+      #load-images {
+        max-width: 306px;
+        max-height: 234px;
+      }
+      .load-images-wrapper {
+        height: 234px;
+        margin-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #subtext-messages-container {
+        bottom: 40px;
+        left: 0;
+        position: fixed;
+
+        min-width: 100%;
+        padding-left: 20%;
+        padding-right: 20%;
+
+        text-align: center;
+
+        font-size: 1em;
+        color: #7d8385;
+      }
+
+      #subtext-messages-container div {
+        margin: auto;
+      }
+
+      div#check-wallet-prompt {
+        width: 395px;
+        text-align: center;
+        background: #43474b;
+        border-radius: 100px;
+        color: white;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+
+      #eth-connect-advice {
+        display: none;
+      }
+      #eth-sign-advice {
+        display: none;
+      }
+      .login {
+        background: #74a4d5;
+        background-position: left 50% bottom 33px;
+
+        position: absolute;
+        z-index: 9;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #eth-login {
+        display: none;
+      }
+      .eth-login-popup {
+        width: 70%;
+        max-width: 650px;
+        height: 446px;
+
+        position: absolute;
+        left: 50%;
+        top: 40px;
+        transform: translate(-50%, 0);
+        padding: 34px 44px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #eth-login-confirmation-wrapper {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      @font-face {
+        font-family: sfregular;
+        src: url(images/decentraland-connect/SF-UI-Text-Regular.otf);
+      }
+      @font-face {
+        font-family: sfsemibold;
+        src: url(images/decentraland-connect/SF-UI-Text-Semibold.otf);
+      }
+      .eth-login-description {
+        color: white;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        text-align: center;
+        font-size: 16px;
+        font-family: sfregular, 'Helvetica Neue', Arial, sans-serif;
+      }
+      .eth-login-welcome {
+        color: white;
+        font-family: sfregular, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 16px;
+        margin-bottom: 2px;
+      }
+      .code {
+        font-family: 'Courier New', Courier, monospace;
+      }
+      .eth-login-logo {
+        width: 262px;
+      }
+      .eth-login-wallet-icon {
+        margin-right: 10px;
+        width: 24px;
+        height: 23px;
+        vertical-align: middle;
+      }
+      .eth-login-tos {
+        max-width: 310px;
+        margin-bottom: 50px;
+        text-align: center;
+      }
+      .eth-login-tos-label {
+        font-size: 13px;
+        font-family: sfregular, 'Helvetica Neue', Arial, sans-serif;
+        color: white;
+      }
+      .eth-login-tos-label > a:any-link {
+        color: white;
+        font-family: sfsemibold, 'Helvetica Neue', Arial, sans-serif;
+      }
+      .eth-login-tos-agree {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+      }
+
+      .nav-bar {
+        background-color: rgba(0, 0, 0, 0.1);
+        height: 40px;
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+      }
+      .nav-bar-content {
+        position: absolute;
+        right: 50px;
+        height: 100%;
+        display: flex;
+        width: fit-content;
+
+        align-items: center;
+        vertical-align: middle;
+      }
+      @media screen and (min-width: 1200px) {
+        .nav-bar-content {
+          right: 285px;
+        }
+      }
+      .nav-text {
+        color: white;
+        font-family: sfregular, 'Helvetica Neue', Arial, sans-serif;
+      }
+      .nav-discord {
+        width: fit-content;
+
+        vertical-align: middle;
+        margin: 6px 0 8px 10px;
+
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        padding: 4px 12.15px;
+
+        box-sizing: border-box;
+        border-radius: 6px;
+        text-decoration: none;
+      }
+      .nav-discord-img {
+        width: 14px;
+        vertical-align: middle;
+      }
+      .nav-discord-text {
+        margin-left: 2px;
+        font-size: 9px;
+      }
+      .nav-need-support {
+        width: fit-content;
+        font-size: 11px;
+      }
+
+      .footer-bar {
+        background: #1c191f;
+        height: 33px;
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+      }
+      .footer-bar-content {
+        position: absolute;
+        right: 50px;
+        height: 100%;
+        display: flex;
+        width: fit-content;
+
+        align-items: center;
+        vertical-align: middle;
+      }
+      @media screen and (min-width: 1200px) {
+        .footer-bar-content {
+          right: 285px;
+        }
+      }
+      .footer-link {
+        margin-left: 34px;
+      }
+      .footer-text {
+        margin-left: 45px;
+        vertical-align: middle;
+        color: #736e7d;
+        font-family: sfregular, 'Helvetica Neue', Arial, sans-serif;
+      }
+      .footer-icon {
+        max-height: 18px;
+      }
+      .loader {
+        --thickness: 5px;
+        --diameter: 35px;
+
+        border: var(--thickness) solid #f3f3f3;
+        border-top: var(--thickness) solid #ff5273;
+        border-radius: 50%;
+        width: var(--diameter);
+        height: var(--diameter);
+        animation: spin 1.24s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Preview only style */
+
+      .error-overlay-bar {
+        display: none;
+
+        width: 100%;
+        padding: 5px 0;
+
+        position: absolute;
+        top: 0%;
+        z-index: 1001;
+
+        background-color: #de3959;
+      }
+      .error-overlay-title {
+        text-align: center;
+
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .error-overlay-description {
+        text-align: center;
+
+        font-size: 0.85rem;
+      }
+      .error-overlay-button {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+
+        transform: translate(-50%, -50%);
+
+        color: white;
+
+        font-size: 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        border: 0;
+        background-color: transparent;
+      }
+      .error-overlay-button:active,
+      .error-overlay-button:focus,
+      .error-overlay-button:focus:active {
+        background-image: none;
+        outline: 0;
+        box-shadow: none;
+      }
+    </style>
+  </head>
+
+  <body class="dcl-loading">
+    <div id="overlay"></div>
+    <div id="gameContainer"></div>
+    <audio autoplay id="voice-chat-audio"></audio>
+
+    <div id="error-overlay" class="error-overlay-bar">
+      <div class="error-overlay-title"></div>
+      <div class="error-overlay-description"></div>
+      <button class="error-overlay-button" onclick="document.getElementById('error-overlay').style.display = 'none';">
+        ⨯
+      </button>
+    </div>
+
+    <script>
+      globalThis.preview = true
+
+      const qs = new URLSearchParams(document.location.search)
+      const position = qs.get('position') || qs.get('POSITION') || null
+      if (!position){
+        qs.append('position', '{{ scene.scene.base }}')
+        document.location.search = qs.toString()
+      }
+    </script>
+
+    <script src="./index.js"></script>
+
+    <script>
+      function rootURL() {
+        return location.origin + location.pathname
+      }
+
+      function handleError(title, message) {
+        const titleElement = document.getElementsByClassName('error-overlay-title')[0]
+        const descElement = document.getElementsByClassName('error-overlay-description')[0]
+        const containerElement = document.getElementById('error-overlay')
+
+        titleElement.textContent = '' + title || 'Error'
+
+        const item = document.createElement('li')
+        item.textContent = ' - ' + message || ''
+        descElement.appendChild(item)
+
+        containerElement.style.display = 'block'
+      }
+
+      async function getExplorerBaseUrl() {
+        const qs = new URLSearchParams(document.location.search)
+
+        if (qs.has('explorer')) {
+          return qs.get('explorer')
+        }
+
+        if (qs.has('explorer-branch')) {
+          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('explorer-branch')}`
+        }
+
+        if (qs.has('explorer-version')) {
+          return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
+        }
+
+        return new URL(rootURL() + 'explorer').toString()
+      }
+
+      async function initKernel() {
+        const container = document.getElementById('gameContainer')
+
+        const DecentralandKernel = globalThis.DecentralandKernel
+
+        if (!DecentralandKernel) throw new Error('DecentralandKernel could not be loaded')
+
+        const kernel = await DecentralandKernel.initKernel({
+          kernelOptions: {
+            baseUrl: rootURL(),
+            previewMode: true
+          },
+          rendererOptions: {
+            container,
+            baseUrl: await getExplorerBaseUrl()
+          }
+        })
+
+        kernel.on('trackingEvent', ({ eventName, eventData }) => {
+          console.log(`> event`, eventName, eventData)
+        })
+
+        kernel.on('openUrl', ({ url }) => {
+          const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+          if (newWindow != null) newWindow.opener = null
+        })
+
+        kernel.on('accountState', (account) => {
+          console.log('> account state', account)
+        })
+
+        kernel.on('signUp', ({ email }) => {
+          console.log(`> sign up ${email}`)
+        })
+
+        kernel.on('logout', (data) => {
+          console.log(`> logout ${data}`)
+        })
+
+        kernel.on('error', (error) => {
+          try {
+            handleError('Critical error', '' + (error.error.message || error.error))
+          } catch {
+            handleError('Critical error', '' + error.error)
+          }
+        })
+
+        kernel.on('rendererVisible', (event) => {
+          document.getElementById('overlay').style.display = event.visible ? 'none' : 'block'
+        })
+
+        return kernel
+      }
+
+      async function initPreview(kernel) {
+        const url = new URLSearchParams(location.search)
+
+        if (url.has('ENABLE_WEB3')) {
+          if (!globalThis.ethereum) {
+            handleError('Ethereum provider missing', 'There is no Ethereum provider to use')
+          } else {
+            if ('request' in globalThis.ethereum) {
+              await ethereum.request({ method: 'eth_requestAccounts' })
+            }
+
+            kernel.authenticate(globalThis.ethereum, false)
+          }
+        } else {
+          kernel.authenticate('wss://rpc.decentraland.org/mainnet?project=cli-preview', true)
+        }
+      }
+
+      initKernel()
+        .then(initPreview)
+        .catch((err) => {
+          handleError('Error loading kernel', '' + err)
+        })
+    </script>
+  </body>
+</html>
