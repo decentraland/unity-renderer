@@ -72,4 +72,6 @@ MonoBehaviour:
     value: {r: 1, g: 0.29411766, b: 0.92941177, a: 1}
   - key: land
     value: {r: 0, g: 0, b: 0, a: 0.7058824}
+  - key: name
+    value: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
   defaultColor: {r: 0.9254902, g: 0.92156863, b: 0.92941177, a: 0.6862745}

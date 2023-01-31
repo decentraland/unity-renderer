@@ -228,6 +228,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b16568f5e2de64c8dbc491d9ac2830e9, type: 3}
   - {fileID: 21300000, guid: 91e559f524592ad4a94afd8829f86e75, type: 3}
   - {fileID: 21300000, guid: b7f3fdf5bf2a24afdaeef1c2d7edb8ea, type: 3}
+  - {fileID: 21300000, guid: 686758069f8a14776994a397af7581cd, type: 3}
   - {fileID: 21300000, guid: c1efd816f289d442281c6d21fcb60c1f, type: 3}
   - {fileID: 21300000, guid: fb175f167b0cc447c8f2fd84c9671a68, type: 3}
   - {fileID: 21300000, guid: d1530a26cd1484393bd6f29419fe7ad3, type: 3}
@@ -644,6 +645,7 @@ SpriteAtlas:
   - PoiIcon
   - ImageIcon
   - ExploreOff
+  - NameBackground
   - ShapeTriangleOutline
   - FAQsIcon
   - PlayersIcon
