@@ -2732,7 +2732,6 @@ GameObject:
   - component: {fileID: 5782250513884070238}
   - component: {fileID: 5211374839953244563}
   - component: {fileID: 5116231656028486776}
-  - component: {fileID: 7740667581815490143}
   - component: {fileID: 4375793330587386988}
   m_Layer: 5
   m_Name: ControlsHUD
@@ -2778,7 +2777,6 @@ MonoBehaviour:
   showHideAnimator: {fileID: 4375793330587386988}
   closeButton: {fileID: 7609492662271127952}
   voiceChatButton: {fileID: 5136095157326740966}
-  builderInWorldButton: {fileID: 0}
 --- !u!223 &7899065392233343085
 Canvas:
   m_ObjectHideFlags: 0
@@ -2860,26 +2858,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!95 &7740667581815490143
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3228828099108839015}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &4375793330587386988
 MonoBehaviour:
   m_ObjectHideFlags: 0

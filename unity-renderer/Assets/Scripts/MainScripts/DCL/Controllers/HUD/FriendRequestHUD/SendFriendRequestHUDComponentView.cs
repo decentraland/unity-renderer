@@ -1,12 +1,13 @@
 using DCL.Helpers;
 using System;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class SendFriendRequestHUDComponentView : BaseComponentView, ISendFriendRequestHUDView
+    public class SendFriendRequestHUDComponentView : BaseComponentView<SendFriendRequestHUDModel>, ISendFriendRequestHUDView, IFriendRequestHUDView
     {
         [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
         [SerializeField] internal GameObject pendingToSendContainer;
@@ -21,7 +22,6 @@ namespace DCL.Social.Friends
         [SerializeField] internal ImageComponentView profileImage;
         [SerializeField] internal Color bodyMaxLimitColor;
 
-        private readonly Model model = new Model();
         private ILazyTextureObserver lastProfilePictureObserver;
         private Color messageBodyLengthOriginalColor;
 
@@ -58,11 +58,11 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            sendButton.gameObject.SetActive(model.State != Model.LayoutState.Pending);
-            sendButton.interactable = model.State != Model.LayoutState.Pending;
+            sendButton.gameObject.SetActive(model.State != SendFriendRequestHUDModel.LayoutState.Pending);
+            sendButton.interactable = model.State != SendFriendRequestHUDModel.LayoutState.Pending;
 
             foreach (Button cancelButton in cancelButtons)
-                cancelButton.interactable = model.State != Model.LayoutState.Pending;
+                cancelButton.interactable = model.State != SendFriendRequestHUDModel.LayoutState.Pending;
 
             nameLabel.text = model.Name;
             successStateLabel.text = $"Friend request sent to {model.Name}";
@@ -83,7 +83,7 @@ namespace DCL.Social.Friends
         public override void Show(bool instant = false)
         {
             base.Show(instant);
-            model.State = Model.LayoutState.Default;
+            model.State = SendFriendRequestHUDModel.LayoutState.Default;
             showHideAnimatorForDefaultState.Show(true);
             pendingToSendContainer.SetActive(false);
             showHideAnimatorForSuccessState.Hide(true);
@@ -104,7 +104,7 @@ namespace DCL.Social.Friends
 
         public void ShowPendingToSend()
         {
-            model.State = Model.LayoutState.Pending;
+            model.State = SendFriendRequestHUDModel.LayoutState.Pending;
             showHideAnimatorForDefaultState.Show(true);
             pendingToSendContainer.SetActive(true);
             showHideAnimatorForSuccessState.Hide(true);
@@ -113,7 +113,7 @@ namespace DCL.Social.Friends
 
         public void ShowSendSuccess()
         {
-            model.State = Model.LayoutState.Success;
+            model.State = SendFriendRequestHUDModel.LayoutState.Success;
             showHideAnimatorForDefaultState.Hide(true);
             pendingToSendContainer.SetActive(false);
             showHideAnimatorForSuccessState.Show();
@@ -128,20 +128,6 @@ namespace DCL.Social.Friends
             messageBodyMaxLimitMark.gameObject.SetActive(message.Length >= messageBodyInput.characterLimit);
             messageBodyMaxLimitMark.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
             messageBodyLengthLabel.color = messageBodyMaxLimitMark.gameObject.activeSelf ? bodyMaxLimitColor : messageBodyLengthOriginalColor;
-        }
-
-        private class Model
-        {
-            public string Name;
-            public LayoutState State;
-            public ILazyTextureObserver ProfilePictureObserver;
-
-            public enum LayoutState
-            {
-                Default,
-                Pending,
-                Success
-            }
         }
     }
 }

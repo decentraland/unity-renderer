@@ -4,6 +4,7 @@ using DCL;
 using DCL.Chat.HUD;
 using DCL.Chat.Notifications;
 using DCL.Social.Friends;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,12 +36,14 @@ public class TaskbarHUDController : IHUD
     private Transform experiencesViewerTransform;
     private Transform notificationViewerTransform;
     private Transform topNotificationViewerTransform;
-    private IHUD chatToggleTargetWindow;
     private IHUD chatInputTargetWindow;
     private IHUD chatBackWindow;
     private SearchChannelsWindowController searchChannelsHud;
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
+    private CancellationTokenSource openPrivateChatCancellationToken = new ();
+
+    private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -219,6 +222,7 @@ public class TaskbarHUDController : IHUD
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
         if (friendsHud == null) return;
+        if (!isFriendsFeatureEnabled) return;
 
         bool anyInputFieldIsSelected = EventSystem.current != null &&
                                        EventSystem.current.currentSelectedGameObject != null &&
@@ -269,7 +273,6 @@ public class TaskbarHUDController : IHUD
         {
             publicChatWindow.SetVisibility(false);
             worldChatWindowHud.SetVisibility(true);
-            chatToggleTargetWindow = worldChatWindowHud;
             chatInputTargetWindow = publicChatWindow;
         }
         else
@@ -385,7 +388,6 @@ public class TaskbarHUDController : IHUD
         privateChatWindow.Setup(userId);
         privateChatWindow.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = privateChatWindow;
     }
 
@@ -466,7 +468,6 @@ public class TaskbarHUDController : IHUD
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
 
-        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = channelChatWindow;
     }
 
@@ -486,7 +487,6 @@ public class TaskbarHUDController : IHUD
 
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
 
-        chatToggleTargetWindow = worldChatWindowHud;
         chatInputTargetWindow = publicChatWindow;
     }
 
@@ -502,8 +502,6 @@ public class TaskbarHUDController : IHUD
         voiceChatHud?.SetVisibility(false);
         worldChatWindowHud.SetVisibility(true);
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
-
-        chatToggleTargetWindow = worldChatWindowHud;
     }
 
     private void CloseChatList()
@@ -622,7 +620,11 @@ public class TaskbarHUDController : IHUD
         experiencesViewerTransform?.SetAsLastSibling();
 
         friendsHud = controller;
-        view.ShowFriendsButton();
+
+        if (isFriendsFeatureEnabled)
+            view.ShowFriendsButton();
+        else
+            view.HideFriendsButton();
 
         friendsHud.OnViewClosed += () =>
         {
@@ -715,15 +717,18 @@ public class TaskbarHUDController : IHUD
             OpenChatList();
         else
         {
-            async UniTaskVoid OpenPrivateChatAsync(string chatId)
+            async UniTaskVoid OpenPrivateChatAsync(string chatId, CancellationToken cancellationToken = default)
             {
-                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId);
+                var friendshipStatus = await friendsController.GetFriendshipStatus(chatId, cancellationToken);
 
                 if (friendshipStatus == FriendshipStatus.FRIEND)
                     OpenPrivateChat(chatId);
             }
 
-            OpenPrivateChatAsync(chatId).Forget();
+            openPrivateChatCancellationToken.Cancel();
+            openPrivateChatCancellationToken.Dispose();
+            openPrivateChatCancellationToken = new CancellationTokenSource();
+            OpenPrivateChatAsync(chatId, openPrivateChatCancellationToken.Token).Forget();
         }
     }
 
@@ -782,6 +787,9 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
+
+        openPrivateChatCancellationToken.Cancel();
+        openPrivateChatCancellationToken.Dispose();
     }
 
     private void SetVisibility(bool visible, bool previus)
