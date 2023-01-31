@@ -430,14 +430,14 @@ workflows:
       - checkout:
           <<: *all_branches_and_tags
 
-      # - playmode-tests:
-      #     <<: *all_branches_and_tags
-      #     requires:
-      #       - checkout
-      # - benchmark:
-      #     <<: *all_branches_and_tags
-      #     requires:
-      #       - checkout
+      - playmode-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
+      - benchmark:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
      # - asset-bundle-tests:
      #     <<: *all_branches_and_tags
      #     requires:
@@ -458,5 +458,5 @@ workflows:
           requires:
             - build-unity
             - build-js-interface
-            # - playmode-tests
+            - playmode-tests
             # - editmode-tests

@@ -36,10 +36,7 @@ namespace DCL.Components
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         internal WebVideoPlayer texturePlayer;
@@ -211,7 +208,7 @@ namespace DCL.Components
             else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.Update(flipY: true); // TODO: change default
+                texturePlayer.Update(flipY: false);
                 texture = texturePlayer.texture;
             }
         }
@@ -292,10 +289,7 @@ namespace DCL.Components
             UpdateVolume();
         }
 
-        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue)
-        {
-            UpdateVolume();
-        }
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) { UpdateVolume(); }
 
         private void UpdateVolume()
         {
@@ -327,11 +321,9 @@ namespace DCL.Components
             return (scene.sceneData.sceneNumber == currentSceneNumber) || (scene.isPersistent);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) =>
-            SetPlayStateDirty();
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) => SetPlayStateDirty();
 
-        private void OnSceneNumberChanged(int current, int previous) =>
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
+        private void OnSceneNumberChanged(int current, int previous) => isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
 
         public override void AttachTo(ISharedComponent component)
         {
@@ -370,11 +362,9 @@ namespace DCL.Components
             SetPlayStateDirty();
         }
 
-        private void SetPlayStateDirty(IDCLEntity entity = null) =>
-            isPlayStateDirty = true;
+        private void SetPlayStateDirty(IDCLEntity entity = null) => isPlayStateDirty = true;
 
-        private void OnAudioSettingsChanged(AudioSettings settings) =>
-            UpdateVolume();
+        private void OnAudioSettingsChanged(AudioSettings settings) => UpdateVolume();
 
         public override void Dispose()
         {
