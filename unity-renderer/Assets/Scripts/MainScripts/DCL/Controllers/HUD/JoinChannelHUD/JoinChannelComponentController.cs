@@ -1,116 +1,151 @@
-using System;
-using System.Linq;
-using DCL;
+using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using SocialFeaturesAnalytics;
+using System;
+using System.Linq;
+using Channel = DCL.Chat.Channels.Channel;
 
-public class JoinChannelComponentController : IDisposable
+namespace DCL.Social.Chat.Channels
 {
-    internal readonly IJoinChannelComponentView joinChannelView;
-    internal readonly IChatController chatController;
-    private readonly DataStore dataStore;
-    internal readonly DataStore_Channels channelsDataStore;
-    private readonly ISocialAnalytics socialAnalytics;
-    private readonly StringVariable currentPlayerInfoCardId;
-    private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
-    private string channelId;
-
-    public JoinChannelComponentController(
-        IJoinChannelComponentView joinChannelView,
-        IChatController chatController,
-        DataStore dataStore,
-        ISocialAnalytics socialAnalytics,
-        StringVariable currentPlayerInfoCardId,
-        IChannelsFeatureFlagService channelsFeatureFlagService)
+    public class JoinChannelComponentController : IDisposable
     {
-        this.joinChannelView = joinChannelView;
-        this.chatController = chatController;
-        this.dataStore = dataStore;
-        channelsDataStore = dataStore.channels;
-        this.socialAnalytics = socialAnalytics;
-        this.currentPlayerInfoCardId = currentPlayerInfoCardId;
-        this.channelsFeatureFlagService = channelsFeatureFlagService;
+        internal readonly IJoinChannelComponentView joinChannelView;
+        internal readonly IChatController chatController;
+        private readonly DataStore dataStore;
+        internal readonly DataStore_Channels channelsDataStore;
+        private readonly ISocialAnalytics socialAnalytics;
+        private readonly StringVariable currentPlayerInfoCardId;
+        private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
+        private string channelId;
 
-        channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
-        this.joinChannelView.OnCancelJoin += OnCancelJoin;
-        this.joinChannelView.OnConfirmJoin += OnConfirmJoin;
-    }
-
-    public void Dispose()
-    {
-        channelsDataStore.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
-        joinChannelView.OnCancelJoin -= OnCancelJoin;
-        joinChannelView.OnConfirmJoin -= OnConfirmJoin;
-    }
-
-    private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
-    {
-        if (!channelsFeatureFlagService.IsChannelsFeatureEnabled())
-            return;
-
-        if (string.IsNullOrEmpty(currentChannelId))
-            return;
-
-        channelId = currentChannelId;
-        joinChannelView.SetChannel(currentChannelId);
-        joinChannelView.Show();
-    }
-
-    private void OnCancelJoin()
-    {
-        if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
-            socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
-
-        joinChannelView.Hide();
-        channelsDataStore.currentJoinChannelModal.Set(null);
-    }
-
-    private void OnConfirmJoin(string channelName)
-    {
-        channelName = channelName
-            .Replace("#", "")
-            .Replace("~", "")
-            .ToLower();
-
-        var alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
-
-        if (alreadyJoinedChannel == null || !alreadyJoinedChannel.Joined)
-            chatController.JoinOrCreateChannel(channelName);
-        else
-            dataStore.channels.channelToBeOpened.Set(alreadyJoinedChannel.ChannelId);
-
-        if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
-            socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
-
-        joinChannelView.Hide();
-        channelsDataStore.currentJoinChannelModal.Set(null);
-    }
-
-    private ChannelLinkSource GetChannelLinkSource()
-    {
-        if (dataStore.exploreV2.isOpen.Get()
-            && dataStore.exploreV2.placesAndEventsVisible.Get()
-            && dataStore.exploreV2.isSomeModalOpen.Get())
+        public JoinChannelComponentController(
+            IJoinChannelComponentView joinChannelView,
+            IChatController chatController,
+            DataStore dataStore,
+            ISocialAnalytics socialAnalytics,
+            StringVariable currentPlayerInfoCardId,
+            IChannelsFeatureFlagService channelsFeatureFlagService)
         {
-            switch (dataStore.exploreV2.currentVisibleModal.Get())
-            {
-                case ExploreV2CurrentModal.Events:
-                    return ChannelLinkSource.Event;
-                case ExploreV2CurrentModal.Places:
-                    return ChannelLinkSource.Place;
-            }
+            this.joinChannelView = joinChannelView;
+            this.chatController = chatController;
+            this.dataStore = dataStore;
+            channelsDataStore = dataStore.channels;
+            this.socialAnalytics = socialAnalytics;
+            this.currentPlayerInfoCardId = currentPlayerInfoCardId;
+            this.channelsFeatureFlagService = channelsFeatureFlagService;
+
+            channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
+            this.joinChannelView.OnCancelJoin += OnCancelJoin;
+            this.joinChannelView.OnConfirmJoin += OnConfirmJoin;
         }
 
-        if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
-            return ChannelLinkSource.Profile;
+        public void Dispose()
+        {
+            channelsDataStore.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
+            joinChannelView.OnCancelJoin -= OnCancelJoin;
+            joinChannelView.OnConfirmJoin -= OnConfirmJoin;
+        }
 
-        var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();
+        private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+        {
+            if (!channelsFeatureFlagService.IsChannelsFeatureEnabled())
+                return;
 
-        if (visibleTaskbarPanels.Any(panel => panel == "PrivateChatChannel"
-                                              || panel == "ChatChannel"
-                                              || panel == "PublicChatChannel"))
-            return ChannelLinkSource.Chat;
+            if (string.IsNullOrEmpty(currentChannelId))
+                return;
 
-        return ChannelLinkSource.Unknown;
+            channelId = currentChannelId;
+            joinChannelView.SetChannel(currentChannelId);
+            joinChannelView.Show();
+        }
+
+        private void OnCancelJoin()
+        {
+            if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
+                socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
+
+            joinChannelView.Hide();
+            channelsDataStore.currentJoinChannelModal.Set(null);
+        }
+
+        private void OnConfirmJoin(string channelName)
+        {
+            channelName = channelName
+                         .Replace("#", "")
+                         .Replace("~", "")
+                         .ToLower();
+
+            async UniTaskVoid JoinAsync(string channelName)
+            {
+                Channel alreadyJoinedChannel = chatController.GetAllocatedChannelByName(channelName);
+
+                if (alreadyJoinedChannel != null)
+                {
+                    if (!alreadyJoinedChannel.Joined)
+                        alreadyJoinedChannel = await chatController.JoinOrCreateChannelAsync(alreadyJoinedChannel.ChannelId);
+
+                    OpenChannelWindow(alreadyJoinedChannel);
+                }
+                else
+                {
+                    (string pageToken, Channel[] channels) = await chatController.GetChannelsByNameAsync(1, channelName);
+                    Channel channelToJoin = channels.FirstOrDefault(channel => channel.Name == channelName);
+
+                    if (channelToJoin != null)
+                    {
+                        channelToJoin = await chatController.JoinOrCreateChannelAsync(channelToJoin.ChannelId);
+                        OpenChannelWindow(channelToJoin);
+                    }
+                    else
+                        ShowErrorToast("The channel you are trying to access do not exist");
+                }
+
+                if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
+                    socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
+
+                joinChannelView.Hide();
+                channelsDataStore.currentJoinChannelModal.Set(null);
+            }
+
+            JoinAsync(channelName).Forget();
+        }
+
+        private void ShowErrorToast(string message)
+        {
+            dataStore.notifications.DefaultErrorNotification.Set(message, true);
+        }
+
+        private void OpenChannelWindow(Channel channel)
+        {
+            dataStore.channels.channelToBeOpened.Set(channel.ChannelId);
+        }
+
+        private ChannelLinkSource GetChannelLinkSource()
+        {
+            if (dataStore.exploreV2.isOpen.Get()
+                && dataStore.exploreV2.placesAndEventsVisible.Get()
+                && dataStore.exploreV2.isSomeModalOpen.Get())
+            {
+                switch (dataStore.exploreV2.currentVisibleModal.Get())
+                {
+                    case ExploreV2CurrentModal.Events:
+                        return ChannelLinkSource.Event;
+                    case ExploreV2CurrentModal.Places:
+                        return ChannelLinkSource.Place;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(currentPlayerInfoCardId.Get()))
+                return ChannelLinkSource.Profile;
+
+            var visibleTaskbarPanels = dataStore.HUDs.visibleTaskbarPanels.Get();
+
+            if (visibleTaskbarPanels.Any(panel => panel == "PrivateChatChannel"
+                                                  || panel == "ChatChannel"
+                                                  || panel == "PublicChatChannel"))
+                return ChannelLinkSource.Chat;
+
+            return ChannelLinkSource.Unknown;
+        }
     }
 }

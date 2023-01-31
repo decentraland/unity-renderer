@@ -1,9 +1,12 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Chat.Channels;
 using DCL.Chat.WebApi;
 using DCL.Interface;
+using System.Threading;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Social.Chat
 {
@@ -16,9 +19,9 @@ namespace DCL.Social.Chat
 
         public static ChatController i { get; private set; }
 
-        private readonly Dictionary<string, int> unseenMessagesByUser = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> unseenMessagesByChannel = new Dictionary<string, int>();
-        private readonly Dictionary<string, Channel> channels = new Dictionary<string, Channel>();
+        private readonly Dictionary<string, int> unseenMessagesByUser = new ();
+        private readonly Dictionary<string, int> unseenMessagesByChannel = new ();
+        private readonly Dictionary<string, Channel> channels = new ();
         private HashSet<string> autoJoinChannelList => dataStore.HUDs.autoJoinChannelList.Get();
         private bool chatAlreadyInitialized;
         private int totalUnseenMessages;
@@ -54,10 +57,10 @@ namespace DCL.Social.Chat
         {
             this.dataStore = dataStore;
             this.apiBridge = apiBridge;
-            
+
             channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, NEARBY_CHANNEL_ID, 0, 0, true, false,
                 NEARBY_CHANNEL_DESCRIPTION);
-            
+
             apiBridge.OnInitialized += Initialize;
             apiBridge.OnAddMessage += AddMessages;
             apiBridge.OnTotalUnseenMessagesChanged += UpdateTotalUnseenMessages;
@@ -71,7 +74,7 @@ namespace DCL.Social.Chat
             apiBridge.OnMuteChannelFailed += MuteChannelFailed;
             apiBridge.OnChannelSearchResults += UpdateChannelSearchResults;
         }
-        
+
         public static void CreateSharedInstance(IChatApiBridge apiBridge, DataStore dataStore)
         {
             i = new ChatController(apiBridge, dataStore);
@@ -101,8 +104,8 @@ namespace DCL.Social.Chat
         {
             foreach (var unseenMessages in userUnseenMessages)
             {
-                var userId = unseenMessages.userId;
-                var count = unseenMessages.count;
+                string userId = unseenMessages.userId;
+                int count = unseenMessages.count;
                 unseenMessagesByUser[userId] = count;
                 OnUserUnseenMessagesUpdated?.Invoke(userId, count);
             }
@@ -123,9 +126,8 @@ namespace DCL.Social.Chat
 
             foreach (var channelInfo in msg.channelInfoPayload)
             {
-                var channel = new Channel(channelInfo.channelId, channelInfo.name, channelInfo.unseenMessages,
-                    channelInfo.memberCount, channelInfo.joined, channelInfo.muted, channelInfo.description);
-                var channelId = channel.ChannelId;
+                Channel channel = ToChannel(channelInfo);
+                string channelId = channel.ChannelId;
 
                 if (channels.ContainsKey(channelId))
                     channels[channelId].CopyFrom(channel);
@@ -139,7 +141,7 @@ namespace DCL.Social.Chat
 
                 OnChannelUpdated?.Invoke(channel);
                 autoJoinChannelList.Remove(channelId);
-                
+
                 SendChannelWelcomeMessage(channel);
             }
 
@@ -149,13 +151,13 @@ namespace DCL.Social.Chat
 
         private void JoinChannelFailed(JoinChannelErrorPayload msg)
         {
-            OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+            OnJoinChannelError?.Invoke(msg.channelId, (ChannelErrorCode)msg.errorCode);
             autoJoinChannelList.Remove(msg.channelId);
         }
 
         private void LeaveChannelFailed(JoinChannelErrorPayload msg)
         {
-            OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+            OnChannelLeaveError?.Invoke(msg.channelId, (ChannelErrorCode)msg.errorCode);
             autoJoinChannelList.Remove(msg.channelId);
         }
 
@@ -165,11 +167,9 @@ namespace DCL.Social.Chat
 
             foreach (var channelInfo in msg.channelInfoPayload)
             {
-                var channelId = channelInfo.channelId;
-                var channel = new Channel(channelId, channelInfo.name, channelInfo.unseenMessages,
-                    channelInfo.memberCount,
-                    channelInfo.joined, channelInfo.muted, channelInfo.description);
-                var justLeft = !channel.Joined;
+                string channelId = channelInfo.channelId;
+                Channel channel = ToChannel(channelInfo);
+                bool justLeft = !channel.Joined;
 
                 if (channels.ContainsKey(channelId))
                 {
@@ -197,7 +197,7 @@ namespace DCL.Social.Chat
 
         private void MuteChannelFailed(MuteChannelErrorPayload msg)
         {
-            OnMuteChannelError?.Invoke(msg.channelId, (ChannelErrorCode) msg.errorCode);
+            OnMuteChannelError?.Invoke(msg.channelId, (ChannelErrorCode)msg.errorCode);
         }
 
         private void UpdateChannelSearchResults(ChannelSearchResultsPayload msg)
@@ -208,9 +208,7 @@ namespace DCL.Social.Chat
             {
                 var channelPayload = msg.channels[i];
                 var channelId = channelPayload.channelId;
-                var channel = new Channel(channelId, channelPayload.name, channelPayload.unseenMessages,
-                    channelPayload.memberCount,
-                    channelPayload.joined, channelPayload.muted, channelPayload.description);
+                var channel = ToChannel(channelPayload);
 
                 if (channels.ContainsKey(channelId))
                     channels[channelId].CopyFrom(channel);
@@ -229,12 +227,30 @@ namespace DCL.Social.Chat
             autoJoinChannelList.Remove(channelId);
         }
 
-        public void JoinOrCreateChannel(string channelId) => apiBridge.JoinOrCreateChannel(channelId);
+        public async UniTask<Channel> JoinOrCreateChannelAsync(string channelId, CancellationToken cancellationToken = default)
+        {
+            ChannelInfoPayload payload = await apiBridge.JoinOrCreateChannelAsync(channelId, cancellationToken);
+            Channel channel = ToChannel(payload);
+            channels[channel.ChannelId] = channel;
+            OnChannelJoined?.Invoke(channel);
+            return channel;
+        }
+
+        public void JoinOrCreateChannel(string channelId) =>
+            apiBridge.JoinOrCreateChannel(channelId);
 
         public void GetChannelMessages(string channelId, int limit, string fromMessageId) =>
             apiBridge.GetChannelMessages(channelId, limit, fromMessageId);
 
-        public void GetJoinedChannels(int limit, int skip) => apiBridge.GetJoinedChannels(limit, skip);
+        public void GetJoinedChannels(int limit, int skip) =>
+            apiBridge.GetJoinedChannels(limit, skip);
+
+        public async UniTask<(string, Channel[])> GetChannelsByNameAsync(int limit, string name, string paginationToken = null,
+            CancellationToken cancellationToken = default)
+        {
+            ChannelSearchResultsPayload searchResult = await apiBridge.GetChannelsAsync(limit, name, paginationToken, cancellationToken);
+            return (searchResult.since, searchResult.channels.Select(ToChannel).ToArray());
+        }
 
         public void GetChannelsByName(int limit, string name, string paginationToken = null) =>
             apiBridge.GetChannels(limit, paginationToken, name);
@@ -247,6 +263,7 @@ namespace DCL.Social.Chat
             if (channelId == NEARBY_CHANNEL_ID)
             {
                 var channel = GetAllocatedChannel(NEARBY_CHANNEL_ID);
+
                 var payload = new ChannelInfoPayloads
                 {
                     channelInfoPayload = new[]
@@ -275,6 +292,7 @@ namespace DCL.Social.Chat
             if (channelId == NEARBY_CHANNEL_ID)
             {
                 var channel = GetAllocatedChannel(NEARBY_CHANNEL_ID);
+
                 var payload = new ChannelInfoPayloads
                 {
                     channelInfoPayload = new[]
@@ -318,9 +336,11 @@ namespace DCL.Social.Chat
             apiBridge.MarkChannelMessagesAsSeen(channelId);
         }
 
-        public void GetUnseenMessagesByUser() => apiBridge.GetUnseenMessagesByUser();
+        public void GetUnseenMessagesByUser() =>
+            apiBridge.GetUnseenMessagesByUser();
 
-        public void GetUnseenMessagesByChannel() => apiBridge.GetUnseenMessagesByChannel();
+        public void GetUnseenMessagesByChannel() =>
+            apiBridge.GetUnseenMessagesByChannel();
 
         public int GetAllocatedUnseenMessages(string userId) =>
             unseenMessagesByUser.ContainsKey(userId) ? unseenMessagesByUser[userId] : 0;
@@ -330,9 +350,11 @@ namespace DCL.Social.Chat
                 ? unseenMessagesByChannel.ContainsKey(channelId) ? unseenMessagesByChannel[channelId] : 0
                 : 0;
 
-        public void CreateChannel(string channelId) => apiBridge.CreateChannel(channelId);
+        public void CreateChannel(string channelId) =>
+            apiBridge.CreateChannel(channelId);
 
-        public void GetChannelInfo(string[] channelIds) => apiBridge.GetChannelInfo(channelIds);
+        public void GetChannelInfo(string[] channelIds) =>
+            apiBridge.GetChannelInfo(channelIds);
 
         public void GetChannelMembers(string channelId, int limit, int skip, string name) =>
             apiBridge.GetChannelMembers(channelId, limit, skip, name);
@@ -340,9 +362,11 @@ namespace DCL.Social.Chat
         public void GetChannelMembers(string channelId, int limit, int skip) =>
             apiBridge.GetChannelMembers(channelId, limit, skip, string.Empty);
 
-        public void Send(ChatMessage message) => apiBridge.SendChatMessage(message);
+        public void Send(ChatMessage message) =>
+            apiBridge.SendChatMessage(message);
 
-        public void MarkMessagesAsSeen(string userId) => apiBridge.MarkMessagesAsSeen(userId);
+        public void MarkMessagesAsSeen(string userId) =>
+            apiBridge.MarkMessagesAsSeen(userId);
 
         private void SendChannelWelcomeMessage(Channel channel)
         {
@@ -356,7 +380,7 @@ Invite others to join by quoting the channel name in other chats or include it a
                     messageId = Guid.NewGuid().ToString()
                 };
 
-            AddMessages(new[] {message});
+            AddMessages(new[] { message });
         }
 
         private void AddMessages(ChatMessage[] messages)
@@ -364,6 +388,7 @@ Invite others to join by quoting the channel name in other chats or include it a
             if (messages == null) return;
 
             var nearbyUpdated = false;
+
             var nearbyUnseenMessages = unseenMessagesByChannel.ContainsKey(NEARBY_CHANNEL_ID)
                 ? unseenMessagesByChannel[NEARBY_CHANNEL_ID]
                 : 0;
@@ -395,5 +420,10 @@ Invite others to join by quoting the channel name in other chats or include it a
 
             OnChannelUnseenMessagesUpdated?.Invoke(channelId, count);
         }
+
+        private static Channel ToChannel(ChannelInfoPayload payload) =>
+            new (payload.channelId, payload.name, payload.unseenMessages,
+                payload.memberCount,
+                payload.joined, payload.muted, payload.description);
     }
 }

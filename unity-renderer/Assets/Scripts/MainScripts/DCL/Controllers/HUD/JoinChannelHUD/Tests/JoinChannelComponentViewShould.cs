@@ -1,48 +1,52 @@
+using DCL.Social.Chat.Channels;
 using NUnit.Framework;
 
-public class JoinChannelComponentViewShould
+namespace DCl.Social.Chat.Channels
 {
-    private JoinChannelComponentView joinChannelComponentView;
-
-    [SetUp]
-    public void Setup()
+    public class JoinChannelComponentViewShould
     {
-        joinChannelComponentView = JoinChannelComponentView.Create();
-    }
+        private JoinChannelComponentView joinChannelComponentView;
 
-    [TearDown]
-    public void TearDown()
-    {
-        joinChannelComponentView.Dispose();
-    }
-
-    [Test]
-    public void ConfigureRealmSelectorCorrectly()
-    {
-        // Arrange
-        JoinChannelComponentModel testModel = new JoinChannelComponentModel
+        [SetUp]
+        public void Setup()
         {
-            channelId = "TestId"
-        };
+            joinChannelComponentView = JoinChannelComponentView.Create();
+        }
 
-        // Act
-        joinChannelComponentView.Configure(testModel);
+        [TearDown]
+        public void TearDown()
+        {
+            joinChannelComponentView.Dispose();
+        }
 
-        // Assert
-        Assert.AreEqual(testModel, joinChannelComponentView.model, "The model does not match after configuring the realm selector.");
-    }
+        [Test]
+        public void ConfigureRealmSelectorCorrectly()
+        {
+            // Arrange
+            JoinChannelComponentModel testModel = new JoinChannelComponentModel
+            {
+                channelId = "TestId"
+            };
 
-    [Test]
-    public void SetChannelCorrectly()
-    {
-        // Arrange
-        string testName = "TestName";
+            // Act
+            joinChannelComponentView.Configure(testModel);
 
-        // Act
-        joinChannelComponentView.SetChannel(testName);
+            // Assert
+            Assert.AreEqual(testModel, joinChannelComponentView.model, "The model does not match after configuring the realm selector.");
+        }
 
-        // Assert
-        Assert.AreEqual(testName, joinChannelComponentView.model.channelId, "The channel id does not match in the model.");
-        Assert.AreEqual(joinChannelComponentView.titleText.text, string.Format(JoinChannelComponentView.MODAL_TITLE, testName));
+        [Test]
+        public void SetChannelCorrectly()
+        {
+            // Arrange
+            string testName = "TestName";
+
+            // Act
+            joinChannelComponentView.SetChannel(testName);
+
+            // Assert
+            Assert.AreEqual(testName, joinChannelComponentView.model.channelId, "The channel id does not match in the model.");
+            Assert.AreEqual(joinChannelComponentView.titleText.text, string.Format(JoinChannelComponentView.MODAL_TITLE, testName));
+        }
     }
 }

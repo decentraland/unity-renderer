@@ -1,11 +1,14 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using DCL.Chat.Channels;
 using DCL.Interface;
+using System.Threading;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class ChatController_Mock : IChatController
 {
-    private readonly List<ChatMessage> entries = new List<ChatMessage>();
+    private readonly List<ChatMessage> entries = new ();
 
     public event Action OnInitialized;
     public event Action<ChatMessage[]> OnAddMessage;
@@ -45,6 +48,9 @@ public class ChatController_Mock : IChatController
     {
     }
 
+    public UniTask<Channel> JoinOrCreateChannelAsync(string channelId, CancellationToken cancellationToken = default) =>
+        UniTask.FromResult(new Channel(channelId, "", 0, 0, false, false, ""));
+
     public void JoinOrCreateChannel(string channelId)
     {
     }
@@ -60,6 +66,9 @@ public class ChatController_Mock : IChatController
     public void GetJoinedChannels(int limit, int skip)
     {
     }
+
+    public UniTask<(string, Channel[])> GetChannelsByNameAsync(int limit, string name, string paginationToken = null, CancellationToken cancellationToken = default) =>
+        UniTask.FromResult(("", Array.Empty<Channel>()));
 
     public void GetChannelsByName(int limit, string name, string paginationToken = null)
     {

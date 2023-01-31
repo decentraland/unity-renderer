@@ -1,4 +1,3 @@
-using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -8,112 +7,115 @@ using SocialFeaturesAnalytics;
 using UnityEngine;
 using DCL.Chat;
 
-public class JoinChannelComponentControllerShould
+namespace DCL.Social.Chat.Channels
 {
-    private JoinChannelComponentController joinChannelComponentController;
-    private IJoinChannelComponentView joinChannelComponentView;
-    private IChatController chatController;
-    private DataStore_Channels channelsDataStore;
-    private DataStore dataStore;
-    private StringVariable currentPlayerInfoCardId;
-    private ISocialAnalytics socialAnalytics;
-    private IChannelsFeatureFlagService channelsFeatureFlagService;
-
-    [SetUp]
-    public void SetUp()
+    public class JoinChannelComponentControllerShould
     {
-        joinChannelComponentView = Substitute.For<IJoinChannelComponentView>();
-        chatController = Substitute.For<IChatController>();
-        dataStore = new DataStore();
-        channelsDataStore = dataStore.channels;
-        currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
-        socialAnalytics = Substitute.For<ISocialAnalytics>();
-        channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
-        channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
-        joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
-            dataStore,
-            socialAnalytics,
-            currentPlayerInfoCardId,
-            channelsFeatureFlagService);
-    }
+        private JoinChannelComponentController joinChannelComponentController;
+        private IJoinChannelComponentView joinChannelComponentView;
+        private IChatController chatController;
+        private DataStore_Channels channelsDataStore;
+        private DataStore dataStore;
+        private StringVariable currentPlayerInfoCardId;
+        private ISocialAnalytics socialAnalytics;
+        private IChannelsFeatureFlagService channelsFeatureFlagService;
 
-    [TearDown]
-    public void TearDown()
-    {
-        joinChannelComponentController.Dispose();
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            joinChannelComponentView = Substitute.For<IJoinChannelComponentView>();
+            chatController = Substitute.For<IChatController>();
+            dataStore = new DataStore();
+            channelsDataStore = dataStore.channels;
+            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
+            channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
+            channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
+            joinChannelComponentController = new JoinChannelComponentController(joinChannelComponentView, chatController,
+                dataStore,
+                socialAnalytics,
+                currentPlayerInfoCardId,
+                channelsFeatureFlagService);
+        }
 
-    [Test]
-    public void InitializeCorrectly()
-    {
-        // Assert
-        Assert.AreEqual(joinChannelComponentView, joinChannelComponentController.joinChannelView);
-        Assert.AreEqual(chatController, joinChannelComponentController.chatController);
-        Assert.AreEqual(channelsDataStore, joinChannelComponentController.channelsDataStore);
-    }
+        [TearDown]
+        public void TearDown()
+        {
+            joinChannelComponentController.Dispose();
+        }
 
-    [Test]
-    [TestCase("TestId")]
-    [TestCase(null)]
-    public void RaiseOnChannelToJoinChangedCorrectly(string testChannelId)
-    {
-        // Act
-        channelsDataStore.currentJoinChannelModal.Set(testChannelId, true);
+        [Test]
+        public void InitializeCorrectly()
+        {
+            // Assert
+            Assert.AreEqual(joinChannelComponentView, joinChannelComponentController.joinChannelView);
+            Assert.AreEqual(chatController, joinChannelComponentController.chatController);
+            Assert.AreEqual(channelsDataStore, joinChannelComponentController.channelsDataStore);
+        }
 
-        // Assert
-        joinChannelComponentView.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).SetChannel(testChannelId);
-        joinChannelComponentView.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).Show();
-    }
+        [Test]
+        [TestCase("TestId")]
+        [TestCase(null)]
+        public void RaiseOnChannelToJoinChangedCorrectly(string testChannelId)
+        {
+            // Act
+            channelsDataStore.currentJoinChannelModal.Set(testChannelId, true);
 
-    [Test]
-    public void RaiseOnCancelJoinCorrectly()
-    {
-        // Act
-        joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
+            // Assert
+            joinChannelComponentView.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).SetChannel(testChannelId);
+            joinChannelComponentView.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).Show();
+        }
 
-        // Assert
-        joinChannelComponentView.Received(1).Hide();
-        Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
-    }
+        [Test]
+        public void RaiseOnCancelJoinCorrectly()
+        {
+            // Act
+            joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
 
-    [Test]
-    public void RaiseOnConfirmJoinCorrectly()
-    {
-        // Arrange
-        string testChannelId = "TestId";
+            // Assert
+            joinChannelComponentView.Received(1).Hide();
+            Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
+        }
 
-        // Act
-        joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(testChannelId);
+        [Test]
+        public void RaiseOnConfirmJoinCorrectly()
+        {
+            // Arrange
+            string testChannelId = "TestId";
 
-        // Assert
-        chatController.Received(1).JoinOrCreateChannel(testChannelId.ToLower());
-        joinChannelComponentView.Received(1).Hide();
-        Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
-    }
+            // Act
+            joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(testChannelId);
 
-    [Test]
-    public void TrackChannelLinkClickWhenCancel()
-    {
-        const string channelId = "channelId";
-        dataStore.HUDs.visibleTaskbarPanels.Set(new HashSet<string> {"PrivateChatChannel"});
-        channelsDataStore.currentJoinChannelModal.Set(channelId, true);
-        channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
-        
-        joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
+            // Assert
+            chatController.Received(1).JoinOrCreateChannel(testChannelId.ToLower());
+            joinChannelComponentView.Received(1).Hide();
+            Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
+        }
 
-        socialAnalytics.Received(1).SendChannelLinkClicked(channelId, false, ChannelLinkSource.Chat);
-    }
-    
-    [Test]
-    public void TrackChannelLinkClickWhenConfirm()
-    {
-        const string channelId = "channelId";
-        currentPlayerInfoCardId.Set("userId");
-        channelsDataStore.currentJoinChannelModal.Set(channelId, true);
-        channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
-        
-        joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(channelId);
+        [Test]
+        public void TrackChannelLinkClickWhenCancel()
+        {
+            const string channelId = "channelId";
+            dataStore.HUDs.visibleTaskbarPanels.Set(new HashSet<string> {"PrivateChatChannel"});
+            channelsDataStore.currentJoinChannelModal.Set(channelId, true);
+            channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
 
-        socialAnalytics.Received(1).SendChannelLinkClicked(channelId.ToLower(), true, ChannelLinkSource.Profile);
+            joinChannelComponentView.OnCancelJoin += Raise.Event<Action>();
+
+            socialAnalytics.Received(1).SendChannelLinkClicked(channelId, false, ChannelLinkSource.Chat);
+        }
+
+        [Test]
+        public void TrackChannelLinkClickWhenConfirm()
+        {
+            const string channelId = "channelId";
+            currentPlayerInfoCardId.Set("userId");
+            channelsDataStore.currentJoinChannelModal.Set(channelId, true);
+            channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
+
+            joinChannelComponentView.OnConfirmJoin += Raise.Event<Action<string>>(channelId);
+
+            socialAnalytics.Received(1).SendChannelLinkClicked(channelId.ToLower(), true, ChannelLinkSource.Profile);
+        }
     }
 }
