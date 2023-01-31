@@ -61,9 +61,21 @@ namespace DCLServices.WearablesCatalogService
             Clear();
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
+            var createNewPointer = false;
             if (!ownerWearablesPagePointers.TryGetValue(userId, out var pagePointer))
+            {
+                createNewPointer = true;
+            }
+            else if (cleanCachedPages)
+            {
+                pagePointer.Dispose();
+                ownerWearablesPagePointers.Remove(userId);
+                createNewPointer = true;
+            }
+
+            if (createNewPointer)
             {
                 ownerWearablesPagePointers[userId] = pagePointer = new (
                     WEARABLES_BY_OWNER_END_POINT.Replace("{userId}", userId),
@@ -92,9 +104,21 @@ namespace DCLServices.WearablesCatalogService
             return serviceResponse.response.wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
+            var createNewPointer = false;
             if (!thirdPartyCollectionPagePointers.TryGetValue((userId, collectionId), out var pagePointer))
+            {
+                createNewPointer = true;
+            }
+            else if (cleanCachedPages)
+            {
+                pagePointer.Dispose();
+                thirdPartyCollectionPagePointers.Remove((userId, collectionId));
+                createNewPointer = true;
+            }
+
+            if (createNewPointer)
             {
                 thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new (
                     WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
