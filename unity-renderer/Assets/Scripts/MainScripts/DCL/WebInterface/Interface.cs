@@ -1132,6 +1132,7 @@ namespace DCL.Interface
                 pointerEventPayload.hit = null;
         }
 
+
         public static void ReportGlobalPointerEvent(OnGlobalPointerEventPayload.InputEventType pointerDirection, ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
             float distance, int sceneNumber, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
         {
@@ -1141,6 +1142,22 @@ namespace DCL.Interface
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
             SendSceneEvent(sceneNumber, "actionButtonEvent", onGlobalPointerEvent);
+        }
+
+        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, int sceneNumber, string uuid,
+            string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onPointerDownEvent.uuid = uuid;
+            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, point,
+                normal, distance, isHitInfoValid: true);
+            onPointerDownEvent.payload = onPointerEventPayload;
+
+            SendSceneEvent(sceneNumber, "uuidEvent", onPointerDownEvent);
         }
 
         public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, int sceneNumber, string uuid, string entityId,

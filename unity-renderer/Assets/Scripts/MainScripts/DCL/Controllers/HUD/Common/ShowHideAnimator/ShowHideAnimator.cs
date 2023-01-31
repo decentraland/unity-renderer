@@ -1,4 +1,6 @@
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +14,11 @@ public class ShowHideAnimator : MonoBehaviour
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
 
-    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
-
     [SerializeField] private CanvasGroup canvasGroup;
 
     private GraphicRaycaster raycaster;
+
+    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
 
     public event Action<ShowHideAnimator> OnWillFinishHide;
     public event Action<ShowHideAnimator> OnWillFinishStart;
@@ -56,12 +58,20 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
-    private void SetVisibility(bool visible, TweenCallback onComplete, bool instant = false)
+    public void ShowDelayHide(float delay)
+    {
+        SetVisibility(visible: true, OnShowCompleted);
+
+        void OnShowCompleted() =>
+            SetVisibility(visible: false, null).SetDelay(delay);
+    }
+
+    private TweenerCore<float, float, FloatOptions> SetVisibility(bool visible, TweenCallback onComplete, bool instant = false)
     {
         if (canvasGroup == null)
         {
             Debug.LogError($"Show Hide Animator in GameObject: {gameObject.name} has no canvasGroup assigned", gameObject);
-            return;
+            return null;
         }
 
         if (raycaster != null)
@@ -75,7 +85,7 @@ public class ShowHideAnimator : MonoBehaviour
 
         canvasGroup.DOKill();
 
-        canvasGroup.DOFade(visible ? 1 : 0, duration)
+        return canvasGroup.DOFade(visible ? 1 : 0, duration)
                    .SetEase(Ease.InOutQuad)
                    .OnComplete(onComplete)
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
