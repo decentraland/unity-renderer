@@ -39,8 +39,8 @@ namespace DCL
         UniTask<UnityWebRequest> Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -63,8 +63,8 @@ namespace DCL
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -82,8 +82,8 @@ namespace DCL
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         UniTask<UnityWebRequest> GetAssetBundle(
             string url,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -102,8 +102,8 @@ namespace DCL
         UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -120,8 +120,8 @@ namespace DCL
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         UniTask<UnityWebRequest> GetTexture(
             string url,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -142,8 +142,8 @@ namespace DCL
         UniTask<UnityWebRequest> GetAudioClip(
             string url,
             AudioType audioType,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,

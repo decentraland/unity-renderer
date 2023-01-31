@@ -61,8 +61,8 @@ namespace DCL
         public async UniTask<UnityWebRequest> Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -77,8 +77,8 @@ namespace DCL
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -92,8 +92,8 @@ namespace DCL
 
         public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -106,8 +106,8 @@ namespace DCL
         public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -120,8 +120,8 @@ namespace DCL
 
         public async UniTask<UnityWebRequest> GetTexture(
             string url,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -137,8 +137,8 @@ namespace DCL
         public async UniTask<UnityWebRequest> GetAudioClip(
             string url,
             AudioType audioType,
-            Action<UnityWebRequestAsyncOperation> onSuccess = null,
-            Action<UnityWebRequestAsyncOperation> onfail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -153,8 +153,8 @@ namespace DCL
             T requestFactory,
             string url,
             DownloadHandler downloadHandler,
-            Action<UnityWebRequestAsyncOperation> onSuccess,
-            Action<UnityWebRequestAsyncOperation> onFail,
+            Action<UnityWebRequest> onSuccess,
+            Action<UnityWebRequest> onFail,
             int requestAttemps,
             int timeout,
             bool disposeOnCompleted,
@@ -193,7 +193,7 @@ namespace DCL
 
                 if (request.WebRequestSucceded())
                 {
-                    onSuccess?.Invoke(asyncOp);
+                    onSuccess?.Invoke(asyncOp.webRequest);
                     DisposeRequestIfNeeded(request, disposeOnCompleted);
                     return asyncOp.webRequest;
                 }
@@ -208,14 +208,14 @@ namespace DCL
                     }
                     else
                     {
-                        onFail?.Invoke(asyncOp);
+                        onFail?.Invoke(asyncOp.webRequest);
                         DisposeRequestIfNeeded(request, disposeOnCompleted);
                         return asyncOp.webRequest;
                     }
                 }
                 else
                 {
-                    onFail?.Invoke(asyncOp);
+                    onFail?.Invoke(asyncOp.webRequest);
                     DisposeRequestIfNeeded(request, disposeOnCompleted);
                     return asyncOp.webRequest;
                 }

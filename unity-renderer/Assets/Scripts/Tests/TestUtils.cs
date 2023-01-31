@@ -21,6 +21,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 using Object = System.Object;
+using System.Threading;
 
 namespace DCL.Helpers
 {
@@ -55,31 +56,32 @@ namespace DCL.Helpers
         /// <param name="mockedRequestController">Mocked request controller</param>
         /// <param name="successParamIndex"> The index of the "OnSucess" action when you call the Get method</param>
         /// <returns></returns>
-        public static IWebRequestAsyncOperation ConfigureMockedRequestController(string jsonData, IWebRequestController mockedRequestController, int successParamIndex = 3)
+        public static UnityWebRequest ConfigureMockedRequestController(string jsonData, IWebRequestController mockedRequestController, int successParamIndex = 3)
         {
-            IWebRequestAsyncOperation operation = Substitute.For<IWebRequestAsyncOperation>();
-            operation.Configure().GetResultData().Returns(Encoding.ASCII.GetBytes(jsonData));
+            UnityWebRequest operation = Substitute.For<UnityWebRequest>();
+            //operation.Configure().Returns(Encoding.ASCII.GetBytes(jsonData));
 
-            mockedRequestController.Configure()
-                                   .Get(Arg.Any<string>(),
-                                       Arg.Any<DownloadHandler>(),
-                                       Arg.Any<Action<UnityWebRequest>>(),
-                                       Arg.Any<Action<UnityWebRequest>>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<bool>(),
-                                       Arg.Any<Dictionary<string, string>>())
-                                   .Returns(operation);
+            //mockedRequestController.Configure()
+            //                       .Get(Arg.Any<string>(),
+            //                           Arg.Any<DownloadHandler>(),
+            //                           Arg.Any<Action<UnityWebRequest>>(),
+            //                           Arg.Any<Action<UnityWebRequest>>(),
+            //                           Arg.Any<int>(),
+            //                           Arg.Any<int>(),
+            //                           Arg.Any<bool>(),
+            //                           Arg.Any<CancellationToken>(),
+            //                           Arg.Any<Dictionary<string, string>>());
 
-            mockedRequestController.When(x => x.Get(Arg.Any<string>(),
-                                       Arg.Any<DownloadHandler>(),
-                                       Arg.Any<Action<UnityWebRequest>>(),
-                                       Arg.Any<Action<IWebRequestAsyUnityWebRequestncOperation>>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<bool>(),
-                                       Arg.Any<Dictionary<string, string>>()))
-                                   .Do(x => x.ArgAt<Action<UnityWebRequest>>(successParamIndex).Invoke(operation));
+            //mockedRequestController.When(x => x.Get(Arg.Any<string>(),
+            //                           Arg.Any<DownloadHandler>(),
+            //                           Arg.Any<Action<UnityWebRequest>>(),
+            //                           Arg.Any<Action<UnityWebRequest>>(),
+            //                           Arg.Any<int>(),
+            //                           Arg.Any<int>(),
+            //                           Arg.Any<bool>(),
+            //                           Arg.Any<CancellationToken>(),
+            //                           Arg.Any<Dictionary<string, string>>()))
+            //                       .Do(x => x.ArgAt<Action<UnityWebRequest>>(successParamIndex).Invoke(operation));
 
             return operation;
         }

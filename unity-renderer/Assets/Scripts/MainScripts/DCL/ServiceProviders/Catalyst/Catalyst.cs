@@ -213,7 +213,7 @@ public class Catalyst : ICatalyst
     {
         Promise<string> promise = new Promise<string>();
 
-        DCL.Environment.i.platform.webRequest.Get(url, null, request => { promise.Resolve(request.webRequest.downloadHandler.text); }, request => { promise.Reject($"{request.webRequest.error} {request.webRequest.downloadHandler.text} at url {url}"); });
+        DCL.Environment.i.platform.webRequest.Get(url, null, request => { promise.Resolve(request.downloadHandler.text); }, request => { promise.Reject($"{request.error} {request.downloadHandler.text} at url {url}"); });
 
         return promise;
     }

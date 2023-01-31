@@ -14,7 +14,7 @@ namespace DCL.Helpers
         // TODO: change fetching logic to allow for auto-pagination
         // The https://nft-api.decentraland.org/v1/ endpoint doesn't fetch L1 wearables right now, if those need to be re-converted we should use that old endpoint again and change the WearablesAPIData structure again for that response.
         public const string BASE_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
-        public const string COLLECTIONS_FETCH_PARAMS = "?sortBy=newest&first=1000"; 
+        public const string COLLECTIONS_FETCH_PARAMS = "?sortBy=newest&first=1000";
         public const string WEARABLES_FETCH_PARAMS = "/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
@@ -29,15 +29,16 @@ namespace DCL.Helpers
                 url: GetCollectionsFetchURL(),
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 60,
-                disposeOnCompleted: false,
-                onFail: (requestOp) =>
+                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
                 {
-                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {requestOp.webRequest.error}");
-                },
-                onSuccess: (requestOp) =>
-                {
-                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(requestOp.webRequest.downloadHandler.text);
-                    collections = collectionsApiData.data;
+                    if (uwr.result == UnityWebRequest.Result.Success)
+                    {
+                        collections = JsonUtility.FromJson<WearableCollectionsAPIData>(uwr.downloadHandler.text).data;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Request error! collections couldn't be fetched! -- {uwr.error}");
+                    }
                 });
         }
 
@@ -45,7 +46,7 @@ namespace DCL.Helpers
         {
             return $"{BASE_FETCH_URL}{COLLECTIONS_FETCH_PARAMS}";
         }
-        
+
         public static string GetWearablesFetchURL()
         {
             return $"{BASE_FETCH_URL}{WEARABLES_FETCH_PARAMS}";
@@ -59,9 +60,9 @@ namespace DCL.Helpers
         {
             yield return EnsureCollectionsData();
 
-            finalCollectionIdsList.Add( BASE_WEARABLES_COLLECTION_ID );
+            finalCollectionIdsList.Add(BASE_WEARABLES_COLLECTION_ID);
         }
-        
+
         public static IEnumerator GetRandomCollections(int amount, List<string> finalCollectionIdsList)
         {
             yield return EnsureCollectionsData();
@@ -73,15 +74,15 @@ namespace DCL.Helpers
             for (int i = 0; i < amount; i++)
             {
                 randomIndex = Random.Range(0, collections.Length);
-            
+
                 while (randomizedIndices.Contains(randomIndex))
                 {
                     randomIndex = Random.Range(0, collections.Length);
                 }
-            
+
                 if (collections[randomIndex].urn == BASE_WEARABLES_COLLECTION_ID)
                     addedBaseWearablesCollection = true;
-            
+
                 finalCollectionIdsList.Add(collections[randomIndex].urn);
                 randomizedIndices.Add(randomIndex);
             }
@@ -96,23 +97,25 @@ namespace DCL.Helpers
         public static IEnumerator GetWearableItems(string url, List<WearableItem> finalWearableItemsList)
         {
             string nextPageParams = null;
-            
+
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 60,
-                disposeOnCompleted: false,
-                onFail: (requestOp) =>
+                disposeOnCompleted: false).ContinueWith((UnityWebRequest uwr) =>
                 {
-                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {requestOp.webRequest.error}");
-                },
-                onSuccess: (requestOp) =>
-                {
-                    var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(requestOp.webRequest.downloadHandler.text);
-                    var wearableItemsList = wearablesApiData.GetWearableItems();
-                    finalWearableItemsList.AddRange(wearableItemsList);
+                    if (uwr.result == UnityWebRequest.Result.Success)
+                    {
+                        var wearablesApiData = JsonConvert.DeserializeObject<WearablesAPIData>(uwr.downloadHandler.text);
+                        var wearableItemsList = wearablesApiData.GetWearableItems();
+                        finalWearableItemsList.AddRange(wearableItemsList);
 
-                    nextPageParams = wearablesApiData.pagination.next;
+                        nextPageParams = wearablesApiData.pagination.next;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {uwr.error}");
+                    }
                 });
 
             if (!string.IsNullOrEmpty(nextPageParams))
@@ -120,7 +123,7 @@ namespace DCL.Helpers
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
                 yield return GetWearableItems(
-                    GetWearablesFetchURL() + $"{nextPageParams}", 
+                    GetWearablesFetchURL() + $"{nextPageParams}",
                     finalWearableItemsList);
             }
         }
@@ -128,7 +131,7 @@ namespace DCL.Helpers
         public async static UniTask<Collection[]> GetThirdPartyCollections()
         {
             Promise<Collection[]> promiseResult = new Promise<Collection[]>();
-            
+
             UnityWebRequest uwr = await Environment.i.platform.webRequest.Get(
                 url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_COLLECTIONS_FETCH_URL}",
                 downloadHandler: new DownloadHandlerBuffer(),
