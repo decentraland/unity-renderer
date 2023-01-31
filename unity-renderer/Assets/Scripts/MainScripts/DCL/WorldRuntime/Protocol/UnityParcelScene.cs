@@ -14,6 +14,7 @@ namespace DCL.Models
         public List<ContentServerUtils.MappingPair> contents;
         public string icon;
         public bool isPortableExperience;
+        public bool sdk7;
     }
 
     [Serializable]
