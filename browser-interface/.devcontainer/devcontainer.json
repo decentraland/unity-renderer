@@ -18,7 +18,7 @@
 	"forwardPorts": [8080],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "git lfs pull && npm ci"
+	"postCreateCommand": "npm ci"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
