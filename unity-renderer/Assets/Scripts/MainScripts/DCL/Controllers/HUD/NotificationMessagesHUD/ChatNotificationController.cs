@@ -29,7 +29,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
+        private BaseVariable<string> openedChat => dataStore.HUDs.openChat;
         private CancellationTokenSource fadeOutCT = new ();
         private UserProfile internalOwnUserProfile;
 
@@ -144,6 +144,7 @@ namespace DCL.Chat.Notifications
         private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null)
         {
             string body = message.body;
+            string openedChatId = openedChat.Get();
 
             switch (message.messageType)
             {
@@ -158,14 +159,22 @@ namespace DCL.Chat.Notifications
 
                     mainChatNotificationView.AddNewChatNotification(privateModel);
 
-                    if (message.sender != openedChat.Get())
+                    if (message.sender != openedChatId && message.recipient != openedChatId)
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(privateModel);
 
                     break;
                 case ChatMessage.Type.PUBLIC:
-                    UserProfile senderProfile = userProfileBridge.Get(message.sender);
-                    string senderName = senderProfile?.userName ?? message.sender;
+                    bool isMyMessage = message.sender == ownUserProfile.userId;
+                    string senderName;
+
+                    if (isMyMessage)
+                        senderName = "You";
+                    else
+                    {
+                        UserProfile senderProfile = userProfileBridge.Get(message.sender);
+                        senderName = senderProfile?.userName ?? message.sender;
+                    }
 
                     if (IsProfanityFilteringEnabled())
                     {
@@ -179,7 +188,8 @@ namespace DCL.Chat.Notifications
 
                     mainChatNotificationView.AddNewChatNotification(publicModel);
 
-                    if (message.sender != openedChat.Get())
+                    if ((string.IsNullOrEmpty(message.recipient) && openedChatId != ChatUtils.NEARBY_CHANNEL_ID)
+                        || (!string.IsNullOrEmpty(message.recipient) && openedChatId != message.recipient))
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(publicModel);
 
