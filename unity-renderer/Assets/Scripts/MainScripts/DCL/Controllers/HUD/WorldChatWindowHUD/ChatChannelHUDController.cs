@@ -36,6 +36,8 @@ namespace DCL.Chat.HUD
         private ChatMessage oldestMessage;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
+        private bool isVisible = true;
+
         public event Action OnPressBack;
         public event Action OnClosed;
         public event Action<string> OnOpenChannelLeave;
@@ -99,16 +101,21 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
+            if(isVisible == visible)
+                return;
+
+            isVisible = visible;
+
             SetVisiblePanelList(visible);
-            
+
             if (visible)
             {
                 ClearChatControllerListeners();
-                
+
                 chatController.OnAddMessage += HandleMessageReceived;
                 chatController.OnChannelLeft += HandleChannelLeft;
                 chatController.OnChannelUpdated += HandleChannelUpdated;
-                
+
                 if (channelMembersHUDController.IsVisible)
                     channelMembersHUDController.SetAutomaticReloadingActive(true);
 
@@ -149,7 +156,7 @@ namespace DCL.Chat.HUD
                 mouseCatcher.OnMouseLock -= Hide;
 
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
-            
+
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
 
@@ -199,7 +206,7 @@ namespace DCL.Chat.HUD
         private void HandleMessageReceived(ChatMessage[] messages)
         {
             var messageLogUpdated = false;
-            
+
             foreach (var message in messages)
             {
                 if (!IsMessageFomCurrentChannel(message)) continue;
@@ -217,7 +224,7 @@ namespace DCL.Chat.HUD
 
                 messageLogUpdated = true;
             }
-            
+
             if (View.IsActive && messageLogUpdated)
             {
                 // The messages from 'channelId' are marked as read if the channel window is currently open
@@ -359,7 +366,7 @@ namespace DCL.Chat.HUD
                 channel.Joined, channel.MemberCount, channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
         }
-        
+
         private void ClearChatControllerListeners()
         {
             if (chatController == null) return;
@@ -373,7 +380,7 @@ namespace DCL.Chat.HUD
             chatHudController.FocusInputField();
             MarkChannelMessagesAsRead();
         }
-        
+
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
             chatHudController.AddChatMessage(new ChatEntryModel

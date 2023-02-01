@@ -9,7 +9,7 @@ namespace DCL.Chat.HUD
     public class PublicChatWindowController : IHUD
     {
         public IPublicChatWindowView View { get; private set; }
-    
+
         public event Action OnBack;
         public event Action OnClosed;
 
@@ -23,6 +23,8 @@ namespace DCL.Chat.HUD
         private string channelId;
         private bool skipChatInputTrigger;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
+
+        private bool isVisible = true;
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
@@ -67,7 +69,7 @@ namespace DCL.Chat.HUD
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
         }
-    
+
         public void Setup(string channelId)
         {
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
@@ -96,7 +98,7 @@ namespace DCL.Chat.HUD
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
-        
+
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
             if (View != null)
@@ -107,17 +109,22 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible, bool focusInputField)
         {
+            if(isVisible == visible)
+                return;
+
+            isVisible = visible;
+
             SetVisiblePanelList(visible);
             if (visible)
             {
                 View.Show();
                 MarkChannelMessagesAsRead();
-            
+
                 if (focusInputField)
                     chatHudController.FocusInputField();
             }
             else
-            {   
+            {
                 chatHudController.UnfocusInputField();
                 View.Hide();
             }
@@ -153,7 +160,7 @@ namespace DCL.Chat.HUD
             HashSet<string> newSet = visibleTaskbarPanels.Get();
             if (visible)
                 newSet.Add("PublicChatChannel");
-            else 
+            else
                 newSet.Remove("PublicChatChannel");
 
             visibleTaskbarPanels.Set(newSet, true);
@@ -166,15 +173,15 @@ namespace DCL.Chat.HUD
             OnClosed?.Invoke();
         }
 
-        private void HandleViewBacked() 
+        private void HandleViewBacked()
         {
-            OnBack?.Invoke(); 
+            OnBack?.Invoke();
         }
 
         private void HandleMessageReceived(ChatMessage[] messages)
         {
             var messageLogUpdated = false;
-            
+
             foreach (var message in messages)
             {
                 if (message.messageType != ChatMessage.Type.PUBLIC
@@ -184,7 +191,7 @@ namespace DCL.Chat.HUD
                 chatHudController.AddChatMessage(message, View.IsActive);
                 messageLogUpdated = true;
             }
-            
+
             if (View.IsActive && messageLogUpdated)
                 MarkChannelMessagesAsRead();
         }
@@ -196,7 +203,7 @@ namespace DCL.Chat.HUD
             if (!View.IsActive) return;
             chatHudController.FocusInputField();
         }
-    
+
         private void HandleMessageBlockedBySpam(ChatMessage message)
         {
             chatHudController.AddChatMessage(new ChatEntryModel
@@ -208,7 +215,7 @@ namespace DCL.Chat.HUD
                 subType = ChatEntryModel.SubType.RECEIVED
             });
         }
-    
+
         private void MuteChannel(bool muted)
         {
             if (muted)
@@ -216,7 +223,7 @@ namespace DCL.Chat.HUD
             else
                 chatController.UnmuteChannel(channelId);
         }
-    
+
         private PublicChatModel ToPublicChatModel(Channel channel)
         {
             return new PublicChatModel(channel.ChannelId,
@@ -227,7 +234,7 @@ namespace DCL.Chat.HUD
                 channel.Muted,
                 showOnlyOnlineMembersOnPublicChannels);
         }
-    
+
         private void HandleChannelUpdated(Channel updatedChannel)
         {
             if (updatedChannel.ChannelId != channelId) return;
