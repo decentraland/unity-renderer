@@ -596,8 +596,7 @@ export class BrowserInterface {
   /**
    * @deprecated
    */
-  public UserAcceptedCollectibles(_data: { id: string }) {
-  }
+  public UserAcceptedCollectibles(_data: { id: string }) {}
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {

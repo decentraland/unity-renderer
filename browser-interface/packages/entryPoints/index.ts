@@ -1,5 +1,5 @@
-import Hls from "./hlsLoader"
-import { isWebGLCompatible } from "./validations"
+import Hls from './hlsLoader'
+import { isWebGLCompatible } from './validations'
 
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 
@@ -8,7 +8,7 @@ import { sdk } from '@dcl/schemas'
 import { resolveUrlFromUrn } from '@dcl/urn-resolver'
 import { getFromPersistentStorage, setPersistentStorage } from 'atomicHelpers/persistentStorage'
 import { WebSocketProvider } from 'eth-connect'
-import { storeCondition } from "lib/redux/storeCondition"
+import { storeCondition } from 'lib/redux/storeCondition'
 import { initShared } from 'shared'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 import { setResourcesURL } from 'shared/location'
@@ -19,22 +19,18 @@ import { teleportToAction } from 'shared/scene-loader/actions'
 import { getStoredSession } from 'shared/session'
 import { authenticate, initSession } from 'shared/session/actions'
 import { store } from 'shared/store/isolatedStore'
-import { RootState } from "shared/store/rootTypes"
+import { RootState } from 'shared/store/rootTypes'
 import { getInitialPositionFromUrl } from 'shared/world/positionThings'
 import { clientDebug } from 'unity-interface/ClientDebug'
 import { IUnityInterface } from 'unity-interface/IUnityInterface'
 import 'unity-interface/trace'
 import { gridToWorld, parseParcelPosition } from '../atomicHelpers/parcelScenePositions'
-import {
-  DEBUG_WS_MESSAGES,
-  ETHEREUM_NETWORK,
-  HAS_INITIAL_POSITION_MARK
-} from '../config/index'
+import { DEBUG_WS_MESSAGES, ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from '../config/index'
 import { sendHomeScene } from '../shared/atlas/actions'
 import { homePointKey } from '../shared/atlas/utils'
 import { getPreviewSceneId, loadPreviewScene, reloadPlaygroundScene } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
-import { loadWebsiteSystems } from "./loadWebsiteSystems"
+import { loadWebsiteSystems } from './loadWebsiteSystems'
 
 const logger = createLogger('kernel: ')
 
@@ -63,8 +59,6 @@ async function authenticateWhenItsReady(provider: IEthereumProvider, isGuest: bo
 
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-
-
     if (!isWebGLCompatible()) {
       throw new Error(
         "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible. This error may also happen when many tabs are open and the browser doesn't have enough resources available to start Decentraland, if that's the case, please try closing other tabs and specially other Decentraland instances."
@@ -72,13 +66,12 @@ globalThis.DecentralandKernel = {
     }
 
     if (!Hls || !Hls.isSupported) {
-      throw new Error("HTTP Live Streaming did not load")
+      throw new Error('HTTP Live Streaming did not load')
     }
 
     if (!Hls.isSupported()) {
-      throw new Error("HTTP Live Streaming is not supported in your browser")
+      throw new Error('HTTP Live Streaming is not supported in your browser')
     }
-
 
     options.kernelOptions.baseUrl = await resolveBaseUrl(
       options.kernelOptions.baseUrl || orFail('MISSING kernelOptions.baseUrl')
@@ -155,7 +148,7 @@ globalThis.DecentralandKernel = {
             throw new Error('Text provider can only be WebSocket')
           }
         }
-        authenticateWhenItsReady(provider, isGuest)
+        return authenticateWhenItsReady(provider, isGuest)
       },
       on: globalObservable.on.bind(globalObservable),
       version: 'mockedversion',

@@ -1,10 +1,5 @@
 import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
-import {
-  ETHEREUM_NETWORK, getAssetBundlesBaseUrl,
-  getServerConfigurations,
-  PREVIEW,
-  rootURLPreviewMode
-} from 'config'
+import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
 import { all, call, fork, put, select, take } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics'
 import { SELECT_NETWORK } from 'shared/dao/actions'

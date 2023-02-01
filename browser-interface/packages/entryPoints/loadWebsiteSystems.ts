@@ -19,14 +19,10 @@ import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
 import { getRendererInterface } from 'shared/renderer/getRendererInterface'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import {
-  HAS_INITIAL_POSITION_MARK,
-  OPEN_AVATAR_EDITOR,
-  RESET_TUTORIAL
-} from '../config/index'
+import { HAS_INITIAL_POSITION_MARK, OPEN_AVATAR_EDITOR, RESET_TUTORIAL } from '../config/index'
 import { renderingInBackground, renderingInForeground } from '../shared/loadingScreen/types'
 import { kernelConfigForRenderer } from '../unity-interface/kernelConfigForRenderer'
-import { startPreview } from "./index"
+import { startPreview } from './index'
 
 export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
   const renderer = await getRendererInterface()
@@ -104,7 +100,8 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
   // from the renderer
   if (NEEDS_TUTORIAL) {
     const NEW_TUTORIAL_FEATURE_FLAG = getFeatureFlagVariantName(store.getState(), 'new_tutorial_variant')
-    const IS_NEW_TUTORIAL_DISABLED = NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
+    const IS_NEW_TUTORIAL_DISABLED =
+      NEW_TUTORIAL_FEATURE_FLAG === 'disabled' || NEW_TUTORIAL_FEATURE_FLAG === 'undefined' || HAS_INITIAL_POSITION_MARK
     if (IS_NEW_TUTORIAL_DISABLED) {
       const enableNewTutorialCamera = worldConfig ? worldConfig.enableNewTutorialCamera ?? false : false
       const tutorialConfig = {

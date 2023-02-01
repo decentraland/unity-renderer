@@ -1,7 +1,7 @@
 import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 
-import { onLoginCompleted } from "shared/session/onLoginCompleted"
+import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { sdkCompatibilityAvatar } from './Players'
 
 import { UserIdentityServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_identity.gen'

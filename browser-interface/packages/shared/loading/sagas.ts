@@ -20,7 +20,7 @@ import { getCurrentUserId } from 'shared/session/selectors'
 import { LoginState } from '@dcl/kernel-interface'
 import { call } from 'redux-saga-test-plan/matchers'
 import { RootState } from 'shared/store/rootTypes'
-import { onLoginCompleted } from "shared/session/onLoginCompleted"
+import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { getResourcesURL } from 'shared/location'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { getAssetBundlesBaseUrl } from 'config'
