@@ -78,8 +78,12 @@ const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
 export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready' | 'failed'
 export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCycleStatusType }
 
-export const sceneEvents =
-  mitt<{ [SCENE_LOAD]: SceneLoad; [SCENE_START]: SceneStart; [SCENE_FAIL]: SceneFail; [SCENE_UNLOAD]: SceneUnload }>()
+export const sceneEvents = mitt<{
+  [SCENE_LOAD]: SceneLoad
+  [SCENE_START]: SceneStart
+  [SCENE_FAIL]: SceneFail
+  [SCENE_UNLOAD]: SceneUnload
+}>()
 
 function buildWebWorkerTransport(loadableScene: LoadableScene, sdk7: boolean): Transport {
   const loggerName = getSceneNameFromJsonData(loadableScene.entity.metadata) || loadableScene.id

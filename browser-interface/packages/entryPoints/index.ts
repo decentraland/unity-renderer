@@ -1,5 +1,5 @@
-import { isWebGLCompatible } from "./validations"
-import Hls from "./hlsLoader"
+import { isWebGLCompatible } from './validations'
+import Hls from './hlsLoader'
 
 import { renderingInBackground, renderingInForeground } from '../shared/loadingScreen/types'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
@@ -89,8 +89,6 @@ function authenticateWhenItsReady(provider: IEthereumProvider, isGuest: boolean)
 
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-
-
     if (!isWebGLCompatible()) {
       throw new Error(
         "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible. This error may also happen when many tabs are open and the browser doesn't have enough resources available to start Decentraland, if that's the case, please try closing other tabs and specially other Decentraland instances."
@@ -98,13 +96,12 @@ globalThis.DecentralandKernel = {
     }
 
     if (!Hls || !Hls.isSupported) {
-      throw new Error("HTTP Live Streaming did not load")
+      throw new Error('HTTP Live Streaming did not load')
     }
 
     if (!Hls.isSupported()) {
-      throw new Error("HTTP Live Streaming is not supported in your browser")
+      throw new Error('HTTP Live Streaming is not supported in your browser')
     }
-
 
     options.kernelOptions.baseUrl = await resolveBaseUrl(
       options.kernelOptions.baseUrl || orFail('MISSING kernelOptions.baseUrl')
