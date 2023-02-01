@@ -3,7 +3,7 @@ import {
   getFromPersistentStorage,
   removeFromPersistentStorage,
   saveToPersistentStorage
-} from 'atomicHelpers/persistentStorage'
+} from 'lib/browser/persistentStorage'
 import { ETHEREUM_NETWORK } from 'config'
 
 const LOCAL_PROFILES_KEY = 'dcl-local-profile'

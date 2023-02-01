@@ -1,6 +1,4 @@
-import { Vector2Component } from 'atomicHelpers/landHelpers'
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-import { parcelLimits } from 'config'
 import {
   getOwnerNameFromJsonData,
   getSceneDescriptionFromJsonData,
@@ -30,7 +28,8 @@ import { RootAtlasState } from './types'
 import { getTilesRectFromCenter } from '../getTilesRectFromCenter'
 import { LoadableScene } from 'shared/types'
 import { SCENE_LOAD } from 'shared/loading/actions'
-import { parseParcelPosition, worldToGrid } from '../../atomicHelpers/parcelScenePositions'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
 import { getPOIService } from 'shared/dao/selectors'
@@ -38,11 +37,13 @@ import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { Scene } from '@dcl/schemas'
-import { saveToPersistentStorage } from 'atomicHelpers/persistentStorage'
+import { saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import { homePointKey } from './utils'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { trackEvent } from 'shared/analytics'
 import { waitForRealmAdapter } from 'shared/realm/selectors'
+import { parcelSize } from 'lib/decentraland/parcels/limits'
+import { Vector2 } from 'lib/math/Vector2'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -56,12 +57,12 @@ export function* atlasSaga(): any {
   yield takeEvery(SEND_HOME_SCENE_TO_UNITY, sendHomeSceneToUnityAction)
 }
 
-const TRIGGER_DISTANCE = 10 * parcelLimits.parcelSize
+const TRIGGER_DISTANCE = 10 * parcelSize
 const MAX_SCENES_AROUND = 15
 
 function* checkAndReportAround() {
   const userPosition = lastPlayerPosition
-  const lastReport: Vector2Component | undefined = yield select((state) => state.atlas.lastReportPosition)
+  const lastReport: Vector2 | undefined = yield select((state) => state.atlas.lastReportPosition)
 
   if (
     !lastReport ||
@@ -139,7 +140,7 @@ function* reportScenes(scenes: LoadableScene[]): any {
   const minimapSceneInfoResult: MinimapSceneInfo[] = []
 
   scenes.forEach((scene) => {
-    const parcels: Vector2Component[] = []
+    const parcels: Vector2[] = []
     let isPOI: boolean = false
     const metadata: Scene | undefined = scene.entity.metadata
 
@@ -147,7 +148,7 @@ function* reportScenes(scenes: LoadableScene[]): any {
       let sceneName = metadata.display?.title || ''
 
       metadata.scene.parcels.forEach((parcel) => {
-        const xy: Vector2Component = parseParcelPosition(parcel)
+        const xy: Vector2 = parseParcelPosition(parcel)
 
         if (pois.includes(parcel)) {
           isPOI = true

@@ -1,4 +1,4 @@
-import { SortedLimitedQueue } from 'atomicHelpers/SortedLimitedQueue'
+import { SortedLimitedQueue } from 'lib/data-structures/SortedLimitedQueue'
 import { expect } from 'chai'
 
 describe('SortedLimitedQueue', () => {

@@ -1,5 +1,5 @@
 import { AuthChain, Authenticator, AuthIdentity } from '@dcl/crypto'
-import { flatFetch, FlatFetchInit } from './flatFetch'
+import { flatFetch, FlatFetchInit } from 'lib/javascript/flatFetch'
 
 const AUTH_CHAIN_HEADER_PREFIX = 'x-identity-auth-chain-'
 const AUTH_TIMESTAMP_HEADER = 'x-identity-timestamp'

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { isEqual } from 'atomicHelpers/vectorHelpers'
+import { isEqual } from 'lib/math/Vector3'
 
 describe('vectorHelpers unit tests', () => {
   describe('isEqual', () => {

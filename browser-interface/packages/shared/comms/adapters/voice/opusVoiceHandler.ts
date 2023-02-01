@@ -7,7 +7,7 @@ import { getCommsRoom } from 'shared/comms/selectors'
 import { getSpatialParamsFor } from '../../../voiceChat/utils'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 import { store } from 'shared/store/isolatedStore'
-import withCache from 'atomicHelpers/withCache'
+import withCache from 'lib/javascript/withCache'
 
 import './audioDebugger'
 

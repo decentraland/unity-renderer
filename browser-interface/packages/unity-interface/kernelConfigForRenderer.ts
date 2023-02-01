@@ -21,7 +21,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     ...globalState.meta.config.world,
     comms: {
       commRadius: commConfigurations.commRadius,
-      voiceChatEnabled: false
+      voiceChatEnabled: true
     },
     profiles: {
       nameValidCharacterRegex: nameValidCharacterRegex.toString().replace(/[/]/g, ''),

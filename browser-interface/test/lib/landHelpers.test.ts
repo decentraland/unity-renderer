@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import { isEqual, isAdjacent } from 'atomicHelpers/landHelpers'
+import { isAdjacent } from 'lib/decentraland/parcels/isAdjacent'
+import { isEqual } from 'lib/math/Vector2'
 
 describe('landHelpers unit tests', () => {
   describe('isEqual', () => {

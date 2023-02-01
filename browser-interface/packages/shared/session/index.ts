@@ -4,7 +4,7 @@ import {
   getKeysFromPersistentStorage,
   removeFromPersistentStorage,
   saveToPersistentStorage
-} from 'atomicHelpers/persistentStorage'
+} from 'lib/browser/persistentStorage'
 import { StoredSession } from './types'
 import { store } from 'shared/store/isolatedStore'
 
