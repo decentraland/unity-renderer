@@ -1,11 +1,4 @@
-using DCL.Providers;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace DCL.Skybox
 {

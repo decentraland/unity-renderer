@@ -83,11 +83,19 @@ namespace DCL.Skybox
 
         private async void DoAsyncInitializations()
         {
-            materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
-            await GetOrCreateEnvironmentProbe();
-            await LoadConfigurations();
-            skyboxElements = new SkyboxElements();
-            await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer);
+            try
+            {
+                materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
+                await GetOrCreateEnvironmentProbe();
+                await LoadConfigurations();
+                skyboxElements = new SkyboxElements();
+                await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Skybox async initialization failed. Please check that the Essentials group addressables are correct");
+            }
+
 
             // Create skybox Camera
             skyboxCam = new SkyboxCamera();
