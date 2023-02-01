@@ -81,6 +81,10 @@ namespace DCLServices.WearablesCatalogService
             }
 
             var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+
+            if (!pageResponse.success)
+                throw new Exception($"The request of the owned wearables for '{userId}' failed!");
+
             AddWearablesToCatalog(pageResponse.response.wearables);
 
             return pageResponse.response.wearables;
@@ -96,6 +100,9 @@ namespace DCLServices.WearablesCatalogService
                 ct,
                 LambdaPaginatedResponseHelper.GetPageSizeParam(1),
                 LambdaPaginatedResponseHelper.GetPageNumParam(1));
+
+            if (!serviceResponse.success)
+                throw new Exception("The request of the base wearables failed!");
 
             AddWearablesToCatalog(serviceResponse.response.wearables);
 
@@ -126,6 +133,10 @@ namespace DCLServices.WearablesCatalogService
             }
 
             var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+
+            if (!pageResponse.success)
+                throw new Exception($"The request of the '{collectionId}' third party wearables collection of '{userId}' failed!");
+
             AddWearablesToCatalog(pageResponse.response.wearables);
 
             return pageResponse.response.wearables;
@@ -252,29 +263,28 @@ namespace DCLServices.WearablesCatalogService
                     throw;
                 }
 
-                AddWearablesToCatalog(serviceResponse.response.wearables);
-
-                // Resolves found wearables
-                foreach (WearableItem wearable in serviceResponse.response.wearables)
+                if (serviceResponse.success)
                 {
-                    if (!awaitingWearableTasks.TryGetValue(wearable.id, out var wearableSource))
-                        continue;
+                    AddWearablesToCatalog(serviceResponse.response.wearables);
 
-                    wearableSource.TrySetResult(wearable);
-                    awaitingWearableTasks.Remove(wearable.id);
+                    // Resolves found wearables
+                    foreach (WearableItem wearable in serviceResponse.response.wearables)
+                    {
+                        ResolveAwaitingWearableTask(wearable.id, wearable);
 
-                    if (wearable.id == newWearableId)
-                        result = wearable;
+                        if (wearable.id == newWearableId)
+                            result = wearable;
+                    }
+
+                    // Resolves not found wearables
+                    foreach (string id in wearableIds)
+                        ResolveAwaitingWearableTask(id, null);
                 }
-
-                // Resolves not found wearables
-                foreach (string id in wearableIds)
+                else
                 {
-                    if (!awaitingWearableTasks.TryGetValue(id, out var wearableNotFoundSource))
-                        continue;
-
-                    wearableNotFoundSource.TrySetResult(null);
-                    awaitingWearableTasks.Remove(id);
+                    // Resolves failed wearables
+                    foreach (string id in wearableIds)
+                        ResolveAwaitingWearableTask(id, null, $"The request of the wearable '{id}' failed!");
                 }
             }
             else
@@ -287,6 +297,19 @@ namespace DCLServices.WearablesCatalogService
 
         private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
             string.Concat("wearableId=", string.Join("&wearableId=", wearableIds));
+
+        private void ResolveAwaitingWearableTask(string id, WearableItem result, string errorMessage = null)
+        {
+            if (!awaitingWearableTasks.TryGetValue(id, out var wearableSource))
+                return;
+
+            if (string.IsNullOrEmpty(errorMessage))
+                wearableSource.TrySetResult(result);
+            else
+                wearableSource.TrySetException(new Exception(errorMessage));
+
+            awaitingWearableTasks.Remove(id);
+        }
 
         private async UniTaskVoid CheckForUnusedWearablesAsync(CancellationToken ct)
         {
