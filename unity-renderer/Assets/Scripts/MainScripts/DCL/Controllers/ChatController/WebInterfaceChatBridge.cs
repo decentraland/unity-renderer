@@ -15,6 +15,7 @@ namespace DCL.Social.Chat
     {
         private const string JOIN_OR_CREATE_CHANNEL_TASK_ID = "JoinOrCreateChannelAsync";
         private const string GET_CHANNELS_TASK_ID = "GetChannelsAsync";
+        private const double REQUEST_TIMEOUT_SECONDS = 30;
 
         public event Action<InitializeChatPayload> OnInitialized;
         public event Action<ChatMessage[]> OnAddMessage;
@@ -157,7 +158,10 @@ namespace DCL.Social.Chat
             UniTaskCompletionSource<ChannelInfoPayload> task = new ();
             pendingTasks[JOIN_OR_CREATE_CHANNEL_TASK_ID] = task;
             cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
-            return task.Task;
+
+            WebInterface.JoinOrCreateChannel(channelId);
+
+            return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT_SECONDS));
         }
 
         public void JoinOrCreateChannel(string channelId) =>
@@ -181,7 +185,10 @@ namespace DCL.Social.Chat
             UniTaskCompletionSource<ChannelSearchResultsPayload> task = new ();
             pendingTasks[GET_CHANNELS_TASK_ID] = task;
             cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
-            return task.Task;
+
+            WebInterface.GetChannels(limit, paginationToken, name);
+
+            return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT_SECONDS));
         }
 
         public void MuteChannel(string channelId, bool muted) =>
