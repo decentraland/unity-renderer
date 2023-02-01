@@ -52,6 +52,7 @@ public class WorldChatWindowController : IHUD
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
     private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
+    private bool isVisible = true;
     public IWorldChatWindowView View => view;
 
     public event Action OnCloseView;
@@ -195,6 +196,10 @@ public class WorldChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        if (isVisible == visible)
+            return;
+
+        isVisible = visible;
         SetVisiblePanelList(visible);
 
         if (visible)
@@ -264,7 +269,7 @@ public class WorldChatWindowController : IHUD
     private void RequestJoinedChannels()
     {
         if ((DateTime.UtcNow - channelsRequestTimestamp).TotalSeconds < 3) return;
-        
+
         // skip=0: we do not support pagination for channels, it is supposed that a user can have a limited amount of joined channels
         chatController.GetJoinedChannels(CHANNELS_PAGE_SIZE, 0);
         channelsRequestTimestamp = DateTime.UtcNow;
@@ -293,7 +298,7 @@ public class WorldChatWindowController : IHUD
         AutomaticJoinChannelList joinChannelList = channelsFeatureFlagService.GetAutoJoinChannelsList();
         if (joinChannelList == null) return;
         if (joinChannelList.automaticJoinChannelList == null) return;
-        
+
         foreach (var channel in joinChannelList.automaticJoinChannelList)
         {
             var channelId = channel.channelId;
