@@ -194,6 +194,7 @@ public class WorldChatWindowControllerShould
     public void Hide()
     {
         controller.Initialize(view);
+        controller.isVisible = true;
         controller.SetVisibility(false);
 
         view.Received(1).Hide();
@@ -217,6 +218,7 @@ public class WorldChatWindowControllerShould
     public void HideWhenRequested()
     {
         controller.Initialize(view);
+        controller.isVisible = true;
         view.OnClose += Raise.Event<Action>();
 
         view.Received(1).Hide();
