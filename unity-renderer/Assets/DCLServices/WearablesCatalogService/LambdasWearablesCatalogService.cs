@@ -196,7 +196,7 @@ namespace DCLServices.WearablesCatalogService
                 WearablesCatalog[wearableItem.id] = wearableItem;
 
                 if (wearablesInUseCounters.ContainsKey(wearableItem.id))
-                    wearablesInUseCounters[wearableItem.id] = 10000; //A high value to ensure they are not removed
+                    wearablesInUseCounters[wearableItem.id] = int.MaxValue; //A high value to ensure they are not removed
             }
         }
 
