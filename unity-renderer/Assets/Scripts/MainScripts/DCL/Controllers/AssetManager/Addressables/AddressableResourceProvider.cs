@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -39,9 +38,10 @@ namespace DCL.Providers
         public async UniTask<T> GetAddressable<T>(string key, CancellationToken cancellationToken = default)
         {
             //This function does nothing if initialization has already occurred
-            await Addressables.InitializeAsync().WithCancellation(cancellationToken);;
+            await Addressables.InitializeAsync().WithCancellation(cancellationToken);
+
             AsyncOperationHandle<T> request = Addressables.LoadAssetAsync<T>(key);
-            await request.WithCancellation(cancellationToken);;
+            await request.WithCancellation(cancellationToken);
             return request.Result;
         }
 
