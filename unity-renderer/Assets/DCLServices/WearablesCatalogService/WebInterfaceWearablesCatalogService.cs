@@ -24,7 +24,6 @@ namespace DCLServices.WearablesCatalogService
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const float REQUESTS_TIME_OUT_SECONDS = 45;
         private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
-        private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
 
         public static WebInterfaceWearablesCatalogService Instance { get; private set; }
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; private set; }
@@ -109,7 +108,7 @@ namespace DCLServices.WearablesCatalogService
                 awaitingWearableTasks[newWearableId] = source = new UniTaskCompletionSource<WearableItem>();
             }
 
-            await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
+            await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
             WearableItem result = null;
 
@@ -319,7 +318,7 @@ namespace DCLServices.WearablesCatalogService
         {
             while (!ct.IsCancellationRequested)
             {
-                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
                 if (pendingWearableRequestedTimes.Count <= 0)
                     continue;
@@ -341,7 +340,7 @@ namespace DCLServices.WearablesCatalogService
         {
             while (!ct.IsCancellationRequested)
             {
-                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
                 if (pendingWearablesByContextRequestedTimes.Count <= 0)
                     continue;

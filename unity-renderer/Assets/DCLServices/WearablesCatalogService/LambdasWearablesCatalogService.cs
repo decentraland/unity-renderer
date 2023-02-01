@@ -24,7 +24,6 @@ namespace DCLServices.WearablesCatalogService
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
-        private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
 
         private Service<ILambdasService> lambdasService;
         private CancellationTokenSource serviceCts;
@@ -231,7 +230,7 @@ namespace DCLServices.WearablesCatalogService
                 awaitingWearableTasks[newWearableId] = source = new UniTaskCompletionSource<WearableItem>();
             }
 
-            await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
+            await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
             WearableItem result = null;
 
