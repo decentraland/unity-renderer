@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -35,12 +36,19 @@ namespace DCL.Skybox
         private List<RightPanelPins> rightPanelPins = new List<RightPanelPins>() { new RightPanelPins { part = SkyboxEditorToolsParts.BG_Layer, name = "Background Layer" } };
 
         private CopyFunctionality copyPasteObj;
-        private SkyboxElements skyboxElements;
+        private static SkyboxElements skyboxElements;
 
+        private static SkyboxConfiguration[] tConfigurations;
         [MenuItem("Window/Skybox Editor")]
         static async void Init()
         {
-            await MaterialReferenceContainer.InitializeAddressable(new AddressableResourceProvider());
+            AddressableResourceProvider addressableResourceProvider = new AddressableResourceProvider();
+            await MaterialReferenceContainer.InitializeAddressable(addressableResourceProvider);
+            IList<SkyboxConfiguration> configurations = await addressableResourceProvider.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration");
+            tConfigurations = configurations.ToArray();
+            skyboxElements = new SkyboxElements();
+            await skyboxElements.Initialize(addressableResourceProvider);
+
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
             window.minSize = new Vector2(500, 500);
             window.Initialize();
@@ -535,11 +543,6 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
-
-            if (skyboxElements == null)
-            {
-                skyboxElements = new SkyboxElements();
-            }
         }
 
         void TakeControlAtRuntime()
@@ -570,8 +573,7 @@ namespace DCL.Skybox
             SkyboxConfiguration temp = null;
             temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
             temp.skyboxID = name;
-
-            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/Resources/Skybox Configurations/" + name + ".asset");
+            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/SkyboxAddressables/Skybox Configurations/" + name + ".asset");
             AssetDatabase.CreateAsset(temp, path);
             AssetDatabase.SaveAssets();
 
@@ -580,7 +582,6 @@ namespace DCL.Skybox
 
         private void UpdateConfigurationsList()
         {
-            SkyboxConfiguration[] tConfigurations = Resources.LoadAll<SkyboxConfiguration>("Skybox Configurations/");
             configurations = new List<SkyboxConfiguration>(tConfigurations);
             configurationNames = new List<string>();
 
