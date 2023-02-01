@@ -532,8 +532,11 @@ public class TaskbarHUDController : IHUD
 
     private void CloseVoiceChatWindow()
     {
-        voiceChatHud?.SetVisibility(false);
-        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        if(voiceChatHud.IsVisible)
+        {
+            voiceChatHud?.SetVisibility(false);
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        }
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)

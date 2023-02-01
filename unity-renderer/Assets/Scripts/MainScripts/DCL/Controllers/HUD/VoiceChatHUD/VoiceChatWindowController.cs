@@ -41,10 +41,9 @@ public class VoiceChatWindowController : IHUD
     private Coroutine updateMuteStatusRoutine = null;
     internal bool isMuteAll = false;
     internal bool isJoined = false;
-    
-    public event Action OnCloseView;
 
-    public VoiceChatWindowController() { }
+    public bool IsVisible { get; private set; }
+    public event Action OnCloseView;
 
     public VoiceChatWindowController(
         IUserProfileBridge userProfileBridge,
@@ -110,8 +109,13 @@ public class VoiceChatWindowController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        if (IsVisible == visible)
+            return;
+
         if (voiceChatWindowView == null)
             return;
+
+        IsVisible = visible;
 
         SetVisiblePanelList(visible);
         if (visible)
@@ -131,7 +135,7 @@ public class VoiceChatWindowController : IHUD
         visibleTaskbarPanels.Set(newSet, true);
     }
 
-    public void SetUsersMuted(string[] usersId, bool isMuted) 
+    public void SetUsersMuted(string[] usersId, bool isMuted)
     {
         for (int i = 0; i < usersId.Length; i++)
         {
@@ -145,8 +149,8 @@ public class VoiceChatWindowController : IHUD
         SetWhichPlayerIsTalking();
     }
 
-    public void SetVoiceChatRecording(bool recording) 
-    { 
+    public void SetVoiceChatRecording(bool recording)
+    {
         voiceChatBarView.PlayVoiceChatRecordingAnimation(recording);
         isOwnPLayerTalking = recording;
         SetWhichPlayerIsTalking();
@@ -241,7 +245,7 @@ public class VoiceChatWindowController : IHUD
 
         if (otherProfile == null)
             return;
-        
+
         voiceChatWindowView.AddOrUpdatePlayer(otherProfile);
 
         if (!trackedUsersHashSet.Contains(userId))

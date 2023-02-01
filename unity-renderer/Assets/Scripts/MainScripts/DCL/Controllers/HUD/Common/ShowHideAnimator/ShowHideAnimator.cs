@@ -80,9 +80,7 @@ public class ShowHideAnimator : MonoBehaviour
         // When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
         float duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
 
-        canvasGroup.interactable = visible;
         canvasGroup.blocksRaycasts = visible;
-
         canvasGroup.DOKill();
 
         return canvasGroup.DOFade(visible ? 1 : 0, duration)
