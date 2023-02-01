@@ -41,7 +41,6 @@ namespace DCL.Chat.Notifications
         private int notificationCount = 1;
         private TMP_Text notificationMessage;
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
-        private BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
         public static MainChatNotificationsComponentView Create()
         {
@@ -59,7 +58,6 @@ namespace DCL.Chat.Notifications
 
         public override void Show(bool instant = false)
         {
-            openedChat.Set("");
             gameObject.SetActive(true);
         }
 

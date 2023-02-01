@@ -32,6 +32,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
         private CancellationTokenSource fadeOutCT = new ();
         private UserProfile internalOwnUserProfile;
+
         private UserProfile ownUserProfile
         {
             get
@@ -40,6 +41,7 @@ namespace DCL.Chat.Notifications
                 return internalOwnUserProfile;
             }
         }
+
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
 
         public ChatNotificationController(DataStore dataStore,
@@ -119,8 +121,6 @@ namespace DCL.Chat.Notifications
                 if (message.messageType != ChatMessage.Type.PRIVATE &&
                     message.messageType != ChatMessage.Type.PUBLIC) return;
 
-                if (message.sender == ownUserProfile.userId) return;
-
                 var span = Utils.UnixToDateTimeWithTime((ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
                            Utils.UnixToDateTimeWithTime(message.timestamp);
 
@@ -137,51 +137,51 @@ namespace DCL.Chat.Notifications
                 if (notificationEntries.Contains(message.messageId)) return;
                 notificationEntries.Add(message.messageId);
 
-                AddNotification(message, channel).Forget();
+                AddNotificationAsync(message, channel).Forget();
             }
         }
 
-        private async UniTaskVoid AddNotification(ChatMessage message, Channel channel = null)
+        private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null)
         {
-            var peerId = ExtractPeerId(message);
-            var peerProfile = userProfileBridge.Get(peerId);
-            var peerName = peerProfile?.userName ?? peerId;
-            var peerProfilePicture = peerProfile?.face256SnapshotURL;
-            var body = message.body;
+            string body = message.body;
 
             switch (message.messageType)
             {
                 case ChatMessage.Type.PRIVATE:
+                    string peerId = ExtractPeerId(message);
+                    UserProfile peerProfile = userProfileBridge.Get(peerId);
+                    string peerName = peerProfile?.userName ?? peerId;
+                    string peerProfilePicture = peerProfile?.face256SnapshotURL;
+
                     var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
                         message.sender, body, message.timestamp, peerName, peerProfilePicture);
 
-                    if (message.sender != openedChat.Get())
-                    {
-                        mainChatNotificationView.AddNewChatNotification(privateModel);
+                    mainChatNotificationView.AddNewChatNotification(privateModel);
 
+                    if (message.sender != openedChat.Get())
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(privateModel);
-                    }
 
                     break;
                 case ChatMessage.Type.PUBLIC:
+                    UserProfile senderProfile = userProfileBridge.Get(message.sender);
+                    string senderName = senderProfile?.userName ?? message.sender;
+
                     if (IsProfanityFilteringEnabled())
                     {
-                        peerName = await profanityFilter.Filter(peerProfile?.userName ?? peerId);
+                        senderName = await profanityFilter.Filter(senderName);
                         body = await profanityFilter.Filter(message.body);
                     }
 
                     var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
                         body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
-                        peerName);
+                        senderName);
 
-                    if (channel?.ChannelId != openedChat.Get())
-                    {
-                        mainChatNotificationView.AddNewChatNotification(publicModel);
+                    mainChatNotificationView.AddNewChatNotification(publicModel);
 
+                    if (message.sender != openedChat.Get())
                         if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
                             topNotificationView.AddNewChatNotification(publicModel);
-                    }
 
                     break;
             }
