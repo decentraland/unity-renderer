@@ -23,7 +23,6 @@ namespace DCLServices.WearablesCatalogService
         private const string THIRD_PARTY_WEARABLES_CONTEXT = "ThirdPartyWearables";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const float REQUESTS_TIME_OUT_SECONDS = 45;
-        private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
 
         public static WebInterfaceWearablesCatalogService Instance { get; private set; }
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; private set; }
@@ -50,9 +49,6 @@ namespace DCLServices.WearablesCatalogService
             {
                 CheckForRequestsTimeOutsAsync(serviceCts.Token).Forget();
                 CheckForRequestsByContextTimeOutsAsync(serviceCts.Token).Forget();
-
-                // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
-                CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
             }
             catch (OperationCanceledException) { }
         }
@@ -289,6 +285,12 @@ namespace DCLServices.WearablesCatalogService
                     continue;
 
                 wearablesInUseCounters[wearableToRemove]--;
+
+                if (wearablesInUseCounters[wearableToRemove] <= 0)
+                    continue;
+
+                WearablesCatalog.Remove(wearableToRemove);
+                wearablesInUseCounters.Remove(wearableToRemove);
             }
         }
 
@@ -356,23 +358,6 @@ namespace DCLServices.WearablesCatalogService
                     ResolvePendingWearablesByContext(expiredRequestToRemove, null,
                         $"The request for the wearable context '{expiredRequestToRemove}' has exceed the set timeout!");
                 }
-            }
-        }
-
-        private async UniTaskVoid CheckForUnusedWearablesAsync(CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(TIME_TO_CHECK_FOR_UNUSED_WEARABLES), cancellationToken: ct);
-
-                if (wearablesInUseCounters.Count <= 0)
-                    continue;
-
-                var wearablesToRemove = from wearableInUse in wearablesInUseCounters
-                    where wearableInUse.Value <= 0
-                    select wearableInUse.Key;
-
-                RemoveWearablesFromCatalog(wearablesToRemove);
             }
         }
 

@@ -21,7 +21,6 @@ namespace DCLServices.WearablesCatalogService
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
-        private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
 
         private Service<ILambdasService> lambdasService;
         private CancellationTokenSource serviceCts;
@@ -39,13 +38,6 @@ namespace DCLServices.WearablesCatalogService
         public void Initialize()
         {
             serviceCts = serviceCts.SafeRestart();
-
-            try
-            {
-                // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
-                CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
-            }
-            catch (OperationCanceledException) { }
         }
 
         public void Dispose()
@@ -186,6 +178,12 @@ namespace DCLServices.WearablesCatalogService
                     continue;
 
                 wearablesInUseCounters[wearableToRemove]--;
+
+                if (wearablesInUseCounters[wearableToRemove] <= 0)
+                    continue;
+
+                WearablesCatalog.Remove(wearableToRemove);
+                wearablesInUseCounters.Remove(wearableToRemove);
             }
         }
 
@@ -301,23 +299,6 @@ namespace DCLServices.WearablesCatalogService
                 wearableSource.TrySetException(new Exception(errorMessage));
 
             awaitingWearableTasks.Remove(id);
-        }
-
-        private async UniTaskVoid CheckForUnusedWearablesAsync(CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(TIME_TO_CHECK_FOR_UNUSED_WEARABLES), cancellationToken: ct);
-
-                if (wearablesInUseCounters.Count <= 0)
-                    continue;
-
-                var wearablesToRemove = from wearableInUse in wearablesInUseCounters
-                    where wearableInUse.Value <= 0
-                    select wearableInUse.Key;
-
-                RemoveWearablesFromCatalog(wearablesToRemove);
-            }
         }
     }
 }
