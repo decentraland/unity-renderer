@@ -52,7 +52,7 @@ public class WorldChatWindowController : IHUD
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
     private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-    private bool isVisible = true;
+    internal bool isVisible = true;
     public IWorldChatWindowView View => view;
 
     public event Action OnCloseView;

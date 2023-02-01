@@ -57,6 +57,8 @@ public class WorldChatWindowControllerShould
             channelsFeatureFlagService,
             browserBridge,
             CommonScriptableObjects.rendererState);
+
+        controller.isVisible = false;
         view = Substitute.For<IWorldChatWindowView>();
     }
 
@@ -437,7 +439,7 @@ public class WorldChatWindowControllerShould
 
         socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "manual");
     }
-    
+
     [Test]
     public void TrackAutoChannelJoined()
     {
@@ -596,9 +598,9 @@ public class WorldChatWindowControllerShould
         chatController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
         controller.Initialize(view);
-        
+
         controller.SetVisibility(true);
-        
+
         view.Received(1).HideChannelsLoading();
     }
 

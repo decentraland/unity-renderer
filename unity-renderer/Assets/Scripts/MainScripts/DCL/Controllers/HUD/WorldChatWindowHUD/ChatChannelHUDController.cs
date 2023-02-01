@@ -36,7 +36,7 @@ namespace DCL.Chat.HUD
         private ChatMessage oldestMessage;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-        private bool isVisible = true;
+        internal bool isVisible = true;
 
         public event Action OnPressBack;
         public event Action OnClosed;

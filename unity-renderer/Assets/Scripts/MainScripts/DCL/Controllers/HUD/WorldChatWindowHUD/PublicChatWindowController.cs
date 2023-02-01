@@ -24,7 +24,7 @@ namespace DCL.Chat.HUD
         private bool skipChatInputTrigger;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-        private bool isVisible = true;
+        internal bool isVisible = true;
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
