@@ -1,18 +1,24 @@
 using Cysharp.Threading.Tasks;
 using DCL.Chat;
+using DCL.Chat.Channels;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Social.Chat.Channels
 {
     public class JoinChannelComponentControllerShould
     {
+        const string TEST_CHANNEL_NAME = "TestId";
+        const string CHANNEL_ID = "channelId";
+
         private JoinChannelComponentController joinChannelComponentController;
         private IJoinChannelComponentView view;
         private IChatController chatController;
@@ -84,8 +90,6 @@ namespace DCL.Social.Chat.Channels
         public void JoinChannelWhenIsAlreadyAllocated()
         {
             // Arrange
-            const string TEST_CHANNEL_NAME = "TestId";
-            const string CHANNEL_ID = "channelId";
             Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
 
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower())
@@ -107,9 +111,6 @@ namespace DCL.Social.Chat.Channels
         public void JoinChannelWhenIsAlreadyCreatedButNotFetched()
         {
             // Arrange
-            const string TEST_CHANNEL_NAME = "TestId";
-            const string CHANNEL_ID = "channelId";
-
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
 
             Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME.ToLower(), 0, 1, false, false, "");
@@ -132,8 +133,6 @@ namespace DCL.Social.Chat.Channels
         [Test]
         public void DoNotJoinChannelWhenIsNotCreated()
         {
-            const string TEST_CHANNEL_NAME = "TestId";
-            const string CHANNEL_ID = "channelId";
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
 
             chatController.GetChannelsByNameAsync(1, TEST_CHANNEL_NAME.ToLower(), null, Arg.Any<CancellationToken>())
@@ -150,7 +149,6 @@ namespace DCL.Social.Chat.Channels
         [Test]
         public void DoNotJoinChannelWhenTheFetchedChannelIsNotTheSame()
         {
-            const string TEST_CHANNEL_NAME = "TestId";
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
 
             chatController.GetChannelsByNameAsync(1, TEST_CHANNEL_NAME.ToLower(), null, Arg.Any<CancellationToken>())
@@ -164,27 +162,54 @@ namespace DCL.Social.Chat.Channels
             view.Received(1).Hide();
         }
 
-        // [Test]
-        // public void HideWhenThereIsAnException()
+        [Test]
+        public void HideWhenThereIsAnException()
+        {
+            LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
+
+            chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
+
+            chatController.GetChannelsByNameAsync(1, TEST_CHANNEL_NAME.ToLower(), null, Arg.Any<CancellationToken>())
+                          .Returns(UniTask.FromException<(string, Channel[])>(new TimeoutException()));
+
+            view.OnConfirmJoin += Raise.Event<Action<string>>(TEST_CHANNEL_NAME);
+
+            view.Received(1).Hide();
+        }
+
+        [Test]
+        public void ShowErrorToastWhenThereIsAChannelException()
+        {
+            LogAssert.Expect(LogType.Exception, new Regex("ChannelException"));
+
+            chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
+
+            chatController.GetChannelsByNameAsync(1, TEST_CHANNEL_NAME.ToLower(), null, Arg.Any<CancellationToken>())
+                          .Returns(UniTask.FromException<(string, Channel[])>(new ChannelException(CHANNEL_ID, ChannelErrorCode.Unknown)));
+
+            var called = false;
+            dataStore.notifications.DefaultErrorNotification.OnChange += (current, previous) => called = true;
+
+            view.OnConfirmJoin += Raise.Event<Action<string>>(TEST_CHANNEL_NAME);
+
+            Assert.IsTrue(called);
+        }
 
         [Test]
         public void TrackChannelLinkClickWhenCancel()
         {
-            const string channelId = "channelId";
             dataStore.HUDs.visibleTaskbarPanels.Set(new HashSet<string> { "PrivateChatChannel" });
-            channelsDataStore.currentJoinChannelModal.Set(channelId, true);
+            channelsDataStore.currentJoinChannelModal.Set(CHANNEL_ID, true);
             channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
 
             view.OnCancelJoin += Raise.Event<Action>();
 
-            socialAnalytics.Received(1).SendChannelLinkClicked(channelId, false, ChannelLinkSource.Chat);
+            socialAnalytics.Received(1).SendChannelLinkClicked(CHANNEL_ID, false, ChannelLinkSource.Chat);
         }
 
         [Test]
         public void TrackChannelLinkClickWhenConfirm()
         {
-            const string TEST_CHANNEL_NAME = "TestId";
-            const string CHANNEL_ID = "channelId";
             Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
 
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower())
