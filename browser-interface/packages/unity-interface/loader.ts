@@ -85,10 +85,10 @@ function extractSemver(url: string): string | null {
 }
 
 async function initializeWebRenderer(options: RendererOptions): Promise<DecentralandRendererInstance> {
-  const rendererVersion = options.versionQueryParam
+  const explorerVersion = options.versionQueryParam
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) =>
-    new URL(file + (rendererVersion ? '?v=' + rendererVersion : ''), baseUrl).toString()
+    new URL(file + (explorerVersion ? '?v=' + explorerVersion : ''), baseUrl).toString()
 
   const enableBrotli =
     typeof options.enableBrotli != 'undefined' ? !!options.enableBrotli : document.location.protocol == 'https:'
@@ -138,13 +138,13 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
 }
 
 export async function loadUnity(baseUrl: string, options: CommonRendererOptions): Promise<LoadRendererResult> {
-  const rendererVersion = extractSemver(baseUrl) || 'dynamic'
+  const explorerVersion = extractSemver(baseUrl) || 'dynamic'
 
   let startTime = performance.now()
 
-  trackEvent('unity_loader_downloading_start', { renderer_version: rendererVersion })
+  trackEvent('unity_loader_downloading_start', { renderer_version: explorerVersion })
   trackEvent('unity_loader_downloading_end', {
-    renderer_version: rendererVersion,
+    renderer_version: explorerVersion,
     loading_time: performance.now() - startTime
   })
 
@@ -153,24 +153,24 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
       let didLoadUnity = false
 
       startTime = performance.now()
-      trackEvent('unity_downloading_start', { renderer_version: rendererVersion })
+      trackEvent('unity_downloading_start', { renderer_version: explorerVersion })
 
       function onProgress(progress: number) {
         // 0.9 is harcoded in unityLoader, it marks the download-complete event
         if (0.9 === progress && !didLoadUnity) {
           trackEvent('unity_downloading_end', {
-            renderer_version: rendererVersion,
+            renderer_version: explorerVersion,
             loading_time: performance.now() - startTime
           })
 
           startTime = performance.now()
-          trackEvent('unity_initializing_start', { renderer_version: rendererVersion })
+          trackEvent('unity_initializing_start', { renderer_version: explorerVersion })
           didLoadUnity = true
         }
         // 1.0 marks the engine-initialized event
         if (1.0 === progress) {
           trackEvent('unity_initializing_end', {
-            renderer_version: rendererVersion,
+            renderer_version: explorerVersion,
             loading_time: performance.now() - startTime
           })
         }
@@ -179,7 +179,7 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
       return initializeWebRenderer({
         baseUrl,
         canvas,
-        versionQueryParam: rendererVersion === 'dynamic' ? Date.now().toString() : rendererVersion,
+        versionQueryParam: explorerVersion === 'dynamic' ? Date.now().toString() : explorerVersion,
         onProgress,
         onMessageLegacy: options.onMessage,
         onError: (error) => {
