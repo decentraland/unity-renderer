@@ -39,9 +39,7 @@ namespace DCL.Components.Video.Plugin
         
         public void Update()
         {
-            VideoState force = plugin.GetState(videoPlayerId);
-            force = VideoState.ERROR;
-            switch (force)
+            switch (plugin.GetState(videoPlayerId))
             {
                 case VideoState.ERROR:
                     string newError = plugin.GetError(videoPlayerId);
@@ -57,7 +55,8 @@ namespace DCL.Components.Video.Plugin
                     if (!isReady)
                     {
                         isReady = true;
-                        texture = plugin.PrepareTexture(videoPlayerId);
+                        //texture = plugin.PrepareTexture(videoPlayerId);
+                        SetAsError();
                     }
 
                     if (playWhenReady)
@@ -68,8 +67,8 @@ namespace DCL.Components.Video.Plugin
 
                     break;
                 case VideoState.PLAYING:
-                    if (visible)
-                        plugin.TextureUpdate(videoPlayerId);
+                    //if (visible)
+                    //    plugin.TextureUpdate(videoPlayerId);
 
                     break;
             }
