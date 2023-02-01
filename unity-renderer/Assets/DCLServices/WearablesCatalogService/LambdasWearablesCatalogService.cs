@@ -27,8 +27,8 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableResponse>> thirdPartyCollectionPagePointers = new ();
-        private readonly Dictionary<string, UniTaskCompletionSource<WearableItem>> awaitingWearableTasks = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
+        private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
         {
@@ -202,7 +202,6 @@ namespace DCLServices.WearablesCatalogService
         {
             WearablesCatalog.Clear();
             wearablesInUseCounters.Clear();
-            awaitingWearableTasks.Clear();
             pendingWearablesToRequest.Clear();
         }
 
@@ -219,18 +218,19 @@ namespace DCLServices.WearablesCatalogService
 
         private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {
-            if (!awaitingWearableTasks.TryGetValue(newWearableId, out var source))
-            {
-                pendingWearablesToRequest.Add(newWearableId);
-                awaitingWearableTasks[newWearableId] = source = new UniTaskCompletionSource<WearableItem>();
-            }
+            pendingWearablesToRequest.Add(newWearableId);
 
             await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
-            WearableItem result = null;
+            lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+            IReadOnlyList<WearableItem> result;
 
             if (pendingWearablesToRequest.Count > 0)
             {
+                var source = lastRequestSource;
+                lastRequestSource = null;   // TODO: We cannot set lastRequestSource to NULL here because it will make the other requests will never end.
+                                            //       In the line 261 we are doing an `await lastRequestSource.Task`, but as lastRequestSource is NULL, it never ends.
+
                 using var wearableIdsPool = PoolUtils.RentList<string>();
                 var wearableIds = wearableIdsPool.GetList();
                 wearableIds.AddRange(pendingWearablesToRequest);
@@ -253,52 +253,19 @@ namespace DCLServices.WearablesCatalogService
                     throw;
                 }
 
-                if (serviceResponse.success)
-                {
-                    AddWearablesToCatalog(serviceResponse.response.wearables);
-
-                    // Resolves found wearables
-                    foreach (WearableItem wearable in serviceResponse.response.wearables)
-                    {
-                        ResolveAwaitingWearableTask(wearable.id, wearable);
-
-                        if (wearable.id == newWearableId)
-                            result = wearable;
-                    }
-
-                    // Resolves not found wearables
-                    foreach (string id in wearableIds)
-                        ResolveAwaitingWearableTask(id, null);
-                }
-                else
-                {
-                    // Resolves failed wearables
-                    foreach (string id in wearableIds)
-                        ResolveAwaitingWearableTask(id, null, $"The request of the wearable '{id}' failed!");
-                }
+                AddWearablesToCatalog(serviceResponse.response.wearables);
+                result = serviceResponse.response.wearables;
+                source.TrySetResult(result);
             }
             else
-                result = await source.Task;
+                result = await lastRequestSource.Task;
 
             ct.ThrowIfCancellationRequested();
 
-            return result;
+            return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
             wearableIds.Select(id => ("wearableId", id)).ToArray();
-
-        private void ResolveAwaitingWearableTask(string id, WearableItem result, string errorMessage = null)
-        {
-            if (!awaitingWearableTasks.TryGetValue(id, out var wearableSource))
-                return;
-
-            if (string.IsNullOrEmpty(errorMessage))
-                wearableSource.TrySetResult(result);
-            else
-                wearableSource.TrySetException(new Exception(errorMessage));
-
-            awaitingWearableTasks.Remove(id);
-        }
     }
 }
