@@ -45,10 +45,10 @@ namespace DCL.Helpers
 
         public static void Save()
         {
-#if UNITY_WEBGL
-            Application.ExternalEval("FS.syncfs(false, function (err) {})");
-#endif
             PlayerPrefs.Save();
+#if UNITY_WEBGL
+            Application.ExternalEval("FS.syncfs(false, function (err) { console.error(err); })");
+#endif
         }
 
         public static float GetFloat(string key, float defaultValue = 0f) =>
