@@ -1,5 +1,6 @@
 using DCL;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class DynamicOBJLoaderController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
     [HideInInspector] public bool alreadyLoadedAsset = false;
     [HideInInspector] public GameObject loadedOBJGameObject;
 
-    IWebRequestAsyncOperation asyncOp = null;
+    private UnityWebRequest uwr = null;
 
     void Awake()
     {
@@ -32,25 +33,22 @@ public class DynamicOBJLoaderController : MonoBehaviour
             OBJUrl = url;
         }
 
-        if (asyncOp != null)
-        {
-            asyncOp.Dispose();
-        }
+        uwr?.Dispose();
 
         LoadAsset();
     }
 
-    void LoadAsset()
+    async void LoadAsset()
     {
         if (!string.IsNullOrEmpty(OBJUrl))
         {
             Destroy(loadedOBJGameObject);
 
-            asyncOp = Environment.i.platform.webRequest.Get(
+            uwr = await Environment.i.platform.webRequest.GetAsync(
                 url: OBJUrl,
-                OnSuccess: (webRequestResult) =>
+                onSuccess: (request) =>
                 {
-                    loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequestResult.webRequest.downloadHandler.text, true);
+                    loadedOBJGameObject = OBJLoader.LoadOBJFile(request.downloadHandler.text, true);
                     loadedOBJGameObject.name = "LoadedOBJ";
                     loadedOBJGameObject.transform.SetParent(transform);
                     loadedOBJGameObject.transform.localPosition = Vector3.zero;
@@ -58,9 +56,9 @@ public class DynamicOBJLoaderController : MonoBehaviour
                     OnFinishedLoadingAsset?.Invoke();
                     alreadyLoadedAsset = true;
                 },
-                OnFail: (webRequestResult) =>
+                onFail: (request) =>
                 {
-                    Debug.Log("Couldn't get OBJ, error: " + webRequestResult.webRequest.error + " ... " + OBJUrl);
+                    Debug.Log("Couldn't get OBJ, error: " + request.error + " ... " + OBJUrl);
                 });
         }
         else
@@ -76,10 +74,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
 
     void OnDestroy()
     {
-        if (asyncOp != null)
-        {
-            asyncOp.Dispose();
-        }
+        uwr?.Dispose();
 
         Destroy(loadingPlaceholder);
         Destroy(loadedOBJGameObject);

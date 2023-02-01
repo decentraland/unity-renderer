@@ -15,7 +15,7 @@ namespace DCL
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
 
-        private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new ();
+        private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
 
         private WebRequestController(
             IWebRequestFactory getWebRequestFactory,
@@ -59,15 +59,29 @@ namespace DCL
             this.audioClipWebRequestFactory = audioClipWebRequest;
         }
 
-        public IWebRequestAsyncOperation Get(
+        public async UniTask<UnityWebRequest> GetAsync(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true,
+            CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null)
+        {
+            return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onFail, requestAttemps,
+                timeout, cancellationToken, headers);
+        }
+
+        public IWebRequestAsyncOperation Get(
+                string url,
+                DownloadHandler downloadHandler = null,
+                Action<IWebRequestAsyncOperation> OnSuccess = null,
+                Action<IWebRequestAsyncOperation> OnFail = null,
+                int requestAttemps = 3,
+                int timeout = 0,
+                bool disposeOnCompleted = true,
+                Dictionary<string, string> headers = null)
         {
             return SendWebRequest(getWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
@@ -167,7 +181,7 @@ namespace DCL
             bool disposeOnCompleted,
             Dictionary<string, string> headers = null,
             WebRequestAsyncOperation asyncOp = null
-        ) where T: IWebRequestFactory
+        ) where T : IWebRequestFactory
         {
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
 
@@ -176,7 +190,8 @@ namespace DCL
 
             if (headers != null)
             {
-                foreach (var item in headers) { request.SetRequestHeader(item.Key, item.Value); }
+                foreach (var item in headers)
+                { request.SetRequestHeader(item.Key, item.Value); }
             }
 
             if (downloadHandler != null)
@@ -300,7 +315,8 @@ namespace DCL
 
         public void Dispose()
         {
-            foreach (var webRequest in ongoingWebRequests) { webRequest.Dispose(); }
+            foreach (var webRequest in ongoingWebRequests)
+            { webRequest.Dispose(); }
         }
     }
 }
