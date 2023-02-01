@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,9 +46,6 @@ namespace DCLServices.WearablesCatalogService
 
             try
             {
-                // All the requests happened during the same frames interval are sent together
-                CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
-
                 // Check unused wearables (to be removed from our catalog) only every [TIME_TO_CHECK_FOR_UNUSED_WEARABLES] seconds
                 CheckForUnusedWearablesAsync(serviceCts.Token).Forget();
             }
@@ -133,22 +131,6 @@ namespace DCLServices.WearablesCatalogService
             return pageResponse.response.wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
-        {
-            var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
-                "",
-                WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
-                REQUESTS_TIME_OUT_SECONDS,
-                ATTEMPTS_NUMBER,
-                ct,
-                LambdaPaginatedResponseHelper.GetPageSizeParam(1),
-                LambdaPaginatedResponseHelper.GetPageNumParam(1));
-
-            AddWearablesToCatalog(serviceResponse.response.wearables);
-
-            return serviceResponse.response.wearables;
-        }
-
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
             if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
@@ -163,16 +145,8 @@ namespace DCLServices.WearablesCatalogService
 
             try
             {
-                if (!awaitingWearableTasks.TryGetValue(wearableId, out var taskResult))
-                {
-                    taskResult = new UniTaskCompletionSource<WearableItem>();
-                    awaitingWearableTasks.Add(wearableId, taskResult);
-
-                    // We accumulate all the requests during the same frames interval to send them all together
-                    pendingWearablesToRequest.Add(wearableId);
-                }
-
-                return await taskResult.Task.AttachExternalCancellation(ct);
+                // All the requests happened during the same frames interval are sent together
+                return await SyncWearablesRequestsAsync(wearableId, ct);
             }
             catch (OperationCanceledException) { return null; }
         }
@@ -242,33 +216,77 @@ namespace DCLServices.WearablesCatalogService
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
 
-        private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
-            string.Concat("wearableId=", string.Join("&wearableId=", wearableIds));
-
-        private async UniTaskVoid CheckForSendingPendingRequestsAsync(CancellationToken ct)
+        private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
+            if (!awaitingWearableTasks.TryGetValue(newWearableId, out var source))
             {
-                await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
+                pendingWearablesToRequest.Add(newWearableId);
+                awaitingWearableTasks[newWearableId] = source = new UniTaskCompletionSource<WearableItem>();
+            }
 
-                if (pendingWearablesToRequest.Count <= 0)
-                    continue;
+            await UniTask.DelayFrame(FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS, cancellationToken: ct);
 
-                string[] wearablesToRequest = pendingWearablesToRequest.ToArray();
+            WearableItem result = null;
+
+            if (pendingWearablesToRequest.Count > 0)
+            {
+                using var wearableIdsPool = PoolUtils.RentList<string>();
+                var wearableIds = wearableIdsPool.GetList();
+                wearableIds.AddRange(pendingWearablesToRequest);
                 pendingWearablesToRequest.Clear();
 
-                var requestedWearables = await RequestWearablesAsync(wearablesToRequest, ct);
-                List<string> wearablesNotFound = wearablesToRequest.ToList();
-                foreach (WearableItem wearable in requestedWearables)
+                (WearableResponse response, bool success) serviceResponse;
+
+                try
                 {
-                    wearablesNotFound.Remove(wearable.id);
-                    ResolvePendingWearableById(wearable.id, wearable);
+                    serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
+                        "",
+                        WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
+                        REQUESTS_TIME_OUT_SECONDS,
+                        ATTEMPTS_NUMBER,
+                        serviceCts.Token);
+                }
+                catch (Exception e)
+                {
+                    source.TrySetException(e);
+                    throw;
                 }
 
-                foreach (string wearableNotFound in wearablesNotFound)
-                    ResolvePendingWearableById(wearableNotFound, null);
+                AddWearablesToCatalog(serviceResponse.response.wearables);
+
+                // Resolves found wearables
+                foreach (WearableItem wearable in serviceResponse.response.wearables)
+                {
+                    if (!awaitingWearableTasks.TryGetValue(wearable.id, out var wearableSource))
+                        continue;
+
+                    wearableSource.TrySetResult(wearable);
+                    awaitingWearableTasks.Remove(wearable.id);
+
+                    if (wearable.id == newWearableId)
+                        result = wearable;
+                }
+
+                // Resolves not found wearables
+                foreach (string id in wearableIds)
+                {
+                    if (!awaitingWearableTasks.TryGetValue(id, out var wearableNotFoundSource))
+                        continue;
+
+                    wearableNotFoundSource.TrySetResult(null);
+                    awaitingWearableTasks.Remove(id);
+                }
             }
+            else
+                result = await source.Task;
+
+            ct.ThrowIfCancellationRequested();
+
+            return result;
         }
+
+        private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
+            string.Concat("wearableId=", string.Join("&wearableId=", wearableIds));
 
         private async UniTaskVoid CheckForUnusedWearablesAsync(CancellationToken ct)
         {
@@ -285,19 +303,6 @@ namespace DCLServices.WearablesCatalogService
 
                 RemoveWearablesFromCatalog(wearablesToRemove);
             }
-        }
-
-        private void ResolvePendingWearableById(string wearableId, WearableItem result, string errorMessage = "")
-        {
-            if (!awaitingWearableTasks.TryGetValue(wearableId, out var task))
-                return;
-
-            if (string.IsNullOrEmpty(errorMessage))
-                task.TrySetResult(result);
-            else
-                task.TrySetException(new Exception(errorMessage));
-
-            awaitingWearableTasks.Remove(wearableId);
         }
     }
 }

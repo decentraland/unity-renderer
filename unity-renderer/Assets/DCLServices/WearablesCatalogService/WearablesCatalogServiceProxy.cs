@@ -64,12 +64,6 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestThirdPartyWearablesByCollectionAsync(userId, collectionId, pageNumber, pageSize, cleanCachedPages, ct);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearablesAsync(string[] wearableIds, CancellationToken ct)
-        {
-            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
-            return await wearablesCatalogServiceInUse.RequestWearablesAsync(wearableIds, ct);
-        }
-
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
             await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
@@ -102,7 +96,7 @@ namespace DCLServices.WearablesCatalogService
             {
                 lambdasWearablesCatalogService.Initialize();
                 wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
-                webInterfaceWearablesCatalogService?.Dispose();
+                webInterfaceWearablesCatalogService.Dispose();
             }
 
             isInitialized = true;
