@@ -497,13 +497,13 @@ function initChatCommands() {
   })
 
   addChatCommand('version', 'Shows application version', (_message) => {
-    const { kernelVersion, rendererVersion } = getUsedComponentVersions()
+    const { explorerVersion } = getUsedComponentVersions()
     return {
       messageId: uuid(),
       sender: 'Decentraland',
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: `\nKernel: ${kernelVersion}\nRenderer: ${rendererVersion}`
+      body: `\nExplorer: ${explorerVersion}\n`
     }
   })
 
