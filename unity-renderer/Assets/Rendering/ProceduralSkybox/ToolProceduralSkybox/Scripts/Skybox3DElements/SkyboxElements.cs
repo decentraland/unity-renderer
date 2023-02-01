@@ -1,8 +1,9 @@
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
-using Object = System.Object;
 
 namespace DCL.Skybox
 {
@@ -13,9 +14,9 @@ namespace DCL.Skybox
         public SkyboxPlanarElements planarElements;
         public SkyboxElementsReferences references;
 
-        public SkyboxElements()
+        public async Task Initialize(IAddressableResourceProvider addresableResolver)
         {
-            references = SkyboxElementsReferences.Create().Result;
+            references = await SkyboxElementsReferences.Create(addresableResolver);
 
             domeElements = new SkyboxDomeElements(references.domeElementsGO);
             satelliteElements = new SkyboxSatelliteElements(references.satelliteElementsGO);
@@ -48,5 +49,7 @@ namespace DCL.Skybox
 #endif
             references = null;
         }
+
+
     }
 }

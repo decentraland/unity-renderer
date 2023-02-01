@@ -9,23 +9,18 @@ namespace DCL.Skybox
 {
     public class SkyboxElementsReferences : MonoBehaviour
     {
-        private const string PREFAB = "Skybox Elements.prefab";
+        private const string PREFAB = "SkyboxElements.prefab";
 
         public GameObject domeElementsGO;
         public GameObject satelliteElementsGO;
         public GameObject planarElementsGO;
 
-        private static Service<IAddressableResourceProvider> addresableResolver;
-
-        public static async Task<SkyboxElementsReferences> Create()
+        public static async Task<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider)
         {
-            Debug.Log($"STARTING TO LOAD {PREFAB}");
             CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfterSlim(TimeSpan.FromSeconds(5));
-            GameObject prefabToInstantiate = await addresableResolver.Ref.GetAddressable<GameObject>(PREFAB, cts.Token);
-            Debug.Log($"LOADED {PREFAB}");
+            cts.CancelAfterSlim(TimeSpan.FromSeconds(15));
+            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB, cts.Token);
             var refernces = Instantiate(prefabToInstantiate).GetComponent<SkyboxElementsReferences>();
-            refernces.gameObject.name = "_Skybox Elements";
             return refernces;
         }
     }

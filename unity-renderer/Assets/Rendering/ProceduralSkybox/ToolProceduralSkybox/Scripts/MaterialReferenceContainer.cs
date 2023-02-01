@@ -1,6 +1,11 @@
+using DCL.Providers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Skybox
 {
@@ -8,24 +13,19 @@ namespace DCL.Skybox
     public class MaterialReferenceContainer : ScriptableObject
     {
         private static MaterialReferenceContainer instance;
-        public static MaterialReferenceContainer i => GetOrLoad(ref instance, "Skybox Materials/SkyboxMaterialData");
+        public static MaterialReferenceContainer i;
 
         public Material skyboxMat;
         public int skyboxMatSlots = 5;
         public Material domeMat;
 
-        private static T GetOrLoad<T>(ref T variable, string path) where T : Object
-        {
-            if (variable == null)
-            {
-                variable = Resources.Load<T>(path);
-            }
-
-            return variable;
-        }
-
         public Material GetSkyboxMaterial() { return skyboxMat; }
 
         public Material GetDomeMaterial() { return domeMat; }
+
+        public static async Task InitializeAddressable(IAddressableResourceProvider addresableResolver)
+        {
+            i = await addresableResolver.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
+        }
     }
 }

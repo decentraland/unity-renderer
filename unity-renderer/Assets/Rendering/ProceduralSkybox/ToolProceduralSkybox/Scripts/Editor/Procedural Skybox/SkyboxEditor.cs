@@ -1,3 +1,4 @@
+using DCL.Providers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,8 +38,9 @@ namespace DCL.Skybox
         private SkyboxElements skyboxElements;
 
         [MenuItem("Window/Skybox Editor")]
-        static void Init()
+        static async void Init()
         {
+            await MaterialReferenceContainer.InitializeAddressable(new AddressableResourceProvider());
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
             window.minSize = new Vector2(500, 500);
             window.Initialize();

@@ -53,6 +53,7 @@ namespace DCL.Skybox
         private ITimeReporter timeReporter { get; set; } = new TimeReporter();
 
         private Service<IAddressableResourceProvider> addresableResolver;
+        private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
 
         public SkyboxController()
         {
@@ -76,12 +77,17 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            GetOrCreateEnvironmentProbe().ContinueWith((t) => ContinueInitialization());
+            DoAsyncInitializations();
         }
 
-        private void ContinueInitialization()
+        private async void DoAsyncInitializations()
         {
+            await MaterialReferenceContainer.InitializeAddressable(addresableResolver.Ref);
+            await GetOrCreateEnvironmentProbe();
+            await LoadConfigurations();
+
             skyboxElements = new SkyboxElements();
+            await skyboxElements.Initialize(addresableResolver.Ref);
 
             // Create skybox Camera
             skyboxCam = new SkyboxCamera();
@@ -102,16 +108,30 @@ namespace DCL.Skybox
 
             KernelConfig.i.OnChange += KernelConfig_OnChange;
 
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
-            // Register UI related events
-            DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
-            DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
 
             // Register for camera references
             DataStore.i.camera.transform.OnChange += AssignCameraReferences;
             AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
+
+            // Register UI related events
+            DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
+            DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
+            // Forcing a call because we may have missed the change during the addressable load
+            UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
+            FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
+        }
+
+        private async Task LoadConfigurations()
+        {
+            IList<SkyboxConfiguration> skyboxConfigurations = await addresableResolver.Ref.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration");
+            skyboxConfigurationsDictionary = new Dictionary<string, SkyboxConfiguration>();
+            foreach (SkyboxConfiguration skyboxConfiguration in skyboxConfigurations)
+            {
+                skyboxConfigurationsDictionary.Add(skyboxConfiguration.name, skyboxConfiguration);
+            }
         }
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
@@ -120,7 +140,7 @@ namespace DCL.Skybox
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
-        private void FixedTime_OnChange(float current, float previous)
+        private void FixedTime_OnChange(float current, float _ = 0)
         {
             if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
@@ -133,7 +153,7 @@ namespace DCL.Skybox
             }
         }
 
-        private void UseDynamicSkybox_OnChange(SkyboxMode current, SkyboxMode _)
+        private void UseDynamicSkybox_OnChange(SkyboxMode current, SkyboxMode _ = SkyboxMode.Dynamic)
         {
             if (current == SkyboxMode.Dynamic)
             {
@@ -171,7 +191,7 @@ namespace DCL.Skybox
             if (skyboxProbe == null)
             {
                 CancellationTokenSource cts = new CancellationTokenSource();
-                cts.CancelAfterSlim(TimeSpan.FromSeconds(5));
+                cts.CancelAfterSlim(TimeSpan.FromSeconds(15));
                 // Instantiate new probe from the resources
                 GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab", cts.Token);
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
@@ -236,6 +256,7 @@ namespace DCL.Skybox
             // Call update on skybox config which will call Update config in this class.
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
         }
+
 
         /// <summary>
         /// Called whenever any change in skyboxConfig is observed
@@ -311,14 +332,15 @@ namespace DCL.Skybox
         /// <summary>
         /// Apply changed configuration
         /// </summary>
-        bool ApplyConfig()
+        private bool ApplyConfig()
         {
             if (overrideByEditor)
             {
                 return false;
             }
 
-            if (!SelectSkyboxConfiguration().Result)
+            bool gotConfiguration = SelectSkyboxConfiguration();
+            if (!gotConfiguration)
             {
                 return false;
             }
@@ -368,7 +390,7 @@ namespace DCL.Skybox
         /// <summary>
         /// Select Configuration to load.
         /// </summary>
-        private async Task<bool> SelectSkyboxConfiguration()
+        private bool SelectSkyboxConfiguration()
         {
             bool tempConfigLoaded = true;
 
@@ -391,10 +413,7 @@ namespace DCL.Skybox
                 return tempConfigLoaded;
             }
 
-
-            CancellationTokenSource ct = new CancellationTokenSource();
-            ct.CancelAfterSlim(TimeSpan.FromSeconds(5));
-            SkyboxConfiguration newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset", ct.Token);
+            SkyboxConfiguration newConfiguration = skyboxConfigurationsDictionary[configToLoad];
 
             if (newConfiguration == null)
             {
@@ -403,9 +422,7 @@ namespace DCL.Skybox
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
-                CancellationTokenSource ct2 = new CancellationTokenSource();
-                ct2.CancelAfterSlim(TimeSpan.FromSeconds(5));
-                newConfiguration = await addresableResolver.Ref.GetAddressable<SkyboxConfiguration>($"{configToLoad}.asset", ct2.Token);
+                newConfiguration = skyboxConfigurationsDictionary[configToLoad];
 
                 if (newConfiguration == null)
                 {
@@ -447,7 +464,7 @@ namespace DCL.Skybox
                 AssignCameraInstancetoProbe();
             }
 
-            if (configuration == null || isPaused)
+            if (isPaused || configuration == null)
             {
                 return;
             }
