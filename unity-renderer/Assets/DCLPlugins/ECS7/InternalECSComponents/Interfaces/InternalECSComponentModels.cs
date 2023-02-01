@@ -51,6 +51,7 @@ namespace DCL.ECS7.InternalComponents
 
         public Queue<EventData> events;
         public int lastTimestamp;
+        public long lastEntity;
     }
 
     public class InternalUiContainer : InternalComponent
