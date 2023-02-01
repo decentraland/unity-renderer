@@ -42,7 +42,7 @@ interface IChatCommand {
 }
 
 const chatCommands: { [key: string]: IChatCommand } = {}
-const excludeList = ['help', 'airdrop', 'feelinglonely']
+const excludeList = ['help', 'feelinglonely']
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }

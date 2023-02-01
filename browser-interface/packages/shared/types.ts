@@ -360,7 +360,10 @@ export enum HUDElementID {
   EXPRESSIONS = 6,
 
   PLAYER_INFO_CARD = 7,
+
+  /** @deprecaed */
   AIRDROPPING = 8,
+
   TERMS_OF_SERVICE = 9,
   WORLD_CHAT_WINDOW = 10,
   TASKBAR = 11,

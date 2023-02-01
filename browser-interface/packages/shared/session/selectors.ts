@@ -14,4 +14,5 @@ export const getProvider = (state: RootSessionState): IEthereumProvider | undefi
 
 export function isLoginCompleted(state: RootSessionState) {
   return state.session.identity && state.session.provider && state.session.loginState === LoginState.COMPLETED
+    || false
 }

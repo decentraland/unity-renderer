@@ -1,7 +1,6 @@
 import { Vector3 } from '@dcl/ecs-math'
 import lodash from 'lodash'
 import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
-import { AirdropInfo } from 'shared/airdrops/interface'
 import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
 import {
   HUDConfiguration,
@@ -369,10 +368,6 @@ export class UnityInterface implements IUnityInterface {
       'SetTutorialEnabledForUsersThatAlreadyDidTheTutorial',
       JSON.stringify(tutorialConfig)
     )
-  }
-
-  public TriggerAirdropDisplay(_data: AirdropInfo) {
-    // Disabled for security reasons
   }
 
   public AddMessageToChatWindow(message: ChatMessage) {

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Vector3 } from '@dcl/ecs-math'
-import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
+import type { EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
+import type { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { Observable } from 'mz-observable'
-import { AirdropInfo } from '../shared/airdrops/interface'
 import {
   RenderProfile,
   InstancedSpawnPoint,
@@ -164,7 +163,6 @@ export interface IUnityInterface {
   UpdateMinimapSceneInformation(info: MinimapSceneInfo[]): void
   SetTutorialEnabled(tutorialConfig: TutorialInitializationMessage): void
   SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(tutorialConfig: TutorialInitializationMessage): void
-  TriggerAirdropDisplay(data: AirdropInfo): void
   AddMessageToChatWindow(message: ChatMessage): void
   AddChatMessages(addChatMessagesPayload: AddChatMessagesPayload): void
 
@@ -258,7 +256,7 @@ export interface IUnityInterface {
   PreloadFileBuilder(url: string): void
   GetMousePositionBuilder(x: string, y: string, id: string): void
   TakeScreenshotBuilder(id: string): void
-  SetCameraPositionBuilder(position: Vector3): void
+  SetCameraPositionBuilder(position: EcsMathReadOnlyVector3): void
   SetCameraRotationBuilder(aplha: number, beta: number): void
   ResetCameraZoomBuilder(): void
   SetBuilderGridResolution(position: number, rotation: number, scale: number): void

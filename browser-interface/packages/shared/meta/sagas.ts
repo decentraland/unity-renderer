@@ -1,24 +1,22 @@
-import { call, put, select, take, all, fork } from 'redux-saga/effects'
+import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
 import {
-  ETHEREUM_NETWORK,
-  FORCE_RENDERING_STYLE,
-  getAssetBundlesBaseUrl,
+  ETHEREUM_NETWORK, getAssetBundlesBaseUrl,
   getServerConfigurations,
   PREVIEW,
   rootURLPreviewMode
 } from 'config'
-import { META_CONFIGURATION_INITIALIZED, metaConfigurationInitialized } from './actions'
-import defaultLogger from '../logger'
-import { FeatureFlagsName, MetaConfiguration, WorldConfig } from './types'
-import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { SELECT_NETWORK } from 'shared/dao/actions'
-import { RootState } from 'shared/store/rootTypes'
-import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
+import { all, call, fork, put, select, take } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics'
+import { SELECT_NETWORK } from 'shared/dao/actions'
+import { getSelectedNetwork } from 'shared/dao/selectors'
 import { addKernelPortableExperience } from 'shared/portableExperiences/actions'
-import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
+import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
+import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
+import defaultLogger from '../logger'
+import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
+import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
+import { FeatureFlagsName, MetaConfiguration } from './types'
 
 export function* waitForMetaConfigurationInitialization() {
   const configInitialized: boolean = yield select(isMetaConfigurationInitialized)
@@ -47,14 +45,6 @@ function* initMeta() {
     ...config,
     comms: config.comms,
     featureFlagsV2: flagsAndVariants
-  }
-
-  if (FORCE_RENDERING_STYLE) {
-    if (!merge.world) {
-      merge.world = {} as WorldConfig
-    }
-
-    merge.world.renderProfile = FORCE_RENDERING_STYLE
   }
 
   yield put(metaConfigurationInitialized(merge))

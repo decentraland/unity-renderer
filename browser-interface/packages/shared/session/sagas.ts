@@ -33,7 +33,7 @@ import {
   SignUpAction
 } from './actions'
 import { localProfilesRepo } from '../profiles/sagas'
-import { getCurrentIdentity, getIsGuestLogin, isLoginCompleted } from './selectors'
+import { getCurrentIdentity, getIsGuestLogin } from './selectors'
 import { waitForRoomConnection } from '../dao/sagas'
 import { saveProfileDelta } from '../profiles/actions'
 import { DecentralandIdentity, LoginState } from '@dcl/kernel-interface'
@@ -309,22 +309,6 @@ export function observeAccountStateChange(
       previousState = currentState
       accountStateChange(previousState, currentState)
     }
-  })
-}
-
-export async function onLoginCompleted(): Promise<SessionState> {
-  const state = store.getState()
-
-  if (isLoginCompleted(state)) return state.session
-
-  return new Promise<SessionState>((resolve) => {
-    const unsubscribe = store.subscribe(() => {
-      const state = store.getState()
-      if (isLoginCompleted(state)) {
-        unsubscribe()
-        return resolve(state.session)
-      }
-    })
   })
 }
 

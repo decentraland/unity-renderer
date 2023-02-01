@@ -593,9 +593,10 @@ export class BrowserInterface {
     futures[data.id].resolve(data.cameraTarget)
   }
 
+  /**
+   * @deprecated
+   */
   public UserAcceptedCollectibles(_data: { id: string }) {
-    // Here, we should have "airdropObservable.notifyObservers(data.id)".
-    // It's disabled because of security reasons.
   }
 
   /** @deprecated */
