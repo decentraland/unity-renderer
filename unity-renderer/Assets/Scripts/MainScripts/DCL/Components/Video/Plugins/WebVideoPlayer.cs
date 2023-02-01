@@ -36,10 +36,12 @@ namespace DCL.Components.Video.Plugin
 
             SetAsLoading();
         }
-
+        
         public void Update()
         {
-            switch (plugin.GetState(videoPlayerId))
+            VideoState force = plugin.GetState(videoPlayerId);
+            force = VideoState.ERROR;
+            switch (force)
             {
                 case VideoState.ERROR:
                     string newError = plugin.GetError(videoPlayerId);
