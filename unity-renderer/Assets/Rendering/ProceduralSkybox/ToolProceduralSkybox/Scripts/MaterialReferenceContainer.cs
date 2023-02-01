@@ -12,9 +12,6 @@ namespace DCL.Skybox
     [CreateAssetMenu(fileName = "SkyboxMaterialData", menuName = "ScriptableObjects/SkyboxMaterialData", order = 1)]
     public class MaterialReferenceContainer : ScriptableObject
     {
-        private static MaterialReferenceContainer instance;
-        public static MaterialReferenceContainer i;
-
         public Material skyboxMat;
         public int skyboxMatSlots = 5;
         public Material domeMat;
@@ -23,9 +20,5 @@ namespace DCL.Skybox
 
         public Material GetDomeMaterial() { return domeMat; }
 
-        public static async Task InitializeAddressable(IAddressableResourceProvider addresableResolver)
-        {
-            i = await addresableResolver.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
-        }
     }
 }

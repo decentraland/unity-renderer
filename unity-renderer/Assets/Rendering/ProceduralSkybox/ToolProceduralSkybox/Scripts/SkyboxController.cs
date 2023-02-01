@@ -54,6 +54,7 @@ namespace DCL.Skybox
 
         private Service<IAddressableResourceProvider> addresableResolver;
         private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
+        private MaterialReferenceContainer materialReferenceContainer;
 
         public SkyboxController()
         {
@@ -82,12 +83,11 @@ namespace DCL.Skybox
 
         private async void DoAsyncInitializations()
         {
-            await MaterialReferenceContainer.InitializeAddressable(addresableResolver.Ref);
+            materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
             await GetOrCreateEnvironmentProbe();
             await LoadConfigurations();
-
             skyboxElements = new SkyboxElements();
-            await skyboxElements.Initialize(addresableResolver.Ref);
+            await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer);
 
             // Create skybox Camera
             skyboxCam = new SkyboxCamera();
@@ -442,8 +442,8 @@ namespace DCL.Skybox
             newConfiguration.OnTimelineEvent += Configuration_OnTimelineEvent;
             configuration = newConfiguration;
 
-            selectedMat = MaterialReferenceContainer.i.skyboxMat;
-            slotCount = MaterialReferenceContainer.i.skyboxMatSlots;
+            selectedMat = materialReferenceContainer.skyboxMat;
+            slotCount = materialReferenceContainer.skyboxMatSlots;
             configuration.ResetMaterial(selectedMat, slotCount);
 
             RenderSettings.skybox = selectedMat;

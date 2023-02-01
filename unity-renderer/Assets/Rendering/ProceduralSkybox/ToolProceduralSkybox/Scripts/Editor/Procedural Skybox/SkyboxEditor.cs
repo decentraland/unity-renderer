@@ -39,15 +39,16 @@ namespace DCL.Skybox
         private static SkyboxElements skyboxElements;
 
         private static SkyboxConfiguration[] tConfigurations;
+        private static MaterialReferenceContainer materialReferenceContainer;
         [MenuItem("Window/Skybox Editor")]
         static async void Init()
         {
             AddressableResourceProvider addressableResourceProvider = new AddressableResourceProvider();
-            await MaterialReferenceContainer.InitializeAddressable(addressableResourceProvider);
+            materialReferenceContainer = await addressableResourceProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
             IList<SkyboxConfiguration> configurations = await addressableResourceProvider.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration");
             tConfigurations = configurations.ToArray();
             skyboxElements = new SkyboxElements();
-            await skyboxElements.Initialize(addressableResourceProvider);
+            await skyboxElements.Initialize(addressableResourceProvider, materialReferenceContainer);
 
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
             window.minSize = new Vector2(500, 500);
@@ -561,8 +562,8 @@ namespace DCL.Skybox
 
         void InitializeMaterial()
         {
-            selectedMat = MaterialReferenceContainer.i.skyboxMat;
-            selectedConfiguration.ResetMaterial(selectedMat, MaterialReferenceContainer.i.skyboxMatSlots);
+            selectedMat = materialReferenceContainer.skyboxMat;
+            selectedConfiguration.ResetMaterial(selectedMat, materialReferenceContainer.skyboxMatSlots);
             RenderSettings.skybox = selectedMat;
         }
 
@@ -626,7 +627,7 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, materialReferenceContainer.skyboxMatSlots, directionalLight);
 
             skyboxElements?.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
 

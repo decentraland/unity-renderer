@@ -14,11 +14,11 @@ namespace DCL.Skybox
         public SkyboxPlanarElements planarElements;
         public SkyboxElementsReferences references;
 
-        public async Task Initialize(IAddressableResourceProvider addresableResolver)
+        public async Task Initialize(IAddressableResourceProvider addresableResolver, MaterialReferenceContainer materialReferenceContainer)
         {
             references = await SkyboxElementsReferences.Create(addresableResolver);
 
-            domeElements = new SkyboxDomeElements(references.domeElementsGO);
+            domeElements = new SkyboxDomeElements(references.domeElementsGO, materialReferenceContainer);
             satelliteElements = new SkyboxSatelliteElements(references.satelliteElementsGO);
             planarElements = new SkyboxPlanarElements(references.planarElementsGO);
         }
