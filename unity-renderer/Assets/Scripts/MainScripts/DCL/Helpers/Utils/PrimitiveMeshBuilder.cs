@@ -127,6 +127,8 @@ namespace DCL.Helpers
 
         public static Mesh BuildPlane(float _size)
         {
+            return BuildPlaneV2(_size);
+            
             Mesh mesh = new Mesh();
             mesh.name = "DCL Plane";
             Vector3[] vertices = new Vector3[8];
