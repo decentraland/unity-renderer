@@ -17,10 +17,8 @@ namespace DCLServices.WearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
-        private const string WEARABLES_BY_OWNER_END_POINT = "nfts/wearables/{userId}/";
-        private const string WEARABLES_BY_COLLECTION_END_POINT = "collections/wearables?collectionId={collectionId}/";
-        private const string WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT = "nfts/wearables/{userId}?collectionId={collectionId}/";
-        private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?{wearableIdsQuery}/";
+        private const string PAGINATED_WEARABLES_END_POINT = "nfts/wearables/";
+        private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
@@ -73,8 +71,8 @@ namespace DCLServices.WearablesCatalogService
 
             if (createNewPointer)
             {
-                ownerWearablesPagePointers[userId] = pagePointer = new (
-                    WEARABLES_BY_OWNER_END_POINT.Replace("{userId}", userId),
+                ownerWearablesPagePointers[userId] = pagePointer = new LambdaResponsePagePointer<WearableResponse>(
+                    PAGINATED_WEARABLES_END_POINT + userId,
                     pageSize, ct, this);
             }
 
@@ -91,9 +89,10 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
             var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
-                "",
-                WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
+                NON_PAGINATED_WEARABLES_END_POINT,
+                NON_PAGINATED_WEARABLES_END_POINT,
                 REQUESTS_TIME_OUT_SECONDS,
+                urlEncodedParams: ("collectionId", BASE_WEARABLES_COLLECTION_ID),
                 cancellationToken: ct);
 
             if (!serviceResponse.success)
@@ -120,10 +119,8 @@ namespace DCLServices.WearablesCatalogService
 
             if (createNewPointer)
             {
-                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new (
-                    WEARABLES_BY_THIRD_PARTY_COLLECTION_END_POINT
-                       .Replace("{userId}", userId)
-                       .Replace("{collectionId}", collectionId),
+                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new LambdaResponsePagePointer<WearableResponse>(
+                    PAGINATED_WEARABLES_END_POINT + $"{userId}?collectionId={collectionId}",
                     pageSize, ct, this);
             }
 
@@ -214,7 +211,7 @@ namespace DCLServices.WearablesCatalogService
         UniTask<(WearableResponse response, bool success)> ILambdaServiceConsumer<WearableResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<WearableResponse>(
-                "",
+                PAGINATED_WEARABLES_END_POINT,
                 endPoint,
                 REQUESTS_TIME_OUT_SECONDS,
                 ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
@@ -246,9 +243,10 @@ namespace DCLServices.WearablesCatalogService
                 try
                 {
                     serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
-                        "",
-                        WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
+                        NON_PAGINATED_WEARABLES_END_POINT,
+                        NON_PAGINATED_WEARABLES_END_POINT,
                         REQUESTS_TIME_OUT_SECONDS,
+                        urlEncodedParams: GetWearablesUrlParams(wearableIds),
                         cancellationToken: serviceCts.Token);
                 }
                 catch (Exception e)
@@ -289,8 +287,8 @@ namespace DCLServices.WearablesCatalogService
             return result;
         }
 
-        private string GetWearablesQuery(IReadOnlyList<string> wearableIds) =>
-            string.Concat("wearableId=", string.Join("&wearableId=", wearableIds));
+        private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
+            wearableIds.Select(id => ("wearableId", id)).ToArray();
 
         private void ResolveAwaitingWearableTask(string id, WearableItem result, string errorMessage = null)
         {
