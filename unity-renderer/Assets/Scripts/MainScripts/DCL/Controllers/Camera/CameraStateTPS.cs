@@ -183,7 +183,7 @@ namespace DCL.Camera
                 var horizontalAxisLookAt = payload.y - cameraTarget.y;
                 verticalAxisLookAt = new Vector3(cameraTarget.x - payload.x, 0, cameraTarget.z - payload.z);
 
-                if (verticalAxisLookAt.sqrMagnitude == 0)
+                if (verticalAxisLookAt is { x: 0, y: 0, z: 0 })
                     verticalAxisLookAt = Vector3.forward;
 
                 eulerDir.y = Vector3.SignedAngle(Vector3.forward, verticalAxisLookAt, Vector3.up);

@@ -430,7 +430,7 @@ public class DCLCharacterController : MonoBehaviour
             //               if we dont do this, the character wont rotate when moving, only when the platform rotates
             var newForward = newCharacterForward + lastFrameDifference;
 
-            if (newForward.sqrMagnitude == 0)
+            if (newForward is { x: 0, y: 0, z: 0 })
                 newForward = Vector3.forward;
 
             CommonScriptableObjects.characterForward.Set(newForward);
