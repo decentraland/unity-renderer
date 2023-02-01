@@ -127,9 +127,6 @@ namespace DCL.Skybox
             // Register UI related events
             DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
-            // Forcing a call because we may have missed the change during the addressable load
-            UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
-            FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
         }
 
         private async Task LoadConfigurations()
