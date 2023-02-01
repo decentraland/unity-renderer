@@ -87,7 +87,7 @@ namespace DCL
             return SendWebRequest(postWebRequestFactory, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
-        public async UniTask<UnityWebRequest> GetAssetBundleAsync(
+        public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Action<UnityWebRequest> onSuccess = null,
             Action<UnityWebRequest> onfail = null,
@@ -99,7 +99,7 @@ namespace DCL
                 timeout, cancellationToken);
         }
 
-        public async UniTask<UnityWebRequest> GetAssetBundleAsync(
+        public async UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Hash128 hash,
             Action<UnityWebRequest> onSuccess = null,
@@ -111,30 +111,6 @@ namespace DCL
             assetBundleFactory.SetHash(hash);
             return await SendWebRequest(assetBundleFactory, url, null, onSuccess, onfail, requestAttemps,
                 timeout, cancellationToken);
-        }
-
-        public IWebRequestAsyncOperation GetAssetBundle(
-            string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true)
-        {
-            return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
-        }
-
-        public IWebRequestAsyncOperation GetAssetBundle(
-            string url,
-            Hash128 hash,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true)
-        {
-            assetBundleFactory.SetHash(hash);
-            return SendWebRequest(assetBundleFactory, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 
         public async UniTask<UnityWebRequest> GetTextureAsync(

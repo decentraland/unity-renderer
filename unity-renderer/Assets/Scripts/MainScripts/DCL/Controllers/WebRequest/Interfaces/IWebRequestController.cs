@@ -78,7 +78,7 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        UniTask<UnityWebRequest> GetAssetBundleAsync(
+        UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Action<UnityWebRequest> onSuccess = null,
             Action<UnityWebRequest> onfail = null,
@@ -96,7 +96,7 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        UniTask<UnityWebRequest> GetAssetBundleAsync(
+        UniTask<UnityWebRequest> GetAssetBundle(
             string url,
             Hash128 hash,
             Action<UnityWebRequest> onSuccess = null,
@@ -104,42 +104,6 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default);
-        
-        /// <summary>
-        /// Download an Asset Bundle from a url.
-        /// </summary>
-        /// <param name="url">Url where to make the request.</param>
-        /// <param name="OnSuccess">This action will be executed if the request successfully finishes and it includes the request with the data downloaded.</param>
-        /// <param name="OnFail">This action will be executed if the request fails.</param>
-        /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
-        /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
-        /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetAssetBundle(
-            string url,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true);
-
-        /// <summary>
-        /// Download an Asset Bundle from a url.
-        /// </summary>
-        /// <param name="url">Url where to make the request.</param>
-        /// <param name="hash">Hash to use for caching the AB to disk/indexedDB.</param>
-        /// <param name="OnSuccess">This action will be executed if the request successfully finishes and it includes the request with the data downloaded.</param>
-        /// <param name="OnFail">This action will be executed if the request fails.</param>
-        /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
-        /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
-        /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        IWebRequestAsyncOperation GetAssetBundle(
-            string url,
-            Hash128 hash,
-            Action<IWebRequestAsyncOperation> OnSuccess = null,
-            Action<IWebRequestAsyncOperation> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true);
 
         /// <summary>
         /// Download a texture from a url.

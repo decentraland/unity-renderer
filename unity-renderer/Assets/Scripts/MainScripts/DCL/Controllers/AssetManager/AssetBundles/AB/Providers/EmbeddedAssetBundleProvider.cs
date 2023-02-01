@@ -13,9 +13,10 @@ namespace DCL.Providers
         public async UniTask<AssetBundle> GetAssetBundleAsync(string contentUrl, string hash, CancellationToken cancellationToken)
         {
             string streamingPath = GetUrl(hash);
-            
+
             // For WebGL the only way to load assets from `StreamingFolder` is via `WebRequest`
-            UnityWebRequest uwr = await webRequestController.Ref.GetAssetBundleAsync(streamingPath, requestAttemps: 1);
+            UnityWebRequest uwr = await webRequestController.Ref.GetAssetBundle(streamingPath,
+                requestAttemps: 1, cancellationToken: cancellationToken);
             return DownloadHandlerAssetBundle.GetContent(uwr);
         }
 

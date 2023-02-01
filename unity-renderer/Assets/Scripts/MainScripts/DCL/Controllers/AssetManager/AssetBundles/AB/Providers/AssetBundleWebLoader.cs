@@ -1,9 +1,10 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.AssetManager;
 using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Pool;
 
 namespace DCL.Providers
@@ -38,11 +39,11 @@ namespace DCL.Providers
                 if (cachingEnabled)
                     AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
 
-                using var webRequest = cachingEnabled
-                    ? webRequestController.Ref.GetAssetBundle(url, hash: hash128, disposeOnCompleted: false)
-                    : webRequestController.Ref.GetAssetBundle(url, disposeOnCompleted: false);
+                UnityWebRequest uwr = cachingEnabled ?
+                    await webRequestController.Ref.GetAssetBundle(url, hash: hash128, cancellationToken: cancellationToken) :
+                    await webRequestController.Ref.GetAssetBundle(url, cancellationToken: cancellationToken);
 
-                return await FromWebRequestAsync(webRequest, url, cancellationToken);
+                return DownloadHandlerAssetBundle.GetContent(uwr);
             }
             finally
             {
