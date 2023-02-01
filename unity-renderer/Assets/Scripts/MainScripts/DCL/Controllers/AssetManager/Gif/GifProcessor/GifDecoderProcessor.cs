@@ -48,14 +48,14 @@ namespace DCL
         }
 
         public GifDecoderProcessor(Stream stream) { this.stream = stream; }
-        
+
         public void DisposeGif()
         {
             gifFrameData = null;
             webRequestController.Dispose();
             stream?.Dispose();
         }
-        
+
         public async UniTask Load(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
@@ -68,16 +68,16 @@ namespace DCL
                 fail(e);
             }
         }
-        
+
         private async UniTask StartDecoding(Action<GifFrameData[]> loadSuccsess, Action<Exception> fail, CancellationToken token)
         {
             try
             {
-                // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only 
+                // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only
                 //          one is loading, this also avoids the "burst" of gifs loading at the same time, overall
                 //          improving the smoothness and the experience, this could be further improved by prioritizing
                 //          the processing of gifs whether im close or looking at them like GLFTs.
-                await UniTask.WaitUntil(() => isRunning == false, cancellationToken: token);
+                await UniTaskUtils.WaitForBoolean(ref isRunning, false, cancellationToken: token);
 
                 isRunning = false;
                 isRunningInternal = true;
@@ -147,7 +147,7 @@ namespace DCL
         private async UniTask<byte[]> DownloadGifAndReadStream(CancellationToken token)
         {
             var operation = webRequestController.Get(url, timeout: 15, disposeOnCompleted: false);
-            await UniTask.WaitUntil( () => operation.isDone || operation.isDisposed || operation.isSucceeded, cancellationToken: token);
+            await operation.WithCancellation(token);
 
             if (!operation.isSucceeded)
             {

@@ -117,14 +117,14 @@ namespace UnityGLTF
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
-        
+
         // this setting forces coroutines to be ran in a single call
         public bool forceSyncCoroutines = false;
 
         private bool useMaterialTransitionValue = true;
 
         public bool importSkeleton = true;
-        
+
         public bool ignoreMaterials = false;
 
         public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
@@ -346,7 +346,7 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
-                
+
                 PerformanceAnalytics.GLTFTracker.TrackLoaded();
             }
             catch (Exception e)
@@ -719,7 +719,7 @@ namespace UnityGLTF
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
-            
+
             //NOTE(Brian): This tex compression breaks importing in editor mode
             if (Application.isPlaying && DataStore.i.textureConfig.runCompression.Get())
                 texture.Compress(false);
@@ -1641,12 +1641,12 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             if (ignoreMaterials)
             {
                 if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
                     primitiveObj.SetActive(true);
-                
+
                 return;
             }
 
