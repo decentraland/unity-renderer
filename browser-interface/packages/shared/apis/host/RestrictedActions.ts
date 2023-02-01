@@ -1,16 +1,15 @@
-import { Vector3, Quaternion } from '@dcl/ecs-math'
-import {
-  gridToWorld,
-  isWorldPositionInsideParcels,
-  parseParcelPosition
-} from '../../../atomicHelpers/parcelScenePositions'
-import { lastPlayerPosition } from '../../world/positionThings'
-import { browserInterface } from '../../../unity-interface/BrowserInterface'
-import { getUnityInstance } from '../../../unity-interface/IUnityInterface'
+import { Quaternion, Vector3 } from '@dcl/ecs-math'
 import { RpcServerPort } from '@dcl/rpc'
-import { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { lastPlayerPosition } from 'shared/world/positionThings'
+import { browserInterface } from 'unity-interface/BrowserInterface'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { PortContext } from './context'
 
+import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
 import {
   ChangeRealmRequest,
   CommsAdapterRequest,
@@ -23,12 +22,11 @@ import {
   TriggerEmoteRequest,
   TriggerEmoteResponse
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
-import { assertHasPermission } from './Permissions'
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import { changeRealm } from 'shared/dao'
+import defaultLogger from 'shared/logger'
 import { getRendererModules } from 'shared/renderer/selectors'
 import { store } from 'shared/store/isolatedStore'
-import defaultLogger from 'shared/logger'
-import { changeRealm } from 'shared/dao'
+import { assertHasPermission } from './Permissions'
 
 export function movePlayerTo(req: MovePlayerToRequest, ctx: PortContext): MovePlayerToResponse {
   //   checks permissions

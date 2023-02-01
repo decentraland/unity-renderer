@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { Vector3Component, Vector2Component } from '../atomicHelpers/landHelpers'
+import type { Vector3 } from 'lib/math/Vector3'
+import type { Vector2 } from 'lib/math/Vector2'
 import { Entity } from '@dcl/schemas'
-export { WearableId, Wearable, WearableV2 } from './catalogs/types'
+export type { WearableId, Wearable, WearableV2 } from './catalogs/types'
 
 export interface MessageDict {
   [key: string]: string
@@ -201,10 +202,10 @@ export type SceneSpawnPoint = {
     z: number | number[]
   }
   default?: boolean
-  cameraTarget?: Vector3Component
+  cameraTarget?: Vector3
 }
 
-export type InstancedSpawnPoint = { position: Vector3Component; cameraTarget?: Vector3Component }
+export type InstancedSpawnPoint = { position: Vector3; cameraTarget?: Vector3 }
 
 export type SoundComponent = {
   /** Distance fading model, default: 'linear' */
@@ -313,8 +314,8 @@ export type SkeletalAnimationComponent = {
 }
 
 export type Ray = {
-  origin: Vector3Component
-  direction: Vector3Component
+  origin: Vector3
+  direction: Vector3
   distance: number
 }
 
@@ -519,7 +520,7 @@ type Realm = {
 export type UpdateUserStatusMessage = {
   userId: string
   realm: Realm | undefined
-  position: Vector2Component | undefined
+  position: Vector2 | undefined
   presence: PresenceStatus
 }
 

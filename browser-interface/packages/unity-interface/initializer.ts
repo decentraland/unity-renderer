@@ -14,9 +14,9 @@ import {
 } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'shared/logger'
-import { trackEvent } from '../shared/analytics'
+import { trackEvent } from 'shared/analytics'
 import { browserInterface } from './BrowserInterface'
-import { webTransport } from '../renderer-protocol/transports/webTransport'
+import { webTransport } from 'renderer-protocol/transports/webTransport'
 import { Transport } from '@dcl/rpc'
 import { isRendererInitialized } from 'shared/renderer/selectors'
 

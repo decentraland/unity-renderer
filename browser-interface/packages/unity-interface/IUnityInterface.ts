@@ -34,7 +34,7 @@ import {
   UpdateChannelMembersPayload,
   ChannelSearchResultsPayload,
   SetAudioDevicesPayload
-} from '../shared/types'
+} from 'shared/types'
 import { FeatureFlag } from 'shared/meta/types'
 import { IFuture } from 'fp-future'
 import { Avatar, ContentMapping } from '@dcl/schemas'

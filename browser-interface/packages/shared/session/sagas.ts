@@ -9,7 +9,7 @@ import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereu
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
-import { getFromPersistentStorage, saveToPersistentStorage } from 'atomicHelpers/persistentStorage'
+import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 
 import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'

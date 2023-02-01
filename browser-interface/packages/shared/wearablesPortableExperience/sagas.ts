@@ -1,6 +1,6 @@
 import { EntityType, Scene } from '@dcl/schemas'
 import { call, select, takeEvery, takeLatest } from '@redux-saga/core/effects'
-import { jsonFetch } from 'atomicHelpers/jsonFetch'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 import { put } from 'redux-saga-test-plan/matchers'
 import { getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
