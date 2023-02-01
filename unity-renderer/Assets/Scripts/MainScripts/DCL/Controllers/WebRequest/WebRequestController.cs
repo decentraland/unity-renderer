@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -157,7 +158,21 @@ namespace DCL
                 timeout, disposeOnCompleted, headers);
         }
 
-        public async UniTask<UnityWebRequest> GetAudioClip(
+        public IWebRequestAsyncOperation GetAudioClip(
+            string url,
+            AudioType audioType,
+            Action<IWebRequestAsyncOperation> onSuccess = null,
+            Action<IWebRequestAsyncOperation> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            bool disposeOnCompleted = true)
+        {
+            audioClipWebRequestFactory.SetAudioType(audioType);
+            return SendWebRequest(audioClipWebRequestFactory, url, null, onSuccess, onFail, requestAttemps,
+                timeout, disposeOnCompleted);
+        }
+
+        public async UniTask<UnityWebRequest> GetAudioClipAsync(
             string url,
             AudioType audioType,
             Action<UnityWebRequest> onSuccess = null,

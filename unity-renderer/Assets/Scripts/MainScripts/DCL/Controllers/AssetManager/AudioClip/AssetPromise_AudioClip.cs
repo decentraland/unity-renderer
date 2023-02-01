@@ -47,24 +47,24 @@ namespace DCL
                 OnFail?.Invoke(new Exception("Audio clip url is null or empty"));
                 return;
             }
-            uwr = await webRequestController.GetAudioClip(url, audioType);
-            if (uwr.result == UnityWebRequest.Result.Success)
+            uwr = await webRequestController.GetAudioClipAsync(url, audioType,
+            (request) =>
             {
                 if (renderState.Get())
                 {
-                    queueItem = new QueueItem { promise = this, request = uwr };
+                    queueItem = new QueueItem { promise = this, request = request };
                     requestQueue.Enqueue(queueItem);
                     coroutineQueueLoader = CoroutineStarter.Start(CoroutineQueueLoader());
                 }
                 else
                 {
-                    GetAudioClipFromRequest(this, uwr);
+                    GetAudioClipFromRequest(this, request);
                 }
-            }
-            else
+            },
+            (request) =>
             {
-                OnFail?.Invoke(new Exception($"Audio clip failed to fetch: {uwr.error}"));
-            }
+                OnFail?.Invoke(new Exception($"Audio clip failed to fetch: {request.error}"));
+            });
         }
 
         /// <summary>

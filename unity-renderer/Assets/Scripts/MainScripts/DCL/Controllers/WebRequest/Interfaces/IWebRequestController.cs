@@ -173,8 +173,8 @@ namespace DCL
         /// <param name="onFail">This action will be executed if the request fails.</param>
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
-        /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        UniTask<UnityWebRequest> GetAudioClip(
+        /// <param name="cancellationToken">Token for cancelling current request.</param>
+        UniTask<UnityWebRequest> GetAudioClipAsync(
             string url,
             AudioType audioType,
             Action<UnityWebRequest> onSuccess = null,
@@ -182,5 +182,24 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Download an audio clip from a url.
+        /// </summary>
+        /// <param name="url">Url where to make the request.</param>
+        /// <param name="audioType">Type of audio that will be requested.</param>
+        /// <param name="onSuccess">This action will be executed if the request successfully finishes and it includes the request with the data downloaded.</param>
+        /// <param name="onFail">This action will be executed if the request fails.</param>
+        /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
+        /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
+        /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
+        IWebRequestAsyncOperation GetAudioClip(
+            string url,
+            AudioType audioType,
+            Action<IWebRequestAsyncOperation> onSuccess = null,
+            Action<IWebRequestAsyncOperation> onFail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            bool disposeOnCompleted = true);
     }
 }
