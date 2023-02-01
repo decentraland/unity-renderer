@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using JetBrains.Annotations;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
@@ -44,6 +45,9 @@ public class VoiceChatWindowController : IHUD
 
     public bool IsVisible { get; private set; }
     public event Action OnCloseView;
+
+    [UsedImplicitly] // by NSubstitute
+    public VoiceChatWindowController() { }
 
     public VoiceChatWindowController(
         IUserProfileBridge userProfileBridge,
