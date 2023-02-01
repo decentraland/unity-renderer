@@ -23,7 +23,6 @@ namespace DCLServices.WearablesCatalogService
         private const string WEARABLES_BY_ID_END_POINT = "collections/wearables?{wearableIdsQuery}/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
-        private const int ATTEMPTS_NUMBER = ILambdasService.DEFAULT_ATTEMPTS_NUMBER;
         private const int TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10;
         private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
 
@@ -96,10 +95,7 @@ namespace DCLServices.WearablesCatalogService
                 "",
                 WEARABLES_BY_COLLECTION_END_POINT.Replace("{collectionId}", BASE_WEARABLES_COLLECTION_ID),
                 REQUESTS_TIME_OUT_SECONDS,
-                ATTEMPTS_NUMBER,
-                ct,
-                LambdaPaginatedResponseHelper.GetPageSizeParam(1),
-                LambdaPaginatedResponseHelper.GetPageNumParam(1));
+                cancellationToken: ct);
 
             if (!serviceResponse.success)
                 throw new Exception("The request of the base wearables failed!");
@@ -222,7 +218,7 @@ namespace DCLServices.WearablesCatalogService
                 "",
                 endPoint,
                 REQUESTS_TIME_OUT_SECONDS,
-                ATTEMPTS_NUMBER,
+                ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
                 cancellationToken,
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
                 LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
@@ -254,8 +250,7 @@ namespace DCLServices.WearablesCatalogService
                         "",
                         WEARABLES_BY_ID_END_POINT.Replace("{wearableIdsQuery}", GetWearablesQuery(wearableIds)),
                         REQUESTS_TIME_OUT_SECONDS,
-                        ATTEMPTS_NUMBER,
-                        serviceCts.Token);
+                        cancellationToken: serviceCts.Token);
                 }
                 catch (Exception e)
                 {
