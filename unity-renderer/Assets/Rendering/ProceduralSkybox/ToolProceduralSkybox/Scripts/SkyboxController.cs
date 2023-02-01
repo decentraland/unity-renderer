@@ -127,6 +127,10 @@ namespace DCL.Skybox
             // Register UI related events
             DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
+
+            configuration = skyboxConfigurationsDictionary[DEFAULT_SKYBOX_ID];
+            UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
+            FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
         }
 
         private async Task LoadConfigurations()
@@ -141,8 +145,8 @@ namespace DCL.Skybox
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
-            skyboxCam.AssignTargetCamera(currentTransform);
-            skyboxElements.AssignCameraInstance(currentTransform);
+            //skyboxCam.AssignTargetCamera(currentTransform);
+            //skyboxElements.AssignCameraInstance(currentTransform);
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
