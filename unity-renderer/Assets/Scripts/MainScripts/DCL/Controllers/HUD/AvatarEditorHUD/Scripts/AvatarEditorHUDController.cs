@@ -217,6 +217,7 @@ public class AvatarEditorHUDController : IHUD
                              }
                              else
                              {
+                                 LoadUserProfile(userProfile, true);
                                  NotificationsController.i.ShowNotification(new Model
                                  {
                                      message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
