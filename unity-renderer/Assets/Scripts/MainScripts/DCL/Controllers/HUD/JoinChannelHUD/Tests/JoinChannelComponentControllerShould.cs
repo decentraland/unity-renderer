@@ -86,19 +86,19 @@ namespace DCL.Social.Chat.Channels
             // Arrange
             const string TEST_CHANNEL_NAME = "TestId";
             const string CHANNEL_ID = "channelId";
-            var channel = new Channel(CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
+            Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
 
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower())
                           .Returns(channel);
 
-            chatController.JoinOrCreateChannelAsync(CHANNEL_ID)
+            chatController.JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(channel));
 
             // Act
             view.OnConfirmJoin += Raise.Event<Action<string>>(TEST_CHANNEL_NAME);
 
             // Assert
-            chatController.Received(1).JoinOrCreateChannelAsync(CHANNEL_ID);
+            chatController.Received(1).JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>());
             view.Received(1).Hide();
             Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
         }
@@ -112,19 +112,19 @@ namespace DCL.Social.Chat.Channels
 
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower()).Returns((Channel)null);
 
-            var channel = new Channel(CHANNEL_ID, TEST_CHANNEL_NAME.ToLower(), 0, 1, false, false, "");
+            Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME.ToLower(), 0, 1, false, false, "");
 
             chatController.GetChannelsByNameAsync(1, TEST_CHANNEL_NAME.ToLower(), null, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(("", new[] { channel })));
 
-            chatController.JoinOrCreateChannelAsync(CHANNEL_ID)
+            chatController.JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(channel));
 
             // Act
             view.OnConfirmJoin += Raise.Event<Action<string>>(TEST_CHANNEL_NAME);
 
             // Assert
-            chatController.Received(1).JoinOrCreateChannelAsync(CHANNEL_ID);
+            chatController.Received(1).JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>());
             view.Received(1).Hide();
             Assert.IsNull(channelsDataStore.currentJoinChannelModal.Get());
         }
@@ -164,6 +164,9 @@ namespace DCL.Social.Chat.Channels
             view.Received(1).Hide();
         }
 
+        // [Test]
+        // public void HideWhenThereIsAnException()
+
         [Test]
         public void TrackChannelLinkClickWhenCancel()
         {
@@ -182,12 +185,12 @@ namespace DCL.Social.Chat.Channels
         {
             const string TEST_CHANNEL_NAME = "TestId";
             const string CHANNEL_ID = "channelId";
-            var channel = new Channel(CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
+            Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, false, false, "");
 
             chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower())
                           .Returns(channel);
 
-            chatController.JoinOrCreateChannelAsync(CHANNEL_ID)
+            chatController.JoinOrCreateChannelAsync(CHANNEL_ID, Arg.Any<CancellationToken>())
                           .Returns(UniTask.FromResult(channel));
 
             currentPlayerInfoCardId.Set("userId");
