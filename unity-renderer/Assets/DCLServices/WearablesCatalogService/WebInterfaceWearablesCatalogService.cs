@@ -130,7 +130,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    wearablesRequested = await RequestWearablesByContextAsync(null, wearableIds.ToArray(), null, string.Join(",", wearableIds), false, serviceCts.Token);
+                    wearablesRequested = await RequestWearablesByContextAsync(null, wearableIds, null, string.Join(",", wearableIds), false, serviceCts.Token);
                 }
                 catch (Exception e)
                 {
@@ -177,7 +177,7 @@ namespace DCLServices.WearablesCatalogService
 
         private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(
             string userId,
-            string[] wearableIds,
+            List<string> wearableIds,
             string[] collectionIds,
             string context,
             bool isThirdParty,
@@ -324,9 +324,9 @@ namespace DCLServices.WearablesCatalogService
                 if (pendingWearableRequestedTimes.Count <= 0)
                     continue;
 
-                List<string> expiredRequests = (from taskRequestedTime in pendingWearableRequestedTimes
+                var expiredRequests = from taskRequestedTime in pendingWearableRequestedTimes
                     where Time.realtimeSinceStartup - taskRequestedTime.Value > REQUESTS_TIME_OUT_SECONDS
-                    select taskRequestedTime.Key).ToList();
+                    select taskRequestedTime.Key;
 
                 foreach (string expiredRequestId in expiredRequests)
                 {
@@ -346,9 +346,9 @@ namespace DCLServices.WearablesCatalogService
                 if (pendingWearablesByContextRequestedTimes.Count <= 0)
                     continue;
 
-                List<string> expiredRequests = (from promiseByContextRequestedTime in pendingWearablesByContextRequestedTimes
+                var expiredRequests = from promiseByContextRequestedTime in pendingWearablesByContextRequestedTimes
                     where Time.realtimeSinceStartup - promiseByContextRequestedTime.Value > REQUESTS_TIME_OUT_SECONDS
-                    select promiseByContextRequestedTime.Key).ToList();
+                    select promiseByContextRequestedTime.Key;
 
                 foreach (string expiredRequestToRemove in expiredRequests)
                 {
@@ -369,9 +369,9 @@ namespace DCLServices.WearablesCatalogService
                 if (wearablesInUseCounters.Count <= 0)
                     continue;
 
-                List<string> wearablesToRemove = (from wearableInUse in wearablesInUseCounters
+                var wearablesToRemove = from wearableInUse in wearablesInUseCounters
                     where wearableInUse.Value <= 0
-                    select wearableInUse.Key).ToList();
+                    select wearableInUse.Key;
 
                 RemoveWearablesFromCatalog(wearablesToRemove);
             }
