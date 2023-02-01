@@ -1,3 +1,4 @@
+import type { Vector2 } from 'lib/math/Vector2'
 import { encodeParcelPosition } from './encodeParcelPosition'
 
 export function encodeParcelSceneBoundaries(base: Vector2, parcels: Vector2[]) {

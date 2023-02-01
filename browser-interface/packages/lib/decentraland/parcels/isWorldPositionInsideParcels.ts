@@ -1,6 +1,6 @@
 import { worldToGrid } from './worldToGrid'
 import { encodeParcelPosition } from './encodeParcelPosition'
-import { Vector3 } from 'lib/math/Vector3'
+import type { Vector3 } from 'lib/math/Vector3'
 
 /**
  * Returns true if a world position is inside a group of parcels

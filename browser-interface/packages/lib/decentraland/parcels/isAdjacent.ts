@@ -1,4 +1,4 @@
-import { Vector2 } from 'lib/math/Vector2'
+import type { Vector2 } from 'lib/math/Vector2'
 
 /**
  * Returns `true` if the given parcels are one next to each other

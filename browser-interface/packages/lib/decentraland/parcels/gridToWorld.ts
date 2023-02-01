@@ -1,4 +1,4 @@
-import { Vector3 } from 'lib/math/Vector3'
+import type { Vector3 } from 'lib/math/Vector3'
 import { parcelSize } from './limits'
 
 /**
