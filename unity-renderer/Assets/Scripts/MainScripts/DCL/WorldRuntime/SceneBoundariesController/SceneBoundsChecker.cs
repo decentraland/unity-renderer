@@ -24,8 +24,8 @@ namespace DCL.Controllers
         private Coroutine entitiesCheckRoutine = null;
         private float lastCheckTime;
 
-        private Service<MessagingControllersManager> messagingManagerService;
-        private MessagingControllersManager messagingManager => messagingManagerService;
+        private Service<IMessagingControllersManager> messagingManagerService;
+        private IMessagingControllersManager messagingManager => messagingManagerService.Ref;
 
         private bool isNerfed;
 
