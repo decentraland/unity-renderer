@@ -1,15 +1,16 @@
 import { store } from 'shared/store/isolatedStore'
-import { RootState } from 'shared/store/rootTypes'
 
-export async function storeCondition(selector: (store: RootState) => boolean): Promise<void> {
-  if (selector(store.getState())) {
-    return
+export async function storeCondition<T>(selector: (state: any) => T | false): Promise<T> {
+  const value: T | false = selector(store.getState())
+  if (!!value) {
+    return value
   }
-  return new Promise<void>((resolve) => {
+  return new Promise<T>((resolve) => {
     const unsubscribe = store.subscribe(() => {
-      if (selector(store.getState())) {
+      const value: T | false = selector(store.getState())
+      if (!!value) {
         unsubscribe()
-        return resolve()
+        return resolve(value)
       }
     })
   })
