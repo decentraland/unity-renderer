@@ -57,6 +57,7 @@ namespace DCl.Social.Friends
             view = Substitute.For<IFriendsHUDComponentView>();
             view.FriendRequestCount.Returns(FRIEND_REQUEST_SHOWN);
             controller.Initialize(view);
+            controller.IsVisible = false;
 
             // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });

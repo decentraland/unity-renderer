@@ -34,7 +34,7 @@ namespace DCL.Social.Friends
         private int lastSkipForFriends;
         private int lastSkipForFriendRequests;
 
-        public bool IsVisible { get; private set; } = true;
+        public bool IsVisible { get; internal set; } = true;
         public IFriendsHUDComponentView View { get; private set; }
 
         public event Action<string> OnPressWhisper;
