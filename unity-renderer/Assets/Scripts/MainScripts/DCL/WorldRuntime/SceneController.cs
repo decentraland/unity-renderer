@@ -805,7 +805,8 @@ namespace DCL
                 sceneNumber = newGlobalSceneNumber,
                 basePosition = new Vector2Int(0, 0),
                 baseUrl = globalScene.baseUrl,
-                contents = globalScene.contents
+                contents = globalScene.contents,
+                sdk7 = globalScene.sdk7
             };
 
             newScene.SetData(sceneData);

@@ -7,25 +7,26 @@ using UnityEngine;
 public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 {
     public int pendingResourcesCount => resourcesNotReady.Count;
-    
-    public float loadingProgress 
+
+    public float loadingProgress
     {
         get
         {
-            int resourcesReadyCount = resourcesReady;
-            return resourcesReadyCount > 0 ? (resourcesReadyCount - pendingResourcesCount) * 100f / resourcesReadyCount : 100f;
+            if (resourcesReady < pendingResourcesCount)
+                return 0;
+            return resourcesReady > 0 ? (resourcesReady - pendingResourcesCount) * 100f / resourcesReady : 100f;
         }
     }
-    
+
     public event Action OnResourcesLoaded;
     public event Action OnStatusUpdate;
-    
+
     private int resourcesReady;
-    
+
     private readonly List<object> resourcesNotReady = new List<object>();
     private readonly int sceneNumber;
     private readonly DataStore_ECS7 dataStore;
-    
+
     public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7, int sceneNumber)
     {
         this.dataStore = dataStoreEcs7;
@@ -81,7 +82,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
             resourcesNotReady.Remove(model);
 
         resourcesReady++;
-        
+
         if (resourcesNotReady.Count == 0)
             OnResourcesLoaded?.Invoke();
         else
