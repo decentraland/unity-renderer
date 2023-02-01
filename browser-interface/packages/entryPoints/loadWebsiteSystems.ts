@@ -1,8 +1,7 @@
-import { KernelOptions } from '@dcl/kernel-interface'
+import type { KernelOptions } from '@dcl/kernel-interface'
 import { trackEvent } from 'shared/analytics'
 import { changeRealm, realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
-import defaultLogger from 'shared/logger'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import {
   getFeatureFlagEnabled,
@@ -11,18 +10,19 @@ import {
   getFeatureFlagVariantValue,
   getWorldConfig
 } from 'shared/meta/selectors'
-import { WorldConfig } from 'shared/meta/types'
+import type { WorldConfig } from 'shared/meta/types'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { getRendererInterface } from 'shared/renderer/getRendererInterface'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { HUDElementID } from 'shared/types'
-import { getRendererInterface } from 'shared/renderer/getRendererInterface'
 import { foregroundChangeObservable, isForeground } from 'shared/world/worldState'
-import { HAS_INITIAL_POSITION_MARK, OPEN_AVATAR_EDITOR, RESET_TUTORIAL } from '../config/index'
+import { HAS_INITIAL_POSITION_MARK, OPEN_AVATAR_EDITOR, RESET_TUTORIAL } from '../config'
 import { renderingInBackground, renderingInForeground } from '../shared/loadingScreen/types'
 import { kernelConfigForRenderer } from '../unity-interface/kernelConfigForRenderer'
-import { startPreview } from './index'
+import { logger } from './logger'
+import { startPreview } from './startPreview'
 
 export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
   const renderer = await getRendererInterface()
@@ -117,7 +117,7 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
           await changeRealm(realm)
           trackEvent('onboarding_started', { onboardingRealm: realm })
         } else {
-          defaultLogger.warn('No realm was providede for the onboarding experience.')
+          logger.warn('No realm was provided for the onboarding experience.')
         }
       } catch (err) {
         console.error(err)
