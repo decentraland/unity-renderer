@@ -46,13 +46,13 @@ namespace DCL
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
             result.Register<ISceneController>(() => new SceneController());
             result.Register<IWorldState>(() => new WorldState());
-            result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
 
+            result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
