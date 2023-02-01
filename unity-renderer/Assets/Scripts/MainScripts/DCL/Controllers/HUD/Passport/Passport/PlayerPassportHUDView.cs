@@ -86,10 +86,7 @@ namespace DCL.Social.Passports
                     await UniTask.NextFrame(cancellationToken);
                 }
             }
-            catch (OperationCanceledException)
-            {
-                Debug.LogError("Cancelled show passport animation");
-            }
+            catch (OperationCanceledException) { }
         }
 
         private async UniTaskVoid HidePassportAnimation(CancellationToken cancellationToken)
