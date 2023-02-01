@@ -96,7 +96,7 @@ namespace DCLServices.WearablesCatalogService
             {
                 lambdasWearablesCatalogService.Initialize();
                 wearablesCatalogServiceInUse = lambdasWearablesCatalogService;
-                webInterfaceWearablesCatalogService.Dispose();
+                webInterfaceWearablesCatalogService?.Dispose();
             }
 
             isInitialized = true;
