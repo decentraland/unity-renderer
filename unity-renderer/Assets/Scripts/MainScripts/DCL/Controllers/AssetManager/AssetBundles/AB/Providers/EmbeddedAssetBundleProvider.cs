@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using MainScripts.DCL.AssetsEmbedment.Runtime;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.Providers
 {
@@ -11,10 +12,11 @@ namespace DCL.Providers
 
         public async UniTask<AssetBundle> GetAssetBundleAsync(string contentUrl, string hash, CancellationToken cancellationToken)
         {
-            var streamingPath = GetUrl(hash);
+            string streamingPath = GetUrl(hash);
+            
             // For WebGL the only way to load assets from `StreamingFolder` is via `WebRequest`
-            using var webRequest = webRequestController.Ref.GetAssetBundle(streamingPath, requestAttemps: 1, disposeOnCompleted: false);
-            return await FromWebRequestAsync(webRequest, streamingPath, cancellationToken);
+            UnityWebRequest uwr = await webRequestController.Ref.GetAssetBundleAsync(streamingPath, requestAttemps: 1);
+            return DownloadHandlerAssetBundle.GetContent(uwr);
         }
 
         private static string GetUrl(string hash)
