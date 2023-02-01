@@ -198,10 +198,8 @@ namespace DCL.Skybox
 
             if (skyboxProbe == null)
             {
-                CancellationTokenSource cts = new CancellationTokenSource();
-                cts.CancelAfterSlim(TimeSpan.FromSeconds(15));
                 // Instantiate new probe from the resources
-                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab", cts.Token);
+                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab");
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
                 probe.name = "SkyboxProbe";
                 skyboxProbe = probe.GetComponent<ReflectionProbe>();
