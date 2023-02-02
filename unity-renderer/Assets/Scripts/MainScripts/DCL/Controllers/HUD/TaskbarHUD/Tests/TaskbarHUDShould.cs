@@ -151,6 +151,17 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
         controller.AddChannelSearch(channelSearchController);
 
+        var chatChannelHUDController = new ChatChannelHUDController(new DataStore(),
+            userProfileBridge,
+            chatController,
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            socialAnalytics,
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+        chatChannelHUDController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<ChatChannelWindowMock>());
+
+        controller.AddChatChannel(chatChannelHUDController);
+
         Assert.IsFalse(view.chatButton.toggledOn);
 
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
