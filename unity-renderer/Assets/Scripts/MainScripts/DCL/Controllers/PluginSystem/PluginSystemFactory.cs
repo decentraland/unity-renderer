@@ -8,6 +8,7 @@ using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
+using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
@@ -57,7 +58,7 @@ namespace DCL
             pluginSystem.Register<FallbackFontsLoaderPlugin>(() => new FallbackFontsLoaderPlugin());
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
 
-            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 
