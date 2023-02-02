@@ -81,7 +81,11 @@ references:
   .only_dev_and_main: &only_dev_and_main
     filters:
       branches:
-        only: /(.*)/
+        only:
+          - dev
+          - main
+          - release*
+          - hotfix*
 
 commands:
   build-unity-generic:
