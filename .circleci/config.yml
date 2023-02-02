@@ -378,8 +378,7 @@ jobs:
 
   upload-build-analysis:
     <<: *working_directory_root
-    docker: 
-      - image: cimg/node:18.13.0
+    docker: cimg/node:18.13.0
     steps:
       - <<: *attach_root
       - run:
@@ -479,6 +478,10 @@ workflows:
           requires:
             - checkout
       - build-js-interface:
+          <<: *all_branches_and_tags
+          requires:
+            - build-unity
+      - upload-build-analysis:
           <<: *all_branches_and_tags
           requires:
             - build-unity
