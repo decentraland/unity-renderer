@@ -11,9 +11,9 @@ namespace DCL.Helpers.Tests
         private bool testBool;
 
         [Test]
-        public async Task FinishWhenRefDeclaredInClass([Values(true, false)] bool targetValue)
+        public async Task FinishWhenRefDeclaredInClass([Values(true, false)] bool targetValue, [Values(true, false)] bool startValue)
         {
-            testBool = !targetValue;
+            testBool = startValue;
 
             var task = UniTaskUtils.WaitForBoolean(ref testBool, targetValue);
 

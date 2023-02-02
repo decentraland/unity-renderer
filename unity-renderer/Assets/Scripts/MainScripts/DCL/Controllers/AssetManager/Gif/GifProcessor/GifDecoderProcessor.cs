@@ -32,7 +32,6 @@ namespace DCL
             }
         }
 
-        private static bool isRunning;
         private bool isRunningInternal;
         private readonly ThrottlingCounter throttlingCounter = new ThrottlingCounter();
 
@@ -76,11 +75,7 @@ namespace DCL
                 // (Kinerius): I noticed that overall the loading of multiple gifs at the same time is faster when only
                 //          one is loading, this also avoids the "burst" of gifs loading at the same time, overall
                 //          improving the smoothness and the experience, this could be further improved by prioritizing
-                //          the processing of gifs whether im close or looking at them like GLFTs.
-                await UniTaskUtils.WaitForBoolean(ref isRunning, false, cancellationToken: token);
-
-                isRunning = false;
-                isRunningInternal = true;
+                //          the processing of gifs whether im close or looking at them like GLFTs
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -110,11 +105,6 @@ namespace DCL
             catch (Exception e) when (!(e is OperationCanceledException))
             {
                 throw;
-            }
-            finally
-            {
-                if (isRunningInternal)
-                    isRunning = false;
             }
         }
 
