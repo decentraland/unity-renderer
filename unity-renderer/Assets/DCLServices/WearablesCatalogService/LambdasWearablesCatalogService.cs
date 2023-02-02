@@ -219,7 +219,6 @@ namespace DCLServices.WearablesCatalogService
         private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {
             pendingWearablesToRequest.Add(newWearableId);
-
             lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
             var sourceToAwait = lastRequestSource;
 
@@ -251,6 +250,13 @@ namespace DCLServices.WearablesCatalogService
                 {
                     sourceToAwait.TrySetException(e);
                     throw;
+                }
+
+                if (!serviceResponse.success)
+                {
+                    Exception e = new Exception($"The request of the wearables ('{string.Join(", ", wearableIds)}') failed!");
+                    sourceToAwait.TrySetException(e);
+                    throw e;
                 }
 
                 AddWearablesToCatalog(serviceResponse.response.wearables);

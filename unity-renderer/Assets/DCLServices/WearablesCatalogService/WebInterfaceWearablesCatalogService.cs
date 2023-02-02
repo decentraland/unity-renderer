@@ -1,6 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
-using MainScripts.DCL.Helpers.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -47,6 +46,8 @@ namespace DCLServices.WearablesCatalogService
 
             try
             {
+                // All the requests happened during the same frames interval are sent together
+                CheckForSendingPendingRequestsAsync(serviceCts.Token).Forget();
                 CheckForRequestsTimeOutsAsync(serviceCts.Token).Forget();
                 CheckForRequestsByContextTimeOutsAsync(serviceCts.Token).Forget();
             }
@@ -88,91 +89,26 @@ namespace DCLServices.WearablesCatalogService
 
             ct.ThrowIfCancellationRequested();
 
-            try
+            UniTaskCompletionSource<WearableItem> taskResult;
+
+            if (!awaitingWearableTasks.ContainsKey(wearableId))
             {
-                // All the requests happened during the same frames interval are sent together
-                return await SyncWearablesRequestsAsync(wearableId, ct);
-            }
-            catch (OperationCanceledException) { return null; }
-        }
+                taskResult = new UniTaskCompletionSource<WearableItem>();
+                awaitingWearableTasks.Add(wearableId, taskResult);
 
-        private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
-        {
-            if (!awaitingWearableTasks.TryGetValue(newWearableId, out var source))
-            {
-                pendingWearablesToRequest.Add(newWearableId);
-                awaitingWearableTasks[newWearableId] = source = new UniTaskCompletionSource<WearableItem>();
-            }
-
-            await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
-
-            WearableItem result = null;
-
-            if (pendingWearablesToRequest.Count > 0)
-            {
-                using var wearableIdsPool = PoolUtils.RentList<string>();
-                var wearableIds = wearableIdsPool.GetList();
-                wearableIds.AddRange(pendingWearablesToRequest);
-                pendingWearablesToRequest.Clear();
-
-                foreach (string id in wearableIds)
-                {
-                    if (!pendingWearableRequestedTimes.ContainsKey(id))
-                        pendingWearableRequestedTimes.Add(id, Time.realtimeSinceStartup);
-                }
-
-                IReadOnlyList<WearableItem> wearablesRequested;
-
-                try
-                {
-                    wearablesRequested = await RequestWearablesByContextAsync(null, wearableIds, null, string.Join(",", wearableIds), false, serviceCts.Token);
-                }
-                catch (Exception e)
-                {
-                    source.TrySetException(e);
-                    throw;
-                }
-
-                AddWearablesToCatalog(wearablesRequested);
-
-                // Resolves found wearables
-                foreach (WearableItem wearable in wearablesRequested)
-                {
-                    ResolvePendingWearableById(wearable.id, wearable);
-
-                    // if (!awaitingWearableTasks.TryGetValue(wearable.id, out var wearableSource))
-                    //     continue;
-                    //
-                    // wearableSource.TrySetResult(wearable);
-                    // awaitingWearableTasks.Remove(wearable.id);
-
-                    if (wearable.id == newWearableId)
-                        result = wearable;
-                }
-
-                // Resolves not found wearables
-                foreach (string id in wearableIds)
-                {
-                    ResolvePendingWearableById(id, null);
-
-                    // if (!awaitingWearableTasks.TryGetValue(id, out var wearableNotFoundSource))
-                    //     continue;
-                    //
-                    // wearableNotFoundSource.TrySetResult(null);
-                    // awaitingWearableTasks.Remove(id);
-                }
+                // We accumulate all the requests during the same frames interval to send them all together
+                pendingWearablesToRequest.Add(wearableId);
             }
             else
-                result = await source.Task;
+                taskResult = awaitingWearableTasks[wearableId];
 
-            ct.ThrowIfCancellationRequested();
-
-            return result;
+            ct.RegisterWithoutCaptureExecutionContext(() => taskResult.TrySetCanceled());
+            return await taskResult.Task;
         }
 
         private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(
             string userId,
-            List<string> wearableIds,
+            string[] wearableIds,
             string[] collectionIds,
             string context,
             bool isThirdParty,
@@ -309,11 +245,48 @@ namespace DCLServices.WearablesCatalogService
         {
             WearablesCatalog.Clear();
             wearablesInUseCounters.Clear();
-            awaitingWearableTasks.Clear();
-            awaitingWearablesByContextTasks.Clear();
             pendingWearablesToRequest.Clear();
             pendingWearableRequestedTimes.Clear();
             pendingWearablesByContextRequestedTimes.Clear();
+
+            foreach (var awaitingTask in awaitingWearableTasks)
+                awaitingTask.Value.TrySetCanceled();
+            awaitingWearableTasks.Clear();
+
+            foreach (var awaitingTask in awaitingWearablesByContextTasks)
+                awaitingTask.Value.TrySetCanceled();
+            awaitingWearablesByContextTasks.Clear();
+        }
+
+        private async UniTaskVoid CheckForSendingPendingRequestsAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
+
+                if (pendingWearablesToRequest.Count <= 0)
+                    continue;
+
+                string[] wearablesToRequest = pendingWearablesToRequest.ToArray();
+                pendingWearablesToRequest.Clear();
+
+                foreach (string wearablesToRequestId in wearablesToRequest)
+                {
+                    if (!pendingWearableRequestedTimes.ContainsKey(wearablesToRequestId))
+                        pendingWearableRequestedTimes.Add(wearablesToRequestId, Time.realtimeSinceStartup);
+                }
+
+                var requestedWearables = await RequestWearablesByContextAsync(null, wearablesToRequest, null, string.Join(",", wearablesToRequest), false, ct);
+                List<string> wearablesNotFound = wearablesToRequest.ToList();
+                foreach (WearableItem wearable in requestedWearables)
+                {
+                    wearablesNotFound.Remove(wearable.id);
+                    ResolvePendingWearableById(wearable.id, wearable);
+                }
+
+                foreach (string wearableNotFound in wearablesNotFound)
+                    ResolvePendingWearableById(wearableNotFound, null);
+            }
         }
 
         private async UniTaskVoid CheckForRequestsTimeOutsAsync(CancellationToken ct)

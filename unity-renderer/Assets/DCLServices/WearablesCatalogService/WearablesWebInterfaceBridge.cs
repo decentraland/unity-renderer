@@ -6,8 +6,8 @@ namespace DCLServices.WearablesCatalogService
 {
     public class WearablesWebInterfaceBridge
     {
-        public virtual void RequestWearables(string ownedByUser, IEnumerable<string> wearableIds, IEnumerable<string> collectionIds, string context) =>
-            WebInterface.RequestWearables(ownedByUser, wearableIds.ToArray(), collectionIds.ToArray(), context);
+        public virtual void RequestWearables(string ownedByUser, string[] wearableIds, string[] collectionIds, string context) =>
+            WebInterface.RequestWearables(ownedByUser, wearableIds, collectionIds, context);
 
         public virtual void RequestThirdPartyWearables(string ownedByUser, string thirdPartyCollectionId, string context) =>
             WebInterface.RequestThirdPartyWearables(ownedByUser, thirdPartyCollectionId, context);
