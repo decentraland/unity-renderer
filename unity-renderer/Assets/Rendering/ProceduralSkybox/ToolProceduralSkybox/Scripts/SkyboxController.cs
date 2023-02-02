@@ -127,8 +127,7 @@ namespace DCL.Skybox
             // Register UI related events
             DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
-
-            configuration = skyboxConfigurationsDictionary[DEFAULT_SKYBOX_ID];
+            //Ensure current settings
             UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
             FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
         }
@@ -279,6 +278,9 @@ namespace DCL.Skybox
 
             // Reset Object Update value without notifying
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
+            
+            //Ensure default configuration
+            SelectSkyboxConfiguration();
 
             if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
@@ -425,7 +427,7 @@ namespace DCL.Skybox
             if (newConfiguration == null)
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                Debug.LogError(configToLoad + " configuration not found in Resources. Trying to load Default config: " + DEFAULT_SKYBOX_ID + "(Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+                Debug.LogError(configToLoad + " configuration not found in Addressables. Trying to load Default config: " + DEFAULT_SKYBOX_ID);
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
@@ -434,7 +436,7 @@ namespace DCL.Skybox
                 if (newConfiguration == null)
                 {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    Debug.LogError("Default configuration not found in Resources. Shifting to old skybox. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+                    Debug.LogError("Default configuration not found in Addressables. Shifting to old skybox.");
 #endif
                     tempConfigLoaded = false;
                     return tempConfigLoaded;
