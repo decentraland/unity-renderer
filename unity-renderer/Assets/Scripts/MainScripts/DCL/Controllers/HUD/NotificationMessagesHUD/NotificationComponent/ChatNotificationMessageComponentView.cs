@@ -218,6 +218,7 @@ namespace DCL.Chat.Notifications
 
         public void SetMaxContentCharacters(int maxContentCharacters)
         {
+            maxContentCharacters = Mathf.Max(0, maxContentCharacters);
             model.maxContentCharacters = maxContentCharacters;
             this.maxContentCharacters = maxContentCharacters;
         }
