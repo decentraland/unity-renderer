@@ -455,20 +455,20 @@ public class HUDController : IHUDController
     {
     }
 
-    public void CreateHudElement(HUDConfiguration config, HUDElementID id)
+    private async void CreateHudElement(HUDConfiguration config, HUDElementID id)
     {
         bool controllerCreated = hudElements.ContainsKey(id);
 
         if (config.active && !controllerCreated)
         {
-            hudElements.Add(id, hudFactory.CreateHUD(id));
+            hudElements.Add(id, await hudFactory.CreateHUD(id));
 
             if (VERBOSE)
                 Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
         }
     }
 
-    public void UpdateHudElement(HUDConfiguration config, HUDElementID id)
+    private void UpdateHudElement(HUDConfiguration config, HUDElementID id)
     {
         if (!hudElements.ContainsKey(id))
             return;

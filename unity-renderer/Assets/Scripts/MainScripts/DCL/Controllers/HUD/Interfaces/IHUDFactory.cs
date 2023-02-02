@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 
 namespace DCL
@@ -73,6 +74,6 @@ namespace DCL
 
     public interface IHUDFactory : IService
     {
-        IHUD CreateHUD(HUDElementID elementID);
+        UniTask<IHUD> CreateHUD(HUDElementID elementID);
     }
 }

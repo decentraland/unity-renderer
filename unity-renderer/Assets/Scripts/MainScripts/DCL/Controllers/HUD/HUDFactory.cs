@@ -1,4 +1,4 @@
-using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
@@ -7,23 +7,35 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
-using DCl.Social.Passports;
-using DCL.Social.Passports;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
-using DCLServices.Lambdas.NamesService;
-using DCLServices.Lambdas.LandsService;
 
 public class HUDFactory : IHUDFactory
 {
+    private readonly IAddressableResourceProvider assetsProvider;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-    public virtual IHUD CreateHUD(HUDElementID hudElementId)
+    private ISignupHUDView signupHUD;
+
+    public HUDFactory(IAddressableResourceProvider assetsProvider)
+    {
+        this.assetsProvider = assetsProvider;
+    }
+
+    public void Initialize() { }
+
+    public void Dispose()
+    {
+        signupHUD.Dispose();
+    }
+
+    public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
     {
         IHUD hudElement = null;
         switch (hudElementId)
@@ -171,9 +183,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new QuestsTrackerHUDController();
                 break;
             case HUDElementID.SIGNUP:
-                var analytics = Environment.i.platform.serviceProviders.analytics;
-                hudElement = new SignupHUDController(analytics, dataStoreLoadingScreen.Ref);
-                break;
+                return await CreateSignupHUD();
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
             case HUDElementID.LOADING:
@@ -184,11 +194,9 @@ public class HUDFactory : IHUDFactory
         return hudElement;
     }
 
-    public void Dispose()
+    private async UniTask<SignupHUDController> CreateSignupHUD()
     {
-    }
-
-    public void Initialize()
-    {
+        signupHUD = await assetsProvider.Instantiate<ISignupHUDView>("SignupHUD", "_SignupHUD");
+        return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, signupHUD, dataStoreLoadingScreen.Ref);
     }
 }
