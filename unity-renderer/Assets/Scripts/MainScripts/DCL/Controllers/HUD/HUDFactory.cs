@@ -14,27 +14,30 @@ using DCL.Social.Chat;
 using DCL.Social.Friends;
 using SignupHUD;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using static HUDAssetPath;
+using Environment = DCL.Environment;
 
 public class HUDFactory : IHUDFactory
 {
     private readonly IAddressableResourceProvider assetsProvider;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
-
-    private ISignupHUDView signupHUDView;
-    private IQuestsTrackerHUDView questTrackerHUDView;
+    private readonly List<IDisposable> disposableViews;
 
     public HUDFactory(IAddressableResourceProvider assetsProvider)
     {
         this.assetsProvider = assetsProvider;
+        disposableViews = new List<IDisposable>();
     }
 
     public void Initialize() { }
 
     public void Dispose()
     {
-        signupHUDView.Dispose();
-        questTrackerHUDView.Dispose();
+        foreach (IDisposable view in disposableViews)
+            view.Dispose();
     }
 
     public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
@@ -66,7 +69,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.AIRDROPPING:
-                hudElement = new AirdroppingHUDController();
+                hudElement = new AirdroppingHUDController(await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD));
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 hudElement = new TermsOfServiceHUDController();
@@ -190,11 +193,12 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.QUESTS_PANEL:
                 hudElement = new QuestsPanelHUDController();
                 break;
-
-            case HUDElementID.QUESTS_TRACKER: return await CreateQuestsTrackerHUD();
+            case HUDElementID.QUESTS_TRACKER:
+                return new QuestsTrackerHUDController(
+                    await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD));
             case HUDElementID.SIGNUP:
-                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(), dataStoreLoadingScreen.Ref);;
-
+                return new SignupHUDController(
+                    Environment.i.platform.serviceProviders.analytics, await CreateHUDView<ISignupHUDView>(SIGNUP_HUD), dataStoreLoadingScreen.Ref);
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
             case HUDElementID.LOADING:
@@ -205,17 +209,11 @@ public class HUDFactory : IHUDFactory
         return hudElement;
     }
 
-    private async UniTask<QuestsTrackerHUDController> CreateQuestsTrackerHUD()
+    private async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
     {
-        questTrackerHUDView = await assetsProvider.Instantiate<IQuestsTrackerHUDView>("QuestsTrackerHUD", "_QuestsTrackerHUDView");
-        return new QuestsTrackerHUDController(questTrackerHUDView);
+        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}");
+        disposableViews.Add(view);
+
+        return view;
     }
-
-    public async UniTask<ISignupHUDView> CreateSignupHUDView()
-    {
-        signupHUDView = await assetsProvider.Instantiate<ISignupHUDView>("SignupHUD", "_SignupHUD");
-        return signupHUDView;
-    }
-
-
 }
