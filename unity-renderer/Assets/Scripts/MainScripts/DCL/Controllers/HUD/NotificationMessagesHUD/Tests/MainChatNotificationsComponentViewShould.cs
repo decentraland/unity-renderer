@@ -55,7 +55,7 @@ namespace DCL.Chat.Notifications
 
             Assert.AreEqual(body, addedNotification.notificationMessage.text);
             Assert.AreEqual("DM - UsernameTest", addedNotification.notificationHeader.text);
-            Assert.AreEqual("You:", addedNotification.notificationSender.text);
+            Assert.AreEqual("UsernameTest:", addedNotification.notificationSender.text);
             Assert.IsTrue(addedNotification.imageContainer.activeSelf);
         }
 
@@ -113,7 +113,7 @@ namespace DCL.Chat.Notifications
             Assert.AreEqual("~nearby", addedNotification.model.messageHeader);
             Assert.AreEqual("~nearby", addedNotification.notificationHeader.text);
             Assert.AreEqual("nearby", addedNotification.model.notificationTargetId);
-            Assert.AreEqual("You", addedNotification.model.messageSender);
+            Assert.AreEqual("You:", addedNotification.model.messageSender);
         }
 
         [Test]
