@@ -333,6 +333,10 @@ jobs:
           name: Print build logs
           command: cat ./unity-renderer/build-logs.txt
           when: always
+      - run:
+          name: Analyze build logs
+          command: node ./analyze-build-logs.mjs > ./unity-renderer/build-files.csv
+          when: always
       - save_cache:
           name: Store test cache
           key: unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -351,6 +355,9 @@ jobs:
       - store_artifacts:
           name: Store build report
           path: ./unity-renderer/Library/LastBuild.buildreport
+      - store_artifacts:
+          name: Store CSV with files on build
+          path: ./unity-renderer/build-files.csv
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
