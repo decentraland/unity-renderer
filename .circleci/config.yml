@@ -378,7 +378,7 @@ jobs:
 
   upload-build-analysis:
     <<: *working_directory_root
-    docker: cimg/node:18.13.0
+    docker: *image_kernel
     steps:
       - <<: *attach_root
       - run:
