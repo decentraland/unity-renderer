@@ -380,7 +380,7 @@ workflows:
       - checkout:
           <<: *all_branches
 
-       - build-unity-for-linux:
+      - build-unity-for-linux:
           <<: *only_dev_and_main
           requires:
             - checkout
@@ -390,10 +390,10 @@ workflows:
           requires:
             - checkout
 
-       - build-unity-for-mac:
-           <<: *only_dev_and_main
-           requires:
-             - checkout
+      - build-unity-for-mac:
+          <<: *only_dev_and_main
+          requires:
+            - checkout
 
       - build-unity-for-webgl:
           <<: *all_branches
