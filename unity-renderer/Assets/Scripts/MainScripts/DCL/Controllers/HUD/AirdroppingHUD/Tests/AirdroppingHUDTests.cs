@@ -46,7 +46,7 @@ public class AirdroppingHUDController_Should : IntegrationTestSuite_Legacy
             items = new AirdroppingHUDController.ItemModel[0]
         };
 
-        controller = new AirdroppingHUDController();
+        controller = new AirdroppingHUDController(null);
         ThumbnailsManager.bypassRequests = true;
     }
 
