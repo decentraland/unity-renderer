@@ -59,7 +59,7 @@ namespace DCL
             audioClipWebRequestFactory = audioClipWebRequest;
         }
 
-        public async UniTask<UnityWebRequest> Get(
+        public async UniTask<UnityWebRequest> GetAsync(
             string url,
             DownloadHandler downloadHandler = null,
             Action<UnityWebRequest> onSuccess = null,
@@ -73,7 +73,7 @@ namespace DCL
                 timeout, cancellationToken, headers);
         }
 
-        public async UniTask<UnityWebRequest> Post(
+        public async UniTask<UnityWebRequest> PostAsync(
             string url,
             string postData,
             DownloadHandler downloadHandler = null,
@@ -89,7 +89,7 @@ namespace DCL
                 timeout, cancellationToken, headers);
         }
 
-        public async UniTask<UnityWebRequest> GetAssetBundle(
+        public async UniTask<UnityWebRequest> GetAssetBundleAsync(
             string url,
             Action<UnityWebRequest> onSuccess = null,
             Action<UnityWebRequest> onfail = null,
@@ -101,7 +101,7 @@ namespace DCL
                 timeout, cancellationToken);
         }
 
-        public async UniTask<UnityWebRequest> GetAssetBundle(
+        public async UniTask<UnityWebRequest> GetAssetBundleAsync(
             string url,
             Hash128 hash,
             Action<UnityWebRequest> onSuccess = null,
@@ -115,7 +115,7 @@ namespace DCL
                 timeout, cancellationToken);
         }
 
-        public async UniTask<UnityWebRequest> GetTexture(
+        public async UniTask<UnityWebRequest> GetTextureAsync(
             string url,
             Action<UnityWebRequest> onSuccess = null,
             Action<UnityWebRequest> onfail = null,
@@ -130,7 +130,7 @@ namespace DCL
                 timeout, cancellationToken, headers);
         }
 
-        public async UniTask<UnityWebRequest> GetAudioClip(
+        public async UniTask<UnityWebRequest> GetAudioClipAsync(
             string url,
             AudioType audioType,
             Action<UnityWebRequest> onSuccess = null,
@@ -143,6 +143,7 @@ namespace DCL
             return await SendWebRequest(audioClipWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
                 timeout, cancellationToken);
         }
+        
 
         private async UniTask<UnityWebRequest> SendWebRequest<T>(
             T requestFactory,
