@@ -284,6 +284,7 @@ namespace DCL.Chat.Notifications
             string senderName = model.ImTheSender ? "You" : model.SenderUsername;
 
             chatNotificationComponentView.SetIsPrivate(true);
+            chatNotificationComponentView.SetMaxContentCharacters(40 - senderName.Length);
             chatNotificationComponentView.SetMessage(model.Body);
             chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");
@@ -297,13 +298,13 @@ namespace DCL.Chat.Notifications
         private void PopulatePublicNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
             PublicChannelMessageNotificationModel model)
         {
-            chatNotificationComponentView.SetIsPrivate(false);
-            chatNotificationComponentView.SetMessage(model.Body);
-
             string channelId = model.ChannelId;
             string channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
             string senderName = model.ImTheSender ? "You" : model.Username;
 
+            chatNotificationComponentView.SetIsPrivate(false);
+            chatNotificationComponentView.SetMaxContentCharacters(40 - senderName.Length);
+            chatNotificationComponentView.SetMessage(model.Body);
             chatNotificationComponentView.SetNotificationTargetId(channelId);
             chatNotificationComponentView.SetNotificationHeader(channelName);
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");

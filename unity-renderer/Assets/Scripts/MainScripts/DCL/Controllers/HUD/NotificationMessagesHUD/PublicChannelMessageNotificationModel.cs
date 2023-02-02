@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-
 namespace DCL.Chat.Notifications
 {
     public class PublicChannelMessageNotificationModel
@@ -9,11 +7,11 @@ namespace DCL.Chat.Notifications
         public string ChannelName { get; }
         public string ChannelId { get; }
         public ulong Timestamp { get; }
-        [CanBeNull] public string Username { get; }
+        public string Username { get; }
         public bool ImTheSender { get; }
 
         public PublicChannelMessageNotificationModel(string messageId, string body, string channelName,
-            string channelId, ulong timestamp, bool imTheSender, string username = null)
+            string channelId, ulong timestamp, bool imTheSender, string username)
         {
             MessageId = messageId;
             Body = body;
