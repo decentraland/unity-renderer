@@ -373,8 +373,16 @@ public class TaskbarHUDController : IHUD
         view.ToggleOn(TaskbarHUDView.TaskbarButtonType.Chat);
     }
 
-    private void OpenLastActiveChatWindow() =>
-        openChat.Set(openChat.Get(), true);
+    private void OpenLastActiveChatWindow()
+    {
+        string lastOpenedChat = openChat.Get();
+
+        string newChat = string.IsNullOrEmpty(lastOpenedChat)
+            ? ChatUtils.NEARBY_CHANNEL_ID
+            : lastOpenedChat;
+
+        openChat.Set(newChat, true);
+    }
 
     private void CloseAnyChatWindow()
     {
