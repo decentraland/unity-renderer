@@ -45,7 +45,7 @@ namespace DCL.Chat.Notifications
         public void AddPrivateNotificationCorrectly()
         {
             const string body = "This is a test message";
-        
+
             view.AddNewChatNotification(new PrivateChatMessageNotificationModel("privateMessageId", "0x00000ba",
                 body, 0, "UsernameTest"));
 
@@ -66,7 +66,7 @@ namespace DCL.Chat.Notifications
             const string body = "This is a test msg";
             ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
             view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
-                body, "nearby", "nearby", 0, "UsernameTest"));
+                body, "nearby", "nearby", 0, false, "UsernameTest"));
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);
@@ -78,14 +78,34 @@ namespace DCL.Chat.Notifications
             Assert.AreEqual("~nearby", addedNotification.notificationHeader.text);
             Assert.AreEqual("nearby", addedNotification.model.notificationTargetId);
         }
-    
+
+        [Test]
+        public void AddNearbyNotificationCorrectlyWhenImTheSender()
+        {
+            const string body = "This is a test msg";
+            ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
+            view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
+                body, "nearby", "nearby", 0, true, "UsernameTest"));
+
+            Assert.IsTrue(view.notificationQueue.Count == 1);
+            Assert.IsTrue(view.poolableQueue.Count == 1);
+            ChatNotificationMessageComponentView addedNotification = (ChatNotificationMessageComponentView)view.notificationQueue.Dequeue();
+
+            Assert.AreEqual($"{newMessage.body}", addedNotification.model.message);
+            Assert.AreEqual($"{newMessage.body}", addedNotification.notificationMessage.text);
+            Assert.AreEqual("~nearby", addedNotification.model.messageHeader);
+            Assert.AreEqual("~nearby", addedNotification.notificationHeader.text);
+            Assert.AreEqual("nearby", addedNotification.model.notificationTargetId);
+            Assert.AreEqual("You", addedNotification.model.messageSender);
+        }
+
         [Test]
         public void AddCustomChannelNotificationCorrectly()
         {
             const string body = "This is a test msg";
             ChatMessage newMessage = new ChatMessage(ChatMessage.Type.PUBLIC, "0x00000ba", body);
             view.AddNewChatNotification(new PublicChannelMessageNotificationModel("publicMessageId",
-                body, "my-channel", "oi34j5o24j52", 0, "UsernameTest"));
+                body, "my-channel", "oi34j5o24j52", 0, false, "UsernameTest"));
 
             Assert.IsTrue(view.notificationQueue.Count == 1);
             Assert.IsTrue(view.poolableQueue.Count == 1);

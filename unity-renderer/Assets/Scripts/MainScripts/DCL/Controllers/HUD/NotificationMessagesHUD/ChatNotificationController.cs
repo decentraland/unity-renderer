@@ -166,15 +166,8 @@ namespace DCL.Chat.Notifications
                     break;
                 case ChatMessage.Type.PUBLIC:
                     bool isMyMessage = message.sender == ownUserProfile.userId;
-                    string senderName;
-
-                    if (isMyMessage)
-                        senderName = "You";
-                    else
-                    {
-                        UserProfile senderProfile = userProfileBridge.Get(message.sender);
-                        senderName = senderProfile?.userName ?? message.sender;
-                    }
+                    UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
+                    string senderName = senderProfile?.userName ?? message.sender;
 
                     if (IsProfanityFilteringEnabled())
                     {
@@ -184,7 +177,7 @@ namespace DCL.Chat.Notifications
 
                     var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
                         body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
-                        senderName);
+                        isMyMessage, senderName);
 
                     mainChatNotificationView.AddNewChatNotification(publicModel);
 

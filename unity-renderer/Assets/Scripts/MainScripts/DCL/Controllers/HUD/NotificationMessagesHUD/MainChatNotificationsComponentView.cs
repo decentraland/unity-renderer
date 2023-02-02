@@ -296,12 +296,13 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetIsPrivate(false);
             chatNotificationComponentView.SetMessage(model.Body);
 
-            var channelId = model.ChannelId;
-            var channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            string channelId = model.ChannelId;
+            string channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
 
             chatNotificationComponentView.SetNotificationTargetId(channelId);
             chatNotificationComponentView.SetNotificationHeader(channelName);
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+            string senderName = model.ImTheSender ? "You" : model.Username;
+            chatNotificationComponentView.SetNotificationSender($"{senderName}:");
         }
 
         private void ClickedOnNotification(string targetId)
