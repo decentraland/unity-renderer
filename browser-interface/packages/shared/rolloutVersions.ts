@@ -16,7 +16,6 @@ export function injectVersions<T extends Record<string, any>>(versions: T): T & 
 
 export function getUsedComponentVersions() {
   const versions = injectVersions({})
-  const kernelVersion = versions['@dcl/kernel'] || 'unknown'
-  const rendererVersion = versions['@dcl/unity-renderer'] || 'unknown'
-  return { kernelVersion, rendererVersion }
+  const explorerVersion = versions['@dcl/explorer'] || 'unknown'
+  return { explorerVersion }
 }

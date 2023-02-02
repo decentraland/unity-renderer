@@ -1,7 +1,6 @@
 import { Vector3 } from '@dcl/ecs-math'
 import lodash from 'lodash'
 import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
-import { AirdropInfo } from 'shared/airdrops/interface'
 import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
 import {
   HUDConfiguration,
@@ -46,13 +45,13 @@ import { Observable } from 'mz-observable'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { FeatureFlag } from 'shared/meta/types'
 import { getProvider } from 'shared/session/index'
-import { uuid } from 'atomicHelpers/math'
+import { uuid } from 'lib/javascript/uuid'
 import future, { IFuture } from 'fp-future'
 import { futures } from './BrowserInterface'
 import { trackEvent } from 'shared/analytics'
 import { Avatar, ContentMapping } from '@dcl/schemas'
 import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
-import { incrementCounter } from '../shared/occurences'
+import { incrementCounter } from 'shared/occurences'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 
 const MINIMAP_CHUNK_SIZE = 100
@@ -369,10 +368,6 @@ export class UnityInterface implements IUnityInterface {
       'SetTutorialEnabledForUsersThatAlreadyDidTheTutorial',
       JSON.stringify(tutorialConfig)
     )
-  }
-
-  public TriggerAirdropDisplay(_data: AirdropInfo) {
-    // Disabled for security reasons
   }
 
   public AddMessageToChatWindow(message: ChatMessage) {

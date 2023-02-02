@@ -3,6 +3,8 @@ using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.CRDT;
+using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -11,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
+using RPC.Context;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -85,6 +88,30 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(sceneGo != null, "scene game object not found! GlobalScenes must not be unloaded by distance!");
         Assert.IsTrue(Environment.i.world.state.GetScene(sceneNumber) != null,
             "Scene not in loaded dictionary when far! GlobalScenes must not be unloaded by distance!");
+    }
+
+    [UnityTest]
+    public IEnumerator CreateSdk7GlobalScene()
+    {
+
+        Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
+        CRDTServiceContext rpcCrdtServiceContext = Substitute.For<CRDTServiceContext>();
+        ECSComponentsManager componentsManager = new ECSComponentsManager(new Dictionary<int, ECSComponentsFactory.ECSComponentBuilder>());
+        CrdtExecutorsManager executorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, rpcCrdtServiceContext);
+
+        int sceneNumberWithoutSdk7 = 83;
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumberWithoutSdk7 });
+        Assert.AreEqual(0, crdtExecutors.Count);
+
+        int sceneNumberWithSdk7 = 84;
+        sceneController.CreateGlobalScene(new CreateGlobalSceneMessage() { sceneNumber = sceneNumberWithSdk7, sdk7 = true});
+        Assert.AreEqual(1, crdtExecutors.Count);
+
+        sceneController.UnloadParcelSceneExecute(sceneNumberWithoutSdk7);
+        sceneController.UnloadParcelSceneExecute(sceneNumberWithSdk7);
+        executorsManager.Dispose();
+
+        yield break;
     }
 
     [UnityTest]

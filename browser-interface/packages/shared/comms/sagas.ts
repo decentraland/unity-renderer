@@ -20,7 +20,7 @@ import { DEPLOY_PROFILE_SUCCESS, SendProfileToRenderer, SEND_PROFILE_TO_RENDERER
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { Avatar, IPFSv2, Snapshots } from '@dcl/schemas'
 import { commConfigurations, COMMS_GRAPH, DEBUG_COMMS, genericAvatarSnapshots, PREFERED_ISLAND } from 'config'
-import { isURL } from 'atomicHelpers/isURL'
+import { isURL } from 'lib/javascript/isURL'
 import { getAllPeers, processAvatarVisibility } from './peers'
 import { getFatalError } from 'shared/loading/selectors'
 import { EventChannel } from 'redux-saga'
@@ -44,7 +44,7 @@ import { store } from 'shared/store/isolatedStore'
 import { ConnectToCommsAction, CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
-import { deepEqual } from 'atomicHelpers/deepEqual'
+import { deepEqual } from 'lib/javascript/deepEqual'
 import { incrementCounter } from 'shared/occurences'
 import { RoomConnection } from './interface'
 import {
@@ -58,7 +58,7 @@ import { NotificationType } from 'shared/types'
 import { trackEvent } from 'shared/analytics'
 import { getCatalystCandidates } from 'shared/dao/selectors'
 import { setCatalystCandidates } from 'shared/dao/actions'
-import { signedFetch } from 'atomicHelpers/signedFetch'
+import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
