@@ -17,6 +17,8 @@ namespace DCL.Emotes
         private IEmotesCatalogService emoteCatalog;
         private CatalogController catalogController;
 
+        private Service<IEmotesCatalogService> emotesCatalog;
+
         [SetUp]
         public void SetUp()
         {
@@ -35,7 +37,7 @@ namespace DCL.Emotes
         [Test]
         public void InitializeEmbeddedEmotesOnConstructor()
         {
-            EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            EmbeddedEmotesSO embeddedEmotes = emotesCatalog.Ref.GetEmbeddedEmotes();
             foreach (EmbeddedEmote emote in embeddedEmotes.emotes)
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);

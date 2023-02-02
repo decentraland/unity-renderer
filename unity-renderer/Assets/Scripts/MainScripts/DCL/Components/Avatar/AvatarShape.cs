@@ -56,7 +56,7 @@ namespace DCL
         private bool isGlobalSceneAvatar = true;
         private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
         private IUserProfileBridge userProfileBridge;
-
+        private Service<IEmotesCatalogService> emotesCatalogService;
         public override string componentName => "avatarShape";
 
         private void Awake()
@@ -176,7 +176,7 @@ namespace DCL
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                var embeddedEmotesSo = emotesCatalogService.Ref.GetEmbeddedEmotes();
                 var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
                 //here we add emote ids to both new and old emote loading flow to merge the results later
                 //because some users might have emotes as wearables and others only as emotes

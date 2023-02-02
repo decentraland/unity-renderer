@@ -81,6 +81,8 @@ public class AvatarEditorHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
+    public Service<IEmotesCatalogService> emotesCatalogService;
+
     public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags, IAnalytics analytics)
     {
         this.featureFlags = featureFlags;
@@ -125,7 +127,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
         //Initialize with embedded emotes
-        emotesCustomizationComponentController.SetEmotes(EmbeddedEmotesSO.Provide().emotes.ToArray());
+        emotesCustomizationComponentController.SetEmotes(emotesCatalogService.Ref.GetEmbeddedEmotes().emotes);
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
@@ -256,7 +258,7 @@ public class AvatarEditorHUDController : IHUD
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
         try
         {
-            var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
+            var embeddedEmotes = emotesCatalogService.Ref.GetEmbeddedEmotes().emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
             var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
             var emotesFilter = new HashSet<string>();

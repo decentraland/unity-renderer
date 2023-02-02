@@ -7,6 +7,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class EmotesCatalogServiceShould
@@ -18,7 +19,7 @@ public class EmotesCatalogServiceShould
     public void SetUp()
     {
         bridge = Substitute.For<IEmotesCatalogBridge>();
-        catalog = new EmotesCatalogService(bridge, Array.Empty<WearableItem>());
+        catalog = new EmotesCatalogService(bridge,ScriptableObject.CreateInstance<EmbeddedEmotesSO>() );
         catalog.Initialize();
     }
 
@@ -324,7 +325,9 @@ public class EmotesCatalogServiceShould
     public void EmbedEmotes()
     {
         WearableItem[] embededEmotes = new [] { new WearableItem { id = "id1" }, new WearableItem { id = "id2" }, new WearableItem { id = "id3" } };
-        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), embededEmotes);
+        EmbeddedEmotesSO embeddedEmotesSo = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotesSo.emotes = (EmbeddedEmote[])embededEmotes;
+        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), embeddedEmotesSo);
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);

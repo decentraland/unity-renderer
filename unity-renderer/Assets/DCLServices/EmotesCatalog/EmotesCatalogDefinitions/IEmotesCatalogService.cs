@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using DCL.Helpers;
 
 public interface IEmotesCatalogService : IService
@@ -17,6 +18,7 @@ public interface IEmotesCatalogService : IService
     UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default);
     UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default);
 
+    EmbeddedEmotesSO GetEmbeddedEmotes();
     void ForgetEmote(string id);
     void ForgetEmotes(IList<string> ids);
 }

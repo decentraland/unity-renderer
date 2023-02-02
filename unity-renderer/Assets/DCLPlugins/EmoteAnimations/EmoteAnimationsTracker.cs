@@ -24,6 +24,8 @@ namespace DCL.Emotes
 
         internal GameObject animationsModelsContainer;
 
+        private Service<IEmotesCatalogService> emotesCatalog;
+
         // Alex: While we are supporting the old Emotes flow, we need the wearableItemResolver
         public EmoteAnimationsTracker(DataStore_Emotes dataStore, EmoteAnimationLoaderFactory emoteAnimationLoaderFactory, IWearableItemResolver wearableItemResolver, IEmotesCatalogService emotesCatalogService)
         {
@@ -48,7 +50,7 @@ namespace DCL.Emotes
             const string FEMALE = "urn:decentraland:off-chain:base-avatars:BaseFemale";
             const string MALE = "urn:decentraland:off-chain:base-avatars:BaseMale";
 
-            EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            EmbeddedEmotesSO embeddedEmotes = emotesCatalog.Ref.GetEmbeddedEmotes();
 
             foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
             {

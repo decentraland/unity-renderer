@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Emotes;
 using DCL.Helpers;
 
 public class EmotesCatalogService : IEmotesCatalogService
@@ -13,10 +14,13 @@ public class EmotesCatalogService : IEmotesCatalogService
     internal readonly Dictionary<string, int> emotesOnUse = new Dictionary<string, int>();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new Dictionary<string, HashSet<Promise<WearableItem[]>>>();
 
-    public EmotesCatalogService(IEmotesCatalogBridge bridge, WearableItem[] embeddedEmotes)
+    private EmbeddedEmotesSO embeddedEmotes;
+
+    public EmotesCatalogService(IEmotesCatalogBridge bridge, EmbeddedEmotesSO embeddedEmotes)
     {
         this.bridge = bridge;
-        EmbedEmotes(embeddedEmotes);
+        this.embeddedEmotes = embeddedEmotes;
+        EmbedEmotes();
     }
 
     public void Initialize()
@@ -86,9 +90,9 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
     }
 
-    private void EmbedEmotes(WearableItem[] embeddedEmotes)
+    private void EmbedEmotes()
     {
-        foreach (WearableItem embeddedEmote in embeddedEmotes)
+        foreach (WearableItem embeddedEmote in embeddedEmotes.emotes)
         {
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;
@@ -234,6 +238,11 @@ public class EmotesCatalogService : IEmotesCatalogService
             string id = ids[i];
             ForgetEmote(id);
         }
+    }
+
+    public EmbeddedEmotesSO GetEmbeddedEmotes()
+    {
+        return embeddedEmotes;
     }
 
     public void Dispose()

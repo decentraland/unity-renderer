@@ -53,7 +53,7 @@ namespace DCL
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes")));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
