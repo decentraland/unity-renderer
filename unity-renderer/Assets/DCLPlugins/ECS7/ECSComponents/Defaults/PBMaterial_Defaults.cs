@@ -17,6 +17,7 @@ namespace DCL.ECSComponents
 
         public static bool GetCastShadows(this PBMaterial self)
         {
+            // Note: HasCastShadows represent the existence of the parameter and not the value of castShadows itself.
             if (self.Pbr != null)
                 return !self.Pbr.HasCastShadows || self.Pbr.CastShadows;
 

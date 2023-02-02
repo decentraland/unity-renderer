@@ -3,8 +3,8 @@
 namespace MainScripts.DCL.Controllers.AssetManager
 {
     /// <summary>
-    /// Possible sources an asset can come from.
-    /// Should be sorted by priority in an ascending order
+    ///     Possible sources an asset can come from.
+    ///     Should be sorted by priority in an ascending order
     /// </summary>
     [Flags]
     public enum AssetSource
@@ -12,18 +12,23 @@ namespace MainScripts.DCL.Controllers.AssetManager
         NONE = 0,
 
         /// <summary>
-        /// From the resources bundles at build time
+        ///     From the resources bundles at build time
         /// </summary>
         EMBEDDED = 1,
 
         /// <summary>
-        /// Downloaded over network
+        ///     Downloaded over network
         /// </summary>
         WEB = 1 << 1,
 
         /// <summary>
-        /// All sources
+        ///     Downloaded over Addressables
         /// </summary>
-        ALL = ~0
+        ADDRESSABLE = 2 << 2,
+
+        /// <summary>
+        ///     All sources
+        /// </summary>
+        ALL = ~0,
     }
 }

@@ -96,6 +96,7 @@ namespace RPC.Services
                 {
                     contents = parsedContent,
                     id = request.Entity.Id,
+                    sdk7 = request.Sdk7,
                     name = request.SceneName,
                     baseUrl = request.BaseUrl,
                     sceneNumber = sceneNumber,
