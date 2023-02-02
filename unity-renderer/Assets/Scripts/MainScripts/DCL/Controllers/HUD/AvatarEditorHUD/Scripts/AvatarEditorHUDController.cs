@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -120,6 +121,13 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
 
+        InitializeAsyncEmoteController();
+    }
+
+    private async void InitializeAsyncEmoteController()
+    {
+        EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.Ref.GetEmbeddedEmotes();
+
         emotesCustomizationComponentController = CreateEmotesController();
         IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
             DataStore.i.emotesCustomization,
@@ -127,7 +135,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
         //Initialize with embedded emotes
-        emotesCustomizationComponentController.SetEmotes(emotesCatalogService.Ref.GetEmbeddedEmotes().emotes);
+        emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.emotes);
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
@@ -258,7 +266,9 @@ public class AvatarEditorHUDController : IHUD
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
         try
         {
-            var embeddedEmotes = emotesCatalogService.Ref.GetEmbeddedEmotes().emotes;
+            Task<EmbeddedEmotesSO> embeddedEmoteTask = emotesCatalogService.Ref.GetEmbeddedEmotes();
+            await embeddedEmoteTask;
+            var embeddedEmotes = embeddedEmoteTask.Result.emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
             var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
             var emotesFilter = new HashSet<string>();

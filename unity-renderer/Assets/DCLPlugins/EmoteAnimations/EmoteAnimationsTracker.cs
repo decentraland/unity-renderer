@@ -37,20 +37,17 @@ namespace DCL.Emotes
             this.emotesCatalogService = emotesCatalogService;
             this.dataStore.animations.Clear();
 
-            InitializeEmbeddedEmotes();
-            InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
-
-            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
+            AsyncInitialization();
         }
 
-        private void InitializeEmbeddedEmotes()
+        private async void AsyncInitialization()
         {
             //To avoid circular references in assemblies we hardcode this here instead of using WearableLiterals
             //Embedded Emotes are only temporary until they can be retrieved from the content server
             const string FEMALE = "urn:decentraland:off-chain:base-avatars:BaseFemale";
             const string MALE = "urn:decentraland:off-chain:base-avatars:BaseMale";
 
-            EmbeddedEmotesSO embeddedEmotes = emotesCatalog.Ref.GetEmbeddedEmotes();
+            EmbeddedEmotesSO embeddedEmotes = await emotesCatalog.Ref.GetEmbeddedEmotes();
 
             foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
             {
@@ -77,6 +74,9 @@ namespace DCL.Emotes
                 }
             }
             CatalogController.i.EmbedWearables(embeddedEmotes.emotes);
+
+            InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
+            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
         }
 
         private void OnRefCountUpdated((string bodyshapeId, string emoteId) value, int refCount)

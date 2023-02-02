@@ -193,7 +193,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 wearableItems.Add(profile.avatar.bodyShape);
 
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
-                var embeddedEmotesSo = emotesCatalog.Ref.GetEmbeddedEmotes();
+                var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
                 emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
                 wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 

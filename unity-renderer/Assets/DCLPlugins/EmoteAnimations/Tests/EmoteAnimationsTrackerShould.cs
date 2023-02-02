@@ -4,7 +4,10 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.Emotes
 {
@@ -34,10 +37,12 @@ namespace DCL.Emotes
         [TearDown]
         public void TearDown() { Object.Destroy(catalogController.gameObject); }
 
-        [Test]
-        public void InitializeEmbeddedEmotesOnConstructor()
+        [UnityTest]
+        public IEnumerator InitializeEmbeddedEmotesOnConstructor()
         {
-            EmbeddedEmotesSO embeddedEmotes = emotesCatalog.Ref.GetEmbeddedEmotes();
+            Task<EmbeddedEmotesSO> embeddedEmotesTask = emotesCatalog.Ref.GetEmbeddedEmotes();
+            yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+            EmbeddedEmotesSO embeddedEmotes = embeddedEmotesTask.Result;
             foreach (EmbeddedEmote emote in embeddedEmotes.emotes)
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);

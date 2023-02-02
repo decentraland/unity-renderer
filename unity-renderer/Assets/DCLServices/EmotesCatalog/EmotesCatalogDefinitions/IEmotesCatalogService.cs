@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
+using System.Threading.Tasks;
 
 public interface IEmotesCatalogService : IService
 {
@@ -18,7 +19,7 @@ public interface IEmotesCatalogService : IService
     UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default);
     UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default);
 
-    EmbeddedEmotesSO GetEmbeddedEmotes();
+    Task<EmbeddedEmotesSO> GetEmbeddedEmotes();
     void ForgetEmote(string id);
     void ForgetEmotes(IList<string> ids);
 }

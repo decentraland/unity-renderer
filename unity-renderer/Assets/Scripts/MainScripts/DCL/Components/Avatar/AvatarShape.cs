@@ -11,6 +11,7 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
+using System.Threading.Tasks;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -176,8 +177,9 @@ namespace DCL
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
-                var embeddedEmotesSo = emotesCatalogService.Ref.GetEmbeddedEmotes();
-                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                Task<EmbeddedEmotesSO> embeddedEmotesTask = emotesCatalogService.Ref.GetEmbeddedEmotes();
+                yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+                var embeddedEmoteIds = embeddedEmotesTask.Result.emotes.Select(x => x.id);
                 //here we add emote ids to both new and old emote loading flow to merge the results later
                 //because some users might have emotes as wearables and others only as emotes
                 foreach (var emoteId in embeddedEmoteIds)

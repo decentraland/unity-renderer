@@ -4,6 +4,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.Helpers;
+using DCL.Providers;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public class EmotesCatalogService : IEmotesCatalogService
 {
@@ -14,12 +17,27 @@ public class EmotesCatalogService : IEmotesCatalogService
     internal readonly Dictionary<string, int> emotesOnUse = new Dictionary<string, int>();
     internal readonly Dictionary<string, HashSet<Promise<WearableItem[]>>> ownedEmotesPromisesByUser = new Dictionary<string, HashSet<Promise<WearableItem[]>>>();
 
-    private EmbeddedEmotesSO embeddedEmotes;
+    private IAddressableResourceProvider addressableResourceProvider;
+    private EmbeddedEmotesSO embeddedEmotesSO;
 
-    public EmotesCatalogService(IEmotesCatalogBridge bridge, EmbeddedEmotesSO embeddedEmotes)
+    public EmotesCatalogService(IEmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider)
     {
         this.bridge = bridge;
-        this.embeddedEmotes = embeddedEmotes;
+        this.addressableResourceProvider = addressableResourceProvider;
+        InitializeAsyncEmbeddedEmotes();
+    }
+
+    private async void InitializeAsyncEmbeddedEmotes()
+    {
+        try
+        {
+            embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset");
+        }
+        catch (Exception e)
+        {
+            embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+            throw new Exception("Embedded emotes async initialization failed. Please check that the Essentials group addressables are correct");
+        }
         EmbedEmotes();
     }
 
@@ -92,7 +110,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     private void EmbedEmotes()
     {
-        foreach (WearableItem embeddedEmote in embeddedEmotes.emotes)
+        foreach (WearableItem embeddedEmote in embeddedEmotesSO.emotes)
         {
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;
@@ -240,9 +258,10 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
     }
 
-    public EmbeddedEmotesSO GetEmbeddedEmotes()
+    public async Task<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        return embeddedEmotes;
+        await UniTask.WaitUntil(() => embeddedEmotesSO != null);
+        return embeddedEmotesSO;
     }
 
     public void Dispose()
