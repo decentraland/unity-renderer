@@ -25,8 +25,6 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal GameObject imageContainer;
         [SerializeField] internal GameObject imageBackground;
         [SerializeField] internal GameObject multiNotificationBackground;
-        [SerializeField] internal GameObject firstSeparator;
-        [SerializeField] internal GameObject secondSeparator;
         [SerializeField] internal bool isPrivate;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
@@ -181,8 +179,6 @@ namespace DCL.Chat.Notifications
             model.isPrivate = isPrivate;
             this.isPrivate = isPrivate;
             imageBackground.SetActive(isPrivate);
-            firstSeparator.SetActive(isPrivate);
-            secondSeparator.SetActive(isPrivate);
             if (multiNotificationBackground != null)
                 multiNotificationBackground.SetActive(false);
 
