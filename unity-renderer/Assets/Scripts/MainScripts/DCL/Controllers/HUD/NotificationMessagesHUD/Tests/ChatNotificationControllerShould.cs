@@ -109,13 +109,17 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "mutedChannel" &&
-                                     m.ChannelName == "random-channel"));
+                                     m.MessageId == "mid" && m.Username == "imsender"
+                                                          && m.Body == "hey" && m.ChannelId == "mutedChannel"
+                                                          && m.ChannelName == "random-channel"
+                                                          && !m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "mutedChannel" &&
-                                      m.ChannelName == "random-channel"));
+                                      m.MessageId == "mid" && m.Username == "imsender"
+                                                           && m.Body == "hey" && m.ChannelId == "mutedChannel"
+                                                           && m.ChannelName == "random-channel"
+                                                           && !m.ImTheSender));
         }
 
         [Test]
@@ -142,11 +146,17 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.PeerUsername == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                     m.MessageId == "mid" && m.PeerUsername == "imsender"
+                                                          && m.Body == "hey" && m.ProfilePicture == "face256"
+                                                          && m.SenderUsername == "imsender"
+                                                          && !m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.PeerUsername == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                      m.MessageId == "mid" && m.PeerUsername == "imsender"
+                                                           && m.Body == "hey" && m.ProfilePicture == "face256"
+                                                           && m.SenderUsername == "imsender"
+                                                           && !m.ImTheSender));
         }
 
         [Test]
@@ -173,11 +183,17 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.PeerUsername == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                     m.MessageId == "mid" && m.PeerUsername == "recipientName"
+                                                          && m.Body == "hey" && m.ProfilePicture == "face256"
+                                                          && m.SenderUsername == OWN_USER_NAME
+                                                          && m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.PeerUsername == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                      m.MessageId == "mid" && m.PeerUsername == "recipientName"
+                                                           && m.Body == "hey" && m.ProfilePicture == "face256"
+                                                           && m.SenderUsername == OWN_USER_NAME
+                                                           && m.ImTheSender));
         }
 
         [Test]
@@ -236,12 +252,14 @@ namespace DCL.Chat.Notifications
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                                      m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "nearby" &&
-                                     m.ChannelName == "nearby"));
+                                     m.ChannelName == "nearby"
+                                     && !m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                                       m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ChannelId == "nearby" &&
-                                      m.ChannelName == "nearby"));
+                                      m.ChannelName == "nearby"
+                                      && !m.ImTheSender));
         }
 
         [Test]
@@ -258,13 +276,19 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == OWN_USER_NAME && m.Body == "hey" && m.ChannelId == "nearby" &&
-                                     m.ChannelName == "nearby"));
+                                     m.MessageId == "mid" && m.Username == OWN_USER_NAME
+                                                          && m.Body == "hey"
+                                                          && m.ChannelId == "nearby"
+                                                          && m.ChannelName == "nearby"
+                                                          && m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == OWN_USER_NAME && m.Body == "hey" && m.ChannelId == "nearby" &&
-                                      m.ChannelName == "nearby"));
+                                      m.MessageId == "mid" && m.Username == OWN_USER_NAME
+                                                           && m.Body == "hey"
+                                                           && m.ChannelId == "nearby"
+                                                           && m.ChannelName == "nearby"
+                                                           && m.ImTheSender));
         }
 
         [Test]
@@ -283,11 +307,11 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == "sender"));
+                                     m.MessageId == "mid" && m.Username == "sender" && !m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == "sender"));
+                                      m.MessageId == "mid" && m.Username == "sender" && !m.ImTheSender));
         }
 
         [Test]
@@ -306,11 +330,12 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == OWN_USER_NAME));
+                                     m.MessageId == "mid" && m.Username == OWN_USER_NAME && m.ImTheSender));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == OWN_USER_NAME));
+                                      m.MessageId == "mid" && m.Username == OWN_USER_NAME
+                                                           && m.ImTheSender));
         }
 
         [TestCase("shit", "****")]
