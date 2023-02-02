@@ -4,7 +4,7 @@ import {
   incrementMessageFromKernelToRenderer,
   incrementMessageFromRendererToKernel
 } from 'shared/session/getPerformanceInfo'
-import defaultLogger from '../shared/logger'
+import defaultLogger from 'shared/logger'
 import type { CommonRendererOptions } from './loader'
 
 let pendingMessagesInTrace = 0
