@@ -58,19 +58,7 @@ public class WebSocketCommunication : IKernelCommunication
         {
             if (withSSL)
             {
-                wssServerUrl = $"wss://localhost:{port}/";
-                ws = new WebSocketServer(wssServerUrl)
-                {
-                    SslConfiguration =
-                    {
-                        ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
-                        ClientCertificateRequired = false,
-                        CheckCertificateRevocation = false,
-                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
-                        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
-                    },
-                    KeepClean = false
-                };
+                throw new Exception("Not supported");
             }
             else
             {
