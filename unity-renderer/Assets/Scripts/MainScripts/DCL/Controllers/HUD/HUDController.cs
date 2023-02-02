@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
@@ -162,7 +163,7 @@ public class HUDController : IHUDController
         }
     }
 
-    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
+    public async void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
         string extraPayload = null)
     {
         //TODO(Brian): For now, the factory code is using this switch approach.
@@ -383,7 +384,7 @@ public class HUDController : IHUDController
                     questsTrackerHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.SIGNUP:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
                 {
                     //Same race condition risks as with the ProfileHUD
@@ -455,7 +456,7 @@ public class HUDController : IHUDController
     {
     }
 
-    private async void CreateHudElement(HUDConfiguration config, HUDElementID id)
+    private async UniTask CreateHudElement(HUDConfiguration config, HUDElementID id)
     {
         bool controllerCreated = hudElements.ContainsKey(id);
 

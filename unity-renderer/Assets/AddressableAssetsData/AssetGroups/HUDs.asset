@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: HUDs
   m_EditorClassIdentifier: 
-  m_GroupName: Packed Assets
+  m_GroupName: HUDs
   m_Data:
     m_SerializedData: []
   m_GUID: b4629246b07e29e46b61c17c64def0fc
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: d1d56442dbd2b534faad59e42b3c4a87
+    m_Address: SignupHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
