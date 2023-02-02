@@ -17,7 +17,7 @@ public class CatalogController : MonoBehaviour
     private const string THIRD_PARTY_WEARABLES_CONTEXT = "ThirdPartyWearables";
     private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
     private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
-    private const float REQUESTS_TIME_OUT_SECONDS = 45;
+    private const float REQUESTS_TIME_OUT_SECONDS = 300;
 
     public static CatalogController i { get; private set; }
 
@@ -30,7 +30,7 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
-    
+
     public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
@@ -65,7 +65,7 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
-    //This temporary until the emotes are in the content server 
+    //This temporary until the emotes are in the content server
     public void EmbedWearables(IEnumerable<WearableItem> wearables)
     {
         foreach (WearableItem wearableItem in wearables)
