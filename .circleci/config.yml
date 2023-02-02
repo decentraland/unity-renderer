@@ -73,7 +73,12 @@ references:
     - ./unity-renderer/TestResources/VisualTests
     - ./Builds/
 
-  .all_branches_and_tags: &all_branches_and_tags
+  .all_branches: &all_branches
+    filters:
+      branches:
+        only: /(.*)/
+
+  .only_dev_and_main: &only_dev_and_main
     filters:
       branches:
         only: /(.*)/
@@ -239,14 +244,14 @@ jobs:
           name: Get the hash of source files
           command: |
             # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -path '*node_modules*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
             # hash pipeline files
-            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+            find ./ -type f \( -not -path '*node_modules*' \) \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
       - run: *STORE_TARGET
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode- # {{ checksum "../.unitysources-checksum" }}
+            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
@@ -373,47 +378,47 @@ workflows:
   build-deploy:
     jobs:
       - checkout:
-          <<: *all_branches_and_tags
+          <<: *all_branches
 
-      # - build-unity-for-linux:
-      #     <<: *all_branches_and_tags
-      #     requires:
-      #       - checkout
-
-      - build-unity-for-windows:
-          <<: *all_branches_and_tags
+       - build-unity-for-linux:
+          <<: *only_dev_and_main
           requires:
             - checkout
 
-      # - build-unity-for-mac:
-      #     <<: *all_branches_and_tags
-      #     requires:
-      #       - checkout
+      - build-unity-for-windows:
+          <<: *all_branches
+          requires:
+            - checkout
+
+       - build-unity-for-mac:
+           <<: *only_dev_and_main
+           requires:
+             - checkout
 
       - build-unity-for-webgl:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
             - checkout
 
       - playmode-tests:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
             - checkout
 
       - publish-desktop-artifacts:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
-      #      - build-unity-for-linux
+            - build-unity-for-linux
             - build-unity-for-windows
-      #      - build-unity-for-mac
+            - build-unity-for-mac
 
       - build-js-interface:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
             - build-unity-for-webgl
 
       - test-js-interface:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
             - checkout
 
