@@ -19,6 +19,7 @@ import {
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 import { OFFLINE_REALM } from 'shared/realm/types'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
+import { storeCondition } from 'lib/redux'
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -121,18 +122,7 @@ export async function fetchCatalystStatuses(
 }
 
 export async function realmInitialized(): Promise<void> {
-  if (getRealmAdapter(store.getState())) {
-    return
-  }
-
-  return new Promise((resolve) => {
-    const unsubscribe = store.subscribe(() => {
-      if (getRealmAdapter(store.getState())) {
-        unsubscribe()
-        return resolve()
-      }
-    })
-  })
+  await storeCondition(getRealmAdapter)
 }
 
 export async function resolveRealmAboutFromBaseUrl(

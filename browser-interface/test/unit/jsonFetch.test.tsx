@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { jsonFetch } from 'atomicHelpers/jsonFetch'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 
 describe('jsonFetch', function() {
   let originalFetch: any
