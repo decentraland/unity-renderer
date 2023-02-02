@@ -211,10 +211,8 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    private static bool ContainsLinks(string description)
-    {
-        return Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase).Count > 0;
-    }
+    private static bool ContainsLinks(string description) =>
+        Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase).Count > 0;
 
     private IEnumerator PolygonManaIntervalRoutine()
     {

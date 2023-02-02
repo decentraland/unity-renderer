@@ -170,10 +170,12 @@ namespace SocialFeaturesAnalytics
 
         public void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
-            data.Add("descriptionLength", descriptionLength.ToString());
-            data.Add("hasLinks", hasLinks.ToString());
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source.ToString(),
+                ["descriptionLength"] = descriptionLength.ToString(),
+                ["hasLinks"] = hasLinks.ToString(),
+            };
 
             analytics.SendAnalytic(PASSPORT_EDIT_PROFILE, data);
         }
