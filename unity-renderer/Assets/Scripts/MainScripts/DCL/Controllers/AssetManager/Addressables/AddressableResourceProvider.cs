@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -43,6 +44,18 @@ namespace DCL.Providers
             AsyncOperationHandle<T> request = Addressables.LoadAssetAsync<T>(key);
             await request.WithCancellation(cancellationToken);
             return request.Result;
+        }
+
+        public async UniTask<T> Instantiate<T>(string address, string name, CancellationToken cancellationToken = default)
+        {
+            //This function does nothing if initialization has already occurred
+            await Addressables.InitializeAsync().WithCancellation(cancellationToken);
+
+            AsyncOperationHandle<GameObject> request = Addressables.InstantiateAsync(address);
+            await request.WithCancellation(cancellationToken);
+
+            request.Result.name = name;
+            return request.Result.GetComponent<T>();
         }
 
         public void Dispose() { }
