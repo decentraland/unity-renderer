@@ -1,4 +1,4 @@
-import { LoadableScene } from '../shared/types'
+import { LoadableScene } from 'shared/types'
 import { forceStopScene, getSceneWorkerBySceneID, loadParcelSceneWorker } from 'shared/world/parcelSceneManager'
 import { parseUrn, resolveContentUrl } from '@dcl/urn-resolver'
 import { Entity } from '@dcl/schemas'

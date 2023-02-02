@@ -35,7 +35,8 @@ import {
 } from 'shared/loading/actions'
 import { EntityAction, LoadableScene } from 'shared/types'
 import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'shared/logger'
-import { gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { protobufMsgBridge } from 'unity-interface/protobufMessagesBridge'
 import mitt from 'mitt'
@@ -78,8 +79,12 @@ const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
 export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready' | 'failed'
 export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCycleStatusType }
 
-export const sceneEvents =
-  mitt<{ [SCENE_LOAD]: SceneLoad; [SCENE_START]: SceneStart; [SCENE_FAIL]: SceneFail; [SCENE_UNLOAD]: SceneUnload }>()
+export const sceneEvents = mitt<{
+  [SCENE_LOAD]: SceneLoad
+  [SCENE_START]: SceneStart
+  [SCENE_FAIL]: SceneFail
+  [SCENE_UNLOAD]: SceneUnload
+}>()
 
 function buildWebWorkerTransport(loadableScene: LoadableScene, sdk7: boolean): Transport {
   const loggerName = getSceneNameFromJsonData(loadableScene.entity.metadata) || loadableScene.id

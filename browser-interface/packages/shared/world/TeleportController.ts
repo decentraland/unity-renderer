@@ -3,7 +3,7 @@ import { getWorld, isInsideWorldLimits } from '@dcl/schemas'
 import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 import defaultLogger from 'shared/logger'
 
-import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 
 import { store } from 'shared/store/isolatedStore'
 import { getRealmAdapter } from 'shared/realm/selectors'
@@ -15,7 +15,7 @@ import { getParcelPosition } from 'shared/scene-loader/selectors'
 
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { homePointKey } from 'shared/atlas/utils'
-import { getFromPersistentStorage } from 'atomicHelpers/persistentStorage'
+import { getFromPersistentStorage } from 'lib/browser/persistentStorage'
 import { changeToMostPopulatedRealm } from '../dao'
 
 const descriptiveValidWorldRanges = getWorld()
