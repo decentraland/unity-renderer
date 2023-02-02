@@ -73,20 +73,20 @@ namespace Tests
 
             videoMaterialComponent.PutFor(scene0, entity00, new InternalVideoMaterial()
             {
-                material = new Material(Shader.Find("Standard")) { mainTexture = new Texture2D(1, 1), },
+                material = new Material(Shader.Find("DCL/Universal Render Pipeline/Lit")) { mainTexture = new Texture2D(1, 1), },
                 videoTextureDatas = new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(100, ShaderUtils.BaseMap) },
             });
 
             videoMaterialComponent.PutFor(scene0, entity01, new InternalVideoMaterial()
             {
-                material = new Material(Shader.Find("Standard")) { mainTexture = new Texture2D(1, 1), },
+                material = new Material(Shader.Find("DCL/Universal Render Pipeline/Lit")) { mainTexture = new Texture2D(1, 1), },
                 videoTextureDatas = new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(100, ShaderUtils.BaseMap) },
             });
 
             // Texture should not change on this
             videoMaterialComponent.PutFor(scene1, entity10, new InternalVideoMaterial()
             {
-                material = new Material(Shader.Find("Standard")) { mainTexture = new Texture2D(1, 1), },
+                material = new Material(Shader.Find("DCL/Universal Render Pipeline/Lit")) { mainTexture = new Texture2D(1, 1), },
                 videoTextureDatas = new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(200, ShaderUtils.BaseMap) },
             });
 
