@@ -1,3 +1,4 @@
+using DCL.Providers;
 using NUnit.Framework;
 using SignupHUD;
 using UnityEngine;
@@ -7,9 +8,23 @@ namespace Tests.SignupHUD
     public class SignupHUDViewShould
     {
         private SignupHUDView hudView;
+        private HUDFactory factory;
 
         [SetUp]
-        public void SetUp() { hudView = Object.Instantiate(Resources.Load<GameObject>("SignupHUD")).GetComponent<SignupHUDView>(); }
+        public async void SetUp()
+        {
+            factory = new HUDFactory(new AddressableResourceProvider());
+            hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            factory.Dispose();
+
+            if (hudView != null)
+                Object.Destroy(hudView.gameObject);
+        }
 
         [Test]
         [TestCase(true)]
@@ -91,8 +106,5 @@ namespace Tests.SignupHUD
 
             Assert.IsTrue(hudView.nameAndEmailNextButton.interactable);
         }
-
-        [TearDown]
-        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }

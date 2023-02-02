@@ -21,7 +21,8 @@ public class HUDFactory : IHUDFactory
     private readonly IAddressableResourceProvider assetsProvider;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-    private ISignupHUDView signupHUD;
+    private ISignupHUDView signupHUDView;
+    private IQuestsTrackerHUDView questTrackerHUDView;
 
     public HUDFactory(IAddressableResourceProvider assetsProvider)
     {
@@ -32,12 +33,14 @@ public class HUDFactory : IHUDFactory
 
     public void Dispose()
     {
-        signupHUD.Dispose();
+        signupHUDView.Dispose();
+        questTrackerHUDView.Dispose();
     }
 
     public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
     {
         IHUD hudElement = null;
+
         switch (hudElementId)
         {
             case HUDElementID.NONE:
@@ -57,6 +60,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.AVATAR_EDITOR:
                 hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags,
                     Environment.i.platform.serviceProviders.analytics);
+
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();
@@ -76,6 +80,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher);
+
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
@@ -90,6 +95,7 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
                     new WebInterfaceBrowserBridge(),
                     CommonScriptableObjects.rendererState);
+
                 break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 hudElement = new PrivateChatWindowController(
@@ -102,6 +108,7 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+
                 break;
             case HUDElementID.PUBLIC_CHAT:
                 hudElement = new PublicChatWindowController(
@@ -111,6 +118,7 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+
                 break;
             case HUDElementID.CHANNELS_CHAT:
                 hudElement = new ChatChannelHUDController(
@@ -123,6 +131,7 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IProfanityFilter>());
+
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
@@ -133,6 +142,7 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
+
                 break;
             case HUDElementID.CHANNELS_CREATE:
                 hudElement = new CreateChannelWindowController(Environment.i.serviceLocator.Get<IChatController>(),
@@ -170,6 +180,7 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     Settings.i,
                     SceneReferences.i.mouseCatcher);
+
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();
@@ -179,11 +190,11 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.QUESTS_PANEL:
                 hudElement = new QuestsPanelHUDController();
                 break;
-            case HUDElementID.QUESTS_TRACKER:
-                hudElement = new QuestsTrackerHUDController();
-                break;
+
+            case HUDElementID.QUESTS_TRACKER: return await CreateQuestsTrackerHUD();
             case HUDElementID.SIGNUP:
-                return await CreateSignupHUD();
+                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(), dataStoreLoadingScreen.Ref);;
+
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
             case HUDElementID.LOADING:
@@ -194,9 +205,17 @@ public class HUDFactory : IHUDFactory
         return hudElement;
     }
 
-    private async UniTask<SignupHUDController> CreateSignupHUD()
+    private async UniTask<QuestsTrackerHUDController> CreateQuestsTrackerHUD()
     {
-        signupHUD = await assetsProvider.Instantiate<ISignupHUDView>("SignupHUD", "_SignupHUD");
-        return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, signupHUD, dataStoreLoadingScreen.Ref);
+        questTrackerHUDView = await assetsProvider.Instantiate<IQuestsTrackerHUDView>("QuestsTrackerHUD", "_QuestsTrackerHUDView");
+        return new QuestsTrackerHUDController(questTrackerHUDView);
     }
+
+    public async UniTask<ISignupHUDView> CreateSignupHUDView()
+    {
+        signupHUDView = await assetsProvider.Instantiate<ISignupHUDView>("SignupHUD", "_SignupHUD");
+        return signupHUDView;
+    }
+
+
 }

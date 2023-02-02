@@ -6,17 +6,19 @@ namespace SignupHUD
 {
     public class SignupHUDController : IHUD
     {
-        internal readonly ISignupHUDView view;
         private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
+        internal readonly ISignupHUDView view;
 
         internal string name;
         internal string email;
-        internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
 
-        [UsedImplicitly]
-        public SignupHUDController() { }
+        public SignupHUDController(ISignupHUDView view)
+        {
+            this.view = view;
+        }
 
         public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore)
         {
