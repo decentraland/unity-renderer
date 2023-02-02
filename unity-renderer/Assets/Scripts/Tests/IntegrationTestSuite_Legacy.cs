@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
+using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Rendering;
@@ -76,6 +77,12 @@ public class IntegrationTestSuite_Legacy
                 mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
                 return mockedProviders;
             });
+
+        IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        emotesCatalogService.GetEmbeddedEmotes().Returns(embeddedEmotes);
+        result.Register<IEmotesCatalogService>(() => emotesCatalogService);
 
         return result;
     }
