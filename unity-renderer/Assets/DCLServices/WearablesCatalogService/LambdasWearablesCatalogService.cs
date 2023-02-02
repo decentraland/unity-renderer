@@ -220,16 +220,16 @@ namespace DCLServices.WearablesCatalogService
         {
             pendingWearablesToRequest.Add(newWearableId);
 
+            lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+            var sourceToAwait = lastRequestSource;
+
             await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
-            lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
             IReadOnlyList<WearableItem> result;
 
             if (pendingWearablesToRequest.Count > 0)
             {
-                var source = lastRequestSource;
-                lastRequestSource = null;   // TODO: We cannot set lastRequestSource to NULL here because it will make the other requests will never end.
-                                            //       In the line 261 we are doing an `await lastRequestSource.Task`, but as lastRequestSource is NULL, it never ends.
+                lastRequestSource = null;
 
                 using var wearableIdsPool = PoolUtils.RentList<string>();
                 var wearableIds = wearableIdsPool.GetList();
@@ -249,16 +249,16 @@ namespace DCLServices.WearablesCatalogService
                 }
                 catch (Exception e)
                 {
-                    source.TrySetException(e);
+                    sourceToAwait.TrySetException(e);
                     throw;
                 }
 
                 AddWearablesToCatalog(serviceResponse.response.wearables);
                 result = serviceResponse.response.wearables;
-                source.TrySetResult(result);
+                sourceToAwait.TrySetResult(result);
             }
             else
-                result = await lastRequestSource.Task;
+                result = await sourceToAwait.Task;
 
             ct.ThrowIfCancellationRequested();
 
