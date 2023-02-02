@@ -144,8 +144,8 @@ namespace DCL.Skybox
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
-            //skyboxCam.AssignTargetCamera(currentTransform);
-            //skyboxElements.AssignCameraInstance(currentTransform);
+            skyboxCam.AssignTargetCamera(currentTransform);
+            skyboxElements.AssignCameraInstance(currentTransform);
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
