@@ -211,7 +211,7 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    private bool ContainsLinks(string description)
+    private static bool ContainsLinks(string description)
     {
         return Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase).Count > 0;
     }
