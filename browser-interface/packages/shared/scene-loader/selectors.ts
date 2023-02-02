@@ -1,4 +1,4 @@
-import { encodeParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { RootSceneLoaderState } from './types'
 
 export const getSceneLoader = (state: RootSceneLoaderState) => state.sceneLoader.loader

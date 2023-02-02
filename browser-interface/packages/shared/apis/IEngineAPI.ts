@@ -1,4 +1,4 @@
-import { EntityAction } from 'shared/types'
+import type { EntityAction } from 'shared/types'
 
 export interface IEngineAPI {
   /**
