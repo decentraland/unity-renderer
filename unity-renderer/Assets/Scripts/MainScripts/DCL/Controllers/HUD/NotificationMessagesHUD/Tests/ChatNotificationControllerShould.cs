@@ -142,11 +142,11 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                     m.MessageId == "mid" && m.PeerUsername == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                      m.MessageId == "mid" && m.PeerUsername == "imsender" && m.Body == "hey" && m.ProfilePicture == "face256"));
         }
 
         [Test]
@@ -173,11 +173,11 @@ namespace DCL.Chat.Notifications
 
             topNotificationsView.Received(1)
                                 .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                     m.MessageId == "mid" && m.Username == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                     m.MessageId == "mid" && m.PeerUsername == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
 
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PrivateChatMessageNotificationModel>(m =>
-                                      m.MessageId == "mid" && m.Username == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
+                                      m.MessageId == "mid" && m.PeerUsername == OWN_USER_NAME && m.Body == "hey" && m.ProfilePicture == "face256"));
         }
 
         [Test]

@@ -17,5 +17,6 @@ namespace DCL.Chat.Notifications
         public bool isFriendRequest;
         public string imageUri;
         public string notificationTargetId;
+        public bool isImageVisible = true;
     }
 }

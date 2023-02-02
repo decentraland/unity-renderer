@@ -1360,6 +1360,7 @@ MonoBehaviour:
   notificationSender: {fileID: 6073461703838333555}
   notificationTimestamp: {fileID: 3263340986707228004}
   image: {fileID: 9152767298886590043}
+  imageContainer: {fileID: 6044850236307948660}
   imageBackground: {fileID: 6044850236307948660}
   multiNotificationBackground: {fileID: 6169268687836788529}
   firstSeparator: {fileID: 8648860913182280513}
@@ -1381,6 +1382,7 @@ MonoBehaviour:
     isFriendRequest: 0
     imageUri: 
     notificationTargetId: 
+    isImageVisible: 1
   privateColor: {r: 0.10980392, g: 0.93333334, b: 0.4862745, a: 1}
   publicColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
   standardColor: {r: 1, g: 1, b: 1, a: 1}

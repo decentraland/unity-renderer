@@ -146,47 +146,48 @@ namespace DCL.Chat.Notifications
             string body = message.body;
             string openedChatId = openedChat.Get();
 
-            switch (message.messageType)
+            if (message.messageType == ChatMessage.Type.PRIVATE)
             {
-                case ChatMessage.Type.PRIVATE:
-                    string peerId = ExtractPeerId(message);
-                    UserProfile peerProfile = userProfileBridge.Get(peerId);
-                    string peerName = peerProfile?.userName ?? peerId;
-                    string peerProfilePicture = peerProfile?.face256SnapshotURL;
+                string peerId = ExtractPeerId(message);
+                UserProfile peerProfile = userProfileBridge.Get(peerId);
+                bool isMyMessage = message.sender == ownUserProfile.userId;
+                UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
+                string peerName = peerProfile?.userName ?? peerId;
+                string peerProfilePicture = peerProfile?.face256SnapshotURL;
+                string senderName = senderProfile?.userName ?? message.sender;
 
-                    var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
-                        message.sender, body, message.timestamp, peerName, peerProfilePicture);
+                var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
+                    message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
+                    peerProfilePicture);
 
-                    mainChatNotificationView.AddNewChatNotification(privateModel);
+                mainChatNotificationView.AddNewChatNotification(privateModel);
 
-                    if (message.sender != openedChatId && message.recipient != openedChatId)
-                        if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-                            topNotificationView.AddNewChatNotification(privateModel);
+                if (message.sender != openedChatId && message.recipient != openedChatId)
+                    if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                        topNotificationView.AddNewChatNotification(privateModel);
+            }
+            else if (message.messageType == ChatMessage.Type.PUBLIC)
+            {
+                bool isMyMessage = message.sender == ownUserProfile.userId;
+                UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
+                string senderName = senderProfile?.userName ?? message.sender;
 
-                    break;
-                case ChatMessage.Type.PUBLIC:
-                    bool isMyMessage = message.sender == ownUserProfile.userId;
-                    UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
-                    string senderName = senderProfile?.userName ?? message.sender;
+                if (IsProfanityFilteringEnabled())
+                {
+                    senderName = await profanityFilter.Filter(senderName);
+                    body = await profanityFilter.Filter(message.body);
+                }
 
-                    if (IsProfanityFilteringEnabled())
-                    {
-                        senderName = await profanityFilter.Filter(senderName);
-                        body = await profanityFilter.Filter(message.body);
-                    }
+                var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
+                    body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
+                    isMyMessage, senderName);
 
-                    var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
-                        body, channel?.Name ?? message.recipient, channel?.ChannelId, message.timestamp,
-                        isMyMessage, senderName);
+                mainChatNotificationView.AddNewChatNotification(publicModel);
 
-                    mainChatNotificationView.AddNewChatNotification(publicModel);
-
-                    if ((string.IsNullOrEmpty(message.recipient) && openedChatId != ChatUtils.NEARBY_CHANNEL_ID)
-                        || (!string.IsNullOrEmpty(message.recipient) && openedChatId != message.recipient))
-                        if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
-                            topNotificationView.AddNewChatNotification(publicModel);
-
-                    break;
+                if ((string.IsNullOrEmpty(message.recipient) && openedChatId != ChatUtils.NEARBY_CHANNEL_ID)
+                    || (!string.IsNullOrEmpty(message.recipient) && openedChatId != message.recipient))
+                    if (topNotificationPanelTransform.Get().gameObject.activeInHierarchy)
+                        topNotificationView.AddNewChatNotification(publicModel);
             }
         }
 

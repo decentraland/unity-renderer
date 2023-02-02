@@ -22,6 +22,7 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal TMP_Text notificationSender;
         [SerializeField] internal TMP_Text notificationTimestamp;
         [SerializeField] internal ImageComponentView image;
+        [SerializeField] internal GameObject imageContainer;
         [SerializeField] internal GameObject imageBackground;
         [SerializeField] internal GameObject multiNotificationBackground;
         [SerializeField] internal GameObject firstSeparator;
@@ -102,6 +103,7 @@ namespace DCL.Chat.Notifications
             SetIsPrivate(model.isPrivate);
             SetNotificationHeader(model.messageHeader);
             SetImage(model.imageUri);
+            SetImageVisibility(model.isImageVisible);
         }
 
         public void SetMessage(string message)
@@ -200,6 +202,12 @@ namespace DCL.Chat.Notifications
             model.imageUri = uri;
             image.SetImage(uri);
             ForceUIRefresh();
+        }
+
+        public void SetImageVisibility(bool visible)
+        {
+            model.isImageVisible = visible;
+            imageContainer.SetActive(visible);
         }
 
         public void SetPositionOffset(float xPosHeader, float xPosContent)

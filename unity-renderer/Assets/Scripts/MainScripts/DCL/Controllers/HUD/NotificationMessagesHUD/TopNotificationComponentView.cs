@@ -202,11 +202,14 @@ namespace DCL.Chat.Notifications
 
         private void PopulatePrivateNotification(PrivateChatMessageNotificationModel model)
         {
+            string senderName = model.ImTheSender ? "You" : model.SenderUsername;
+
             chatNotificationComponentView.SetIsPrivate(true);
             chatNotificationComponentView.SetMessage(model.Body);
-            chatNotificationComponentView.SetNotificationHeader("Private message");
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+            chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
+            chatNotificationComponentView.SetNotificationSender($"{senderName}:");
             chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
+            chatNotificationComponentView.SetImageVisibility(false);
         }
 
         private void PopulatePublicNotification(PublicChannelMessageNotificationModel model)
@@ -214,11 +217,13 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetIsPrivate(false);
             chatNotificationComponentView.SetMessage(model.Body);
 
-            var channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            string channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            string senderName = model.ImTheSender ? "You" : model.Username;
 
             chatNotificationComponentView.SetNotificationTargetId(model.ChannelId);
             chatNotificationComponentView.SetNotificationHeader(channelName);
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+            chatNotificationComponentView.SetNotificationSender($"{senderName}:");
+            chatNotificationComponentView.SetImageVisibility(false);
         }
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationModel model)
