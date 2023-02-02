@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
-import { gridToWorld } from "lib/decentraland/parcels/gridToWorld"
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { isInsideWorldLimits, Scene } from '@dcl/schemas'
 
 describe('pickWorldSpawnPoint unit tests', function () {
