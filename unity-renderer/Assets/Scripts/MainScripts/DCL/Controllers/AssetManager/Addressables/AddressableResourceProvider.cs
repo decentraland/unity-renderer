@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace DCL.Providers
             return request.Result;
         }
 
-        public async UniTask<T> Instantiate<T>(string address, string name, CancellationToken cancellationToken = default)
+        public async UniTask<T> Instantiate<T>(string address, string name = "", CancellationToken cancellationToken = default)
         {
             //This function does nothing if initialization has already occurred
             await Addressables.InitializeAsync().WithCancellation(cancellationToken);
@@ -54,7 +55,9 @@ namespace DCL.Providers
             AsyncOperationHandle<GameObject> request = Addressables.InstantiateAsync(address);
             await request.WithCancellation(cancellationToken);
 
-            request.Result.name = name;
+            if(!string.IsNullOrEmpty(name))
+                request.Result.name = name;
+
             return request.Result.GetComponent<T>();
         }
 

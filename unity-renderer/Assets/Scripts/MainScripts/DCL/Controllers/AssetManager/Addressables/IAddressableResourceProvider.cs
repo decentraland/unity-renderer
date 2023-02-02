@@ -10,6 +10,6 @@ namespace DCL.Providers
 
         UniTask<T> GetAddressable<T>(string key, CancellationToken cancellationToken = default);
 
-        UniTask<T> Instantiate<T>(string address, string name, CancellationToken cancellationToken = default);
+        UniTask<T> Instantiate<T>(string address, string name = "", CancellationToken cancellationToken = default);
     }
 }
