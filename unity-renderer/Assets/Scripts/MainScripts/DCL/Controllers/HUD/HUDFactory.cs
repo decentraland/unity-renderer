@@ -69,7 +69,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.AIRDROPPING:
-                hudElement = new AirdroppingHUDController(await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD));
+                hudElement = new AirdroppingHUDController(await CreateAirdroppingHUDView());
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 hudElement = new TermsOfServiceHUDController();
@@ -198,7 +198,7 @@ public class HUDFactory : IHUDFactory
                     await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD));
             case HUDElementID.SIGNUP:
                 return new SignupHUDController(
-                    Environment.i.platform.serviceProviders.analytics, await CreateHUDView<ISignupHUDView>(SIGNUP_HUD), dataStoreLoadingScreen.Ref);
+                    Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(), dataStoreLoadingScreen.Ref);
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
             case HUDElementID.LOADING:
@@ -208,6 +208,12 @@ public class HUDFactory : IHUDFactory
 
         return hudElement;
     }
+
+    public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView() =>
+        await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD);
+
+    public async UniTask<ISignupHUDView> CreateSignupHUDView() =>
+        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD);
 
     private async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
     {
