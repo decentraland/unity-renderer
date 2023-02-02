@@ -379,7 +379,7 @@ public class HUDController : IHUDController
                     questsPanelHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.QUESTS_TRACKER:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
                 break;
@@ -387,10 +387,10 @@ public class HUDController : IHUDController
                 await CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
                 {
-                    //Same race condition risks as with the ProfileHUD
-                    //TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
-                    //Then this reference can be removed so we just work with a BaseVariable<bool>.
-                    //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
+                    // Same race condition risks as with the ProfileHUD
+                    // TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
+                    // Then this reference can be removed so we just work with a BaseVariable<bool>.
+                    // This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
 

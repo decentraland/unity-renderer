@@ -37,8 +37,7 @@ namespace Tests.QuestsTrackerHUD
 
             questsController = Substitute.For<IQuestsController>();
             hudView = Substitute.For<IQuestsTrackerHUDView>();
-            hudController = Substitute.ForPartsOf<QuestsTrackerHUDController>();
-            hudController.Configure().CreateView().Returns(info => hudView);
+            hudController = new QuestsTrackerHUDController(hudView);
         }
 
         [Test]

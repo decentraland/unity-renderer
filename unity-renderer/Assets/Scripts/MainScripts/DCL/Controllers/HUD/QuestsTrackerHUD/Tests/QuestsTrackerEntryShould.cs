@@ -69,7 +69,10 @@ namespace Tests.QuestsTrackerHUD
         };
 
         [SetUp]
-        public void SetUp() { questEntry = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerEntry")).GetComponent<QuestsTrackerEntry>(); }
+        public void SetUp()
+        {
+            questEntry = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerEntry")).GetComponent<QuestsTrackerEntry>();
+        }
 
         [Test]
         public void PopulateProperly()
