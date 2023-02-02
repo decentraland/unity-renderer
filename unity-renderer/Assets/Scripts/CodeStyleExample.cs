@@ -53,7 +53,7 @@ namespace DCL.UIComponents
 
         protected float cooldown;
         
-        private Animation animation;
+        private new Animation animation;
         private Interaction<int> interactionsBuffer;
 
         //----------------------------------------------------------------------------------------  Properties group

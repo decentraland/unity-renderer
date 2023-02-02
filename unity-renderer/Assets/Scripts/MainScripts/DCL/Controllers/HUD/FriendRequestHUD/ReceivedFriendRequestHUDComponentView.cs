@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -6,7 +7,8 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class ReceivedFriendRequestHUDComponentView : BaseComponentView<ReceivedFriendRequestHUDModel>, IReceivedFriendRequestHUDView
+    public class ReceivedFriendRequestHUDComponentView : BaseComponentView<ReceivedFriendRequestHUDModel>,
+        IReceivedFriendRequestHUDView, IFriendRequestHUDView
     {
         [SerializeField] internal GameObject bodyMessageContainer;
         [SerializeField] internal TMP_InputField bodyMessageInput;
@@ -19,15 +21,16 @@ namespace DCL.Social.Friends
         [SerializeField] internal Button[] closeButtons;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal Button rejectButton;
+        [SerializeField] internal GameObject pendingToRejectContainer;
         [SerializeField] internal Button confirmButton;
-        [SerializeField] internal Button retryButton;
-        [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
-        [SerializeField] internal GameObject rejectSuccessContainer;
-        [SerializeField] internal GameObject confirmSuccessContainer;
+        [SerializeField] internal GameObject pendingToConfirmContainer;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForDefaultState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForConfirmSuccessState;
+        [SerializeField] internal ShowHideAnimator showHideAnimatorForRejectSuccessState;
         [SerializeField] internal Button[] buttonsToDisableOnPendingState;
         [SerializeField] internal TMP_Text rejectSuccessLabel;
         [SerializeField] internal TMP_Text confirmSuccessLabel;
+        [SerializeField] internal Canvas currentCanvas;
 
         public event Action OnClose;
         public event Action OnOpenProfile;
@@ -60,14 +63,6 @@ namespace DCL.Social.Friends
                 lastTryWasConfirm = true;
                 OnConfirmFriendRequest?.Invoke();
             });
-
-            retryButton.onClick.AddListener(() =>
-            {
-                if (lastTryWasConfirm)
-                    OnConfirmFriendRequest?.Invoke();
-                else
-                    OnRejectFriendRequest?.Invoke();
-            });
         }
 
         public override void Dispose()
@@ -91,21 +86,23 @@ namespace DCL.Social.Friends
             SetTimestamp(model.RequestDate);
             SetSenderName(model.UserName);
             SetSenderProfilePicture(model.UserProfilePictureUri);
-            SetOwnProfilePicture(model.OwnProfilePictureUri);
+            SetRecipientProfilePicture(model.OwnProfilePictureUri);
             SetState(model.State);
         }
 
         public void SetBodyMessage(string messageBody)
         {
             model.BodyMessage = messageBody;
-            bodyMessageInput.text = messageBody;
+            bodyMessageInput.text = !string.IsNullOrEmpty(model.UserName)
+                ? $"<b>{model.UserName}:</b> {messageBody}"
+                : messageBody;
             bodyMessageContainer.SetActive(!string.IsNullOrEmpty(messageBody));
         }
 
         public void SetTimestamp(DateTime timestamp)
         {
             model.RequestDate = timestamp;
-            dateLabel.text = timestamp.Date.ToString("MMM dd").ToUpper();
+            dateLabel.text = timestamp.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
 
         public void SetSenderName(string userName)
@@ -114,6 +111,9 @@ namespace DCL.Social.Friends
             nameLabel.text = userName;
             rejectSuccessLabel.text = $"{userName} request rejected!";
             confirmSuccessLabel.text = $"{userName} and you are friends now!";
+
+            if (!string.IsNullOrEmpty(model.BodyMessage))
+                bodyMessageInput.text = $"<b>{model.UserName}:</b> {model.BodyMessage}";
         }
 
         public void SetSenderProfilePicture(string uri)
@@ -124,7 +124,7 @@ namespace DCL.Social.Friends
             otherProfileImageInConfirmRejectState.SetImage(uri);
         }
 
-        public void SetOwnProfilePicture(string uri)
+        public void SetRecipientProfilePicture(string uri)
         {
             model.OwnProfilePictureUri = uri;
             ownProfileImageInConfirmSuccessState.SetImage(uri);
@@ -142,9 +142,6 @@ namespace DCL.Social.Friends
                 case ReceivedFriendRequestHUDModel.LayoutState.Pending:
                     SetPendingState();
                     break;
-                case ReceivedFriendRequestHUDModel.LayoutState.Failed:
-                    SetFailedState();
-                    break;
                 case ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess:
                     SetConfirmSuccessState();
                     break;
@@ -156,20 +153,26 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
             SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
-            gameObject.SetActive(true);
+            base.Show(instant);
         }
 
-        public void Close() => gameObject.SetActive(false);
+        public void Close() => base.Hide();
+
+        public void SetSortingOrder(int sortingOrder) => currentCanvas.sortingOrder = sortingOrder;
 
         private void SetDefaultState()
         {
-            defaultContainer.SetActive(true);
-            failedContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
+            showHideAnimatorForDefaultState.Show();
+            showHideAnimatorForRejectSuccessState.Hide(true);
+            showHideAnimatorForConfirmSuccessState.Hide(true);
+
+            confirmButton.gameObject.SetActive(true);
+            pendingToConfirmContainer.SetActive(false);
+            rejectButton.gameObject.SetActive(true);
+            pendingToRejectContainer.SetActive(false);
 
             foreach (var button in buttonsToDisableOnPendingState)
                 button.interactable = true;
@@ -177,40 +180,27 @@ namespace DCL.Social.Friends
 
         private void SetPendingState()
         {
-            defaultContainer.SetActive(true);
-            failedContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
+            confirmButton.gameObject.SetActive(!lastTryWasConfirm);
+            pendingToConfirmContainer.SetActive(lastTryWasConfirm);
+            rejectButton.gameObject.SetActive(lastTryWasConfirm);
+            pendingToRejectContainer.SetActive(!lastTryWasConfirm);
 
             foreach (var button in buttonsToDisableOnPendingState)
                 button.interactable = false;
         }
 
-        private void SetFailedState()
-        {
-            defaultContainer.SetActive(false);
-            failedContainer.SetActive(true);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(false);
-
-            foreach (var button in buttonsToDisableOnPendingState)
-                button.interactable = true;
-        }
-
         private void SetConfirmSuccessState()
         {
-            defaultContainer.SetActive(false);
-            failedContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(false);
-            confirmSuccessContainer.SetActive(true);
+            showHideAnimatorForDefaultState.Hide();
+            showHideAnimatorForRejectSuccessState.Hide(true);
+            showHideAnimatorForConfirmSuccessState.Show();
         }
 
         private void SetRejectSuccessState()
         {
-            defaultContainer.SetActive(false);
-            failedContainer.SetActive(false);
-            rejectSuccessContainer.SetActive(true);
-            confirmSuccessContainer.SetActive(false);
+            showHideAnimatorForDefaultState.Hide();
+            showHideAnimatorForRejectSuccessState.Show();
+            showHideAnimatorForConfirmSuccessState.Hide(true);
         }
     }
 }

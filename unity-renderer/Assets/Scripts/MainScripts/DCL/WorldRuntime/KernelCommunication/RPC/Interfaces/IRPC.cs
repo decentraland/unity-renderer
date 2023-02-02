@@ -12,5 +12,7 @@ namespace DCL
         public ClientFriendRequestKernelService FriendRequests();
 
         public ClientAnalyticsKernelService Analytics();
+
+        public ClientFriendsKernelService Friends();
     }
 }

@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using DCL;
+using System;
+using System.Collections.Generic;
 using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
@@ -17,9 +18,18 @@ namespace SocialFeaturesAnalytics
         private const string FRIEND_REQUEST_APPROVED = "friend_request_approved";
         private const string FRIEND_REQUEST_REJECTED = "friend_request_rejected";
         private const string FRIEND_REQUEST_CANCELLED = "friend_request_cancelled";
+        private const string FRIEND_REQUEST_ERROR = "friend_request_error";
         private const string FRIEND_DELETED = "friend_deleted";
         private const string PASSPORT_OPENED = "passport_opened";
         private const string PASSPORT_CLOSED = "passport_closed";
+        private const string PASSPORT_CLICKED_ON_COLLECTIONS = "passport_collections_click";
+        private const string PASSPORT_STARTED_CONVERSATION = "passport_started_conversation";
+        private const string PASSPORT_INSPECT_AVATAR = "passport_inspect_avatar";
+        private const string PASSPORT_CLICK_LINK = "passport_clicked_link";
+        private const string PASSPORT_WALLET_COPY = "passport_wallet_copy";
+        private const string PASSPORT_USERNAME_COPY = "passport_username_copy";
+        private const string PASSPORT_JUMP_IN = "passport_jump_in";
+        private const string PASSPORT_BUY_NFT = "passport_buy_nft";
         private const string PLAYER_BLOCKED = "user_blocked";
         private const string PLAYER_UNBLOCKED = "user_unblocked";
         private const string PLAYER_REPORT = "player_report";
@@ -30,7 +40,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
-        
+
         public static SocialAnalytics i { get; private set; }
 
         private readonly IAnalytics analytics;
@@ -86,7 +96,7 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
-        public void SendVoiceChannelConnection(int numberOfPeers) 
+        public void SendVoiceChannelConnection(int numberOfPeers)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("numberOfPeers", numberOfPeers.ToString());
@@ -96,12 +106,85 @@ namespace SocialFeaturesAnalytics
 
         public void SendVoiceChannelDisconnection() { analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>()); }
 
+        public void SendClickedOnCollectibles()
+        {
+            analytics.SendAnalytic(PASSPORT_CLICKED_ON_COLLECTIONS, new Dictionary<string, string>());
+        }
+
+        public void SendStartedConversation(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_STARTED_CONVERSATION, data);
+        }
+
+        public void SendNftBuy(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_BUY_NFT, data);
+        }
+
+        public void SendInspectAvatar(double timeSpent)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("timeSpent", timeSpent.ToString());
+
+            analytics.SendAnalytic(PASSPORT_INSPECT_AVATAR, data);
+        }
+
+        public void SendLinkClick(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
+        }
+
+        public void SendCopyWallet(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
+        }
+
+        public void SendCopyUsername(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_USERNAME_COPY, data);
+        }
+
+        public void SendJumpInToPlayer(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
+        }
+
         public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("allow", preference.ToString());
 
             analytics.SendAnalytic(VOICE_CHAT_PREFERENCES_CHANGED, data);
+        }
+
+        public void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source,
+                ["from"] = senderId,
+                ["to"] = recipientId,
+                ["description"] = errorDescription,
+            };
+            analytics.SendAnalytic(FRIEND_REQUEST_ERROR, data);
         }
 
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)
@@ -115,13 +198,16 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
+            // TODO (FRIEND REQUESTS): retro-compatibility, remove this param in the future
             data.Add("text_length", messageLength.ToString());
+            data.Add("attached_message_length", messageLength.ToString());
+            data.Add("attached_message", messageLength > 0 ? "true" : "false");
             data.Add("source", source.ToString());
 
             analytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
-        public void SendFriendRequestApproved(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -132,12 +218,13 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
+            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
 
             analytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
-        public void SendFriendRequestRejected(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -148,12 +235,13 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
+            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
 
             analytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
-        public void SendFriendRequestCancelled(string fromUserId, string toUserId, PlayerActionSource source)
+        public void SendFriendRequestCancelled(string fromUserId, string toUserId, string source)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -164,7 +252,7 @@ namespace SocialFeaturesAnalytics
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("from", fromPlayerType.ToString());
             data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            data.Add("source", source);
 
             analytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }

@@ -12,7 +12,7 @@ references:
       at: *working_directory
 
   .image_kernel: &image_kernel
-    - image: cimg/node:14.19.3-browsers
+    - image: cimg/node:16.18.1-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
         #                          ~~~~~~~~~~~~~~ <- repo name
@@ -87,6 +87,12 @@ jobs:
             cd protocol-gen
             npm install
             npm run build
+      - run:
+          name: Update sentry params
+          command: |
+            cd scripts
+            npm install
+            npm run inject-sentry-params
       - save_cache:
           name: Store large files in cache
           key: git-lfs-{{ .Branch }}
@@ -123,6 +129,7 @@ jobs:
           name: Restore library if exists
           keys:
             - library-2020-3-{{ .Branch }}
+            - library-2020-3-dev
       - run:
           name: Run editmode tests
           command: |
@@ -313,7 +320,7 @@ jobs:
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
-          no_output_timeout: 30m
+          no_output_timeout: 45m
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "./unity-renderer/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
@@ -367,6 +374,22 @@ jobs:
           when: on_fail
           command: |
             cat ./unity-renderer/Library/LastBuild.buildreport
+  test-js-interface:
+    <<: *working_directory_root
+    docker: *image_kernel
+
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: &node_workspace browser-interface
+          name: clean install
+          command: |
+            sudo apt-get install xvfb
+            npm ci
+      - run:
+          working_directory: *node_workspace
+          name: test
+          command: make test-ci
 
   build-js-interface:
     <<: *working_directory_root
@@ -376,17 +399,12 @@ jobs:
       - <<: *attach_root
       - run:
           working_directory: &node_workspace browser-interface
-          name: npm clean install
+          name: clean install
           command: npm ci
       - run:
           working_directory: *node_workspace
-          name: npm run build
-          command: npm run build
-      - run:
-          working_directory: *node_workspace
-          name: npm run test
-          command: npm run test
-      - run: sudo apt-get update && sudo apt-get -y -qq install awscli
+          name: run build
+          command: make build-essentials build-release build-deploy
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
@@ -411,7 +429,7 @@ jobs:
       - run:
           working_directory: *node_workspace
           name: print files to publish
-          command: find .
+          command: find static
       - run:
           working_directory: *node_workspace
           name: npm run publish
@@ -448,9 +466,14 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - build-unity
+      - test-js-interface:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
       - publish-renderer:
           requires:
             - build-unity
             - build-js-interface
             - playmode-tests
+            - test-js-interface
             # - editmode-tests

@@ -1,0 +1,23 @@
+{
+    "name": "LambdasService",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a4bf61c057a098f4ca05b539a6d8c0fe",
+        "GUID:6c1761dc8f737004198eb333521bd665",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:dffbb581f2650ea4990781f603ac258a",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:da17ceae445f47578f8767333e50b9b3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -4,16 +4,11 @@ namespace DCL.FatalErrorReporter
 {
     public class DefaultFatalErrorReporter : IFatalErrorReporter
     {
-        private readonly DataStore dataStore;
+        private DataStoreRef<DataStore_LoadingScreen> loadingScreenRef;
 
-        public DefaultFatalErrorReporter(DataStore dataStore)
-        {
-            this.dataStore = dataStore;
-        }
-        
         public void Report(Exception exception)
         {
-            dataStore.HUDs.loadingHUD.fatalError.Set(exception);
+            loadingScreenRef.Ref.loadingHUD.fatalError.Set(exception);
         }
     }
 }

@@ -3,9 +3,17 @@ using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
 using DCL.Emotes;
+using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
+using DCLServices.Lambdas;
+using DCLServices.Lambdas.LandsService;
+using DCLServices.Lambdas.NamesService;
+using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Helpers.SentryUtils;
+using System.Collections.Generic;
 using UnityEngine;
 using WorldsFeaturesAnalytics;
 
@@ -25,8 +33,12 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IWebRequestController>(WebRequestController.Create);
             result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<ILambdasService>(() => new LambdasService());
+            result.Register<INamesService>(() => new NamesService());
+            result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
+            result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
@@ -46,9 +58,35 @@ namespace DCL
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
 
+            result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
+                new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
+
+            //Addressable Resource Provider
+            var addressableResourceProvider = new AddressableResourceProvider();
+            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
+
+            // Asset Providers
+            result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedTextureProvider() },
+                { AssetSource.WEB, new AssetTextureWebLoader() },
+            }, DataStore.i.featureFlags));
+
+            result.Register<IAssetBundleResolver>(() => new AssetBundleResolver(new Dictionary<AssetSource, IAssetBundleProvider>
+            {
+                { AssetSource.WEB, new AssetBundleWebLoader(DataStore.i.featureFlags, DataStore.i.performance) },
+            }, new EditorAssetBundleProvider(), DataStore.i.featureFlags));
+
+            result.Register<IFontAssetResolver>(() => new FontAssetResolver(new Dictionary<AssetSource, IFontAssetProvider>
+            {
+                { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
+                { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
+            }, DataStore.i.featureFlags));
+
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());
-            result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDController>(() => new HUDController(DataStore.i.featureFlags));
+
             result.Register<IChannelsFeatureFlagService>(() =>
                 new ChannelsFeatureFlagService(DataStore.i, new UserProfileWebInterfaceBridge()));
 

@@ -2,39 +2,39 @@
 #define WEB_PLATFORM
 #endif
 
-using System;
 using DCL.Helpers;
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace DCL
 {
     public interface IMouseCatcher
     {
+        bool IsLocked { get; }
         event Action OnMouseUnlock;
         event Action OnMouseLock;
-        bool isLocked { get; }
-        void LockCursor();
+
         void UnlockCursor();
     }
 
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
+        private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         [SerializeField] private InputAction_Trigger unlockInputAction;
         [SerializeField] private Canvas canvas;
+        [SerializeField] private Image raycastTarget;
 
-        public bool isLocked => Utils.IsCursorLocked;
-        bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
+        private HUDCanvasCameraModeController hudCanvasCameraModeController;
+
+        public bool IsLocked => Utils.IsCursorLocked;
+        private bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
 
         public event Action OnMouseUnlock;
         public event Action OnMouseLock;
         public event Action OnMouseDown;
 
-        //Default OnPointerEvent
-        public LayerMask OnPointerDownTarget = 1 << 9;
-
-        private HUDCanvasCameraModeController hudCanvasCameraModeController;
-        
         private void Start()
         {
             hudCanvasCameraModeController = new HUDCanvasCameraModeController(canvas, DataStore.i.camera.hudsCamera);
@@ -49,7 +49,7 @@ namespace DCL
 
         public void LockCursor()
         {
-            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || DataStore.i.HUDs.loadingHUD.visible.Get())
+            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || dataStoreLoadingScreen.Ref.loadingHUD.visible.Get() || dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
                 return;
 
             Utils.LockCursor();
@@ -69,23 +69,26 @@ namespace DCL
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                LockCursor();
                 DataStore.i.camera.panning.Set(true);
+            }
+            else if(DataStore.i.camera.leftMouseButtonCursorLock.Get())
+                LockCursor();
+
             OnMouseDown?.Invoke();
-            LockCursor();
         }
-        
+
         public void OnPointerUp(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                if (eventData.button == PointerEventData.InputButton.Right)
-                    DataStore.i.camera.panning.Set(false);
+                DataStore.i.camera.panning.Set(false);
                 UnlockCursor();
             }
         }
 
-        #region BROWSER_ONLY
-
+#region BROWSER_ONLY
         //TODO(Brian): Move all this mechanism to a new MouseLockController and branch
         //             behaviour using strategy pattern instead of this.
 
@@ -97,21 +100,18 @@ namespace DCL
         {
             bool lockPointer = val != 0;
             Utils.BrowserSetCursorState(lockPointer);
+
             if (lockPointer)
-            {
                 OnMouseLock?.Invoke();
-            }
             else
-            {
                 OnMouseUnlock?.Invoke();
-            }
         }
+#endregion
 
-        #endregion
+        public bool IsEqualsToRaycastTarget(GameObject gameObject) =>
+            raycastTarget.gameObject == gameObject;
 
-        private void HandleUnlockInput(DCLAction_Trigger action)
-        {
+        private void HandleUnlockInput(DCLAction_Trigger action) =>
             UnlockCursor();
-        }
     }
 }

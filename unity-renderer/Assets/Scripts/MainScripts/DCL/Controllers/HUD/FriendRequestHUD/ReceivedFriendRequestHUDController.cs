@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -7,27 +9,34 @@ namespace DCL.Social.Friends
 {
     public class ReceivedFriendRequestHUDController
     {
-        private const int TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING = 3000;
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
 
         private readonly DataStore dataStore;
         private readonly IReceivedFriendRequestHUDView view;
+        private readonly FriendRequestHUDController friendRequestHUDController;
         private readonly IFriendsController friendsController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly StringVariable openPassportVariable;
+        private readonly ISocialAnalytics socialAnalytics;
 
+        private CancellationTokenSource friendOperationsCancellationToken = new ();
         private string friendRequestId;
 
         public ReceivedFriendRequestHUDController(DataStore dataStore,
             IReceivedFriendRequestHUDView view,
+            FriendRequestHUDController friendRequestHUDController,
             IFriendsController friendsController,
             IUserProfileBridge userProfileBridge,
-            StringVariable openPassportVariable)
+            StringVariable openPassportVariable,
+            ISocialAnalytics socialAnalytics)
         {
             this.dataStore = dataStore;
             this.view = view;
+            this.friendRequestHUDController = friendRequestHUDController;
             this.friendsController = friendsController;
             this.userProfileBridge = userProfileBridge;
             this.openPassportVariable = openPassportVariable;
+            this.socialAnalytics = socialAnalytics;
 
             view.OnClose += Hide;
             view.OnOpenProfile += OpenProfile;
@@ -40,7 +49,9 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendOperationsCancellationToken.SafeCancelAndDispose();
             dataStore.HUDs.openReceivedFriendRequestDetail.OnChange -= ShowOrHide;
+            friendRequestHUDController.Dispose();
         }
 
         private void ShowOrHide(string current, string previous)
@@ -77,15 +88,15 @@ namespace DCL.Social.Friends
                 Debug.LogError($"Cannot display user profile {friendRequest.From}, is not allocated");
 
             var ownProfile = userProfileBridge.GetOwn();
-            view.SetOwnProfilePicture(ownProfile.face256SnapshotURL);
-
+            view.SetRecipientProfilePicture(ownProfile.face256SnapshotURL);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
             view.Show();
         }
 
         private void Hide()
         {
             dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, false);
-            view.Close();
+            friendRequestHUDController.Hide();
         }
 
         private void OpenProfile()
@@ -99,62 +110,67 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.From);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
 
-        private void Reject() =>
-            RejectAsync().Forget();
-
-        private async UniTaskVoid RejectAsync(CancellationToken cancellationToken = default)
+        private void Reject()
         {
-            view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-
-            try
+            async UniTaskVoid RejectAsync(CancellationToken cancellationToken = default)
             {
-                await friendsController.RejectFriendshipAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
-                if (cancellationToken.IsCancellationRequested) return;
+                cancellationToken.ThrowIfCancellationRequested();
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
-                view.Close();
+                try
+                {
+                    FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId, cancellationToken);
+
+                    socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
+
+                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
+                    await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
+                    dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
+                    throw;
+                }
             }
-            catch (Exception)
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
-                throw;
-            }
+
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+            RejectAsync(friendOperationsCancellationToken.Token).Forget();
         }
 
-        private void Confirm() =>
-            ConfirmAsync().Forget();
-
-        private async UniTaskVoid ConfirmAsync(CancellationToken cancellationToken = default)
+        private void Confirm()
         {
-            view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
-
-            try
+            async UniTaskVoid ConfirmAsync(CancellationToken cancellationToken = default)
             {
-                await friendsController.AcceptFriendshipAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
-                if (cancellationToken.IsCancellationRequested) return;
+                cancellationToken.ThrowIfCancellationRequested();
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Pending);
 
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
-                await UniTask.Delay(TIME_MS_BEFORE_SUCCESS_SCREEN_CLOSING, cancellationToken: cancellationToken);
-                view.Close();
+                try
+                {
+                    FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId, cancellationToken);
+
+                    socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
+
+                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
+                    await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
+                    dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                    view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Default);
+                    throw;
+                }
             }
-            catch (Exception)
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.SetState(ReceivedFriendRequestHUDModel.LayoutState.Failed);
-                throw;
-            }
+
+            friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+            ConfirmAsync(friendOperationsCancellationToken.Token).Forget();
         }
     }
 }

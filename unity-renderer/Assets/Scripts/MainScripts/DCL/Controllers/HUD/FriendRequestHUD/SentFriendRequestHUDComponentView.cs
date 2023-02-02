@@ -1,20 +1,21 @@
 using DCL.Helpers;
 using System;
+using System.Globalization;
 using TMPro;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Friends
 {
-    public class SentFriendRequestHUDComponentView : BaseComponentView, ISentFriendRequestHUDView
+    public class SentFriendRequestHUDComponentView : BaseComponentView<SentFriendRequestHUDViewModel>, ISentFriendRequestHUDView
     {
-        [SerializeField] internal GameObject defaultContainer;
-        [SerializeField] internal GameObject failedContainer;
         [SerializeField] internal TMP_Text nameLabel;
         [SerializeField] internal Button[] closeButtons;
+        [SerializeField] internal GameObject cancelButtonsContainer;
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button tryCancelButton;
-        [SerializeField] internal Button retryButton;
+        [SerializeField] internal GameObject pendingToCancelContainer;
         [SerializeField] internal Button openPassportButton;
         [SerializeField] internal TMP_InputField messageBodyInput;
         [SerializeField] internal ImageComponentView profileImage;
@@ -23,8 +24,8 @@ namespace DCL.Social.Friends
         [SerializeField] internal GameObject bodyMessageContainer;
         [SerializeField] internal ShowHideAnimator confirmationToast;
         [SerializeField] internal Button rejectOperationButton;
+        [SerializeField] internal Canvas currentCanvas;
 
-        private readonly Model model = new Model();
         private ILazyTextureObserver lastRecipientProfilePictureObserver;
         private ILazyTextureObserver lastSenderProfilePictureObserver;
 
@@ -57,7 +58,6 @@ namespace DCL.Social.Friends
                 SwitchToTryCancelButton();
             });
 
-            retryButton.onClick.AddListener(() => OnCancel?.Invoke());
             openPassportButton.onClick.AddListener(() => OnOpenProfile?.Invoke());
         }
 
@@ -69,13 +69,13 @@ namespace DCL.Social.Friends
 
         public override void RefreshControl()
         {
-            defaultContainer.SetActive(model.State is Model.LayoutState.Default or Model.LayoutState.Pending);
-            failedContainer.SetActive(model.State == Model.LayoutState.Failed);
-            cancelButton.interactable = model.State != Model.LayoutState.Pending;
-            tryCancelButton.interactable = model.State != Model.LayoutState.Pending;
+            cancelButton.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
+            tryCancelButton.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
+            cancelButtonsContainer.SetActive(model.State != SentFriendRequestHUDViewModel.LayoutState.Pending);
+            pendingToCancelContainer.SetActive(model.State == SentFriendRequestHUDViewModel.LayoutState.Pending);
 
             foreach (Button button in closeButtons)
-                button.interactable = model.State != Model.LayoutState.Pending;
+                button.interactable = model.State != SentFriendRequestHUDViewModel.LayoutState.Pending;
 
             nameLabel.text = model.Name;
             messageBodyInput.text = model.BodyMessage;
@@ -98,11 +98,7 @@ namespace DCL.Social.Friends
             }
         }
 
-        public void Close()
-        {
-            base.Hide(instant: true);
-            gameObject.SetActive(false);
-        }
+        public void Close() => base.Hide();
 
         public void SetSenderProfilePicture(ILazyTextureObserver textureObserver)
         {
@@ -110,13 +106,12 @@ namespace DCL.Social.Friends
             RefreshControl();
         }
 
-        public void Show()
+        public override void Show(bool instant = false)
         {
-            gameObject.SetActive(true);
-            base.Show(instant: true);
+            base.Show(instant);
             HideConfirmationToast();
             SwitchToTryCancelButton();
-            model.State = Model.LayoutState.Default;
+            model.State = SentFriendRequestHUDViewModel.LayoutState.Default;
             RefreshControl();
         }
 
@@ -134,16 +129,8 @@ namespace DCL.Social.Friends
 
         public void ShowPendingToCancel()
         {
-            model.State = Model.LayoutState.Pending;
+            model.State = SentFriendRequestHUDViewModel.LayoutState.Pending;
             HideConfirmationToast();
-            RefreshControl();
-        }
-
-        public void ShowCancelFailed()
-        {
-            model.State = Model.LayoutState.Failed;
-            HideConfirmationToast();
-            SwitchToTryCancelButton();
             RefreshControl();
         }
 
@@ -155,8 +142,10 @@ namespace DCL.Social.Friends
 
         public void SetTimestamp(DateTime date)
         {
-            dateLabel.text = date.Date.ToString("MMM dd").ToUpper();
+            dateLabel.text = date.Date.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
         }
+
+        public void SetSortingOrder(int sortingOrder) => currentCanvas.sortingOrder = sortingOrder;
 
         private void ShowConfirmationToast()
         {
@@ -180,22 +169,6 @@ namespace DCL.Social.Friends
         {
             tryCancelButton.gameObject.SetActive(true);
             cancelButton.gameObject.SetActive(false);
-        }
-
-        private class Model
-        {
-            public string Name;
-            public LayoutState State;
-            public ILazyTextureObserver RecipientProfilePictureObserver;
-            public ILazyTextureObserver SenderProfilePictureObserver;
-            public string BodyMessage;
-
-            public enum LayoutState
-            {
-                Default,
-                Pending,
-                Failed
-            }
         }
     }
 }

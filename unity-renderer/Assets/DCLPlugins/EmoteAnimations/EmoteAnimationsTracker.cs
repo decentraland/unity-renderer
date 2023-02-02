@@ -103,11 +103,11 @@ namespace DCL.Emotes
             try
             {
                 var emote = await(emotesCatalogService.RequestEmoteAsync(emoteId, ct));
-                
+
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders.Add((bodyShapeId, emoteId), animationLoader);
                 await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, ct);
-                
+
                 EmoteClipData emoteClipData;
                 if(emote is EmoteItem newEmoteItem)
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, newEmoteItem.data.loop);
@@ -124,6 +124,7 @@ namespace DCL.Emotes
             catch (Exception e)
             {
                 loaders.Remove((bodyShapeId, emoteId));
+                dataStore.animations.Remove((bodyShapeId, emoteId));
                 ExceptionDispatchInfo.Capture(e).Throw();
                 throw;
             }
@@ -131,10 +132,10 @@ namespace DCL.Emotes
 
         private void UnloadEmote(string bodyShapeId, string emoteId)
         {
+            dataStore.animations.Remove((bodyShapeId, emoteId));
             if (!loaders.TryGetValue((bodyShapeId, emoteId), out IEmoteAnimationLoader loader))
                 return;
 
-            dataStore.animations.Remove((bodyShapeId, emoteId));
             loaders.Remove((bodyShapeId, emoteId));
             loader?.Dispose();
         }

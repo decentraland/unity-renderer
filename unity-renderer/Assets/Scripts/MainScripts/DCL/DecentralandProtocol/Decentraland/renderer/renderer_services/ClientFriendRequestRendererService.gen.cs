@@ -7,7 +7,18 @@ using Cysharp.Threading.Tasks;
 using rpc_csharp;
 
 namespace Decentraland.Renderer.RendererServices {
-public class ClientFriendRequestRendererService
+public interface IClientFriendRequestRendererService
+{
+  UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request);
+
+  UniTask<RejectFriendRequestReply> RejectFriendRequest(RejectFriendRequestPayload request);
+
+  UniTask<CancelFriendRequestReply> CancelFriendRequest(CancelFriendRequestPayload request);
+
+  UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request);
+}
+
+public class ClientFriendRequestRendererService : IClientFriendRequestRendererService
 {
   private readonly RpcClientModule module;
 
@@ -16,6 +27,7 @@ public class ClientFriendRequestRendererService
       this.module = module;
   }
 
+  
   public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request)
   {
       return module.CallUnaryProcedure<ApproveFriendRequestReply>("ApproveFriendRequest", request);
@@ -35,5 +47,6 @@ public class ClientFriendRequestRendererService
   {
       return module.CallUnaryProcedure<ReceiveFriendRequestReply>("ReceiveFriendRequest", request);
   }
+
 }
 }

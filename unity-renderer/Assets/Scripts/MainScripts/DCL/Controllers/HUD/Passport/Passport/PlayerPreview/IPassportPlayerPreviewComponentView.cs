@@ -9,5 +9,7 @@ namespace DCL.Social.Passports
     {
         RenderTexture CharacterPreviewTexture { get; }
         PreviewCameraRotation PreviewCameraRotation { get; }
+        void HideTutorial();
+        void SetAsLoading(bool isLoading);
     }
 }

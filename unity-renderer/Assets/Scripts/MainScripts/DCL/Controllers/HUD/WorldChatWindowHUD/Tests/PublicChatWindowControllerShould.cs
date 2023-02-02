@@ -3,6 +3,7 @@ using DCL;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;

@@ -49,7 +49,6 @@ namespace ECSSystems.InputSenderSystem
                 {
                     result.Commands.Add(new PBPointerEventsResult.Types.PointerCommand()
                     {
-                        Analog = inputEvent.analog,
                         Button = inputEvent.button,
                         Hit = inputEvent.hit,
                         State = inputEvent.type,

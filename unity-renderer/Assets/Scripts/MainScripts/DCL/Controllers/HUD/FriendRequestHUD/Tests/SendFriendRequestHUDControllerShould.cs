@@ -1,10 +1,11 @@
 using Cysharp.Threading.Tasks;
-using DCl.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -22,6 +23,7 @@ namespace DCL.Social.Friends
         private UserProfile recipientProfile;
         private ISocialAnalytics socialAnalytics;
         private IFriendsController friendsController;
+        private IFriendRequestHUDView friendRequestHUDView;
 
         [SetUp]
         public void SetUp()
@@ -55,8 +57,11 @@ namespace DCL.Social.Friends
 
             friendsController = Substitute.For<IFriendsController>();
 
+            friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
+
             controller = new SendFriendRequestHUDController(
                 view,
+                new FriendRequestHUDController(friendRequestHUDView),
                 dataStore,
                 userProfileBridge,
                 friendsController,
@@ -87,7 +92,7 @@ namespace DCL.Social.Friends
 
             dataStore.HUDs.sendFriendRequest.Set(null, notifyEvent: true);
 
-            view.Received(1).Close();
+            friendRequestHUDView.Received(1).Close();
         }
 
         [TestCase("")]
@@ -97,7 +102,7 @@ namespace DCL.Social.Friends
         {
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
-            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, bodyMessage)));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>(bodyMessage);
@@ -107,7 +112,7 @@ namespace DCL.Social.Friends
                            .SendFriendRequestSent(OWN_ID, RECIPIENT_ID, bodyMessage.Length,
                                 PlayerActionSource.Passport);
 
-            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, bodyMessage);
+            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, bodyMessage, Arg.Any<CancellationToken>());
             view.Received(1).ShowSendSuccess();
         }
 
@@ -117,7 +122,7 @@ namespace DCL.Social.Friends
             LogAssert.Expect(LogType.Exception, new Regex("TimeoutException"));
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
-            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>())
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromException<FriendRequest>(new TimeoutException()));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>("hey");
@@ -125,8 +130,26 @@ namespace DCL.Social.Friends
 
             socialAnalytics.DidNotReceiveWithAnyArgs().SendFriendRequestSent(default, default, default, default);
             view.DidNotReceiveWithAnyArgs().ShowSendSuccess();
-            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey");
-            view.Received(1).ShowSendFailed();
+            friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey", Arg.Any<CancellationToken>());
+            view.Received().Show();
+        }
+
+        [UnityTest]
+        public IEnumerator AutomaticallyCloseAfterSucces()
+        {
+            dataStore.HUDs.sendFriendRequestSource.Set(0);
+            dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
+            friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, "")));
+            view.ClearReceivedCalls();
+
+            view.OnSend += Raise.Event<Action>();
+
+            friendRequestHUDView.Received(0).Close();
+
+            yield return new WaitForSeconds(3f);
+
+            friendRequestHUDView.Received(1).Close();
         }
     }
 }

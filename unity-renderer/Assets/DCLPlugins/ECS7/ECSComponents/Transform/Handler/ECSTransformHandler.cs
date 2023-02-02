@@ -99,6 +99,7 @@ namespace DCL.ECSComponents
                 {
                     parent.childrenId.Remove(entity.entityId);
                 }
+                ECSTransformUtils.TrySetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
             }
 
             entity.parentId = parentId;

@@ -41,7 +41,8 @@ namespace DCL
                 staticDeferAgent = agentObject.AddComponent<GltFastDeferAgent>();
             }
 
-            gltFastDownloadProvider = new GltFastDownloadProvider(requestController, FileToUrl);
+            string baseUrl = contentProvider is null ? string.Empty : contentProvider.baseUrl;
+            gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl);
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
             consoleLogger = new ConsoleLogger();
@@ -95,9 +96,9 @@ namespace DCL
 
                 var gltFastSettings = new ImportSettings
                 {
-                    generateMipMaps = false,
-                    anisotropicFilterLevel = 3,
-                    nodeNameMethod = ImportSettings.NameImportMethod.OriginalUnique
+                    GenerateMipMaps = false,
+                    AnisotropicFilterLevel = 3,
+                    NodeNameMethod = NameImportMethod.OriginalUnique
                 };
 
                 bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken).AsUniTask().AttachExternalCancellation(cancellationSourceToken);

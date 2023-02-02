@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;
@@ -22,15 +23,23 @@ namespace DCL.Chat.Notifications
         private readonly ITopNotificationsComponentView topNotificationView;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IProfanityFilter profanityFilter;
-        private readonly TimeSpan maxNotificationInterval = new TimeSpan(0, 1, 0);
-        private readonly HashSet<string> notificationEntries = new HashSet<string>();
+        private readonly TimeSpan maxNotificationInterval = new (0, 1, 0);
+        private readonly HashSet<string> notificationEntries = new ();
         private BaseVariable<bool> shouldShowNotificationPanel => dataStore.HUDs.shouldShowNotificationPanel;
         private BaseVariable<Transform> notificationPanelTransform => dataStore.HUDs.notificationPanelTransform;
         private BaseVariable<Transform> topNotificationPanelTransform => dataStore.HUDs.topNotificationPanelTransform;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
         private BaseVariable<string> openedChat => dataStore.HUDs.openedChat;
-        private CancellationTokenSource fadeOutCT = new CancellationTokenSource();
-        private UserProfile ownUserProfile;
+        private CancellationTokenSource fadeOutCT = new ();
+        private UserProfile internalOwnUserProfile;
+        private UserProfile ownUserProfile
+        {
+            get
+            {
+                internalOwnUserProfile ??= userProfileBridge.GetOwn();
+                return internalOwnUserProfile;
+            }
+        }
         private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
 
         public ChatNotificationController(DataStore dataStore,
@@ -53,6 +62,8 @@ namespace DCL.Chat.Notifications
             mainChatNotificationView.OnPanelFocus += TogglePanelBackground;
             mainChatNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
             topNotificationView.OnClickedFriendRequest += HandleClickedFriendRequest;
+            mainChatNotificationView.OnClickedChatMessage += OpenChat;
+            topNotificationView.OnClickedChatMessage += OpenChat;
             chatController.OnAddMessage += HandleMessageAdded;
             friendsController.OnFriendRequestReceived += HandleFriendRequestReceived;
             friendsController.OnSentFriendRequestApproved += HandleSentFriendRequestApproved;
@@ -92,6 +103,8 @@ namespace DCL.Chat.Notifications
             visibleTaskbarPanels.OnChange -= VisiblePanelsChanged;
             mainChatNotificationView.OnResetFade -= ResetFadeOut;
             topNotificationView.OnResetFade -= ResetFadeOut;
+            mainChatNotificationView.OnClickedChatMessage -= OpenChat;
+            topNotificationView.OnClickedChatMessage -= OpenChat;
         }
 
         private void VisiblePanelsChanged(HashSet<string> newList, HashSet<string> oldList)
@@ -106,7 +119,6 @@ namespace DCL.Chat.Notifications
                 if (message.messageType != ChatMessage.Type.PRIVATE &&
                     message.messageType != ChatMessage.Type.PUBLIC) return;
 
-                ownUserProfile ??= userProfileBridge.GetOwn();
                 if (message.sender == ownUserProfile.userId) return;
 
                 var span = Utils.UnixToDateTimeWithTime((ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) -
@@ -179,8 +191,6 @@ namespace DCL.Chat.Notifications
         {
             if (!isNewFriendRequestsEnabled) return;
 
-            var ownUserProfile = userProfileBridge.GetOwn();
-
             if (friendRequest.From == ownUserProfile.userId ||
                 friendRequest.To != ownUserProfile.userId)
                 return;
@@ -203,15 +213,16 @@ namespace DCL.Chat.Notifications
                 topNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
         }
 
-        private void HandleSentFriendRequestApproved(string userId)
+        private void HandleSentFriendRequestApproved(FriendRequest friendRequest)
         {
             if (!isNewFriendRequestsEnabled) return;
 
-            var friendRequestProfile = userProfileBridge.Get(userId);
+            string recipientUserId = friendRequest.To;
+            var friendRequestProfile = userProfileBridge.Get(recipientUserId);
 
             FriendRequestNotificationModel friendRequestNotificationModel = new FriendRequestNotificationModel(
-                string.Empty,
-                userId,
+                friendRequest.FriendRequestId,
+                recipientUserId,
                 friendRequestProfile.userName,
                 "Friend Request accepted",
                 "and you are friends now!",
@@ -270,12 +281,20 @@ namespace DCL.Chat.Notifications
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
 
-        private void HandleClickedFriendRequest(string friendRequestId)
+        private void HandleClickedFriendRequest(string friendRequestId, string userId, bool isAcceptedFromPeer)
         {
-            if (string.IsNullOrEmpty(friendRequestId))
-                return;
+            if (string.IsNullOrEmpty(friendRequestId)) return;
 
-            dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
+            FriendRequest request = friendsController.GetAllocatedFriendRequest(friendRequestId);
+            bool isFriend = friendsController.IsFriend(userId);
+
+            if (request != null && !isFriend && !isAcceptedFromPeer)
+                dataStore.HUDs.openReceivedFriendRequestDetail.Set(friendRequestId, true);
+            else if (isFriend)
+                OpenChat(userId);
         }
+
+        private void OpenChat(string chatId) =>
+            dataStore.HUDs.openChat.Set(chatId, true);
     }
 }

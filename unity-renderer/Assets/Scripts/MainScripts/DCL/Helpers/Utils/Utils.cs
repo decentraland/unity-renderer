@@ -108,7 +108,7 @@ namespace DCL.Helpers
 
             return uvsResult;
         }
-        
+
         public static Vector2[] FloatArrayToV2List(IList<float> uvs)
         {
             Vector2[] uvsResult = new Vector2[uvs.Count / 2];
@@ -122,12 +122,23 @@ namespace DCL.Helpers
             return uvsResult;
         }
 
+        public static Vector2Int StringToVector2Int(string coords)
+        {
+            string[] coordSplit = coords.Split(',');
+            if (coordSplit.Length == 2 && int.TryParse(coordSplit[0], out int x) && int.TryParse(coordSplit[1], out int y))
+            {
+                return new Vector2Int(x, y);
+            }
+
+            return Vector2Int.zero;
+        }
+
         private const int MAX_TRANSFORM_VALUE = 10000;
         public static void CapGlobalValuesToMax(this Transform transform)
         {
             bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
             bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
-            
+
             if (positionOutsideBoundaries || scaleOutsideBoundaries)
             {
                 Vector3 newPosition = transform.position;
@@ -142,7 +153,7 @@ namespace DCL.Helpers
                     if (Mathf.Abs(newPosition.z) > MAX_TRANSFORM_VALUE)
                         newPosition.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newPosition.z);
                 }
-                
+
                 Vector3 newScale = transform.lossyScale;
                 if (scaleOutsideBoundaries)
                 {
@@ -155,11 +166,11 @@ namespace DCL.Helpers
                     if (Mathf.Abs(newScale.z) > MAX_TRANSFORM_VALUE)
                         newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
                 }
-                
+
                 SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
             }
         }
-        
+
         public static void SetTransformGlobalValues(Transform transform, Vector3 newPos, Quaternion newRot, Vector3 newScale, bool setScale = true)
         {
             transform.position = newPos;
@@ -178,7 +189,7 @@ namespace DCL.Helpers
                 transform.localScale = m.MultiplyPoint(newScale);
             }
         }
-        
+
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;
@@ -195,7 +206,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.zero;
             t.anchoredPosition = Vector2.zero;
         }
-        
+
         public static void SetToCentered(this RectTransform t)
         {
             t.anchorMin = Vector2.one * 0.5f;
@@ -316,7 +327,7 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static WebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
+        public static IWebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
@@ -471,7 +482,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static event Action<bool> OnCursorLockChanged; 
+        public static event Action<bool> OnCursorLockChanged;
 
         public static void LockCursor()
         {
@@ -516,7 +527,7 @@ namespace DCL.Helpers
         public static void BrowserSetCursorState(bool locked)
         {
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
-            
+
             IsCursorLocked = locked;
             Cursor.visible = !locked;
         }
@@ -628,7 +639,7 @@ namespace DCL.Helpers
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
         public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
-        
+
         public static IEnumerator Wait(float delay, Action onFinishCallback)
         {
             yield return new WaitForSeconds(delay);

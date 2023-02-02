@@ -13,8 +13,8 @@ public interface IPlayerName
     /// </summary>
     /// <param name="constraint"></param>
     void RemoveVisibilityConstaint(string constraint);
-    
-    void SetName(string name);
+
+    void SetName(string name, bool isClaimed, bool isGuest);
     void Show(bool instant = false);
     void Hide(bool instant = false);
     void SetForceShow(bool forceShow);

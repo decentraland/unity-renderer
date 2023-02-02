@@ -24,8 +24,8 @@ namespace DCL.Chat.Notifications
         private const string FRINED_REQUEST_NOTIFICATION_POOL_NAME_PREFIX = "FriendRequestNotificationEntriesPool_";
         private const int MAX_NOTIFICATION_ENTRIES = 30;
 
-        public event Action<string> OnClickedNotification;
-        public event Action<string> OnClickedFriendRequest;
+        public event Action<string> OnClickedChatMessage;
+        public event IMainChatNotificationsComponentView.ClickedNotificationDelegate OnClickedFriendRequest;
         public event Action<bool> OnResetFade;
         public event Action<bool> OnPanelFocus;
 
@@ -227,6 +227,9 @@ namespace DCL.Chat.Notifications
 
             OnResetFade?.Invoke(!isOverMessage && !isOverPanel);
             CheckNotificationCountAndRelease();
+
+            // TODO: refactor sfx usage into non-static
+            AudioScriptableObjects.FriendRequestEvent.Play();
         }
 
         private async UniTaskVoid AnimateNewEntry(Transform notification, CancellationToken cancellationToken)
@@ -305,7 +308,7 @@ namespace DCL.Chat.Notifications
 
         private void ClickedOnNotification(string targetId)
         {
-            OnClickedNotification?.Invoke(targetId);
+            OnClickedChatMessage?.Invoke(targetId);
         }
 
         private void PopulateFriendRequestNotification(FriendRequestNotificationComponentView friendRequestNotificationComponentView,
@@ -319,8 +322,8 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 
-        private void ClickedOnFriendRequest(string friendRequestId) =>
-            OnClickedFriendRequest?.Invoke(friendRequestId);
+        private void ClickedOnFriendRequest(string friendRequestId, string userId, bool isAcceptedFromPeer) =>
+            OnClickedFriendRequest?.Invoke(friendRequestId, userId, isAcceptedFromPeer);
 
         private void FocusedOnNotification(bool isInFocus)
         {

@@ -1,3 +1,4 @@
+using DCL.ProfanityFiltering;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
 
@@ -20,7 +21,7 @@ namespace DCL.Chat.Notifications
             ChatController.i,
             FriendsController.i,
             new UserProfileWebInterfaceBridge(),
-            ProfanityFilterSharedInstances.regexFilter);
+            Environment.i.serviceLocator.Get<IProfanityFilter>());
 
         public void Dispose()
         {

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -8,6 +9,8 @@ namespace DCL.Social.Friends
 {
     public class SentFriendRequestHUDController
     {
+        private const string PROCESS_REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
+
         private readonly ISentFriendRequestHUDView view;
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
@@ -15,7 +18,7 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
         private readonly StringVariable openPassportVariable;
 
-        private CancellationTokenSource cancellationToken = new ();
+        private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
 
         public SentFriendRequestHUDController(
@@ -42,6 +45,7 @@ namespace DCL.Social.Friends
 
         public void Dispose()
         {
+            friendRequestOperationsCancellationToken.SafeCancelAndDispose();
             dataStore.HUDs.openSentFriendRequestDetail.OnChange -= ShowOrHide;
             view.OnCancel -= Cancel;
             view.OnClose -= Hide;
@@ -84,37 +88,36 @@ namespace DCL.Social.Friends
             var ownProfile = userProfileBridge.GetOwn();
             view.SetSenderProfilePicture(ownProfile.snapshotObserver);
 
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() + 1);
             view.Show();
         }
 
         private void Cancel()
         {
-            cancellationToken?.Cancel();
-            cancellationToken = new CancellationTokenSource();
-            CancelAsync(cancellationToken.Token).Forget();
-        }
+            friendRequestOperationsCancellationToken = friendRequestOperationsCancellationToken.SafeRestart();
 
-        private async UniTask CancelAsync(CancellationToken cancellationToken = default)
-        {
-            view.ShowPendingToCancel();
-
-            try
+            async UniTask CancelAsync(CancellationToken cancellationToken = default)
             {
-                await friendsController.CancelRequestAsync(friendRequestId)
-                                       .Timeout(TimeSpan.FromSeconds(10));
-                if (cancellationToken.IsCancellationRequested) return;
+                view.ShowPendingToCancel();
 
-                // TODO FRIEND REQUESTS (#3807): send analytics
+                try
+                {
+                    FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId, cancellationToken);
 
-                view.Close();
+                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
+
+                    view.Close();
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    e.ReportFriendRequestErrorToAnalyticsByRequestId(friendRequestId, "modal", friendsController, socialAnalytics);
+                    view.Show();
+                    dataStore.notifications.DefaultErrorNotification.Set(PROCESS_REQUEST_ERROR_MESSAGE, true);
+                    throw;
+                }
             }
-            catch (Exception)
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                // TODO FRIEND REQUESTS (#3807): track error to analytics
-                view.ShowCancelFailed();
-                throw;
-            }
+
+            CancelAsync(friendRequestOperationsCancellationToken.Token).Forget();
         }
 
         private void Hide()
@@ -134,6 +137,7 @@ namespace DCL.Social.Friends
             }
 
             openPassportVariable.Set(friendRequest.To);
+            view.SetSortingOrder(dataStore.HUDs.currentPassportSortingOrder.Get() - 1);
         }
     }
 }

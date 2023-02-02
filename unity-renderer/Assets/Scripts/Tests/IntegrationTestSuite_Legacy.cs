@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
 using DCL.Helpers.NFT.Markets;
+using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
@@ -16,7 +18,7 @@ using UnityEngine.TestTools;
 public class IntegrationTestSuite_Legacy
 {
     private const string VISUAL_TEST_CUBEMAP_PATH = "Assets/Scripts/Tests/VisualTests/Textures/VisualTest Reflection.png";
-    
+
     /// <summary>
     /// Use this as a parent for your dynamically created gameobjects in tests
     /// so they are cleaned up automatically in the teardown
@@ -57,6 +59,12 @@ public class IntegrationTestSuite_Legacy
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
         result.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
+        result.Register<IProfanityFilter>(() =>
+        {
+            IProfanityFilter profanityFilter = Substitute.For<IProfanityFilter>();
+            profanityFilter.Filter(Arg.Any<string>()).Returns(info => UniTask.FromResult(info[0].ToString()));
+            return profanityFilter;
+        });
 
         result.Register<IServiceProviders>(
             () =>
@@ -116,11 +124,11 @@ public class IntegrationTestSuite_Legacy
         Environment.Dispose();
 
         yield return null;
-        
+
         NotificationScriptableObjects.UnloadAll();
         AudioScriptableObjects.UnloadAll();
         CommonScriptableObjects.UnloadAll();
-        
+
         yield return null;
 
         GameObject[] gos = Object.FindObjectsOfType<GameObject>(true);
@@ -129,7 +137,7 @@ public class IntegrationTestSuite_Legacy
         {
             Object.Destroy(go);
         }
-        
+
         yield return null;
     }
 

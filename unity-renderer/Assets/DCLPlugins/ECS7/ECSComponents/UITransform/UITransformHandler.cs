@@ -42,7 +42,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
-            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer();
+            var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer(entity.entityId);
 
             containerModel.components.Add(componentId);
 
@@ -165,8 +165,6 @@ namespace DCL.ECSComponents
         {
             switch (unit)
             {
-                case YGUnit.YguPoint:
-                    return LengthUnit.Pixel;
                 case YGUnit.YguPercent:
                     return LengthUnit.Percent;
                 default:
@@ -178,8 +176,6 @@ namespace DCL.ECSComponents
         {
             switch (overflow)
             {
-                case YGOverflow.YgoVisible:
-                    return Overflow.Visible;
                 case YGOverflow.YgoHidden:
                     return Overflow.Hidden;
                 default:
@@ -191,8 +187,6 @@ namespace DCL.ECSComponents
         {
             switch (display)
             {
-                case YGDisplay.YgdFlex:
-                    return DisplayStyle.Flex;
                 case YGDisplay.YgdNone:
                     return DisplayStyle.None;
                 default:
@@ -255,8 +249,6 @@ namespace DCL.ECSComponents
         {
             switch (positionType)
             {
-                case YGPositionType.YgptRelative:
-                    return UnityEngine.UIElements.Position.Relative;
                 case YGPositionType.YgptAbsolute:
                     return UnityEngine.UIElements.Position.Absolute;
                 default:

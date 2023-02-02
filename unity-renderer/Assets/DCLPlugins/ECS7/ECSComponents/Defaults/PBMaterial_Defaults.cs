@@ -17,6 +17,7 @@ namespace DCL.ECSComponents
 
         public static bool GetCastShadows(this PBMaterial self)
         {
+            // Note: HasCastShadows represent the existence of the parameter and not the value of castShadows itself.
             if (self.Pbr != null)
                 return !self.Pbr.HasCastShadows || self.Pbr.CastShadows;
 
@@ -26,12 +27,12 @@ namespace DCL.ECSComponents
             return true;
         }
 
-        public static Color3 GetAlbedoColor(this PBMaterial self)
+        public static Color4 GetAlbedoColor(this PBMaterial self)
         {
             if (self.Pbr != null)
-                return self.Pbr.AlbedoColor ?? new Color3(Color_Defaults.colorWhite);
+                return self.Pbr.AlbedoColor ?? new Color4(Color_Defaults.color4White);
 
-            return new Color3(Color_Defaults.colorWhite);
+            return new Color4(Color_Defaults.color4White);
         }
 
         public static Color3 GetEmissiveColor(this PBMaterial self)

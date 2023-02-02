@@ -63,7 +63,8 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         {
             sceneNumber = sceneNumber,
             basePosition = baseParcel,
-            parcels = parcels.ToArray()
+            parcels = parcels.ToArray(),
+            sdk7 = true
         };
         scene.crdtExecutor = new CRDTExecutor(scene, componentsManager);
 

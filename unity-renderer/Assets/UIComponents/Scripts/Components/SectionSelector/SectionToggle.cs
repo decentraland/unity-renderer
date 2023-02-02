@@ -7,6 +7,7 @@ using static UnityEngine.UI.Toggle;
 
 public interface ISectionToggle
 {
+    GameObject GameObject { get; }
     /// <summary>
     /// Pivot of the section object.
     /// </summary>
@@ -85,6 +86,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     public void OnPointerDown(PointerEventData eventData) =>
         SelectToggle();
 
+    public GameObject GameObject => gameObject;
     public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
 
@@ -153,7 +155,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
         if (reselectIfAlreadyOn)
             toggle.isOn = false;
 
-        toggle.isOn = true;
+        if(!toggle.isOn)
+            toggle.isOn = true;
     }
 
     public void SetSelectedVisuals()

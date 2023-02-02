@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCl.Social.Friends;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SocialFriendRequest = DCL.Social.Friends.FriendRequest;
 
 namespace DCL.Social.Friends
@@ -14,9 +15,8 @@ namespace DCL.Social.Friends
         event Action<string> OnFriendNotFound;
         event Action<List<FriendWithDirectMessages>> OnAddFriendsWithDirectMessages;
         event Action<int, int> OnTotalFriendRequestUpdated;
-        event Action<int> OnTotalFriendsUpdated;
         event Action<SocialFriendRequest> OnFriendRequestReceived;
-        event Action<string> OnSentFriendRequestApproved;
+        event Action<SocialFriendRequest> OnSentFriendRequestApproved;
 
         int AllocatedFriendCount { get; }
         bool IsInitialized { get; }
@@ -30,29 +30,30 @@ namespace DCL.Social.Friends
         UserStatus GetUserStatus(string userId);
 
         bool ContainsStatus(string friendId, FriendshipStatus status);
-        UniTask<SocialFriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody);
+        UniTask<SocialFriendRequest> RequestFriendshipAsync(string friendUserId, string messageBody, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use RequestFriendship(string friendUserId, string messageBody) instead")]
         void RequestFriendship(string friendUserId);
-        UniTask<SocialFriendRequest> CancelRequestByUserIdAsync(string friendUserId);
+        UniTask<SocialFriendRequest> CancelRequestByUserIdAsync(string friendUserId, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use CancelRequestByUserIdAsync instead")]
         void CancelRequestByUserId(string friendUserId);
-        UniTask<SocialFriendRequest> CancelRequestAsync(string friendRequestId);
+        UniTask<SocialFriendRequest> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use AcceptFriendshipAsync instead")]
         void AcceptFriendship(string friendUserId);
-        UniTask<SocialFriendRequest> AcceptFriendshipAsync(string friendRequestId);
+        UniTask<SocialFriendRequest> AcceptFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use RejectFriendshipAsync instead")]
         void RejectFriendship(string friendUserId);
-        UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId);
+        UniTask<SocialFriendRequest> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken = default);
         bool IsFriend(string userId);
         void RemoveFriend(string friendId);
-        void GetFriends(int limit, int skip);
-        void GetFriends(string usernameOrId, int limit);
+        UniTask<string[]> GetFriendsAsync(int limit, int skip, CancellationToken cancellationToken = default);
+        UniTask<string[]> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default);
         [Obsolete("Old API. Use GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) instead")]
         void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip);
+        UniTask<List<SocialFriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken = default);
         void GetFriendsWithDirectMessages(int limit, int skip);
         void GetFriendsWithDirectMessages(string userNameOrId, int limit);
         SocialFriendRequest GetAllocatedFriendRequest(string friendRequestId);
         SocialFriendRequest GetAllocatedFriendRequestByUser(string userId);
+        UniTask<FriendshipStatus> GetFriendshipStatus(string userId, CancellationToken cancellationToken = default);
     }
 }

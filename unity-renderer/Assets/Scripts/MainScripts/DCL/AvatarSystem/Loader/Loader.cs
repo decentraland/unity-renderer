@@ -234,6 +234,7 @@ namespace AvatarSystem
         public void Dispose()
         {
             avatarMeshCombiner.Dispose();
+            combinedRenderer = null;
             status = ILoader.Status.Idle;
             ClearLoaders();
         }
