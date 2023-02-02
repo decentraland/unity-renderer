@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DCL.Huds.QuestsTracker
 {
-    public interface IQuestsTrackerHUDView
+    public interface IQuestsTrackerHUDView: IDisposable
     {
         void UpdateQuest(string questId, bool hasProgressed);
         void RemoveEntry(string questId);
@@ -16,7 +16,6 @@ namespace DCL.Huds.QuestsTracker
         void ClearEntries();
         void SetVisibility(bool visibility);
         void AddReward(string questId, QuestReward reward);
-        void Dispose();
     }
 
     public class QuestsTrackerHUDView : MonoBehaviour, IQuestsTrackerHUDView
