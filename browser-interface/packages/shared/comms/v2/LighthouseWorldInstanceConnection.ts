@@ -1,39 +1,40 @@
+import {
+  MinPeerData,
+  PacketCallback,
+  Peer as IslandBasedPeer,
+  PeerConfig,
+  PeerMessageType,
+  PeerMessageTypes,
+  PeerStatus
+} from '@dcl/catalyst-peer'
 import { CommsEvents, RoomConnection } from '../interface/index'
 import { Package } from '../interface/types'
 import { CommunicationArea, position2parcelRfc4, positionHashRfc4 } from '../interface/utils'
-import {
-  Peer as IslandBasedPeer,
-  PeerConfig,
-  PacketCallback,
-  PeerStatus,
-  PeerMessageType,
-  PeerMessageTypes,
-  MinPeerData
-} from '@dcl/catalyst-peer'
+import { CommsStatus } from '../types'
 import {
   ChatData,
   CommsMessage,
-  ProfileData,
-  SceneData,
   PositionData,
-  VoiceData,
+  ProfileData,
   ProfileRequestData,
-  ProfileResponseData
+  ProfileResponseData,
+  SceneData,
+  VoiceData
 } from './proto/comms_pb'
-import { CommsStatus } from '../types'
 
-import { ProfileType } from 'shared/profiles/types'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import { commConfigurations } from 'config'
+import { maxParcelX, maxParcelZ } from 'lib/decentraland/parcels/limits'
+import { uuid } from 'lib/javascript/uuid'
 import mitt from 'mitt'
-import { createLogger } from 'shared/logger'
-import { ExplorerIdentity } from 'shared/session/types'
-import { uuid } from 'atomicHelpers/math'
-import { commConfigurations, parcelLimits } from 'config'
-import { peerIdHandler } from '../logic/peer-id-handler'
 import { Observable } from 'mz-observable'
-import { AdapterDisconnectedEvent } from '../adapters/types'
+import { createLogger } from 'shared/logger'
+import { ProfileType } from 'shared/profiles/types'
+import { ExplorerIdentity } from 'shared/session/types'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { AdapterDisconnectedEvent } from '../adapters/types'
 import { createOpusVoiceHandler } from '../adapters/voice/opusVoiceHandler'
+import { peerIdHandler } from '../logic/peer-id-handler'
 
 type PeerType = IslandBasedPeer
 
@@ -273,10 +274,10 @@ export class LighthouseWorldInstanceConnection implements RoomConnection {
       const newParcel = position2parcelRfc4(this.lastPosition)
       const commArea = new CommunicationArea(newParcel, commConfigurations.commRadius)
 
-      const xMin = ((commArea.vMin.x + parcelLimits.maxParcelX) >> 2) << 2
-      const xMax = ((commArea.vMax.x + parcelLimits.maxParcelX) >> 2) << 2
-      const zMin = ((commArea.vMin.y + parcelLimits.maxParcelZ) >> 2) << 2
-      const zMax = ((commArea.vMax.y + parcelLimits.maxParcelZ) >> 2) << 2
+      const xMin = ((commArea.vMin.x + maxParcelX) >> 2) << 2
+      const xMax = ((commArea.vMax.x + maxParcelX) >> 2) << 2
+      const zMin = ((commArea.vMin.y + maxParcelZ) >> 2) << 2
+      const zMax = ((commArea.vMax.y + maxParcelZ) >> 2) << 2
 
       for (let x = xMin; x <= xMax; x += 4) {
         for (let z = zMin; z <= zMax; z += 4) {

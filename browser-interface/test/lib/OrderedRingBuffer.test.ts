@@ -1,4 +1,4 @@
-import { OrderedRingBuffer } from 'atomicHelpers/RingBuffer'
+import { OrderedRingBuffer } from 'lib/data-structures/RingBuffer'
 import { expect } from 'chai'
 
 describe('OrderedRingBuffer', () => {

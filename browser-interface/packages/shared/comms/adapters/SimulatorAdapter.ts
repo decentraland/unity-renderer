@@ -1,7 +1,8 @@
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
 import { Vector3 } from '@dcl/ecs-math'
 import { Avatar } from '@dcl/schemas'
-import { gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import mitt from 'mitt'
 import { generateRandomUserProfile } from 'shared/profiles/sagas'
 import {

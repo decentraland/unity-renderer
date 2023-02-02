@@ -2,9 +2,9 @@ import {
   spawnScenePortableExperienceSceneFromUrn,
   getPortableExperiencesLoaded,
   getRunningPortableExperience
-} from '../../../unity-interface/portableExperiencesUtils'
-import { store } from '../../../shared/store/isolatedStore'
-import { removeScenePortableExperience } from '../../../shared/portableExperiences/actions'
+} from 'unity-interface/portableExperiencesUtils'
+import { store } from 'shared/store/isolatedStore'
+import { removeScenePortableExperience } from 'shared/portableExperiences/actions'
 
 import { RpcServerPort } from '@dcl/rpc'
 import { PortContext } from './context'

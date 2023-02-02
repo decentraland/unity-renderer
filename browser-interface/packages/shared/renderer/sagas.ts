@@ -29,7 +29,7 @@ import {
 import { getExploreRealmsService } from 'shared/dao/selectors'
 import defaultLogger from 'shared/logger'
 import { receivePeerUserData } from 'shared/comms/peers'
-import { deepEqual } from 'atomicHelpers/deepEqual'
+import { deepEqual } from 'lib/javascript/deepEqual'
 import { waitForRendererInstance } from './sagas-helper'
 import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
 import {

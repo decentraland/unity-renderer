@@ -1,5 +1,5 @@
+import { Vector2 } from 'lib/math/Vector2'
 import { action } from 'typesafe-actions'
-import { Vector2Component } from '../../atomicHelpers/landHelpers'
 
 export const REPORT_SCENES_AROUND_PARCEL = 'Report scenes around parcel'
 export const reportScenesAroundParcel = (parcelCoord: { x: number; y: number }, rectSizeAround: number) =>
@@ -15,7 +15,7 @@ export const reportedScenes = (parcels: string[]) => action(REPORTED_SCENES_FOR_
 export type ReportedScenes = ReturnType<typeof reportedScenes>
 
 export const LAST_REPORTED_POSITION = 'Last reported position'
-export const reportLastPosition = (position: Vector2Component) => action(LAST_REPORTED_POSITION, { position })
+export const reportLastPosition = (position: Vector2) => action(LAST_REPORTED_POSITION, { position })
 export type ReportLastPosition = ReturnType<typeof reportLastPosition>
 
 export const INITIALIZE_POI_TILES = 'Initialize POI tiles'
