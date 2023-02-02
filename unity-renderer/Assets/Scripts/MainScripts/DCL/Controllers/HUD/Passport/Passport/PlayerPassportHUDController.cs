@@ -131,8 +131,7 @@ namespace DCL.Social.Passports
             playerPreviewController.Dispose();
             passportNavigationController.Dispose();
 
-            if (view != null)
-                view.Dispose();
+            view?.Dispose();
         }
 
         private void OnCurrentPlayerIdChanged(string current, string previous)
@@ -165,6 +164,8 @@ namespace DCL.Social.Passports
 
         private void SetPassportPanelVisibility(bool visible)
         {
+            isOpen = visible;
+
             if (visible && userProfileBridge.GetOwn().isGuest)
             {
                 dataStore.HUDs.connectWalletModalVisible.Set(true);
