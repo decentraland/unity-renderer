@@ -31,6 +31,7 @@ references:
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
     - ./unity-renderer/Builds/
+    - ./unity-renderer/build-files.csv
 
   .unity_image: &unity_image
     - image: unityci/editor:2021.3.14f1-webgl-1
@@ -333,10 +334,6 @@ jobs:
           name: Print build logs
           command: cat ./unity-renderer/build-logs.txt
           when: always
-      - run:
-          name: Analyze build logs
-          command: node ./analyze-build-logs.mjs > ./unity-renderer/build-files.csv
-          when: always
       - save_cache:
           name: Store test cache
           key: unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -355,9 +352,6 @@ jobs:
       - store_artifacts:
           name: Store build report
           path: ./unity-renderer/Library/LastBuild.buildreport
-      - store_artifacts:
-          name: Store CSV with files on build
-          path: ./unity-renderer/build-files.csv
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -381,6 +375,21 @@ jobs:
           when: on_fail
           command: |
             cat ./unity-renderer/Library/LastBuild.buildreport
+
+  upload-build-analysis:
+    <<: *working_directory_root
+    docker: 
+      - image: cimg/node:18.13.0
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Analyze build logs for build size
+          command: nodejs ./analyze-build-logs.mjs > ./unity-renderer/build-files.csv
+          when: always
+      - store_artifacts:
+          name: Store analysis on build size
+          path: ./unity-renderer/build-files.csv
+
   test-js-interface:
     <<: *working_directory_root
     docker: *image_kernel
