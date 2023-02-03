@@ -64,7 +64,7 @@ globalThis.DecentralandKernel = {
     }
 
     if (!Hls.isSupported()) {
-      throw new Error('HTTP Live Streaming is not supported in your browser')
+      // throw new Error('HTTP Live Streaming is not supported in your browser')
     }
 
     options.kernelOptions.baseUrl = await resolveBaseUrl(
