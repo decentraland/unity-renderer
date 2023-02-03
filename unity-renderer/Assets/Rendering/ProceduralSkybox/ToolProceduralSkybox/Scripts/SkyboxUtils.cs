@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace DCL.Skybox
@@ -26,8 +24,9 @@ namespace DCL.Skybox
 
     public static class SkyboxShaderUtils
     {
+        public const int TOTAL_SKYBOX_LAYERS = 5;
 
-        static Dictionary<string, int>[] shaderLayersProperties = null;
+        private static Dictionary<string, int>[] shaderLayersProperties = null;
         public static readonly int LightTint = Shader.PropertyToID("_lightTint");
         public static readonly int LightDirection = Shader.PropertyToID("_lightDirection");
         public static readonly int SkyColor = Shader.PropertyToID("_skyColor");
@@ -46,7 +45,6 @@ namespace DCL.Skybox
         public static readonly int FogIntensity = Shader.PropertyToID("_fogIntesity");
         public static readonly int Opacity = Shader.PropertyToID("_Opacity");
 
-        public const int TOTAL_SKYBOX_LAYERS = 5;
         static SkyboxShaderUtils() { CacheShaderProperties(); }
 
         static void CacheShaderProperties()
@@ -97,14 +95,14 @@ namespace DCL.Skybox
                 CacheShaderProperties();
             }
 
-            if (!shaderLayersProperties[layer].TryGetValue(name, out int val))
+            if (shaderLayersProperties[layer].TryGetValue(name, out int val))
             {
-                propertyInt = Shader.PropertyToID(name);
-                shaderLayersProperties[layer].Add(name, propertyInt);
+                propertyInt = val;
             }
             else
             {
-                propertyInt = val;
+                propertyInt = Shader.PropertyToID(name);
+                shaderLayersProperties[layer].Add(name, propertyInt);
             }
 
             return propertyInt;
