@@ -162,7 +162,6 @@ namespace DCL.Components
                 entity.meshesInfo.currentShape = this;
 
                 loadableShape.entity = entity;
-                loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 
                 bool initialVisibility = model.visible;
                 if (!DataStore.i.debugConfig.isDebugMode.Get())
