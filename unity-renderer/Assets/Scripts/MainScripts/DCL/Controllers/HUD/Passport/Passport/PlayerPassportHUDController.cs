@@ -67,6 +67,7 @@ namespace DCL.Social.Passports
             closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
 
             passportNavigationController.OnClickBuyNft += ClickedBuyNft;
+            passportNavigationController.OnClickedLink += ClickedLink;
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
@@ -172,6 +173,11 @@ namespace DCL.Social.Passports
                 return;
 
             (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token), passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token));
+        }
+
+        private void ClickedLink()
+        {
+            socialAnalytics.SendLinkClick(PlayerActionSource.Passport);
         }
 
         private void ClickedBuyNft(string id, string wearableType)

@@ -12,57 +12,57 @@ namespace DCL.SettingsCommon
         {
             this.prefixPrefsKey = prefixPrefsKey;
         }
-        
+
         public T GetEnum<T>(string fieldName, T defaultValue) where T : struct
         {
-            if (!Enum.TryParse<T>(PlayerPrefs.GetString(GetFieldKey(fieldName), ""), out var result))
+            if (!Enum.TryParse<T>(PlayerPrefsBridge.GetString(GetFieldKey(fieldName), ""), out var result))
                 return defaultValue;
             return result;
         }
 
         public bool GetBool(string fieldName, bool defaultValue)
         {
-            return PlayerPrefsUtils.GetBool(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsBridge.GetBool(GetFieldKey(fieldName), defaultValue);
         }
 
         public float GetFloat(string fieldName, float defaultValue)
         {
-            return PlayerPrefs.GetFloat(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsBridge.GetFloat(GetFieldKey(fieldName), defaultValue);
         }
-        
+
         public int GetInt(string fieldName, int defaultValue)
         {
-            return PlayerPrefs.GetInt(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsBridge.GetInt(GetFieldKey(fieldName), defaultValue);
         }
 
         public string GetString(string fieldName, string defaultValue)
         {
-            return PlayerPrefs.GetString(GetFieldKey(fieldName), defaultValue);
+            return PlayerPrefsBridge.GetString(GetFieldKey(fieldName), defaultValue);
         }
 
         public void SetBool(string fieldName, bool value)
         {
-            PlayerPrefsUtils.SetBool(GetFieldKey(fieldName), value);
+            PlayerPrefsBridge.SetBool(GetFieldKey(fieldName), value);
         }
 
         public void SetFloat(string fieldName, float value)
         {
-            PlayerPrefs.SetFloat(GetFieldKey(fieldName), value);
+            PlayerPrefsBridge.SetFloat(GetFieldKey(fieldName), value);
         }
 
         public void SetEnum<T>(string fieldName, T value) where T : struct
         {
-            PlayerPrefs.SetString(GetFieldKey(fieldName), value.ToString());
+            PlayerPrefsBridge.SetString(GetFieldKey(fieldName), value.ToString());
         }
 
         public void SetInt(string fieldName, int value)
         {
-            PlayerPrefs.SetInt(GetFieldKey(fieldName), value);
+            PlayerPrefsBridge.SetInt(GetFieldKey(fieldName), value);
         }
 
         public void SetString(string fieldName, string value)
         {
-            PlayerPrefs.SetString(GetFieldKey(fieldName), value);
+            PlayerPrefsBridge.SetString(GetFieldKey(fieldName), value);
         }
 
         private string GetFieldKey(string fieldName)
