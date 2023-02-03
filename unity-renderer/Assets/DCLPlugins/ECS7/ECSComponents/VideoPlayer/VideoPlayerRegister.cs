@@ -1,20 +1,21 @@
+using DCL.ECS7.InternalComponents;
 using System;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class MaterialRegister : IDisposable
+    public class VideoPlayerRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public MaterialRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
+        public VideoPlayerRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             factory.AddOrReplaceComponent(componentId,
-                ProtoSerialization.Deserialize<PBMaterial>,
-                () => new MaterialHandler(internalComponents.materialComponent, internalComponents.videoMaterialComponent));
-            componentWriter.AddOrReplaceComponentSerializer<PBMaterial>(componentId, ProtoSerialization.Serialize);
+                ProtoSerialization.Deserialize<PBVideoPlayer>,
+                () => new VideoPlayerHandler(internalComponents.videoPlayerComponent));
+            componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
