@@ -29,6 +29,14 @@ MonoBehaviour:
     m_Address: AirdroppingHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: ab94f4a6f36c1cd44bfc5dc64fd8d4c8
+    m_Address: _LoadingScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fe1b003c698c6d9429b51e3e8dd5fbaf
+    m_Address: LoadingHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

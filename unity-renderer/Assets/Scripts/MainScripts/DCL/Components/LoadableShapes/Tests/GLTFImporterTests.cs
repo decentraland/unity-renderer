@@ -111,9 +111,9 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator CurvesAreOptimizedCorrectly()
     {
-        var curvesSource = AssetDatabase.LoadAssetAtPath<AnimationCurveContainer>("CurveOptimizedCorrectlySource");
+        var curvesSource = AssetDatabase.LoadAssetAtPath<AnimationCurveContainer>("Assets/Scripts/MainScripts/DCL/Components/LoadableShapes/Tests/CurveOptimizedCorrectlySource.asset");
         //NOTE(Brian): We are going to output the optimization result in this SO, so it can be debugged more easily
-        var curvesResult = AssetDatabase.LoadAssetAtPath<AnimationCurveContainer>("CurveOptimizedCorrectlyResult");
+        var curvesResult = AssetDatabase.LoadAssetAtPath<AnimationCurveContainer>("Assets/Scripts/MainScripts/DCL/Components/LoadableShapes/Tests/CurveOptimizedCorrectlyResult.asset");
 
         curvesResult.curves = new AnimationCurve[curvesSource.curves.Length];
 
