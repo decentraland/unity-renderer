@@ -130,7 +130,7 @@ public class CatalogController : MonoBehaviour
     public void WearablesRequestFailed(string payload)
     {
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
-		
+
 		if (requestFailedResponse?.context == null)
             return;
 
