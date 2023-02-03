@@ -46,14 +46,14 @@ namespace DCL.Skybox
         public static readonly int FogIntensity = Shader.PropertyToID("_fogIntesity");
         public static readonly int Opacity = Shader.PropertyToID("_Opacity");
 
-        private const int MAX_SKYBOX_LAYERS = 5;
+        public const int TOTAL_SKYBOX_LAYERS = 5;
         static SkyboxShaderUtils() { CacheShaderProperties(); }
 
         static void CacheShaderProperties()
         {
             if (shaderLayersProperties != null) return;
-            shaderLayersProperties = new Dictionary<string, int>[MAX_SKYBOX_LAYERS];
-            for (int i = 0; i < 5; i++)
+            shaderLayersProperties = new Dictionary<string, int>[TOTAL_SKYBOX_LAYERS];
+            for (int i = 0; i < TOTAL_SKYBOX_LAYERS; i++)
             {
                 shaderLayersProperties[i] = new Dictionary<string, int>();
 
@@ -86,9 +86,9 @@ namespace DCL.Skybox
 
         public static int GetLayerProperty(string name, int layer)
         {
-            if (layer > MAX_SKYBOX_LAYERS)
+            if (layer >= TOTAL_SKYBOX_LAYERS)
             {
-                throw new ArgumentException($"Maximum Skybox Layers is {MAX_SKYBOX_LAYERS}");
+                throw new ArgumentException($"Maximum Skybox Layers is {TOTAL_SKYBOX_LAYERS}");
             }
 
             int propertyInt;
