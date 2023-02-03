@@ -31,7 +31,8 @@ namespace MainScripts.DCL.Controllers.SettingsDesktop
         public void Save()
         {
             displaySettings.Save();
-            PlayerPrefsUtils.Save();
+            PlayerPrefsBridge.Save();
+            PlayerPrefsBridge.Save();
         }
     }
 }
