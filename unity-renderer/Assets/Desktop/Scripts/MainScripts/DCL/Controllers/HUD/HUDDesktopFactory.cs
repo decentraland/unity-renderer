@@ -2,6 +2,7 @@ using DCL;
 using DCL.Controllers.HUD;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
+using SocialFeaturesAnalytics;
 
 public class HUDDesktopFactory : HUDFactory
 {
@@ -17,7 +18,10 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new SettingsPanelHUDControllerDesktop();
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDControllerDesktop(new UserProfileWebInterfaceBridge());
+                hudElement = new ProfileHUDControllerDesktop(new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.MINIMAP:
                 hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
