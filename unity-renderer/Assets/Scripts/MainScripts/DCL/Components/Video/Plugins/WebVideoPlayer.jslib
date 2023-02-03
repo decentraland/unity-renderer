@@ -145,7 +145,7 @@ var WebVideoPlayer = {
         return videos[id].textureId;
     },
 
-    WebVideoPlayerTextureUpdate: function (videoId, flipY) {
+    WebVideoPlayerTextureUpdate: function (videoId) {
         const videoData = videos[UTF8ToString(videoId)];
 
         if (videoData.state !== 4) return; //PLAYING
@@ -156,9 +156,6 @@ var WebVideoPlayer = {
             videoData.newFrame = false;
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
-
-        if (flipY)
-            GLctx.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
@@ -171,9 +168,6 @@ var WebVideoPlayer = {
             GLctx.UNSIGNED_BYTE,
             videoData.video
         );
-
-        if (flipY)
-            GLctx.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {

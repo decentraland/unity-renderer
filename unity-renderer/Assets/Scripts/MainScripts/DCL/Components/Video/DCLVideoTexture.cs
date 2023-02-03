@@ -117,6 +117,7 @@ namespace DCL.Components
                         texturePlayerUpdateRoutine = null;
                     }
 
+                    texturePlayer.SetAsError();
                     yield break;
                 }
 
@@ -208,7 +209,7 @@ namespace DCL.Components
             else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.Update(flipY: false);
+                texturePlayer.Update();
                 texture = texturePlayer.texture;
             }
         }

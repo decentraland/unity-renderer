@@ -21,7 +21,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     ...globalState.meta.config.world,
     comms: {
       commRadius: commConfigurations.commRadius,
-      voiceChatEnabled: false
+      voiceChatEnabled: true
     },
     profiles: {
       nameValidCharacterRegex: nameValidCharacterRegex.toString().replace(/[/]/g, ''),
@@ -35,8 +35,8 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
       isGifWebSupported(globalState),
     network,
     validWorldRanges: getWorld().validWorldRanges,
-    kernelVersion: versions['@dcl/kernel'] || 'unknown-kernel-version',
-    rendererVersion: versions['@dcl/unity-renderer'] || 'unknown-renderer-version',
+    kernelVersion: versions['@dcl/explorer'] || 'unknown-kernel-version',
+    rendererVersion: versions['@dcl/explorer'] || 'unknown-renderer-version',
     avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState))
   }
 }

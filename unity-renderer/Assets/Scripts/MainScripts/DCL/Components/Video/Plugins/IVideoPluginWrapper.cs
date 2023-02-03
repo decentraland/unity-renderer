@@ -8,7 +8,7 @@ namespace DCL.Components.Video.Plugin
 
         void Remove(string id);
 
-        void TextureUpdate(string id, bool flipY);
+        void TextureUpdate(string id);
 
         Texture2D PrepareTexture(string id);
 

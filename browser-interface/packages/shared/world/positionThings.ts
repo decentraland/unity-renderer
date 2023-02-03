@@ -1,8 +1,10 @@
 import { Vector3, EcsMathReadOnlyVector3, EcsMathReadOnlyQuaternion, Quaternion } from '@dcl/ecs-math'
 import { Observable } from 'mz-observable'
 import { InstancedSpawnPoint } from '../types'
-import { gridToWorld, isWorldPositionInsideParcels, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
-import { DEBUG, playerConfigurations } from '../../config'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { DEBUG, playerConfigurations } from 'config'
 import { isInsideWorldLimits, Scene } from '@dcl/schemas'
 
 export type PositionReport = {

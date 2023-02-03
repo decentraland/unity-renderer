@@ -27,10 +27,16 @@ namespace Tests
         public void Dispose()
         {
             if (coroutineDelayedReady != null)
+            {
                 CoroutineStarter.Stop(coroutineDelayedReady);
+                coroutineDelayedReady = null;
+            }
 
             if (coroutinePlay != null)
+            {
                 CoroutineStarter.Stop(coroutinePlay);
+                coroutinePlay = null;
+            }
         }
 
         public void Create(string id, string url, bool useHls)
@@ -60,9 +66,10 @@ namespace Tests
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
             Assert.IsFalse(wasRemoved, "Already removed!");
             wasRemoved = true;
+            Dispose();
         }
 
-        public void TextureUpdate(string id, bool flipY)
+        public void TextureUpdate(string id)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
         }

@@ -43,7 +43,7 @@ namespace Tests
 
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
 
             plugin.Received(1).Play(ID, -1);
         }
@@ -53,7 +53,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, -1);
@@ -64,7 +64,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
             webVideoPlayer.SetTime(100);
             webVideoPlayer.Play();
 
@@ -98,7 +98,7 @@ namespace Tests
             plugin.GetTime(ID).Returns(80);
             plugin.GetState(ID).Returns(VideoState.READY);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
 
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
@@ -157,7 +157,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
 
             plugin.Received(1).GetError(ID);
             Assert.IsTrue(webVideoPlayer.isError);
@@ -169,7 +169,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
-            webVideoPlayer.Update(false);
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
             webVideoPlayer.SetVolume(10);
