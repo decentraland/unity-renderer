@@ -17,6 +17,7 @@ namespace Tests
     {
         private MaterialHandler handler;
         private IInternalECSComponent<InternalMaterial> internalMaterialComponent;
+        private IInternalECSComponent<InternalVideoMaterial> internalVideoMaterial;
         private ICatalyst catalyst;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -26,7 +27,8 @@ namespace Tests
         public void SetUp()
         {
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
-            handler = new MaterialHandler(internalMaterialComponent);
+            internalVideoMaterial = Substitute.For<IInternalECSComponent<InternalVideoMaterial>>();
+            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial);
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
