@@ -6,6 +6,7 @@ import {
   SceneServiceDefinition
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/scene.gen'
 import { PortContext, PortContextService } from './context'
+import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl } from '../../../config'
 
 export function registerSceneServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
   codegen.registerService(port, SceneServiceDefinition, async () => ({
@@ -19,7 +20,14 @@ export function registerSceneServiceServerImplementation(port: RpcServerPort<Por
       return {
         cid: ctx.sceneData.id || '',
         sceneId: sceneData.id || '',
-        sceneJson: sceneData.entity.metadata ? JSON.stringify(sceneData.entity.metadata) : '{}'
+        sceneJson: sceneData.entity.metadata ? JSON.stringify(sceneData.entity.metadata) : '{}',
+        baseUrl: sceneData.baseUrl || '',
+        baseUrlBundles: getAssetBundlesBaseUrl(ETHEREUM_NETWORK.MAINNET) + '/',
+        mappingsResponse: {
+          parcelId: sceneData.id || '',
+          rootCid: sceneData.id || '',
+          contents: sceneData.entity.content || []
+        }
       }
     }
   }))
