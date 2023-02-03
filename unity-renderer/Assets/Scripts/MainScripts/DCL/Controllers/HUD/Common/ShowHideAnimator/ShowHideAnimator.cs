@@ -58,11 +58,14 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Show and then hide after delay (Show->Delay->Hide)
+    /// </summary>
     public void ShowDelayHide(float delay)
     {
-        SetVisibility(visible: true, OnShowCompleted);
+        SetVisibility(visible: true, onComplete: HideAfterDelay);
 
-        void OnShowCompleted() =>
+        void HideAfterDelay() =>
             SetVisibility(visible: false, null).SetDelay(delay);
     }
 

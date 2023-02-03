@@ -43,18 +43,18 @@ public static class InputProcessor
             }
             else
             {
-                var contains = false;
+                var anyModifierKeysActive = false;
 
                 foreach (var key in modifierKeys)
                 {
                     if (key == keyCode)
                     {
-                        contains = true;
+                        anyModifierKeysActive = true;
                         break;
                     }
                 }
 
-                if (contains != pressed)
+                if (anyModifierKeysActive != pressed)
                     return false;
             }
         }

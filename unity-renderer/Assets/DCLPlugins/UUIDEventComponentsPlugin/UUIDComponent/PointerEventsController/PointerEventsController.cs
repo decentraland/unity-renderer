@@ -305,10 +305,9 @@ namespace DCL
             ReportGlobalPointerEvent(InputEventType.UP, buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentSceneNumber);
 
             // Raycast for global pointer events (for each PE scene)
-            foreach (string pexId in DataStore.i.Get<DataStore_World>().portableExperienceIds.Get().ToArray())
+            foreach (string pexId in DataStore.i.Get<DataStore_World>().portableExperienceIds.Get())
             {
                 IParcelScene pexScene = worldState.GetPortableExperienceScene(pexId);
-
                 if (pexScene != null)
                 {
                     raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, pexScene);
