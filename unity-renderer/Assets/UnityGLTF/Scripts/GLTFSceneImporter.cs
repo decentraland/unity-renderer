@@ -121,13 +121,9 @@ namespace UnityGLTF
         // this setting forces coroutines to be ran in a single call
         public bool forceSyncCoroutines = false;
 
-        private bool useMaterialTransitionValue = true;
-
         public bool importSkeleton = true;
         
         public bool ignoreMaterials = false;
-
-        public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
         public int maxTextureSize = 512;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
@@ -327,15 +323,6 @@ namespace UnityGLTF
                     OnPerformanceFinish?.Invoke(Time.realtimeSinceStartup - profiling);
                 }
 
-                MaterialTransitionController[] matTransitions = CreatedObject.GetComponentsInChildren<MaterialTransitionController>(true);
-
-                if (matTransitions != null && matTransitions.Length > 0)
-                {
-                    //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions), cancellationToken: token);
-
-                }
-
                 if (!importSkeleton)
                 {
                     foreach (var skeleton in skeletonGameObjects)
@@ -378,22 +365,6 @@ namespace UnityGLTF
 
                 }
             }
-        }
-        private static bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
-        {
-            bool finishedTransition = true;
-
-            for (int i = 0; i < matTransitions.Length; i++)
-            {
-                if (matTransitions[i] != null)
-                {
-                    finishedTransition = false;
-
-                    break;
-                }
-            }
-
-            return finishedTransition;
         }
 
         /// <summary>
@@ -1644,32 +1615,19 @@ namespace UnityGLTF
             
             if (ignoreMaterials)
             {
-                if (!(useMaterialTransition && initialVisibility) && LoadingTextureMaterial == null)
+                if (!initialVisibility && LoadingTextureMaterial == null)
                     primitiveObj.SetActive(true);
                 
                 return;
             }
 
-            //// NOTE(Brian): Texture loading
-            if (useMaterialTransition && initialVisibility)
-            {
-                var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController, cancellationToken);
-            }
-            else
-            {
-                if (LoadingTextureMaterial != null)
-                {
-                    renderer.sharedMaterial = LoadingTextureMaterial;
-                }
+            if (LoadingTextureMaterial != null)
+                renderer.sharedMaterial = LoadingTextureMaterial;
 
-                await DownloadAndConstructMaterial(primitive, materialIndex, renderer, null, cancellationToken);
+            await DownloadAndConstructMaterial(primitive, materialIndex, renderer, cancellationToken);
 
-                if (LoadingTextureMaterial == null)
-                {
-                    primitiveObj.SetActive(true);
-                }
-            }
+            if (LoadingTextureMaterial == null)
+                primitiveObj.SetActive(true);
         }
 
         protected virtual async UniTask ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin, CancellationToken cancellationToken)
@@ -1687,7 +1645,7 @@ namespace UnityGLTF
                 cancellationToken.ThrowIfCancellationRequested();
                 var primitiveObj = new GameObject("Primitive");
                 primitiveObj.transform.SetParent(parent, false);
-                primitiveObj.SetActive(useMaterialTransition || LoadingTextureMaterial != null);
+                primitiveObj.SetActive(LoadingTextureMaterial != null);
 
                 _assetCache.MeshCache[meshId][i].PrimitiveGO = primitiveObj;
 
@@ -1753,7 +1711,7 @@ namespace UnityGLTF
             }
         }
 
-        async UniTask DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController, CancellationToken cancellationToken)
+        async UniTask DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, CancellationToken cancellationToken)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
@@ -1780,15 +1738,7 @@ namespace UnityGLTF
             }
 
             SRPBatchingHelper.OptimizeMaterial(material);
-
-            if (matController != null)
-            {
-                matController.OnDidFinishLoading(material);
-            }
-            else
-            {
-                renderer.sharedMaterial = material;
-            }
+            renderer.sharedMaterial = material;
         }
 
         protected virtual async UniTask ConstructMeshPrimitive(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken cancellationToken)

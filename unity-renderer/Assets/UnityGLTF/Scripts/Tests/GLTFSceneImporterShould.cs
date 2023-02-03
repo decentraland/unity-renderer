@@ -35,7 +35,6 @@ public class GLTFSceneImporterShould
         gltfLoader.addImagesToPersistentCaching = false;
         gltfLoader.addMaterialsToPersistentCaching = false;
         gltfLoader.initialVisibility = true;
-        gltfLoader.useMaterialTransition = false;
         gltfLoader.forceGPUOnlyMesh = false;
         gltfLoader.forceGPUOnlyTex = false;
         gltfLoader.forceSyncCoroutines = true;
