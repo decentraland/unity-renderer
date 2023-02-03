@@ -698,11 +698,6 @@ public class TaskbarHUDController : IHUD
         openPrivateChatCancellationToken.Dispose();
     }
 
-    private void SetVisibility(bool visible, bool previus)
-    {
-        SetVisibility(visible);
-    }
-
     public void SetVisibility(bool visible)
     {
         view.SetVisibility(visible);

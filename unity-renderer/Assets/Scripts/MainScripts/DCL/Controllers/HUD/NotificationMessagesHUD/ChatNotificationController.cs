@@ -141,6 +141,7 @@ namespace DCL.Chat.Notifications
             }
         }
 
+        // TODO: add support for cancellation tokens in profanity filtering
         private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null)
         {
             string body = message.body;
