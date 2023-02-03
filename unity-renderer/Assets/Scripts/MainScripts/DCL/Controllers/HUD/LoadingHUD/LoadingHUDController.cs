@@ -5,24 +5,25 @@ public class LoadingHUDController : IHUD
     internal LoadingHUDView view;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-    internal BaseVariable<bool> visible => dataStoreLoadingScreen.Ref.loadingHUD.visible;
-    internal BaseVariable<bool> fadeIn => dataStoreLoadingScreen.Ref.loadingHUD.fadeIn;
-    internal BaseVariable<bool> fadeOut => dataStoreLoadingScreen.Ref.loadingHUD.fadeOut;
-    internal BaseVariable<string> message => dataStoreLoadingScreen.Ref.loadingHUD.message;
-    internal BaseVariable<float> percentage => dataStoreLoadingScreen.Ref.loadingHUD.percentage;
-    internal BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
+    private BaseVariable<bool> visible => dataStoreLoadingScreen.Ref.loadingHUD.visible;
+    private BaseVariable<bool> fadeIn => dataStoreLoadingScreen.Ref.loadingHUD.fadeIn;
+    private BaseVariable<bool> fadeOut => dataStoreLoadingScreen.Ref.loadingHUD.fadeOut;
+    private BaseVariable<string> message => dataStoreLoadingScreen.Ref.loadingHUD.message;
+    private BaseVariable<float> percentage => dataStoreLoadingScreen.Ref.loadingHUD.percentage;
+    private BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
 
-    protected internal virtual LoadingHUDView CreateView() =>
-        LoadingHUDView.CreateView();
+    public LoadingHUDController(LoadingHUDView view)
+    {
+        this.view = view;
+    }
 
     public void Initialize()
     {
-        view = CreateView();
         ClearEvents();
         SetViewVisible(fadeIn.Get(), true);
-        view?.SetMessage(message.Get());
-        view?.SetPercentage(percentage.Get() / 100f);
-        view?.SetTips(showTips.Get());
+        view.SetMessage(message.Get());
+        view.SetPercentage(percentage.Get() / 100f);
+        view.SetTips(showTips.Get());
 
         // set initial states to prevent reconciliation errors
         fadeIn.OnChange += OnFadeInChange;
@@ -40,17 +41,17 @@ public class LoadingHUDController : IHUD
 
     private void OnMessageChanged(string current, string previous)
     {
-        view?.SetMessage(current);
+        view.SetMessage(current);
     }
 
     private void OnPercentageChanged(float current, float previous)
     {
-        view?.SetPercentage(current / 100f);
+        view.SetPercentage(current / 100f);
     }
 
     private void OnShowTipsChanged(bool current, bool previous)
     {
-        view?.SetTips(current);
+        view.SetTips(current);
     }
 
     private void OnFadeInChange(bool current, bool previous)
@@ -73,10 +74,10 @@ public class LoadingHUDController : IHUD
     public void Dispose()
     {
         ClearEvents();
-        view?.Dispose();
+        view.Dispose();
     }
 
-    internal void ClearEvents()
+    private void ClearEvents()
     {
         visible.OnChange -= OnVisibleHUDChanged;
         message.OnChange -= OnMessageChanged;
@@ -84,8 +85,8 @@ public class LoadingHUDController : IHUD
         showTips.OnChange -= OnShowTipsChanged;
     }
 
-    internal void SetViewVisible(bool isVisible, bool instant)
+    private void SetViewVisible(bool isVisible, bool instant)
     {
-        view?.SetVisible(isVisible, instant);
+        view.SetVisible(isVisible, instant);
     }
 }
