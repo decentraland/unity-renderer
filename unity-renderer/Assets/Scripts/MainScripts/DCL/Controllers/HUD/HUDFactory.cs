@@ -156,9 +156,9 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.QUESTS_PANEL:
                 return new QuestsPanelHUDController();
             case HUDElementID.LOADING:
-                return new LoadingHUDController();
+                return new LoadingHUDController(await CreateHUDView<LoadingHUDView>(LOADING_HUD));
             case HUDElementID.QUESTS_TRACKER:
-                return new QuestsTrackerHUDController(await CreateQuestsTrackerHUDView());
+                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD));
             case HUDElementID.AIRDROPPING:
                 return new AirdroppingHUDController(await CreateAirdroppingHUDView());
             case HUDElementID.SIGNUP:
@@ -173,9 +173,6 @@ public class HUDFactory : IHUDFactory
 
     public async UniTask<ISignupHUDView> CreateSignupHUDView() =>
         await CreateHUDView<ISignupHUDView>(SIGNUP_HUD);
-
-    public async UniTask<IQuestsTrackerHUDView> CreateQuestsTrackerHUDView() =>
-        await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD);
 
     private async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
     {

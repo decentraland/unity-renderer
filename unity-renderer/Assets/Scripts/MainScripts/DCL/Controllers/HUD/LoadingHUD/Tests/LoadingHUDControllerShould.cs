@@ -1,6 +1,7 @@
 using DCL;
-using LoadingHUD;
+using DCL.Providers;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public class LoadingHUDControllerShould
@@ -15,11 +16,14 @@ public class LoadingHUDControllerShould
     private BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
 
     [SetUp]
-    public void SetUp()
+    public async void SetUp()
     {
-        hudController = new LoadingHUDController();
+        hudView = Object.Instantiate(
+                             AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/LoadingHUD/Prefabs/LoadingHUD.prefab"))
+                        .GetComponent<LoadingHUDView>();
+
+        hudController = new LoadingHUDController(hudView);
         hudController.Initialize();
-        hudView = hudController.view;
     }
 
     [Test]
