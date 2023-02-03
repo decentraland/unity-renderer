@@ -43,7 +43,6 @@ namespace DCL.Chat.Notifications
         public string notificationTargetId;
         private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
         private float startingXPosition;
-        private Image backgroundImage;
 
         public void Configure(ChatNotificationMessageComponentModel newModel)
         {
@@ -56,7 +55,6 @@ namespace DCL.Chat.Notifications
             base.Awake();
             button?.onClick.AddListener(() => OnClickedNotification?.Invoke(notificationTargetId));
             startingXPosition = messageContainerTransform.anchoredPosition.x;
-            backgroundImage = imageBackground.GetComponent<Image>();
             RefreshControl();
         }
 
@@ -102,6 +100,11 @@ namespace DCL.Chat.Notifications
             SetNotificationHeader(model.messageHeader);
             SetImage(model.imageUri);
             SetImageVisibility(model.isImageVisible);
+
+            if (model.isDockedLeft)
+                DockLeft();
+            else
+                DockRight();
         }
 
         public void SetMessage(string message)
@@ -241,9 +244,27 @@ namespace DCL.Chat.Notifications
             this.notificationTargetId = notificationTargetId;
         }
 
-        private void ForceUIRefresh()
+        public void DockRight()
         {
-            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
+            model.isDockedLeft = false;
+            DockHorizontally(1f);
         }
+
+        public void DockLeft()
+        {
+            model.isDockedLeft = true;
+            DockHorizontally(0);
+        }
+
+        private void DockHorizontally(float anchor)
+        {
+            messageContainerTransform.pivot = new Vector2(anchor, 0.5f);
+            messageContainerTransform.anchorMin = new Vector2(anchor, 0.5f);
+            messageContainerTransform.anchorMax = new Vector2(anchor, 0.5f);
+            backgroundTransform.pivot = new Vector2(anchor, 0.5f);
+        }
+
+        private void ForceUIRefresh() =>
+            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
     }
 }

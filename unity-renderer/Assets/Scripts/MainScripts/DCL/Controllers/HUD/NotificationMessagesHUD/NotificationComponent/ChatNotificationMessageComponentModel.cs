@@ -18,5 +18,6 @@ namespace DCL.Chat.Notifications
         public string imageUri;
         public string notificationTargetId;
         public bool isImageVisible = true;
+        public bool isDockedLeft = true;
     }
 }
