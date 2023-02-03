@@ -12,6 +12,6 @@
 #unity-client/**/*                            @decentraland/unity-team 
 
 # ECS and SDK packages
-kernel/packages/build-ecs/**/*               @decentraland/kernel-team
-kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
-kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
+unity-renderer/Assets/Scripts/MainScripts/DCL/CRDTProtocol/**/*             @decentraland/sdk-team
+unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ECSRuntime/**/*  @decentraland/sdk-team
+unity-renderer/Assets/DCLPlugins/ECS7/**/*                                  @decentraland/sdk-team
