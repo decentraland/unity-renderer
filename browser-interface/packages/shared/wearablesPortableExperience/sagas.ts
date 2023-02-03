@@ -1,4 +1,5 @@
-import { EntityType, Scene } from '@dcl/schemas'
+import { Scene } from '@dcl/schemas/dist/platform/scene/scene'
+import { EntityType } from '@dcl/schemas/dist/platform/entity'
 import { call, select, takeEvery, takeLatest } from '@redux-saga/core/effects'
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { put } from 'redux-saga-test-plan/matchers'

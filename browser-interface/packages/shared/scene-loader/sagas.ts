@@ -45,7 +45,7 @@ import { encodeParcelPosition, gridToWorld, worldToGrid } from 'atomicHelpers/pa
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { ENABLE_EMPTY_SCENES, LOS, PREVIEW, rootURLPreviewMode } from 'config'
 import { getResourcesURL } from 'shared/location'
-import { Vector2 } from '@dcl/ecs-math'
+import { Vector2 } from '@dcl/ecs-math/dist/Vector2'
 import { trackEvent } from 'shared/analytics'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'

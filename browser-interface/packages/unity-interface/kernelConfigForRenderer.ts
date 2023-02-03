@@ -1,7 +1,7 @@
 import { KernelConfigForRenderer } from 'shared/types'
 import { getAvatarTextureAPIBaseUrl, commConfigurations, WSS_ENABLED } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'shared/profiles/utils/names'
-import { getWorld } from '@dcl/schemas'
+import { getWorld } from '@dcl/schemas/dist/dapps/world'
 import { injectVersions } from 'shared/rolloutVersions'
 import { store } from 'shared/store/isolatedStore'
 import { getSelectedNetwork } from 'shared/dao/selectors'

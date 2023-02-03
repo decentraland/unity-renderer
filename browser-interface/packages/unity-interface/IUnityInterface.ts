@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Vector3 } from '@dcl/ecs-math'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
 import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { Observable } from 'mz-observable'
@@ -38,7 +38,8 @@ import {
 } from '../shared/types'
 import { FeatureFlag } from 'shared/meta/types'
 import { IFuture } from 'fp-future'
-import { Avatar, ContentMapping } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
+import type { ContentMapping } from '@dcl/schemas/dist/misc/content-mapping'
 import { ILogger } from 'shared/logger'
 import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
 import { Emote } from 'shared/catalogs/types'

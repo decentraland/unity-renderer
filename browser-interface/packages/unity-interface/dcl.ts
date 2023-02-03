@@ -13,7 +13,9 @@ import { store } from 'shared/store/isolatedStore'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { traceDecoratorUnityGame } from './trace'
 import defaultLogger from 'shared/logger'
-import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
+import type { ContentMapping } from '@dcl/schemas/dist/misc/content-mapping'
+import { EntityType } from '@dcl/schemas/dist/platform/entity'
+import type { Scene } from '@dcl/schemas/dist/platform/scene/scene'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { reloadScenePortableExperience } from 'shared/portableExperiences/actions'
 import { wearableToSceneEntity } from 'shared/wearablesPortableExperience/sagas'
@@ -22,6 +24,9 @@ import { sleep } from 'atomicHelpers/sleep'
 import { signalRendererInitializedCorrectly } from 'shared/renderer/actions'
 import { browserInterface } from './BrowserInterface'
 import { LoadableScene } from 'shared/types'
+import { ProjectType } from '@dcl/schemas/dist/sdk/project'
+import { SceneUpdate, SCENE_UPDATE } from '@dcl/schemas/dist/sdk/ws/scene-update'
+import { Messages } from '@dcl/schemas/dist/sdk/ws'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hudWorkerRaw = require('../../static/systems/decentraland-ui.scene.js.txt')
@@ -136,7 +141,7 @@ export async function getPreviewSceneId(): Promise<{ sceneId: string | null; sce
   }
 }
 
-export async function loadPreviewScene(message: sdk.Messages) {
+export async function loadPreviewScene(message: Messages) {
   async function oldReload() {
     const { sceneId, sceneBase } = await getPreviewSceneId()
     if (sceneId) {
@@ -147,8 +152,8 @@ export async function loadPreviewScene(message: sdk.Messages) {
     }
   }
 
-  if (message.type === sdk.SCENE_UPDATE && sdk.SceneUpdate.validate(message)) {
-    if (message.payload.sceneType === sdk.ProjectType.PORTABLE_EXPERIENCE) {
+  if (message.type === SCENE_UPDATE && SceneUpdate.validate(message)) {
+    if (message.payload.sceneType === ProjectType.PORTABLE_EXPERIENCE) {
       try {
         const { sceneId } = message.payload
         const url = `${rootURLPreviewMode()}/preview-wearables/${sceneId}`

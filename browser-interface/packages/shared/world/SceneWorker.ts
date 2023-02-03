@@ -1,4 +1,5 @@
-import { Quaternion, Vector3 } from '@dcl/ecs-math'
+import { Quaternion } from '@dcl/ecs-math/dist/Quaternion'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
 import {
   DEBUG_SCENE_LOG,
   ETHEREUM_NETWORK,
@@ -16,7 +17,7 @@ import { PortContext } from 'shared/apis/host/context'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics'
 import { getSceneNameFromJsonData } from 'shared/selectors'
-import { Scene } from '@dcl/schemas'
+import { Scene } from '@dcl/schemas/dist/platform/scene/scene'
 import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import {

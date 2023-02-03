@@ -1,4 +1,4 @@
-import { Vector2 } from '@dcl/ecs-math'
+import { Vector2 } from '@dcl/ecs-math/dist/Vector2'
 import { parcelLimits } from 'config'
 import { PositionReport } from 'shared/world/positionThings'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'

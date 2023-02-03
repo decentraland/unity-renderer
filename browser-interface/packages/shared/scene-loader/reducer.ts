@@ -12,7 +12,7 @@ import {
   SET_SCENE_LOADER,
   SET_WORLD_LOADING_RADIUS
 } from './actions'
-import { Vector3 } from '@dcl/ecs-math'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
 
 const INITIAL_STATE: SceneLoaderState = {
   loader: undefined,

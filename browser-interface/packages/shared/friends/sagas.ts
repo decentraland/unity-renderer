@@ -114,7 +114,8 @@ import {
   getFetchContentUrlPrefixFromRealmAdapter,
   getRealmConnectionString
 } from 'shared/realm/selectors'
-import { Avatar, EthAddress } from '@dcl/schemas'
+import { EthAddress } from '@dcl/schemas/dist/misc'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { trackEvent } from '../analytics'
 import { getCurrentIdentity, getCurrentUserId, getIsGuestLogin } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'

@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { IFuture } from 'fp-future'
 import { action } from 'typesafe-actions'
 import { ProfileType } from './types'

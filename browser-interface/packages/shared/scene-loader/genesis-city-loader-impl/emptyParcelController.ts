@@ -1,4 +1,6 @@
-import { ContentMapping, EntityType, Scene } from '@dcl/schemas'
+import type { ContentMapping } from '@dcl/schemas/dist/misc/content-mapping'
+import type { Scene } from '@dcl/schemas/dist/platform/scene/scene'
+import { EntityType } from '@dcl/schemas/dist/platform/entity'
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { LoadableScene } from 'shared/types'
 import { unsignedCRC32 } from 'atomicHelpers/crc32'

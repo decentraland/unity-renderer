@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type { Vector3Component, Vector2Component } from '../atomicHelpers/landHelpers'
-import { Entity } from '@dcl/schemas'
+import type { Entity } from '@dcl/schemas/dist/platform/entity'
 export { WearableId, Wearable, WearableV2 } from './catalogs/types'
 
 export interface MessageDict {

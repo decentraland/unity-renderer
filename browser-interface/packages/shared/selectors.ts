@@ -1,4 +1,5 @@
-import { ContentMapping, Scene } from '@dcl/schemas'
+import { Scene } from '@dcl/schemas/dist/platform/scene/scene'
+import { ContentMapping } from '@dcl/schemas/dist/misc/content-mapping'
 import { SceneFeatureToggle } from './types'
 
 export function getOwnerNameFromJsonData(jsonData?: Scene) {

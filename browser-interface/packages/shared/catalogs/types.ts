@@ -1,4 +1,4 @@
-import { EmoteDataADR74 } from '@dcl/schemas'
+import type { EmoteDataADR74 } from '@dcl/schemas/dist/platform/item/emote/adr74/emote-data-adr74'
 import { RarityEnum } from '../airdrops/interface'
 
 export type Catalog = PartialWearableV2[]

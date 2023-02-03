@@ -4,7 +4,6 @@ import Hls from "./hlsLoader"
 import { renderingInBackground, renderingInForeground } from '../shared/loadingScreen/types'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 
-import { sdk } from '@dcl/schemas'
 import defaultLogger, { createLogger } from 'shared/logger'
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
@@ -53,6 +52,7 @@ import { sendHomeScene } from '../shared/atlas/actions'
 import { homePointKey } from '../shared/atlas/utils'
 import { teleportToAction } from 'shared/scene-loader/actions'
 import { trackEvent } from 'shared/analytics'
+import { Messages, SCENE_UPDATE, UPDATE } from "@dcl/schemas/dist/sdk/ws"
 
 const logger = createLogger('kernel: ')
 
@@ -348,11 +348,11 @@ export async function startPreview(unityInterface: IUnityInterface) {
       logger.info('Warning: cannot get preview scene id')
     })
 
-  function handleServerMessage(message: sdk.Messages) {
+  function handleServerMessage(message: Messages) {
     if (DEBUG_WS_MESSAGES) {
       logger.info('Message received: ', message)
     }
-    if (message.type === sdk.UPDATE || message.type === sdk.SCENE_UPDATE) {
+    if (message.type === UPDATE || message.type === SCENE_UPDATE) {
       void loadPreviewScene(message)
     }
   }
@@ -362,7 +362,7 @@ export async function startPreview(unityInterface: IUnityInterface) {
   ws.addEventListener('message', (msg) => {
     if (msg.data.startsWith('{')) {
       logger.log('Update message from CLI', msg.data)
-      const message: sdk.Messages = JSON.parse(msg.data)
+      const message: Messages = JSON.parse(msg.data)
       handleServerMessage(message)
     }
   })

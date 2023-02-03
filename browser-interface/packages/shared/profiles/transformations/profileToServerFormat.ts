@@ -1,6 +1,7 @@
 import { analizeColorPart, stripAlpha } from './analizeColorPart'
 import { isValidBodyShape } from './isValidBodyShape'
-import { Avatar, AvatarInfo, Profile } from '@dcl/schemas'
+import type { Avatar, AvatarInfo } from '@dcl/schemas/dist/platform/profile/avatar'
+import type { Profile } from '@dcl/schemas/dist/platform/profile/profile'
 import { validateAvatar } from '../schemaValidation'
 import { trackEvent } from 'shared/analytics'
 import defaultLogger from 'shared/logger'

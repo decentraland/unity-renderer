@@ -14,7 +14,7 @@ import {
 } from './actions'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 
 type ProfileSetKey = 'muted' | 'blocked'

@@ -1,7 +1,7 @@
 import { ProfileStatus, ProfileUserInfo, RootProfileState } from './types'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { RootSessionState } from 'shared/session/types'
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { calculateDisplayName } from './transformations/processServerProfile'
 
 export const getProfileStatusAndData = (

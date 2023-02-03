@@ -7,7 +7,8 @@ import { getInSceneAvatarsUserId } from 'shared/social/avatarTracker'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { isWorldPositionInsideParcels } from 'atomicHelpers/parcelScenePositions'
-import { AvatarInfo, Snapshots, WearableId } from '@dcl/schemas'
+import type { WearableId } from '@dcl/schemas/dist/misc'
+import type { AvatarInfo, Snapshots } from '@dcl/schemas/dist/platform/profile/avatar'
 import { rgbToHex } from 'shared/profiles/transformations/convertToRGBObject'
 
 export type AvatarForUserData = {

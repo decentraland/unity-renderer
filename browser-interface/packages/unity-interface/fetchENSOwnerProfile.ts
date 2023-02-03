@@ -3,7 +3,7 @@ import { ethereumConfigurations } from 'config'
 import { fetchENSOwnersContains, getAppNetwork } from 'shared/web3'
 import { ProfileType } from 'shared/profiles/types'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 
 export async function fetchENSOwnerProfile(name: string, maxResults: number = 1): Promise<Avatar[]> {
   let userIds: string[]

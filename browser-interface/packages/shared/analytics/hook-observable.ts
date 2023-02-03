@@ -1,4 +1,4 @@
-import { Vector2 } from '@dcl/ecs-math'
+import { Vector2 } from '@dcl/ecs-math/dist/Vector2'
 
 import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
 import { avatarMessageObservable } from '../comms/peers'

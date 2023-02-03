@@ -1,11 +1,12 @@
 import { convertToRGBObject } from './convertToRGBObject'
 import { isURL } from 'atomicHelpers/isURL'
-import { Avatar, AvatarInfo, IPFSv2, Snapshots } from '@dcl/schemas'
+import { IPFSv2 } from '@dcl/schemas/dist/misc'
+import { Avatar, AvatarInfo, Snapshots } from '@dcl/schemas/dist/platform/profile/avatar'
 import { backupProfile } from '../generateRandomUserProfile'
 import { genericAvatarSnapshots } from 'config'
 import { calculateDisplayName } from './processServerProfile'
 import { NewProfileForRenderer } from './types'
-import { Color3 } from '@dcl/ecs-math'
+import { Color3 } from '@dcl/ecs-math/dist/Color3'
 
 export function profileToRendererFormat(
   profile: Partial<Avatar>,

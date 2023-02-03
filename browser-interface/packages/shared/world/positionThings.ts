@@ -1,9 +1,11 @@
-import { Vector3, EcsMathReadOnlyVector3, EcsMathReadOnlyQuaternion, Quaternion } from '@dcl/ecs-math'
+import { Vector3, EcsMathReadOnlyVector3 } from '@dcl/ecs-math/dist/Vector3'
+import { EcsMathReadOnlyQuaternion, Quaternion } from '@dcl/ecs-math/dist/Quaternion'
 import { Observable } from 'mz-observable'
 import { InstancedSpawnPoint } from '../types'
 import { gridToWorld, isWorldPositionInsideParcels, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { DEBUG, playerConfigurations } from '../../config'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import { isInsideWorldLimits } from '@dcl/schemas/dist/dapps/world'
+import type { Scene } from '@dcl/schemas/dist/platform/scene/scene'
 
 export type PositionReport = {
   /** Camera position, world space */

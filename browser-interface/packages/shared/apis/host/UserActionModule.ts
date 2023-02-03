@@ -8,7 +8,7 @@ import { UserActionModuleServiceDefinition } from '@dcl/protocol/out-ts/decentra
 import { PortContext } from './context'
 import { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { Scene } from '@dcl/schemas'
+import type { Scene } from '@dcl/schemas/dist/platform/scene/scene'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 

@@ -1,6 +1,6 @@
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { Vector3 } from '@dcl/ecs-math'
-import { Avatar } from '@dcl/schemas'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import mitt from 'mitt'
 import { generateRandomUserProfile } from 'shared/profiles/sagas'

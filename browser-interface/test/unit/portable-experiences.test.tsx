@@ -17,7 +17,7 @@ import { declareWantedPortableExperiences } from 'unity-interface/portableExperi
 import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
 import { reducers } from 'shared/store/rootReducer'
 import { expect } from 'chai'
-import { EntityType } from '@dcl/schemas'
+import { EntityType } from '@dcl/schemas/dist/platform/entity'
 
 describe('Portable experiences sagas test', () => {
   const createLoadablePX = (urn: string): LoadableScene => ({

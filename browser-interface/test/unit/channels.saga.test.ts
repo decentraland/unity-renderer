@@ -25,7 +25,7 @@ import {
 } from 'shared/types'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 
 const channelMessages: TextMessage[] = [
   {

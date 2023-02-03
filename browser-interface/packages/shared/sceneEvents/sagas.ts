@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { call, select, takeLatest } from 'redux-saga/effects'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { realmToConnectionString } from 'shared/realm/resolver'

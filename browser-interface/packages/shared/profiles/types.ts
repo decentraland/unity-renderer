@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 
 export const REMOTE_AVATAR_IS_INVALID = `Remote avatar for profile is invalid`
 

@@ -1,5 +1,5 @@
-import { ReadOnlyColor4 } from '@dcl/ecs-math'
-import { Snapshots } from '@dcl/schemas'
+import type { ReadOnlyColor4 } from '@dcl/ecs-math/dist/Color4'
+import type { Snapshots } from '@dcl/schemas/dist/platform/profile/avatar'
 
 export type AvatarForRenderer = {
   bodyShape: string

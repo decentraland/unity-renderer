@@ -1,7 +1,8 @@
 import { expect } from 'chai'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { gridToWorld } from '../../packages/atomicHelpers/parcelScenePositions'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import type { Scene } from '@dcl/schemas/dist/platform/scene/scene'
+import { isInsideWorldLimits } from '@dcl/schemas/dist/dapps/world'
 
 describe('pickWorldSpawnPoint unit tests', function () {
   it('picks a spawn point from the defined ones when no default', () => {

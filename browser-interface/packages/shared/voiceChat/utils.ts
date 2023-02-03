@@ -1,6 +1,7 @@
 import { VoiceSpatialParams } from './VoiceCommunicator'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { Quaternion, Vector3 } from '@dcl/ecs-math'
+import { Quaternion } from '@dcl/ecs-math/dist/Quaternion'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
 
 export function getSpatialParamsFor(position: rfc4.Position): VoiceSpatialParams {
   const orientation = Vector3.Backward().rotate(

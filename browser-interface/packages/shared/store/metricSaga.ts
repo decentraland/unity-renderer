@@ -22,7 +22,7 @@ import {
 } from '../loading/types'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { INIT_SESSION } from 'shared/session/actions'
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 
 const trackingEvents: Record<ExecutionLifecycleEvent, string> = {

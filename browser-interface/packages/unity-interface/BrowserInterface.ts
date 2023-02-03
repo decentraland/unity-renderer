@@ -1,4 +1,5 @@
-import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
+import { EcsMathReadOnlyQuaternion } from '@dcl/ecs-math/dist/Quaternion'
+import { EcsMathReadOnlyVector3 } from '@dcl/ecs-math/dist/Vector3'
 
 import { sendPublicChatMessage } from 'shared/comms'
 import { findProfileByName } from 'shared/profiles/selectors'
@@ -88,7 +89,8 @@ import { getAuthHeaders } from 'atomicHelpers/signedFetch'
 import { Authenticator } from '@dcl/crypto'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
-import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
+import { JSONSchema, generateLazyValidator } from '@dcl/schemas/dist/validation'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import {
   getFriendRequests,
   getFriends,

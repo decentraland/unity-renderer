@@ -1,5 +1,5 @@
-import { Vector3 } from '@dcl/ecs-math'
-import lodash from 'lodash'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
+import uniqBy from 'lodash/uniqBy'
 import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
 import { AirdropInfo } from 'shared/airdrops/interface'
 import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
@@ -50,7 +50,8 @@ import { uuid } from 'atomicHelpers/math'
 import future, { IFuture } from 'fp-future'
 import { futures } from './BrowserInterface'
 import { trackEvent } from 'shared/analytics'
-import { Avatar, ContentMapping } from '@dcl/schemas'
+import type { ContentMapping } from '@dcl/schemas/dist/misc/content-mapping'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
 import { incrementCounter } from '../shared/occurences'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
@@ -267,7 +268,7 @@ export class UnityInterface implements IUnityInterface {
       this.SendMessageToUnity('Main', 'AddWearablesToCatalog', JSON.stringify({ wearables, context }))
     } else {
       //First, we remove the duplicate wearables entries.
-      wearables = lodash.uniqBy(wearables, 'id')
+      wearables = uniqBy(wearables, 'id')
 
       //Then, we map to a string array to find the limit of wearables we can add
       function stringifyWearable(num) {

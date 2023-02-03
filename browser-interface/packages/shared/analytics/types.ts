@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { getPerformanceInfo } from '../session/getPerformanceInfo'
 import { ChatMessagePlayerType, ChatMessageType } from '../types'
 

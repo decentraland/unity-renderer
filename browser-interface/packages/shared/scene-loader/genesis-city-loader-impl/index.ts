@@ -1,4 +1,4 @@
-import { Vector2 } from '@dcl/ecs-math'
+import { Vector2 } from '@dcl/ecs-math/dist/Vector2'
 import { encodeParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { ISceneLoader, SetDesiredScenesCommand } from '../types'
 import { SceneDataDownloadManager } from './downloadManager'

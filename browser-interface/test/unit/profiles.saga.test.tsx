@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { sleep } from 'atomicHelpers/sleep'
 import { expect } from 'chai'
 import future from 'fp-future'

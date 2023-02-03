@@ -1,4 +1,5 @@
-import { Color3, ReadOnlyColor4 } from '@dcl/ecs-math'
+import { Color3 } from '@dcl/ecs-math/dist/Color3'
+import type { ReadOnlyColor4 } from '@dcl/ecs-math/dist/Color4'
 
 export function convertToRGBObject(colorString: any): ReadOnlyColor4 {
   if (!colorString) return { r: 1, g: 0, b: 1, a: 1 }

@@ -1,4 +1,4 @@
-import { Entity } from '@dcl/schemas'
+import type { Entity } from '@dcl/schemas/dist/platform/entity'
 import future, { IFuture } from 'fp-future'
 import { LoadableScene } from 'shared/types'
 import { EmptyParcelController } from './emptyParcelController'

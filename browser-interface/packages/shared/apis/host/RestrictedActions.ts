@@ -1,4 +1,5 @@
-import { Vector3, Quaternion } from '@dcl/ecs-math'
+import { Vector3 } from '@dcl/ecs-math/dist/Vector3'
+import { Quaternion } from '@dcl/ecs-math/dist/Quaternion'
 import {
   gridToWorld,
   isWorldPositionInsideParcels,

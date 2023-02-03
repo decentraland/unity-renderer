@@ -1,4 +1,4 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas/dist/platform/profile/avatar'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import { ProfileType } from 'shared/profiles/types'
 
