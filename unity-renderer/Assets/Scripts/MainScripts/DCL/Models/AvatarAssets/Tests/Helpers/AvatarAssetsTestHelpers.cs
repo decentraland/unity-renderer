@@ -31,7 +31,8 @@ public static class AvatarAssetsTestHelpers
 
     public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal()
     {
-        List<WearableItemDummy> dummyWearables = Object.Instantiate(AssetDatabase.LoadAssetAtPath<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
+        List<WearableItemDummy> dummyWearables = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets.asset")).list;
 
         foreach (var wearableItem in dummyWearables)
         {
