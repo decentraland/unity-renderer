@@ -47,7 +47,7 @@ namespace Tests
             for (int i = 0; i < inputController.triggerTimeActions.Length; i++)
             {
                 // Find the open nav map action used by the input controller
-                if (inputController.triggerTimeActions[i].GetDCLAction() == DCLAction_Trigger.ToggleNavMap)
+                if (inputController.triggerTimeActions[i].DCLAction == DCLAction_Trigger.ToggleNavMap)
                 {
                     action = inputController.triggerTimeActions[i];
                     break;
