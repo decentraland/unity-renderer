@@ -17,7 +17,7 @@ kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
 kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
 
 # comms
-kernel/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
-kernel/packages/shared/comms/v2/*                             @decentraland/platform
-kernel/packages/shared/comms/adapters/*.ts                    @decentraland/platform
-kernel/packages/shared/comms/sagas.ts                         @decentraland/platform
+browser-interface/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
+browser-interface/packages/shared/comms/v2/*                             @decentraland/platform
+browser-interface/packages/shared/comms/adapters/*.ts                    @decentraland/platform
+browser-interface/packages/shared/comms/sagas.ts                         @decentraland/platform
