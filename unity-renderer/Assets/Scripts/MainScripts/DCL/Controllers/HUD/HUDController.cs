@@ -207,7 +207,7 @@ public class HUDController : IHUDController
                     settingsPanelHud.Initialize();
                 break;
             case HUDElementID.AIRDROPPING:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
                 CreateHudElement(configuration, hudElementId);
@@ -398,7 +398,7 @@ public class HUDController : IHUDController
             case HUDElementID.LOADING:
                 if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
                 {
-                    CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId);
                     if (loadingHud != null && configuration.active)
                         loadingController.Initialize();
                 }
