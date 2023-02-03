@@ -8,13 +8,14 @@
 
 # Specific subteams
 
-# Unity Team (disabled)
-#unity-client/**/*                            @decentraland/unity-team 
+# explorer
+unity-renderer/**/*               @decentraland/explorer-team
 
-# ECS and SDK packages
-kernel/packages/build-ecs/**/*               @decentraland/kernel-team
-kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
-kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
+# comms
+browser-interface/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
+browser-interface/packages/shared/comms/v2/*                             @decentraland/platform
+browser-interface/packages/shared/comms/adapters/*.ts                    @decentraland/platform
+browser-interface/packages/shared/comms/sagas.ts                         @decentraland/platform
 
 # dServices
 browser-interface/packages/shared/friends/**/*    @decentraland/dservices
