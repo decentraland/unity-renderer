@@ -43,8 +43,7 @@ public class PublicChatWindowControllerShould
         view = Substitute.For<IPublicChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
-        controller.Initialize(view);
-        controller.isVisible = false;
+        controller.Initialize(view, false);
     }
 
     [TearDown]

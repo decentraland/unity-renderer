@@ -24,7 +24,7 @@ namespace DCL.Chat.HUD
         private bool skipChatInputTrigger;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-        internal bool isVisible = true;
+        private bool isVisible;
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
@@ -43,7 +43,7 @@ namespace DCL.Chat.HUD
             this.toggleChatTrigger = toggleChatTrigger;
         }
 
-        public void Initialize(IPublicChatWindowView view = null)
+        public void Initialize(IPublicChatWindowView view = null, bool isVisible = true)
         {
             view ??= PublicChatWindowComponentView.Create();
             View = view;
@@ -68,6 +68,9 @@ namespace DCL.Chat.HUD
             chatController.OnChannelUpdated += HandleChannelUpdated;
 
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
+
+            SetVisibility(isVisible);
+            this.isVisible = isVisible;
         }
 
         public void Setup(string channelId)

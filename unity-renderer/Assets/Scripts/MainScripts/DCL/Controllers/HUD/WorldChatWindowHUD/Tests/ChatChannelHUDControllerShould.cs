@@ -49,12 +49,11 @@ namespace DCL.Chat.HUD
                 socialAnalytics,
                 profanityFilter);
 
-            controller.isVisible = false;
-
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
-            controller.Initialize(view);
+
+            controller.Initialize(view, false);
             controller.Setup(CHANNEL_ID);
         }
 

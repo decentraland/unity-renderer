@@ -36,7 +36,7 @@ namespace DCL.Chat.HUD
         private ChatMessage oldestMessage;
         private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-        internal bool isVisible = true;
+        private bool isVisible;
 
         public event Action OnPressBack;
         public event Action OnClosed;
@@ -59,7 +59,7 @@ namespace DCL.Chat.HUD
             this.profanityFilter = profanityFilter;
         }
 
-        public void Initialize(IChatChannelWindowView view = null)
+        public void Initialize(IChatChannelWindowView view = null, bool isVisible = true)
         {
             view ??= ChatChannelComponentView.Create();
             View = view;
@@ -84,6 +84,9 @@ namespace DCL.Chat.HUD
             toggleChatTrigger.OnTriggered += HandleChatInputTriggered;
 
             channelMembersHUDController = new ChannelMembersHUDController(view.ChannelMembersHUD, chatController, userProfileBridge);
+
+            SetVisibility(isVisible);
+            this.isVisible = isVisible;
         }
 
         public void Setup(string channelId)
