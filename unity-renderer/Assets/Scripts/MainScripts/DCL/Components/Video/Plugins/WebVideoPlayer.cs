@@ -7,7 +7,7 @@ namespace DCL.Components.Video.Plugin
     {
         private const string VIDEO_LOADING_PATH = "Textures/VideoLoading";
         private const string VIDEO_FAILED_PATH = "Textures/VideoFailed";
-        private const float DEFAULT_ASPECT_RATIO = 1;
+        private const float DEFAULT_ASPECT_RATIO = 4f / 3f;
 
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
@@ -39,7 +39,9 @@ namespace DCL.Components.Video.Plugin
         
         public void Update()
         {
-            switch (plugin.GetState(videoPlayerId))
+            VideoState state = plugin.GetState(videoPlayerId);
+            state = VideoState.ERROR;
+            switch (state)
             {
                 case VideoState.ERROR:
                     string newError = plugin.GetError(videoPlayerId);
@@ -57,6 +59,7 @@ namespace DCL.Components.Video.Plugin
                         isReady = true;
                         //texture = plugin.PrepareTexture(videoPlayerId);
                         SetAsError();
+                        
                     }
 
                     if (playWhenReady)

@@ -102,12 +102,13 @@ namespace DCL.Components
 
                 Initialize(dclVideoClip);
             }
-
+            
             if (texture == null)
             {
                 yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
 
-                if (texturePlayer.isError)
+                //if (texturePlayer.isError)
+                if (true)
                 {
                     if (texturePlayerUpdateRoutine != null)
                     {
