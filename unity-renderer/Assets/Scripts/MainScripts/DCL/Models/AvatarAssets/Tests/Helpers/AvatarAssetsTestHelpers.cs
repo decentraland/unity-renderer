@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCL.Helpers;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public static class AvatarAssetsTestHelpers
@@ -30,7 +31,7 @@ public static class AvatarAssetsTestHelpers
 
     public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal()
     {
-        List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
+        List<WearableItemDummy> dummyWearables = Object.Instantiate(AssetDatabase.LoadAssetAtPath<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
 
         foreach (var wearableItem in dummyWearables)
         {
