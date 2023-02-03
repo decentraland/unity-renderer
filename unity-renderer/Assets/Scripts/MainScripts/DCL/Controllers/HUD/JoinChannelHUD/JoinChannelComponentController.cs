@@ -65,11 +65,9 @@ namespace DCL.Social.Chat.Channels
 
             Channel alreadyJoinedChannel = chatController.GetAllocatedChannelByName(currentChannelName);
 
-            if (alreadyJoinedChannel != null)
+            if (alreadyJoinedChannel is { Joined: true })
             {
-                if (alreadyJoinedChannel.Joined)
-                    OpenChannelWindow(alreadyJoinedChannel);
-
+                OpenChannelWindow(alreadyJoinedChannel);
                 return;
             }
 
