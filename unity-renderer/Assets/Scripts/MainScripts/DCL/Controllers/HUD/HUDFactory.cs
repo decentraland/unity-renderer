@@ -34,7 +34,10 @@ public class HUDFactory : IHUDFactory
                 hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
+                hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
                 break;
             case HUDElementID.NOTIFICATION:
                 hudElement = new NotificationHUDController();
