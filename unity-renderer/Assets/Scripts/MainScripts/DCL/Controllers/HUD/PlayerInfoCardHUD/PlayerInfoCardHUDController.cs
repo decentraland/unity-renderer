@@ -306,10 +306,16 @@ public class PlayerInfoCardHUDController : IHUD
     private void BlockPlayer()
     {
         if (ownUserProfile.IsBlocked(currentUserProfile.userId)) return;
-        ownUserProfile.Block(currentUserProfile.userId);
-        view.SetIsBlocked(true);
-        WebInterface.SendBlockPlayer(currentUserProfile.userId);
-        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+
+        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
+            userProfileBridge.Get(currentPlayerId)?.userName,
+            () =>
+            {
+                ownUserProfile.Block(currentUserProfile.userId);
+                view.SetIsBlocked(true);
+                WebInterface.SendBlockPlayer(currentUserProfile.userId);
+                socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+            }), true);
     }
 
     private void UnblockPlayer()
