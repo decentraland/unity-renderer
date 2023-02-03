@@ -362,7 +362,7 @@ public class TaskbarHUDController : IHUD
 
     private void CloseFriendsWindow()
     {
-        if(friendsHud.IsVisible)
+        if(friendsHud is { IsVisible: true })
         {
             friendsHud?.SetVisibility(false);
             view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
