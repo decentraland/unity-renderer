@@ -10,3 +10,9 @@
 
 # ECS and SDK packages
 unity-renderer/**/*               @decentraland/explorer-team
+
+# comms
+browser-interface/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
+browser-interface/packages/shared/comms/v2/*                             @decentraland/platform
+browser-interface/packages/shared/comms/adapters/*.ts                    @decentraland/platform
+browser-interface/packages/shared/comms/sagas.ts                         @decentraland/platform
