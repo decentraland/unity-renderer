@@ -621,7 +621,6 @@ public static class InputProcessor
     /// <returns></returns>
     public static Boolean PassModifierKeys(KeyCode[] modifierKeys)
     {
-        Profiler.BeginSample("PassModifierKeys");
         for (var i = 0; i < MODIFIER_KEYS.Length; i++)
         {
             var keyCode = MODIFIER_KEYS[i];
@@ -646,7 +645,6 @@ public static class InputProcessor
                     return false;
             }
         }
-        Profiler.EndSample();
 
         return true;
     }
