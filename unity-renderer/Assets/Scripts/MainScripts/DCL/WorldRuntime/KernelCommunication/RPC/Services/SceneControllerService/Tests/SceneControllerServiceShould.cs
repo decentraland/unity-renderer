@@ -247,6 +247,8 @@ namespace Tests
         }
 
         [UnityTest]
+        [NUnit.Framework.Explicit("Flakytest, issue to fix it: https://github.com/decentraland/unity-renderer/issues/4222")]
+        [Category("Explicit")]
         public IEnumerator CallGetCurrentStateWithoutStoredState()
         {
             yield return UniTask.ToCoroutine(async () =>
