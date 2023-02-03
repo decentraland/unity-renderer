@@ -7,7 +7,7 @@ import {
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/scene.gen'
 import { PortContext, PortContextService } from './context'
 
-export function registerRuntimeServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
+export function registerSceneServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
   codegen.registerService(port, SceneServiceDefinition, async () => ({
     async getSceneInfo(_req: GetSceneRequest, ctx: PortContext): Promise<GetSceneResponse> {
       const sceneData = ctx.sceneData
