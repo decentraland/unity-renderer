@@ -52,6 +52,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: 57f4b3503db7141bea960af5af6aba3f, type: 3}
   - {fileID: 21300000, guid: ddce90606ec7d4e5d820390fe246a91b, type: 3}
+  - {fileID: 21300000, guid: d52b4d70a596143e6a8f84723bfb5d27, type: 3}
   - {fileID: 21300000, guid: 9aea7690f97604e91a23067bc1c98693, type: 3}
   - {fileID: 21300000, guid: 2de957f05cca04e4aac38646afee2263, type: 3}
   - {fileID: 21300000, guid: a62bd54126ace4d309526c08cd177fbe, type: 3}
@@ -91,7 +92,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a3837a59671b94a699e1f72ece4c8d8d, type: 3}
   - {fileID: 21300000, guid: d4ee93e9eb8464972b0fd5598a452f50, type: 3}
   - {fileID: 21300000, guid: 2a24a45ae661148d2af4bc9f390fdd66, type: 3}
-  - {fileID: 21300000, guid: e1221c1b1e9a444d88ea67e0d34c071c, type: 3}
   - {fileID: 21300000, guid: c7f41b8bc4324443a82a0e197610125d, type: 3}
   - {fileID: 21300000, guid: 59b6b5bb7ec0348ef9f9d2890faa3efe, type: 3}
   - {fileID: 21300000, guid: 84c790cbe3a484378906dc785b6c5995, type: 3}
@@ -105,6 +105,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - ContainerUniqueCard
   - TopIcon
+  - NoCollectiblesImg
   - RandomizeIcon
   - HatIcon
   - CellUniqueHighlight
@@ -144,7 +145,6 @@ SpriteAtlas:
   - StarIcon
   - BottomIcon
   - CellGradient
-  - NoCollectiblesIcon
   - InfoIcon
   - ColorSelected
   - EyebrowIcon

@@ -1668,7 +1668,6 @@ GameObject:
   - component: {fileID: 7243330985022076965}
   - component: {fileID: 7635278770119939455}
   - component: {fileID: 2065161310655255824}
-  - component: {fileID: 2538225595765649946}
   - component: {fileID: 3386700703919681769}
   - component: {fileID: 4507086455335170913}
   - component: {fileID: 3978479458520506477}
@@ -1788,26 +1787,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!95 &2538225595765649946
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269658673017942781}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!225 &3386700703919681769
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -9339,6 +9318,7 @@ MonoBehaviour:
     isBlocked: 0
     hasBlocked: 0
     friendshipStatus: 0
+    isFriendshipVisible: 0
   name: {fileID: 1750995632636747991}
   address: {fileID: 3431385152357898269}
   nameInOptionsPanel: {fileID: 2313361900714903975}
@@ -9352,6 +9332,7 @@ MonoBehaviour:
   cancelFriendRequestButton: {fileID: 3539354935361854780}
   acceptFriendButton: {fileID: 1556928558984779415}
   blockedFriendButton: {fileID: 6329467860429900791}
+  friendshipContainer: {fileID: 3257621660973361290}
   whisperButton: {fileID: 3884232551266363028}
   whisperNonFriendsPopup: {fileID: 2036723919353643394}
   onlineStatus: {fileID: 5036442527997073431}

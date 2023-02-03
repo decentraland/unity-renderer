@@ -1,0 +1,103 @@
+
+
+# ===================================== #
+# Visual Studio / MonoDevelop / Rider   #
+# ===================================== #
+ExportedObj/
+.vs/
+.vscode/
+.idea/
+Assets/Plugins/Editor/JetBrains.meta
+Assets/Plugins/Editor/JetBrains/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.tmproj
+*.dwlt
+Assembly-UnityScript.unityProj
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+unity-client/debug.log
+static/gif-processor
+static/voice-chat-codec
+static/*.js
+!packages/voice-chat-codec/libopus.wasm.js
+
+
+# ======= #
+# Node.js #
+# ======= #
+node_modules/
+npm-debug.log
+.DS_Store
+static/dist
+public/systems
+static/systems
+static/loader
+static/lifecycle
+static/voice-chat-codec/audioWorkletProcessors.js
+static/voice-chat-codec/worker.js
+static/unity-renderer
+static/node_modules
+packages/config/contracts.ts
+.decentraland
+**/.decentraland
+
+test/tmp
+test/diff
+test/out
+
+.idea
+coverage
+
+static/unity.data
+static/unity.wasm
+
+# ============================= #
+# Generated / Downloaded scenes #
+# ============================= #
+
+scripts/**/*.js
+scripts/**/*.d.ts
+packages/**/*.js
+# keep js from proto files in vcs
+!packages/**/proto/*.js
+packages/**/*.js.map
+test/**/*.js
+test/**/*.js.map
+dist
+
+# ============== #
+# Local mappings #
+# ============== #
+public/local-ipfs
+
+# ================================== #
+# Do not keep built definition types #
+# ================================== #
+.tsbuildinfo
+
+**/*.js.lib
+static/package-lock.json
+**/*.dot.pdf
+**/*.dot
+
+packages/shared/apis/proto/*.ts
+lsall
+*.gen.ts
+static/index.js.map
