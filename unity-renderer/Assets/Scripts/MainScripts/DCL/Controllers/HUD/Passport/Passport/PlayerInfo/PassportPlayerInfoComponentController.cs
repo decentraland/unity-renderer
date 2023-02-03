@@ -81,7 +81,7 @@ namespace DCL.Social.Passports
         private void UsernameCopy(string username)
         {
             clipboard.WriteText(username);
-            socialAnalytics.SendCopyWallet(PlayerActionSource.Passport);
+            socialAnalytics.SendCopyUsername(PlayerActionSource.Passport);
         }
 
         private void JumpInUser()
@@ -161,8 +161,13 @@ namespace DCL.Social.Passports
 
         private void RemoveFriend()
         {
-            friendsController.RemoveFriend(currentPlayerId);
-            socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
+                UserProfileController.userProfilesCatalog.Get(currentPlayerId)?.userName,
+                () =>
+                {
+                    friendsController.RemoveFriend(currentPlayerId);
+                    socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, currentPlayerId, PlayerActionSource.Passport);
+                }), true);
         }
 
         private void CancelFriendRequest()
@@ -238,10 +243,16 @@ namespace DCL.Social.Passports
         private void BlockUser()
         {
             if (ownUserProfile.IsBlocked(currentPlayerId)) return;
-            ownUserProfile.Block(currentPlayerId);
-            view.SetIsBlocked(true);
-            passportApiBridge.SendBlockPlayer(currentPlayerId);
-            socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
+
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
+                userProfileBridge.Get(currentPlayerId)?.userName,
+                () =>
+                {
+                    ownUserProfile.Block(currentPlayerId);
+                    view.SetIsBlocked(true);
+                    passportApiBridge.SendBlockPlayer(currentPlayerId);
+                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentPlayerId), PlayerActionSource.Passport);
+                }), true);
         }
 
         private void UnblockUser()

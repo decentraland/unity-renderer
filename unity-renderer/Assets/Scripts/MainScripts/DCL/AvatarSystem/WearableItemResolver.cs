@@ -89,8 +89,6 @@ namespace AvatarSystem
             catch (OperationCanceledException ex)
             {
                 wearablesRetrieved.Remove(wearableId);
-
-                UnityEngine.Debug.LogError($"Resolve wearable OperationCanceledException: {ex.Message} {ex.StackTrace}");
                 return null;
             }
             finally
