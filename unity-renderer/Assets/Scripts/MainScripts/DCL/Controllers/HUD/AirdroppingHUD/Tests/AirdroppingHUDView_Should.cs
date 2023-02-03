@@ -16,14 +16,17 @@ public class AirdroppingHUDView_Should : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
+        ThumbnailsManager.bypassRequests = true;
+
         factory = new HUDFactory(new AddressableResourceProvider());
 
-        AirdroppingHUDView view = null;
-        yield return factory.CreateAirdroppingHUDView().ToCoroutine(hudView => view = hudView);
+        yield return factory.CreateAirdroppingHUDView().ToCoroutine(resultHandler: CreateController);
 
-        controller = new AirdroppingHUDController(view);
-        ThumbnailsManager.bypassRequests = true;
-        view = controller.view;
+        void CreateController(AirdroppingHUDView viewAsset)
+        {
+            controller = new AirdroppingHUDController(viewAsset);
+            view = viewAsset;
+        }
     }
 
     [UnityTearDown]

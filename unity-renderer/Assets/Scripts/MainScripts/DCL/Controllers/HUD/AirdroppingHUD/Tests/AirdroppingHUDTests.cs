@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Providers;
+using System.Collections;
 using NUnit.Framework;
+using System;
 using UnityEngine.TestTools;
 
 public class AirdroppingHUDController_Should : IntegrationTestSuite_Legacy
 {
     private AirdroppingHUDController controller;
     private AirdroppingHUDController.Model model_2Item;
+
     private AirdroppingHUDController.Model model_0Item;
 
     [UnitySetUp]
@@ -46,8 +50,25 @@ public class AirdroppingHUDController_Should : IntegrationTestSuite_Legacy
             items = new AirdroppingHUDController.ItemModel[0]
         };
 
-        controller = new AirdroppingHUDController(null);
+
         ThumbnailsManager.bypassRequests = true;
+
+        HUDFactory factory = new HUDFactory(new AddressableResourceProvider());
+
+        yield return factory.CreateAirdroppingHUDView().ToCoroutine(resultHandler: CreateController);
+
+        void CreateController(AirdroppingHUDView viewAsset)
+        {
+            controller = new AirdroppingHUDController(viewAsset);
+        }
+    }
+
+    [UnityTearDown]
+    protected override IEnumerator TearDown()
+    {
+        ThumbnailsManager.bypassRequests = false;
+        controller.Dispose();
+        yield return base.TearDown();
     }
 
     [Test]
@@ -89,13 +110,5 @@ public class AirdroppingHUDController_Should : IntegrationTestSuite_Legacy
         Assert.AreEqual(AirdroppingHUDController.State.Summary_NoItems, controller.currentState);
         controller.MoveToNextState();
         Assert.AreEqual(AirdroppingHUDController.State.Hidden, controller.currentState);
-    }
-
-    [UnityTearDown]
-    protected override IEnumerator TearDown()
-    {
-        ThumbnailsManager.bypassRequests = false;
-        controller.Dispose();
-        yield return base.TearDown();
     }
 }
