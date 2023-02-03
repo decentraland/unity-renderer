@@ -21,7 +21,6 @@ namespace DCL.Emotes
         private IEmotesCatalogService emoteCatalog;
         private CatalogController catalogController;
 
-        private AddressableResourceProvider addressableResourceProvider;
 
         [SetUp]
         public void SetUp()
@@ -32,15 +31,18 @@ namespace DCL.Emotes
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
             resolver = Substitute.For<IWearableItemResolver>();
 
-            addressableResourceProvider = new AddressableResourceProvider();
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
             emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
 
             tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog);
         }
 
-        private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO() =>
-            await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset");
+        private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+        {
+            EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+            embeddedEmotes.emotes = new EmbeddedEmote [] { };
+            return embeddedEmotes;
+        }
 
         [TearDown]
         public void TearDown() { Object.Destroy(catalogController.gameObject); }
