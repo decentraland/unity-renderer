@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DCL.Configuration;
+using UnityEngine.Profiling;
 using UnityEngine.UIElements;
 
 /// <summary>
@@ -620,6 +621,7 @@ public static class InputProcessor
     /// <returns></returns>
     public static Boolean PassModifierKeys(KeyCode[] modifierKeys)
     {
+        Profiler.BeginSample("PassModifierKeys");
         for (var i = 0; i < MODIFIER_KEYS.Length; i++)
         {
             var keyCode = MODIFIER_KEYS[i];
@@ -631,10 +633,20 @@ public static class InputProcessor
             }
             else
             {
-                if (modifierKeys.Contains(keyCode) != pressed)
+                // Very confusing function, but this should avoid allocations and LINQ
+                var contains = false;
+                foreach (KeyCode kc in modifierKeys)
+                {
+                    if (kc == keyCode)
+                    {
+                        contains = true;
+                    }
+                }
+                if (contains != pressed)
                     return false;
             }
         }
+        Profiler.EndSample();
 
         return true;
     }
