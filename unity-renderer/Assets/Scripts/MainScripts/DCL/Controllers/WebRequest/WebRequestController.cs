@@ -172,18 +172,7 @@ namespace DCL
                     request.downloadHandler = downloadHandler;
 
                 UnityWebRequestAsyncOperation asyncOp = request.SendWebRequest();
-                while (!asyncOp.isDone)
-                {
-                    await UniTask.Yield();
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        request.Abort();
-                        break;
-                    }
-                }
-
-                if (asyncOp.webRequest == null)
-                    continue;
+                await asyncOp.WithCancellation(cancellationToken);
 
                 if (request.WebRequestSucceded())
                 {
@@ -207,7 +196,7 @@ namespace DCL
                 }
             }
 
-            return null;
+            throw new Exception("WebRequestController SendWebRequest: Unexpected error");
         }
 
         [Obsolete]
