@@ -34,7 +34,7 @@ namespace DCL.Social.Friends
         private int lastSkipForFriends;
         private int lastSkipForFriendRequests;
 
-        public bool IsVisible { get; internal set; } = true;
+        public bool IsVisible { get; private set; }
         public IFriendsHUDComponentView View { get; private set; }
 
         public event Action<string> OnPressWhisper;
@@ -57,8 +57,11 @@ namespace DCL.Social.Friends
             this.mouseCatcher = mouseCatcher;
         }
 
-        public void Initialize(IFriendsHUDComponentView view = null)
+        public void Initialize(IFriendsHUDComponentView view = null, bool isVisible = true)
         {
+            SetVisibility(isVisible);
+            IsVisible = isVisible;
+
             view ??= FriendsHUDComponentView.Create();
             View = view;
 
