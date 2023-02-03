@@ -20,7 +20,7 @@ namespace DCL.Social.Chat.Channels
         private readonly StringVariable currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private CancellationTokenSource joinChannelCancellationToken = new ();
-        private string channelId;
+        private string channelName;
 
         public JoinChannelComponentController(
             IJoinChannelComponentView view,
@@ -51,23 +51,37 @@ namespace DCL.Social.Chat.Channels
             view.OnConfirmJoin -= OnConfirmJoin;
         }
 
-        private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
+        private void OnChannelToJoinChanged(string currentChannelName, string previousChannelName)
         {
             if (!channelsFeatureFlagService.IsChannelsFeatureEnabled())
                 return;
 
-            if (string.IsNullOrEmpty(currentChannelId))
+            if (string.IsNullOrEmpty(currentChannelName))
                 return;
 
-            channelId = currentChannelId;
-            view.SetChannel(currentChannelId);
+            currentChannelName = currentChannelName.Replace("#", "")
+                                                   .Replace("~", "")
+                                                   .ToLower();
+
+            Channel alreadyJoinedChannel = chatController.GetAllocatedChannelByName(currentChannelName);
+
+            if (alreadyJoinedChannel != null)
+            {
+                if (alreadyJoinedChannel.Joined)
+                    OpenChannelWindow(alreadyJoinedChannel);
+
+                return;
+            }
+
+            channelName = currentChannelName;
+            view.SetChannel(currentChannelName);
             view.Show();
         }
 
         private void OnCancelJoin()
         {
             if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
-                socialAnalytics.SendChannelLinkClicked(channelId, false, GetChannelLinkSource());
+                socialAnalytics.SendChannelLinkClicked(channelName, false, GetChannelLinkSource());
 
             view.Hide();
             channelsDataStore.currentJoinChannelModal.Set(null);

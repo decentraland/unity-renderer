@@ -56,14 +56,14 @@ namespace DCL.Social.Chat.Channels
             SetChannel(model.channelId);
         }
 
-        public void SetChannel(string channelId)
+        public void SetChannel(string channelName)
         {
-            model.channelId = channelId;
+            model.channelId = channelName;
 
             if (titleText == null)
                 return;
 
-            titleText.text = string.Format(MODAL_TITLE, channelId);
+            titleText.text = string.Format(MODAL_TITLE, channelName);
         }
 
         internal static JoinChannelComponentView Create()

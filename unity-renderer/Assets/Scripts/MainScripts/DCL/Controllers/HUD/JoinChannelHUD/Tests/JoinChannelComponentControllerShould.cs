@@ -226,5 +226,22 @@ namespace DCL.Social.Chat.Channels
 
             socialAnalytics.Received(1).SendChannelLinkClicked(TEST_CHANNEL_NAME.ToLower(), true, ChannelLinkSource.Profile);
         }
+
+        [Test]
+        public void OpenChannelWindowWhenShowAnAlreadyJoinedChannel()
+        {
+            var called = false;
+            Channel channel = new (CHANNEL_ID, TEST_CHANNEL_NAME, 0, 1, true, false, "");
+
+            chatController.GetAllocatedChannelByName(TEST_CHANNEL_NAME.ToLower())
+                          .Returns(channel);
+
+            channelsDataStore.channelToBeOpened.OnChange += (current, previous) => called = current == CHANNEL_ID;
+
+            channelsDataStore.currentJoinChannelModal.Set(TEST_CHANNEL_NAME, true);
+
+            view.Received(0).Show();
+            Assert.IsTrue(called);
+        }
     }
 }
