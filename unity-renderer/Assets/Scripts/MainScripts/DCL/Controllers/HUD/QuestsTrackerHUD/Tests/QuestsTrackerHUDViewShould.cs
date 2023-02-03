@@ -2,6 +2,7 @@ using System.Collections;
 using DCL;
 using DCL.Huds.QuestsTracker;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,12 +12,13 @@ namespace Tests.QuestsTrackerHUD
     {
         private const string MOCK_QUEST_ID = "quest0";
         private const string MOCK_SECTION_ID = "section0";
+
         private const string MOCK_TASK_ID = "task0";
 
         private QuestsTrackerHUDView hudView;
 
         [SetUp]
-        public void SetUp()
+        public async void SetUp()
         {
             QuestModel questMock = new QuestModel
             {
@@ -49,8 +51,15 @@ namespace Tests.QuestsTrackerHUD
             });
 
             QuestsTrackerHUDView.ENTRIES_PER_FRAME = int.MaxValue;
+            hudView = Object.Instantiate(
+                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/QuestsTrackerHUD/Prefabs/QuestsTrackerHUD.prefab"))
+                            .GetComponent<QuestsTrackerHUDView>();
+        }
 
-            hudView = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerHUD")).GetComponent<QuestsTrackerHUDView>();
+        [TearDown]
+        public void TearDown()
+        {
+            Object.Destroy(hudView.gameObject);
         }
 
         [Test]
@@ -261,7 +270,5 @@ namespace Tests.QuestsTrackerHUD
             Assert.AreEqual("task1" , taskEntry1.taskTitle.text);
             Assert.AreEqual("15/20" , taskEntry1.progressText.text);
         }
-        [TearDown]
-        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }

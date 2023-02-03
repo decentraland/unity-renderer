@@ -1,5 +1,6 @@
 using DCL.Huds.QuestsTracker;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Tests.QuestsTrackerHUD
@@ -71,7 +72,9 @@ namespace Tests.QuestsTrackerHUD
         [SetUp]
         public void SetUp()
         {
-            questEntry = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerEntry")).GetComponent<QuestsTrackerEntry>();
+            questEntry = Object.Instantiate(
+                                    AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/QuestsTrackerHUD/Prefabs/QuestsTrackerEntry.prefab"))
+                               .GetComponent<QuestsTrackerEntry>();
         }
 
         [Test]
@@ -242,7 +245,12 @@ namespace Tests.QuestsTrackerHUD
         };
 
         [SetUp]
-        public void SetUp() { sectionEntry = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerSection")).GetComponent<QuestsTrackerSection>(); }
+        public void SetUp()
+        {
+            sectionEntry = Object.Instantiate(
+                                      AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/QuestsTrackerHUD/Prefabs/QuestsTrackerSection.prefab"))
+                                 .GetComponent<QuestsTrackerSection>();
+        }
 
         [TearDown]
         public void TearDown()
