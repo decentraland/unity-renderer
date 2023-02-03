@@ -17,6 +17,6 @@ kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
 kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
 
 # dServices
-browser-interface/packages/shared/friends/**/*    @decentraland/dServices-team
-browser-interface/packages/shared/profiles/**/*   @decentraland/dServices-team
-browser-interface/packages/shared/chat/**/*       @decentraland/dServices-team
+browser-interface/packages/shared/friends/**/*    @decentraland/dservices
+browser-interface/packages/shared/profiles/**/*   @decentraland/dservices
+browser-interface/packages/shared/chat/**/*       @decentraland/dservices
