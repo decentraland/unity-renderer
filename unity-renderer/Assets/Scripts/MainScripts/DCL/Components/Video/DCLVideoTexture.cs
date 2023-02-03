@@ -107,8 +107,7 @@ namespace DCL.Components
             {
                 yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
 
-                //if (texturePlayer.isError)
-                if (true)
+                if (texturePlayer.isError)
                 {
                     if (texturePlayerUpdateRoutine != null)
                     {
