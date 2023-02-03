@@ -61,7 +61,7 @@ namespace DCL.Components.Video.Plugin
 
                     if (playWhenReady)
                     {
-                        PlayInternal();
+                        //PlayInternal();
                         playWhenReady = false;
                     }
 
