@@ -43,7 +43,7 @@ import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
 import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
 import { encodeParcelPosition, gridToWorld, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { ENABLE_EMPTY_SCENES, LOS, PREVIEW, rootURLPreviewMode } from 'config'
+import { ENABLE_EMPTY_SCENES, LOS } from 'config'
 import { getResourcesURL } from 'shared/location'
 import { Vector2 } from '@dcl/ecs-math'
 import { trackEvent } from 'shared/analytics'
@@ -216,9 +216,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
       const enableEmptyParcels = ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
 
       const emptyParcelsBaseUrl = enableEmptyParcels
-        ? PREVIEW
-          ? rootURLPreviewMode() + '/@/artifacts/'
-          : getResourcesURL('.')
+        ? getResourcesURL('.') // resolve empty parcels based on the URL of the explorer
         : undefined
 
       const contentServer: string = yield select(
