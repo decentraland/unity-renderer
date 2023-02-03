@@ -185,6 +185,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         try
         {
             ct.ThrowIfCancellationRequested();
+
             if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
                 currentAvatar.CopyFrom(profile.avatar);
@@ -219,27 +220,29 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         catch (Exception e)
         {
             Debug.LogException(e);
-            WebInterface.ReportAvatarFatalError(e.ToString());
+            //WebInterface.ReportAvatarFatalError(e.ToString());
             return;
         }
-
-        IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
-
-        var player = new Player()
+        finally
         {
-            id = userProfile.userId,
-            name = userProfile.name,
-            avatar = avatar,
-            anchorPoints = anchorPoints,
-            collider = avatarCollider
-        };
-        DataStore.i.player.ownPlayer.Set(player);
+            IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
 
-        enableCameraCheck = true;
-        avatarCollider.gameObject.SetActive(true);
-        CommonScriptableObjects.rendererState.RemoveLock(this);
-        DataStore.i.common.isPlayerRendererLoaded.Set(true);
+            var player = new Player()
+            {
+                id = userProfile.userId,
+                name = userProfile.name,
+                avatar = avatar,
+                anchorPoints = anchorPoints,
+                collider = avatarCollider
+            };
+            DataStore.i.player.ownPlayer.Set(player);
+
+            enableCameraCheck = true;
+            avatarCollider.gameObject.SetActive(true);
+            CommonScriptableObjects.rendererState.RemoveLock(this);
+            DataStore.i.common.isPlayerRendererLoaded.Set(true);
+        }
     }
 
     public void ApplyHideAvatarModifier()

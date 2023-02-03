@@ -35,6 +35,8 @@ namespace DCL.Social.Passports
         private double passportOpenStartTime;
         private CancellationTokenSource cts = new CancellationTokenSource();
 
+        private bool isOpen;
+
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
             PassportPlayerInfoComponentController playerInfoController,
@@ -67,6 +69,7 @@ namespace DCL.Social.Passports
             closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
 
             passportNavigationController.OnClickBuyNft += ClickedBuyNft;
+            passportNavigationController.OnClickedLink += ClickedLink;
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
@@ -88,6 +91,11 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
+            if(!isOpen)
+                return;
+
+            isOpen = false;
+
             passportNavigationController.CloseAllNFTItemInfos();
             passportNavigationController.SetViewInitialPage();
             playerInfoController.ClosePassport();
@@ -123,8 +131,7 @@ namespace DCL.Social.Passports
             playerPreviewController.Dispose();
             passportNavigationController.Dispose();
 
-            if (view != null)
-                view.Dispose();
+            view?.Dispose();
         }
 
         private void OnCurrentPlayerIdChanged(string current, string previous)
@@ -157,6 +164,8 @@ namespace DCL.Social.Passports
 
         private void SetPassportPanelVisibility(bool visible)
         {
+            isOpen = visible;
+
             if (visible && userProfileBridge.GetOwn().isGuest)
             {
                 dataStore.HUDs.connectWalletModalVisible.Set(true);
@@ -172,6 +181,11 @@ namespace DCL.Social.Passports
                 return;
 
             (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token), passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token));
+        }
+
+        private void ClickedLink()
+        {
+            socialAnalytics.SendLinkClick(PlayerActionSource.Passport);
         }
 
         private void ClickedBuyNft(string id, string wearableType)

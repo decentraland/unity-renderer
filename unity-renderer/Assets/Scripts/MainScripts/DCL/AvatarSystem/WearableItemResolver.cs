@@ -86,7 +86,7 @@ namespace AvatarSystem
                 return promise.value;
 
             }
-            catch (OperationCanceledException ex)
+            catch (Exception ex) when (ex is OperationCanceledException or PromiseException)
             {
                 wearablesRetrieved.Remove(wearableId);
                 return null;

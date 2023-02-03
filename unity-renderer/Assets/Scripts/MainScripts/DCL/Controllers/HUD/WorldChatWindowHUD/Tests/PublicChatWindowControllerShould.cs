@@ -43,7 +43,7 @@ public class PublicChatWindowControllerShould
         view = Substitute.For<IPublicChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
-        controller.Initialize(view);
+        controller.Initialize(view, false);
     }
 
     [TearDown]
@@ -150,7 +150,7 @@ public class PublicChatWindowControllerShould
     {
         controller.Setup(CHANNEL_ID);
         view.IsActive.Returns(true);
-        
+
         var msg = new ChatMessage
         {
             messageType = ChatMessage.Type.PUBLIC,
@@ -159,7 +159,7 @@ public class PublicChatWindowControllerShould
             timestamp = 100
         };
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
-        
+
         chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
     }
 
@@ -168,7 +168,7 @@ public class PublicChatWindowControllerShould
     {
         controller.Setup(CHANNEL_ID);
         view.IsActive.Returns(true);
-        
+
         var msg1 = new ChatMessage
         {
             messageType = ChatMessage.Type.PUBLIC,
@@ -184,7 +184,7 @@ public class PublicChatWindowControllerShould
             timestamp = 101
         };
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
-        
+
         chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
     }
 
