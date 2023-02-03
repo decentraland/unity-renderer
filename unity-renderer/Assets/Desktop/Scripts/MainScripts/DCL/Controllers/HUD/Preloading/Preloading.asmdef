@@ -1,0 +1,25 @@
+{
+    "name": "Preloading",
+    "rootNamespace": "",
+    "references": [
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

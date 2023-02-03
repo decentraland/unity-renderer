@@ -218,9 +218,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
       const enableEmptyParcels = ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
 
       const emptyParcelsBaseUrl = enableEmptyParcels
-        ? PREVIEW
-          ? rootURLPreviewMode() + '/@/artifacts/'
-          : getResourcesURL('.')
+        ? getResourcesURL('.') // resolve explorer path to look for empty parcels
         : undefined
 
       const contentServer: string = yield select(

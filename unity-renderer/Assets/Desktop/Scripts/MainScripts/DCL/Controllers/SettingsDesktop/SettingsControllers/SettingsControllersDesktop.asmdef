@@ -1,0 +1,25 @@
+{
+    "name": "SettingsControllersDesktop",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3a20bd2e61151461ab17e9cf5dc7a24b",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:0808274fbf804428b871b403dc5b457d",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
