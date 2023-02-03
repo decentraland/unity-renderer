@@ -171,7 +171,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadScene()
     {
-        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
         yield return new WaitForAllMessagesProcessed();
 
         string loadedSceneID = "0,0";
@@ -184,7 +184,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator UnloadScene()
     {
-        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -221,7 +221,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadManyParcelsFromJSON()
     {
-        string severalParcelsJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/TestSceneSeveralParcels").text;
+        string severalParcelsJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/TestSceneSeveralParcels.json").text;
 
         //Not really elegant, but does the trick
         var jsonScenes = JsonConvert
@@ -471,7 +471,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ReloadedSceneShouldBeCleanedProperly()
     {
         const int loadedSceneNumber = 666;
-        string sceneJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text;
+        string sceneJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text;
         sceneController.LoadParcelScenes(sceneJson);
         yield return new WaitForAllMessagesProcessed();
 
