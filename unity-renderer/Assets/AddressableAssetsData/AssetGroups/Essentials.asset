@@ -21,6 +21,16 @@ MonoBehaviour:
     m_Address: EmbeddedEmotes.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: d46b1af13bd8fd94eabb1ee09e49475e
+    m_Address: dab.anim
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TestResources
+  - m_GUID: 155565c20994e334ea44df2fc77b9097
+    m_Address: tik.anim
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TestResources
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

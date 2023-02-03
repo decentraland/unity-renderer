@@ -5,6 +5,7 @@ using DCL.CameraTool;
 using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
@@ -27,6 +28,7 @@ public class IntegrationTestSuite_Legacy
     private GameObject runtimeGameObjectsRoot;
 
     private List<GameObject> legacySystems = new List<GameObject>();
+    private AddressableResourceProvider addressableResourceProvider;
 
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
@@ -79,12 +81,17 @@ public class IntegrationTestSuite_Legacy
             });
 
         IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
-        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
-        emotesCatalogService.GetEmbeddedEmotes().Returns(embeddedEmotes);
+        emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
         result.Register<IEmotesCatalogService>(() => emotesCatalogService);
 
         return result;
+    }
+
+    private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+    {
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        return embeddedEmotes;
     }
 
     protected virtual List<GameObject> SetUp_LegacySystems()

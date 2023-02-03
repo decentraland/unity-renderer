@@ -36,6 +36,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         catch (Exception e)
         {
             embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+            embeddedEmotesSO.emotes = new EmbeddedEmote[]{};
             throw new Exception("Embedded emotes async initialization failed. Please check that the Essentials group addressables are correct");
         }
         EmbedEmotes();
@@ -258,7 +259,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
     }
 
-    public async Task<EmbeddedEmotesSO> GetEmbeddedEmotes()
+    public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
         await UniTask.WaitUntil(() => embeddedEmotesSO != null);
         return embeddedEmotesSO;

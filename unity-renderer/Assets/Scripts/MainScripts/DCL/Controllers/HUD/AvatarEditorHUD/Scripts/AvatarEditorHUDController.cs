@@ -266,9 +266,8 @@ public class AvatarEditorHUDController : IHUD
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
         try
         {
-            Task<EmbeddedEmotesSO> embeddedEmoteTask = emotesCatalogService.Ref.GetEmbeddedEmotes();
-            await embeddedEmoteTask;
-            var embeddedEmotes = embeddedEmoteTask.Result.emotes;
+            EmbeddedEmotesSO embeddedEmoteTask = await emotesCatalogService.Ref.GetEmbeddedEmotes();
+            var embeddedEmotes = embeddedEmoteTask.emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
             var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
             var emotesFilter = new HashSet<string>();

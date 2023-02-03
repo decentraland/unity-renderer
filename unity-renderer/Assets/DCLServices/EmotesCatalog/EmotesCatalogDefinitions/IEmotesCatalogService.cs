@@ -19,7 +19,7 @@ public interface IEmotesCatalogService : IService
     UniTask<WearableItem> RequestEmoteAsync(string id, CancellationToken ct = default);
     UniTask<WearableItem[]> RequestEmotesAsync(IList<string> ids, CancellationToken ct = default);
 
-    Task<EmbeddedEmotesSO> GetEmbeddedEmotes();
+    UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes();
     void ForgetEmote(string id);
     void ForgetEmotes(IList<string> ids);
 }
