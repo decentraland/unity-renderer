@@ -59,9 +59,6 @@ namespace DCL.Social.Friends
 
         public void Initialize(IFriendsHUDComponentView view = null, bool isVisible = true)
         {
-            SetVisibility(isVisible);
-            IsVisible = isVisible;
-
             view ??= FriendsHUDComponentView.Create();
             View = view;
 
@@ -107,6 +104,9 @@ namespace DCL.Social.Friends
 
             ShowOrHideMoreFriendsToLoadHint();
             ShowOrHideMoreFriendRequestsToLoadHint();
+
+            SetVisibility(isVisible);
+            IsVisible = isVisible;
         }
 
         private void SetVisiblePanelList(bool visible)

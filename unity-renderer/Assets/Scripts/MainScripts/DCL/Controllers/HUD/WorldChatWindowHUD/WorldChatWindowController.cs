@@ -52,7 +52,7 @@ public class WorldChatWindowController : IHUD
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
     private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
-    internal bool isVisible = true;
+    private bool isVisible = true;
     public IWorldChatWindowView View => view;
 
     public event Action OnCloseView;
@@ -86,7 +86,7 @@ public class WorldChatWindowController : IHUD
         this.rendererState = rendererState;
     }
 
-    public void Initialize(IWorldChatWindowView view)
+    public void Initialize(IWorldChatWindowView view, bool isVisible = true)
     {
         this.view = view;
         view.Initialize(chatController);
@@ -153,6 +153,9 @@ public class WorldChatWindowController : IHUD
         }
 
         view.SetChannelsPromoteLabelVisible(channelsFeatureFlagService.IsPromoteChannelsToastEnabled());
+
+        SetVisibility(isVisible);
+        this.isVisible = isVisible;
     }
 
     public void Dispose()
