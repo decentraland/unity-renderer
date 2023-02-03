@@ -36,7 +36,7 @@ namespace DCL.Components.Video.Plugin
 
             SetAsLoading();
         }
-
+        
         public void Update()
         {
             switch (plugin.GetState(videoPlayerId))
@@ -167,7 +167,7 @@ namespace DCL.Components.Video.Plugin
         {
             UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>(VIDEO_LOADING_PATH), true);
         }
-
+        
         public void SetAsError()
         {
             UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>(VIDEO_FAILED_PATH), true);

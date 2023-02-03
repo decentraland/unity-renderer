@@ -1,14 +1,12 @@
-using DCL.Components.Video.Plugin;
-using DCL.Configuration;
-using DCL.Controllers;
-using DCL.Helpers;
-using DCL.Interface;
-using DCL.Models;
-using DCL.SettingsCommon;
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
+using DCL.Models;
 using UnityEngine;
+using DCL.Components.Video.Plugin;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.SettingsCommon;
 using UnityEngine.Assertions;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -17,14 +15,14 @@ namespace DCL.Components
     public class DCLVideoTexture : DCLTexture
     {
         public static bool VERBOSE = false;
-        public static Logger logger = new Logger("DCLVideoTexture") { verboseEnabled = VERBOSE };
+        public static Logger logger = new Logger("DCLVideoTexture") {verboseEnabled = VERBOSE};
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
 
-        public static Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
+        public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
 
-        [Serializable]
+        [System.Serializable]
         new public class Model : BaseModel
         {
             public string videoClipId;
@@ -73,7 +71,7 @@ namespace DCL.Components
                 yield break;
             }
 
-            var model = (Model)newModel;
+            var model = (Model) newModel;
 
             unitySamplingMode = model.samplingMode;
 
@@ -104,7 +102,7 @@ namespace DCL.Components
 
                 Initialize(dclVideoClip);
             }
-
+            
             if (texture == null)
             {
                 yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
@@ -175,11 +173,8 @@ namespace DCL.Components
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), -1);
         }
 
-        public float GetVolume()
-        {
-            return ((Model)model).volume;
-        }
-
+        public float GetVolume() { return ((Model) model).volume; }
+        
         private IEnumerator OnUpdate()
         {
             while (true)
@@ -218,9 +213,9 @@ namespace DCL.Components
         {
             var currentState = texturePlayer.GetState();
 
-            if (currentState == VideoState.PLAYING
-                && IsTimeToReportVideoProgress()
-                || previousVideoState != currentState)
+            if ( currentState == VideoState.PLAYING
+                 && IsTimeToReportVideoProgress()
+                 || previousVideoState != currentState)
             {
                 ReportVideoProgress();
             }
@@ -234,7 +229,7 @@ namespace DCL.Components
             var videoStatus = (int)videoState;
             var currentOffset = texturePlayer.GetTime();
             var length = texturePlayer.GetDuration();
-            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.sceneNumber, lastVideoClipID, videoStatus, currentOffset, length);
+            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.sceneNumber, lastVideoClipID, videoStatus, currentOffset, length );
         }
 
         private bool IsTimeToReportVideoProgress()
@@ -263,12 +258,12 @@ namespace DCL.Components
 
                             var entityDist = DCLVideoTextureUtils.GetClosestDistanceSqr(materialInfo.Value,
                                 CommonScriptableObjects.playerUnityPosition);
-
+                            
                             if (entityDist < minDistance)
                                 minDistance = entityDist;
-
+                            
                             // NOTE: if current minDistance is enough for full volume then there is no need to keep iterating to check distances
-                            if (minDistance <= ParcelSettings.PARCEL_SIZE * ParcelSettings.PARCEL_SIZE)
+                            if (minDistance <= DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE)
                                 break;
                         }
                     }
@@ -278,7 +273,7 @@ namespace DCL.Components
             if (isVisible)
             {
                 const float maxDistanceBlockForSound = 12;
-                float sqrParcelDistance = ParcelSettings.PARCEL_SIZE * ParcelSettings.PARCEL_SIZE * 2.25f;
+                float sqrParcelDistance = DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 2.25f;
                 distanceVolumeModifier = 1 - Mathf.Clamp01(Mathf.FloorToInt(minDistance / sqrParcelDistance) / maxDistanceBlockForSound);
             }
 
@@ -315,7 +310,6 @@ namespace DCL.Components
         {
             if (scene == null)
                 return false;
-
             if (currentSceneNumber <= 0)
                 return false;
 
