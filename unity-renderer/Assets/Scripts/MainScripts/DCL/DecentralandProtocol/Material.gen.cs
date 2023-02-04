@@ -27,45 +27,47 @@ namespace DCL.ECSComponents {
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
             "bW1vbi9jb2xvcnMucHJvdG8aIWRlY2VudHJhbGFuZC9jb21tb24vdGV4dHVy",
-            "ZS5wcm90byLdCgoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
+            "ZS5wcm90byKmCwoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
             "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFsLlVubGl0TWF0ZXJp",
             "YWxIABJCCgNwYnIYAiABKAsyMy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
-            "dHMuUEJNYXRlcmlhbC5QYnJNYXRlcmlhbEgAGqgBCg1VbmxpdE1hdGVyaWFs",
+            "dHMuUEJNYXRlcmlhbC5QYnJNYXRlcmlhbEgAGvEBCg1VbmxpdE1hdGVyaWFs",
             "EjcKB3RleHR1cmUYASABKAsyIS5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1",
             "cmVVbmlvbkgAiAEBEhcKCmFscGhhX3Rlc3QYAiABKAJIAYgBARIZCgxjYXN0",
-            "X3NoYWRvd3MYAyABKAhIAogBAUIKCghfdGV4dHVyZUINCgtfYWxwaGFfdGVz",
-            "dEIPCg1fY2FzdF9zaGFkb3dzGosICgtQYnJNYXRlcmlhbBI3Cgd0ZXh0dXJl",
-            "GAEgASgLMiEuZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5pb25IAIgB",
-            "ARIXCgphbHBoYV90ZXN0GAIgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAMg",
-            "ASgISAKIAQESPQoNYWxwaGFfdGV4dHVyZRgEIAEoCzIhLmRlY2VudHJhbGFu",
-            "ZC5jb21tb24uVGV4dHVyZVVuaW9uSAOIAQESQAoQZW1pc3NpdmVfdGV4dHVy",
-            "ZRgFIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSASI",
-            "AQESPAoMYnVtcF90ZXh0dXJlGAYgASgLMiEuZGVjZW50cmFsYW5kLmNvbW1v",
-            "bi5UZXh0dXJlVW5pb25IBYgBARI2CgxhbGJlZG9fY29sb3IYByABKAsyGy5k",
-            "ZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yNEgGiAEBEjgKDmVtaXNzaXZlX2Nv",
-            "bG9yGAggASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIB4gBARI8",
-            "ChJyZWZsZWN0aXZpdHlfY29sb3IYCSABKAsyGy5kZWNlbnRyYWxhbmQuY29t",
-            "bW9uLkNvbG9yM0gIiAEBElUKEXRyYW5zcGFyZW5jeV9tb2RlGAogASgOMjUu",
-            "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLk1hdGVyaWFsVHJhbnNwYXJl",
-            "bmN5TW9kZUgJiAEBEhUKCG1ldGFsbGljGAsgASgCSAqIAQESFgoJcm91Z2hu",
-            "ZXNzGAwgASgCSAuIAQESFwoKZ2xvc3NpbmVzcxgNIAEoAkgMiAEBEh8KEnNw",
-            "ZWN1bGFyX2ludGVuc2l0eRgOIAEoAkgNiAEBEh8KEmVtaXNzaXZlX2ludGVu",
-            "c2l0eRgPIAEoAkgOiAEBEh0KEGRpcmVjdF9pbnRlbnNpdHkYECABKAJID4gB",
-            "AUIKCghfdGV4dHVyZUINCgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dz",
-            "QhAKDl9hbHBoYV90ZXh0dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJlQg8KDV9i",
-            "dW1wX3RleHR1cmVCDwoNX2FsYmVkb19jb2xvckIRCg9fZW1pc3NpdmVfY29s",
-            "b3JCFQoTX3JlZmxlY3Rpdml0eV9jb2xvckIUChJfdHJhbnNwYXJlbmN5X21v",
-            "ZGVCCwoJX21ldGFsbGljQgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NC",
-            "FQoTX3NwZWN1bGFyX2ludGVuc2l0eUIVChNfZW1pc3NpdmVfaW50ZW5zaXR5",
-            "QhMKEV9kaXJlY3RfaW50ZW5zaXR5QgoKCG1hdGVyaWFsKoUBChhNYXRlcmlh",
-            "bFRyYW5zcGFyZW5jeU1vZGUSDgoKTVRNX09QQVFVRRAAEhIKDk1UTV9BTFBI",
-            "QV9URVNUEAESEwoPTVRNX0FMUEhBX0JMRU5EEAISIgoeTVRNX0FMUEhBX1RF",
-            "U1RfQU5EX0FMUEhBX0JMRU5EEAMSDAoITVRNX0FVVE8QBEIUqgIRRENMLkVD",
-            "U0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "X3NoYWRvd3MYAyABKAhIAogBARI2CgxhbGJlZG9fY29sb3IYBCABKAsyGy5k",
+            "ZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yNEgDiAEBQgoKCF90ZXh0dXJlQg0K",
+            "C19hbHBoYV90ZXN0Qg8KDV9jYXN0X3NoYWRvd3NCDwoNX2FsYmVkb19jb2xv",
+            "chqLCAoLUGJyTWF0ZXJpYWwSNwoHdGV4dHVyZRgBIAEoCzIhLmRlY2VudHJh",
+            "bGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSACIAQESFwoKYWxwaGFfdGVzdBgC",
+            "IAEoAkgBiAEBEhkKDGNhc3Rfc2hhZG93cxgDIAEoCEgCiAEBEj0KDWFscGhh",
+            "X3RleHR1cmUYBCABKAsyIS5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1cmVV",
+            "bmlvbkgDiAEBEkAKEGVtaXNzaXZlX3RleHR1cmUYBSABKAsyIS5kZWNlbnRy",
+            "YWxhbmQuY29tbW9uLlRleHR1cmVVbmlvbkgEiAEBEjwKDGJ1bXBfdGV4dHVy",
+            "ZRgGIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSAWI",
+            "AQESNgoMYWxiZWRvX2NvbG9yGAcgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1v",
+            "bi5Db2xvcjRIBogBARI4Cg5lbWlzc2l2ZV9jb2xvchgIIAEoCzIbLmRlY2Vu",
+            "dHJhbGFuZC5jb21tb24uQ29sb3IzSAeIAQESPAoScmVmbGVjdGl2aXR5X2Nv",
+            "bG9yGAkgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNICIgBARJV",
+            "ChF0cmFuc3BhcmVuY3lfbW9kZRgKIAEoDjI1LmRlY2VudHJhbGFuZC5zZGsu",
+            "Y29tcG9uZW50cy5NYXRlcmlhbFRyYW5zcGFyZW5jeU1vZGVICYgBARIVCght",
+            "ZXRhbGxpYxgLIAEoAkgKiAEBEhYKCXJvdWdobmVzcxgMIAEoAkgLiAEBEhcK",
+            "Cmdsb3NzaW5lc3MYDSABKAJIDIgBARIfChJzcGVjdWxhcl9pbnRlbnNpdHkY",
+            "DiABKAJIDYgBARIfChJlbWlzc2l2ZV9pbnRlbnNpdHkYDyABKAJIDogBARId",
+            "ChBkaXJlY3RfaW50ZW5zaXR5GBAgASgCSA+IAQFCCgoIX3RleHR1cmVCDQoL",
+            "X2FscGhhX3Rlc3RCDwoNX2Nhc3Rfc2hhZG93c0IQCg5fYWxwaGFfdGV4dHVy",
+            "ZUITChFfZW1pc3NpdmVfdGV4dHVyZUIPCg1fYnVtcF90ZXh0dXJlQg8KDV9h",
+            "bGJlZG9fY29sb3JCEQoPX2VtaXNzaXZlX2NvbG9yQhUKE19yZWZsZWN0aXZp",
+            "dHlfY29sb3JCFAoSX3RyYW5zcGFyZW5jeV9tb2RlQgsKCV9tZXRhbGxpY0IM",
+            "Cgpfcm91Z2huZXNzQg0KC19nbG9zc2luZXNzQhUKE19zcGVjdWxhcl9pbnRl",
+            "bnNpdHlCFQoTX2VtaXNzaXZlX2ludGVuc2l0eUITChFfZGlyZWN0X2ludGVu",
+            "c2l0eUIKCghtYXRlcmlhbCqFAQoYTWF0ZXJpYWxUcmFuc3BhcmVuY3lNb2Rl",
+            "Eg4KCk1UTV9PUEFRVUUQABISCg5NVE1fQUxQSEFfVEVTVBABEhMKD01UTV9B",
+            "TFBIQV9CTEVORBACEiIKHk1UTV9BTFBIQV9URVNUX0FORF9BTFBIQV9CTEVO",
+            "RBADEgwKCE1UTV9BVVRPEARCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Unlit", "Pbr" }, new[]{ "Material" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial), global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows" }, new[]{ "Texture", "AlphaTest", "CastShadows" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Unlit", "Pbr" }, new[]{ "Material" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial), global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlbedoColor" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlbedoColor" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial), global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, null)})
           }));
     }
@@ -411,6 +413,7 @@ namespace DCL.ECSComponents {
           texture_ = other.texture_ != null ? other.texture_.Clone() : null;
           alphaTest_ = other.alphaTest_;
           castShadows_ = other.castShadows_;
+          albedoColor_ = other.albedoColor_ != null ? other.albedoColor_.Clone() : null;
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -491,6 +494,21 @@ namespace DCL.ECSComponents {
           _hasBits0 &= ~2;
         }
 
+        /// <summary>Field number for the "albedo_color" field.</summary>
+        public const int AlbedoColorFieldNumber = 4;
+        private global::Decentraland.Common.Color4 albedoColor_;
+        /// <summary>
+        /// default = white;
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::Decentraland.Common.Color4 AlbedoColor {
+          get { return albedoColor_; }
+          set {
+            albedoColor_ = value;
+          }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
@@ -509,6 +527,7 @@ namespace DCL.ECSComponents {
           if (!object.Equals(Texture, other.Texture)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(AlphaTest, other.AlphaTest)) return false;
           if (CastShadows != other.CastShadows) return false;
+          if (!object.Equals(AlbedoColor, other.AlbedoColor)) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -519,6 +538,7 @@ namespace DCL.ECSComponents {
           if (texture_ != null) hash ^= Texture.GetHashCode();
           if (HasAlphaTest) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(AlphaTest);
           if (HasCastShadows) hash ^= CastShadows.GetHashCode();
+          if (albedoColor_ != null) hash ^= AlbedoColor.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -549,6 +569,10 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(24);
             output.WriteBool(CastShadows);
           }
+          if (albedoColor_ != null) {
+            output.WriteRawTag(34);
+            output.WriteMessage(AlbedoColor);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
@@ -571,6 +595,10 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(24);
             output.WriteBool(CastShadows);
           }
+          if (albedoColor_ != null) {
+            output.WriteRawTag(34);
+            output.WriteMessage(AlbedoColor);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
           }
@@ -589,6 +617,9 @@ namespace DCL.ECSComponents {
           }
           if (HasCastShadows) {
             size += 1 + 1;
+          }
+          if (albedoColor_ != null) {
+            size += 1 + pb::CodedOutputStream.ComputeMessageSize(AlbedoColor);
           }
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
@@ -613,6 +644,12 @@ namespace DCL.ECSComponents {
           }
           if (other.HasCastShadows) {
             CastShadows = other.CastShadows;
+          }
+          if (other.albedoColor_ != null) {
+            if (albedoColor_ == null) {
+              AlbedoColor = new global::Decentraland.Common.Color4();
+            }
+            AlbedoColor.MergeFrom(other.AlbedoColor);
           }
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
@@ -644,6 +681,13 @@ namespace DCL.ECSComponents {
                 CastShadows = input.ReadBool();
                 break;
               }
+              case 34: {
+                if (albedoColor_ == null) {
+                  AlbedoColor = new global::Decentraland.Common.Color4();
+                }
+                input.ReadMessage(AlbedoColor);
+                break;
+              }
             }
           }
         #endif
@@ -672,6 +716,13 @@ namespace DCL.ECSComponents {
               }
               case 24: {
                 CastShadows = input.ReadBool();
+                break;
+              }
+              case 34: {
+                if (albedoColor_ == null) {
+                  AlbedoColor = new global::Decentraland.Common.Color4();
+                }
+                input.ReadMessage(AlbedoColor);
                 break;
               }
             }
