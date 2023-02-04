@@ -7,6 +7,7 @@ import {
   isWin,
   nodeModulesPath,
   normalizePath,
+  protocolOutputPath,
   protocolPath,
   protocPath,
   workingDirectory,
@@ -20,9 +21,12 @@ const protocolInputPath = normalizePath(
   path.resolve(__dirname, '../temp/'),
 )
 
-const protocolOutputPath = path.resolve(
-  __dirname,
-  '../../unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/',
+const rendererProtocolRawInputPath = normalizePath(
+  path.resolve(__dirname, '../../renderer-protocol/'),
+)
+
+const rendererProtocolInputPath = normalizePath(
+  path.resolve(__dirname, '../temp/decentraland/renderer/'),
 )
 
 async function main() {
@@ -30,6 +34,10 @@ async function main() {
     fs.rmSync(protocolInputPath, { recursive: true })
   }
   fse.copySync(protocolRawInputPath, protocolInputPath, {
+    overwrite: true,
+  })
+
+  fse.copySync(rendererProtocolRawInputPath, rendererProtocolInputPath, {
     overwrite: true,
   })
 

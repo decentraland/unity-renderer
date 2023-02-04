@@ -8,7 +8,16 @@ export const isWin = process.platform === 'win32'
 export const workingDirectory = __dirname
 export const nodeModulesPath = path.resolve(__dirname, '../node_modules/')
 export const protocPath = path.resolve(nodeModulesPath, '.bin/protoc')
-export const protocolPath = path.resolve(nodeModulesPath, '@dcl/protocol', 'proto')
+export const protocolPath = path.resolve(
+  nodeModulesPath,
+  '@dcl/protocol',
+  'proto',
+)
+
+export const protocolOutputPath = path.resolve(
+  __dirname,
+  '../../unity-renderer/Assets/Scripts/MainScripts/DCL/DecentralandProtocol/',
+)
 
 export function normalizePath(path: string) {
   if (isWin) {
@@ -47,4 +56,5 @@ export async function execute(
 }
 
 export const camelToSnakeCase = (text: string) =>
-  text.substring(0, 1) + text.slice(1).replace(/[A-Z][a-z]/g, (letter) => `_${letter.toLowerCase()}`)
+  text.substring(0, 1) +
+  text.slice(1).replace(/[A-Z][a-z]/g, (letter) => `_${letter.toLowerCase()}`)
