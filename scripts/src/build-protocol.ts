@@ -79,7 +79,7 @@ function fixEngineInterface() {
   const engineInterfaceProtoPath = normalizePath(
     path.resolve(
       protocolInputPath,
-      '../renderer-protocol/engine_interface.proto',
+      'decentraland/renderer/engine_interface.proto',
     ),
   )
   const content = fs.readFileSync(engineInterfaceProtoPath).toString()
@@ -150,7 +150,7 @@ async function buildProtocol() {
     ...getProtofiles('decentraland/common/**/*.proto'),
     ...getProtofiles('decentraland/sdk/components/**/*.proto').filter((value) => !value.endsWith('id.proto')),
     ...getProtofiles('decentraland/bff/**/*.proto'),
-    ...getProtofiles('../renderer-protocol/**/*.proto')
+    ...getProtofiles('decentraland/renderer/**/*.proto')
   ].join(' ')
 
   const ext = isWin ? 'cmd' : 'js'
