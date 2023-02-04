@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package decentraland.renderer.kernel_services;
+
+message TriggerExpressionRequest {
+  string id = 1;
+  float timestamp = 2;
+}
+
+message TriggerExpressionResponse {}
+
+// Service implemented in Kernel and used in Renderer through the inverse RPC transport
+service EmotesKernelService {
+  // Request Kernel to Trigger the Expression (it will be broadcasted to the avatars in the area)
+  rpc TriggerExpression(TriggerExpressionRequest) returns (TriggerExpressionResponse) {}
+}

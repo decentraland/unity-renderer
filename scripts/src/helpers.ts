@@ -18,14 +18,6 @@ export function normalizePath(path: string) {
   }
 }
 
-/*function getMetaPath(filePath: string) {
-  const basepath = path.dirname(filePath)
-  const basename = path.basename(filePath)
-  const metafile = basename.replace('.gen.cs', '.meta')
-  const metapath = `${basepath}/${metafile}`
-  return metapath
-}*/
-
 export function cleanGeneratedCode(pathToClean: string) {
   const files = glob.sync(normalizePath(`${pathToClean}/**/*.gen.cs`))
 

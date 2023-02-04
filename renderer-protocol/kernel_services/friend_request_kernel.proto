@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package decentraland.renderer.kernel_services;
+
+import "decentraland/renderer/common/friend_request_common.proto";
+
+// Get friend requests
+message GetFriendRequestsPayload {
+  int32 sent_limit = 1; // Max amount of entries of sent friend requests to request
+  int32 sent_skip = 2; // The amount of entries of sent friend requests to skip
+  int32 received_limit = 3; // Max amount of entries of received friend requests to request
+  int32 received_skip = 4; // The amount of entries of received friend requests to skip
+}
+
+message GetFriendRequestsReplyOk {
+  repeated decentraland.renderer.common.FriendRequestInfo requested_to = 1; // Friend request info on the requests you've sent to users
+  repeated decentraland.renderer.common.FriendRequestInfo requested_from = 2; // Friend request info on the requests you've received from users
+  int32 total_received_friend_requests = 3; // Total amount of friend requests received
+  int32 total_sent_friend_requests = 4; // Total amount of friend requests sent
+}
+
+message GetFriendRequestsReply {
+  oneof message {
+    GetFriendRequestsReplyOk reply = 1;
+    decentraland.renderer.common.FriendshipErrorCode error = 2;
+  }
+}
+
+// Send friend request
+message SendFriendRequestPayload {
+  string user_id = 1;
+  string message_body = 2;
+}
+
+message SendFriendRequestReplyOk {
+  decentraland.renderer.common.FriendRequestInfo friend_request = 1; // Friend request info on the request you've sent to a user
+}
+
+message SendFriendRequestReply {
+  oneof message {
+    SendFriendRequestReplyOk reply = 1;
+    decentraland.renderer.common.FriendshipErrorCode error = 2;
+  }
+}
+
+// Cancel friend request
+message CancelFriendRequestPayload {
+  string friend_request_id = 1;
+}
+
+message CancelFriendRequestReplyOk {
+  decentraland.renderer.common.FriendRequestInfo friend_request = 1; // Friend request info on the request you've canceled
+}
+
+message CancelFriendRequestReply {
+  oneof message {
+    CancelFriendRequestReplyOk reply = 1;
+    decentraland.renderer.common.FriendshipErrorCode error = 2;
+  }
+}
+
+// Accept friend request
+message AcceptFriendRequestPayload {
+  string friend_request_id = 1;
+}
+
+message AcceptFriendRequestReplyOk {
+  decentraland.renderer.common.FriendRequestInfo friend_request = 1;
+}
+
+message AcceptFriendRequestReply {
+  oneof message {
+    AcceptFriendRequestReplyOk reply = 1;
+    decentraland.renderer.common.FriendshipErrorCode error = 2;
+  }
+}
+
+// Reject friend request
+message RejectFriendRequestPayload {
+  string friend_request_id = 1;
+}
+
+message RejectFriendRequestReplyOk {
+  decentraland.renderer.common.FriendRequestInfo friend_request = 1;
+}
+
+message RejectFriendRequestReply {
+  oneof message {
+    RejectFriendRequestReplyOk reply = 1;
+    decentraland.renderer.common.FriendshipErrorCode error = 2;
+  }
+}
+
+service FriendRequestKernelService {
+  rpc GetFriendRequests(GetFriendRequestsPayload) returns (GetFriendRequestsReply) {}
+  rpc SendFriendRequest(SendFriendRequestPayload) returns (SendFriendRequestReply) {}
+  rpc CancelFriendRequest(CancelFriendRequestPayload) returns (CancelFriendRequestReply) {}
+  rpc AcceptFriendRequest(AcceptFriendRequestPayload) returns (AcceptFriendRequestReply) {}
+  rpc RejectFriendRequest(RejectFriendRequestPayload) returns (RejectFriendRequestReply) {}
+}

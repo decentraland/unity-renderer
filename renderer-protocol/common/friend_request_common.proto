@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package decentraland.renderer.common;
+
+message FriendRequestInfo {
+    string friend_request_id = 1;
+    uint64 timestamp = 2;
+    string from = 3;
+    string to = 4;
+    optional string message_body = 5;
+}
+
+enum FriendshipErrorCode {
+    FEC_TOO_MANY_REQUESTS_SENT = 0;
+    FEC_NOT_ENOUGH_TIME_PASSED = 1;
+    FEC_BLOCKED_USER = 2;
+    FEC_NON_EXISTING_USER = 3;
+    FEC_INVALID_REQUEST = 4;
+    FEC_UNKNOWN = 5;
+}
