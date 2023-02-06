@@ -1042,26 +1042,12 @@ namespace DCL.Interface
                 pointerEventPayload.hit = null;
         }
 
-        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
+
+        public static void ReportGlobalPointerEvent(OnGlobalPointerEventPayload.InputEventType pointerDirection, ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
             float distance, int sceneNumber, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId, meshName, ray, point, normal, distance,
-                isHitInfoValid);
-            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
-
-            onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
-
-            SendSceneEvent(sceneNumber, "actionButtonEvent", onGlobalPointerEvent);
-        }
-
-        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
-            float distance, int sceneNumber, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
-        {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId, meshName, ray, point, normal, distance,
-                isHitInfoValid);
-            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
+            SetPointerEventPayload(onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            onGlobalPointerEventPayload.type = pointerDirection;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 

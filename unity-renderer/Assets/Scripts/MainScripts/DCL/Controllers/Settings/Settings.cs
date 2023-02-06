@@ -106,7 +106,7 @@ namespace DCL.SettingsCommon
             generalSettings.Save();
             qualitySettings.Save();
             audioSettings.Save();
-            PlayerPrefsUtils.Save();
+            PlayerPrefsBridge.Save();
         }
     }
 }
