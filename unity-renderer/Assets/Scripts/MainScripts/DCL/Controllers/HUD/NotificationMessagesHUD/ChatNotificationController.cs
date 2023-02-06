@@ -32,6 +32,7 @@ namespace DCL.Chat.Notifications
         private BaseVariable<string> openedChat => dataStore.HUDs.openChat;
         private CancellationTokenSource fadeOutCT = new ();
         private UserProfile internalOwnUserProfile;
+        private CancellationTokenSource addMessagesCancellationToken = new ();
 
         private UserProfile ownUserProfile
         {
@@ -107,6 +108,8 @@ namespace DCL.Chat.Notifications
             topNotificationView.OnResetFade -= ResetFadeOut;
             mainChatNotificationView.OnClickedChatMessage -= OpenChat;
             topNotificationView.OnClickedChatMessage -= OpenChat;
+            addMessagesCancellationToken.Cancel();
+            addMessagesCancellationToken.Dispose();
         }
 
         private void VisiblePanelsChanged(HashSet<string> newList, HashSet<string> oldList)
@@ -137,12 +140,12 @@ namespace DCL.Chat.Notifications
                 if (notificationEntries.Contains(message.messageId)) return;
                 notificationEntries.Add(message.messageId);
 
-                AddNotificationAsync(message, channel).Forget();
+                AddNotificationAsync(message, channel, addMessagesCancellationToken.Token).Forget();
             }
         }
 
         // TODO: add support for cancellation tokens in profanity filtering
-        private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null)
+        private async UniTaskVoid AddNotificationAsync(ChatMessage message, Channel channel = null, CancellationToken cancellationToken = default)
         {
             string body = message.body;
             string openedChatId = openedChat.Get();
@@ -175,8 +178,8 @@ namespace DCL.Chat.Notifications
 
                 if (IsProfanityFilteringEnabled())
                 {
-                    senderName = await profanityFilter.Filter(senderName);
-                    body = await profanityFilter.Filter(message.body);
+                    senderName = await profanityFilter.Filter(senderName, cancellationToken);
+                    body = await profanityFilter.Filter(message.body, cancellationToken);
                 }
 
                 var publicModel = new PublicChannelMessageNotificationModel(message.messageId,
