@@ -102,8 +102,7 @@ namespace DCLServices.WearablesCatalogService
             else
                 taskResult = awaitingWearableTasks[wearableId];
 
-            ct.RegisterWithoutCaptureExecutionContext(() => taskResult.TrySetCanceled());
-            return await taskResult.Task;
+            return await taskResult.Task.AttachExternalCancellation(ct);
         }
 
         private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(
@@ -133,9 +132,8 @@ namespace DCLServices.WearablesCatalogService
             }
             else
                 taskResult = awaitingWearablesByContextTasks[context];
-
-            ct.RegisterWithoutCaptureExecutionContext(() => taskResult.TrySetCanceled());
-            var wearablesResult = await taskResult.Task;
+            
+            var wearablesResult = await taskResult.Task.AttachExternalCancellation(ct);
             AddWearablesToCatalog(wearablesResult);
 
             return wearablesResult;
