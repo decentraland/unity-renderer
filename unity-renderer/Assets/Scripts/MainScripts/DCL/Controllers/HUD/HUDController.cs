@@ -163,7 +163,7 @@ public class HUDController : IHUDController
         }
     }
 
-    public async void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
+    public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
         string extraPayload = null)
     {
         //TODO(Brian): For now, the factory code is using this switch approach.
@@ -462,7 +462,8 @@ public class HUDController : IHUDController
 
         if (config.active && !controllerCreated)
         {
-            hudElements.Add(id, await hudFactory.CreateHUD(id));
+            IHUD hudElement = await hudFactory.CreateHUD(id);
+            hudElements.Add(id, hudElement);
 
             if (VERBOSE)
                 Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
@@ -475,8 +476,7 @@ public class HUDController : IHUDController
             return;
 
         if (VERBOSE)
-            Debug.Log(
-                $"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
+            Debug.Log($"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
 
         hudElements[id].SetVisibility(config.visible);
     }
@@ -524,18 +524,14 @@ public class HUDController : IHUDController
         PublicChatWindowHud.SetVisibility(false);
     }
 
-    public IHUD GetHUDElement(HUDElementID id)
-    {
-        if (!hudElements.ContainsKey(id))
-            return null;
-
-        return hudElements[id];
-    }
+    public IHUD GetHUDElement(HUDElementID id) =>
+        hudElements.ContainsKey(id) ? hudElements[id] : null;
 
     public static bool IsHUDElementDeprecated(HUDElementID element)
     {
         Type enumType = typeof(HUDElementID);
         var enumName = enumType.GetEnumName(element);
+        Debug.Log(enumName);
         var fieldInfo = enumType.GetField(enumName);
         return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
     }
