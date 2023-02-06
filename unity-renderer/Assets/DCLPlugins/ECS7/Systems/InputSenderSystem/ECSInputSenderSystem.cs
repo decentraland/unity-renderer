@@ -1,8 +1,8 @@
-using System;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using System;
 
 namespace ECSSystems.InputSenderSystem
 {
@@ -10,7 +10,7 @@ namespace ECSSystems.InputSenderSystem
     {
         // Entities' number as buffer for PointerEventResult, the range is [MIN_ENTITY_TARGET, MAX_ENTITY_TARGET]
         private const long MIN_ENTITY_TARGET = 32;
-        private const long MAX_ENTITY_TARGET = 64;
+        private const long MAX_ENTITY_TARGET = 63;
 
         private class State
         {
@@ -41,14 +41,7 @@ namespace ECSSystems.InputSenderSystem
                 if (!model.dirty)
                     continue;
 
-                inputResults[i].value.model.lastEntity++;
-                if (inputResults[i].value.model.lastEntity < MIN_ENTITY_TARGET || inputResults[i].value.model.lastEntity >= MAX_ENTITY_TARGET)
-                {
-                    inputResults[i].value.model.lastEntity = MIN_ENTITY_TARGET;
-                }
-
                 var scene = inputResults[i].value.scene;
-
                 PBPointerEventsResult result = new PBPointerEventsResult();
                 result.Commands.Capacity = model.events.Count;
 
@@ -66,6 +59,7 @@ namespace ECSSystems.InputSenderSystem
                 }
                 model.events.Clear();
 
+                inputResults[i].value.model.lastEntity = Math.Clamp(inputResults[i].value.model.lastEntity + 1, MIN_ENTITY_TARGET, MAX_ENTITY_TARGET);
                 writer.PutComponent(scene.sceneData.sceneNumber,
                     inputResults[i].value.model.lastEntity,
                     ComponentID.POINTER_EVENTS_RESULT,

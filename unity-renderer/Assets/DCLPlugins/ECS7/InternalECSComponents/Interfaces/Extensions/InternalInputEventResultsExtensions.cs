@@ -13,7 +13,7 @@ namespace DCL.ECS7.InternalComponents
                         new InternalInputEventResults()
                         {
                             lastTimestamp = 0,
-                            events = new Queue<InternalInputEventResults.EventData>(6)
+                            events = new Queue<InternalInputEventResults.EventData>()
                         };
 
             data.timestamp = model.lastTimestamp++;
