@@ -1,6 +1,5 @@
 # General setup
 NODE = node
-CONCURRENTLY = node_modules/.bin/concurrently
 
 CWD = $(shell pwd)
 # Remove default Makefile rules
@@ -34,26 +33,12 @@ DIST_STATIC_FILES := static/export.html static/preview.html
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) ## Build all the entrypoints needed for a deployment
 
-build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON)
-
 # Testing
 
 TEST_SOURCE_FILES := $(wildcard test/**/*.ts)
 
 test: build-essentials ## Run all the tests
 	@node ./runTestServer.js
-
-test-docker: ## Run all the tests using a docker container
-	@docker run \
-		-it \
-		--rm \
-		--name node \
-		-v "$(PWD):/usr/src/app" \
-		-w /usr/src/app \
-		-e SINGLE_RUN=true \
-		-p 8080:8080 \
-		circleci/node:10-browsers \
-			make test
 
 test-ci: touch-local # Run the tests (for use in the continuous integration environment)
 	@SINGLE_RUN=true NODE_ENV=production $(MAKE) test
@@ -88,7 +73,7 @@ update-renderer:  ## Update the renderer
 
 # Makefile
 
-.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix test-ci test-docker update build-essentials build-deploy build-release update-renderer madge
+.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix test-ci update build-essentials build-deploy update-renderer madge
 .DEFAULT_GOAL := help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
