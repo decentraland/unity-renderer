@@ -176,7 +176,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private async UniTaskVoid LoadingAvatarRoutine(UserProfile profile, CancellationToken ct)
     {
-        Debug.Log("VENGO POR ACA");
         if (string.IsNullOrEmpty(profile.avatar.bodyShape) || profile.avatar.wearables == null)
         {
             avatar.Dispose();
@@ -186,9 +185,6 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         try
         {
             ct.ThrowIfCancellationRequested();
-
-            Debug.Log($"AVATAR STATUS {avatar.status != IAvatar.Status.Loaded}");
-            Debug.Log($"ES DIFERENTE? {!profile.avatar.HaveSameWearablesAndColors(currentAvatar)}");
 
             if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
@@ -214,12 +210,10 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
 
                 avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
-                Debug.Log("TERMINE DE CARGAR");
             }
         }
         catch (OperationCanceledException ex)
         {
-            Debug.Log("CANCELADO");
             Debug.LogException(ex);
             return;
         }
