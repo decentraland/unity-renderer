@@ -35,17 +35,24 @@ public class EmotesCatalogService : IEmotesCatalogService
         {
             addressableCTS = new CancellationTokenSource();
             embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
-            EmbedEmotes();
         }
         catch (Exception e)
         {
             retryCount--;
             if (retryCount < 0)
-                throw new Exception("Embedded Emotes retry limit reached. Please check the Essentials group is set up correctly");
+            {
+                embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+                embeddedEmotesSO.emotes = new EmbeddedEmote[] { };
+                throw new Exception("Embedded Emotes retry limit reached, they wont work correctly. Please check the Essentials group is set up correctly");
+            }
 
             Debug.LogWarning("Retrying embedded emotes addressables async request...");
             DisposeCT();
             InitializeAsyncEmbeddedEmotes();
+        }
+        finally
+        {
+            EmbedEmotes();
         }
     }
 
