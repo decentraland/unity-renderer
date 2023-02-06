@@ -1,4 +1,6 @@
-﻿namespace DCL
+﻿using DCL.Providers;
+
+namespace DCL
 {
     public static class ServiceLocatorDesktopFactory
     {
@@ -10,7 +12,7 @@
             result.Register<IMemoryManager>(() => new MemoryManagerDesktop());
 
             // HUD
-            result.Register<IHUDFactory>(() => new HUDDesktopFactory());
+            result.Register<IHUDFactory>(() => new HUDDesktopFactory(result.Get<IAddressableResourceProvider>()));
 
             return result;
         }
