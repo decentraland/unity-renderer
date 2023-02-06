@@ -17,9 +17,7 @@ namespace DCL.Skybox
 
         public static async Task<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider)
         {
-            CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfterSlim(TimeSpan.FromSeconds(15));
-            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB, cts.Token);
+            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB);
             var refernces = Instantiate(prefabToInstantiate).GetComponent<SkyboxElementsReferences>();
             return refernces;
         }
