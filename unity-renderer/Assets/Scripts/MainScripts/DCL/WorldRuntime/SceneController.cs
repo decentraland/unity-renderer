@@ -12,6 +12,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.CRDT;
+using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -586,10 +587,10 @@ namespace DCL
             sceneToLoad = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(scenePayload);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            LoadUnityParcelScene(sceneToLoad);
+            LoadUnityParcelScene(sceneToLoad).Forget();
         }
 
-        public void LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad)
+        public async UniTaskVoid LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad)
         {
             if (sceneToLoad == null || sceneToLoad.sceneNumber <= 0)
                 return;
@@ -616,7 +617,7 @@ namespace DCL
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.SetData(sceneToLoad);
+                await newScene.SetData(sceneToLoad);
 
                 if (debugConfig.isDebugMode.Get())
                 {

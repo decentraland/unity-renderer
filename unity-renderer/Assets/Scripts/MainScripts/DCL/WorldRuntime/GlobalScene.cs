@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace DCL.Controllers
 
         public override bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0) { return true; }
 
-        public override void SetData(LoadParcelScenesMessage.UnityParcelScene data)
+        public override async UniTask SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
             this.sceneData = data;
 

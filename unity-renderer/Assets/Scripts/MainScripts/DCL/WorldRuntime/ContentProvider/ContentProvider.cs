@@ -12,8 +12,10 @@ namespace DCL
         public static bool VERBOSE = false;
 
         public string baseUrl;
+        public string assetBundlesBaseUrl;
         public List<MappingPair> contents = new ();
         public Dictionary<string, string> fileToHash = new ();
+        public HashSet<string> assetBundles = new ();
 
         public override string ToString()
         {
