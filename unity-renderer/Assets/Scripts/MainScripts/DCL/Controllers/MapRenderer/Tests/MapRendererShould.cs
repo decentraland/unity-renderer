@@ -118,7 +118,7 @@ namespace Tests
         public void DisplayParcelOfInterestIconsProperly2()
         {
             var sceneInfo = new MinimapMetadata.MinimapSceneInfo();
-            sceneInfo.name = "important scene";
+            sceneInfo.name = "important scene 2";
             sceneInfo.isPOI = true;
             sceneInfo.parcels = new List<Vector2Int>()
             {
