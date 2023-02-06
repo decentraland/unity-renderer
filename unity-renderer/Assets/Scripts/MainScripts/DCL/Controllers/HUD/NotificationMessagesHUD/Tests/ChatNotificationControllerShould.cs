@@ -5,6 +5,7 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Threading;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 using Object = UnityEngine.Object;
@@ -343,7 +344,7 @@ namespace DCL.Chat.Notifications
         public void FilterProfanityWordsOnPublicMessages(string body, string expectedBody)
         {
             dataStore.settings.profanityChatFilteringEnabled.Set(true);
-            profanityFilter.Filter(body).Returns(UniTask.FromResult(expectedBody));
+            profanityFilter.Filter(body, Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(expectedBody));
             GivenProfile("sender", "senderName");
 
             chatController.GetAllocatedChannel("channel")
