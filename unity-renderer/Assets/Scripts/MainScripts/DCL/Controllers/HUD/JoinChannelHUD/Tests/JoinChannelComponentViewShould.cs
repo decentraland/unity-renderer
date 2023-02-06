@@ -5,18 +5,18 @@ namespace DCl.Social.Chat.Channels
 {
     public class JoinChannelComponentViewShould
     {
-        private JoinChannelComponentView joinChannelComponentView;
+        private JoinChannelComponentView view;
 
         [SetUp]
         public void Setup()
         {
-            joinChannelComponentView = JoinChannelComponentView.Create();
+            view = JoinChannelComponentView.Create();
         }
 
         [TearDown]
         public void TearDown()
         {
-            joinChannelComponentView.Dispose();
+            view.Dispose();
         }
 
         [Test]
@@ -29,10 +29,10 @@ namespace DCl.Social.Chat.Channels
             };
 
             // Act
-            joinChannelComponentView.Configure(testModel);
+            view.Configure(testModel);
 
             // Assert
-            Assert.AreEqual(testModel, joinChannelComponentView.model, "The model does not match after configuring the realm selector.");
+            Assert.AreEqual(testModel, view.model, "The model does not match after configuring the realm selector.");
         }
 
         [Test]
@@ -42,11 +42,31 @@ namespace DCl.Social.Chat.Channels
             string testName = "TestName";
 
             // Act
-            joinChannelComponentView.SetChannel(testName);
+            view.SetChannel(testName);
 
             // Assert
-            Assert.AreEqual(testName, joinChannelComponentView.model.channelId, "The channel id does not match in the model.");
-            Assert.AreEqual(joinChannelComponentView.titleText.text, string.Format(JoinChannelComponentView.MODAL_TITLE, testName));
+            Assert.AreEqual(testName, view.model.channelId, "The channel id does not match in the model.");
+            Assert.AreEqual(view.titleText.text, string.Format(JoinChannelComponentView.MODAL_TITLE, testName));
+        }
+
+        [Test]
+        public void ShowLoading()
+        {
+            view.ShowLoading();
+
+            Assert.IsFalse(view.cancelButton.IsInteractable());
+            Assert.IsFalse(view.confirmButton.IsInteractable());
+            Assert.IsTrue(view.loadingSpinnerContainer.activeSelf);
+        }
+
+        [Test]
+        public void HideLoading()
+        {
+            view.HideLoading();
+
+            Assert.IsTrue(view.cancelButton.IsInteractable());
+            Assert.IsTrue(view.confirmButton.IsInteractable());
+            Assert.IsFalse(view.loadingSpinnerContainer.activeSelf);
         }
     }
 }

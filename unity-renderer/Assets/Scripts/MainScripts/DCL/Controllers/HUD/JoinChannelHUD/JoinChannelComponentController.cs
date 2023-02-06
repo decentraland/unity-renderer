@@ -73,6 +73,7 @@ namespace DCL.Social.Chat.Channels
 
             channelName = currentChannelName;
             view.SetChannel(currentChannelName);
+            view.HideLoading();
             view.Show();
         }
 
@@ -101,12 +102,17 @@ namespace DCL.Social.Chat.Channels
                     if (alreadyJoinedChannel != null)
                     {
                         if (!alreadyJoinedChannel.Joined)
+                        {
+                            view.ShowLoading();
                             alreadyJoinedChannel = await chatController.JoinOrCreateChannelAsync(alreadyJoinedChannel.ChannelId, cancellationToken);
+                        }
 
                         OpenChannelWindow(alreadyJoinedChannel);
                     }
                     else
                     {
+                        view.ShowLoading();
+
                         (string pageToken, Channel[] channels) = await chatController.GetChannelsByNameAsync(1, channelName, cancellationToken: cancellationToken);
                         Channel channelToJoin = channels.FirstOrDefault(channel => channel.Name == channelName);
 
@@ -129,6 +135,7 @@ namespace DCL.Social.Chat.Channels
                     if (channelsDataStore.channelJoinedSource.Get() == ChannelJoinedSource.Link)
                         socialAnalytics.SendChannelLinkClicked(channelName, true, GetChannelLinkSource());
 
+                    view.HideLoading();
                     view.Hide();
                     channelsDataStore.currentJoinChannelModal.Set(null);
                 }

@@ -10,5 +10,7 @@ namespace DCL.Social.Chat.Channels
         void SetChannel(string channelName);
         void Show(bool instant = false);
         void Hide(bool instant = false);
+        void ShowLoading();
+        void HideLoading();
     }
 }

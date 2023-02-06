@@ -15,6 +15,7 @@ namespace DCL.Social.Chat.Channels
         [SerializeField] internal TMP_Text titleText;
         [SerializeField] internal ButtonComponentView cancelButton;
         [SerializeField] internal ButtonComponentView confirmButton;
+        [SerializeField] internal GameObject loadingSpinnerContainer;
 
         [Header("Configuration")]
         [SerializeField] internal JoinChannelComponentModel model;
@@ -54,6 +55,11 @@ namespace DCL.Social.Chat.Channels
                 return;
 
             SetChannel(model.channelId);
+
+            if (model.isLoading)
+                ShowLoading();
+            else
+                HideLoading();
         }
 
         public void SetChannel(string channelName)
@@ -64,6 +70,22 @@ namespace DCL.Social.Chat.Channels
                 return;
 
             titleText.text = string.Format(MODAL_TITLE, channelName);
+        }
+
+        public void ShowLoading()
+        {
+            model.isLoading = true;
+            cancelButton.SetInteractable(false);
+            confirmButton.SetInteractable(false);
+            loadingSpinnerContainer.SetActive(true);
+        }
+
+        public void HideLoading()
+        {
+            model.isLoading = false;
+            cancelButton.SetInteractable(true);
+            confirmButton.SetInteractable(true);
+            loadingSpinnerContainer.SetActive(false);
         }
 
         internal static JoinChannelComponentView Create()

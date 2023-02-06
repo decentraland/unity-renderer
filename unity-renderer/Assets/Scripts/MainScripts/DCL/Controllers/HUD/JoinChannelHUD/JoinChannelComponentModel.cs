@@ -6,5 +6,6 @@ namespace DCL.Social.Chat.Channels
     public class JoinChannelComponentModel : BaseComponentModel
     {
         public string channelId;
+        public bool isLoading;
     }
 }
