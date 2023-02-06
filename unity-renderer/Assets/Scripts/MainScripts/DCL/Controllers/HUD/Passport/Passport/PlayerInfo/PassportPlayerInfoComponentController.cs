@@ -81,7 +81,7 @@ namespace DCL.Social.Passports
         private void UsernameCopy(string username)
         {
             clipboard.WriteText(username);
-            socialAnalytics.SendCopyWallet(PlayerActionSource.Passport);
+            socialAnalytics.SendCopyUsername(PlayerActionSource.Passport);
         }
 
         private void JumpInUser()

@@ -635,6 +635,9 @@
           return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
         }
 
+        // the CLI tool binds @/explorer to a static server serving the contents of
+        // the @dcl/explorer package, it has the same behavior as the CDNs listed
+        // above
         return new URL('@/explorer', location.toString()).toString()
       }
 

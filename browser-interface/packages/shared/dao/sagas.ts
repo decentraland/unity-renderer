@@ -17,7 +17,7 @@ import {
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
 import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
-import { saveToPersistentStorage, getFromPersistentStorage } from '../../atomicHelpers/persistentStorage'
+import { saveToPersistentStorage, getFromPersistentStorage } from 'lib/browser/persistentStorage'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { createAlgorithm } from './pick-realm-algorithm/index'
 import { AlgorithmChainConfig } from './pick-realm-algorithm/types'
