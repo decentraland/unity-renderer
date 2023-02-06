@@ -151,7 +151,7 @@ const commonOptions = {
   minify: !cliopts.watch,
   sourcemap: 'external',
   sourceRoot: path.resolve('./packages'),
-  sourcesContent: !!cliopts.watch,
+  sourcesContent: true,
   treeShaking: true,
   plugins: [nodeBuiltIns(), workerLoader()]
 }
