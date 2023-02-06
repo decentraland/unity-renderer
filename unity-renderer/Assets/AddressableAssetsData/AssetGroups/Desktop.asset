@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: Preloading
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 52e407ac531d7f47a8ebe361e507bf9b
+    m_Address: LoginHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
