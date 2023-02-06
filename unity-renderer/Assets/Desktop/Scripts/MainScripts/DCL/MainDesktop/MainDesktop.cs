@@ -1,6 +1,7 @@
 using System;
 using DCL.SettingsCommon;
 using DCL.Components;
+using DCL.Providers;
 using MainScripts.DCL.Controllers.HUD.Preloading;
 using MainScripts.DCL.Controllers.LoadingFlow;
 using MainScripts.DCL.Controllers.SettingsDesktop;
@@ -149,7 +150,7 @@ namespace DCL
         protected override void InitializeSceneDependencies()
         {
             base.InitializeSceneDependencies();
-            preloadingController = new PreloadingController();
+            preloadingController = new PreloadingController(new AddressableResourceProvider());
         }
 
         protected override void SetupServices()
