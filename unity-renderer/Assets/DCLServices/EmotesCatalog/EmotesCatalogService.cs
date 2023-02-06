@@ -19,6 +19,8 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     private IAddressableResourceProvider addressableResourceProvider;
     private EmbeddedEmotesSO embeddedEmotesSO;
+    private CancellationTokenSource addressableCTS;
+    private int retryCount = 3;
 
     public EmotesCatalogService(IEmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider)
     {
@@ -31,15 +33,20 @@ public class EmotesCatalogService : IEmotesCatalogService
     {
         try
         {
-            embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset");
+            addressableCTS = new CancellationTokenSource();
+            embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
+            EmbedEmotes();
         }
         catch (Exception e)
         {
-            embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-            embeddedEmotesSO.emotes = new EmbeddedEmote[]{};
-            throw new Exception("Embedded emotes async initialization failed. Please check that the Essentials group addressables are correct");
+            retryCount--;
+            if (retryCount < 0)
+                throw new Exception("Embedded Emotes retry limit reached. Please check the Essentials group is set up correctly");
+
+            Debug.LogWarning("Retrying embedded emotes addressables async request...");
+            DisposeCT();
+            InitializeAsyncEmbeddedEmotes();
         }
-        EmbedEmotes();
     }
 
     public void Initialize()
@@ -270,5 +277,16 @@ public class EmotesCatalogService : IEmotesCatalogService
         bridge.OnEmotesReceived -= OnEmotesReceived;
         bridge.OnEmoteRejected -= OnEmoteRejected;
         bridge.OnOwnedEmotesReceived -= OnOwnedEmotesReceived;
+        DisposeCT();
+    }
+
+    private void DisposeCT()
+    {
+        if (addressableCTS != null)
+        {
+            addressableCTS.Cancel();
+            addressableCTS.Dispose();
+            addressableCTS = null;
+        }
     }
 }
