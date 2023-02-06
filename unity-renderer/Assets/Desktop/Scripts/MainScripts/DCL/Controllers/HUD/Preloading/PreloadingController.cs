@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Providers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,25 +14,24 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
         private readonly DataStoreRef<DataStore_LoadingScreen> loadingScreenRef;
 
         private BaseVariable<bool> isSignUpFlow => DataStore.i.common.isSignUpFlow;
-        private bool isDisposed = false;
+        private bool isDisposed;
 
-        public PreloadingController()
+        public PreloadingController(IAddressableResourceProvider addressableResourceProvider)
         {
-            view = Object.Instantiate(GetView());
+            GetView().Forget();
+
             loadingScreenRef.Ref.loadingHUD.message.OnChange += OnMessageChange;
             loadingScreenRef.Ref.decoupledLoadingHUD.visible.OnChange += OnDecoupledLoadingScreenVisibilityChange;
             isSignUpFlow.OnChange += SignUpFlowChanged;
+
+            async UniTask GetView() =>
+                view = (await addressableResourceProvider.Instantiate<Transform>("Preloading")).gameObject;
         }
 
         private void OnDecoupledLoadingScreenVisibilityChange(bool current, bool _)
         {
             if (current)
                 Dispose();
-        }
-
-        private GameObject GetView()
-        {
-            return Resources.Load<GameObject>("Preloading");
         }
 
         public void Dispose()
