@@ -1,19 +1,18 @@
 import { Vector2 } from '@dcl/ecs-math'
-import { parcelLimits } from 'config'
 import { PositionReport } from 'shared/world/positionThings'
+import { parcelSize, maxParcelX, maxParcelZ } from 'lib/decentraland/parcels/limits'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 
 export type ParcelArray = [number, number]
 
 export function positionHashRfc4(p: rfc4.Position) {
   const parcel = position2parcelRfc4(p)
-  const x = (parcel.x + parcelLimits.maxParcelX) >> 2
-  const z = (parcel.y + parcelLimits.maxParcelZ) >> 2
+  const x = (parcel.x + maxParcelX) >> 2
+  const z = (parcel.y + maxParcelZ) >> 2
   return `${x}:${z}`
 }
 
 export function position2parcelRfc4(p: Readonly<rfc4.Position>): Vector2 {
-  const parcelSize = parcelLimits.parcelSize
   return new Vector2(Math.trunc(p.positionX / parcelSize), Math.trunc(p.positionZ / parcelSize))
 }
 

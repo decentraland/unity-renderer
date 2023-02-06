@@ -63,7 +63,7 @@ MonoBehaviour:
     maxHQAvatars: 60
     reflectionResolution: 2
   - displayName: Ultra
-    baseResolution: 2
+    baseResolution: 1
     antiAliasing: 8
     renderScale: 1
     shadows: 1

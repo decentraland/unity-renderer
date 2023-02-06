@@ -1,5 +1,5 @@
 import { Avatar } from '@dcl/schemas'
-import { sleep } from 'atomicHelpers/sleep'
+import { sleep } from 'lib/javascript/sleep'
 import { expect } from 'chai'
 import future from 'fp-future'
 import { expectSaga } from 'redux-saga-test-plan'

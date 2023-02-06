@@ -10,12 +10,27 @@ namespace DCL.Social.Passports
     {
         [field: SerializeField]
         public RawImage CharacterPreviewImage { get; private set; }
+        public event Action<double> OnEndDragEvent;
 
         [field: SerializeField]
         public PreviewCameraRotation PreviewCameraRotation { get; private set; }
 
         [SerializeField] private ShowHideAnimator tutorialShowHide;
         [SerializeField] private GameObject loadingSpinner;
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            PreviewCameraRotation.OnEndDragEvent += EndPreviewDrag;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            PreviewCameraRotation.OnEndDragEvent -= EndPreviewDrag;
+        }
 
         public void HideTutorial()
         {
@@ -38,6 +53,11 @@ namespace DCL.Social.Passports
             {
                 HideTutorial();
             }
+        }
+
+        private void EndPreviewDrag(double dragTime)
+        {
+            OnEndDragEvent?.Invoke(dragTime);
         }
 
         RenderTexture IPassportPlayerPreviewComponentView.CharacterPreviewTexture => (RenderTexture) CharacterPreviewImage.texture;
