@@ -98,7 +98,7 @@ static class BuildCommand
     {
         string buildOptions = GetArgument("customBuildOptions");
         Profiler.maxUsedMemory = 16777000;
-        return BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler | BuildOptions.EnableDeepProfilingSupport;
+        return BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler;
         /*string buildOptions = GetArgument("customBuildOptions");
         return buildOptions == "AcceptExternalModificationsToPlayer"
             ? BuildOptions.AcceptExternalModificationsToPlayer
