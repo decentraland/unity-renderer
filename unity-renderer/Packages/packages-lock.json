@@ -56,6 +56,13 @@
       "dependencies": {},
       "hash": "5577bd123883e2fa96f51b8d534abd75bad0535f"
     },
+    "com.decentraland.videoplayer": {
+      "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "06e147c3b999e7da725d5896aaf154f329b88642"
+    },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
       "depth": 0,
@@ -81,6 +88,20 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {}
+    },
+    "com.unity.addressables": {
+      "version": "1.19.19",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "1.19.6",
+        "com.unity.modules.assetbundle": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.build-report-inspector": {
       "version": "https://github.com/needle-mirror/com.unity.build-report-inspector.git",

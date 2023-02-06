@@ -124,6 +124,7 @@ namespace DCL.Emotes
             catch (Exception e)
             {
                 loaders.Remove((bodyShapeId, emoteId));
+                dataStore.animations.Remove((bodyShapeId, emoteId));
                 ExceptionDispatchInfo.Capture(e).Throw();
                 throw;
             }
@@ -131,10 +132,10 @@ namespace DCL.Emotes
 
         private void UnloadEmote(string bodyShapeId, string emoteId)
         {
+            dataStore.animations.Remove((bodyShapeId, emoteId));
             if (!loaders.TryGetValue((bodyShapeId, emoteId), out IEmoteAnimationLoader loader))
                 return;
 
-            dataStore.animations.Remove((bodyShapeId, emoteId));
             loaders.Remove((bodyShapeId, emoteId));
             loader?.Dispose();
         }

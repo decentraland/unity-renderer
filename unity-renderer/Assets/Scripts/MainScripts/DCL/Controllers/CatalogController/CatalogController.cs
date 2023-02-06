@@ -30,7 +30,7 @@ public class CatalogController : MonoBehaviour
     private static Dictionary<string, float> pendingWearablesByContextRequestedTimes = new Dictionary<string, float>();
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
-    
+
     public BaseDictionary<string, WearableItem> Wearables => DataStore.i.common.wearables;
 
     public void Awake() { i = this; }
@@ -65,7 +65,7 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
-    //This temporary until the emotes are in the content server 
+    //This temporary until the emotes are in the content server
     public void EmbedWearables(IEnumerable<WearableItem> wearables)
     {
         foreach (WearableItem wearableItem in wearables)
@@ -130,6 +130,9 @@ public class CatalogController : MonoBehaviour
     public void WearablesRequestFailed(string payload)
     {
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
+
+		if (requestFailedResponse?.context == null)
+            return;
 
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
             requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT) ||

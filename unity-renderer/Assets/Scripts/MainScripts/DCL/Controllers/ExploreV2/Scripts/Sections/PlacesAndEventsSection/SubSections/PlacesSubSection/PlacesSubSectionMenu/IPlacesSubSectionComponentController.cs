@@ -1,6 +1,4 @@
-﻿// unset:none
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 public interface IPlacesSubSectionComponentController : IDisposable
 {

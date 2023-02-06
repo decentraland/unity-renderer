@@ -16,7 +16,7 @@ public class PrivateChatWindowController : IHUD
     internal const int USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_SHOW_MORE = 10;
 
     public IPrivateChatComponentView View { get; private set; }
-    
+
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IChatController chatController;
@@ -66,7 +66,7 @@ public class PrivateChatWindowController : IHUD
         view.OnClose += Hide;
         view.OnMinimize += MinimizeView;
         view.OnUnfriend += Unfriend;
-        
+
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += Hide;
 
@@ -103,7 +103,7 @@ public class PrivateChatWindowController : IHUD
             return;
 
         SetVisiblePanelList(visible);
-        
+
         if (visible)
         {
             View?.SetLoadingMessagesActive(false);
@@ -123,7 +123,7 @@ public class PrivateChatWindowController : IHUD
                         conversationUserId,
                         USER_PRIVATE_MESSAGES_TO_REQUEST_FOR_INITIAL_LOAD,
                         null);
-                    
+
                     shouldRequestMessages = false;
                 }
             }
@@ -202,7 +202,7 @@ public class PrivateChatWindowController : IHUD
     private void HandleMessageReceived(ChatMessage[] messages)
     {
         var messageLogUpdated = false;
-        
+
         foreach (var message in messages)
         {
             if (!IsMessageFomCurrentConversation(message)) continue;
@@ -223,7 +223,7 @@ public class PrivateChatWindowController : IHUD
 
         deactivateFadeOutCancellationToken.Cancel();
         deactivateFadeOutCancellationToken = new CancellationTokenSource();
-        
+
         if (View.IsActive && messageLogUpdated)
             MarkUserChatMessagesAsRead();
     }
@@ -243,8 +243,13 @@ public class PrivateChatWindowController : IHUD
 
     private void Unfriend(string friendId)
     {
-        friendsController.RemoveFriend(friendId);
-        Hide();
+        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
+            UserProfileController.userProfilesCatalog.Get(friendId)?.userName,
+            () =>
+            {
+                friendsController.RemoveFriend(friendId);
+                Hide();
+            }), true);
     }
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)
@@ -331,7 +336,7 @@ public class PrivateChatWindowController : IHUD
         View?.SetLoadingMessagesActive(false);
         View?.SetOldMessagesLoadingActive(false);
     }
-    
+
     private void HandleMessageBlockedBySpam(ChatMessage message)
     {
         chatHudController.AddChatMessage(new ChatEntryModel
@@ -343,7 +348,7 @@ public class PrivateChatWindowController : IHUD
             subType = ChatEntryModel.SubType.RECEIVED
         });
     }
-    
+
     private void ResetPagination()
     {
         oldestTimestamp = long.MaxValue;

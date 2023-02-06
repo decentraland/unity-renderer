@@ -1,11 +1,12 @@
 import { exec } from "child_process"
-import { readFileSync } from "fs"
+import { readFile, stat } from "fs/promises"
 import { resolve } from "path"
+import * as zlib from "zlib"
+import * as glob from "glob"
 import { ensureFileExists } from "./utils"
-import fetch from "node-fetch"
-import FormData from "form-data"
+import { fetch, FormData } from "undici"
 
-const DIST_ROOT = resolve(__dirname, "../dist")
+const DIST_ROOT = resolve(__dirname, "../static")
 
 async function main() {
   await checkFiles()
@@ -43,20 +44,43 @@ async function main() {
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version, tag)
   }
+
+  await checkFileSizes()
 }
 
 async function checkFiles() {
-  const packageJson = JSON.parse(readFileSync(resolve(DIST_ROOT, "./package.json")).toString())
+  const packageJson = JSON.parse(await readFile(resolve(DIST_ROOT, "./package.json"), 'utf-8'))
   console.log("> will publish:\n" + JSON.stringify(packageJson, null, 2))
   console.assert(packageJson.main, "package.json must contain main file")
-  console.assert(packageJson.typings, "package.json must contain typings file")
   ensureFileExists(DIST_ROOT, packageJson.main)
-  ensureFileExists(DIST_ROOT, packageJson.typings)
   ensureFileExists(DIST_ROOT, "unity.loader.js")
+  ensureFileExists(DIST_ROOT, "unity.data")
+  ensureFileExists(DIST_ROOT, "unity.wasm")
+  ensureFileExists(DIST_ROOT, "unity.framework.js")
+  ensureFileExists(DIST_ROOT, "index.html")
+  ensureFileExists(DIST_ROOT, "preview.html")
+}
+
+
+async function checkFileSizes() {
+  const MAX_FILE_SIZE = 42_000_000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
+  for (let file of glob.sync("**/*", { cwd: DIST_ROOT, absolute: true })) {
+    const stats = await stat(file)
+    if (stats.size > MAX_FILE_SIZE) {
+      console.error(`Warning, the file ${file} exceeds the maximum cacheable file (uncompressed) size: ${(stats.size / 1024 / 1024).toFixed(2)}MB`)
+      const buffer = zlib.brotliCompressSync(await readFile(file))
+      if (buffer.byteLength > MAX_FILE_SIZE) {
+        console.error(`The file ${file} exceeds the maximum cacheable file size: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)
+        process.exitCode = 1
+      }else{
+        console.log(`The file ${file} has a compressed file size of: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)        
+      }
+    }
+  }
 }
 
 async function getPackageJson(workingDirectory: string) {
-  return JSON.parse(readFileSync(workingDirectory + "/package.json", "utf8"))
+  return JSON.parse(await readFile(workingDirectory + "/package.json", "utf8"))
 }
 
 async function triggerPipeline(packageName: string, packageVersion: string, npmTag: string) {

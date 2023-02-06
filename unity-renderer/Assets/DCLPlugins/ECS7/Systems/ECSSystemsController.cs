@@ -8,6 +8,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.VideoPlayerSystem;
 using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VisibilitySystem;
 using System;
@@ -29,6 +30,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
     private readonly ECSPlayerTransformSystem playerTransformSystem;
+    private readonly ECSVideoPlayerSystem videoPlayerSystem;
     private readonly ECSUIInputSenderSystem uiInputSenderSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly GameObject hoverCanvas;
@@ -65,6 +67,7 @@ public class ECSSystemsController : IDisposable
             DataStore.i.ecs7.scenes, Environment.i.world.state, loadingScreenVisible);
 
         billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
+        videoPlayerSystem = new ECSVideoPlayerSystem(context.internalEcsComponents.videoPlayerComponent, context.internalEcsComponents.videoMaterialComponent);
 
         cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
@@ -105,7 +108,8 @@ public class ECSSystemsController : IDisposable
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
             uiInputSenderSystem.Update,
-            billboardSystem.Update
+            billboardSystem.Update,
+            videoPlayerSystem.Update,
         };
 
         lateUpdateSystems = new ECS7System[]

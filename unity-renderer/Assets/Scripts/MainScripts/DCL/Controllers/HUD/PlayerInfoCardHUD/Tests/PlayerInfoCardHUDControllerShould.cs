@@ -45,6 +45,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         GivenWearableCatalog();
 
         dataStore = new DataStore();
+        dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["friends_enabled"] = true } });
         GivenProfanityFiltering();
         GivenProfanityFilteringAvailability(true);
 
