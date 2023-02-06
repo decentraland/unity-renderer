@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Providers;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.Skybox
@@ -12,9 +13,9 @@ namespace DCL.Skybox
         public GameObject satelliteElementsGO;
         public GameObject planarElementsGO;
 
-        public static async UniTask<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider)
+        public static async UniTask<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider, CancellationToken ct)
         {
-            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB);
+            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB, ct);
             var refernces = Instantiate(prefabToInstantiate).GetComponent<SkyboxElementsReferences>();
             return refernces;
         }

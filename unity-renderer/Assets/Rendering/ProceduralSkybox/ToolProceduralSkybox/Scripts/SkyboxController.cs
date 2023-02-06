@@ -56,6 +56,7 @@ namespace DCL.Skybox
         private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
         private MaterialReferenceContainer materialReferenceContainer;
         private int currentRetryCount = 3;
+        private CancellationTokenSource addressableCTS;
 
         public SkyboxController()
         {
@@ -82,15 +83,16 @@ namespace DCL.Skybox
             DoAsyncInitializations();
         }
 
-        private async void DoAsyncInitializations()
+        private async UniTaskVoid DoAsyncInitializations()
         {
             try
             {
-                materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
-                await GetOrCreateEnvironmentProbe();
-                await LoadConfigurations();
+                addressableCTS = new CancellationTokenSource();
+                materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset", addressableCTS.Token);
+                await GetOrCreateEnvironmentProbe(addressableCTS.Token);
+                await LoadConfigurations(addressableCTS.Token);
                 skyboxElements = new SkyboxElements();
-                await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer);
+                await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer, addressableCTS.Token);
             }
             catch (Exception e)
             {
@@ -99,6 +101,7 @@ namespace DCL.Skybox
                     throw new Exception("Skybox retry limit reached. Please check the Essentials group is set up correctly");
 
                 Debug.LogWarning("Retrying skybox addressables async request...");
+                DisposeCT();
                 DoAsyncInitializations();
                 return;
             }
@@ -138,9 +141,9 @@ namespace DCL.Skybox
             FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
         }
 
-        private async Task LoadConfigurations()
+        private async UniTask LoadConfigurations(CancellationToken ct)
         {
-            IList<SkyboxConfiguration> skyboxConfigurations = await addresableResolver.Ref.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration");
+            IList<SkyboxConfiguration> skyboxConfigurations = await addresableResolver.Ref.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration", ct);
             skyboxConfigurationsDictionary = new Dictionary<string, SkyboxConfiguration>();
             foreach (SkyboxConfiguration skyboxConfiguration in skyboxConfigurations)
             {
@@ -185,7 +188,7 @@ namespace DCL.Skybox
             }
         }
 
-        private async Task GetOrCreateEnvironmentProbe()
+        private async UniTask GetOrCreateEnvironmentProbe(CancellationToken cts)
         {
             // Get Reflection Probe Object
             skyboxProbe = GameObject.FindObjectsOfType<ReflectionProbe>().Where(s => s.name == "SkyboxProbe").FirstOrDefault();
@@ -205,7 +208,7 @@ namespace DCL.Skybox
             if (skyboxProbe == null)
             {
                 // Instantiate new probe from the resources
-                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab");
+                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab", cts);
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
                 probe.name = "SkyboxProbe";
                 skyboxProbe = probe.GetComponent<ReflectionProbe>();
@@ -533,6 +536,7 @@ namespace DCL.Skybox
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
 
             timeReporter.Dispose();
+            DisposeCT();
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)
@@ -612,5 +616,15 @@ namespace DCL.Skybox
         }
 
         public SkyboxElements GetSkyboxElements() { return skyboxElements; }
+
+        private void DisposeCT()
+        {
+            if (addressableCTS != null)
+            {
+                addressableCTS.Cancel();
+                addressableCTS.Dispose();
+                addressableCTS = null;
+            }
+        }
     }
 }

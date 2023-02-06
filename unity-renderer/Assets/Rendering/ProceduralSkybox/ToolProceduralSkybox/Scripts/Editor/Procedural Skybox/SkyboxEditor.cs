@@ -41,7 +41,7 @@ namespace DCL.Skybox
         private SkyboxConfiguration[] tConfigurations;
         private MaterialReferenceContainer materialReferenceContainer;
         [MenuItem("Window/Skybox Editor")]
-        async void Init()
+        private async void Init()
         {
             AddressableResourceProvider addressableResourceProvider = new AddressableResourceProvider();
             materialReferenceContainer = await addressableResourceProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
