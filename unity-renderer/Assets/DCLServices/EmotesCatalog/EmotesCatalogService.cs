@@ -275,7 +275,8 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        await UniTask.WaitUntil(() => embeddedEmotesSO != null);
+        if(embeddedEmotesSO == null)
+            await UniTask.WaitUntil(() => embeddedEmotesSO != null);
         return embeddedEmotesSO;
     }
 
