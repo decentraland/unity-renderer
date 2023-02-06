@@ -15,7 +15,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         updateCoroutine = CoroutineStarter.Start(ThrottleUpdate());
     }
 
-    public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates)
+    public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates = 1)
     {
         gpuSkinnings.Add(gpuSkinning, framesBetweenUpdates);
     }
