@@ -19,12 +19,14 @@ namespace DCL.Skybox
         private readonly GameObject domeElements;
         private GameObject domePrefab;
         private FollowBehaviour followBehavior;
+        private MaterialReferenceContainer materialReferenceContainer;
 
         Queue<DomeReferences> domeObjects = new Queue<DomeReferences>();
         Queue<DomeReferences> activeDomeObjects = new Queue<DomeReferences>();
 
-        public SkyboxDomeElements(GameObject domeElements)
+        public SkyboxDomeElements(GameObject domeElements, MaterialReferenceContainer materialReferenceContainer)
         {
+            this.materialReferenceContainer = materialReferenceContainer;
             this.domeElements = domeElements;
             Initialize();
         }
@@ -44,7 +46,7 @@ namespace DCL.Skybox
             {
                 DomeReferences dome = new DomeReferences();
                 dome.domeGO = domeElements.transform.GetChild(i).gameObject;
-                dome.domeGO.GetComponent<Renderer>().material = Object.Instantiate(MaterialReferenceContainer.i.domeMat);
+                dome.domeGO.GetComponent<Renderer>().material = Object.Instantiate(materialReferenceContainer.domeMat);
                 dome.domeMat = dome.domeGO.GetComponent<Renderer>().sharedMaterial;
                 dome.domeGO.SetActive(false);
                 domeObjects.Enqueue(dome);
@@ -92,7 +94,7 @@ namespace DCL.Skybox
             obj.name = "Dome";
             obj.transform.parent = domeElements.transform;
             obj.transform.localPosition = new Vector3(0, -0.7f, 0);
-            obj.GetComponent<Renderer>().material = Object.Instantiate<Material>(MaterialReferenceContainer.i.domeMat);
+            obj.GetComponent<Renderer>().material = Object.Instantiate<Material>(materialReferenceContainer.domeMat);
 
             DomeReferences dome = new DomeReferences();
             dome.domeGO = obj;

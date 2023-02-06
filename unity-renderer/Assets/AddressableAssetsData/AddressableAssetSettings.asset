@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 03787049e5024224093312ce055333db
+  m_DefaultGroup: 2ba95c866c28abd43a150e06c782a8a7
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -42,8 +42,8 @@ MonoBehaviour:
   m_overridePlayerVersion: 
   m_GroupAssets:
   - {fileID: 11400000, guid: 6336a0ada3dc09243870f707b1aca6bc, type: 2}
+  - {fileID: 11400000, guid: 874e9730b65013849b338f16accfa848, type: 2}
   - {fileID: 11400000, guid: b00cb2830851a89468c9f2178f3023e0, type: 2}
-  - {fileID: 11400000, guid: c68d29c5dba66b241b832563ded399c1, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
-    - TestResources
+    - SkyboxConfiguration
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 1861e97f1e599df4ba42e39baceb02ce, type: 2}
