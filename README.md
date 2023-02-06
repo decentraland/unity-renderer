@@ -19,6 +19,8 @@ This repository contains the reference implementation of the [decentraland explo
 
 ## Developer mode, without running the `browser-interface`
 
+Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
+
 1. Download and install Unity 2021.3.14f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
