@@ -46,7 +46,7 @@ namespace InputController_Tests
         {
             action.dclAction = DCLAction_Trigger.CameraChange;
 
-            Assert.AreEqual(DCLAction_Trigger.CameraChange, action.GetDCLAction());
+            Assert.AreEqual(DCLAction_Trigger.CameraChange, action.DCLAction);
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace InputController_Tests
         {
             action.dclAction = DCLAction_Hold.Sprint;
 
-            Assert.AreEqual(DCLAction_Hold.Sprint, action.GetDCLAction());
+            Assert.AreEqual(DCLAction_Hold.Sprint, action.DCLAction);
         }
     }
 
@@ -158,7 +158,7 @@ namespace InputController_Tests
         {
             action.dclAction = DCLAction_Measurable.CameraXAxis;
 
-            Assert.AreEqual(DCLAction_Measurable.CameraXAxis, action.GetDCLAction());
+            Assert.AreEqual(DCLAction_Measurable.CameraXAxis, action.DCLAction);
         }
     }
 }

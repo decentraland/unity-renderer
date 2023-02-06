@@ -102,7 +102,7 @@ namespace DCL.Components
 
                 Initialize(dclVideoClip);
             }
-
+            
             if (texture == null)
             {
                 yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
@@ -115,6 +115,7 @@ namespace DCL.Components
                         texturePlayerUpdateRoutine = null;
                     }
 
+                    texturePlayer.SetAsError();
                     yield break;
                 }
 
