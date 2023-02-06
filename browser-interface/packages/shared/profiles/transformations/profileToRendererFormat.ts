@@ -1,5 +1,5 @@
 import { convertToRGBObject } from './convertToRGBObject'
-import { isURL } from 'atomicHelpers/isURL'
+import { isURL } from 'lib/javascript/isURL'
 import { Avatar, AvatarInfo, IPFSv2, Snapshots } from '@dcl/schemas'
 import { backupProfile } from '../generateRandomUserProfile'
 import { genericAvatarSnapshots } from 'config'

@@ -9,5 +9,7 @@ public enum InternalECSComponentsId
     VISIBILITY = 7,
     INPUT_EVENTS_RESULT = 8,
     UI_CONTAINER = 9,
-    UI_INPUT_EVENTS_RESULT = 10
+    UI_INPUT_EVENTS_RESULT = 10,
+    VIDEO_PLAYER = 11,
+    VIDEO_MATERIAL = 12
 }

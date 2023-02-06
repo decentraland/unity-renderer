@@ -1,7 +1,6 @@
-// This file decides and loads the renderer of choice
-
+// This file contains code that selects which renderer to use and loads it
+import { storeCondition } from 'lib/redux/storeCondition'
 import { initializeRenderer } from 'shared/renderer/actions'
-import { ensureUnityInterface } from 'shared/renderer'
 import { CommonRendererOptions, loadUnity } from './loader'
 import type { UnityGame } from '@dcl/unity-renderer/src/index'
 import type { KernelOptions } from '@dcl/kernel-interface'
@@ -15,10 +14,11 @@ import {
 } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'shared/logger'
-import { trackEvent } from '../shared/analytics'
+import { trackEvent } from 'shared/analytics'
 import { browserInterface } from './BrowserInterface'
-import { webTransport } from '../renderer-protocol/transports/webTransport'
+import { webTransport } from 'renderer-protocol/transports/webTransport'
 import { Transport } from '@dcl/rpc'
+import { isRendererInitialized } from 'shared/renderer/selectors'
 
 export type InitializeUnityResult = {
   container: HTMLElement
@@ -138,7 +138,7 @@ export async function initializeUnity(options: KernelOptions['rendererOptions'])
   // wait until the renderer is fully loaded before returning, this
   // is important because once this function returns, it is assumed
   // that the renderer will be ready
-  await ensureUnityInterface()
+  await storeCondition(isRendererInitialized)
 
   return {
     container

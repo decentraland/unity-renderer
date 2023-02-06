@@ -65,7 +65,7 @@ public class CatalogController : MonoBehaviour
         pendingRequestsToSend.Clear();
     }
 
-    // TODO: when emotes get published to the content server, remove this
+    //This temporary until the emotes are in the content server
     public void EmbedWearables(IEnumerable<WearableItem> wearables)
     {
         foreach (WearableItem wearableItem in wearables)
@@ -130,7 +130,7 @@ public class CatalogController : MonoBehaviour
     public void WearablesRequestFailed(string payload)
     {
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
-		
+
 		if (requestFailedResponse?.context == null)
             return;
 

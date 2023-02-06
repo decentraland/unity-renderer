@@ -56,7 +56,9 @@ namespace DCL.Social.Passports
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
             playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
 
-            playerPreviewController = new PassportPlayerPreviewComponentController(playerPreviewView);
+            playerPreviewController = new PassportPlayerPreviewComponentController(
+                playerPreviewView,
+                socialAnalytics);
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,

@@ -1,8 +1,7 @@
-import { uuid } from 'atomicHelpers/math'
-
-import { ChatMessageType } from 'shared/types'
+import { uuid } from 'lib/javascript/uuid'
 import { messageReceived } from 'shared/chat/actions'
 import { store } from 'shared/store/isolatedStore'
+import { ChatMessageType } from 'shared/types'
 
 export function notifyStatusThroughChat(status: string) {
   store.dispatch(

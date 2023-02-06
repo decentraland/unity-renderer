@@ -25,7 +25,7 @@ import {
   OpenNFTDialogPayload,
   UpdateEntityComponentPayload,
   AttachEntityComponentPayload
-} from '../shared/types'
+} from 'shared/types'
 
 // protobuf message instances
 const updateEntityComponent: PBUpdateEntityComponent = { classId: 0, data: '', entityId: '', name: '' }

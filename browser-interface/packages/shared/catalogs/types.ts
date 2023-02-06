@@ -1,9 +1,9 @@
-import { EmoteDataADR74 } from '@dcl/schemas'
-import { RarityEnum } from '../airdrops/interface'
+import type { EmoteDataADR74 } from '@dcl/schemas'
 
 export type Catalog = PartialWearableV2[]
 
 export type Collection = { id: string; wearables: Wearable }
+export type RarityEnum = 'common' | 'uncommon' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'unique'
 
 export type Wearable = {
   id: WearableId

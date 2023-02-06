@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 0.9019608}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -309,6 +309,7 @@ GameObject:
   - component: {fileID: 735159421342563394}
   - component: {fileID: 4696139973615041447}
   - component: {fileID: 3534663696508493575}
+  - component: {fileID: 1647888461218364459}
   m_Layer: 5
   m_Name: Toast
   m_TagString: Untagged
@@ -353,8 +354,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hideOnEnable: 1
   animSpeedFactor: 1
-  disableAfterFadeOut: 1
-  canvasGroup: {fileID: 0}
+  disableAfterFadeOut: 0
+  canvasGroup: {fileID: 3534663696508493575}
+  canvas: {fileID: 0}
 --- !u!225 &3534663696508493575
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -364,9 +366,30 @@ CanvasGroup:
   m_GameObject: {fileID: 6455763930528195619}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 1
+  m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!223 &1647888461218364459
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6455763930528195619}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &6791236476121309718
 GameObject:
   m_ObjectHideFlags: 0

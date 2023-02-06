@@ -1,9 +1,9 @@
-import { signedFetch } from '../../../atomicHelpers/signedFetch'
-import { ETHEREUM_NETWORK } from '../../../config'
+import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
+import { ETHEREUM_NETWORK } from 'config'
 import { getSelectedNetwork } from '../../dao/selectors'
 import { store } from '../../store/isolatedStore'
 import { getIsGuestLogin } from '../../session/selectors'
-import { onLoginCompleted } from '../../session/sagas'
+import { onLoginCompleted } from '../../session/onLoginCompleted'
 
 import { RpcServerPort } from '@dcl/rpc'
 import { PortContext } from './context'

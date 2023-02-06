@@ -18,12 +18,14 @@ namespace DCL
             public readonly string src;
             public readonly TextureWrapMode wrapMode;
             public readonly FilterMode filterMode;
+            public readonly bool videoTexture;
 
-            public Texture(string src, TextureWrapMode wrapMode, FilterMode filterMode)
+            public Texture(string src, TextureWrapMode wrapMode, FilterMode filterMode, bool videoTexture = false)
             {
                 this.src = src;
                 this.wrapMode = wrapMode;
                 this.filterMode = filterMode;
+                this.videoTexture = videoTexture;
             }
         }
 

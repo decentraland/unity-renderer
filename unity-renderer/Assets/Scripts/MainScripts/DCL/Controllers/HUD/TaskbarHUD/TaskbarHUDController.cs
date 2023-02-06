@@ -359,10 +359,14 @@ public class TaskbarHUDController : IHUD
         isPromoteChannelsToastVisible.Set(false);
     }
 
+
     private void CloseFriendsWindow()
     {
-        friendsHud?.SetVisibility(false);
-        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
+        if(friendsHud is { IsVisible: true })
+        {
+            friendsHud?.SetVisibility(false);
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.Friends);
+        }
     }
 
     private void OpenPrivateChatFromPassport(string current, string previous)
@@ -528,8 +532,11 @@ public class TaskbarHUDController : IHUD
 
     private void CloseVoiceChatWindow()
     {
-        voiceChatHud?.SetVisibility(false);
-        view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        if(voiceChatHud.IsVisible)
+        {
+            voiceChatHud?.SetVisibility(false);
+            view.ToggleOff(TaskbarHUDView.TaskbarButtonType.VoiceChat);
+        }
     }
 
     public void AddPrivateChatWindow(PrivateChatWindowController controller)
