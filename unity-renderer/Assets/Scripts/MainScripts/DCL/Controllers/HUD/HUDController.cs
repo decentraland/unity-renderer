@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Chat;
 using DCL.Social.Friends;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -163,7 +164,7 @@ public class HUDController : IHUDController
         }
     }
 
-    public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
+    public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, CancellationToken cancellationToken = default,
         string extraPayload = null)
     {
         //TODO(Brian): For now, the factory code is using this switch approach.
@@ -379,12 +380,12 @@ public class HUDController : IHUDController
                     questsPanelHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.QUESTS_TRACKER:
-                await CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.SIGNUP:
-                await CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                 {
                     // Same race condition risks as with the ProfileHUD
@@ -398,7 +399,7 @@ public class HUDController : IHUDController
             case HUDElementID.LOADING:
                 if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
                 {
-                    await CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
                     if (loadingHud != null && configuration.active)
                         loadingController.Initialize();
                 }
@@ -456,13 +457,13 @@ public class HUDController : IHUDController
     {
     }
 
-    private async UniTask CreateHudElement(HUDConfiguration config, HUDElementID id)
+    private async UniTask CreateHudElement(HUDConfiguration config, HUDElementID id, CancellationToken cancellationToken = default)
     {
         bool controllerCreated = hudElements.ContainsKey(id);
 
         if (config.active && !controllerCreated)
         {
-            IHUD hudElement = await hudFactory.CreateHUD(id);
+            IHUD hudElement = await hudFactory.CreateHUD(id, cancellationToken);
             hudElements.Add(id, hudElement);
 
             if (VERBOSE)

@@ -5,6 +5,7 @@ using DCL.Providers;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
+using System.Threading;
 
 public class HUDDesktopFactory : HUDFactory
 {
@@ -14,7 +15,7 @@ public class HUDDesktopFactory : HUDFactory
     {
     }
 
-    public override async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
+    public override async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
     {
         IHUD hudElement = null;
 
@@ -36,12 +37,12 @@ public class HUDDesktopFactory : HUDFactory
                 break;
 
             case HUDElementID.LOADING:
-                var loadingHUDView = await CreateHUDView<LoadingHUDView>(LOADING_HUD_ADDRESS);
+                var loadingHUDView = await CreateHUDView<LoadingHUDView>(LOADING_HUD_ADDRESS, cancellationToken);
                 loadingHUDView.Initialize();
                 return new LoadingHUDController(loadingHUDView);
 
             default:
-                hudElement = await base.CreateHUD(hudElementId);
+                hudElement = await base.CreateHUD(hudElementId, cancellationToken);
                 break;
         }
 

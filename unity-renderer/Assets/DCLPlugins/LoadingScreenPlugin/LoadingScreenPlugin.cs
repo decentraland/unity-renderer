@@ -26,13 +26,13 @@ namespace DCLPlugins.LoadingScreenPlugin
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Set(true);
 
             cancellationTokenSource = new CancellationTokenSource();
-            CreateLoadingScreen().Forget();
+            CreateLoadingScreen(cancellationTokenSource.Token).Forget();
         }
 
-        private async UniTask CreateLoadingScreen()
+        private async UniTask CreateLoadingScreen(CancellationToken cancellationToken = default)
         {
             loadingScreenController = new LoadingScreenController(
-                await CreateLoadingScreenView(assetsProvider, cancellationTokenSource.Token),
+                await CreateLoadingScreenView(assetsProvider, cancellationToken),
                 Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
                 DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm);
         }

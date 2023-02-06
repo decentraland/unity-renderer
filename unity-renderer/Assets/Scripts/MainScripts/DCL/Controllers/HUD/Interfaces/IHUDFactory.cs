@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 
 namespace DCL
 {
@@ -54,6 +55,6 @@ namespace DCL
 
     public interface IHUDFactory : IService
     {
-        UniTask<IHUD> CreateHUD(HUDElementID elementID);
+        UniTask<IHUD> CreateHUD(HUDElementID elementID, CancellationToken cancellationToken = default);
     }
 }

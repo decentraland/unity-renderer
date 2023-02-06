@@ -16,6 +16,7 @@ using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using static HUDAssetPath;
 using Environment = DCL.Environment;
@@ -31,7 +32,7 @@ public class HUDFactory : IHUDFactory
         this.assetsProvider = assetsProvider;
         disposableViews = new List<IDisposable>();
     }
-    
+
     public void Initialize() { }
 
     public void Dispose()
@@ -40,7 +41,7 @@ public class HUDFactory : IHUDFactory
             view.Dispose();
     }
 
-    public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
+    public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
     {
         switch (hudElementId)
         {
@@ -154,27 +155,27 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.QUESTS_PANEL:
                 return new QuestsPanelHUDController();
             case HUDElementID.LOADING:
-                return new LoadingHUDController(await CreateHUDView<LoadingHUDView>(LOADING_HUD));
+                return new LoadingHUDController(await CreateHUDView<LoadingHUDView>(LOADING_HUD, cancellationToken));
             case HUDElementID.QUESTS_TRACKER:
-                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD));
+                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
             case HUDElementID.AIRDROPPING:
-                return new AirdroppingHUDController(await CreateAirdroppingHUDView());
+                return new AirdroppingHUDController(await CreateAirdroppingHUDView(cancellationToken));
             case HUDElementID.SIGNUP:
-                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(), dataStoreLoadingScreen.Ref);
+                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken), dataStoreLoadingScreen.Ref);
         }
 
         return null;
     }
 
-    public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView() =>
-        await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD);
+    public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView(CancellationToken cancellationToken = default) =>
+        await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD, cancellationToken);
 
-    public async UniTask<ISignupHUDView> CreateSignupHUDView() =>
-        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD);
+    public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
+        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);
 
-    protected async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
+    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
     {
-        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}");
+        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
         disposableViews.Add(view);
 
         return view;
