@@ -31,7 +31,7 @@ public class HUDFactory : IHUDFactory
         this.assetsProvider = assetsProvider;
         disposableViews = new List<IDisposable>();
     }
-
+    
     public void Initialize() { }
 
     public void Dispose()
@@ -42,8 +42,6 @@ public class HUDFactory : IHUDFactory
 
     public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId)
     {
-        IHUD hudElement = null;
-
         switch (hudElementId)
         {
             case HUDElementID.NONE:
@@ -165,7 +163,7 @@ public class HUDFactory : IHUDFactory
                 return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(), dataStoreLoadingScreen.Ref);
         }
 
-        return hudElement;
+        return null;
     }
 
     public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView() =>
@@ -174,7 +172,7 @@ public class HUDFactory : IHUDFactory
     public async UniTask<ISignupHUDView> CreateSignupHUDView() =>
         await CreateHUDView<ISignupHUDView>(SIGNUP_HUD);
 
-    private async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
+    protected async UniTask<T> CreateHUDView<T>(string assetAddress) where T:IDisposable
     {
         var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}");
         disposableViews.Add(view);

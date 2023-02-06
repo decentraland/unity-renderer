@@ -2,7 +2,7 @@ using DCL;
 
 public class LoadingHUDController : IHUD
 {
-    internal LoadingHUDView view;
+    internal readonly LoadingHUDView view;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
     private BaseVariable<bool> visible => dataStoreLoadingScreen.Ref.loadingHUD.visible;
