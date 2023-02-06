@@ -20,5 +20,6 @@ namespace DCLServices.WearablesCatalogService
         [Obsolete("Will be removed in the future, when emotes are in the content server.")]
         void EmbedWearables(IEnumerable<WearableItem> wearables);
         void Clear();
+        bool IsValidWearable(string wearableId);
     }
 }

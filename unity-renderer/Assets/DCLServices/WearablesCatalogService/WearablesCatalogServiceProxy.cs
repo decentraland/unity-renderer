@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -84,6 +85,9 @@ namespace DCLServices.WearablesCatalogService
 
         public void Clear() =>
             wearablesCatalogServiceInUse?.Clear();
+
+        public bool IsValidWearable(string wearableId) =>
+            wearablesCatalogServiceInUse.IsValidWearable(wearableId);
 
         private void SetServiceInUse(KernelConfigModel currentKernelConfig)
         {

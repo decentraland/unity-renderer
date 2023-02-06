@@ -205,6 +205,14 @@ namespace DCLServices.WearablesCatalogService
             pendingWearablesToRequest.Clear();
         }
 
+        public bool IsValidWearable(string wearableId)
+        {
+            if (!WearablesCatalog.TryGetValue(wearableId, out var wearable))
+                return false;
+
+            return wearable != null;
+        }
+
         UniTask<(WearableResponse response, bool success)> ILambdaServiceConsumer<WearableResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<WearableResponse>(

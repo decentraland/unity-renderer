@@ -132,7 +132,7 @@ namespace DCLServices.WearablesCatalogService
             }
             else
                 taskResult = awaitingWearablesByContextTasks[context];
-            
+
             var wearablesResult = await taskResult.Task.AttachExternalCancellation(ct);
             AddWearablesToCatalog(wearablesResult);
 
@@ -254,6 +254,14 @@ namespace DCLServices.WearablesCatalogService
             foreach (var awaitingTask in awaitingWearablesByContextTasks)
                 awaitingTask.Value.TrySetCanceled();
             awaitingWearablesByContextTasks.Clear();
+        }
+
+        public bool IsValidWearable(string wearableId)
+        {
+            if (!WearablesCatalog.TryGetValue(wearableId, out var wearable))
+                return false;
+
+            return wearable != null;
         }
 
         private async UniTaskVoid CheckForSendingPendingRequestsAsync(CancellationToken ct)
