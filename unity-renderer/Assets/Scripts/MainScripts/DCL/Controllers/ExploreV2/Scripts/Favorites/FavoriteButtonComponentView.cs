@@ -1,18 +1,71 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class FavoriteButtonComponentView : MonoBehaviour
+public class FavoriteButtonComponentView : BaseComponentView, IComponentModelConfig<FavoriteButtonComponentModel>
 {
-    // Start is called before the first frame update
-    void Start()
+    [Header("Prefab References")]
+    [SerializeField] private ButtonComponentView button;
+    [SerializeField] private Image buttonFill;
+    [SerializeField] private Color noFavoriteFillColor;
+    [SerializeField] private Color favoriteFillColor;
+
+    [Header("Configuration")]
+    [SerializeField] internal FavoriteButtonComponentModel model;
+
+    public event Action<string, bool> OnFavoriteChange;
+
+    private bool isFavorite;
+    private string placeUUID;
+
+    public override void Awake()
     {
-        
+        base.Awake();
+
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(SetFavorite);
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void RefreshControl()
     {
-        
+        if (model == null)
+            return;
+
+        isFavorite = model.isFavorite;
+        SetFavorite();
+    }
+
+    private void SetFavorite()
+    {
+        isFavorite = !isFavorite;
+        if (isFavorite)
+        {
+            SetFavoriteVisuals();
+        }
+        else
+        {
+            SetNoFavoriteVisuals();
+        }
+
+        OnFavoriteChange?.Invoke(placeUUID, isFavorite);
+    }
+
+    private void SetNoFavoriteVisuals()
+    {
+        buttonFill.color = noFavoriteFillColor;
+    }
+
+    private void SetFavoriteVisuals()
+    {
+        buttonFill.color = favoriteFillColor;
+    }
+
+    public void Configure(FavoriteButtonComponentModel newModel)
+    {
+        model = newModel;
+        isFavorite = newModel.isFavorite;
+        placeUUID = newModel.placeUUID;
+
+        RefreshControl();
     }
 }

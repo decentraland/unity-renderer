@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -110,6 +111,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
+    [SerializeField] internal FavoriteButtonComponentView favoriteButton;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -182,8 +184,25 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
-
+        SetFavoriteButton();
         RebuildCardLayouts();
+    }
+
+    private void SetFavoriteButton()
+    {
+        favoriteButton.Configure(new FavoriteButtonComponentModel()
+        {
+            isFavorite = true,
+            placeUUID = ""
+        });
+
+        favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
+        favoriteButton.OnFavoriteChange += FavoriteValueChanged;
+    }
+
+    private void FavoriteValueChanged(string placeUUID, bool isFavorite)
+    {
+        //TODO: wire Places API request once completed
     }
 
     public override void OnFocus()
