@@ -1,4 +1,4 @@
-import { unsignedCRC32 } from 'atomicHelpers/crc32'
+import { unsignedCRC32 } from 'lib/encoding/crc32'
 
 const names = [
   'Baqiorana',

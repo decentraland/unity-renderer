@@ -1,32 +1,23 @@
 # Decentraland Unity Renderer
 
-This repository contains the Unity part of [decentraland explorer](https://play.decentraland.org). This component works alongside Kernel to produce an Explorer build.
+This repository contains the reference implementation of the [decentraland explorer](https://play.decentraland.org). It includes two main big components, located in the folders:
 
-## Before you start
-
-1. [Contribution Guidelines](.github/CONTRIBUTING.md)
-2. [Coding Guidelines](docs/style-guidelines.md)
-3. [Code Review Standards](docs/code-review-standards.md)
-4. [Architecture](https://github.com/decentraland/architecture)
+* `unity-renderer` which contains the main 3D experience and UI
+* `browser-interface` to connect to the different aspects requiring of a web browser, such as connection with a wallet and WebRTC communications
 
 # Running the Explorer
 
 ## Main Dependencies
 
-This repo requires `git lfs` to track images and other binary files. https://git-lfs.github.com/ .
-So, before anything make sure you have it installed by typing:
+* Install images and binary files using `git lfs` ([git-lfs.github.com](https://git-lfs.github.com/)). These can be installed from bash or PowerShell by typing:
 
     git lfs install
     git lfs pull
 
----
+* The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
+* [node.js](https://nodejs.com), version 16 or later
 
-## Debug using Unity
-
-Take this path if you intend to contribute on features without the need of modifying Kernel.
-This is the recommended path for artists.
-
-### Steps
+## Developer mode, without running the `browser-interface`
 
 1. Download and install Unity 2021.3.14f1
 2. Open the scene named `InitialScene`
@@ -65,9 +56,12 @@ If you want to test your Unity branch against a specific kernel branch, you'll h
 
 If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
 
----
+# Links for Contributors
 
-<a name="advanced-debugging-scenarios"></a>
+1. [Contribution Guidelines](.github/CONTRIBUTING.md)
+2. [Coding Guidelines](docs/style-guidelines.md)
+3. [Code Review Standards](docs/code-review-standards.md)
+4. [Architecture](https://github.com/decentraland/architecture)
 
 # Advanced debugging scenarios
 

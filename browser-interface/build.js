@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { build, cliopts } = require('estrella')
-const { readFileSync, writeFileSync, copyFileSync } = require('fs')
+const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('fs')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
@@ -17,7 +17,7 @@ const PROD = !!process.env.CI
 
 console.log(`production: ${PROD}`)
 process.env.BUILD_PATH = path.resolve(
-  process.env.BUILD_PATH || path.resolve(__dirname, '../unity-renderer/Builds/unity')
+  process.env.BUILD_PATH || path.resolve(__dirname, '../Builds/unity')
 )
 const DIST_PATH = path.resolve(__dirname, './static')
 
@@ -33,8 +33,15 @@ async function copyBuiltFiles() {
 
   const basePath = path.resolve(process.env.BUILD_PATH, 'Build')
 
-  for (let file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
+  for (const file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
     copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + '/', './')))
+  }
+
+  const streamingPath = path.resolve(process.env.BUILD_PATH, 'StreamingAssets')
+  const streamingDistPath = path.resolve(DIST_PATH, 'StreamingAssets')
+
+  for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
+    copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
   }
 }
 
@@ -58,15 +65,12 @@ function copyFile(from, to) {
     throw new Error(`${from} does not exist`)
   }
 
-  // if it is not a file, remove it to avoid conflict with symbolic links
-  if (fs.existsSync(to)) {
-    const type = fs.lstatSync(to)
-    if (!type.isFile()) {
-      fs.removeSync(to)
-    }
+  const type = fs.lstatSync(from)
+  if (type.isFile()) {
+    copyFileSync(from, to)
+  } else {
+    mkdirSync(to, { recursive: true })
   }
-
-  copyFileSync(from, to)
 
   if (!fs.existsSync(to)) {
     throw new Error(`${to} does not exist`)
@@ -158,7 +162,8 @@ function createWorker(entry, outfile) {
     entry,
     outfile,
     tsconfig: path.join(path.dirname(entry), 'tsconfig.json'),
-    inject: ['packages/entryPoints/inject.js']
+    inject: ['packages/entryPoints/inject.js'],
+    sourcemap: true
   })
 }
 
@@ -187,7 +192,8 @@ async function compileJs() {
       outfile: 'static/index.js',
       tsconfig: 'packages/entryPoints/tsconfig.json',
       inject: ['packages/entryPoints/inject.js'],
-      banner: {js: readFileSync(injectUnityPath).toString() }
+      banner: {js: readFileSync(injectUnityPath).toString() },
+      sourcemap: true
     })
 
     build({

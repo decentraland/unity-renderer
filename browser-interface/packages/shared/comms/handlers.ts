@@ -28,7 +28,6 @@ import { ProfileType } from 'shared/profiles/types'
 import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
-import { uuid } from 'atomicHelpers/math'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
 import { RoomConnection } from './interface'
@@ -38,6 +37,7 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { commsLogger } from './context'
 import { incrementCounter } from 'shared/occurences'
 import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { uuid } from 'lib/javascript/uuid'
 
 type PingRequest = {
   alias: number

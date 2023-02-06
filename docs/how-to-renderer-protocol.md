@@ -123,7 +123,6 @@ getRendererModules(store.getState())
 
 - protocol: https://github.com/decentraland/protocol/pull/81
 - unity-renderer: https://github.com/decentraland/unity-renderer/pull/3605
-- kernel: https://github.com/decentraland/kernel/pull/728
 
 ### **Kernel Side:**
 #### Step by step

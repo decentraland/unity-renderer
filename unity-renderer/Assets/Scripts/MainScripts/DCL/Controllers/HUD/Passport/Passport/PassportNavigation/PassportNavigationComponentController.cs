@@ -31,6 +31,7 @@ namespace DCL.Social.Passports
         private HashSet<string> cachedAvatarEquippedWearables = new ();
         private readonly List<string> loadedWearables = new List<string>();
         public event Action<string, string> OnClickBuyNft;
+        public event Action OnClickedLink;
         public event Action OnClickCollectibles;
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Promise<WearableItem[]> wearablesPromise;
