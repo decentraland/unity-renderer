@@ -57,6 +57,7 @@ public class WorldChatWindowControllerShould
             channelsFeatureFlagService,
             browserBridge,
             CommonScriptableObjects.rendererState);
+
         view = Substitute.For<IWorldChatWindowView>();
     }
 
@@ -181,7 +182,7 @@ public class WorldChatWindowControllerShould
         var openTriggered = false;
         controller.OnOpen += () => openTriggered = true;
 
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         view.Received(1).Show();
@@ -191,7 +192,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void Hide()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(false);
 
         view.Received(1).Hide();
@@ -280,7 +281,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void ShowMoreChannelsToLoadHintCorrectly()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(40);
 
         controller.SetVisibility(true);
@@ -296,7 +297,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void HideMoreChannelsToLoadHintCorrectly()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(26);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
@@ -313,7 +314,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestFriendsWithDirectMessagesForFirstTime()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         friendsController.Received(1).GetFriendsWithDirectMessages(30, 0);
@@ -324,7 +325,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestFriendsWithDirectMessagesWhenViewRequires()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(42);
         view.ClearReceivedCalls();
@@ -357,7 +358,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestChannelsWhenBecomesVisible()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         chatController.Received(1).GetJoinedChannels(10, 0);
@@ -367,7 +368,7 @@ public class WorldChatWindowControllerShould
     public void RequestChannelsWhenFriendsInitializes()
     {
         friendsController.IsInitialized.Returns(false);
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
         view.IsActive.Returns(true);
         friendsController.IsInitialized.Returns(true);
@@ -380,7 +381,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestUnreadMessagesWhenIsVisible()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         chatController.Received(1).GetUnseenMessagesByUser();
@@ -389,7 +390,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void RequestUnreadMessagesWhenFriendsInitializes()
     {
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         friendsController.IsInitialized.Returns(false);
         controller.SetVisibility(true);
         friendsController.IsInitialized.Returns(true);
@@ -437,7 +438,7 @@ public class WorldChatWindowControllerShould
 
         socialAnalytics.Received(1).SendPopulatedChannelJoined("channelName", ChannelJoinedSource.Link, "manual");
     }
-    
+
     [Test]
     public void TrackAutoChannelJoined()
     {
@@ -480,7 +481,7 @@ public class WorldChatWindowControllerShould
     {
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
 
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         view.Received(1).ShowConnectWallet();
@@ -492,7 +493,7 @@ public class WorldChatWindowControllerShould
     {
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
 
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
 
@@ -507,7 +508,7 @@ public class WorldChatWindowControllerShould
     {
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
 
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
 
         view.Received(1).HideConnectWallet();
@@ -519,7 +520,7 @@ public class WorldChatWindowControllerShould
     {
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
 
-        controller.Initialize(view);
+        controller.Initialize(view, false);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
 
@@ -595,10 +596,10 @@ public class WorldChatWindowControllerShould
     {
         chatController.IsInitialized.Returns(false);
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
-        controller.Initialize(view);
-        
+        controller.Initialize(view, false);
+
         controller.SetVisibility(true);
-        
+
         view.Received(1).HideChannelsLoading();
     }
 

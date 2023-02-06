@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using DCL.CameraTool;
 using DCL.Models;
 using Newtonsoft.Json;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Ray = UnityEngine.Ray;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -108,6 +108,11 @@ namespace DCL.Interface
             public string uuid;
             public TPayload payload = new TPayload();
         }
+
+        private static IEnumerable<ACTION_BUTTON> concreteActionButtons;
+        public static IEnumerable<ACTION_BUTTON> ConcreteActionButtons =>
+            concreteActionButtons ??= Enum.GetValues(typeof(ACTION_BUTTON)).Cast<ACTION_BUTTON>()
+                                          .Where(actionButton => actionButton != ACTION_BUTTON.ANY);
 
         public enum ACTION_BUTTON
         {
@@ -782,7 +787,7 @@ namespace DCL.Interface
             public int limit;
             public int skip;
         }
-        
+
         [Serializable]
         private class LeaveChannelPayload
         {
@@ -1127,26 +1132,12 @@ namespace DCL.Interface
                 pointerEventPayload.hit = null;
         }
 
-        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
+
+        public static void ReportGlobalPointerEvent(OnGlobalPointerEventPayload.InputEventType pointerDirection, ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
             float distance, int sceneNumber, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId, meshName, ray, point, normal, distance,
-                isHitInfoValid);
-            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
-
-            onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
-
-            SendSceneEvent(sceneNumber, "actionButtonEvent", onGlobalPointerEvent);
-        }
-
-        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal,
-            float distance, int sceneNumber, string entityId = "0", string meshName = null, bool isHitInfoValid = false)
-        {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId,
-                entityId, meshName, ray, point, normal, distance,
-                isHitInfoValid);
-            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
+            SetPointerEventPayload(onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            onGlobalPointerEventPayload.type = pointerDirection;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 

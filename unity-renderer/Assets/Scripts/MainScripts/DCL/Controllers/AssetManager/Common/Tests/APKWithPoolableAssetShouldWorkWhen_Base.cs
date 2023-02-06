@@ -111,11 +111,6 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom != null);
             Assert.IsTrue(prom.asset == null);
             Assert.IsTrue(calledFail);
-
-            if (prom is AssetPromise_AB_GameObject)
-            {
-                LogAssert.Expect(LogType.Exception, new Regex("^.*?AB sub-promise asset or container is null"));
-            }
         }
 
         [UnityTest]

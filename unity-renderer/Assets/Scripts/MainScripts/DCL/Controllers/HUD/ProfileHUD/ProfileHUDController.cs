@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -22,10 +23,12 @@ public class ProfileHUDController : IHUD
     private const string URL_TERMS_OF_USE = "https://decentraland.org/terms";
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
     private const string VIEW_NAME = "_ProfileHUD";
+    private const string LINKS_REGEX = @"\[(.*?)\)";
     private const float FETCH_MANA_INTERVAL = 60;
 
     public readonly IProfileHUDView view;
     private readonly IUserProfileBridge userProfileBridge;
+    private readonly ISocialAnalytics socialAnalytics;
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -40,9 +43,12 @@ public class ProfileHUDController : IHUD
 
     public RectTransform TutorialTooltipReference => view.TutorialReference;
 
-    public ProfileHUDController(IUserProfileBridge userProfileBridge)
+    public ProfileHUDController(
+        IUserProfileBridge userProfileBridge,
+        ISocialAnalytics socialAnalytics)
     {
         this.userProfileBridge = userProfileBridge;
+        this.socialAnalytics = socialAnalytics;
 
         GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
         viewGo.name = VIEW_NAME;
@@ -162,7 +168,7 @@ public class ProfileHUDController : IHUD
 
     protected virtual GameObject GetViewPrefab()
     {
-        return Resources.Load<GameObject>(DataStore.i.HUDs.enableNewPassport.Get() ? "ProfileHUD_V2" : "ProfileHUD");
+        return Resources.Load<GameObject>("ProfileHUD_V2");
     }
 
     private void OnProfileUpdated(UserProfile profile) =>
@@ -188,6 +194,7 @@ public class ProfileHUDController : IHUD
             return;
 
         userProfileBridge.SaveDescription(description);
+        socialAnalytics.SendProfileEdit(description.Length, ContainsLinks(description), PlayerActionSource.ProfileEditHUD);
     }
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
@@ -203,6 +210,9 @@ public class ProfileHUDController : IHUD
             yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
         }
     }
+
+    private static bool ContainsLinks(string description) =>
+        Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase).Count > 0;
 
     private IEnumerator PolygonManaIntervalRoutine()
     {

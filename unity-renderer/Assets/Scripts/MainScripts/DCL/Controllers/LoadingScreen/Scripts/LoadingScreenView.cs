@@ -14,7 +14,9 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private RawImage rawImage;
+        [SerializeField] private GameObject betaTag;
         private RenderTexture renderTexture;
+        private RectTransform rawImageRectTransform;
 
         public event Action<ShowHideAnimator> OnFadeInFinish;
 
@@ -26,10 +28,13 @@ namespace DCL.LoadingScreen
             base.Start();
             showHideAnimator.OnWillFinishStart += FadeInFinish;
 
+            betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
+
+            rawImageRectTransform = rawImage.GetComponent<RectTransform>();
             SetupBlitTexture();
-            rawImage.gameObject.SetActive(false);
             FadeIn(true, false);
         }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -80,9 +85,14 @@ namespace DCL.LoadingScreen
 
         private void SetupBlitTexture()
         {
+            //Blit null works differently in WebGL than in desktop platform. We have to deal with it and rotate the resultant image accordingly
+            if (Application.isEditor || Application.platform != RuntimePlatform.WebGLPlayer)
+                rawImageRectTransform.eulerAngles = new Vector3(180, 0, 0);
+
             if (renderTexture) renderTexture.Release();
             renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
             rawImage.texture = renderTexture;
         }
+
     }
 }

@@ -75,7 +75,7 @@ namespace AvatarSystem
 
                 Promise<WearableItem> promise = CatalogController.RequestWearable(wearableId);
                 // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
-                await promise.WithCancellation(linkedCts.Token).AttachExternalCancellation(linkedCts.Token);
+                await promise.WithCancellation(linkedCts.Token);
 
                 // Cancelling is irrelevant at this point,
                 // either we have the wearable and we have to add it to forget it later
@@ -86,11 +86,9 @@ namespace AvatarSystem
                 return promise.value;
 
             }
-            catch (OperationCanceledException ex)
+            catch (Exception ex) when (ex is OperationCanceledException or PromiseException)
             {
                 wearablesRetrieved.Remove(wearableId);
-                
-                UnityEngine.Debug.LogError($"Resolve wearable OperationCanceledException: {ex.Message} {ex.StackTrace}");
                 return null;
             }
             finally

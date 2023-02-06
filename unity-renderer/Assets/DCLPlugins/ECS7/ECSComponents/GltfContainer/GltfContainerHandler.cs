@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
     {
         private const string POINTER_COLLIDER_NAME = "OnPointerEventCollider";
         private const string FEATURE_GLTFAST = "gltfast";
+        private const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
 
         internal RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
@@ -152,7 +153,7 @@ namespace DCL.ECSComponents
                     continue;
                 }
 
-                if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                if (!IsCollider(meshFilters[i]))
                     continue;
 
                 MeshCollider collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
@@ -165,6 +166,11 @@ namespace DCL.ECSComponents
 
             return physicColliders;
         }
+
+        // Compatibility layer for old GLTF importer and GLTFast
+        private static bool IsCollider(MeshFilter meshFilter) =>
+            meshFilter.name.Contains("_collider", IGNORE_CASE)
+            || meshFilter.transform.parent.name.Contains("_collider", IGNORE_CASE);
 
         private static (List<Collider>, List<Renderer>) SetUpPointerCollidersAndRenderers(HashSet<Renderer> renderers)
         {
@@ -196,7 +202,10 @@ namespace DCL.ECSComponents
                 GameObject colliderGo = new GameObject(POINTER_COLLIDER_NAME);
                 colliderGo.layer = PhysicsLayers.onPointerEventLayer;
                 MeshCollider collider = colliderGo.AddComponent<MeshCollider>();
-                collider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+                MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+                if (meshFilter == null) continue;
+
+                collider.sharedMesh = meshFilter.sharedMesh;
                 colliderGo.transform.SetParent(renderer.transform);
                 colliderGo.transform.ResetLocalTRS();
                 pointerColliders.Add(collider);

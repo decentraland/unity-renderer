@@ -1,30 +1,21 @@
 # Decentraland Unity Renderer
 
-This repository contains the Unity part of [decentraland explorer](https://play.decentraland.org). This component works alongside Kernel to produce an Explorer build.
+This repository contains the reference implementation of the [decentraland explorer](https://play.decentraland.org). It includes two main big components, located in the folders:
 
-## Before you start
-
-1. [Contribution Guidelines](.github/CONTRIBUTING.md)
-2. [Coding Guidelines](docs/style-guidelines.md)
-3. [Code Review Standards](docs/code-review-standards.md)
-4. [Architecture](https://github.com/decentraland/architecture)
+* `unity-renderer` which contains the main 3D experience and UI
+* `browser-interface` to connect to the different aspects requiring of a web browser, such as connection with a wallet and WebRTC communications
 
 # Running the Explorer
 
 ## Main Dependencies
 
-This repo requires `git lfs` to track images and other binary files. https://git-lfs.github.com/ .
-So, before anything make sure you have it installed by typing:
+* Install images and binary files using `git lfs` ([git-lfs.github.com](https://git-lfs.github.com/)). These can be installed from bash or PowerShell by typing:
 
     git lfs install
     git lfs pull
 
----
-
-## Debug using Unity
-
-Take this path if you intend to contribute to features without the need of modifying Kernel.
-This is the recommended path for artists.
+* The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
+* [node.js](https://nodejs.com), version 16 or later
 
 ### Steps
 
@@ -55,19 +46,22 @@ Then, on the Unity editor, click on `Assets > Reimport All`
 
 To test against a build made on this repository, you can use a link with this format:
 
-    https://play.decentraland.zone/?renderer-branch=<branch-name>
+    https://play.decentraland.zone/?explorer-branch=<branch-name>
 
 Note that using this approach, the Unity builds will run against kernel `master` HEAD.
 
 If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
 
-    https://play.decentraland.zone/?renderer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
+    https://play.decentraland.zone/?explorer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
 
 If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
 
----
+# Links for Contributors
 
-<a name="advanced-debugging-scenarios"></a>
+1. [Contribution Guidelines](.github/CONTRIBUTING.md)
+2. [Coding Guidelines](docs/style-guidelines.md)
+3. [Code Review Standards](docs/code-review-standards.md)
+4. [Architecture](https://github.com/decentraland/architecture)
 
 # Advanced debugging scenarios
 

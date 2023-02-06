@@ -14,6 +14,8 @@ namespace DCL.Social.Passports
         private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
         private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
+        private const string NAME_TYPE = "name";
+        private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
 
         private readonly IPlayerPassportHUDView view;
         private readonly StringVariable currentPlayerId;
@@ -25,12 +27,15 @@ namespace DCL.Social.Passports
         private readonly PassportPlayerInfoComponentController playerInfoController;
         private readonly PassportPlayerPreviewComponentController playerPreviewController;
         private readonly PassportNavigationComponentController passportNavigationController;
+        private readonly BooleanVariable playerInfoCardVisibleState;
 
         private UserProfile currentUserProfile;
         private List<Nft> ownedNftCollectionsL1 = new ();
         private List<Nft> ownedNftCollectionsL2 = new ();
         private double passportOpenStartTime;
         private CancellationTokenSource cts = new CancellationTokenSource();
+
+        private bool isOpen;
 
         public PlayerPassportHUDController(
             IPlayerPassportHUDView view,
@@ -41,7 +46,9 @@ namespace DCL.Social.Passports
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics,
-            DataStore dataStore)
+            DataStore dataStore,
+            MouseCatcher mouseCatcher,
+            BooleanVariable playerInfoCardVisibleState)
         {
             this.view = view;
             this.playerInfoController = playerInfoController;
@@ -52,15 +59,17 @@ namespace DCL.Social.Passports
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
             this.dataStore = dataStore;
+            this.playerInfoCardVisibleState = playerInfoCardVisibleState;
 
-            view.Initialize();
-            view.OnClose += RemoveCurrentPlayer;
+            view.Initialize(mouseCatcher);
+            view.OnClose += ClosePassport;
 
             closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
             closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
 
             passportNavigationController.OnClickBuyNft += ClickedBuyNft;
+            passportNavigationController.OnClickedLink += ClickedLink;
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
@@ -82,7 +91,15 @@ namespace DCL.Social.Passports
 
         private void ClosePassport()
         {
-            RemoveCurrentPlayer();
+            if(!isOpen)
+                return;
+
+            isOpen = false;
+
+            passportNavigationController.CloseAllNFTItemInfos();
+            passportNavigationController.SetViewInitialPage();
+            playerInfoController.ClosePassport();
+            currentPlayerId.Set(null);
         }
 
         /// <summary>
@@ -114,8 +131,7 @@ namespace DCL.Social.Passports
             playerPreviewController.Dispose();
             passportNavigationController.Dispose();
 
-            if (view != null)
-                view.Dispose();
+            view?.Dispose();
         }
 
         private void OnCurrentPlayerIdChanged(string current, string previous)
@@ -148,10 +164,13 @@ namespace DCL.Social.Passports
 
         private void SetPassportPanelVisibility(bool visible)
         {
+            isOpen = visible;
+
             if (visible && userProfileBridge.GetOwn().isGuest)
             {
                 dataStore.HUDs.connectWalletModalVisible.Set(true);
             }
+            playerInfoCardVisibleState.Set(visible);
             view.SetPassportPanelVisibility(visible);
             playerPreviewController.SetPassportPanelVisibility(visible);
         }
@@ -161,8 +180,12 @@ namespace DCL.Social.Passports
             if (string.IsNullOrEmpty(userId))
                 return;
 
-            ownedNftCollectionsL1 = await passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token);
-            ownedNftCollectionsL2 = await passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token);
+            (ownedNftCollectionsL1, ownedNftCollectionsL2) = await UniTask.WhenAll(passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.ETHEREUM, cts.Token), passportApiBridge.QueryNftCollectionsAsync(userId, NftCollectionsLayer.MATIC, cts.Token));
+        }
+
+        private void ClickedLink()
+        {
+            socialAnalytics.SendLinkClick(PlayerActionSource.Passport);
         }
 
         private void ClickedBuyNft(string id, string wearableType)
@@ -177,12 +200,12 @@ namespace DCL.Social.Passports
                 if (nft != null)
                     OpenNftMarketUrl(nft);
                 else
-                    WebInterface.OpenURL(URL_COLLECTIBLE_GENERIC);
+                    passportApiBridge.OpenURL(URL_COLLECTIBLE_GENERIC);
             }
 
-            if (wearableType is "name" or "parcel" or "estate")
+            if (ALLOWED_TYPES.Contains(wearableType))
             {
-                WebInterface.OpenURL((wearableType is "name" ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
+                passportApiBridge.OpenURL((wearableType is NAME_TYPE ? URL_COLLECTIBLE_NAME : URL_COLLECTIBLE_LAND).Replace("{userId}", id));
                 socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
                 return;
             }
@@ -207,7 +230,7 @@ namespace DCL.Social.Passports
 
         private void OpenNftMarketUrl(Nft nft)
         {
-            WebInterface.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{tokenId}", nft.tokenId));
+            passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{tokenId}", nft.tokenId));
             //TODO: integrate ItemType itemType once new lambdas are active
             socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
         }
@@ -227,12 +250,6 @@ namespace DCL.Social.Passports
             playerPreviewController.UpdateWithUserProfile(userProfile, activateLoading);
             playerInfoController.UpdateWithUserProfile(userProfile);
             passportNavigationController.UpdateWithUserProfile(userProfile);
-        }
-
-        private void RemoveCurrentPlayer()
-        {
-            passportNavigationController.CloseAllNFTItemInfos();
-            currentPlayerId.Set(null);
         }
 
     }

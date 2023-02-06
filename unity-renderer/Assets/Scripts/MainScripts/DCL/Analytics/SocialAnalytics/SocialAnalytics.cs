@@ -27,7 +27,9 @@ namespace SocialFeaturesAnalytics
         private const string PASSPORT_INSPECT_AVATAR = "passport_inspect_avatar";
         private const string PASSPORT_CLICK_LINK = "passport_clicked_link";
         private const string PASSPORT_WALLET_COPY = "passport_wallet_copy";
+        private const string PASSPORT_USERNAME_COPY = "passport_username_copy";
         private const string PASSPORT_JUMP_IN = "passport_jump_in";
+        private const string PASSPORT_EDIT_PROFILE = "passport_edit_profile";
         private const string PASSPORT_BUY_NFT = "passport_buy_nft";
         private const string PLAYER_BLOCKED = "user_blocked";
         private const string PLAYER_UNBLOCKED = "user_unblocked";
@@ -142,12 +144,20 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
         }
 
-        public void SendWalletCopy(PlayerActionSource source)
+        public void SendCopyWallet(PlayerActionSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("source", source.ToString());
 
             analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
+        }
+
+        public void SendCopyUsername(PlayerActionSource source)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("source", source.ToString());
+
+            analytics.SendAnalytic(PASSPORT_USERNAME_COPY, data);
         }
 
         public void SendJumpInToPlayer(PlayerActionSource source)
@@ -156,6 +166,18 @@ namespace SocialFeaturesAnalytics
             data.Add("source", source.ToString());
 
             analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
+        }
+
+        public void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["source"] = source.ToString(),
+                ["descriptionLength"] = descriptionLength.ToString(),
+                ["hasLinks"] = hasLinks.ToString(),
+            };
+
+            analytics.SendAnalytic(PASSPORT_EDIT_PROFILE, data);
         }
 
         public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)

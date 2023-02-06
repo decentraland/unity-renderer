@@ -49,12 +49,16 @@ namespace DCL.Social.Passports
                                 profanityFilter,
                                 friendsController,
                                 userProfileBridge,
-                                socialAnalytics);
+                                socialAnalytics,
+                                Substitute.For<IClipboard>(),
+                                passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
             playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
 
-            playerPreviewController = new PassportPlayerPreviewComponentController(playerPreviewView);
+            playerPreviewController = new PassportPlayerPreviewComponentController(
+                playerPreviewView,
+                socialAnalytics);
             passportNavigationController = new PassportNavigationComponentController(
                                 Substitute.For<IPassportNavigationComponentView>(),
                                 profanityFilter,
@@ -75,7 +79,9 @@ namespace DCL.Social.Passports
                 userProfileBridge,
                 passportApiBridge,
                 socialAnalytics,
-                dataStore
+                dataStore,
+                Substitute.For<MouseCatcher>(),
+                Substitute.For<BooleanVariable>()
             );
         }
 
