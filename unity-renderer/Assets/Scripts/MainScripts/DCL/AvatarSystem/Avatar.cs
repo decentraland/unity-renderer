@@ -20,6 +20,7 @@ namespace AvatarSystem
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
+        private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
@@ -27,7 +28,7 @@ namespace AvatarSystem
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
 
-        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -35,7 +36,7 @@ namespace AvatarSystem
             this.visibility = visibility;
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
-            this.gpuSkinningThrottler = gpuSkinningThrottler;
+            this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
             this.emoteAnimationEquipper = emoteAnimationEquipper;
         }
 

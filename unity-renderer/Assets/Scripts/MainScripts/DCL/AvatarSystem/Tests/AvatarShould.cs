@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -29,6 +29,7 @@ namespace Test.AvatarSystem
         private ILOD lod;
         private IGPUSkinning gpuSkinning;
         private IGPUSkinningThrottler gpuSkinningThrottler;
+        private IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private IEmoteAnimationEquipper emoteAnimationEquipper;
 
         [SetUp]
@@ -36,24 +37,25 @@ namespace Test.AvatarSystem
         {
             container = new GameObject();
 
-            curator = Substitute.For<IAvatarCurator>();
-            loader = Substitute.For<ILoader>();
-            animator = Substitute.For<IAnimator>();
-            visibility = Substitute.For<IVisibility>();
-            lod = Substitute.For<ILOD>();
-            gpuSkinning = Substitute.For<IGPUSkinning>();
-            gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
-            emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
-            avatar = new Avatar(
-                curator,
-                loader,
-                animator,
-                visibility,
-                lod,
-                gpuSkinning,
-                gpuSkinningThrottler,
-                emoteAnimationEquipper
-            );
+            //curator = Substitute.For<IAvatarCurator>();
+            //loader = Substitute.For<ILoader>();
+            //animator = Substitute.For<IAnimator>();
+            //visibility = Substitute.For<IVisibility>();
+            //lod = Substitute.For<ILOD>();
+            //gpuSkinning = Substitute.For<IGPUSkinning>();
+            //gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
+            //gpuSkinningThrottlerService = Substitute.For<IGPUSkinningThrottlerService>();
+            //emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
+            //avatar = new Avatar(
+            //    curator,
+            //    loader,
+            //    animator,
+            //    visibility,
+            //    lod,
+            //    gpuSkinning,
+            //    gpuSkinningThrottler,
+            //    emoteAnimationEquipper
+            //);
         }
 
         [UnityTest]

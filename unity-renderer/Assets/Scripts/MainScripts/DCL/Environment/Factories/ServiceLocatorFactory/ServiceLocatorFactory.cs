@@ -44,6 +44,7 @@ namespace DCL
             result.Register<IIdleChecker>(() => new IdleChecker());
             result.Register<IAvatarsLODController>(() => new AvatarsLODController());
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
+            result.Register<IGPUSkinningThrottlerService>(() => GPUSkinningThrottlerService.Create(true));
             result.Register<ISceneController>(() => new SceneController());
             result.Register<IWorldState>(() => new WorldState());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
