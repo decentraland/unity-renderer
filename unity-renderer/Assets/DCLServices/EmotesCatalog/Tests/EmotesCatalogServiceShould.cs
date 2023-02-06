@@ -23,7 +23,7 @@ public class EmotesCatalogServiceShould
     {
         bridge = Substitute.For<IEmotesCatalogBridge>();
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
-        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>()).Returns(GetEmbeddedEmotesSO());
+        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
         catalog = new EmotesCatalogService(bridge, addressableResourceProvider);
         catalog.Initialize();
     }
@@ -339,7 +339,7 @@ public class EmotesCatalogServiceShould
         embededEmotes = new [] { new EmbeddedEmote { id = "id1" }, new EmbeddedEmote { id = "id2" }, new EmbeddedEmote { id = "id3" } };
 
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
-        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>()).Returns(GetExampleEmbeddedEmotesSO());
+        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
         catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), addressableResourceProvider);
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
