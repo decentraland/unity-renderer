@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using GPUSkinning;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace DCL
@@ -20,13 +22,13 @@ namespace DCL
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true);
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose = true);
     }
-    
+
     /// <summary>
     /// AvatarMeshCombinerHelper uses the AvatarMeshCombiner utility class to combine many skinned renderers
     /// into a single one.
     ///
     /// This class will recycle the same gameObject and renderer each time it is called,
-    /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer. 
+    /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer.
     /// </summary>
     public class AvatarMeshCombinerHelper : IAvatarMeshCombinerHelper
     {
@@ -43,8 +45,8 @@ namespace DCL
 
         private AvatarMeshCombiner.Output? lastOutput;
 
-        public AvatarMeshCombinerHelper (GameObject container = null) 
-        { 
+        public AvatarMeshCombinerHelper (GameObject container = null)
+        {
             this.container = container;
         }
 
@@ -54,7 +56,7 @@ namespace DCL
         /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
         ///
         /// Uses a predefined Material ready for the Avatar
-        /// 
+        ///
         /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
@@ -65,7 +67,7 @@ namespace DCL
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
         /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
         /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
-        /// 
+        ///
         /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
@@ -74,6 +76,8 @@ namespace DCL
         /// <returns>true if succeeded, false if not</returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose)
         {
+            Profiler.BeginSample($"{nameof(AvatarMeshCombinerHelper)}.{nameof(Combine)}");
+
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
@@ -98,6 +102,8 @@ namespace DCL
                 renderers[i].enabled = false;
             }
 
+            Profiler.EndSample();
+
             return success;
         }
 
@@ -109,7 +115,7 @@ namespace DCL
             Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
-            
+
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,

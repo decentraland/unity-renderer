@@ -37,7 +37,7 @@ public class CombineLayerUtilsCan
         }
 
         // Act
-        List<CombineLayer> result = DCL.CombineLayerUtils.Slice(skrList.ToArray());
+        List<CombineLayer> result = DCL.CombineLayerUtils.TrySlice(skrList.ToArray());
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -304,7 +304,7 @@ public class CombineLayerUtilsCan
         };
 
         // Act
-        var result = DCL.CombineLayerUtils.GetMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 0);
+        var result = DCL.CombineLayerUtils.AddMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 0);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(6));
@@ -332,7 +332,7 @@ public class CombineLayerUtilsCan
         textures.Add( Texture2D.blackTexture, 1 );
 
         // Act
-        var result = DCL.CombineLayerUtils.GetMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 2);
+        var result = DCL.CombineLayerUtils.AddMapIds(new ReadOnlyDictionary<Texture2D, int>(textures), mats, 2);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));

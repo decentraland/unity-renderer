@@ -189,8 +189,7 @@ namespace AvatarSystem
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
-            await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, ct).AttachExternalCancellation(ct);
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());

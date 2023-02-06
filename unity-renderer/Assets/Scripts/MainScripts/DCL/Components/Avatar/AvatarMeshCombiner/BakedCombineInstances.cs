@@ -1,25 +1,29 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class BakedCombineInstances : IDisposable
+    public struct BakedCombineInstances : IDisposable
     {
-        private List<Mesh> bakedMeshes = new List<Mesh>();
+        private Mesh[] bakedMeshes;
 
         public void Dispose()
         {
             foreach ( var mesh in bakedMeshes )
-            {
                 Object.Destroy(mesh);
-            }
+
+            ArrayPool<Mesh>.Shared.Return(bakedMeshes);
+            bakedMeshes = null;
         }
 
-        public void Bake(List<CombineInstance> combineInstances, List<SkinnedMeshRenderer> renderers)
+        public static BakedCombineInstances Bake(IList<CombineInstance> combineInstances, IReadOnlyList<SkinnedMeshRenderer> renderers)
         {
             int combineInstancesCount = combineInstances.Count;
+            var bakedCombinedInstances = ArrayPool<Mesh>.Shared.Rent(combineInstancesCount);
 
             for ( int i = 0; i < combineInstancesCount; i++)
             {
@@ -35,10 +39,12 @@ namespace DCL
 
                 var combinedInstance = combineInstances[i];
                 combinedInstance.mesh = mesh;
-                bakedMeshes.Add(mesh);
+                bakedCombinedInstances[i] = mesh;
 
                 combineInstances[i] = combinedInstance;
             }
+
+            return new BakedCombineInstances { bakedMeshes = bakedCombinedInstances };
         }
     }
 }

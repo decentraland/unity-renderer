@@ -152,8 +152,7 @@ public class AvatarMeshCombinerUtilsCan
         }
 
         // Act
-        var weights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
-        var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
+        var (bonesPerVertex, weights) = AvatarMeshCombinerUtils.CombineBones(layers);
 
         // Assert
         Assert.That(weights.Length, Is.EqualTo(96));
