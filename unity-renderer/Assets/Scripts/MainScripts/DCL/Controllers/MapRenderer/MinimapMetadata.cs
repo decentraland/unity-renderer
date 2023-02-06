@@ -34,6 +34,18 @@ public class MinimapMetadata : ScriptableObject
         public string owner;
         public string description;
         public string previewImageUrl;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not MinimapSceneInfo) return false;
+            return Equals(obj as MinimapSceneInfo);
+        }
+
+        private bool Equals(MinimapSceneInfo other) =>
+            name.Equals(other.name) && owner.Equals(other.owner) && description.Equals(other.description);
+
+        public override int GetHashCode() =>
+            (name+owner+description).GetHashCode();
     }
 
     public event Action<MinimapSceneInfo> OnSceneInfoUpdated;
