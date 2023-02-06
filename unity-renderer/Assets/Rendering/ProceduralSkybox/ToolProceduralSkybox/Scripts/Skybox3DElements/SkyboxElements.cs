@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Providers;
 using System;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace DCL.Skybox
         public SkyboxPlanarElements planarElements;
         public SkyboxElementsReferences references;
 
-        public async Task Initialize(IAddressableResourceProvider addresableResolver, MaterialReferenceContainer materialReferenceContainer)
+        public async UniTask Initialize(IAddressableResourceProvider addresableResolver, MaterialReferenceContainer materialReferenceContainer)
         {
             references = await SkyboxElementsReferences.Create(addresableResolver);
 

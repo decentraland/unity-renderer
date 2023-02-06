@@ -1,8 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Providers;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Skybox
