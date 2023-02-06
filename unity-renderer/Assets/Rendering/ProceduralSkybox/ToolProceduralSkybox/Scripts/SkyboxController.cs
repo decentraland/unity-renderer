@@ -55,6 +55,7 @@ namespace DCL.Skybox
         private Service<IAddressableResourceProvider> addresableResolver;
         private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
         private MaterialReferenceContainer materialReferenceContainer;
+        private int currentRetryCount = 3;
 
         public SkyboxController()
         {
@@ -93,9 +94,14 @@ namespace DCL.Skybox
             }
             catch (Exception e)
             {
-                throw new Exception("Skybox async initialization failed. Please check that the Essentials group addressables are correct");
-            }
+                currentRetryCount--;
+                if (currentRetryCount < 0)
+                    throw new Exception("Skybox retry limit reached. Please check the Essentials group is set up correctly");
 
+                Debug.LogWarning("Retrying skybox addressables async request...");
+                DoAsyncInitializations();
+                return;
+            }
 
             // Create skybox Camera
             skyboxCam = new SkyboxCamera();
@@ -278,7 +284,7 @@ namespace DCL.Skybox
 
             // Reset Object Update value without notifying
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
-            
+
             //Ensure default configuration
             SelectSkyboxConfiguration();
 
