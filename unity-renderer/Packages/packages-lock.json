@@ -56,6 +56,13 @@
       "dependencies": {},
       "hash": "5577bd123883e2fa96f51b8d534abd75bad0535f"
     },
+    "com.decentraland.videoplayer": {
+      "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "06e147c3b999e7da725d5896aaf154f329b88642"
+    },
     "com.decentraland.webgl-ime-input": {
       "version": "https://github.com/decentraland/webgl-ime-input.git",
       "depth": 0,
