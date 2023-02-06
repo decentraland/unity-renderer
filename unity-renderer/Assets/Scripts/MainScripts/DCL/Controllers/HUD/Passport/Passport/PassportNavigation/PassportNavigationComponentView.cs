@@ -78,6 +78,7 @@ namespace DCL.Social.Passports
 
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string, string> OnClickBuyNft;
+        public event Action OnClickedLink;
         public event Action OnClickCollectibles;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
@@ -213,6 +214,7 @@ namespace DCL.Social.Passports
         {
             openUrlView.SetUrlInfo(obj, obj);
             openUrlView.SetVisibility(true);
+            OnClickedLink?.Invoke();
         }
 
         public void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId)

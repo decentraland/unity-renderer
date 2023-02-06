@@ -112,16 +112,24 @@ public class UserContextMenuShould
     [Test]
     public void ClickOnBlockButton()
     {
-        bool blockEventInvoked = false;
+        void TriggerConfirmAction(GenericConfirmationNotificationData current, GenericConfirmationNotificationData previous)
+        {
+            current.ConfirmAction?.Invoke();
+        }
+
+        var blockEventInvoked = false;
         Action<string, bool> onBlock = (id, block) => blockEventInvoked = true;
         contextMenu.OnBlock += onBlock;
+        DataStore.i.notifications.GenericConfirmation.OnChange += TriggerConfirmAction;
 
         contextMenu.Show(TEST_USER_ID);
         contextMenu.blockButton.onClick.Invoke();
 
-        contextMenu.OnBlock -= onBlock;
         Assert.IsTrue(blockEventInvoked);
         Assert.IsFalse(contextMenu.gameObject.activeSelf, "The context menu should not be visible.");
+
+        DataStore.i.notifications.GenericConfirmation.OnChange -= TriggerConfirmAction;
+        contextMenu.OnBlock -= onBlock;
     }
 
     [Test]

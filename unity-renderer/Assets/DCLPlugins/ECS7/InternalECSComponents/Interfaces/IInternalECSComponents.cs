@@ -6,6 +6,8 @@ public interface IInternalECSComponents
     void WriteSystemUpdate();
     IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     IInternalECSComponent<InternalMaterial> materialComponent { get; }
+    IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }
+    IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent { get; }
     IInternalECSComponent<InternalColliders> onPointerColliderComponent { get; }
     IInternalECSComponent<InternalColliders> physicColliderComponent { get; }
     IInternalECSComponent<InternalRenderers> renderersComponent { get; }

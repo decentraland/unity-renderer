@@ -17,7 +17,7 @@ const PROD = !!process.env.CI
 
 console.log(`production: ${PROD}`)
 process.env.BUILD_PATH = path.resolve(
-  process.env.BUILD_PATH || path.resolve(__dirname, '../unity-renderer/Builds/unity')
+  process.env.BUILD_PATH || path.resolve(__dirname, '../Builds/unity')
 )
 const DIST_PATH = path.resolve(__dirname, './static')
 

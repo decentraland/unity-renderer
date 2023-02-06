@@ -1,5 +1,5 @@
 import { GIF_WORKERS } from 'config'
-import { GifAsset, ProcessorMessageData, WorkerMessage, WorkerMessageData } from '../gif-processor/types'
+import { GifAsset, ProcessorMessageData, WorkerMessage, WorkerMessageData } from 'gif-processor/types'
 
 declare const Worker: any
 

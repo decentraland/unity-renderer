@@ -10,6 +10,7 @@ import {
 import { PortContextService } from './context'
 import { getDecentralandTime } from './EnvironmentAPI'
 import { urlWithProtocol } from '../../realm/resolver'
+import { PREVIEW } from '../../../config'
 
 export function registerRuntimeServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
   codegen.registerService(port, RuntimeServiceDefinition, async () => ({
@@ -31,7 +32,8 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
           baseUrl,
           realmName: realmAdapter.about.configurations?.realmName ?? '',
           networkId: realmAdapter.about.configurations?.networkId ?? 1,
-          commsAdapter: realmAdapter.about.comms?.fixedAdapter ?? ''
+          commsAdapter: realmAdapter.about.comms?.fixedAdapter ?? '',
+          isPreview: PREVIEW
         }
       }
     }
