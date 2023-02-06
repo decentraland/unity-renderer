@@ -23,13 +23,12 @@ namespace DCL.Helpers
         {
             var valueGotFromLocalStorage = int.Parse(GetLocalStorageValue(key, defaultValue.ToString()));
 
-            Debug.Log($"For key {key} got value {valueGotFromLocalStorage}");
             if (valueGotFromLocalStorage.Equals(defaultValue) && PlayerPrefs.HasKey(key))
             {
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetInt(key);
-                Debug.Log($"For key {key} got value from PlayerPrefs {valueGotFromLocalStorage}");
                 SetInt(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;
@@ -40,12 +39,8 @@ namespace DCL.Helpers
             SaveStringToLocalStorage(key, value.ToString());
         }
 
-        public bool GetBool(string key, bool defaultValue)
-        {
-            bool value = GetInt(key, defaultValue ? 1 : 0) == 1;
-            Debug.Log($"For key {key} got value from PlayerPrefs {value}");
-            return value;
-        }
+        public bool GetBool(string key, bool defaultValue) =>
+             GetInt(key, defaultValue ? 1 : 0) == 1;
 
         public void SetBool(string key, bool value) =>
             SetInt(key, value ? 1 : 0);
@@ -59,6 +54,7 @@ namespace DCL.Helpers
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetString(key);
                 SetString(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;
@@ -78,6 +74,7 @@ namespace DCL.Helpers
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetFloat(key);
                 SetFloat(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;
