@@ -16,7 +16,7 @@ empty-parcels:
 	cp $(EMPTY_SCENES)/mappings.json static/loader/empty-scenes/mappings.json
 	cp -R $(EMPTY_SCENES)/contents static/loader/empty-scenes/contents
 
-build-essentials: empty-parcels
+build: empty-parcels
 	echo 'declare module "env" {}' > node_modules/env.d.ts
 	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
 	ESSENTIALS_ONLY=true node ./build.js
@@ -26,24 +26,17 @@ build-essentials: empty-parcels
 static/index.js:
 	@node ./build.js
 
-# Release
-
-DIST_ENTRYPOINTS := static/index.js
-DIST_STATIC_FILES := static/export.html static/preview.html
-
-build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) ## Build all the entrypoints needed for a deployment
-
 # Testing
 
 TEST_SOURCE_FILES := $(wildcard test/**/*.ts)
 
-test: build-essentials ## Run all the tests
+test: build ## Run all the tests
 	@node ./runTestServer.js
 
 test-ci: touch-local # Run the tests (for use in the continuous integration environment)
 	@SINGLE_RUN=true NODE_ENV=production $(MAKE) test
 
-npm-link: build-essentials ## Run `npm link` to develop local scenes against this project
+npm-link: build ## Run `npm link` to develop local scenes against this project
 	cd static; npm link
 
 # Aesthetics
@@ -65,15 +58,12 @@ touch-local:
 	touch static/unity.data
 	touch static/unity.wasm
 
-watch: touch-local build-essentials static/index.js ## Watch the files required for hacking the explorer
+watch: touch-local build ## Watch the files required for hacking the explorer
 	@NODE_ENV=development ./build.js -watch
-
-update-renderer:  ## Update the renderer
-	npm install @dcl/unity-renderer@latest
 
 # Makefile
 
-.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix test-ci update build-essentials build-deploy update-renderer madge
+.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix test-ci update build madge
 .DEFAULT_GOAL := help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

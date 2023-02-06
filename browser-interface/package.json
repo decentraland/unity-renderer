@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "make watch",
-    "build": "make build-essentials",
+    "build": "make build",
     "lint": "eslint . --ext .ts --fix",
     "test": "make test-ci",
     "publish": "ts-node --project scripts/tsconfig.json scripts/publish.ts",
