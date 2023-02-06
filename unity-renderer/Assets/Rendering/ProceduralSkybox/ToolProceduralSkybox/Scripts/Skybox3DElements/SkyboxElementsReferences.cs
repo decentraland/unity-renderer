@@ -15,7 +15,7 @@ namespace DCL.Skybox
         public GameObject satelliteElementsGO;
         public GameObject planarElementsGO;
 
-        public static async Task<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider)
+        public static async UniTask<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider)
         {
             GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB);
             var refernces = Instantiate(prefabToInstantiate).GetComponent<SkyboxElementsReferences>();
