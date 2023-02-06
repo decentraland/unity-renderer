@@ -152,7 +152,7 @@ namespace DCL.Social.Chat.Channels
 
         private void OpenChannelWindow(Channel channel)
         {
-            dataStore.channels.channelToBeOpened.Set(channel.ChannelId);
+            dataStore.channels.channelToBeOpened.Set(channel.ChannelId, true);
         }
 
         private ChannelLinkSource GetChannelLinkSource()

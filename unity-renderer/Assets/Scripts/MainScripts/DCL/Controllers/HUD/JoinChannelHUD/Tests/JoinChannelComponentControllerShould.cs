@@ -71,7 +71,7 @@ namespace DCL.Social.Chat.Channels
             channelsDataStore.currentJoinChannelModal.Set(testChannelId, true);
 
             // Assert
-            view.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).SetChannel(testChannelId);
+            view.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).SetChannel(testChannelId?.ToLower());
             view.Received(string.IsNullOrEmpty(testChannelId) ? 0 : 1).Show();
         }
 
@@ -199,12 +199,12 @@ namespace DCL.Social.Chat.Channels
         public void TrackChannelLinkClickWhenCancel()
         {
             dataStore.HUDs.visibleTaskbarPanels.Set(new HashSet<string> { "PrivateChatChannel" });
-            channelsDataStore.currentJoinChannelModal.Set(CHANNEL_ID, true);
+            channelsDataStore.currentJoinChannelModal.Set(TEST_CHANNEL_NAME, true);
             channelsDataStore.channelJoinedSource.Set(ChannelJoinedSource.Link);
 
             view.OnCancelJoin += Raise.Event<Action>();
 
-            socialAnalytics.Received(1).SendChannelLinkClicked(CHANNEL_ID, false, ChannelLinkSource.Chat);
+            socialAnalytics.Received(1).SendChannelLinkClicked(TEST_CHANNEL_NAME.ToLower(), false, ChannelLinkSource.Chat);
         }
 
         [Test]
