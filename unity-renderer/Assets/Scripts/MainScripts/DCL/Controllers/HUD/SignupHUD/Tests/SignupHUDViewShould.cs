@@ -1,6 +1,7 @@
 using DCL.Providers;
 using NUnit.Framework;
 using SignupHUD;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Tests.SignupHUD
@@ -11,7 +12,7 @@ namespace Tests.SignupHUD
         private HUDFactory factory;
 
         [SetUp]
-        public async void SetUp()
+        public async Task SetUp()
         {
             factory = new HUDFactory(new AddressableResourceProvider());
             hudView = (SignupHUDView)await factory.CreateSignupHUDView();
