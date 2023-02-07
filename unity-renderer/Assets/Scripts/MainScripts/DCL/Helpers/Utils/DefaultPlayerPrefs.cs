@@ -2,32 +2,32 @@
 {
     public class DefaultPlayerPrefs : IPlayerPrefs
     {
-        public bool ContainsKey(string key) => PlayerPrefsUtils.HasKey(key);
+        public bool ContainsKey(string key) => PlayerPrefsBridge.HasKey(key);
 
         public string GetString(string key, string defaultValue = null) =>
-            PlayerPrefsUtils.GetString(key, defaultValue);
+            PlayerPrefsBridge.GetString(key, defaultValue);
 
         public bool GetBool(string key, bool defaultValue = false) =>
-            PlayerPrefsUtils.GetBool(key, defaultValue);
+            PlayerPrefsBridge.GetBool(key, defaultValue);
 
         public int GetInt(string key, int defaultValue = 0) =>
-            PlayerPrefsUtils.GetInt(key, defaultValue);
+            PlayerPrefsBridge.GetInt(key, defaultValue);
 
         public float GetFloat(string key, float defaultValue = 0) =>
-            PlayerPrefsUtils.GetFloat(key, defaultValue);
+            PlayerPrefsBridge.GetFloat(key, defaultValue);
 
         public void Set(string key, string value) =>
-            PlayerPrefsUtils.SetString(key, value);
+            PlayerPrefsBridge.SetString(key, value);
 
         public void Set(string key, int value) =>
-            PlayerPrefsUtils.SetInt(key, value);
+            PlayerPrefsBridge.SetInt(key, value);
 
         public void Set(string key, bool value) =>
-            PlayerPrefsUtils.SetBool(key, value);
+            PlayerPrefsBridge.SetBool(key, value);
 
         public void Set(string key, float value) =>
-            PlayerPrefsUtils.SetFloat(key, value);
+            PlayerPrefsBridge.SetFloat(key, value);
 
-        public void Save() => PlayerPrefsUtils.Save();
+        public void Save() => PlayerPrefsBridge.Save();
     }
 }

@@ -1,5 +1,5 @@
 ﻿import { RootState } from '../store/rootTypes'
-import { DEBUG_DISABLE_LOADING } from '../../config'
+import { DEBUG_DISABLE_LOADING } from 'config'
 import { LoginState } from '@dcl/kernel-interface'
 import { getIsSignUp } from '../session/selectors'
 import { RootRendererState } from '../renderer/types'

@@ -47,7 +47,7 @@ import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import { ProfileAsPromise } from './ProfileAsPromise'
 import { fetchOwnedENS } from 'shared/web3'
 import { waitForRoomConnection } from 'shared/dao/sagas'
-import { base64ToBuffer } from 'atomicHelpers/base64ToBlob'
+import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
 import { LocalProfilesRepository } from './LocalProfilesRepository'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { createFakeName } from './utils/fakeName'
@@ -64,7 +64,7 @@ import {
   waitForRealmAdapter
 } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
-import { unsignedCRC32 } from 'atomicHelpers/crc32'
+import { unsignedCRC32 } from 'lib/encoding/crc32'
 import { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>

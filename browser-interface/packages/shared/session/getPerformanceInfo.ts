@@ -131,7 +131,7 @@ export function getPerformanceInfo(data: {
 
   const isHidden = (globalThis as any).document?.hidden
 
-  const { kernelVersion, rendererVersion } = getUsedComponentVersions()
+  const { explorerVersion } = getUsedComponentVersions()
 
   const ret = {
     runtime,
@@ -183,8 +183,9 @@ export function getPerformanceInfo(data: {
     deltaTime,
 
     // versions
-    kernelVersion,
-    rendererVersion,
+    explorerVersion,
+    kernelVersion: explorerVersion, // mantain compatibility
+    rendererVersion: explorerVersion, // mantain compatibility
 
     // detailed profiling
     gltfInProgress: data.gltfInProgress,

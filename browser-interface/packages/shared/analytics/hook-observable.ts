@@ -1,6 +1,6 @@
 import { Vector2 } from '@dcl/ecs-math'
 
-import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
+import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { avatarMessageObservable } from '../comms/peers'
 import { AvatarMessageType } from '../comms/interface/types'
 import { positionObservable } from '../world/positionThings'

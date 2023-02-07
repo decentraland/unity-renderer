@@ -1,6 +1,6 @@
 import type { UnityGame } from '@dcl/unity-renderer/src/index'
 import { CommonRendererOptions } from './loader'
-import { webSocketTransportAdapter } from '../renderer-protocol/transports/webSocketTransportAdapter'
+import { webSocketTransportAdapter } from 'renderer-protocol/transports/webSocketTransportAdapter'
 import { Transport } from '@dcl/rpc'
 
 /** This connects the local game to a native client via WebSocket */

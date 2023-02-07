@@ -8,13 +8,14 @@ import {
   SendMessage,
   sendPrivateMessage
 } from './actions'
-import { uuid } from 'atomicHelpers/math'
+import { uuid } from 'lib/javascript/uuid'
 import { ChatMessageType, ChatMessagePlayerType, ChatMessage } from 'shared/types'
 import { EXPERIENCE_STARTED } from 'shared/loading/types'
 import { trackEvent } from 'shared/analytics'
 import { sendPublicChatMessage } from 'shared/comms'
 import { getAllPeers } from 'shared/comms/peers'
-import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { TeleportController } from 'shared/world/TeleportController'
 import { notifyStatusThroughChat } from './index'
 import defaultLogger from 'shared/logger'
@@ -42,7 +43,7 @@ interface IChatCommand {
 }
 
 const chatCommands: { [key: string]: IChatCommand } = {}
-const excludeList = ['help', 'airdrop', 'feelinglonely']
+const excludeList = ['help', 'feelinglonely']
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
@@ -497,13 +498,13 @@ function initChatCommands() {
   })
 
   addChatCommand('version', 'Shows application version', (_message) => {
-    const { kernelVersion, rendererVersion } = getUsedComponentVersions()
+    const { explorerVersion } = getUsedComponentVersions()
     return {
       messageId: uuid(),
       sender: 'Decentraland',
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: `\nKernel: ${kernelVersion}\nRenderer: ${rendererVersion}`
+      body: `\nExplorer: ${explorerVersion}\n`
     }
   })
 
