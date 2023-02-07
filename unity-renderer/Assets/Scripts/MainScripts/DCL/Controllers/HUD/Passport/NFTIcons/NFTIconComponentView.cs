@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,12 +16,15 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     [SerializeField] internal TMP_Text nftTextInsteadOfImage;
     [SerializeField] internal ImageComponentView typeImage;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal Image backgroundImageGradient;
     [SerializeField] internal Image rarityBackgroundImage;
     [SerializeField] internal NFTTypeIconsAndColors nftTypesIcons;
     [SerializeField] internal NFTSkinFactory skinFactory;
     [SerializeField] internal SizeOnHover sizeOnHoverComponent;
     [SerializeField] internal Transform nftItemInfoPositionRightRef;
     [SerializeField] internal Transform nftItemInfoPositionLeftRef;
+    [SerializeField] internal Sprite normalBackground;
+    [SerializeField] internal Sprite nameBackground;
 
     [SerializeField] internal NFTIconComponentModel model;
 
@@ -31,6 +35,10 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     private NFTItemInfo.Model nftItemInfoCurrentModel;
     private bool showCategoryInfoOnNftItem;
     private string nftItemInfoRarity;
+    private static readonly List<string> landTypes = new () { "parcel", "estate" };
+    private static string nameType = "name";
+    private static readonly Vector3 LAND_IMAGE_SCALE = new (5, 5, 5);
+    private static readonly Vector3 NORMAL_IMAGE_SCALE = new (1, 1, 1);
 
     public void Configure(NFTIconComponentModel newModel)
     {
@@ -49,9 +57,9 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
         SetName(model.name);
         SetShowMarketplaceButton(model.showMarketplaceButton);
         SetMarketplaceURI(model.marketplaceURI);
+        SetType(model.type);
         SetImageURI(model.imageURI);
         SetShowType(model.showType);
-        SetType(model.type);
         SetRarity(model.rarity);
     }
 
@@ -77,6 +85,8 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
         if (nftImage != null)
         {
+            nftImage.gameObject.transform.localScale = landTypes.Contains(model.type) ? LAND_IMAGE_SCALE : NORMAL_IMAGE_SCALE;
+
             nftImage.SetImage(imageURI);
             nftImage.gameObject.SetActive(!string.IsNullOrEmpty(imageURI));
         }
@@ -99,7 +109,6 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     public void SetType(string type)
     {
         model.type = type;
-
         typeImage.SetImage(nftTypesIcons.GetTypeImage(type));
     }
 
@@ -107,7 +116,10 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
     {
         model.rarity = rarity;
         Color rarityColor = nftTypesIcons.GetColor(rarity);
-        backgroundImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
+
+        backgroundImage.sprite = model.type == nameType ? nameBackground : normalBackground;
+        backgroundImageGradient.enabled = model.type != nameType;
+        backgroundImage.color = model.type == nameType ? Color.white : new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
         rarityBackgroundImage.color = rarityColor;
     }
 
