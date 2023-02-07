@@ -166,7 +166,6 @@ namespace DCL
         {
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
-            gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceChatBridge>();

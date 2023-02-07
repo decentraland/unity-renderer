@@ -1,16 +1,21 @@
 using DCL;
+using DCLServices.WearablesCatalogService;
 using System;
 using UnityEngine;
 
 public class AvatarEditorHUDAnimationController : IDisposable
 {
     private readonly IAvatarEditorHUDView hudView;
+    private readonly IWearablesCatalogService wearablesCatalogService;
     internal string activeCategory;
     private int currentAnimationIndexShown;
 
-    public AvatarEditorHUDAnimationController(IAvatarEditorHUDView avatarEditorHUDView)
+    public AvatarEditorHUDAnimationController(
+        IAvatarEditorHUDView avatarEditorHUDView,
+        IWearablesCatalogService wearablesCatalogService)
     {
         this.hudView = avatarEditorHUDView;
+        this.wearablesCatalogService = wearablesCatalogService;
 
         hudView.OnRandomize += OnClickRandomize;
         hudView.WearableSelectorClicked += OnSelectWearable;
@@ -38,7 +43,7 @@ public class AvatarEditorHUDAnimationController : IDisposable
 
     public void OnSelectWearable(string wearableId)
     {
-        CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+        wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out var wearable);
         switch (wearable.data.category)
         {
             case WearableLiterals.Categories.FEET:

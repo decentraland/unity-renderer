@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -37,6 +38,7 @@ public class AvatarEditorHUDController : IHUD
     internal readonly IAnalytics analytics;
     internal readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
     private BaseDictionary<string, WearableItem> catalog;
+    private readonly IWearablesCatalogService wearablesCatalogService;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
@@ -81,11 +83,15 @@ public class AvatarEditorHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController(DataStore_FeatureFlag featureFlags, IAnalytics analytics)
+    public AvatarEditorHUDController(
+        DataStore_FeatureFlag featureFlags,
+        IAnalytics analytics,
+        IWearablesCatalogService wearablesCatalogService)
     {
         this.featureFlags = featureFlags;
         this.analytics = analytics;
         this.newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
+        this.wearablesCatalogService = wearablesCatalogService;
     }
 
     public void Initialize(UserProfile userProfile,
@@ -143,7 +149,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetThirdPartyCollectionsVisibility(isThirdPartyCollectionsEnabled);
 
-        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view);
+        this.avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(view, wearablesCatalogService);
 
         Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocus += OnApplicationFocus;
     }
@@ -183,6 +189,53 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadOwnedWereables(UserProfile userProfile)
     {
+        async UniTaskVoid RequestOwnedWearablesAsync(CancellationToken ct)
+        {
+            lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
+            loadingWearables = true;
+
+            try
+            {
+                var ownedWearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                    userProfile.userId,
+                    1,
+                    int.MaxValue,
+                    true,
+                    ct);
+
+                ownedWearablesAlreadyLoaded = true;
+                //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly
+                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
+                LoadUserProfile(userProfile, true);
+                if (userProfile != null && userProfile.avatar != null)
+                    emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
+                loadingWearables = false;
+            }
+            catch (Exception e)
+            {
+                ownedWearablesRemainingRequests--;
+                if (ownedWearablesRemainingRequests > 0)
+                {
+                    Debug.LogWarning("Retrying owned wereables loading...");
+                    LoadOwnedWereables(userProfile);
+                }
+                else
+                {
+                    LoadUserProfile(userProfile, true);
+                    NotificationsController.i.ShowNotification(new Model
+                    {
+                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                        type = Type.GENERIC,
+                        timer = 10f,
+                        destroyOnFinish = true
+                    });
+
+                    Debug.LogError(e.Message);
+                    loadingWearables = false;
+                }
+            }
+        }
+
         //If there is no userID we dont fetch owned wearabales
         if(string.IsNullOrEmpty(userProfile.userId))
             return;
@@ -191,45 +244,7 @@ public class AvatarEditorHUDController : IHUD
         if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown())
             return;
 
-        lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
-
-        loadingWearables = true;
-        CatalogController.RequestOwnedWearables(userProfile.userId)
-                         .Then((ownedWearables) =>
-                         {
-                             ownedWearablesAlreadyLoaded = true;
-                             //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
-                             LoadUserProfile(userProfile, true);
-                             if (userProfile != null && userProfile.avatar != null)
-                             {
-                                 emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
-                             }
-                             loadingWearables = false;
-                         })
-                         .Catch((error) =>
-                         {
-                             ownedWearablesRemainingRequests--;
-                             if (ownedWearablesRemainingRequests > 0)
-                             {
-                                 Debug.LogWarning("Retrying owned wereables loading...");
-                                 LoadOwnedWereables(userProfile);
-                             }
-                             else
-                             {
-                                 LoadUserProfile(userProfile, true);
-                                 NotificationsController.i.ShowNotification(new Model
-                                 {
-                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                                     type = Type.GENERIC,
-                                     timer = 10f,
-                                     destroyOnFinish = true
-                                 });
-
-                                 Debug.LogError(error);
-                                 loadingWearables = false;
-                             }
-                         });
+        RequestOwnedWearablesAsync(CancellationToken.None).Forget();
     }
 
     private void LoadOwnedEmotes()
@@ -374,7 +389,7 @@ public class AvatarEditorHUDController : IHUD
 
         view.InitializeNavigationEvents(!userProfile.hasConnectedWeb3);
 
-        CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
+        wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
 
         if (bodyShape == null)
         {
@@ -402,7 +417,7 @@ public class AvatarEditorHUDController : IHUD
         {
             for (var i = 0; i < wearablesCount; i++)
             {
-                CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable);
+                wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable);
                 if (wearable == null)
                 {
                     Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
@@ -437,7 +452,7 @@ public class AvatarEditorHUDController : IHUD
                 var defaultItemId = WearableLiterals.DefaultWearables.GetDefaultWearable(model.bodyShape.id, category);
                 if (defaultItemId != null)
                 {
-                    CatalogController.wearableCatalog.TryGetValue(defaultItemId, out wearable);
+                    wearablesCatalogService.WearablesCatalog.TryGetValue(defaultItemId, out wearable);
                 }
                 else
                 {
@@ -454,7 +469,7 @@ public class AvatarEditorHUDController : IHUD
 
     public void WearableClicked(string wearableId)
     {
-        CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+        wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out var wearable);
         if (wearable == null) return;
 
         if (wearable.data.category == Categories.BODY_SHAPE)
@@ -961,7 +976,7 @@ public class AvatarEditorHUDController : IHUD
         List<string> collectionIdsToLoad = new List<string>();
         foreach (string wearableId in userProfile.avatar.wearables)
         {
-            CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+            wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out var wearable);
 
             if (wearable != null && wearable.IsFromThirdPartyCollection)
             {
@@ -986,10 +1001,18 @@ public class AvatarEditorHUDController : IHUD
 
     private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
     {
-        view.BlockCollectionsDropdown(true);
-        CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
-            .Then(wearables =>
+        async UniTaskVoid RequestThirdPartyWearablesAsync(CancellationToken ct)
+        {
+            try
             {
+                var wearables = await wearablesCatalogService.RequestThirdPartyWearablesByCollectionAsync(
+                    userProfile.userId,
+                    collectionId,
+                    1,
+                    int.MaxValue,
+                    true,
+                    ct);
+
                 wearables = wearables.Where(x => x.ThirdPartyCollectionId == collectionId).ToArray();
                 if (wearables.Count().Equals(0)) view.ShowNoItemOfWearableCollectionWarning();
                 thirdPartyCollectionsActive.Add(collectionId);
@@ -1007,22 +1030,26 @@ public class AvatarEditorHUDController : IHUD
                 view.BlockCollectionsDropdown(false);
                 LoadUserProfile(userProfile, true);
                 view.RefreshSelectorsSize();
-            })
-            .Catch((error) =>
+            }
+            catch (Exception e)
             {
                 view.BlockCollectionsDropdown(false);
-                Debug.LogError(error);
-            });
+                Debug.LogError(e.Message);
+            }
+        }
+
+        view.BlockCollectionsDropdown(true);
+        RequestThirdPartyWearablesAsync(CancellationToken.None).Forget();
     }
 
     private void RemoveThirdPartyCollection(string collectionId)
     {
-        var wearablesToRemove = CatalogController.i.Wearables.GetValues()
-            .Where(wearable => !userProfile.HasEquipped(wearable.id)
-                               && wearable.ThirdPartyCollectionId == collectionId)
-            .Select(item => item.id)
-            .ToList();
-        CatalogController.i.Remove(wearablesToRemove);
+        var wearablesToRemove = wearablesCatalogService.WearablesCatalog.GetValues()
+                                                       .Where(wearable => !userProfile.HasEquipped(wearable.id)
+                                                                          && wearable.ThirdPartyCollectionId == collectionId)
+                                                       .Select(item => item.id)
+                                                       .ToList();
+        wearablesCatalogService.RemoveWearablesFromCatalog(wearablesToRemove);
         thirdPartyCollectionsActive.Remove(collectionId);
 
         foreach (string wearableId in wearablesToRemove)

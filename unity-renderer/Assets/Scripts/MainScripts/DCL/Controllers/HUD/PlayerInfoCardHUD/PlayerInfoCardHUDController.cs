@@ -5,6 +5,7 @@ using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using DCL.Tasks;
+using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
-    private readonly IWearableCatalogBridge wearableCatalogBridge;
+    private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly BooleanVariable playerInfoCardVisibleState;
@@ -44,7 +45,7 @@ public class PlayerInfoCardHUDController : IHUD
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
-        IWearableCatalogBridge wearableCatalogBridge,
+        IWearablesCatalogService wearablesCatalogService,
         ISocialAnalytics socialAnalytics,
         IProfanityFilter profanityFilter,
         DataStore dataStore,
@@ -59,7 +60,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         currentPlayerId = currentPlayerIdData;
         this.userProfileBridge = userProfileBridge;
-        this.wearableCatalogBridge = wearableCatalogBridge;
+        this.wearablesCatalogService = wearablesCatalogService;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
@@ -237,7 +238,7 @@ public class PlayerInfoCardHUDController : IHUD
 
             CommonScriptableObjects.playerInfoCardVisibleState.Set(false);
             view.SetCardActive(false);
-            wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
+            wearablesCatalogService.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
         }
         else
@@ -395,17 +396,20 @@ public class PlayerInfoCardHUDController : IHUD
     {
         try
         {
-            var request = wearableCatalogBridge.RequestOwnedWearables(userProfile.userId);
-            await request.WithCancellation(cancellationToken);
+            var ownedWearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                userProfile.userId,
+                1,
+                int.MaxValue,
+                true,
+                cancellationToken);
 
-            var wearableIds = request.value.Select(x => x.id).ToArray();
+            string[] wearableIds = ownedWearables.Select(x => x.id).ToArray();
             userProfile.SetInventory(wearableIds);
             loadedWearables.AddRange(wearableIds);
 
-            var containedWearables = request.value
-
+            var containedWearables = ownedWearables
                 // this makes any sense?
-               .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
+               .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
 
             view.SetWearables(containedWearables);
         }

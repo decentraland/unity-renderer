@@ -6,6 +6,7 @@ using DCl.Social.Passports;
 using DCL.Social.Passports;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ public class PlayerPassportPlugin : IPlugin
                             referenceContainer.PassportNavigationView,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),
                             new WearableItemResolver(),
-                            new WearablesCatalogControllerBridge(),
+                            Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                             Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
                             Environment.i.serviceLocator.Get<INamesService>(),
                             Environment.i.serviceLocator.Get<ILandsService>(),

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 
 namespace AvatarSystem
 {
@@ -73,17 +74,12 @@ namespace AvatarSystem
                 if (wearablesRetrieved.ContainsKey(wearableId))
                     return wearablesRetrieved[wearableId];
 
-                Promise<WearableItem> promise = CatalogController.RequestWearable(wearableId);
-                // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
-                await promise.WithCancellation(linkedCts.Token);
+                var wearable = await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestWearableAsync(wearableId, linkedCts.Token);
 
-                // Cancelling is irrelevant at this point,
-                // either we have the wearable and we have to add it to forget it later
-                // or it's null and we just return it
-                if (promise.value != null)
-                    wearablesRetrieved.Add(wearableId, promise.value);
+                if (wearable != null)
+                    wearablesRetrieved.Add(wearableId, wearable);
 
-                return promise.value;
+                return wearable;
 
             }
             catch (Exception ex) when (ex is OperationCanceledException or PromiseException)
@@ -104,10 +100,10 @@ namespace AvatarSystem
             {
                 wearablesRetrieved.Remove(wearableId);
             }
-            CatalogController.RemoveWearablesInUse(wearableIds);
+            DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RemoveWearablesInUse(wearableIds);
         }
 
-        public void Forget(string wearableId) { CatalogController.RemoveWearablesInUse(new List<string> { wearableId }); }
+        public void Forget(string wearableId) { DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RemoveWearablesInUse(new List<string> { wearableId }); }
 
         public void Dispose()
         {

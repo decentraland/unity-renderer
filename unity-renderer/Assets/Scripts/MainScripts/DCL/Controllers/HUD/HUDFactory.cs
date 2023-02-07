@@ -1,4 +1,3 @@
-using AvatarSystem;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
@@ -11,13 +10,10 @@ using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
-using DCl.Social.Passports;
-using DCL.Social.Passports;
+using DCLServices.WearablesCatalogService;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using UnityEngine;
-using DCLServices.Lambdas.NamesService;
-using DCLServices.Lambdas.LandsService;
 
 public class HUDFactory : IHUDFactory
 {
@@ -44,7 +40,8 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags,
-                    Environment.i.platform.serviceProviders.analytics);
+                    Environment.i.platform.serviceProviders.analytics,
+                    Environment.i.serviceLocator.Get<IWearablesCatalogService>());
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 hudElement = new SettingsPanelHUDController();

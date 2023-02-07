@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Chat;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -126,7 +127,7 @@ public class HUDController : IHUDController
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private BaseDictionary<string, WearableItem> wearableCatalog => CatalogController.wearableCatalog;
+    private BaseDictionary<string, WearableItem> wearableCatalog => DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().WearablesCatalog;
 
     private void ShowSettings()
     {

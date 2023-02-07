@@ -1,4 +1,5 @@
 using DCL;
+using DCLServices.WearablesCatalogService;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,7 +42,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
     void OnSelectWearable(string wearableId)
     {
-        CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
+        Environment.i.serviceLocator.Get<IWearablesCatalogService>().WearablesCatalog.TryGetValue(wearableId, out var wearable);
         wearableIsSameAsPrevious = (wearable == lastSelectedWearable);
         if (wearableIsSameAsPrevious)
             return;
