@@ -122,12 +122,12 @@ namespace DCL.Social.Chat.Channels
                             OpenChannelWindow(channelToJoin);
                         }
                         else
-                            ShowErrorToast("The channel you are trying to access do not exist");
+                            ShowErrorToast("The channel you are trying to access does not exist");
                     }
                 }
                 catch (ChannelException)
                 {
-                    ShowErrorToast("There was a problem trying to process the channel, try again later");
+                    ShowErrorToast("There was a problem trying to process your request, try again later");
                     throw;
                 }
                 finally
