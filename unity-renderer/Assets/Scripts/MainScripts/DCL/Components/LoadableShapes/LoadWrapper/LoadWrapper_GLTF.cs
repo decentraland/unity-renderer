@@ -45,10 +45,7 @@ namespace DCL.Components
             }
             else
             {
-                if (useVisualFeedback)
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
-                else
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+                loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
             }
 
             this.entity.OnCleanupEvent -= OnEntityCleanup;

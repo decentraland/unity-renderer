@@ -1,8 +1,8 @@
-version: 2.0
+version: 2.1
 
 references:
   .working_directory: &working_directory /tmp/workspace/unity-renderer
-  #                                                     ~~~~~~~~~~~~~~ <- repo name
+  #                                                     ~~~~~~~~~~~~~~~~ <- repo name
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
@@ -11,76 +11,183 @@ references:
     attach_workspace:
       at: *working_directory
 
+  .unity_linux_image: &unity_linux_image
+    - image: unityci/editor:ubuntu-2021.3.14f1-linux-il2cpp-1.0.1
+      environment:
+        DCL_OUTPUT_NAME: linux
+        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
+        BUILD_TARGET: StandaloneLinux64
+        BUILD_NAME: unity-renderer-linux
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-linux/
+        #                          ~~~~~~~~~~~~~~~~ <- repo name
+        #                                                  ~~~~~~~~~~~~~~~~~~~~ <- folder name
+
+  .unity_mac_image: &unity_mac_image
+    - image: unityci/editor:ubuntu-2021.3.14f1-mac-mono-1.0.1
+      environment:
+        DCL_OUTPUT_NAME: mac
+        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
+        BUILD_TARGET: StandaloneOSX
+        BUILD_NAME: unity-renderer-mac
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-mac/
+        #                          ~~~~~~~~~~~~~~~~ <- repo name
+        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+
+  .unity_windows_image: &unity_windows_image
+    - image: unityci/editor:ubuntu-2021.3.14f1-windows-mono-1.0.1
+      environment:
+        DCL_OUTPUT_NAME: windows
+        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
+        BUILD_TARGET: StandaloneWindows64
+        BUILD_NAME: unity-renderer-windows
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-windows/
+        #                          ~~~~~~~~~~~~~~~~ <- repo name
+        #                                                  ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
+
+  .unity_webgl_image: &unity_webgl_image
+    - image: unityci/editor:2021.3.14f1-webgl-1
+      environment:
+        DCL_OUTPUT_NAME: webgl
+        PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
+        BUILD_TARGET: WebGL
+        BUILD_NAME: unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
+        #                          ~~~~~~~~~~~~~~~~ <- repo name
+        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+
   .image_kernel: &image_kernel
     - image: cimg/node:16.18.1-browsers
       environment:
-        BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
         #                          ~~~~~~~~~~~~~~ <- repo name
         #                                         ~~~~~~~~~~~~~~ <- folder name
 
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
-    - ./unity-renderer/benchmark-results
     - ./unity-renderer/editmode-logs.txt
     - ./unity-renderer/playmode-logs.txt
-    - ./unity-renderer/benchmark-logs.txt
     - ./unity-renderer/build-logs.txt
     - ./unity-renderer/ab-logs.txt
     - ./unity-renderer/playmode-results.xml
-    - ./unity-renderer/benchmark-results.xml
     - ./unity-renderer/CodeCoverage
     - ./unity-renderer/TestResources/VisualTests
-    - ./unity-renderer/Builds/
+    - ./Builds/
 
-  .unity_image: &unity_image
-    - image: unityci/editor:2021.3.14f1-webgl-1
-      environment:
-        BUILD_TARGET: WebGL
-        BUILD_NAME: unity
-        BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
-        #                          ~~~~~~~~~~~~~~ <- repo name
-        #                                         ~~~~~~~~~~~~~~ <- folder name
-
-  .all_branches_and_tags: &all_branches_and_tags
+  .all_branches: &all_branches
     filters:
       branches:
         only: /(.*)/
-      tags:
-        only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
+
+  .only_dev_and_main: &only_dev_and_main
+    filters:
+      branches:
+        only:
+          - dev
+          - main
+          -  /^release\/.*/
+          -  /^hotfix\/.*/
+
+commands:
+  build-unity-generic:
+    steps:
+      - run:
+          name: Prepare image
+          command: |
+            apt-get update
+            apt-get install -y zip jq gpg
+      - run: &HASH_UNITY_FILES
+          name: Get the hash of source files
+          command: |
+            # hash unity files
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -iname '*SentryOptions.asset*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+
+            # hash pipeline files
+            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+
+            cat ../.unitysources-checksum
+      - run: &STORE_TARGET
+          name: Save target to file
+          command: |
+            echo $DCL_OUTPUT_NAME > /tmp/target
+      - restore_cache:
+          keys:
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev
+      - restore_cache: &RESTORE_LIBRARY_CACHE
+          name: Restore library if exists
+          keys:
+            - library-{{ checksum "/tmp/target" }}-{{ .Branch }}
+            - library-{{ checksum "/tmp/target" }}-dev
+      - run:
+          name: Build Unity Project
+          no_output_timeout: 45m
+          command: |
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "${PROJECT_PATH}/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                mkdir -p ${BUILD_PATH}
+
+                ./ci-build.sh
+            else
+              echo "Skipping build, using cached artifacts."
+            fi;
+      - run:
+          name: Print build logs
+          command: cat ${PROJECT_PATH}/build-logs.txt
+          when: always
+
+      - save_cache:
+          name: Store build cache
+          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
+          paths: *CACHED_PATHS
+      - save_cache:
+          name: Store library
+          key: library-{{ checksum "/tmp/target" }}-{{ .Branch }}
+          paths:
+            - ./unity-renderer/Library
+      - run:
+          name: Check there are build artifacts
+          command: |
+            if [ -z "$(ls -A "${BUILD_PATH}")" ]; then
+              echo "directory ${BUILD_PATH} is empty"
+              exit 1
+            fi
+      - run:
+          name: Print all files
+          command: |
+            find "${BUILD_PATH}"
+  persist-unity-desktop:
+    steps:
+      - run:
+          name: Compress artifacts
+          command: |
+            pushd ${BUILD_PATH}
+            zip -r unity-renderer-${DCL_OUTPUT_NAME}.zip ./
+            popd
+            mkdir -p unity-artifacts
+            mv ${BUILD_PATH}/unity-renderer-${DCL_OUTPUT_NAME}.zip unity-artifacts
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - ./unity-artifacts/
+  persist-unity-web:
+    steps:
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - Builds
+
 
 jobs:
   checkout:
     <<: *working_directory_root
     docker:
-      - image: cimg/node:14.19.3-browsers
-        environment:
-          # avoid automatic download of LFS files
-          GIT_LFS_SKIP_SMUDGE: 1
+      - image: cimg/node:16.18.1-browsers
     steps:
-      # install lfs
       - run:
-          name: "Install git-lfs"
+          name: Prepare image
           command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs
-            ssh git@github.com git-lfs-authenticate decentraland/unity-renderer.git download
-            git lfs --version
-            git lfs install
-      # checkout the actual code
+            sudo apt-get update
+            sudo apt-get install -y jq
       - checkout
-
-      # restore cached lfs
-      - restore_cache:
-          name: Restore large files from CircleCI cache
-          keys:
-            - git-lfs-{{ .Branch }}
-            - git-lfs-master
-      - run:
-          name: "Download LFS files from GitHub's LFS Storage"
-          command: |
-            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - run:
           name: Components and Renderer Protocol code generation
           command: |
@@ -93,89 +200,68 @@ jobs:
             cd scripts
             npm install
             npm run inject-sentry-params
-      - save_cache:
-          name: Store large files in cache
-          key: git-lfs-{{ .Branch }}
-          paths:
-            - .git/lfs
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
           root: *working_directory
           paths:
-            - "*"
-
-  ############
-  ## THIS IS TEMPORARILY DISABLED AND RUNS ONLY IN THE "editmode-branch" branch
-  ############
-  editmode-tests:
+            - '*'
+  build-unity-for-linux:
     <<: *working_directory_root
     resource_class: xlarge
-    docker: *unity_image
+    docker: *unity_linux_image
+    steps:
+      - <<: *attach_root
+      - build-unity-generic
+      - persist-unity-desktop
+  build-unity-for-windows:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_windows_image
+    steps:
+      - <<: *attach_root
+      - build-unity-generic
+      - persist-unity-desktop
+  build-unity-for-mac:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_mac_image
+    steps:
+      - <<: *attach_root
+      - build-unity-generic
+      - persist-unity-desktop
+  build-unity-for-webgl:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_webgl_image
+    steps:
+      - <<: *attach_root
+      - build-unity-generic
+      - persist-unity-web
+  playmode-tests:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_windows_image
     steps:
       - <<: *attach_root
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: |
             # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -path '*node_modules*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
             # hash pipeline files
-            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
-      - restore_cache:
-          keys:
-            - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: &RESTORE_LIBRARY_CACHE
-          name: Restore library if exists
-          keys:
-            - library-2020-3-{{ .Branch }}
-            - library-2020-3-dev
-      - run:
-          name: Run editmode tests
-          command: |
-            if [[ -e ./unity-renderer/editmode-logs.txt ]]; then
-                echo "Skipping editmode tests"
-                exit 0
-            else
-                bash ci-editmode-test.sh
-                exit $?
-            fi;
-          no_output_timeout: 30m
-      - run:
-          name: nunit-to-junit
-          when: always
-          command: |
-            apt-get update
-            apt-get install -y xsltproc
-            xsltproc --output unity-renderer/test-results/editmode-results-junit.xml nunit-to-junit.xsl unity-renderer/editmode-results.xml
-      - store_artifacts:
-          name: Store logs
-          path: ./unity-renderer/editmode-logs.txt
-      - store_artifacts:
-          name: Store test results
-          path: ./unity-renderer/editmode-results.xml
-      - store_test_results:
-          path: ./unity-renderer/test-results
-      - save_cache: &SAVE_CHECKSUM_CACHE_EDITMODE
-          name: Store editmode cache
-          key: unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts: &STORE_VISUAL_TESTS
-          name: Store visual tests result as artifacts
-          path: ./unity-renderer/TestResources/VisualTests
-
-  playmode-tests:
-    <<: *working_directory_root
-    resource_class: xlarge
-    docker: *unity_image
-    steps:
-      - <<: *attach_root
-      - run: *HASH_UNITY_FILES
+            find ./ -type f \( -not -path '*node_modules*' \) \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+      - run: *STORE_TARGET
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Prepare image
+          command: |
+            apt-get update
+            apt-get install -y zip jq gpg
       - run:
           name: Run playmode tests
           command: |
@@ -194,11 +280,11 @@ jobs:
             apt-get update
             apt-get install -y xsltproc
             xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
-      - run: apt-get -y -qq install awscli
+      - run: DEBIAN_FRONTEND=noninteractive apt-get -y -qq install awscli
       - run:
           name: upload code coverage
           command: |
-            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/desktop-coverage/${CIRCLE_BRANCH}" --acl public-read
       - store_test_results:
           path: ./unity-renderer/test-results
       - store_artifacts:
@@ -209,171 +295,27 @@ jobs:
           path: ./unity-renderer/playmode-results.xml
       - save_cache:
           name: Store test cache
-          key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
           paths: *CACHED_PATHS
-      - store_artifacts: *STORE_VISUAL_TESTS
-
-  benchmark:
+      - store_artifacts: &STORE_VISUAL_TESTS
+          name: Store visual tests result as artifacts
+          path: ./unity-renderer/TestResources/VisualTests
+  publish-desktop-artifacts:
     <<: *working_directory_root
-    resource_class: xlarge
-    docker: *unity_image
+    docker:
+      - image: cimg/base:2021.04
     steps:
       - <<: *attach_root
-      - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
-          name: Run benchmarks
+          name: Prepare image
           command: |
-            if [[ -e ./unity-renderer/benchmark-logs.txt ]]; then
-                echo "Skipping benchmarks"
-                exit 0
-            else
-                bash ci-benchmark.sh
-                exit $?
-            fi;
-          no_output_timeout: 30m
+            sudo apt-get update
+            sudo apt-get -y -qq install awscli
       - run:
-          name: nunit-to-junit
-          when: always
+          name: Upload artifacts
           command: |
-            apt-get update
-            apt-get install -y xsltproc
-            xsltproc --output unity-renderer/benchmark-results/benchmark-results-junit.xml nunit-to-junit.xsl unity-renderer/benchmark-results.xml
-      - run: apt-get -y -qq install awscli      
-      - run:
-          name: upload benchmark report
-          command: |
-            bash ci-benchmark-upload-report.sh            
-      - store_test_results:
-          path: ./unity-renderer/benchmark-results
-      - store_artifacts:
-          name: Store benchmark logs
-          path: ./unity-renderer/benchmark-logs.txt
-      - store_artifacts:
-          name: Store benchmark results
-          path: ./unity-renderer/benchmark-results.xml
-      - save_cache:
-          name: Store benchmark cache
-          key: unity-benchmark-2020-3-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts: *STORE_VISUAL_TESTS
+            ./ci-publish-preview-artifacts.sh
 
-  asset-bundle-tests:
-    <<: *working_directory_root
-    resource_class: xlarge
-    docker: *unity_image
-    steps:
-      - <<: *attach_root
-      - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-ab-2020-3-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
-      - run:
-          name: Run AB tests
-          command: |
-            bash ./ci-asset-bundle-test.sh
-            exit $?
-          no_output_timeout: 30m
-      - run:
-          name: Cat logs
-          when: always
-          command: cat $(pwd)/ab-logs.txt
-      - run:
-          name: Print files
-          command: find ./unity-renderer/ab-output
-          when: always
-      - run:
-          name: Print files (failed)
-          command: |
-            pwd
-            find .
-          when: on_fail
-      - save_cache:
-          name: Store test cache
-          key: unity-ab-2020-3-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts:
-          name: Store logs
-          path: ./ab-logs.txt
-      - store_artifacts:
-          name: Store AB converter results
-          path: ./unity-renderer/ab-output
-      - store_artifacts: *STORE_VISUAL_TESTS
-
-  build-unity:
-    <<: *working_directory_root
-    resource_class: xlarge
-    docker: *unity_image
-    steps:
-      - <<: *attach_root
-      - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
-      - run:
-          name: Build Unity Project
-          no_output_timeout: 45m
-          command: |
-            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "./unity-renderer/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
-                mkdir -p ${BUILD_PATH}
-
-                ./ci-build.sh
-            else
-              echo "Skipping build, using cached artifacts."
-            fi;
-      - run:
-          name: Print build logs
-          command: cat ./unity-renderer/build-logs.txt
-          when: always
-      - save_cache:
-          name: Store test cache
-          key: unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts:
-          path: ./unity-renderer/Builds/
-          destination: Builds
-      - save_cache:
-          name: Store library
-          key: library-2020-3-{{ .Branch }}
-          paths:
-            - ./unity-renderer/Library
-      - store_artifacts:
-          name: Store logs
-          path: ./unity-renderer/build-logs.txt
-      - store_artifacts:
-          name: Store build report
-          path: ./unity-renderer/Library/LastBuild.buildreport
-
-      # persist to workspace to use in downstream jobs
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - ./unity-renderer/Builds
-      - run:
-          name: Check there are build artifacts
-          command: |
-            if [ -z "$(ls -A "./unity-renderer/Builds")" ]; then
-              echo "directory ./unity-renderer/Builds is empty"
-              exit 1
-            fi
-      - run:
-          name: Print all files (in failure)
-          when: on_fail
-          command: |
-            find "./unity-renderer"
-      - run:
-          name: Print build summary (in failure)
-          when: on_fail
-          command: |
-            cat ./unity-renderer/Library/LastBuild.buildreport
   test-js-interface:
     <<: *working_directory_root
     docker: *image_kernel
@@ -404,7 +346,7 @@ jobs:
       - run:
           working_directory: *node_workspace
           name: run build
-          command: make build-essentials build-release build-deploy
+          command: make build
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
@@ -416,7 +358,7 @@ jobs:
           paths:
             - *node_workspace
 
-  publish-renderer:
+  publish-webgl-artifacts:
     <<: *working_directory_root
     docker: *image_kernel
 
@@ -440,40 +382,56 @@ workflows:
   build-deploy:
     jobs:
       - checkout:
-          <<: *all_branches_and_tags
+          <<: *all_branches
+
+      - build-unity-for-linux:
+          <<: *only_dev_and_main
+          requires:
+            - checkout
+
+      - build-unity-for-windows:
+          <<: *all_branches
+          requires:
+            - checkout
+
+      - build-unity-for-mac:
+          <<: *only_dev_and_main
+          requires:
+            - checkout
+
+      - build-unity-for-webgl:
+          <<: *all_branches
+          requires:
+            - checkout
 
       - playmode-tests:
-          <<: *all_branches_and_tags
+          <<: *all_branches
           requires:
             - checkout
-      - benchmark:
-          <<: *all_branches_and_tags
+
+      - publish-desktop-artifacts:
+          <<: *all_branches
           requires:
-            - checkout
-     # - asset-bundle-tests:
-     #     <<: *all_branches_and_tags
-     #     requires:
-     #       - checkout
-     # - editmode-tests:
-     #    <<: *all_branches_and_tags
-     #     requires:
-     #       - checkout
-      - build-unity:
-          <<: *all_branches_and_tags
-          requires:
-            - checkout
-      - build-js-interface:
-          <<: *all_branches_and_tags
-          requires:
-            - build-unity
-      - test-js-interface:
-          <<: *all_branches_and_tags
-          requires:
-            - checkout
-      - publish-renderer:
-          requires:
-            - build-unity
+            - build-unity-for-linux
+            - build-unity-for-windows
+            - build-unity-for-mac
             - build-js-interface
             - playmode-tests
+
+      - build-js-interface:
+          <<: *all_branches
+          requires:
+            - build-unity-for-webgl
+
+      - test-js-interface:
+          <<: *all_branches
+          requires:
+            - checkout
+
+      - publish-webgl-artifacts:
+          requires:
+            - build-unity-for-webgl
+            - build-js-interface
             - test-js-interface
+            - playmode-tests
             # - editmode-tests
