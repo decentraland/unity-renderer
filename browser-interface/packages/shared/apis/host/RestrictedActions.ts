@@ -1,5 +1,5 @@
 import { Quaternion, Vector3 } from '@dcl/ecs-math'
-import { RpcServerPort } from '@dcl/rpc'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
@@ -7,23 +7,23 @@ import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPositio
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { browserInterface } from 'unity-interface/BrowserInterface'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { PortContext } from './context'
+import type { PortContext } from './context'
 
 import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import {
+import type {
   ChangeRealmRequest,
   CommsAdapterRequest,
   MovePlayerToRequest,
   MovePlayerToResponse,
   OpenExternalUrlRequest,
   OpenNftDialogRequest,
-  RestrictedActionsServiceDefinition,
   TeleportToRequest,
   TriggerEmoteRequest,
   TriggerEmoteResponse
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
+import { RestrictedActionsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/restricted_actions.gen'
 import { changeRealm } from 'shared/dao'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { getRendererModules } from 'shared/renderer/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { assertHasPermission } from './Permissions'

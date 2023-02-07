@@ -1,4 +1,4 @@
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { store } from 'shared/store/isolatedStore'
 

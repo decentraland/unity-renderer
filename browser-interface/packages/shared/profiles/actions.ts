@@ -9,14 +9,14 @@ export const PROFILE_REQUEST = '[PROFILE] Fetch request'
 export const PROFILE_SUCCESS = '[PROFILE] Fetch succeeded'
 export const PROFILE_FAILURE = '[PROFILE] Fetch failed'
 
-export const SAVE_PROFILE = 'SAVE_PROFILE'
-export const SAVE_PROFILE_FAILURE = 'SAVE_PROFILE_FAILURE'
+export const SAVE_DELTA_PROFILE_REQUEST = 'SAVE_DELTA_PROFILE_REQUEST'
+export const SAVE_DELTA_PROFILE_REQUEST_FAILURE = 'SAVE_DELTA_PROFILE_REQUEST_FAILURE'
 
 export const DEPLOY_PROFILE_SUCCESS = 'DEPLOY_PROFILE_SUCCESS'
 export const DEPLOY_PROFILE_REQUEST = 'DEPLOY_PROFILE_REQUEST'
 export const DEPLOY_PROFILE_FAILURE = 'DEPLOY_PROFILE_FAILURE'
 
-export const SEND_PROFILE_TO_RENDERER = 'SEND_PROFILE_TO_RENDERER'
+export const SEND_PROFILE_TO_RENDERER_REQUEST = 'SEND_PROFILE_TO_RENDERER_REQUEST'
 
 export const profileRequest = (userId: string, future: IFuture<Avatar>, profileType?: ProfileType, version?: number) =>
   action(PROFILE_REQUEST, { userId, future, profileType, version })
@@ -34,9 +34,10 @@ export type ProfileFailureAction = ReturnType<typeof profileFailure>
 
 // Profile update
 
-export const saveProfileDelta = (profile: Partial<Avatar>) => action(SAVE_PROFILE, { profile })
-export const sendProfileToRenderer = (userId: string) => action(SEND_PROFILE_TO_RENDERER, { userId })
-export const saveProfileFailure = (userId: string, error: any) => action(SAVE_PROFILE_FAILURE, { userId, error })
+export const saveProfileDelta = (profile: Partial<Avatar>) => action(SAVE_DELTA_PROFILE_REQUEST, { profile })
+export const sendProfileToRenderer = (userId: string) => action(SEND_PROFILE_TO_RENDERER_REQUEST, { userId })
+export const saveProfileFailure = (userId: string, error: any) =>
+  action(SAVE_DELTA_PROFILE_REQUEST_FAILURE, { userId, error })
 
 export type SaveProfileDelta = ReturnType<typeof saveProfileDelta>
 export type SendProfileToRenderer = ReturnType<typeof sendProfileToRenderer>

@@ -8,7 +8,7 @@ import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { toEnvironmentRealmType } from '../apis/host/EnvironmentAPI'
 import { SET_COMMS_ISLAND, SET_ROOM_CONNECTION } from '../comms/actions'
 import { getCommsIsland } from '../comms/selectors'
-import { SAVE_PROFILE } from '../profiles/actions'
+import { SAVE_DELTA_PROFILE_REQUEST } from '../profiles/actions'
 import { takeLatestByUserId } from '../profiles/sagas'
 import { allScenesEvent } from '../world/parcelSceneManager'
 import { avatarMessageObservable } from 'shared/comms/peers'
@@ -16,7 +16,7 @@ import { AvatarMessageType } from 'shared/comms/interface/types'
 
 export function* sceneEventsSaga() {
   yield takeLatest([SET_COMMS_ISLAND, SET_ROOM_CONNECTION, SET_REALM_ADAPTER], islandChanged)
-  yield takeLatestByUserId(SAVE_PROFILE, submitProfileToScenes)
+  yield takeLatestByUserId(SAVE_DELTA_PROFILE_REQUEST, submitProfileToScenes)
 }
 
 function* islandChanged() {

@@ -1,5 +1,6 @@
-import { Action } from 'redux'
-import { ForkEffect, fork, take, cancel } from 'redux-saga/effects'
+import type { Action } from 'redux'
+import type { ForkEffect } from 'redux-saga/effects'
+import { cancel, fork, take } from 'redux-saga/effects'
 
 export function takeLatestById<T extends Action>(
   patternOrChannel: any,

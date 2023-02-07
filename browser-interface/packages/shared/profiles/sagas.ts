@@ -1,29 +1,64 @@
-import { ContentClient } from 'dcl-catalyst-client/dist/ContentClient'
-import { call, put, select, takeEvery, fork, take, debounce, apply } from 'redux-saga/effects'
 import { hashV1 } from '@dcl/hashing'
+import { ContentClient } from 'dcl-catalyst-client/dist/ContentClient'
+import { apply, call, debounce, fork, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { ethereumConfigurations, RESET_TUTORIAL, ETHEREUM_NETWORK } from 'config'
-import defaultLogger from 'shared/logger'
+import { Authenticator } from '@dcl/crypto'
+import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
+import { ethereumConfigurations, ETHEREUM_NETWORK, RESET_TUTORIAL } from 'config'
+import { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
+import { generateRandomUserProfile as randomProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
+import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
 import {
-  PROFILE_REQUEST,
-  SAVE_PROFILE,
-  ProfileRequestAction,
-  SaveProfileDelta,
-  sendProfileToRenderer,
-  saveProfileFailure,
-  saveProfileDelta,
+  buildServerMetadata,
+  ensureAvatarCompatibilityFormat
+} from 'lib/decentraland/profiles/transformations/profileToServerFormat'
+import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
+import { unsignedCRC32 } from 'lib/encoding/crc32'
+import defaultLogger from 'lib/logger'
+import { EventChannel } from 'redux-saga'
+import { trackEvent } from 'shared/analytics'
+import { createReceiveProfileOverCommsChannel, requestProfileToPeers } from 'shared/comms/handlers'
+import { RoomConnection } from 'shared/comms/interface'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { waitForRoomConnection } from 'shared/dao/sagas'
+import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
+import { getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
+import { IRealmAdapter } from 'shared/realm/types'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import {
+  getCurrentIdentity,
+  getCurrentNetwork,
+  getCurrentUserId,
+  isCurrentUserId,
+  isGuestLogin
+} from 'shared/session/selectors'
+import { ExplorerIdentity } from 'shared/session/types'
+import { fetchOwnedENS } from 'shared/web3'
+import {
   deployProfile,
-  DEPLOY_PROFILE_REQUEST,
-  deployProfileSuccess,
-  deployProfileFailure,
   DeployProfile,
+  deployProfileFailure,
+  deployProfileSuccess,
+  DEPLOY_PROFILE_REQUEST,
+  profileFailure,
+  ProfileRequestAction,
   profileSuccess,
-  PROFILE_SUCCESS,
   ProfileSuccessAction,
-  profileFailure
+  PROFILE_REQUEST,
+  PROFILE_SUCCESS,
+  SaveProfileDelta,
+  saveProfileDelta,
+  saveProfileFailure,
+  SAVE_DELTA_PROFILE_REQUEST,
+  sendProfileToRenderer
 } from './actions'
+import { LocalProfilesRepository } from './LocalProfilesRepository'
+import { ProfileAsPromise } from './ProfileAsPromise'
+import { validateAvatar } from './schemaValidation'
+import { takeLatestById } from 'lib/redux/takeLatestById'
 import { getCurrentUserProfileDirty, getProfileFromStore, getProfileStatusAndData } from './selectors'
-import { buildServerMetadata, ensureAvatarCompatibilityFormat } from './transformations/profileToServerFormat'
 import {
   ContentFile,
   ProfileStatus,
@@ -32,40 +67,6 @@ import {
   RemoteProfile,
   REMOTE_AVATAR_IS_INVALID
 } from './types'
-import { ExplorerIdentity } from 'shared/session/types'
-import { Authenticator } from '@dcl/crypto'
-import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
-import { takeLatestById } from './utils/takeLatestById'
-import {
-  getCurrentUserId,
-  getCurrentIdentity,
-  getCurrentNetwork,
-  getIsGuestLogin,
-  isCurrentUserId
-} from 'shared/session/selectors'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
-import { ProfileAsPromise } from './ProfileAsPromise'
-import { fetchOwnedENS } from 'shared/web3'
-import { waitForRoomConnection } from 'shared/dao/sagas'
-import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
-import { LocalProfilesRepository } from './LocalProfilesRepository'
-import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
-import { createFakeName } from './utils/fakeName'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { createReceiveProfileOverCommsChannel, requestProfileToPeers } from 'shared/comms/handlers'
-import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
-import { validateAvatar } from './schemaValidation'
-import { trackEvent } from 'shared/analytics'
-import { EventChannel } from 'redux-saga'
-import { RoomConnection } from 'shared/comms/interface'
-import {
-  ensureRealmAdapterPromise,
-  getProfilesContentServerFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
-import { unsignedCRC32 } from 'lib/encoding/crc32'
-import { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
   action.type + action.payload.userId
@@ -91,12 +92,12 @@ export const localProfilesRepo = new LocalProfilesRepository()
  * It's *very* important for the renderer to never receive a passport with items that have not been loaded into the catalog.
  */
 export function* profileSaga(): any {
-  yield takeEvery(USER_AUTHENTIFIED, initialRemoteProfileLoad)
+  yield takeEvery(USER_AUTHENTICATED, initialRemoteProfileLoad)
   yield takeLatestByUserId(PROFILE_REQUEST, handleFetchProfile)
   yield takeLatestByUserId(PROFILE_SUCCESS, forwardProfileToRenderer)
   yield fork(handleCommsProfile)
   yield debounce(200, DEPLOY_PROFILE_REQUEST, handleDeployProfile)
-  yield takeEvery(SAVE_PROFILE, handleSaveLocalAvatar)
+  yield takeEvery(SAVE_DELTA_PROFILE_REQUEST, handleSaveLocalAvatar)
 }
 
 function* forwardProfileToRenderer(action: ProfileSuccessAction) {
@@ -177,7 +178,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   }
 
   try {
-    const iAmAGuest: boolean = loadingMyOwnProfile && (yield select(getIsGuestLogin))
+    const iAmAGuest: boolean = loadingMyOwnProfile && (yield select(isGuestLogin))
     const shouldReadProfileFromLocalStorage = iAmAGuest
     const shouldFallbackToLocalStorage = !shouldReadProfileFromLocalStorage && loadingMyOwnProfile
     const shouldFetchViaComms = roomConnection && profileType === ProfileType.LOCAL && !loadingMyOwnProfile
@@ -271,7 +272,7 @@ export function profileServerRequest(userId: string, version?: number): Promise<
   }
 
   async function doTheRequest() {
-    const bff = await ensureRealmAdapterPromise()
+    const bff = await ensureRealmAdapter()
     try {
       let url = `${bff.services.legacy.lambdasServer}/profiles/${userId}`
       if (version) url = url + `?version=${version}`
@@ -380,7 +381,7 @@ function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
 }
 
 function* handleDeployProfile(deployProfileAction: DeployProfile) {
-  const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+  const realmAdapter: IRealmAdapter = yield call(waitForRealm)
   const profileServiceUrl: string = yield call(getProfilesContentServerFromRealmAdapter, realmAdapter)
 
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
@@ -525,7 +526,7 @@ export async function generateRandomUserProfile(userId: string, reason: string):
   }
 
   if (!profile) {
-    profile = backupProfile(userId)
+    profile = randomProfile(userId)
   }
 
   profile.ethAddress = userId

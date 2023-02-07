@@ -7,7 +7,7 @@ import {
 } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/transport.gen'
 import { createRendererProtocolInverseRpcServer } from '../inverseRpc/rpcServer'
 import { AsyncQueue } from '@well-known-components/pushable-channel'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 
 /*
  * Create Transport thought the Rpc using the TransportService

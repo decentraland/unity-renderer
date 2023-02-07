@@ -1,11 +1,16 @@
 import { convertToRGBObject } from './convertToRGBObject'
 import { isURL } from 'lib/javascript/isURL'
-import { Avatar, AvatarInfo, IPFSv2, Snapshots } from '@dcl/schemas'
-import { backupProfile } from '../generateRandomUserProfile'
-import { genericAvatarSnapshots } from 'config'
+import { IPFSv2 } from '@dcl/schemas'
+import type { Avatar, AvatarInfo, Snapshots } from '@dcl/schemas'
+import { generateRandomUserProfile } from '../generateRandomUserProfile'
 import { calculateDisplayName } from './processServerProfile'
-import { NewProfileForRenderer } from './types'
+import type { NewProfileForRenderer } from './types'
 import { Color3 } from '@dcl/ecs-math'
+
+export const genericAvatarSnapshots = {
+  body: 'QmSav1o6QK37Jj1yhbmhYk9MJc6c2H5DWbWzPVsg9JLYfF',
+  face256: 'QmSqZ2npVD4RLdqe17FzGCFcN29RfvmqmEd2FcQUctxaKk'
+} as const
 
 export function profileToRendererFormat(
   profile: Partial<Avatar>,
@@ -16,7 +21,7 @@ export function profileToRendererFormat(
     baseUrl: string
   }
 ): NewProfileForRenderer {
-  const stage = { ...backupProfile(profile.userId || options.address || 'noeth'), ...profile }
+  const stage = { ...generateRandomUserProfile(profile.userId || options.address || 'noeth'), ...profile }
 
   return {
     ...stage,

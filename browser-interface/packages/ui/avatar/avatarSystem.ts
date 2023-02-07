@@ -8,7 +8,7 @@ import type {
   UserInformation,
   UserRemovedMessage
 } from 'shared/comms/interface/types'
-import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import mitt from 'mitt'
 export const avatarMessageObservable = mitt<{ message: AvatarMessage }>()
 
@@ -23,11 +23,6 @@ type Position = {
 }
 
 const avatarMap = new Map<string, AvatarEntity>()
-// const box = new BoxShape()
-// const red = new Material()
-// red.albedoColor = new Color4(1.0, 0.0, 0.0, 1.0)
-// const green = new Material()
-// green.albedoColor = new Color4(0.0, 1.0, 0.0, 1.0)
 
 export class AvatarEntity extends Entity {
   visible = true
@@ -48,12 +43,6 @@ export class AvatarEntity extends Entity {
 
     // we need this component to filter the interpolator system
     this.transform = this.getComponentOrCreate(Transform)
-
-    // this.sub = new Entity()
-    // engine.addEntity(this.sub)
-    // this.sub.addComponent(box)
-    // this.sub.addComponent(this.transform)
-    // this.sub.addComponentOrReplace(red)
   }
 
   loadProfile(profile: Pick<NewProfileForRenderer, 'avatar' | 'name'>) {

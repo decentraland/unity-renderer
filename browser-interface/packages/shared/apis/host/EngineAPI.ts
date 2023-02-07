@@ -1,17 +1,15 @@
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
 import {
   EAType,
   EngineApiServiceDefinition,
-  EventData,
-  ManyEntityAction,
-  Payload,
   queryTypeToJSON
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
+import type { EventData, ManyEntityAction, Payload } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
 
-import { PortContext } from './context'
-import { EntityAction, EntityActionType } from 'shared/types'
-import { RpcServerModule } from '@dcl/rpc/dist/codegen'
+import type { PortContext } from './context'
+import type { EntityAction, EntityActionType } from 'shared/types'
+import type { RpcServerModule } from '@dcl/rpc/dist/codegen'
 
 function getPayload(payloadType: EAType, payload: Payload): any {
   switch (payloadType) {

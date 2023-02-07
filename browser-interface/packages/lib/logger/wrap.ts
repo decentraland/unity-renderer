@@ -1,5 +1,5 @@
 export const METHODS = ['error', 'info', 'log', 'warn', 'trace'] as const
-type Method = typeof METHODS[number]
+type Method = (typeof METHODS)[number]
 
 /**
  * @deprecated Only exported for testing. DO NOT USE
