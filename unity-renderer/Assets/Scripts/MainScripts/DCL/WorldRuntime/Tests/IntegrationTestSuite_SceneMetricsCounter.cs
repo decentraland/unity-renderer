@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -38,7 +38,6 @@ public class IntegrationTestSuite_SceneMetricsCounter : IntegrationTestSuite
         coreComponentsPlugin = new CoreComponentsPlugin();
         scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
         //              like this.

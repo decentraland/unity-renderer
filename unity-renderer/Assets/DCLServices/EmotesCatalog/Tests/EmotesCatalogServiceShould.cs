@@ -5,21 +5,34 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.Helpers;
+using DCL.Providers;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class EmotesCatalogServiceShould
 {
     private EmotesCatalogService catalog;
     private IEmotesCatalogBridge bridge;
+    private EmbeddedEmote[] embededEmotes;
+
 
     [SetUp]
     public void SetUp()
     {
         bridge = Substitute.For<IEmotesCatalogBridge>();
-        catalog = new EmotesCatalogService(bridge, Array.Empty<WearableItem>());
+        IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
+        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
+        catalog = new EmotesCatalogService(bridge, addressableResourceProvider);
         catalog.Initialize();
+    }
+
+    private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+    {
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = new EmbeddedEmote [] { };
+        return embeddedEmotes;
     }
 
     [Test]
@@ -323,8 +336,11 @@ public class EmotesCatalogServiceShould
     [Test]
     public void EmbedEmotes()
     {
-        WearableItem[] embededEmotes = new [] { new WearableItem { id = "id1" }, new WearableItem { id = "id2" }, new WearableItem { id = "id3" } };
-        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), embededEmotes);
+        embededEmotes = new [] { new EmbeddedEmote { id = "id1" }, new EmbeddedEmote { id = "id2" }, new EmbeddedEmote { id = "id3" } };
+
+        IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
+        addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
+        catalog = new EmotesCatalogService(Substitute.For<IEmotesCatalogBridge>(), addressableResourceProvider);
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);
@@ -332,5 +348,13 @@ public class EmotesCatalogServiceShould
         Assert.AreEqual(catalog.emotesOnUse["id1"], 5000);
         Assert.AreEqual(catalog.emotesOnUse["id2"], 5000);
         Assert.AreEqual(catalog.emotesOnUse["id3"], 5000);
+    }
+
+
+    private async UniTask<EmbeddedEmotesSO> GetExampleEmbeddedEmotesSO()
+    {
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = embededEmotes;
+        return embeddedEmotes;
     }
 }

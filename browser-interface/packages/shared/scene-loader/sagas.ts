@@ -45,7 +45,7 @@ import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosit
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { ENABLE_EMPTY_SCENES, LOS, PREVIEW, rootURLPreviewMode } from 'config'
+import { ENABLE_EMPTY_SCENES, LOS } from 'config'
 import { getResourcesURL } from 'shared/location'
 import { Vector2 } from '@dcl/ecs-math'
 import { trackEvent } from 'shared/analytics'
@@ -218,9 +218,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
       const enableEmptyParcels = ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
 
       const emptyParcelsBaseUrl = enableEmptyParcels
-        ? PREVIEW
-          ? rootURLPreviewMode() + '/@/artifacts/'
-          : getResourcesURL('.')
+        ? getResourcesURL('.') // resolve explorer path to look for empty parcels
         : undefined
 
       const contentServer: string = yield select(
