@@ -3,7 +3,7 @@ import { isWebGLCompatible } from './validations'
 
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 
-import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
+import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
 import { resolveUrlFromUrn } from '@dcl/urn-resolver'
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
@@ -17,7 +17,6 @@ import { homePointKey } from 'shared/atlas/utils'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
-import { localProfilesRepo } from 'shared/profiles/sagas'
 import { teleportToAction } from 'shared/scene-loader/actions'
 import { getStoredSession } from 'shared/session'
 import { authenticate, initSession } from 'shared/session/actions'
@@ -27,6 +26,7 @@ import { getInitialPositionFromUrl } from 'shared/world/positionThings'
 import { initializeUnity } from 'unity-interface/initializer'
 import 'unity-interface/trace'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
+import { localProfilesRepo } from 'shared/profiles/sagas'
 
 async function resolveBaseUrl(urn: string): Promise<string> {
   if (urn.startsWith('urn:')) {

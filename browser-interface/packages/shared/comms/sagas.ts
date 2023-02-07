@@ -1,59 +1,57 @@
-import { put, takeEvery, select, call, takeLatest, fork, take, race, delay, apply } from 'redux-saga/effects'
+import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
-import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
-import { commsLogger } from './context'
-import { getCommsRoom } from './selectors'
+import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import { IPFSv2 } from '@dcl/schemas'
+import type { Avatar, Snapshots } from '@dcl/schemas'
+import { genericAvatarSnapshots } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
+import { deepEqual } from 'lib/javascript/deepEqual'
+import { isURL } from 'lib/javascript/isURL'
+import type { EventChannel } from 'redux-saga'
 import { BEFORE_UNLOAD } from 'shared/actions'
+import { trackEvent } from 'shared/analytics'
+import { notifyStatusThroughChat } from 'shared/chat'
+import { setCatalystCandidates } from 'shared/dao/actions'
+import { selectAndReconnectRealm } from 'shared/dao/sagas'
+import { getCatalystCandidates } from 'shared/dao/selectors'
+import { getFatalError } from 'shared/loading/selectors'
+import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
+import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
+import { incrementCounter } from 'shared/occurences'
+import type { SendProfileToRenderer } from 'shared/profiles/actions'
+import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import type { ConnectToCommsAction } from 'shared/realm/actions'
+import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import type { IRealmAdapter } from 'shared/realm/types'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
+import { getCurrentIdentity } from 'shared/session/selectors'
+import type { ExplorerIdentity } from 'shared/session/types'
+import { store } from 'shared/store/isolatedStore'
+import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
+import type { HandleRoomDisconnection, SetRoomConnectionAction } from './actions'
 import {
-  HandleRoomDisconnection,
   HANDLE_ROOM_DISCONNECTION,
   setCommsIsland,
   setRoomConnection,
-  SetRoomConnectionAction,
   SET_COMMS_ISLAND,
   SET_ROOM_CONNECTION
 } from './actions'
-import { notifyStatusThroughChat } from 'shared/chat'
-import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
-import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import { DEPLOY_PROFILE_SUCCESS, SendProfileToRenderer, SEND_PROFILE_TO_RENDERER } from 'shared/profiles/actions'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
-import { Avatar, IPFSv2, Snapshots } from '@dcl/schemas'
-import { COMMS_GRAPH, genericAvatarSnapshots } from 'config'
-import { isURL } from 'lib/javascript/isURL'
-import { getAllPeers, processAvatarVisibility } from './peers'
-import { getFatalError } from 'shared/loading/selectors'
-import { EventChannel } from 'redux-saga'
-import { ExplorerIdentity } from 'shared/session/types'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { selectAndReconnectRealm } from 'shared/dao/sagas'
-import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { OfflineAdapter } from './adapters/OfflineAdapter'
-import { WebSocketAdapter } from './adapters/WebSocketAdapter'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
+import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
-import { IRealmAdapter } from 'shared/realm/types'
-import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
-import { store } from 'shared/store/isolatedStore'
-import { ConnectToCommsAction, CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
+import { WebSocketAdapter } from './adapters/WebSocketAdapter'
+import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
+import type { RoomConnection } from './interface'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
-import { deepEqual } from 'lib/javascript/deepEqual'
-import { incrementCounter } from 'shared/occurences'
-import { RoomConnection } from './interface'
-import {
-  debugCommsGraph,
-  measurePingTime,
-  measurePingTimePercentages,
-  overrideCommsProtocol
-} from 'shared/session/getPerformanceInfo'
-import { trackEvent } from 'shared/analytics'
-import { getCatalystCandidates } from 'shared/dao/selectors'
-import { setCatalystCandidates } from 'shared/dao/actions'
-import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
+import { commsLogger } from './logger'
+import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
+import { getConnectedPeerCount, processAvatarVisibility } from './peers'
+import { getCommsRoom } from './selectors'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -88,10 +86,6 @@ export function* commsSaga() {
   yield fork(handleCommsReconnectionInterval)
   yield fork(pingerProcess)
   yield fork(reportPositionSaga)
-
-  if (COMMS_GRAPH) {
-    yield call(debugCommsGraph)
-  }
 }
 
 /**
@@ -167,7 +161,7 @@ function* pingerProcess() {
       yield delay(15_000 + Math.random() * 60_000)
 
       const responses = new Map<string, number[]>()
-      const expectedResponses = getAllPeers().size
+      const expectedResponses = getConnectedPeerCount()
 
       yield call(sendPing, (dt, address) => {
         const list = responses.get(address) || []
@@ -343,7 +337,7 @@ function* respondCommsProfileRequests() {
 
     const context = (yield select(getCommsRoom)) as RoomConnection | undefined
     const profile: Avatar | null = yield select(getCurrentUserProfile)
-    const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+    const realmAdapter: IRealmAdapter = yield call(waitForRealm)
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
     const identity: ExplorerIdentity | null = yield select(getCurrentIdentity)
 
@@ -397,7 +391,7 @@ function* handleCommsReconnectionInterval() {
     const reason: any = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
       SET_REALM_ADAPTER: take(SET_REALM_ADAPTER),
-      USER_AUTHENTIFIED: take(USER_AUTHENTIFIED),
+      USER_AUTHENTICATED: take(USER_AUTHENTICATED),
       timeout: delay(1000)
     })
 
@@ -425,7 +419,7 @@ function* handleAnnounceProfile() {
     // We notify the network of our profile's latest version when:
     const reason: { sendProfileToRenderer?: SendProfileToRenderer } = yield race({
       // A local profile is updated in the renderer
-      sendProfileToRenderer: take(SEND_PROFILE_TO_RENDERER),
+      sendProfileToRenderer: take(SEND_PROFILE_TO_RENDERER_REQUEST),
       // The profile got updated on a catalyst
       DEPLOY_PROFILE_SUCCESS: take(DEPLOY_PROFILE_SUCCESS),
       // The current user's island changed

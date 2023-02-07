@@ -1,4 +1,4 @@
-import defaultLogger from '../logger'
+import defaultLogger from 'lib/logger'
 import { ServerConnectionStatus, Candidate, Parcel } from './types'
 import { getAllCatalystCandidates } from './selectors'
 import { fetchCatalystNodesFromDAO } from 'shared/web3'
@@ -9,7 +9,6 @@ import { ask } from './utils/ping'
 import { getRealmAdapter } from 'shared/realm/selectors'
 import { setRealmAdapter } from 'shared/realm/actions'
 import { checkValidRealm } from './sagas'
-import { commsLogger } from 'shared/comms/context'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import {
   adapterForRealmConfig,
@@ -20,6 +19,7 @@ import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoi
 import { OFFLINE_REALM } from 'shared/realm/types'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
 import { storeCondition } from 'lib/redux'
+import { commsLogger } from 'shared/comms/logger'
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {

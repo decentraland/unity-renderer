@@ -1,4 +1,4 @@
-import { ILogger, createLogger } from 'shared/logger'
+import { ILogger, createLogger } from 'lib/logger'
 import { Authenticator } from '@dcl/crypto'
 import { createRpcClient, RpcClientPort } from '@dcl/rpc'
 import { WebSocketTransport } from '@dcl/rpc/dist/transports/WebSocket'

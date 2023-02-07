@@ -1,13 +1,13 @@
-import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
 
+import { sceneRuntimeCompatibleAvatar } from 'lib/decentraland/profiles/sceneRuntime'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
-import { sdkCompatibilityAvatar } from './Players'
 
 import { UserIdentityServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_identity.gen'
-import { PortContext } from './context'
-import { RpcServerPort } from '@dcl/rpc'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
+import type { PortContext } from './context'
+import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 
 export function registerUserIdentityServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, UserIdentityServiceDefinition, async () => ({
@@ -39,7 +39,7 @@ export function registerUserIdentityServiceServerImplementation(port: RpcServerP
           hasConnectedWeb3: !!identity.hasConnectedWeb3,
           userId: identity.address,
           version: profile.version,
-          avatar: sdkCompatibilityAvatar(profile.avatar)
+          avatar: sceneRuntimeCompatibleAvatar(profile.avatar)
         }
       }
     }

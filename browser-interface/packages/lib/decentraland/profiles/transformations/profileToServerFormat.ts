@@ -1,11 +1,11 @@
+import type { Avatar, AvatarInfo, Profile } from '@dcl/schemas'
+import type { AvatarForUserData } from 'lib/decentraland/profiles/sceneRuntime'
+import defaultLogger from 'lib/logger'
+import { trackEvent } from 'shared/analytics'
+import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
 import { analizeColorPart, stripAlpha } from './analizeColorPart'
 import { isValidBodyShape } from './isValidBodyShape'
-import { Avatar, AvatarInfo, Profile } from '@dcl/schemas'
-import { validateAvatar } from '../schemaValidation'
-import { trackEvent } from 'shared/analytics'
-import defaultLogger from 'shared/logger'
-import { AvatarForUserData } from 'shared/apis/host/Players'
-import { backupProfile } from '../generateRandomUserProfile'
+import { validateAvatar } from 'shared/profiles/schemaValidation'
 
 type OldAvatar = Omit<Avatar, 'avatar'> & {
   avatar: AvatarForUserData
@@ -14,7 +14,7 @@ type OldAvatar = Omit<Avatar, 'avatar'> & {
 export function ensureAvatarCompatibilityFormat(profile: Readonly<Avatar | OldAvatar>): Avatar {
   const avatarInfo: AvatarInfo = {} as any
 
-  const avatar: AvatarForUserData | AvatarInfo = profile.avatar || backupProfile(profile.userId).avatar
+  const avatar: AvatarForUserData | AvatarInfo = profile.avatar || generateRandomUserProfile(profile.userId).avatar
 
   // These mappings from legacy id are here just in case they still have the legacy id in local storage
   avatarInfo.bodyShape = mapLegacyIdToUrn(avatar?.bodyShape) || 'urn:decentraland:off-chain:base-avatars:BaseFemale'
@@ -67,7 +67,11 @@ export function ensureAvatarCompatibilityFormat(profile: Readonly<Avatar | OldAv
 
   if (!validateAvatar(ret)) {
     defaultLogger.error('error validating schemas', validateAvatar.errors)
-    trackEvent('invalid_schema', { schema: 'avatar', payload: ret, errors: (validateAvatar.errors ?? []).join(',') })
+    trackEvent('invalid_schema', {
+      schema: 'avatar',
+      payload: ret,
+      errors: (validateAvatar.errors ?? []).join(',')
+    })
   }
 
   return ret
@@ -88,7 +92,7 @@ function mapLegacyIdToUrn(wearableId: string): string | null {
 }
 
 export function buildServerMetadata(profile: Avatar): Profile {
-  const newProfile = ensureAvatarCompatibilityFormat(profile)
-  const metadata = { avatars: [newProfile] }
-  return metadata
+  return {
+    avatars: [ensureAvatarCompatibilityFormat(profile)]
+  }
 }

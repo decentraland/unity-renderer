@@ -25,7 +25,7 @@ import { eventChannel } from 'redux-saga'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import { trackEvent } from 'shared/analytics'
 import { ProfileType } from 'shared/profiles/types'
-import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
@@ -34,10 +34,11 @@ import { RoomConnection } from './interface'
 import { incrementCommsMessageReceived, incrementCommsMessageReceivedByName } from 'shared/session/getPerformanceInfo'
 import { sendPublicChatMessage } from '.'
 import { getCurrentIdentity } from 'shared/session/selectors'
-import { commsLogger } from './context'
+import { commsLogger } from './logger'
 import { incrementCounter } from 'shared/occurences'
-import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { uuid } from 'lib/javascript/uuid'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 
 type PingRequest = {
   alias: number
@@ -173,7 +174,7 @@ function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVers
     )
       .then(async (avatar) => {
         // send to Avatars scene
-        const realmAdapter = await ensureRealmAdapterPromise()
+        const realmAdapter = await ensureRealmAdapter()
         const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
         receivePeerUserData(avatar, peerTrackingInfo.baseUrl || fetchContentServerWithPrefix)
       })

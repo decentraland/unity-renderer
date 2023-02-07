@@ -1,6 +1,6 @@
 import { Observable } from 'mz-observable'
 import { PeerInformation, AvatarMessage, AvatarMessageType } from './interface/types'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import {
   CommunicationArea,
   position2parcelRfc4,
@@ -20,6 +20,19 @@ export const avatarMessageObservable = new Observable<AvatarMessage>()
 
 export function getAllPeers() {
   return new Map(peerMap)
+}
+
+export function getVisiblePeerEthereumAddresses(): Array<{ userId: string }> {
+  const result: Array<{ userId: string }> = []
+  for (const peer of peerMap.values()) {
+    if (peer.visible) {
+      result.push({ userId: peer.ethereumAddress })
+    }
+  }
+  return result
+}
+export function getConnectedPeerCount() {
+  return peerMap.size
 }
 
 ;(globalThis as any).peerMap = peerMap

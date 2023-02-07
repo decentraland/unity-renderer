@@ -1,6 +1,6 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas'
 
-export function backupProfile(userId: string): Avatar {
+export function generateRandomUserProfile(userId: string): Avatar {
   return {
     userId,
     email: '',

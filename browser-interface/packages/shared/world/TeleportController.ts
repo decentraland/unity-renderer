@@ -1,7 +1,7 @@
 import { getWorld, isInsideWorldLimits } from '@dcl/schemas'
 
 import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 

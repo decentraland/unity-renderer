@@ -2,7 +2,7 @@ import { ProfileStatus, ProfileUserInfo, RootProfileState } from './types'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { RootSessionState } from 'shared/session/types'
 import { Avatar } from '@dcl/schemas'
-import { calculateDisplayName } from './transformations/processServerProfile'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
 
 export const getProfileStatusAndData = (
   store: RootProfileState,

@@ -1,56 +1,56 @@
-import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { Authenticator } from '@dcl/crypto'
+import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
 import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 
-import { createDummyLogger, createLogger } from 'shared/logger'
-import { initializeReferral, referUser } from 'shared/referral'
+import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
+import { initializeReferral, referUser } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 
-import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
-import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
+import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
+import { Avatar } from '@dcl/schemas'
+import { RequestManager } from 'eth-connect'
+import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
+import { Store } from 'redux'
+import { setRoomConnection } from 'shared/comms/actions'
+import { selectNetwork } from 'shared/dao/actions'
+import { waitForRoomConnection } from 'shared/dao/sagas'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import { ensureMetaConfigurationInitialized } from 'shared/meta'
+import { globalObservable } from 'shared/observables'
+import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
+import { ProfileType } from 'shared/profiles/types'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { store } from 'shared/store/isolatedStore'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { saveProfileDelta } from '../profiles/actions'
 import {
   AUTHENTICATE,
+  AuthenticateAction,
   changeLoginState,
   INIT_SESSION,
   LOGOUT,
   REDIRECT_TO_SIGN_UP,
   SIGNUP,
-  SIGNUP_CANCEL,
+  SignUpAction,
+  signUpCancel,
   signUpClearData,
   signUpSetIsSignUp,
-  UPDATE_TOS,
+  SIGNUP_CANCEL,
   updateTOS,
-  userAuthentified,
-  AuthenticateAction,
-  signUpCancel,
-  USER_AUTHENTIFIED,
-  UserAuthentified,
-  SignUpAction
+  UPDATE_TOS,
+  userAuthenticated,
+  UserAuthenticated,
+  USER_AUTHENTICATED
 } from './actions'
-import { localProfilesRepo } from '../profiles/sagas'
-import { getCurrentIdentity, getIsGuestLogin } from './selectors'
-import { waitForRoomConnection } from '../dao/sagas'
-import { saveProfileDelta } from '../profiles/actions'
-import { DecentralandIdentity, LoginState } from '@dcl/kernel-interface'
-import { RequestManager } from 'eth-connect'
-import { ensureMetaConfigurationInitialized } from 'shared/meta'
-import { Store } from 'redux'
-import { store } from 'shared/store/isolatedStore'
-import { globalObservable } from 'shared/observables'
-import { selectNetwork } from 'shared/dao/actions'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { setRoomConnection } from 'shared/comms/actions'
-import { Avatar } from '@dcl/schemas'
-import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { ProfileType } from 'shared/profiles/types'
+import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
+import { getCurrentIdentity, isGuestLogin } from './selectors'
+import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
+import { localProfilesRepo } from 'shared/profiles/sagas'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -65,7 +65,7 @@ export function* sessionSaga(): any {
   yield takeLatest(SIGNUP, signUpHandler)
   yield takeLatest(SIGNUP_CANCEL, cancelSignUp)
   yield takeLatest(AWAITING_USER_SIGNATURE, signaturePrompt)
-  yield takeEvery(USER_AUTHENTIFIED, function* (action: UserAuthentified) {
+  yield takeEvery(USER_AUTHENTICATED, function* (action: UserAuthenticated) {
     yield call(saveSession, action.payload.identity, action.payload.isGuest)
     logger.log(`User ${action.payload.identity.address} logged in isGuest=` + action.payload.isGuest)
   })
@@ -123,7 +123,7 @@ function* authenticate(action: AuthenticateAction) {
   registerProviderNetChanges()
 
   // 1. authenticate our user
-  yield put(userAuthentified(identity, net, isGuest))
+  yield put(userAuthenticated(identity, net, isGuest))
   // 2. wait for comms to connect, it only requires the Identity authentication
   yield call(waitForRoomConnection)
   // 3. then ask for our profile
@@ -134,20 +134,20 @@ function* authenticate(action: AuthenticateAction) {
     isGuest ? ProfileType.LOCAL : ProfileType.DEPLOYED
   )
 
-  // 4. continue with signin/signup (only not in preview)
+  // 3. continue with signin/signup (only not in preview)
   const isSignUp = avatar.version <= 0 && !PREVIEW
   if (isSignUp) {
     yield put(signUpSetIsSignUp(isSignUp))
     yield take(SIGNUP)
   }
 
-  // 5. finish sign in
-  yield call(ensureMetaConfigurationInitialized)
-  yield put(changeLoginState(LoginState.COMPLETED))
-
   if (!isGuest) {
     yield call(referUser, identity)
   }
+
+  // 4. finish sign in
+  yield call(ensureMetaConfigurationInitialized)
+  yield put(changeLoginState(LoginState.COMPLETED))
 
   if (isSignUp) {
     // HACK to fix onboarding flow, remove in RFC-1 impl
@@ -158,7 +158,7 @@ function* authenticate(action: AuthenticateAction) {
 function* authorize(requestManager: RequestManager) {
   let userData: StoredSession | null = null
 
-  const isGuest: boolean = yield select(getIsGuestLogin)
+  const isGuest: boolean = yield select(isGuestLogin)
 
   if (isGuest) {
     userData = yield call(getLastGuestSession)
@@ -280,7 +280,7 @@ function* logout() {
   const identity: ExplorerIdentity | undefined = yield select(getCurrentIdentity)
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   if (identity && identity.address && network) {
-    yield localProfilesRepo.remove(identity.address, network)
+    yield call(() => localProfilesRepo.remove(identity.address, network))
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
