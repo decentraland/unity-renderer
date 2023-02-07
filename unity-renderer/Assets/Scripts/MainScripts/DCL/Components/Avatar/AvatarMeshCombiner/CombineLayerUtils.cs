@@ -125,7 +125,10 @@ namespace DCL
             {
                 var r = layer.Renderers[rendererIndex];
 
-                var mats = r.sharedMaterials;
+                using var materialRent = PoolUtils.RentList<Material>();
+                var mats = materialRent.GetList();
+
+                r.GetSharedMaterials(mats);
 
                 using var mapIdsToInsertRental = PoolUtils.RentDictionary<Texture2D, int>();
                 var mapIdsToInsert = mapIdsToInsertRental.GetDictionary();
@@ -178,9 +181,9 @@ namespace DCL
             LogResults(results);
         }
 
-        internal static void AddMapIds(IReadOnlyDictionary<Texture2D, int> refDict, IDictionary<Texture2D, int> candidates, in Material[] mats, int startingId)
+        internal static void AddMapIds(IReadOnlyDictionary<Texture2D, int> refDict, IDictionary<Texture2D, int> candidates, IReadOnlyList<Material> mats, int startingId)
         {
-            for (int i = 0; i < mats.Length; i++)
+            for (int i = 0; i < mats.Count; i++)
             {
                 var mat = mats[i];
 

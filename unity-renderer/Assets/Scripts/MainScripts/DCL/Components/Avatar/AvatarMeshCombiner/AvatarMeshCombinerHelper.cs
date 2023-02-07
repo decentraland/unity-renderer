@@ -107,17 +107,20 @@ namespace DCL
 
         private bool CombineInternal(SkinnedMeshRenderer bonesContainer, IReadOnlyCollection<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose)
         {
+            var bones = bonesContainer.bones;
+            var bindPoses = bonesContainer.sharedMesh.bindposes;
+
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(bonesContainer.sharedMesh != null, "the shared mesh of this bones container is null, check if the AvatarBase prefab's mesh is not missing, the hologram avatar might have been re-imported");
-            Assert.IsTrue(bonesContainer.sharedMesh.bindposes != null, "bonesContainer bindPoses should never be null!");
-            Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
+            Assert.IsTrue(bindPoses != null, "bonesContainer bindPoses should never be null!");
+            Assert.IsTrue(bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
 
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
-                bonesContainer.sharedMesh.bindposes,
-                bonesContainer.bones,
+                bindPoses,
+                bones,
                 renderers,
                 materialAsset,
                 keepPose);
@@ -140,7 +143,7 @@ namespace DCL
 
             container.layer = bonesContainer.gameObject.layer;
             renderer.sharedMesh = output.mesh;
-            renderer.bones = bonesContainer.bones;
+            renderer.bones = bones;
             renderer.rootBone = rootBone;
             renderer.sharedMaterials = output.materials;
             renderer.quality = SkinQuality.Bone4;

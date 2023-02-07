@@ -325,7 +325,7 @@ public class CombineLayerUtilsCan
 
         // Act
         var result = new Dictionary<Texture2D, int>();
-        CombineLayerUtils.AddMapIds(textures, result, in mats, 0);
+        CombineLayerUtils.AddMapIds(textures, result, mats, 0);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(6));
@@ -354,7 +354,7 @@ public class CombineLayerUtilsCan
 
         // Act
         var result = new Dictionary<Texture2D, int>();
-        CombineLayerUtils.AddMapIds(textures, result, in mats, 2);
+        CombineLayerUtils.AddMapIds(textures, result, mats, 2);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));

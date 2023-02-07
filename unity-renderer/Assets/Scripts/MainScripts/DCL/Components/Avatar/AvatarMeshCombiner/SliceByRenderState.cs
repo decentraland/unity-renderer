@@ -101,7 +101,7 @@ namespace DCL
         /// <returns></returns>
         internal static CullMode GetCullModeWithoutCullOff(Renderer renderer)
         {
-            CullMode result = GetCullMode(renderer.sharedMaterials[0]);
+            CullMode result = GetCullMode(renderer.sharedMaterial);
 
             if (result == CullMode.Off)
                 result = CullMode.Back;
@@ -114,7 +114,7 @@ namespace DCL
         /// </summary>
         /// <param name="renderer">Renderer to be checked.</param>
         /// <returns>True if its opaque</returns>
-        internal static bool IsOpaque(Renderer renderer) => IsOpaque(renderer.sharedMaterials[0]);
+        internal static bool IsOpaque(Renderer renderer) => IsOpaque(renderer.sharedMaterial);
 
         /// <summary>
         /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
