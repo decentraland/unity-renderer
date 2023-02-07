@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using GPUSkinning;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,14 +6,24 @@ using UnityEngine;
 
 public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 {
-    private Dictionary<IGPUSkinning, int> gpuSkinnings = new Dictionary<IGPUSkinning, int>();
+    private readonly Dictionary<IGPUSkinning, int> gpuSkinnings = new Dictionary<IGPUSkinning, int>();
 
-    private Coroutine updateCoroutine;
+    private bool stopAsked;
 
 
     public void Initialize()
     {
-        updateCoroutine = CoroutineStarter.Start(ThrottleUpdate());
+        if (stopAsked)
+        {
+            Debug.LogError("GPUSkinningThrottlerService: Initialize called while stop was asked");
+            return;
+        }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        CoroutineStarter.Start(ThrottleUpdate());
+#else
+        ThrottleUpdateAsync();
+#endif
     }
 
     public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates = 1)
@@ -32,6 +43,11 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
             gpuSkinnings[gpuSkinning] = framesBetweenUpdates;
     }
 
+    public void ForceStop()
+    {
+        stopAsked = true;
+    }
+
     public void Dispose()
     {
         gpuSkinnings.Clear();
@@ -48,14 +64,35 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 
     private IEnumerator ThrottleUpdate()
     {
-        while (true)
+        WaitForEndOfFrame wait = new WaitForEndOfFrame();
+
+        yield return wait;
+        while (!stopAsked)
         {
             foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
             {
                 if (Time.frameCount % entry.Value == 0)
                     entry.Key.Update();
             }
-            yield return null;
+            yield return wait;
         }
+
+        stopAsked = false;
+    }
+
+    private async UniTaskVoid ThrottleUpdateAsync()
+    {
+        await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
+        while (!stopAsked)
+        {
+            foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
+            {
+                if (Time.frameCount % entry.Value == 0)
+                    entry.Key.Update();
+            }
+            await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
+        }
+
+        stopAsked = false;
     }
 }
