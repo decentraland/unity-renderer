@@ -5,7 +5,6 @@ using DCL.Components;
 using DCL.Emotes;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
-using DCL.Models;
 using DCL.NotificationModel;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
@@ -266,9 +265,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
                     hoverText = "View Profile",
-                },
-                new DecentralandEntity(),
-                player
+                }, , player
             );
         }
     }
