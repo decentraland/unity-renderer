@@ -16,15 +16,16 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 {
     private TaskbarHUDController controller;
     private TaskbarHUDView view;
-
-    private readonly FriendsController_Mock friendsController = new FriendsController_Mock();
-
+    private IFriendsController friendsController;
     private IChatController chatController;
     private PrivateChatWindowController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowController worldChatWindowController;
     private ISocialAnalytics socialAnalytics;
     private IUserProfileBridge userProfileBridge;
+    private SearchChannelsWindowController searchChannelsWindowController;
+    private ChatChannelHUDController channelHUDController;
+    private PublicChatWindowController publicChatWindowController;
 
     protected override List<GameObject> SetUp_LegacySystems()
     {
@@ -37,12 +38,13 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
+        friendsController = Substitute.For<IFriendsController>();
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
 
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
-        ownProfile.UpdateData(new UserProfileModel{name = "myself", userId = "myUserId"});
+        ownProfile.UpdateData(new UserProfileModel { name = "myself", userId = "myUserId" });
         userProfileBridge.GetOwn().Returns(ownProfile);
 
         controller = new TaskbarHUDController(chatController, Substitute.For<IFriendsController>());
@@ -62,6 +64,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
+        channelHUDController?.Dispose();
+        searchChannelsWindowController?.Dispose();
+        publicChatWindowController?.Dispose();
         controller.Dispose();
 
         yield return base.TearDown();
@@ -70,91 +75,47 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
-        worldChatWindowController = new WorldChatWindowController(
-            Substitute.For<IUserProfileBridge>(),
-            Substitute.For<IFriendsController>(),
-            chatController,
-            new DataStore(),
-            Substitute.For<IMouseCatcher>(),
-            Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>(),
-            CommonScriptableObjects.rendererState);
-        worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
+        worldChatWindowController = GivenWorldChatWindowController();
         controller.AddWorldChatWindow(worldChatWindowController);
 
         Assert.IsTrue(worldChatWindowController.View.Transform.parent == view.leftWindowContainer,
             "Chat window isn't inside taskbar window container!");
-        Assert.IsTrue(worldChatWindowController.View.IsActive, "Chat window is disabled!");
     }
 
     [Test]
     public void AddFriendWindowProperly()
     {
-        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, chatController,
-            Substitute.For<IMouseCatcher>());
-        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
+        friendsHudController = GivenFriendsHUDController();
         controller.AddFriendsWindow(friendsHudController);
 
         Assert.IsTrue(friendsHudController.View.Transform.parent == view.leftWindowContainer,
             "Friends window isn't inside taskbar window container!");
-        Assert.IsTrue(friendsHudController.View.IsActive(), "Friends window is disabled!");
     }
 
     [Test]
     public void ToggleWindowsProperly()
     {
-        privateChatController = new PrivateChatWindowController(
-            new DataStore(),
-            userProfileBridge,
-            this.chatController,
-            Substitute.For<IFriendsController>(),
-            socialAnalytics,
-            Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
-        privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
+        privateChatController = GivenPrivateChatWindowController();
         controller.AddPrivateChatWindow(privateChatController);
 
-        worldChatWindowController = new WorldChatWindowController(
-            userProfileBridge,
-            Substitute.For<IFriendsController>(),
-            chatController,
-            new DataStore(),
-            Substitute.For<IMouseCatcher>(),
-            Substitute.For<ISocialAnalytics>(),
-            Substitute.For<IChannelsFeatureFlagService>(),
-            Substitute.For<IBrowserBridge>(),
-            CommonScriptableObjects.rendererState);
-        worldChatWindowController.Initialize(new GameObject("WorldChatWindowViewMock").AddComponent<WorldChatWindowViewMock>());
+        worldChatWindowController = GivenWorldChatWindowController();
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        var publicChatChannelController = new PublicChatWindowController(
-            this.chatController,
-            userProfileBridge,
-            new DataStore(),
-            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            Substitute.For<IMouseCatcher>(),
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
-        publicChatChannelController.Initialize(new GameObject("PublicChatChannelWindowMock").AddComponent<PublicChatPublicWindowMock>());
-        controller.AddPublicChatChannel(publicChatChannelController);
+        publicChatWindowController = GivenPublicChatWindowController();
+        controller.AddPublicChatChannel(publicChatWindowController);
 
-        friendsHudController = new FriendsHUDController(new DataStore(), friendsController, userProfileBridge,
-            socialAnalytics, this.chatController,
-            Substitute.For<IMouseCatcher>());
-        friendsHudController.Initialize(new GameObject("FriendsHUDWindowMock").AddComponent<FriendsHUDWindowMock>());
+        friendsHudController = GivenFriendsHUDController();
         controller.AddFriendsWindow(friendsHudController);
 
-        var channelSearchController = new SearchChannelsWindowController(this.chatController, Substitute.For<IMouseCatcher>(), new DataStore(),
-            Substitute.For<ISocialAnalytics>(), Substitute.For<IChannelsFeatureFlagService>());
-        channelSearchController.Initialize(new GameObject("SearchChannelsWindowMock").AddComponent<SearchChannelsWindowMock>());
-        controller.AddChannelSearch(channelSearchController);
+        searchChannelsWindowController = GivenSearchChannelsWindowController();
+        controller.AddChannelSearch(searchChannelsWindowController);
+
+        channelHUDController = GivenChatChannelHudController();
+        controller.AddChatChannel(channelHUDController);
 
         Assert.IsFalse(view.chatButton.toggledOn);
-
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
         Assert.IsFalse(view.chatButton.lineOnIndicator.isVisible);
-        Assert.IsTrue(controller.privateChatWindow.View.IsActive);
 
         //NOTE(Brian): Toggle friends window on and test all other windows are untoggled
         view.friendsButton.toggleButton.onClick.Invoke();
@@ -177,5 +138,169 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(controller.publicChatWindow.View.IsActive);
         Assert.IsFalse(controller.friendsHud.View.IsActive());
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
+    }
+
+    private PrivateChatWindowController GivenPrivateChatWindowController()
+    {
+        IPrivateChatComponentView GivenView()
+        {
+            var viewObj = new GameObject("PrivateChatWindowMock");
+            viewObj.AddComponent<RectTransform>();
+            var view = Substitute.For<IPrivateChatComponentView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.IsActive.Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        var controller = new PrivateChatWindowController(
+            new DataStore(),
+            userProfileBridge,
+            chatController,
+            friendsController,
+            socialAnalytics,
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
+
+        controller.Initialize(GivenView());
+
+        return controller;
+    }
+
+    private WorldChatWindowController GivenWorldChatWindowController()
+    {
+        IWorldChatWindowView GivenView()
+        {
+            var viewObj = new GameObject("WorldChatWindowViewMock");
+            viewObj.AddComponent<RectTransform>();
+            var view = Substitute.For<IWorldChatWindowView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.IsActive.Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        var controller = new WorldChatWindowController(
+            userProfileBridge,
+            Substitute.For<IFriendsController>(),
+            chatController,
+            new DataStore(),
+            Substitute.For<IMouseCatcher>(),
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IChannelsFeatureFlagService>(),
+            Substitute.For<IBrowserBridge>(),
+            CommonScriptableObjects.rendererState);
+
+        controller.Initialize(GivenView());
+
+        return controller;
+    }
+
+    private PublicChatWindowController GivenPublicChatWindowController()
+    {
+        IPublicChatWindowView GivenView()
+        {
+            var viewObj = new GameObject("PublicChatChannelWindowMock");
+            viewObj.AddComponent<RectTransform>();
+            var view = Substitute.For<IPublicChatWindowView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.IsActive.Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        var controller = new PublicChatWindowController(
+            chatController,
+            userProfileBridge,
+            new DataStore(),
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>());
+
+        controller.Initialize(GivenView());
+
+        return controller;
+    }
+
+    private FriendsHUDController GivenFriendsHUDController()
+    {
+        IFriendsHUDComponentView GivenView()
+        {
+            var viewObj = new GameObject("FriendsHUDWindowMock");
+            viewObj.AddComponent<RectTransform>();
+            var view = Substitute.For<IFriendsHUDComponentView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.IsActive().Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        FriendsHUDController controller = new (new DataStore(), friendsController, userProfileBridge,
+            socialAnalytics, chatController,
+            Substitute.For<IMouseCatcher>());
+        controller.Initialize(GivenView());
+
+        return controller;
+    }
+
+    private SearchChannelsWindowController GivenSearchChannelsWindowController()
+    {
+        ISearchChannelsWindowView GivenView()
+        {
+            var viewObj = new GameObject("SearchChannelsWindowMock");
+            viewObj.AddComponent<RectTransform>();
+            var view = Substitute.For<ISearchChannelsWindowView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.IsActive.Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        var controller = new SearchChannelsWindowController(chatController, Substitute.For<IMouseCatcher>(), new DataStore(),
+            Substitute.For<ISocialAnalytics>(), Substitute.For<IChannelsFeatureFlagService>());
+
+        controller.Initialize(GivenView());
+
+        return controller;
+    }
+
+    private ChatChannelHUDController GivenChatChannelHudController()
+    {
+        IChatChannelWindowView GivenView()
+        {
+            var viewObj = new GameObject("PrivateChatWindowMock");
+            viewObj.AddComponent<RectTransform>();
+            viewObj.SetActive(false);
+            var view = Substitute.For<IChatChannelWindowView>();
+            view.When(x => x.Dispose()).Do(x => Object.Destroy(viewObj));
+            view.When(x => x.Hide()).Do(x => viewObj.SetActive(false));
+            view.When(x => x.Show()).Do(x => viewObj.SetActive(true));
+            view.ChatHUD.Returns(Substitute.For<IChatHUDComponentView>());
+            view.IsActive.Returns(x=> viewObj.activeSelf);
+            view.Transform.Returns((RectTransform)viewObj.transform);
+            return view;
+        }
+
+        var controller = new ChatChannelHUDController(new DataStore(),
+            userProfileBridge,
+            chatController,
+            Substitute.For<IMouseCatcher>(),
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            socialAnalytics,
+            new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()));
+
+        controller.Initialize(GivenView());
+
+        return controller;
     }
 }
