@@ -45,15 +45,6 @@ const server = http.createServer(app)
   })
 
   app.use(
-    '/@/artifacts/index.js',
-    express.static(resolve(__dirname, './static/index.js'), {
-      setHeaders: (res) => {
-        res.setHeader('Content-Type', 'application/javascript')
-      }
-    })
-  )
-
-  app.use(
     '/preview.html',
     express.static(resolve(__dirname, './static/preview.html'), {
       setHeaders: (res) => {

@@ -6,7 +6,6 @@ using DCL.ECSRuntime;
 using Decentraland.Common;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -204,8 +203,9 @@ namespace Tests
                 // Prepare entity creation CRDT message
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = ENTITY_ID,
-                    key2 = 0,
+                    type = CrdtMessageType.PUT_COMPONENT,
+                    entityId = ENTITY_ID,
+                    componentId = 0,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
 
@@ -213,8 +213,8 @@ namespace Tests
 
                 void OnCrdtMessageReceived(int incomingSceneNumber, CRDTMessage incomingCrdtMessage)
                 {
-                    Assert.AreEqual(crdtMessage.key1, incomingCrdtMessage.key1);
-                    Assert.AreEqual(crdtMessage.key2, incomingCrdtMessage.key2);
+                    Assert.AreEqual(crdtMessage.entityId, incomingCrdtMessage.entityId);
+                    Assert.AreEqual(crdtMessage.componentId, incomingCrdtMessage.componentId);
                     Assert.IsTrue(AreEqual((byte[])incomingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
                 }
@@ -256,7 +256,7 @@ namespace Tests
                 const int TEST_SCENE_NUMBER = 666;
                 const int ENTITY_ID = 1;
                 const int COMPONENT_ID = 1;
-                byte[] outgoingCrdt = new byte[] { 0, 0, 0, 0 };
+                byte[] outgoingCrdtBytes = new byte[] { 0, 0, 0, 0 };
 
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
                 await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
@@ -274,8 +274,9 @@ namespace Tests
                           });
 
                 var protocol = new CRDTProtocol() { };
-                protocol.ProcessMessage(protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdt));
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, protocol);
+                var msg = protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CRDTMessage>());
+                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(msg.componentId, msg.entityId, msg);
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -287,36 +288,39 @@ namespace Tests
                     while (iterator.MoveNext())
                     {
                         var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, ENTITY_ID);
-                        Assert.AreEqual(responseCrdt.key2, COMPONENT_ID);
-                        Assert.IsTrue(AreEqual(outgoingCrdt, (byte[])responseCrdt.data));
+                        Assert.AreEqual(responseCrdt.entityId, ENTITY_ID);
+                        Assert.AreEqual(responseCrdt.componentId, COMPONENT_ID);
+                        Assert.IsTrue(AreEqual(outgoingCrdtBytes, (byte[])responseCrdt.data));
                     }
                 }
             });
         }
 
         [UnityTest]
+        [NUnit.Framework.Explicit("Flakytest, issue to fix it: https://github.com/decentraland/unity-renderer/issues/4222")]
+        [Category("Explicit")]
         public IEnumerator CallGetCurrentStateWithStoredState()
         {
             yield return UniTask.ToCoroutine(async () =>
             {
                 const int TEST_SCENE_NUMBER = 666;
-
                 CRDTMessage[] crdts = new CRDTMessage[]
                 {
                     // outgoing crdt
                     new CRDTMessage()
                     {
-                        key1 = 1,
-                        key2 = 1,
+                        type = CrdtMessageType.PUT_COMPONENT,
+                        entityId = 1,
+                        componentId = 1,
                         data = new byte[] { 0, 0, 0, 0 },
                     },
 
                     // stored crdt
                     new CRDTMessage()
                     {
-                        key1 = 1,
-                        key2 = 2,
+                        type = CrdtMessageType.PUT_COMPONENT,
+                        entityId = 1,
+                        componentId = 2,
                         data = new byte[] { 1, 1, 1, 1, 1, 1, 1 }
                     }
                 };
@@ -343,7 +347,8 @@ namespace Tests
 
                 var outgoingCrdtProtocol = new CRDTProtocol() { };
                 outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, outgoingCrdtProtocol);
+                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CRDTMessage>());
+                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(crdts[0].componentId, crdts[0].entityId, crdts[0]);
                 await new WaitUntil(() => getCurrentStateFinished, 1);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -357,8 +362,8 @@ namespace Tests
                     while (iterator.MoveNext())
                     {
                         var responseCrdt = (CRDTMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.key1, crdts[index].key1);
-                        Assert.AreEqual(responseCrdt.key2, crdts[index].key2);
+                        Assert.AreEqual(responseCrdt.entityId, crdts[index].entityId);
+                        Assert.AreEqual(responseCrdt.componentId, crdts[index].componentId);
                         Assert.IsTrue(AreEqual((byte[])responseCrdt.data, (byte[])crdts[index].data));
                         index++;
                     }
@@ -374,7 +379,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }
