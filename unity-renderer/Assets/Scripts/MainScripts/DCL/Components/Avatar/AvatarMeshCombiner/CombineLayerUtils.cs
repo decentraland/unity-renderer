@@ -37,11 +37,11 @@ namespace DCL
         /// </summary>
         /// <param name="renderers">List of renderers to slice.</param>
         /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
-        internal static bool TrySlice(IReadOnlyCollection<SkinnedMeshRenderer> renderers, CombineLayersList result)
+        internal static bool TrySlice(IReadOnlyList<SkinnedMeshRenderer> renderers, CombineLayersList result)
         {
             logger.Log("Slice Start!");
 
-            using (var rental = PoolUtils.RentList<CombineLayer>())
+            using (var rental = PoolUtils.RentListOfDisposables<CombineLayer>())
             {
                 var rawLayers = rental.GetList();
                 SliceByRenderState.Execute(renderers, rawLayers, ENABLE_CULL_OPAQUE_HEURISTIC);

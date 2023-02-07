@@ -322,8 +322,11 @@ namespace DCL
             using var allRenderersRental = PoolUtils.RentList<SkinnedMeshRenderer>();
             var layerRenderers = allRenderersRental.GetList();
 
-            foreach (var t in layers.Layers)
+            for (var i = 0; i < layers.Layers.Count; i++)
+            {
+                CombineLayer t = layers.Layers[i];
                 layerRenderers.AddRange(t.Renderers);
+            }
 
             using var bakedInstances = BakedCombineInstances.Bake(combineInstancesData, layerRenderers);
             result.CombineMeshes(combineInstancesData, true, true);

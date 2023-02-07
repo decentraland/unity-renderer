@@ -105,7 +105,7 @@ namespace DCL
             return success;
         }
 
-        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, IReadOnlyCollection<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose)
+        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose)
         {
             var bones = bonesContainer.bones;
             var bindPoses = bonesContainer.sharedMesh.bindposes;

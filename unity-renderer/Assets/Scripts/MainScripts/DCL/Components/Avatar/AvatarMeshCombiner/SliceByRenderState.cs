@@ -44,7 +44,7 @@ namespace DCL
         /// </summary>
         /// <param name="renderers">List of renderers to slice.</param>
         /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
-        internal static void Execute(IReadOnlyCollection<SkinnedMeshRenderer> renderers, List<CombineLayer> result, bool cullOpaque)
+        internal static void Execute(IReadOnlyList<SkinnedMeshRenderer> renderers, List<CombineLayer> result, bool cullOpaque)
         {
             var grouping = DictionaryPool<LayerKey, CombineLayer>.Get();
 
