@@ -10,7 +10,7 @@ namespace DCL
     public class MessagingControllersManager : IMessagingControllersManager
     {
         public static bool VERBOSE = false;
-        
+
         private const float MAX_GLOBAL_MSG_BUDGET = 0.02f;
         private const float MAX_SYSTEM_MSG_BUDGET_FOR_FAR_SCENES = 0.003f;
 
@@ -26,7 +26,7 @@ namespace DCL
 
         public bool hasPendingMessages => pendingMessagesCount > 0;
 
-        public float timeBudgetCounter = MAX_GLOBAL_MSG_BUDGET;
+        public float timeBudgetCounter { get; set; } = MAX_GLOBAL_MSG_BUDGET;
         public long processedInitMessagesCount { get; set; }
         public int pendingMessagesCount { get; set; }
         public int pendingInitMessagesCount { get; set; }
@@ -302,7 +302,7 @@ namespace DCL
                     {
                         bus = busesToProcess[i];
                     }
-                    
+
                     if (ProcessBus(bus))
                         break;
                 }

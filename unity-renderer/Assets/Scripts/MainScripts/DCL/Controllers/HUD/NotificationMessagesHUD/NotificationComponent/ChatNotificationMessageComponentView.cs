@@ -22,10 +22,9 @@ namespace DCL.Chat.Notifications
         [SerializeField] internal TMP_Text notificationSender;
         [SerializeField] internal TMP_Text notificationTimestamp;
         [SerializeField] internal ImageComponentView image;
+        [SerializeField] internal GameObject imageContainer;
         [SerializeField] internal GameObject imageBackground;
         [SerializeField] internal GameObject multiNotificationBackground;
-        [SerializeField] internal GameObject firstSeparator;
-        [SerializeField] internal GameObject secondSeparator;
         [SerializeField] internal bool isPrivate;
         [SerializeField] internal RectTransform backgroundTransform;
         [SerializeField] internal RectTransform messageContainerTransform;
@@ -44,7 +43,6 @@ namespace DCL.Chat.Notifications
         public string notificationTargetId;
         private int maxContentCharacters, maxHeaderCharacters, maxSenderCharacters;
         private float startingXPosition;
-        private Image backgroundImage;
 
         public void Configure(ChatNotificationMessageComponentModel newModel)
         {
@@ -57,7 +55,6 @@ namespace DCL.Chat.Notifications
             base.Awake();
             button?.onClick.AddListener(() => OnClickedNotification?.Invoke(notificationTargetId));
             startingXPosition = messageContainerTransform.anchoredPosition.x;
-            backgroundImage = imageBackground.GetComponent<Image>();
             RefreshControl();
         }
 
@@ -102,6 +99,12 @@ namespace DCL.Chat.Notifications
             SetIsPrivate(model.isPrivate);
             SetNotificationHeader(model.messageHeader);
             SetImage(model.imageUri);
+            SetImageVisibility(model.isImageVisible);
+
+            if (model.isDockedLeft)
+                DockLeft();
+            else
+                DockRight();
         }
 
         public void SetMessage(string message)
@@ -179,8 +182,6 @@ namespace DCL.Chat.Notifications
             model.isPrivate = isPrivate;
             this.isPrivate = isPrivate;
             imageBackground.SetActive(isPrivate);
-            firstSeparator.SetActive(isPrivate);
-            secondSeparator.SetActive(isPrivate);
             if (multiNotificationBackground != null)
                 multiNotificationBackground.SetActive(false);
 
@@ -202,6 +203,12 @@ namespace DCL.Chat.Notifications
             ForceUIRefresh();
         }
 
+        public void SetImageVisibility(bool visible)
+        {
+            model.isImageVisible = visible;
+            imageContainer.SetActive(visible);
+        }
+
         public void SetPositionOffset(float xPosHeader, float xPosContent)
         {
             if (header != null)
@@ -214,6 +221,7 @@ namespace DCL.Chat.Notifications
 
         public void SetMaxContentCharacters(int maxContentCharacters)
         {
+            maxContentCharacters = Mathf.Max(0, maxContentCharacters);
             model.maxContentCharacters = maxContentCharacters;
             this.maxContentCharacters = maxContentCharacters;
         }
@@ -236,9 +244,27 @@ namespace DCL.Chat.Notifications
             this.notificationTargetId = notificationTargetId;
         }
 
-        private void ForceUIRefresh()
+        public void DockRight()
         {
-            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
+            model.isDockedLeft = false;
+            DockHorizontally(1f);
         }
+
+        public void DockLeft()
+        {
+            model.isDockedLeft = true;
+            DockHorizontally(0);
+        }
+
+        private void DockHorizontally(float anchor)
+        {
+            messageContainerTransform.pivot = new Vector2(anchor, 0.5f);
+            messageContainerTransform.anchorMin = new Vector2(anchor, 0.5f);
+            messageContainerTransform.anchorMax = new Vector2(anchor, 0.5f);
+            backgroundTransform.pivot = new Vector2(anchor, 0.5f);
+        }
+
+        private void ForceUIRefresh() =>
+            Utils.ForceRebuildLayoutImmediate(backgroundTransform);
     }
 }
