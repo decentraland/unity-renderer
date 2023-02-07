@@ -1,8 +1,11 @@
 using DCL.Emotes;
 using DCL.Providers;
+using DCL.Skybox;
 using NUnit.Framework;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace DCL.Tests
 {
@@ -28,20 +31,24 @@ namespace DCL.Tests
             Assert.NotNull(asset.emotes[0].maleAnimation);
         }
 
-        [TestCase("Generic_Skybox.asset")]
-        [TestCase("SkyboxElements.prefab")]
-        [TestCase("SkyboxProbe.prefab")]
-        [TestCase("SkyboxMaterialData.asset")]
-        public async Task EnsureSkyboxEssentials(string skyboxEssentialToAssert)
+        [Test]
+        public async Task EnsureSkyboxEssentials()
         {
             // Arrange
             var addressableProvider = new AddressableResourceProvider();
 
             //Act
-            EmbeddedEmotesSO asset = await addressableProvider.GetAddressable<EmbeddedEmotesSO>(skyboxEssentialToAssert);
+            SkyboxConfiguration skyboxConfiguration = await addressableProvider.GetAddressable<SkyboxConfiguration>("Generic_Skybox.asset");
+            GameObject skyboxElements = await addressableProvider.GetAddressable<GameObject>("SkyboxElements.prefab");
+            GameObject skyboxPrefab = await addressableProvider.GetAddressable<GameObject>("SkyboxProbe.prefab");
+            MaterialReferenceContainer materialReferenceContainer = await addressableProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
+
 
             //Assert
-            Assert.NotNull(asset);
+            Assert.NotNull(skyboxConfiguration);
+            Assert.NotNull(skyboxElements);
+            Assert.NotNull(skyboxPrefab);
+            Assert.NotNull(materialReferenceContainer);
         }
     }
 }
