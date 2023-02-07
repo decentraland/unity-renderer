@@ -4,6 +4,7 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCL.Providers;
 using NSubstitute;
 using NSubstitute.Core.Arguments;
 using NUnit.Framework;
@@ -58,7 +59,7 @@ namespace DCL.Emotes
         public IEnumerator ProvideTheRetrieverAnimation() => UniTask.ToCoroutine(async () =>
         {
             Animation animation = container.AddComponent<Animation>();
-            AnimationClip clip = Resources.Load<AnimationClip>("tik");
+            AnimationClip clip = await new AddressableResourceProvider().GetAddressable<AnimationClip>("tik.anim");
             animation.clip = clip;
             Rendereable rendereable = new Rendereable { container = container, };
             retriever.Retrieve(

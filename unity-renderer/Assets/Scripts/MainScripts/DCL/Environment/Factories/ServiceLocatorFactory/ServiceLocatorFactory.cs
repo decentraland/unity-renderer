@@ -26,6 +26,10 @@ namespace DCL
         {
             var result = new ServiceLocator();
 
+            //Addressable Resource Provider
+            var addressableResourceProvider = new AddressableResourceProvider();
+            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
+
             // Platform
             result.Register<IMemoryManager>(() => new MemoryManager());
             result.Register<ICullingController>(CullingController.Create);
@@ -54,7 +58,7 @@ namespace DCL
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
             result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.i, DataStore.i));
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes));
+            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
@@ -62,9 +66,7 @@ namespace DCL
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
 
-            //Addressable Resource Provider
-            var addressableResourceProvider = new AddressableResourceProvider();
-            result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
+
 
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
