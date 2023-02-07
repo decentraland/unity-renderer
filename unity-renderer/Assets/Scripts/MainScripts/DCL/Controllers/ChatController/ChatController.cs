@@ -135,7 +135,7 @@ namespace DCL.Social.Chat
 
             foreach (var channelInfo in msg.channelInfoPayload)
             {
-                Channel channel = ToChannel(channelInfo);
+                Channel channel = channelInfo.ToChannel();
                 string channelId = channel.ChannelId;
 
                 if (channels.ContainsKey(channelId))
@@ -177,7 +177,7 @@ namespace DCL.Social.Chat
             foreach (var channelInfo in msg.channelInfoPayload)
             {
                 string channelId = channelInfo.channelId;
-                Channel channel = ToChannel(channelInfo);
+                Channel channel = channelInfo.ToChannel();
                 bool justLeft = !channel.Joined;
 
                 if (channels.ContainsKey(channelId))
@@ -215,9 +215,9 @@ namespace DCL.Social.Chat
 
             for (var i = 0; i < msg.channels.Length; i++)
             {
-                var channelPayload = msg.channels[i];
-                var channelId = channelPayload.channelId;
-                var channel = ToChannel(channelPayload);
+                ChannelInfoPayload channelPayload = msg.channels[i];
+                string channelId = channelPayload.channelId;
+                Channel channel = channelPayload.ToChannel();
 
                 if (channels.ContainsKey(channelId))
                     channels[channelId].CopyFrom(channel);
@@ -240,7 +240,7 @@ namespace DCL.Social.Chat
         {
             CancellationTokenSource linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, operationsCancellationToken.Token);
             ChannelInfoPayload payload = await apiBridge.JoinOrCreateChannelAsync(channelId, linkedCancellationToken.Token);
-            Channel channel = ToChannel(payload);
+            Channel channel = payload.ToChannel();
             channels[channel.ChannelId] = channel;
             OnChannelJoined?.Invoke(channel);
             return channel;
@@ -260,7 +260,7 @@ namespace DCL.Social.Chat
         {
             CancellationTokenSource linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, operationsCancellationToken.Token);
             ChannelSearchResultsPayload searchResult = await apiBridge.GetChannelsAsync(limit, name, paginationToken, linkedCancellationToken.Token);
-            return (searchResult.since, searchResult.channels.Select(ToChannel).ToArray());
+            return (searchResult.since, searchResult.channels.Select(payload => payload.ToChannel()).ToArray());
         }
 
         public void GetChannelsByName(int limit, string name, string paginationToken = null) =>
@@ -431,10 +431,5 @@ Invite others to join by quoting the channel name in other chats or include it a
 
             OnChannelUnseenMessagesUpdated?.Invoke(channelId, count);
         }
-
-        private static Channel ToChannel(ChannelInfoPayload payload) =>
-            new (payload.channelId, payload.name, payload.unseenMessages,
-                payload.memberCount,
-                payload.joined, payload.muted, payload.description);
     }
 }
