@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL.Chat.Channels;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +12,8 @@ namespace DCL.Chat.HUD
     public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] internal TMP_Text textComponent;
+
+        private readonly CancellationTokenSource cancellationToken = new ();
 
         internal string currentText;
         internal bool hasNoParseLabel;
@@ -33,6 +37,9 @@ namespace DCL.Chat.HUD
 
         private void OnDestroy()
         {
+            cancellationToken.Cancel();
+            cancellationToken.Dispose();
+
             if (textComponent == null)
                 return;
 
@@ -57,16 +64,16 @@ namespace DCL.Chat.HUD
             if (!isAllowedToCreateChannels) return;
 
             hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
-            CoroutineStarter.Start(RefreshChannelPatterns());
+            RefreshChannelPatterns(cancellationToken.Token).Forget();
         }
 
-        internal IEnumerator RefreshChannelPatterns()
+        internal async UniTask RefreshChannelPatterns(CancellationToken cancellationToken)
         {
-            yield return new WaitForEndOfFrame();
+            await UniTask.WaitForEndOfFrame(this, cancellationToken);
 
             channelsFoundInText = ChannelUtils.ExtractChannelIdsFromText(textComponent.text);
 
-            foreach (var channelFound in channelsFoundInText)
+            foreach (string channelFound in channelsFoundInText)
             {
                 textComponent.text = textComponent.text.Replace(
                     channelFound,
