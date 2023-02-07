@@ -28,7 +28,7 @@ namespace DCL.Social.Passports
             view.PreviewCameraRotation.OnHorizontalRotation += RotateCharacterPreview;
             cancellationTokenSource = new CancellationTokenSource();
 
-            previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithHologram,
+            previewController = characterPreviewFactory.Ref.Create(CharacterPreviewMode.WithoutHologram,
                 view.CharacterPreviewTexture, true, CharacterPreviewController.CameraFocus.Preview);
 
             view.SetModel(new (TutorialEnabled));

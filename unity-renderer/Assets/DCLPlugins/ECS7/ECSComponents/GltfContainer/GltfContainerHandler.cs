@@ -102,15 +102,6 @@ namespace DCL.ECSComponents
 
         private void OnLoadFail(IParcelScene scene, Exception exception)
         {
-            MaterialTransitionController[] transitionController =
-                gameObject.GetComponentsInChildren<MaterialTransitionController>(true);
-
-            for (int i = 0; i < transitionController.Length; i++)
-            {
-                MaterialTransitionController material = transitionController[i];
-                Object.Destroy(material);
-            }
-
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
         }
 

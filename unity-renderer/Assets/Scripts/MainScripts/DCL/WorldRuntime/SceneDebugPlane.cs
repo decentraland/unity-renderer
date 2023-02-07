@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -38,20 +38,7 @@ namespace DCL.Controllers.ParcelSceneDebug
 
                 plane.transform.position = PositionUtils.WorldToUnityPosition(position);
 
-                if (DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
-                {
-                    Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
-                    var matTransition = plane.AddComponent<MaterialTransitionController>();
-                    matTransition.delay = 0;
-                    matTransition.useHologram = false;
-                    matTransition.fadeThickness = 20;
-                    matTransition.OnDidFinishLoading(finalMaterial);
-                }
-                else
-                {
-                    plane.GetComponent<MeshRenderer>().sharedMaterial =
-                        Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
-                }
+                plane.GetComponent<MeshRenderer>().sharedMaterial = Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
             }
         }
 

@@ -376,5 +376,18 @@ namespace Tests
             // Wait for materials to be forgotten
             yield return new WaitUntil(() => AssetPromiseKeeper_Material.i.library.masterAssets.Count == 0);
         }
+
+        [Test]
+        public void NotAllowBase64Textures()
+        {
+            TextureUnion texture = new TextureUnion()
+            {
+                Texture = new Texture()
+                {
+                    Src = "data:text/plain;base64",
+                }
+            };
+            Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
+        }
     }
 }
