@@ -9,7 +9,7 @@ namespace DCL
     /// <summary>
     /// This class is used by the AvatarMeshCombiner to combine meshes. Each layer represents a new generated sub-mesh.
     /// </summary>
-    public class CombineLayer : IDisposable
+    public class CombineLayer
     {
         private List<SkinnedMeshRenderer> renderers;
 

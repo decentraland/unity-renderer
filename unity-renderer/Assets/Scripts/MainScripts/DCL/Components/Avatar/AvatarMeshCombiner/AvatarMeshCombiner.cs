@@ -81,7 +81,7 @@ namespace DCL
         /// <param name="renderers">Renderers to be combined.</param>
         /// <param name="materialAsset">Material asset to be used in the resulting Output object. This Material will be instantiated for each sub-mesh generated.</param>
         /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
-        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, IReadOnlyList<Transform> bones, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose = true)
+        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, IReadOnlyList<Transform> bones, IReadOnlyCollection<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose = true)
         {
             Output result = new Output();
 

@@ -35,7 +35,7 @@ namespace DCL
             TotalRenderersCount++;
         }
 
-        public void AddRenderers(CombineLayer combineLayer, IReadOnlyCollection<SkinnedMeshRenderer> renderers)
+        public void AddRenderers(CombineLayer combineLayer, IReadOnlyList<SkinnedMeshRenderer> renderers)
         {
             combineLayer.AddRenderers(renderers);
             AddToTotalMetrics(renderers);
@@ -46,10 +46,14 @@ namespace DCL
             layers.RemoveAll(SANITIZE_LAYER_FUNC);
         }
 
-        private void AddToTotalMetrics(IReadOnlyCollection<SkinnedMeshRenderer> renderers)
+        private void AddToTotalMetrics(IReadOnlyList<SkinnedMeshRenderer> renderers)
         {
-            foreach (SkinnedMeshRenderer meshRenderer in renderers)
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < renderers.Count; i++)
+            {
+                SkinnedMeshRenderer meshRenderer = renderers[i];
                 TotalVerticesCount += meshRenderer.sharedMesh.vertexCount;
+            }
 
             TotalRenderersCount += renderers.Count;
         }
@@ -58,6 +62,10 @@ namespace DCL
         {
             TotalVerticesCount = 0;
             TotalRenderersCount = 0;
+
+            foreach (CombineLayer layer in layers)
+                layer.Dispose();
+
             ListPool<CombineLayer>.Release(layers);
             layers = null;
             GenericPool<CombineLayersList>.Release(this);

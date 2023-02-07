@@ -9,6 +9,8 @@ namespace DCL
 {
     public static class SliceByRenderState
     {
+        private static readonly Dictionary<Shader, bool> SHADERS_TRANSPARENCY = new ();
+
         private readonly struct LayerKey : IEquatable<LayerKey>
         {
             public readonly bool IsOpaque;
@@ -124,12 +126,16 @@ namespace DCL
             if (material == null)
                 return true;
 
-            bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+            var shader = material.shader;
 
-            // NOTE(Kinerius): Since GLTFast materials doesn't have ZWrite property, we check if the shader name is opaque instead
-            bool hasOpaqueName = material.shader.name.ToLower().Contains("opaque");
-
-            bool isTransparent = (!hasZWrite && !hasOpaqueName) || (hasZWrite && (int)material.GetFloat(ShaderUtils.ZWrite) == 0);
+            if (!SHADERS_TRANSPARENCY.TryGetValue(shader, out var isTransparent))
+            {
+                bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+                // NOTE(Kinerius): Since GLTFast materials doesn't have ZWrite property, we check if the shader name is opaque instead
+                bool hasOpaqueName = shader.name.Contains("opaque", StringComparison.OrdinalIgnoreCase);
+                isTransparent = (!hasZWrite && !hasOpaqueName) || (hasZWrite && (int)material.GetFloat(ShaderUtils.ZWrite) == 0);
+                SHADERS_TRANSPARENCY[shader] = isTransparent;
+            }
 
             return !isTransparent;
         }

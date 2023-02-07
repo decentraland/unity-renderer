@@ -21,8 +21,6 @@ namespace DCL
         private const int MAX_TEXTURE_ID_COUNT = 12;
         private static readonly int[] textureIds = { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
 
-        private static readonly Predicate<CombineLayer> SANITIZE_LAYER_FUNC = x => x.Renderers.Count == 0;
-
         /// <summary>
         /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.<br/>
         ///
@@ -39,7 +37,7 @@ namespace DCL
         /// </summary>
         /// <param name="renderers">List of renderers to slice.</param>
         /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
-        internal static bool TrySlice(SkinnedMeshRenderer[] renderers, CombineLayersList result)
+        internal static bool TrySlice(IReadOnlyCollection<SkinnedMeshRenderer> renderers, CombineLayersList result)
         {
             logger.Log("Slice Start!");
 

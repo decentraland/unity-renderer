@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
+using logger = DCL.MeshCombinerLogger;
 
 namespace DCL
 {
@@ -32,9 +33,6 @@ namespace DCL
     /// </summary>
     public class AvatarMeshCombinerHelper : IAvatarMeshCombinerHelper
     {
-        private static bool VERBOSE = false;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
-
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
@@ -107,7 +105,7 @@ namespace DCL
             return success;
         }
 
-        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose)
+        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, IReadOnlyCollection<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose)
         {
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(bonesContainer.sharedMesh != null, "the shared mesh of this bones container is null, check if the AvatarBase prefab's mesh is not missing, the hologram avatar might have been re-imported");
@@ -126,7 +124,7 @@ namespace DCL
 
             if ( !output.isValid )
             {
-                logger.LogError("AvatarMeshCombiner", "Combine failed!");
+                logger.LogError("AvatarMeshCombiner: Combine failed!");
                 return false;
             }
             Transform rootBone = bonesContainer.rootBone;
@@ -156,7 +154,7 @@ namespace DCL
             if (uploadMeshToGpu)
                 output.mesh.UploadMeshData(true);
 
-            logger.Log("AvatarMeshCombiner", "Finish combining avatar. Click here to focus on GameObject.", container);
+            logger.Log("AvatarMeshCombiner: Finish combining avatar. Click here to focus on GameObject.", container);
             return true;
         }
 
