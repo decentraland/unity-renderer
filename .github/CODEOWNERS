@@ -10,7 +10,7 @@
 
 
 # explorer
-unity-renderer/**/*               @decentraland/explorer-team
+# unity-renderer/**/*               @decentraland/explorer-team
 
 # comms
 browser-interface/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
