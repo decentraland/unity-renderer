@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,7 +27,7 @@ namespace Test.AvatarSystem
         private IVisibility visibility;
         private ILOD lod;
         private IGPUSkinning gpuSkinning;
-        private IGPUSkinningThrottler gpuSkinningThrottler;
+        private IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private IEmoteAnimationEquipper emoteAnimationEquipper;
         private IBaseAvatar baseAvatar;
 
@@ -42,7 +42,7 @@ namespace Test.AvatarSystem
             visibility = Substitute.For<IVisibility>();
             lod = Substitute.For<ILOD>();
             gpuSkinning = Substitute.For<IGPUSkinning>();
-            gpuSkinningThrottler = Substitute.For<IGPUSkinningThrottler>();
+            gpuSkinningThrottlerService = Substitute.For<IGPUSkinningThrottlerService>();
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
             baseAvatar = Substitute.For<IBaseAvatar>();
             avatar = new AvatarWithHologram(
@@ -53,7 +53,7 @@ namespace Test.AvatarSystem
                 visibility,
                 lod,
                 gpuSkinning,
-                gpuSkinningThrottler,
+                gpuSkinningThrottlerService,
                 emoteAnimationEquipper
             );
         }
@@ -134,12 +134,11 @@ namespace Test.AvatarSystem
             Assert.AreEqual(extents, avatar.extents);
             animator.Received().Prepare(settings.bodyshapeId, null);
             gpuSkinning.Received().Prepare(combinedRenderer);
-            gpuSkinningThrottler.Received().Bind(gpuSkinning);
+            gpuSkinningThrottlerService.Received().Register(gpuSkinning);
             visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);
             visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             visibility.Received().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             lod.Received().Bind(gpuSkinnedRenderer);
-            gpuSkinningThrottler.Received().Start();
             Assert.AreEqual(IAvatar.Status.Loaded, avatar.status);
         });
 

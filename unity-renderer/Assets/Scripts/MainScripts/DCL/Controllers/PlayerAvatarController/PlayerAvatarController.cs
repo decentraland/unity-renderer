@@ -85,7 +85,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             new Visibility(),
             noLod,
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
+            Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
             new EmoteAnimationEquipper(animator, DataStore.i.emotes));
     }
 

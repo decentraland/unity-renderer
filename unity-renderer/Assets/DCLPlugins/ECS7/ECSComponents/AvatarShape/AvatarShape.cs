@@ -105,7 +105,7 @@ namespace DCL.ECSComponents
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
+                Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
