@@ -84,8 +84,8 @@ references:
         only:
           - dev
           - main
-          - release*
-          - hotfix*
+          -  /^release\/.*/
+          -  /^hotfix\/.*/
 
 commands:
   build-unity-generic:

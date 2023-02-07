@@ -177,10 +177,7 @@ namespace DCL
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
-
-                yield return null;
-
-                yield return SetMaterialTransition();
+                
             }
         }
 
@@ -211,47 +208,6 @@ namespace DCL
         {
             base.OnForget();
             featureFlags.OnChange -= OnFeatureFlagChange;
-        }
-
-        IEnumerator SetMaterialTransition(Action OnSuccess = null)
-        {
-            if (settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE && doTransitionAnimation)
-            {
-                MaterialTransitionController[] materialTransitionControllers = new MaterialTransitionController[asset.renderers.Count];
-                int index = 0;
-
-                foreach (Renderer assetRenderer in asset.renderers)
-                {
-                    MaterialTransitionController transition = assetRenderer.gameObject.AddComponent<MaterialTransitionController>();
-                    materialTransitionControllers[index] = transition;
-                    transition.delay = 0;
-                    transition.OnDidFinishLoading(assetRenderer.sharedMaterial);
-
-                    index++;
-                }
-
-                // Wait until MaterialTransitionController finishes its effect
-                yield return new WaitUntil(() => IsTransitionFinished(materialTransitionControllers));
-            }
-
-            OnSuccess?.Invoke();
-        }
-
-        private bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
-        {
-            bool finishedTransition = true;
-
-            for (int i = 0; i < matTransitions.Length; i++)
-            {
-                if (matTransitions[i] != null)
-                {
-                    finishedTransition = false;
-
-                    break;
-                }
-            }
-
-            return finishedTransition;
         }
     }
 }

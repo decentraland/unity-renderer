@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -721,7 +721,6 @@ namespace DCL.ABConverter
             loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
             loader.addMaterialsToPersistentCaching = false;
             loader.initialVisibility = true;
-            loader.useMaterialTransition = false;
             loader.maximumLod = 300; // todo: fix this later
             loader.forceGPUOnlyMesh = false;
             loader.forceGPUOnlyTex = false;
