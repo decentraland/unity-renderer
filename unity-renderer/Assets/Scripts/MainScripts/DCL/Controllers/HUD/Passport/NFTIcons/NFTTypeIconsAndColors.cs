@@ -6,6 +6,7 @@ public class NFTTypeIconsAndColors : ScriptableObject
 {
     [SerializeField] SerializableKeyValuePair<string, Sprite>[] nftIcons;
     [SerializeField] SerializableKeyValuePair<string, Color>[] nftColors;
+    [SerializeField] Color defaultColor;
 
     public Sprite GetTypeImage(string nftType)
     {
@@ -26,6 +27,6 @@ public class NFTTypeIconsAndColors : ScriptableObject
                 return color.value;
         }
 
-        return Color.white;
+        return defaultColor;
     }
 }

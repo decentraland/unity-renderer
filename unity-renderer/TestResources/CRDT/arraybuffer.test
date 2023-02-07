@@ -1,24 +1,32 @@
 # CRDT Uint8Array should return the same data
 # Messages sent over the wire
-{"key1":7,"key2":11,"data":"Hola","timestamp":1}
-{"key1":7,"key2":11,"data":"Hola","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"Hola","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"Hola","timestamp":1}
 # End of messages
 # Final CRDT State
-[{"key1":7,"key2":11,"timestamp":1,"data":"Hola"}]
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"Hola"}],"deletedEntities":[]}
 #
 # CRDT Uint8Array should return the bigger raw data
 # Messages sent over the wire
-{"key1":7,"key2":11,"data":"b","timestamp":1}
-{"key1":7,"key2":11,"data":"a","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"b","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"a","timestamp":1}
 # End of messages
 # Final CRDT State
-[{"key1":7,"key2":11,"timestamp":1,"data":"b"}]
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"b"}],"deletedEntities":[]}
 #
 # CRDT Uint8Array should return the bigger raw data. a.byteLength !== b.byteLength
 # Messages sent over the wire
-{"key1":7,"key2":11,"data":"b","timestamp":1}
-{"key1":7,"key2":11,"data":"aa","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"b","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"aa","timestamp":1}
 # End of messages
 # Final CRDT State
-[{"key1":7,"key2":11,"timestamp":1,"data":"b"}]
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"b"}],"deletedEntities":[]}
+#
+# CRDT Uint8Array should return the bigger raw data. a.byteLength === b.byteLength
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"messi","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"messirve","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"messirve"}],"deletedEntities":[]}
 #
