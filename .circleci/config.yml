@@ -84,8 +84,8 @@ references:
         only:
           - dev
           - main
-          - release*
-          - hotfix*
+          -  /^release\/.*/
+          -  /^hotfix\/.*/
 
 commands:
   build-unity-generic:
@@ -415,6 +415,8 @@ workflows:
             - build-unity-for-linux
             - build-unity-for-windows
             - build-unity-for-mac
+            - build-js-interface
+            - playmode-tests
 
       - build-js-interface:
           <<: *all_branches
