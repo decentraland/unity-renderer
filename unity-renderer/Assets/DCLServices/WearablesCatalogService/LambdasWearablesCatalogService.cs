@@ -17,6 +17,8 @@ namespace DCLServices.WearablesCatalogService
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
+        private const string ASSET_BUNDLES_URL_ORG = "https://content-assets-as-bundle.decentraland.org/";
+        private const string TEXTURES_URL_ORG = "https://interconnected.online/content/contents/";
         private const string PAGINATED_WEARABLES_END_POINT = "nfts/wearables/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
@@ -73,6 +75,7 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the owned wearables for '{userId}' failed!");
 
+            MapLambdasDataIntoWearableItem(pageResponse.response.wearables);
             AddWearablesToCatalog(pageResponse.response.wearables);
 
             return pageResponse.response.wearables;
@@ -90,6 +93,7 @@ namespace DCLServices.WearablesCatalogService
             if (!serviceResponse.success)
                 throw new Exception("The request of the base wearables failed!");
 
+            MapLambdasDataIntoWearableItem(serviceResponse.response.wearables);
             AddWearablesToCatalog(serviceResponse.response.wearables);
 
             return serviceResponse.response.wearables;
@@ -121,6 +125,7 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the '{collectionId}' third party wearables collection of '{userId}' failed!");
 
+            MapLambdasDataIntoWearableItem(pageResponse.response.wearables);
             AddWearablesToCatalog(pageResponse.response.wearables);
 
             return pageResponse.response.wearables;
@@ -267,6 +272,7 @@ namespace DCLServices.WearablesCatalogService
                     throw e;
                 }
 
+                MapLambdasDataIntoWearableItem(serviceResponse.response.wearables);
                 AddWearablesToCatalog(serviceResponse.response.wearables);
                 result = serviceResponse.response.wearables;
                 sourceToAwait.TrySetResult(result);
@@ -277,6 +283,26 @@ namespace DCLServices.WearablesCatalogService
             ct.ThrowIfCancellationRequested();
 
             return result.FirstOrDefault(x => x.id == newWearableId);
+        }
+
+        private static void MapLambdasDataIntoWearableItem(List<WearableItem> wearablesFromLambdas)
+        {
+            foreach (var wearable in wearablesFromLambdas)
+            {
+                foreach (var representation in wearable.data.representations)
+                {
+                    foreach (var representationContent in representation.contents)
+                        representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
+                }
+
+                int index = wearable.thumbnail.LastIndexOf('/');
+                string newThumbnail = wearable.thumbnail[(index + 1)..];
+                string newBaseUrl = wearable.thumbnail[..(index + 1)];
+                wearable.thumbnail = newThumbnail;
+                wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
+                wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
+                wearable.emoteDataV0 = null;
+            }
         }
 
         private static (string paramName, string paramValue)[] GetWearablesUrlParams(IEnumerable<string> wearableIds) =>
