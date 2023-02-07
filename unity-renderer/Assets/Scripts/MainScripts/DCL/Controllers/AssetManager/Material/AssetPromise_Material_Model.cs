@@ -39,6 +39,7 @@ namespace DCL
         public readonly Texture? bumpTexture;
 
         public readonly Color albedoColor;
+        public readonly Color diffuseColor;
         public readonly Color emissiveColor;
         public readonly Color reflectivityColor;
 
@@ -57,7 +58,7 @@ namespace DCL
             Color defaultColor = Color.white;
             bool defaultShadow = true;
             return new AssetPromise_Material_Model(false, albedoTexture, null, null, null,
-                alphaTest, defaultShadow, diffuseColor, defaultColor, defaultColor, TransparencyMode.Auto,
+                alphaTest, defaultShadow, defaultColor, diffuseColor, defaultColor, defaultColor, TransparencyMode.Auto,
                 0, 0, 0, 0, 0, 0);
         }
 
@@ -66,14 +67,15 @@ namespace DCL
             Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
+            Color defaultColor = Color.white;
             return new AssetPromise_Material_Model(true, albedoTexture, alphaTexture,
-                emissiveTexture, bumpTexture, alphaTest, castShadows, albedoColor, emissiveColor,
+                emissiveTexture, bumpTexture, alphaTest, castShadows, albedoColor, defaultColor, emissiveColor,
                 reflectivityColor, transparencyMode, metallic, roughness, glossiness,
                 specularIntensity, emissiveIntensity, directIntensity);
         }
 
         public AssetPromise_Material_Model(bool isPbrMaterial, Texture? albedoTexture, Texture? alphaTexture,
-            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color emissiveColor,
+            Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color diffuseColor, Color emissiveColor,
             Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
@@ -85,6 +87,7 @@ namespace DCL
             this.alphaTest = alphaTest;
             this.castShadows = castShadows;
             this.albedoColor = albedoColor;
+            this.diffuseColor = diffuseColor;
             this.emissiveColor = emissiveColor;
             this.reflectivityColor = reflectivityColor;
             this.transparencyMode = transparencyMode;
