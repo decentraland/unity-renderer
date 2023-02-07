@@ -18,8 +18,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private TaskbarHUDView view;
 
     private readonly FriendsController_Mock friendsController = new FriendsController_Mock();
-    private readonly ChatController_Mock chatController = new ChatController_Mock();
 
+    private IChatController chatController;
     private PrivateChatWindowController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowController worldChatWindowController;
@@ -36,6 +36,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        chatController = Substitute.For<IChatController>();
+        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
 
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
@@ -67,8 +70,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddWorldChatWindowProperly()
     {
-        var chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         worldChatWindowController = new WorldChatWindowController(
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
@@ -115,8 +116,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController.Initialize(new GameObject("PrivateChatWindowMock").AddComponent<PrivateChatWindowMock>());
         controller.AddPrivateChatWindow(privateChatController);
 
-        var chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         worldChatWindowController = new WorldChatWindowController(
             userProfileBridge,
             Substitute.For<IFriendsController>(),

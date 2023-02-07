@@ -42,9 +42,6 @@ namespace DCL
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
-            // TODO: migrate chat controller singleton into a service in the service locator
-            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
-
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();

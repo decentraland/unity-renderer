@@ -17,6 +17,8 @@ namespace DCL.Social.Chat
         private const string GET_CHANNELS_TASK_ID = "GetChannelsAsync";
         private const double REQUEST_TIMEOUT_SECONDS = 30;
 
+        public static WebInterfaceChatBridge i { get; private set; }
+
         public event Action<InitializeChatPayload> OnInitialized;
         public event Action<ChatMessage[]> OnAddMessage;
         public event Action<UpdateTotalUnseenMessagesPayload> OnTotalUnseenMessagesChanged;
@@ -31,6 +33,11 @@ namespace DCL.Social.Chat
         public event Action<ChannelSearchResultsPayload> OnChannelSearchResults;
 
         private readonly Dictionary<string, IUniTaskSource> pendingTasks = new ();
+
+        private void Awake()
+        {
+            i ??= this;
+        }
 
         [PublicAPI]
         public void InitializeChat(string json) =>

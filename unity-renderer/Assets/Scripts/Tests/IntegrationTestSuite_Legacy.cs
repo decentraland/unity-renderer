@@ -77,6 +77,8 @@ public class IntegrationTestSuite_Legacy
                 return mockedProviders;
             });
 
+        result.Register<IChatController>(() => Substitute.For<IChatController>());
+
         return result;
     }
 

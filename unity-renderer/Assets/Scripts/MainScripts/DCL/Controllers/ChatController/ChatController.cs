@@ -17,6 +17,7 @@ namespace DCL.Social.Chat
 
         private const string NEARBY_CHANNEL_ID = "nearby";
 
+        // TODO: remove the singleton. Reference the instance through the service locator
         public static ChatController i { get; private set; }
 
         private readonly Dictionary<string, int> unseenMessagesByUser = new ();
@@ -27,6 +28,7 @@ namespace DCL.Social.Chat
         private int totalUnseenMessages;
         private readonly DataStore dataStore;
         private readonly IChatApiBridge apiBridge;
+        private readonly CancellationTokenSource operationsCancellationToken = new ();
 
         public event Action<Channel> OnChannelUpdated;
         public event Action<Channel> OnChannelJoined;
@@ -73,11 +75,18 @@ namespace DCL.Social.Chat
             apiBridge.OnChannelsUpdated += UpdateChannelInfo;
             apiBridge.OnMuteChannelFailed += MuteChannelFailed;
             apiBridge.OnChannelSearchResults += UpdateChannelSearchResults;
+
+            i ??= this;
         }
 
-        public static void CreateSharedInstance(IChatApiBridge apiBridge, DataStore dataStore)
+        public void Dispose()
         {
-            i = new ChatController(apiBridge, dataStore);
+            operationsCancellationToken.Cancel();
+            operationsCancellationToken.Dispose();
+        }
+
+        public void Initialize()
+        {
         }
 
         private void Initialize(InitializeChatPayload msg)
@@ -229,7 +238,8 @@ namespace DCL.Social.Chat
 
         public async UniTask<Channel> JoinOrCreateChannelAsync(string channelId, CancellationToken cancellationToken = default)
         {
-            ChannelInfoPayload payload = await apiBridge.JoinOrCreateChannelAsync(channelId, cancellationToken);
+            CancellationTokenSource linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, operationsCancellationToken.Token);
+            ChannelInfoPayload payload = await apiBridge.JoinOrCreateChannelAsync(channelId, linkedCancellationToken.Token);
             Channel channel = ToChannel(payload);
             channels[channel.ChannelId] = channel;
             OnChannelJoined?.Invoke(channel);
@@ -248,7 +258,8 @@ namespace DCL.Social.Chat
         public async UniTask<(string, Channel[])> GetChannelsByNameAsync(int limit, string name, string paginationToken = null,
             CancellationToken cancellationToken = default)
         {
-            ChannelSearchResultsPayload searchResult = await apiBridge.GetChannelsAsync(limit, name, paginationToken, cancellationToken);
+            CancellationTokenSource linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, operationsCancellationToken.Token);
+            ChannelSearchResultsPayload searchResult = await apiBridge.GetChannelsAsync(limit, name, paginationToken, linkedCancellationToken.Token);
             return (searchResult.since, searchResult.channels.Select(ToChannel).ToArray());
         }
 
