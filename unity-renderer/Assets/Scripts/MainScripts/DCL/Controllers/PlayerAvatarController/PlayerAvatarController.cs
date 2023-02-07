@@ -34,6 +34,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     [SerializeField] private GameObject loadingParticlesPrefab;
     public float cameraDistanceToDeactivate = 1.0f;
     [SerializeField] internal AvatarOnPointerDown onPointerDown;
+    [SerializeField] internal AvatarOutlineOnHoverEvent outlineOnHover;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
     private bool repositioningWorld => DCLCharacterController.i.characterPosition.RepositionedWorldLastFrame();
@@ -261,6 +262,11 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             CommonScriptableObjects.rendererState.RemoveLock(this);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
+            var entity = new DecentralandEntity
+            {
+                gameObject = gameObject,
+            };
+
             onPointerDown.Initialize(
                 new OnPointerDown.Model
                 {
@@ -268,13 +274,12 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
                     hoverText = "View Profile",
                 },
-                new DecentralandEntity
-                {
-                    gameObject = gameObject,
-                },
+                entity,
                 player
             );
             onPointerDown.SetPassportEnabled(true);
+
+            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, avatar);
         }
     }
 
