@@ -10,18 +10,18 @@ CWD = $(shell pwd)
 # SDK Files
 EMPTY_SCENES := public/empty-scenes/common
 
+build-essentials:
+	echo 'declare module "env" {}' > node_modules/env.d.ts
+	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
+	ESSENTIALS_ONLY=true node ./build.js
+	BUNDLES_ONLY=true node ./build.js
+
 empty-parcels:
 	cd public/empty-scenes/common && (node generate_all.js || true)
 	mkdir -p static/loader/empty-scenes || true
 	rm -rf static/loader/empty-scenes/*
 	cp $(EMPTY_SCENES)/mappings.json static/loader/empty-scenes/mappings.json
 	cp -R $(EMPTY_SCENES)/contents static/loader/empty-scenes/contents
-
-build-essentials: empty-parcels
-	echo 'declare module "env" {}' > node_modules/env.d.ts
-	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
-	ESSENTIALS_ONLY=true node ./build.js
-	BUNDLES_ONLY=true node ./build.js
 
 # Entry points
 static/index.js:
