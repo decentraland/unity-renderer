@@ -9,7 +9,7 @@ namespace DCL
 {
     public static class SliceByRenderState
     {
-        private static readonly Dictionary<Shader, bool> SHADERS_TRANSPARENCY = new ();
+        private static readonly Dictionary<Shader, bool> SHADERS_OPACITY = new ();
 
         private readonly struct LayerKey : IEquatable<LayerKey>
         {
@@ -128,16 +128,17 @@ namespace DCL
 
             var shader = material.shader;
 
-            if (!SHADERS_TRANSPARENCY.TryGetValue(shader, out var isTransparent))
+            if (!SHADERS_OPACITY.TryGetValue(shader, out var isOpaqueShader))
             {
-                bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
                 // NOTE(Kinerius): Since GLTFast materials doesn't have ZWrite property, we check if the shader name is opaque instead
                 bool hasOpaqueName = shader.name.Contains("opaque", StringComparison.OrdinalIgnoreCase);
-                isTransparent = (!hasZWrite && !hasOpaqueName) || (hasZWrite && (int)material.GetFloat(ShaderUtils.ZWrite) == 0);
-                SHADERS_TRANSPARENCY[shader] = isTransparent;
+                SHADERS_OPACITY[shader] = isOpaqueShader = hasOpaqueName;
             }
 
-            return !isTransparent;
+            bool hasZWrite = material.HasProperty(ShaderUtils.ZWrite);
+            isOpaqueShader = (!hasZWrite && !isOpaqueShader) || (hasZWrite && (int)material.GetFloat(ShaderUtils.ZWrite) == 0);
+
+            return !isOpaqueShader;
         }
     }
 }
