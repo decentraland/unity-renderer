@@ -205,6 +205,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
                 currentAvatar.CopyFrom(profile.avatar);
+                // profile.avatar.id is a null string, so override it with a valid profile id for further usage
                 currentAvatar.id = profile.userId;
 
                 List<string> wearableItems = profile.avatar.wearables.ToList();
