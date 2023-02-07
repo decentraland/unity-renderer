@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { shallowEqual } from 'atomicHelpers/shallowEqual'
-import { deepEqual } from 'atomicHelpers/deepEqual'
+import { shallowEqual } from 'lib/javascript/shallowEqual'
+import { deepEqual } from 'lib/javascript/deepEqual'
 
 function testComparer(comparer: Function, a: any, b: any, expectedResult: boolean) {
   expect(comparer(a, a)).to.eq(true)

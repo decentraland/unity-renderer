@@ -1,6 +1,6 @@
 import { Transport, TransportEvents } from '@dcl/rpc'
 import mitt from 'mitt'
-import { CommonRendererOptions } from '../../unity-interface/loader'
+import { CommonRendererOptions } from 'unity-interface/loader'
 
 export const defer = Promise.prototype.then.bind(Promise.resolve())
 /** @deprecated

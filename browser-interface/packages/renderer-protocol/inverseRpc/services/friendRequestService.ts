@@ -8,8 +8,8 @@ import {
   getFriendRequestsProtocol,
   rejectFriendRequest,
   requestFriendship
-} from '../../../shared/friends/sagas'
-import defaultLogger from '../../../shared/logger'
+} from 'shared/friends/sagas'
+import defaultLogger from 'shared/logger'
 import { FriendshipErrorCode } from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
 import { FriendRequestKernelServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 

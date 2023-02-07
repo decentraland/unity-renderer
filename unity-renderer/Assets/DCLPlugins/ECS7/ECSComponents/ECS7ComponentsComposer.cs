@@ -29,6 +29,7 @@ namespace DCL.ECSComponents
         private readonly MeshColliderRegister meshColliderRegister;
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
+        private readonly VideoPlayerRegister videoPlayerRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -62,6 +63,7 @@ namespace DCL.ECSComponents
             meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
             meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
+            videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter,
@@ -100,6 +102,7 @@ namespace DCL.ECSComponents
             meshRendererRegister.Dispose();
             meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
+            videoPlayerRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();

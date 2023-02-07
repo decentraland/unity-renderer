@@ -17,6 +17,7 @@ namespace Tests
     {
         private MaterialHandler handler;
         private IInternalECSComponent<InternalMaterial> internalMaterialComponent;
+        private IInternalECSComponent<InternalVideoMaterial> internalVideoMaterial;
         private ICatalyst catalyst;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -26,7 +27,8 @@ namespace Tests
         public void SetUp()
         {
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
-            handler = new MaterialHandler(internalMaterialComponent);
+            internalVideoMaterial = Substitute.For<IInternalECSComponent<InternalVideoMaterial>>();
+            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial);
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
@@ -373,6 +375,19 @@ namespace Tests
 
             // Wait for materials to be forgotten
             yield return new WaitUntil(() => AssetPromiseKeeper_Material.i.library.masterAssets.Count == 0);
+        }
+
+        [Test]
+        public void NotAllowBase64Textures()
+        {
+            TextureUnion texture = new TextureUnion()
+            {
+                Texture = new Texture()
+                {
+                    Src = "data:text/plain;base64",
+                }
+            };
+            Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
         }
     }
 }

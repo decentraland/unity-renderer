@@ -7,7 +7,6 @@ using DCL.ECSComponents;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -93,8 +92,9 @@ namespace Tests
 
                     CRDTMessage crdtCreateBoxMessage = new CRDTMessage()
                     {
-                        key1 = ENTITY_ID,
-                        key2 = COMPONENT_ID,
+                        type = CrdtMessageType.PUT_COMPONENT,
+                        entityId = ENTITY_ID,
+                        componentId = COMPONENT_ID,
                         timestamp = 1,
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };
@@ -122,8 +122,9 @@ namespace Tests
 
                     crdtCreateBoxMessage = new CRDTMessage()
                     {
-                        key1 = ENTITY_ID,
-                        key2 = COMPONENT_ID,
+                        type = CrdtMessageType.PUT_COMPONENT,
+                        entityId = ENTITY_ID,
+                        componentId = COMPONENT_ID,
                         timestamp = 1,
                         data = ProtoSerialization.Serialize(COMPONENT_DATA)
                     };
@@ -198,7 +199,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }

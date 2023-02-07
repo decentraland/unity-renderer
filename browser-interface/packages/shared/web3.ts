@@ -1,7 +1,7 @@
 import { ETHEREUM_NETWORK, ethereumConfigurations } from 'config'
 import { defaultLogger } from './logger'
 import { CatalystNode, GraphResponse } from './types'
-import { retry } from '../atomicHelpers/retry'
+import { retry } from 'lib/javascript/retry'
 import { requestManager } from './ethereum/provider'
 import { ContractFactory, bytesToHex } from 'eth-connect'
 
