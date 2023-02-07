@@ -56,7 +56,9 @@ namespace DCL
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
-            result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.i, DataStore.i));
+            result.Register<IChatController>(() =>
+                // need to generate a DummyChatApiBridge since this is used in test environment and WebInterfaceChatBridge.i does not exist
+                new ChatController((IChatApiBridge) WebInterfaceChatBridge.i ?? new DummyChatApiBridge(), DataStore.i));
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
             result.Register<ITeleportController>(() => new TeleportController());
@@ -65,8 +67,6 @@ namespace DCL
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
-
-
 
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
