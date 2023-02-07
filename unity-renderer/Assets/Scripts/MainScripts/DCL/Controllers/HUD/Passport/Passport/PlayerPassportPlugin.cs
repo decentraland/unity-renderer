@@ -31,7 +31,11 @@ public class PlayerPassportPlugin : IPlugin
                                 new UserProfileWebInterfaceBridge()),
                             Environment.i.platform.clipboard,
                             new WebInterfacePassportApiBridge()),
-                        new PassportPlayerPreviewComponentController(referenceContainer.PlayerPreviewView),
+                        new PassportPlayerPreviewComponentController(
+                            referenceContainer.PlayerPreviewView,
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportNavigationComponentController(
                             referenceContainer.PassportNavigationView,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),

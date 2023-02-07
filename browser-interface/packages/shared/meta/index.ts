@@ -1,21 +1,8 @@
-import { store } from 'shared/store/isolatedStore'
+import { storeCondition } from 'lib/redux'
 import { isMetaConfigurationInitialized } from './selectors'
 
 export async function ensureMetaConfigurationInitialized(): Promise<void> {
-  const initialized = isMetaConfigurationInitialized(store.getState())
-  if (initialized) {
-    return Promise.resolve()
-  }
-
-  return new Promise<void>((resolve) => {
-    const unsubscribe = store.subscribe(() => {
-      const initialized = isMetaConfigurationInitialized(store.getState())
-      if (initialized) {
-        unsubscribe()
-        return resolve()
-      }
-    })
-  })
+  await storeCondition(isMetaConfigurationInitialized)
 }
 
 export const DEFAULT_MAX_VISIBLE_PEERS = 1000

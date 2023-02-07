@@ -1,0 +1,26 @@
+{
+    "name": "LoadingHUDDesktop",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8ea35c85a2f0dc44788f8c3945cee408",
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:555c1f3c6d18648df910b7a1de75b424"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

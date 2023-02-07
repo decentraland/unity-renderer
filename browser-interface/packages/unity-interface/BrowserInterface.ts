@@ -8,7 +8,6 @@ import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/
 import {
   DEBUG,
   ethereumConfigurations,
-  parcelLimits,
   playerConfigurations,
   WORLD_EXPLORER,
   timeBetweenLoadingUpdatesInMillis
@@ -84,7 +83,7 @@ import { globalObservable } from 'shared/observables'
 import { store } from 'shared/store/isolatedStore'
 import { setRendererAvatarState } from 'shared/social/avatarTracker'
 import { isAddress } from 'eth-connect'
-import { getAuthHeaders } from 'atomicHelpers/signedFetch'
+import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { Authenticator } from '@dcl/crypto'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
@@ -113,8 +112,8 @@ import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
 import { rendererSignalSceneReady } from 'shared/world/actions'
-import { requestMediaDevice } from '../shared/voiceChat/sagas'
-import { renderingActivated, renderingDectivated } from '../shared/loadingScreen/types'
+import { requestMediaDevice } from 'shared/voiceChat/sagas'
+import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -593,10 +592,10 @@ export class BrowserInterface {
     futures[data.id].resolve(data.cameraTarget)
   }
 
-  public UserAcceptedCollectibles(_data: { id: string }) {
-    // Here, we should have "airdropObservable.notifyObservers(data.id)".
-    // It's disabled because of security reasons.
-  }
+  /**
+   * @deprecated
+   */
+  public UserAcceptedCollectibles(_data: { id: string }) {}
 
   /** @deprecated */
   public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
@@ -604,9 +603,7 @@ export class BrowserInterface {
   }
 
   public SetScenesLoadRadius(data: { newRadius: number }) {
-    parcelLimits.visibleRadius = Math.round(data.newRadius)
-
-    store.dispatch(setWorldLoadingRadius(Math.max(parcelLimits.visibleRadius, 1)))
+    store.dispatch(setWorldLoadingRadius(Math.max(Math.round(data.newRadius), 1)))
   }
 
   public GetUnseenMessagesByUser() {

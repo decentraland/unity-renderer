@@ -51,16 +51,16 @@ namespace DCL.CRDT
                 Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
 #endif
 
-            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
-            CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
+            CRDTProtocol.EntityComponentData storedMessage = crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
+            CRDTProtocol.ProcessMessageResultType resultType = crdtProtocol.ProcessMessage(crdtMessage);
 
-            // messages are the same so state didn't change
-            if (storedMessage == resultMessage)
+            // If the message change the state
+            if (resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedData ||
+                resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedTimestamp ||
+                resultType == CRDTProtocol.ProcessMessageResultType.EntityWasDeleted)
             {
-                return;
+                ExecuteWithoutStoringState(crdtMessage.entityId, crdtMessage.componentId, crdtMessage.data);
             }
-
-            ExecuteWithoutStoringState(crdtMessage.key1, crdtMessage.key2, crdtMessage.data);
         }
 
         public void ExecuteWithoutStoringState(long entityId, int componentId, object data)

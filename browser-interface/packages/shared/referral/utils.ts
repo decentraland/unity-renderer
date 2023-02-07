@@ -6,7 +6,7 @@ import {
   saveToPersistentStorage,
   getFromPersistentStorage,
   removeFromPersistentStorage
-} from '../../atomicHelpers/persistentStorage'
+} from 'lib/browser/persistentStorage'
 
 const REFERRAL_KEY = 'dcl-referral'
 

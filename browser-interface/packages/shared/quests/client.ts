@@ -1,7 +1,7 @@
-import { getServerConfigurations } from '../../config'
+import { getServerConfigurations } from 'config'
 import { Authenticator } from '@dcl/crypto'
 import { ClientResponse, QuestsClient } from 'dcl-quests-client'
-import { onLoginCompleted } from 'shared/session/sagas'
+import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { store } from 'shared/store/isolatedStore'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 

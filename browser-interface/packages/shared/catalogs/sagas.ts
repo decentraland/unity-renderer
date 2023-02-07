@@ -12,6 +12,7 @@ import {
   WITH_FIXED_ITEMS
 } from 'config'
 
+import { authorizeBuilderHeaders } from 'lib/decentraland/authentication/authorizeBuilderHeaders'
 import defaultLogger from 'shared/logger'
 import {
   EmotesRequest,
@@ -51,7 +52,6 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { ExplorerIdentity } from 'shared/session/types'
 import { trackEvent } from 'shared/analytics'
-import { authorizeBuilderHeaders } from 'atomicHelpers/authenticateBuilder'
 import { IRealmAdapter } from 'shared/realm/types'
 import {
   getFetchContentServerFromRealmAdapter,

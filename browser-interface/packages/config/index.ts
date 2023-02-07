@@ -15,42 +15,6 @@ export namespace interactionLimits {
  */
 export const timeBetweenLoadingUpdatesInMillis = 100
 
-export namespace parcelLimits {
-  // Maximum numbers for parcelScenes to prevent performance problems
-  // Note that more limitations may be added to this with time
-  // And we may also measure individual parcelScene performance (as
-  // in webgl draw time) and disable parcelScenes based on that too,
-  // Performance / anti-ddos work is a fluid area.
-
-  // number of entities
-  export const entities = 200
-
-  // Number of faces (per parcel)
-  export const triangles = 10000
-  export const bodies = 300
-  export const textures = 10
-  export const materials = 20
-  export const height = 20
-  export const geometries = 200
-
-  export const parcelSize = 16 /* meters */
-  export const halfParcelSize = parcelSize / 2 /* meters */
-  export const centimeter = 0.01
-
-  // eslint-disable-next-line prefer-const
-  export let visibleRadius = 4
-
-  /**
-   * @deprecated. This is still used to calculate a position hash, but shouln't be used for anything else.
-   */
-  export const maxParcelX = 150
-  /** @deprecated */
-  export const maxParcelZ = 150
-  /** @deprecated */
-  export const minParcelX = -150
-  /** @deprecated */
-  export const minParcelZ = -150
-}
 export namespace playerConfigurations {
   export const gravity = -0.2
   export const height = 1.6
@@ -90,11 +54,7 @@ function ensureSingleString(value: string | string[] | null): string | null {
 }
 
 // Comms
-const USE_LOCAL_COMMS = location.search.includes('LOCAL_COMMS') || PREVIEW
-export const COMMS =
-  !qs.has('COMMS') && USE_LOCAL_COMMS ? 'v1' : qs.get('COMMS') ? ensureSingleString(qs.get('COMMS'))! : 'v2' // by default
 export const COMMS_PROFILE_TIMEOUT = 15000
-
 export const DECENTRALAND_SPACE = qs.get('SPACE')
 
 export const PARCEL_LOADING_ENABLED = !DECENTRALAND_SPACE || qs.has('DISABLE_PARCEL_LOADING')
@@ -103,14 +63,12 @@ export const UPDATE_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('UPDATE_CONTEN
 export const FETCH_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('FETCH_CONTENT_SERVICE'))
 export const HOTSCENES_SERVICE = ensureSingleString(qs.get('HOTSCENES_SERVICE'))
 export const POI_SERVICE = ensureSingleString(qs.get('POI_SERVICE'))
-export const PREFERED_ISLAND = ensureSingleString(qs.get('island'))
 
 export const TRACE_RENDERER = ensureSingleString(qs.get('TRACE_RENDERER'))
 
 export const LOS = ensureSingleString(qs.get('LOS'))
 
 export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW
-export const DEBUG_COMMS = qs.has('DEBUG_COMMS')
 export const COMMS_GRAPH = qs.has('COMMS_GRAPH')
 export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')

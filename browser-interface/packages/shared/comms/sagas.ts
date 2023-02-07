@@ -19,8 +19,8 @@ import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { DEPLOY_PROFILE_SUCCESS, SendProfileToRenderer, SEND_PROFILE_TO_RENDERER } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { Avatar, IPFSv2, Snapshots } from '@dcl/schemas'
-import { commConfigurations, COMMS_GRAPH, DEBUG_COMMS, genericAvatarSnapshots, PREFERED_ISLAND } from 'config'
-import { isURL } from 'atomicHelpers/isURL'
+import { COMMS_GRAPH, genericAvatarSnapshots } from 'config'
+import { isURL } from 'lib/javascript/isURL'
 import { getAllPeers, processAvatarVisibility } from './peers'
 import { getFatalError } from 'shared/loading/selectors'
 import { EventChannel } from 'redux-saga'
@@ -29,22 +29,19 @@ import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { getCommsConfig, getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
+import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { WebSocketAdapter } from './adapters/WebSocketAdapter'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
 import { IRealmAdapter } from 'shared/realm/types'
-import { CommsConfig } from 'shared/meta/types'
-import { Authenticator } from '@dcl/crypto'
-import { LighthouseConnectionConfig, LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
 import { store } from 'shared/store/isolatedStore'
 import { ConnectToCommsAction, CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter, waitForRealmAdapter } from 'shared/realm/selectors'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
-import { deepEqual } from 'atomicHelpers/deepEqual'
+import { deepEqual } from 'lib/javascript/deepEqual'
 import { incrementCounter } from 'shared/occurences'
 import { RoomConnection } from './interface'
 import {
@@ -53,12 +50,10 @@ import {
   measurePingTimePercentages,
   overrideCommsProtocol
 } from 'shared/session/getPerformanceInfo'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { NotificationType } from 'shared/types'
 import { trackEvent } from 'shared/analytics'
 import { getCatalystCandidates } from 'shared/dao/selectors'
 import { setCatalystCandidates } from 'shared/dao/actions'
-import { signedFetch } from 'atomicHelpers/signedFetch'
+import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -309,104 +304,8 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         })
       )
     }
-    case 'lighthouse': {
-      return createLighthouseConnection(url, identity)
-    }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
-}
-
-function createLighthouseConnection(url: string, identity: ExplorerIdentity) {
-  const commsConfig: CommsConfig = getCommsConfig(store.getState())
-  const peerConfig: LighthouseConnectionConfig = {
-    connectionConfig: {
-      iceServers: commConfigurations.defaultIceServers
-    },
-    authHandler: async (msg: string) => {
-      try {
-        return Authenticator.signPayload(identity, msg)
-      } catch (e) {
-        commsLogger.info(`error while trying to sign message from lighthouse '${msg}'`)
-      }
-      // if any error occurs
-      return getCurrentIdentity(store.getState())
-    },
-    logLevel: DEBUG_COMMS ? 'TRACE' : 'NONE',
-    targetConnections: commsConfig.targetConnections ?? 4,
-    maxConnections: commsConfig.maxConnections ?? 6,
-    positionConfig: {
-      selfPosition: () => {
-        if (lastPlayerPositionReport) {
-          const { x, y, z } = lastPlayerPositionReport.position
-          return [x, y, z]
-        }
-      },
-      maxConnectionDistance: 4,
-      nearbyPeersDistance: 5,
-      disconnectDistance: 6
-    },
-    preferedIslandId: PREFERED_ISLAND ?? ''
-  }
-
-  if (!commsConfig.relaySuspensionDisabled) {
-    peerConfig.relaySuspensionConfig = {
-      relaySuspensionInterval: commsConfig.relaySuspensionInterval ?? 750,
-      relaySuspensionDuration: commsConfig.relaySuspensionDuration ?? 5000
-    }
-  }
-
-  const lighthouse = new LighthouseWorldInstanceConnection(
-    url,
-    peerConfig,
-    (status) => {
-      commsLogger.log('Lighthouse status: ', status)
-      switch (status.status) {
-        case 'realm-full':
-          disconnect(status.status, 'The realm is full, reconnecting')
-          break
-        case 'reconnection-error':
-          disconnect(status.status, 'Reconnection comms error')
-          break
-        case 'id-taken':
-          disconnect(status.status, 'A previous connection to the connection server is still active')
-          break
-        case 'error':
-          disconnect(status.status, 'An error has ocurred in the communications server, reconnecting.')
-          break
-      }
-    },
-    identity
-  )
-
-  function disconnect(reason: string, message: string) {
-    trackEvent('disconnect_lighthouse', { message, reason, url })
-
-    getUnityInstance().ShowNotification({
-      type: NotificationType.GENERIC,
-      message: message,
-      buttonMessage: 'OK',
-      timer: 10
-    })
-
-    lighthouse
-      .disconnect({ kicked: reason === 'id-taken', error: new Error(message) })
-      .catch(commsLogger.error)
-      .finally(() => {
-        setTimeout(
-          () => {
-            store.dispatch(setRealmAdapter(undefined))
-            store.dispatch(setRoomConnection(undefined))
-          },
-          reason === 'id-taken' ? 10000 : 300
-        )
-      })
-  }
-
-  lighthouse.onIslandChangedObservable.add(({ island }) => {
-    store.dispatch(setCommsIsland(island))
-  })
-
-  return lighthouse
 }
 
 /**
