@@ -7,20 +7,20 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 {
     public class Asset_SceneAB : Asset
     {
-        private string tld;
         private SceneAbDto sceneAb;
+        private string contentUrl;
 
-        public void Setup(SceneAbDto dto, string tld)
+        public void Setup(SceneAbDto dto, string contentUrl)
         {
+            this.contentUrl = contentUrl;
             sceneAb = dto;
-            this.tld = tld;
         }
 
         public bool IsSceneConverted() =>
             sceneAb != null;
 
         public string GetBaseUrl() =>
-            $"{SceneAssetBundles.BASE_URL}{tld}{sceneAb.version}/";
+            $"{contentUrl}{sceneAb.version}/";
 
         public HashSet<string> GetConvertedFiles() =>
             sceneAb.files.ToHashSet();

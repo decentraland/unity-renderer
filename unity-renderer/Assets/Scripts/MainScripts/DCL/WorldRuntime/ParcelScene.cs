@@ -102,7 +102,7 @@ namespace DCL.Controllers
 
             if (featureFlags.IsFeatureEnabled(SceneAssetBundles.FEATURE_FLAG))
             {
-                var sceneAb = await FetchSceneAssetBundles(data.id);
+                var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
                 if (sceneAb.IsSceneConverted())
                 {
                     contentProvider.assetBundles = sceneAb.GetConvertedFiles();
@@ -120,9 +120,9 @@ namespace DCL.Controllers
             OnSetData?.Invoke(data);
         }
 
-        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId)
+        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
         {
-            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(SceneAssetBundles.BASE_URL, sceneId);
+            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
             AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
             await promiseSceneAb.ToUniTask();
             return promiseSceneAb.asset;

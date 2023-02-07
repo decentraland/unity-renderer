@@ -21,7 +21,6 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         private Service<IWebRequestController> webRequestController;
 
         private Action onSuccess;
-        private Action<Exception> onFail;
 
         public AssetPromise_SceneAB(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -34,22 +33,20 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
             cancellationTokenSource.Dispose();
         }
 
-        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> _)
         {
-            onFail = OnFail;
             onSuccess = OnSuccess;
-
-            var kernelConfigPromise = KernelConfig.i.EnsureConfigInitialized();
-            kernelConfigPromise.Catch(error => onFail(new Exception(error)));
-            kernelConfigPromise.Then(k => AsyncOnLoad(k).Forget());
+            AsyncOnLoad().Forget();
         }
 
-        private async UniTaskVoid AsyncOnLoad(KernelConfigModel kernelConfigModel)
+        private async UniTaskVoid AsyncOnLoad()
         {
-            var tld = kernelConfigModel.network == "mainnet" ? ".org/" : ".zone/";
-            asset = new Asset_SceneAB();
-            asset.id = hash;
-            var finalUrl = $"{contentUrl}{tld}{SceneAssetBundles.MANIFEST_ENDPOINT}{hash}.json";
+            asset = new Asset_SceneAB
+            {
+                id = hash,
+            };
+
+            var finalUrl = $"{contentUrl}{SceneAssetBundles.MANIFEST_ENDPOINT}{hash}.json";
 
             Debug.Log($"[Asset Bundle] {finalUrl}");
 
@@ -65,13 +62,10 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 
                 string data = result.downloadHandler.text;
                 var sceneAb = Utils.SafeFromJson<SceneAbDto>(data);
-                asset.Setup(sceneAb, tld);
+                asset.Setup(sceneAb, contentUrl);
             }
             catch (OperationCanceledException) { }
-            finally
-            {
-                onSuccess();
-            }
+            finally { onSuccess(); }
         }
 
         protected override void OnBeforeLoadOrReuse() { }
