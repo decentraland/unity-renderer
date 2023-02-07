@@ -7,13 +7,17 @@ using DCL.ProfanityFiltering;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
+using Object = UnityEngine.Object;
 
 public class IntegrationTestSuite_Legacy
 {
@@ -76,7 +80,15 @@ public class IntegrationTestSuite_Legacy
                 return mockedProviders;
             });
 
-        result.Register<IChatController>(() => Substitute.For<IChatController>());
+        result.Register<IChatController>(() =>
+        {
+            IChatController chatController = Substitute.For<IChatController>();
+
+            chatController.GetChannelsByNameAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                          .ReturnsForAnyArgs(UniTask.FromException<(string, DCL.Chat.Channels.Channel[])>(new NotImplementedException()));
+
+            return chatController;
+        });
 
         return result;
     }

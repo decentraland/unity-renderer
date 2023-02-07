@@ -10,6 +10,7 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using Sentry;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+
             result.Register<IWebRequestMonitor>(() =>
             {
                 var subs = Substitute.For<IWebRequestMonitor>();
@@ -109,7 +111,16 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
-            result.Register<IChatController>(() => Substitute.For<IChatController>());
+
+            result.Register<IChatController>(() =>
+            {
+                IChatController chatController = Substitute.For<IChatController>();
+
+                chatController.GetChannelsByNameAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                              .ReturnsForAnyArgs(UniTask.FromException<(string, Chat.Channels.Channel[])>(new NotImplementedException()));
+
+                return chatController;
+            });
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
