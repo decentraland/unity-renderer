@@ -17,9 +17,6 @@ namespace DCL.Social.Chat
 
         private const string NEARBY_CHANNEL_ID = "nearby";
 
-        // TODO: remove the singleton. Reference the instance through the service locator
-        public static ChatController i { get; private set; }
-
         private readonly Dictionary<string, int> unseenMessagesByUser = new ();
         private readonly Dictionary<string, int> unseenMessagesByChannel = new ();
         private readonly Dictionary<string, Channel> channels = new ();
@@ -75,8 +72,6 @@ namespace DCL.Social.Chat
             apiBridge.OnChannelsUpdated += UpdateChannelInfo;
             apiBridge.OnMuteChannelFailed += MuteChannelFailed;
             apiBridge.OnChannelSearchResults += UpdateChannelSearchResults;
-
-            i ??= this;
         }
 
         public void Dispose()

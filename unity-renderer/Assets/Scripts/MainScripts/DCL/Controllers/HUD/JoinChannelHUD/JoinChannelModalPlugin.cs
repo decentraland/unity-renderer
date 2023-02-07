@@ -15,15 +15,17 @@ public class JoinChannelModalPlugin : IPlugin
 
     public JoinChannelModalPlugin()
     {
+        ServiceLocator serviceLocator = Environment.i.serviceLocator;
+
         joinChannelComponentController = new JoinChannelComponentController(
             JoinChannelComponentView.Create(),
-            ChatController.i,
+            serviceLocator.Get<IChatController>(),
             DataStore.i,
             new SocialAnalytics(
                 Environment.i.platform.serviceProviders.analytics,
                 new UserProfileWebInterfaceBridge()),
             Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-            Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
+            serviceLocator.Get<IChannelsFeatureFlagService>());
     }
 
     public void Dispose() { joinChannelComponentController.Dispose(); }
