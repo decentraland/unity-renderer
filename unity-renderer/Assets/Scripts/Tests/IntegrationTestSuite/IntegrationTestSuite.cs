@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using DCL;
-using NSubstitute;
-using NSubstitute.ClearExtensions;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -41,9 +39,8 @@ namespace Tests
             AssetPromiseKeeper_Texture.i?.Cleanup();
             AssetPromiseKeeper_AudioClip.i?.Cleanup();
             AssetPromiseKeeper_Gif.i?.Cleanup();
-
             DataStore.Clear();
-
+            
             yield return null;
             Environment.Dispose();
         }

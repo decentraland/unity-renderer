@@ -154,7 +154,7 @@ namespace AvatarSystem
             loader?.Dispose();
             visibility?.Dispose();
             lod?.Dispose();
-            gpuSkinningThrottlerService.Unregister(gpuSkinning);
+            gpuSkinningThrottlerService?.Unregister(gpuSkinning);
         }
     }
 }
