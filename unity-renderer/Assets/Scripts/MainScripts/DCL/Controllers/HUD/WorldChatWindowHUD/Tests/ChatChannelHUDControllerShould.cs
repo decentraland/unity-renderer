@@ -33,7 +33,7 @@ namespace DCL.Chat.HUD
                 name = "self"
             });
             userProfileBridge.GetOwn().Returns(ownUserProfile);
-            
+
             chatController = Substitute.For<IChatController>();
             chatController.GetAllocatedChannel(CHANNEL_ID)
                 .Returns(new Channel(CHANNEL_ID, CHANNEL_NAME, 4, 12, true, false, "desc"));
@@ -48,10 +48,12 @@ namespace DCL.Chat.HUD
                 ScriptableObject.CreateInstance<InputAction_Trigger>(),
                 socialAnalytics,
                 profanityFilter);
+
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
             view.ChatHUD.Returns(chatView);
-            controller.Initialize(view);
+
+            controller.Initialize(view, false);
             controller.Setup(CHANNEL_ID);
         }
 
@@ -104,15 +106,15 @@ namespace DCL.Chat.HUD
         public void MuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(true);
-            
+
             chatController.Received(1).MuteChannel(CHANNEL_ID);
         }
-        
+
         [Test]
         public void UnmuteChannel()
         {
             view.OnMuteChanged += Raise.Event<Action<bool>>(false);
-            
+
             chatController.Received(1).UnmuteChannel(CHANNEL_ID);
         }
 
@@ -133,7 +135,7 @@ namespace DCL.Chat.HUD
             };
 
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
-            
+
             chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
         }
     }

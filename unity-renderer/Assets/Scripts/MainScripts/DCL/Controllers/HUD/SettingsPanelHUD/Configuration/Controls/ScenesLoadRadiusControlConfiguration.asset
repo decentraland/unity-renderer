@@ -20,7 +20,7 @@ MonoBehaviour:
   flagsThatDeactivateMe: []
   flagsThatOverrideMe: []
   isBeta: 0
-  sliderMinValue: 2
+  sliderMinValue: 1
   sliderMaxValue: 4
   storeValueAsNormalized: 0
   wholeNumbers: 1

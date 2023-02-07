@@ -62,7 +62,7 @@ namespace Tests
                                  SpecialEntityId.PLAYER_ENTITY,
                                  ComponentID.TRANSFORM,
                                  Arg.Any<ECSTransform>(),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)
@@ -101,7 +101,7 @@ namespace Tests
                                  SpecialEntityId.PLAYER_ENTITY,
                                  ComponentID.TRANSFORM,
                                  Arg.Is<ECSTransform>(x => x.position == Vector3.zero),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)
@@ -125,7 +125,7 @@ namespace Tests
                                  ComponentID.TRANSFORM,
                                  Arg.Is<ECSTransform>(x =>
                                      x.position == new Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
-                                 Arg.Any<long>(),
+                                 Arg.Any<int>(),
                                  Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
 
             componentsWriter.Received(1)

@@ -59,7 +59,7 @@ export type DecentralandRendererInstance = {
    * The content of the resolved promise is an empty object to
    * enable future extensions.
    */
-  engineStartedFuture: Promise<{}>
+  engineStartedFuture: Promise<any>
 
   // soon there will be more protocol functions here https://github.com/decentraland/renderer-protocol
   // and originalUnity will be deprecated to decouple the kernel from unity's impl internals
@@ -85,13 +85,13 @@ function extractSemver(url: string): string | null {
 }
 
 async function initializeWebRenderer(options: RendererOptions): Promise<DecentralandRendererInstance> {
-  const rendererVersion = options.versionQueryParam
+  const explorerVersion = options.versionQueryParam
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy, onBinaryMessage } = options
   const resolveWithBaseUrl = (file: string) =>
-    new URL(file + (rendererVersion ? '?v=' + rendererVersion : ''), baseUrl).toString()
+    new URL(file + (explorerVersion ? '?v=' + explorerVersion : ''), baseUrl).toString()
 
   const enableBrotli =
-    typeof options.enableBrotli != 'undefined' ? !!options.enableBrotli : document.location.protocol == 'https:'
+    typeof options.enableBrotli !== 'undefined' ? !!options.enableBrotli : document.location.protocol === 'https:'
 
   const postfix = enableBrotli ? '.br' : ''
 
@@ -99,14 +99,14 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
     dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl + postfix),
     frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl + postfix),
     codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl + postfix),
-    streamingAssetsUrl: new URL("StreamingAssets", baseUrl).toString(),
+    streamingAssetsUrl: new URL('StreamingAssets', baseUrl).toString(),
     companyName: 'Decentraland',
     productName: 'Decentraland World Client',
     productVersion: '0.1',
     ...(options.extraConfig || {})
   }
 
-  const engineStartedFuture = future<{}>()
+  const engineStartedFuture = future<any>()
 
   // The namespace DCL is exposed to global because the unity template uses it to send the messages
   // @see https://github.com/decentraland/unity-renderer/blob/bc2bf1ee0d685132c85606055e592bac038b3471/unity-renderer/Assets/Plugins/JSFunctions.jslib#L6-L29
@@ -138,13 +138,13 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
 }
 
 export async function loadUnity(baseUrl: string, options: CommonRendererOptions): Promise<LoadRendererResult> {
-  const rendererVersion = extractSemver(baseUrl) || 'dynamic'
+  const explorerVersion = extractSemver(baseUrl) || 'dynamic'
 
   let startTime = performance.now()
 
-  trackEvent('unity_loader_downloading_start', { renderer_version: rendererVersion })
+  trackEvent('unity_loader_downloading_start', { renderer_version: explorerVersion })
   trackEvent('unity_loader_downloading_end', {
-    renderer_version: rendererVersion,
+    renderer_version: explorerVersion,
     loading_time: performance.now() - startTime
   })
 
@@ -153,24 +153,24 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
       let didLoadUnity = false
 
       startTime = performance.now()
-      trackEvent('unity_downloading_start', { renderer_version: rendererVersion })
+      trackEvent('unity_downloading_start', { renderer_version: explorerVersion })
 
       function onProgress(progress: number) {
         // 0.9 is harcoded in unityLoader, it marks the download-complete event
         if (0.9 === progress && !didLoadUnity) {
           trackEvent('unity_downloading_end', {
-            renderer_version: rendererVersion,
+            renderer_version: explorerVersion,
             loading_time: performance.now() - startTime
           })
 
           startTime = performance.now()
-          trackEvent('unity_initializing_start', { renderer_version: rendererVersion })
+          trackEvent('unity_initializing_start', { renderer_version: explorerVersion })
           didLoadUnity = true
         }
         // 1.0 marks the engine-initialized event
         if (1.0 === progress) {
           trackEvent('unity_initializing_end', {
-            renderer_version: rendererVersion,
+            renderer_version: explorerVersion,
             loading_time: performance.now() - startTime
           })
         }
@@ -179,7 +179,7 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
       return initializeWebRenderer({
         baseUrl,
         canvas,
-        versionQueryParam: rendererVersion === 'dynamic' ? Date.now().toString() : rendererVersion,
+        versionQueryParam: explorerVersion === 'dynamic' ? Date.now().toString() : explorerVersion,
         onProgress,
         onMessageLegacy: options.onMessage,
         onError: (error) => {

@@ -3,12 +3,11 @@ import { store } from 'shared/store/isolatedStore'
 import { getProfileFromStore } from 'shared/profiles/selectors'
 import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
 
-import { getInSceneAvatarsUserId } from 'shared/social/avatarTracker'
-import { lastPlayerPosition } from 'shared/world/positionThings'
-import { getCurrentUserId } from 'shared/session/selectors'
-import { isWorldPositionInsideParcels } from 'atomicHelpers/parcelScenePositions'
 import { AvatarInfo, Snapshots, WearableId } from '@dcl/schemas'
 import { rgbToHex } from 'shared/profiles/transformations/convertToRGBObject'
+import { getCurrentUserId } from 'shared/session/selectors'
+import { getInSceneAvatarsUserId } from 'shared/social/avatarTracker'
+import { lastPlayerPosition } from 'shared/world/positionThings'
 
 export type AvatarForUserData = {
   bodyShape: WearableId
@@ -40,10 +39,11 @@ export function sdkCompatibilityAvatar(avatar: AvatarInfo): AvatarForUserData {
 }
 
 import { RpcServerPort } from '@dcl/rpc'
-import { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
+import { PortContext } from './context'
 
 import { PlayersServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/players.gen'
+import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { getAllPeers } from 'shared/comms/peers'
 
 export function registerPlayersServiceServerImplementation(port: RpcServerPort<PortContext>) {
