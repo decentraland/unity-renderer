@@ -274,7 +274,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View Profile",
+                    hoverText = "View My Profile",
                 },
                 entity,
                 player
