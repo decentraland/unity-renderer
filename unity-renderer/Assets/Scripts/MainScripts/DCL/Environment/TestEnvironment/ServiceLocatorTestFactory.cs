@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL
 {
@@ -117,7 +118,7 @@ namespace DCL
                 IChatController chatController = Substitute.For<IChatController>();
 
                 chatController.GetChannelsByNameAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                              .ReturnsForAnyArgs(UniTask.FromException<(string, Chat.Channels.Channel[])>(new NotImplementedException()));
+                              .ReturnsForAnyArgs(UniTask.FromResult(("", Array.Empty<Channel>())));
 
                 return chatController;
             });
