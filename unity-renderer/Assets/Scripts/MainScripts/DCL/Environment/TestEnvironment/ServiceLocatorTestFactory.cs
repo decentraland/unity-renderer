@@ -109,6 +109,7 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
+            result.Register<IChatController>(() => Substitute.For<IChatController>());
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
