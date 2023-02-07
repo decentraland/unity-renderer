@@ -13,7 +13,7 @@ VERSION=$(cat ${PACKAGE_PATH} | jq -r .version)
 
 # Dump version
 ARTIFACTS_PATH=/tmp/workspace/unity-renderer/unity-artifacts/
-echo "{\"version\":\"${VERSION}\"}" > ${ARTIFACTS_PATH}/version.json
+echo "{\"version\":\"${CIRCLE_SHA1}\"}" > ${ARTIFACTS_PATH}/version.json
 
 # Upload artifacts for preview
 aws s3 sync ${ARTIFACTS_PATH} "s3://${S3_BUCKET}/desktop/${CIRCLE_BRANCH}" --acl public-read
