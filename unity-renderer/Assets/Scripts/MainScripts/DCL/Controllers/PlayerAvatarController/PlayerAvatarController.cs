@@ -43,6 +43,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private IFatalErrorReporter fatalErrorReporter; // TODO?
     private string visibilityConstrain;
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
+    private Service<IEmotesCatalogService> emotesCatalog;
     private ISocialAnalytics socialAnalytics;
     private StringVariable currentPlayerInfoCardId;
     private IAvatar avatar;
@@ -212,7 +213,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 wearableItems.Add(profile.avatar.bodyShape);
 
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+                var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
                 emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
                 wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
 
