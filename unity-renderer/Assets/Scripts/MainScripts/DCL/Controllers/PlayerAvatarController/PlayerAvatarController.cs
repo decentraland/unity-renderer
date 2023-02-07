@@ -204,6 +204,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
             {
                 currentAvatar.CopyFrom(profile.avatar);
+                currentAvatar.id = profile.userId;
 
                 List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
@@ -267,9 +268,13 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
                     hoverText = "View Profile",
                 },
-                new DecentralandEntity(),
+                new DecentralandEntity
+                {
+                    gameObject = gameObject,
+                },
                 player
             );
+            onPointerDown.SetPassportEnabled(true);
         }
     }
 
