@@ -346,7 +346,7 @@ jobs:
       - run:
           working_directory: *node_workspace
           name: run build
-          command: make build-essentials build-release build-deploy
+          command: make build
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
