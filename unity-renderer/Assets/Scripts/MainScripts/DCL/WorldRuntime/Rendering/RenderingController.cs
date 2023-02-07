@@ -56,7 +56,6 @@ public class RenderingController : MonoBehaviour
     {
         if (!CommonScriptableObjects.rendererState.Get()) return;
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(false);
 
         if (!isDecoupledLoadingScreenEnabled)
@@ -121,7 +120,6 @@ public class RenderingController : MonoBehaviour
             activatedRenderingBefore = true;
         }
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = true;
         CommonScriptableObjects.rendererState.Set(true);
 
         if (!isDecoupledLoadingScreenEnabled)
