@@ -39,7 +39,7 @@ namespace DCL.Emotes
             AsyncInitialization();
         }
 
-        private async void AsyncInitialization()
+        private async UniTaskVoid AsyncInitialization()
         {
             //To avoid circular references in assemblies we hardcode this here instead of using WearableLiterals
             //Embedded Emotes are only temporary until they can be retrieved from the content server

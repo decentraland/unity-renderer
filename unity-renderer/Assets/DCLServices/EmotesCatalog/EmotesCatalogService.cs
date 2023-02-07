@@ -29,7 +29,7 @@ public class EmotesCatalogService : IEmotesCatalogService
         InitializeAsyncEmbeddedEmotes();
     }
 
-    private async void InitializeAsyncEmbeddedEmotes()
+    private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
     {
         try
         {
