@@ -47,7 +47,7 @@ namespace DCL
         /// A list of Bones per vertex that share the same skeleton.
         /// A list of bone weights that share the same skeleton.
         /// </returns>
-        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> boneWeights) CombineBones(IReadOnlyList<CombineLayer> layers)
+        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> boneWeights) CombineBones(CombineLayersList layers)
         {
             int layersCount = layers.Count;
             int totalVertexes = 0;
@@ -59,7 +59,7 @@ namespace DCL
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
@@ -71,6 +71,7 @@ namespace DCL
                     boneWeightArrays.Add(boneWeights);
 
                     totalVertexes += bonesPerVertex.Length;
+                    totalBones += boneWeights.Length;
                 }
             }
 
@@ -123,29 +124,15 @@ namespace DCL
         {
             int layersCount = layers.Count;
 
-            int finalVertexCount = 0;
+            int finalVertexCount = layers.TotalVerticesCount;
+            var result = new FlattenedMaterialsData(finalVertexCount, layersCount);
+
             int currentVertexCount = 0;
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
-                int layerRenderersCount = layerRenderers.Count;
-
-                for (int i = 0; i < layerRenderersCount; i++)
-                {
-                    var renderer = layerRenderers[i];
-                    // TODO can calculate when adding to List of CombineLayer
-                    finalVertexCount += renderer.sharedMesh.vertexCount;
-                }
-            }
-
-            var result = new FlattenedMaterialsData(finalVertexCount, layersCount);
-
-            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
-            {
-                CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
 
                 Material newMaterial = new Material(materialAsset);
 
@@ -242,7 +229,7 @@ namespace DCL
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
         /// <returns>A SubMeshDescriptor list that can be used later to set the sub-meshes of the final combined mesh
         /// in a way that each sub-mesh corresponds with its own layer.</returns>
-        public static NativeArray<SubMeshDescriptor> ComputeSubMeshes(IReadOnlyList<CombineLayer> layers)
+        public static NativeArray<SubMeshDescriptor> ComputeSubMeshes(CombineLayersList layers)
         {
             int layersCount = layers.Count;
             int subMeshIndexOffset = 0;
@@ -252,7 +239,7 @@ namespace DCL
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 int subMeshVertexCount = 0;
@@ -288,14 +275,10 @@ namespace DCL
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice()</param>
         /// <returns>CombineInstance list usable by Mesh.CombineMeshes()</returns>
-        public static CombineInstance[] ComputeCombineInstancesData(IReadOnlyList<CombineLayer> layers)
+        public static CombineInstance[] ComputeCombineInstancesData(CombineLayersList layers)
         {
             int layersCount = layers.Count;
-
-            var combineInstancesCount = 0;
-
-            foreach (var layer in layers)
-                combineInstancesCount += layer.renderers.Count;
+            var combineInstancesCount = layers.TotalRenderersCount;
 
             var result = new CombineInstance[combineInstancesCount];
 
@@ -304,7 +287,7 @@ namespace DCL
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
@@ -330,7 +313,7 @@ namespace DCL
             return result;
         }
 
-        public static Mesh CombineMeshesWithLayers(CombineInstance[] combineInstancesData, IReadOnlyList<CombineLayer> layers)
+        public static Mesh CombineMeshesWithLayers(CombineInstance[] combineInstancesData, in CombineLayersList layers)
         {
             Mesh result = new Mesh();
 
@@ -339,8 +322,8 @@ namespace DCL
             using var allRenderersRental = PoolUtils.RentList<SkinnedMeshRenderer>();
             var layerRenderers = allRenderersRental.GetList();
 
-            foreach (var t in layers)
-                layerRenderers.AddRange(t.renderers);
+            foreach (var t in layers.Layers)
+                layerRenderers.AddRange(t.Renderers);
 
             using var bakedInstances = BakedCombineInstances.Bake(combineInstancesData, layerRenderers);
             result.CombineMeshes(combineInstancesData, true, true);

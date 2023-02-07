@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using DCL.Helpers;
 using DCL.Shaders;
 using MainScripts.DCL.Helpers.Utils;
+using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.Rendering;
+using Debug = UnityEngine.Debug;
+using logger = DCL.MeshCombinerLogger;
+
 
 namespace DCL
 {
@@ -17,12 +18,10 @@ namespace DCL
         // the cases of avatars rendered with one draw call. Temporarily disabled until some wearables are fixed.
         public static bool ENABLE_CULL_OPAQUE_HEURISTIC = false;
 
-        private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         private static readonly int[] textureIds = { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
 
-        private static readonly Predicate<CombineLayer> SANITIZE_LAYER_FUNC = x => x.renderers.Count == 0;
+        private static readonly Predicate<CombineLayer> SANITIZE_LAYER_FUNC = x => x.Renderers.Count == 0;
 
         /// <summary>
         /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.<br/>
@@ -49,7 +48,6 @@ namespace DCL
                 var rawLayers = rental.GetList();
                 SliceByRenderState.Execute(renderers, rawLayers, ENABLE_CULL_OPAQUE_HEURISTIC);
 
-                // TODO conditional
                 logger.Log($"Preparing slice. Found {rawLayers.Count} groups.");
 
                 // Now, we sub-slice the rawLayers.
@@ -59,35 +57,38 @@ namespace DCL
                 for (int i = 0; i < rawLayers.Count; i++)
                 {
                     var rawLayer = rawLayers[i];
-                    // TODO conditional
-                    logger.Log($"Processing group {i}. Renderer count: {rawLayer.renderers.Count}. cullMode: {rawLayer.cullMode} - isOpaque: {rawLayer.isOpaque}");
+
+                    logger.Log($"Processing group {i}. Renderer count: {rawLayer.Renderers.Count}. cullMode: {rawLayer.cullMode} - isOpaque: {rawLayer.isOpaque}");
                     SubsliceLayerByTextures(rawLayer, result);
                 }
             }
 
             // No valid materials were found
-            if (result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
+            if (result.Count == 1 && result[0].textureToId.Count == 0 && result[0].Renderers.Count == 0)
             {
                 logger.Log("Slice End Fail!");
                 return false;
             }
 
-            result.RemoveAll(SANITIZE_LAYER_FUNC);
+            result.Sanitize();
 
-            if (VERBOSE)
+            [Conditional(MeshCombinerLogger.COMPILATION_DEFINE)]
+            static void LogLayers(CombineLayersList result)
             {
                 int layInd = 0;
 
-                foreach (var layer in result)
+                foreach (var layer in result.Layers)
                 {
-                    string rendererNames = layer.renderers
+                    string rendererNames = layer.Renderers
                                                 .Select((x) => $"{x.transform.parent.name}")
                                                 .Aggregate((i, j) => i + "\n" + j);
 
-                    logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
+                    logger.Log($"Layer index: {layInd} ... renderer count: {layer.Renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
                     layInd++;
                 }
             }
+
+            LogLayers(result);
 
             logger.Log("Slice End Success!");
             return true;
@@ -122,9 +123,9 @@ namespace DCL
 
             AddLayerToResult();
 
-            for (int rendererIndex = 0; rendererIndex < layer.renderers.Count; rendererIndex++)
+            for (int rendererIndex = 0; rendererIndex < layer.Renderers.Count; rendererIndex++)
             {
-                var r = layer.renderers[rendererIndex];
+                var r = layer.Renderers[rendererIndex];
 
                 var mats = r.sharedMaterials;
 
@@ -140,7 +141,7 @@ namespace DCL
                 // The renderer is too big to fit in a single layer? (This should never happen).
                 if (mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
                 {
-                    logger.Log(LogType.Warning, "The renderer is too big to fit in a single layer? (This should never happen).");
+                    logger.LogWarning("The renderer is too big to fit in a single layer? (This should never happen).");
                     AddLayerToResult();
                     continue;
                 }
@@ -158,7 +159,7 @@ namespace DCL
                 foreach (var kvp in mapIdsToInsert)
                     currentResultLayer.textureToId[kvp.Key] = kvp.Value;
 
-                currentResultLayer.renderers.Add(r);
+                results.AddRenderer(currentResultLayer, r);
 
                 textureId += mapIdsToInsert.Count;
 
@@ -166,7 +167,8 @@ namespace DCL
                     AddLayerToResult();
             }
 
-            if (VERBOSE)
+            [Conditional(MeshCombinerLogger.COMPILATION_DEFINE)]
+            static void LogResults(CombineLayersList results)
             {
                 for (int i = 0; i < results.Count; i++)
                 {
@@ -174,6 +176,8 @@ namespace DCL
                     Debug.Log($"layer {i} - {c}");
                 }
             }
+
+            LogResults(results);
         }
 
         internal static void AddMapIds(IReadOnlyDictionary<Texture2D, int> refDict, IDictionary<Texture2D, int> candidates, in Material[] mats, int startingId)

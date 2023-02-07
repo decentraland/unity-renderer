@@ -1,6 +1,4 @@
-﻿using MainScripts.DCL.Helpers.Utils;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -109,10 +107,9 @@ namespace DCL
             //
             // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
 
-            using var layersRental = PoolUtils.RentListOfDisposables<CombineLayer>();
-            var layers = layersRental.GetList();
+            using var layers = CombineLayersList.Rent();
 
-            if (CombineLayerUtils.TrySlice(renderers, layers))
+            if (!CombineLayerUtils.TrySlice(renderers, layers))
             {
                 result.isValid = false;
                 return result;

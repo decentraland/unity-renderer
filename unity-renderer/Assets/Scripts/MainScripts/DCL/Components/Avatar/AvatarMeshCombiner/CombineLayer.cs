@@ -11,15 +11,13 @@ namespace DCL
     /// </summary>
     public class CombineLayer : IDisposable
     {
-        public List<SkinnedMeshRenderer> renderers { get; private set; }
+        private List<SkinnedMeshRenderer> renderers;
+
+        public IReadOnlyList<SkinnedMeshRenderer> Renderers => renderers;
         public Dictionary<Texture2D, int> textureToId { get; private set; }
 
         public CullMode cullMode;
         public bool isOpaque;
-
-        public CombineLayer()
-        {
-        }
 
         public void Dispose()
         {
@@ -32,7 +30,17 @@ namespace DCL
             GenericPool<CombineLayer>.Release(this);
         }
 
-        public static CombineLayer Rent(CullMode cullMode = CullMode.Off, bool isOpaque = false)
+        internal void AddRenderer(SkinnedMeshRenderer renderer)
+        {
+            renderers.Add(renderer);
+        }
+
+        internal void AddRenderers(IReadOnlyCollection<SkinnedMeshRenderer> renderers)
+        {
+            this.renderers.AddRange(renderers);
+        }
+
+        public static CombineLayer Rent(CullMode cullMode = CullMode.Off, bool isOpaque = false, IReadOnlyCollection<SkinnedMeshRenderer> renderers = null)
         {
             var layer = GenericPool<CombineLayer>.Get();
             layer.cullMode = cullMode;
@@ -40,12 +48,15 @@ namespace DCL
             layer.renderers = ListPool<SkinnedMeshRenderer>.Get();
             layer.textureToId = DictionaryPool<Texture2D, int>.Get();
 
+            if (renderers != null)
+                layer.AddRenderers(renderers);
+
             return layer;
         }
 
         public override string ToString()
         {
-            string rendererString = $"renderer count: {renderers?.Count ?? 0}";
+            string rendererString = $"renderer count: {Renderers?.Count ?? 0}";
             string textureIdString = "texture ids: {";
 
             foreach ( var kvp in textureToId )

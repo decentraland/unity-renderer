@@ -60,7 +60,7 @@ namespace DCL
                     result.Add(combineLayer);
                 }
 
-                combineLayer.renderers.Add(meshRenderer);
+                combineLayer.AddRenderer(meshRenderer);
             }
 
             DictionaryPool<LayerKey, CombineLayer>.Release(grouping);
@@ -75,7 +75,7 @@ namespace DCL
         }
 
         internal static CullMode GetCullMode(Renderer renderer) =>
-            GetCullMode(renderer.sharedMaterials[0]);
+            GetCullMode(renderer.sharedMaterial);
 
         internal static CullMode GetCullMode(Material material)
         {

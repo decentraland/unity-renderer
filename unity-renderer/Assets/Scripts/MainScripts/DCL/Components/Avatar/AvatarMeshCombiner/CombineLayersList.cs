@@ -5,19 +5,24 @@ using UnityEngine.Pool;
 
 namespace DCL
 {
-    public struct CombineLayersList : IDisposable
+    public class CombineLayersList : IDisposable
     {
-        private static readonly Predicate<CombineLayer> SANITIZE_LAYER_FUNC = x => x.renderers.Count == 0;
+        private static readonly Predicate<CombineLayer> SANITIZE_LAYER_FUNC = x => x.Renderers.Count == 0;
 
         private List<CombineLayer> layers;
 
+        public IReadOnlyList<CombineLayer> Layers => layers;
+
         public int TotalVerticesCount { get; private set; }
+        public int TotalRenderersCount { get; private set; }
         public int Count => layers.Count;
+
+        public CombineLayer this[int index] => layers[index];
 
         public void Add(CombineLayer combineLayer)
         {
             layers.Add(combineLayer);
-            AddToTotalMetrics(combineLayer.renderers);
+            AddToTotalMetrics(combineLayer.Renderers);
         }
 
         public void AddRenderer(CombineLayer combineLayer, SkinnedMeshRenderer renderer)
@@ -25,13 +30,15 @@ namespace DCL
             if (renderer == null)
                 return;
 
-            combineLayer.renderers.Add(renderer);
+            combineLayer.AddRenderer(renderer);
             TotalVerticesCount += renderer.sharedMesh.vertexCount;
+            TotalRenderersCount++;
         }
 
-        public void AddRenderers(CombineLayer combineLayer, IEnumerable<SkinnedMeshRenderer> renderers)
+        public void AddRenderers(CombineLayer combineLayer, IReadOnlyCollection<SkinnedMeshRenderer> renderers)
         {
-            combineLayer.renderers.AddRange(renderers);
+            combineLayer.AddRenderers(renderers);
+            AddToTotalMetrics(renderers);
         }
 
         public void Sanitize()
@@ -39,23 +46,26 @@ namespace DCL
             layers.RemoveAll(SANITIZE_LAYER_FUNC);
         }
 
-        private void AddToTotalMetrics(IEnumerable<SkinnedMeshRenderer> renderers)
+        private void AddToTotalMetrics(IReadOnlyCollection<SkinnedMeshRenderer> renderers)
         {
             foreach (SkinnedMeshRenderer meshRenderer in renderers)
-            {
                 TotalVerticesCount += meshRenderer.sharedMesh.vertexCount;
-            }
+
+            TotalRenderersCount += renderers.Count;
         }
 
         public void Dispose()
         {
+            TotalVerticesCount = 0;
+            TotalRenderersCount = 0;
             ListPool<CombineLayer>.Release(layers);
             layers = null;
+            GenericPool<CombineLayersList>.Release(this);
         }
 
-        public static CombineLayersList Create()
+        public static CombineLayersList Rent()
         {
-            var instance = new CombineLayersList();
+            var instance = GenericPool<CombineLayersList>.Get();
             instance.layers = ListPool<CombineLayer>.Get();
             return instance;
         }
