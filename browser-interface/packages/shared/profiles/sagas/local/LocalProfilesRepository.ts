@@ -10,7 +10,6 @@ const LOCAL_PROFILES_KEY = 'dcl-local-profile'
 
 export class LocalProfilesRepository {
   async persist(address: string, network: ETHEREUM_NETWORK, profile: Avatar) {
-    // For now, we use local storage. BUT DON'T USE THIS KEY OUTSIDE BECAUSE THIS MIGHT CHANGE EVENTUALLY
     await saveToPersistentStorage(this.profileKey(address, network), profile)
   }
 

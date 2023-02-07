@@ -3,27 +3,24 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 
 import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 
-import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { initializeReferral, referUser } from 'shared/referral'
+import { createDummyLogger, createLogger } from 'lib/logger'
+import { initializeReferral } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { Avatar } from '@dcl/schemas'
-import { RequestManager } from 'eth-connect'
 import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
+import { RequestManager } from 'eth-connect'
 import { Store } from 'redux'
 import { setRoomConnection } from 'shared/comms/actions'
 import { selectNetwork } from 'shared/dao/actions'
-import { waitForRoomConnection } from 'shared/dao/sagas'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { globalObservable } from 'shared/observables'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { ProfileType } from 'shared/profiles/types'
+import { initialRemoteProfileLoad } from 'shared/profiles/sagas/initialRemoteProfileLoad'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -50,7 +47,8 @@ import {
 import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
-import { localProfilesRepo } from 'shared/profiles/sagas'
+import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -124,25 +122,15 @@ function* authenticate(action: AuthenticateAction) {
 
   // 1. authenticate our user
   yield put(userAuthenticated(identity, net, isGuest))
-  // 2. wait for comms to connect, it only requires the Identity authentication
-  yield call(waitForRoomConnection)
-  // 3. then ask for our profile
-  const avatar: Avatar = yield call(
-    ProfileAsPromise,
-    identity.address,
-    0,
-    isGuest ? ProfileType.LOCAL : ProfileType.DEPLOYED
-  )
+  // 2. then ask for our profile when we selected a catalyst
+  yield call(waitForRealm)
+  const avatar = yield call(initialRemoteProfileLoad)
 
   // 3. continue with signin/signup (only not in preview)
   const isSignUp = avatar.version <= 0 && !PREVIEW
   if (isSignUp) {
     yield put(signUpSetIsSignUp(isSignUp))
     yield take(SIGNUP)
-  }
-
-  if (!isGuest) {
-    yield call(referUser, identity)
   }
 
   // 4. finish sign in

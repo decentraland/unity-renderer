@@ -1,7 +1,5 @@
-import { Avatar } from '@dcl/schemas'
-import { IFuture } from 'fp-future'
+import type { Avatar } from '@dcl/schemas'
 import { action } from 'typesafe-actions'
-import { ProfileType } from './types'
 
 // Profile fetching
 
@@ -9,17 +7,19 @@ export const PROFILE_REQUEST = '[PROFILE] Fetch request'
 export const PROFILE_SUCCESS = '[PROFILE] Fetch succeeded'
 export const PROFILE_FAILURE = '[PROFILE] Fetch failed'
 
-export const SAVE_DELTA_PROFILE_REQUEST = 'SAVE_DELTA_PROFILE_REQUEST'
-export const SAVE_DELTA_PROFILE_REQUEST_FAILURE = 'SAVE_DELTA_PROFILE_REQUEST_FAILURE'
+export const SAVE_DELTA_PROFILE_REQUEST = '[Current User] Save Profile Requested'
+export const SAVE_PROFILE_SUCCESS = '[Current User] Save Profile Succeeded'
+export const SAVE_PROFILE_FAILURE = '[Current User] Save Profile Failure'
 
-export const DEPLOY_PROFILE_SUCCESS = 'DEPLOY_PROFILE_SUCCESS'
-export const DEPLOY_PROFILE_REQUEST = 'DEPLOY_PROFILE_REQUEST'
-export const DEPLOY_PROFILE_FAILURE = 'DEPLOY_PROFILE_FAILURE'
+export const DEPLOY_PROFILE_REQUEST = '[Deploy Current Profile] Request'
+export const DEPLOY_PROFILE_SUCCESS = '[Deploy Current Profile] Success'
+export const DEPLOY_PROFILE_FAILURE = '[Deploy Current Profile] Failure'
 
-export const SEND_PROFILE_TO_RENDERER_REQUEST = 'SEND_PROFILE_TO_RENDERER_REQUEST'
+export const SEND_PROFILE_TO_RENDERER_REQUEST = 'Send Profile to Renderer Requested'
+export const SEND_PROFILE_TO_RENDERER_SUCCESS = 'Send Profile to Renderer Succeeded'
 
-export const profileRequest = (userId: string, future: IFuture<Avatar>, profileType?: ProfileType, version?: number) =>
-  action(PROFILE_REQUEST, { userId, future, profileType, version })
+export const profileRequest = (userId: string, minimumVersion?: number) =>
+  action(PROFILE_REQUEST, { userId, minimumVersion })
 
 /**
  * profileSuccess stores locally a profile and sends it to the renderer.
@@ -36,8 +36,7 @@ export type ProfileFailureAction = ReturnType<typeof profileFailure>
 
 export const saveProfileDelta = (profile: Partial<Avatar>) => action(SAVE_DELTA_PROFILE_REQUEST, { profile })
 export const sendProfileToRenderer = (userId: string) => action(SEND_PROFILE_TO_RENDERER_REQUEST, { userId })
-export const saveProfileFailure = (userId: string, error: any) =>
-  action(SAVE_DELTA_PROFILE_REQUEST_FAILURE, { userId, error })
+export const saveProfileFailure = (userId: string, error: any) => action(SAVE_PROFILE_FAILURE, { userId, error })
 
 export type SaveProfileDelta = ReturnType<typeof saveProfileDelta>
 export type SendProfileToRenderer = ReturnType<typeof sendProfileToRenderer>

@@ -26,7 +26,7 @@ import { getInitialPositionFromUrl } from 'shared/world/positionThings'
 import { initializeUnity } from 'unity-interface/initializer'
 import 'unity-interface/trace'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
-import { localProfilesRepo } from 'shared/profiles/sagas'
+import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
 
 async function resolveBaseUrl(urn: string): Promise<string> {
   if (urn.startsWith('urn:')) {

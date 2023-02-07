@@ -54,6 +54,7 @@ import { defaultLogger } from 'lib/logger'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
+import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
@@ -113,8 +114,6 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { ProfileType } from 'shared/profiles/types'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -1063,7 +1062,7 @@ export class BrowserInterface {
   }
 
   public RequestUserProfile(userIdPayload: { value: string }) {
-    ProfileAsPromise(userIdPayload.value, undefined, ProfileType.DEPLOYED).catch(defaultLogger.error)
+    retrieveProfile(userIdPayload.value, undefined).catch(defaultLogger.error)
   }
 
   public ReportAvatarFatalError(payload: any) {
