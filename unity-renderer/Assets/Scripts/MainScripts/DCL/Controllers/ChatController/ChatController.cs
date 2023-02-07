@@ -59,7 +59,29 @@ namespace DCL.Social.Chat
 
             channels[NEARBY_CHANNEL_ID] = new Channel(NEARBY_CHANNEL_ID, NEARBY_CHANNEL_ID, 0, 0, true, false,
                 NEARBY_CHANNEL_DESCRIPTION);
+        }
 
+        public void Dispose()
+        {
+            operationsCancellationToken.Cancel();
+            operationsCancellationToken.Dispose();
+
+            apiBridge.OnInitialized -= Initialize;
+            apiBridge.OnAddMessage -= AddMessages;
+            apiBridge.OnTotalUnseenMessagesChanged -= UpdateTotalUnseenMessages;
+            apiBridge.OnUserUnseenMessagesChanged -= UpdateTotalUnseenMessagesByUser;
+            apiBridge.OnChannelUnseenMessagesChanged -= UpdateTotalUnseenMessagesByChannel;
+            apiBridge.OnChannelMembersUpdated -= UpdateChannelMembers;
+            apiBridge.OnChannelJoined -= JoinIntoChannel;
+            apiBridge.OnChannelJoinFailed -= JoinChannelFailed;
+            apiBridge.OnChannelLeaveFailed -= LeaveChannelFailed;
+            apiBridge.OnChannelsUpdated -= UpdateChannelInfo;
+            apiBridge.OnMuteChannelFailed -= MuteChannelFailed;
+            apiBridge.OnChannelSearchResults -= UpdateChannelSearchResults;
+        }
+
+        public void Initialize()
+        {
             apiBridge.OnInitialized += Initialize;
             apiBridge.OnAddMessage += AddMessages;
             apiBridge.OnTotalUnseenMessagesChanged += UpdateTotalUnseenMessages;
@@ -72,16 +94,6 @@ namespace DCL.Social.Chat
             apiBridge.OnChannelsUpdated += UpdateChannelInfo;
             apiBridge.OnMuteChannelFailed += MuteChannelFailed;
             apiBridge.OnChannelSearchResults += UpdateChannelSearchResults;
-        }
-
-        public void Dispose()
-        {
-            operationsCancellationToken.Cancel();
-            operationsCancellationToken.Dispose();
-        }
-
-        public void Initialize()
-        {
         }
 
         private void Initialize(InitializeChatPayload msg)
