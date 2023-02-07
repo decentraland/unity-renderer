@@ -27,6 +27,8 @@ namespace DCL.ECSComponents
             return true;
         }
 
+        public static Color4 GetDiffuseColor(this PBMaterial self) => GetAlbedoColor(self);
+
         public static Color4 GetAlbedoColor(this PBMaterial self)
         {
             if (self.Pbr != null)
