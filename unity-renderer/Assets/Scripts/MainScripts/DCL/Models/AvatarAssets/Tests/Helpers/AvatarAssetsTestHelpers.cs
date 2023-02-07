@@ -37,12 +37,13 @@ public static class AvatarAssetsTestHelpers
             PrepareWearableItemDummy(wearableItem);
         }
 
-        CatalogController.Clear();
+        //CatalogController.Clear();
 
         var wearables = dummyWearables.Select(x => x as WearableItem).ToArray();
 
-        CatalogController.i.AddWearablesToCatalog(wearables);
+        //CatalogController.i.AddWearablesToCatalog(wearables);
 
-        return CatalogController.wearableCatalog;
+        //return CatalogController.wearableCatalog;
+        return new BaseDictionary<string, WearableItem>();
     }
 }

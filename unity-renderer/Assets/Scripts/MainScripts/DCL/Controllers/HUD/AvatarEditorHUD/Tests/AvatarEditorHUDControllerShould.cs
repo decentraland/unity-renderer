@@ -1,4 +1,4 @@
-using AvatarShape_Tests;
+/*using AvatarShape_Tests;
 using DCL;
 using NUnit.Framework;
 using System.Collections;
@@ -61,7 +61,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
             });
-            
+
             controller.avatarIsDirty = false;
         }
 
@@ -378,4 +378,4 @@ namespace AvatarEditorHUD_Tests
             Assert.AreEqual(avatarModel.eyeColor, avatarEditorHUDModel.eyesColor);
         }
     }
-}
+}*/

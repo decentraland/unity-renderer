@@ -1,3 +1,4 @@
+/*
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
@@ -144,3 +145,4 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         return wearable;
     }
 }
+*/

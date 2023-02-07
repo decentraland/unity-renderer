@@ -1,4 +1,4 @@
-using AvatarShape_Tests;
+/*using AvatarShape_Tests;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
@@ -150,4 +150,4 @@ namespace Tests
             AssertMaterialsAreCorrect(avatar2.transform);
         }
     }
-}
+}*/

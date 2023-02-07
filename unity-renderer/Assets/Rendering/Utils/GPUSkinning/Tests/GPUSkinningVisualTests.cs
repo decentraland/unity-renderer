@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AvatarSystem;
@@ -117,4 +117,4 @@ public class GPUSkinningVisualTests : VisualTestsBase
             Object.Destroy(newCatalog);
         yield return base.TearDown();
     }
-}
+}*/

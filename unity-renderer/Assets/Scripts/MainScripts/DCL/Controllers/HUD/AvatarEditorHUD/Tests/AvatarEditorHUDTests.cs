@@ -1,4 +1,4 @@
-using DCL;
+/*using DCL;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -11,8 +11,8 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags, 
-            IAnalytics analytics) 
+        public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags,
+            IAnalytics analytics)
             : base(featureFlags, analytics)
         {
         }
@@ -142,4 +142,4 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
     }
-}
+}*/

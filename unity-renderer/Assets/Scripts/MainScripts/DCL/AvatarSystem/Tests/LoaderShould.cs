@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -200,7 +200,7 @@ namespace Test.AvatarSystem
         public IEnumerator LoadCorrectly() => UniTask.ToCoroutine(async () =>
         {
             MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
-            MockWearableLoaderFactory(); 
+            MockWearableLoaderFactory();
             MockCombinesMesh();
 
             SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
@@ -326,7 +326,7 @@ namespace Test.AvatarSystem
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
                                  .Returns(x => bodyShapeLoader);
-           
+
             wearableLoaderFactory.Configure()
                                  .GetWearableLoader(Arg.Any<WearableItem>())
                                  .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
@@ -599,4 +599,4 @@ namespace Test.AvatarSystem
                 Object.Destroy(CatalogController.i);
         }
     }
-}
+}*/

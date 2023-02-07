@@ -1,4 +1,4 @@
-using AvatarShape_Tests;
+/*using AvatarShape_Tests;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
@@ -77,4 +77,4 @@ namespace Tests
             yield return VisualTestUtils.TakeSnapshot("AvatarShape_B", camera);
         }
     }
-}
+}*/

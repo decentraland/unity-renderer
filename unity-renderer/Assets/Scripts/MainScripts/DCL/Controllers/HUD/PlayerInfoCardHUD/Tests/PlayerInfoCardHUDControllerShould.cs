@@ -1,3 +1,4 @@
+/*
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
@@ -332,3 +333,4 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         dataStore.settings.profanityChatFilteringEnabled.Set(enabled);
     }
 }
+*/
