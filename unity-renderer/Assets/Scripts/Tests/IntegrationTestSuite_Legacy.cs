@@ -2,8 +2,10 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
+using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
@@ -26,12 +28,12 @@ public class IntegrationTestSuite_Legacy
     private GameObject runtimeGameObjectsRoot;
 
     private List<GameObject> legacySystems = new List<GameObject>();
+    private AddressableResourceProvider addressableResourceProvider;
 
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
@@ -77,7 +79,18 @@ public class IntegrationTestSuite_Legacy
                 return mockedProviders;
             });
 
+        IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+        emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
+        result.Register<IEmotesCatalogService>(() => emotesCatalogService);
+
         return result;
+    }
+
+    private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+    {
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        return embeddedEmotes;
     }
 
     protected virtual List<GameObject> SetUp_LegacySystems()

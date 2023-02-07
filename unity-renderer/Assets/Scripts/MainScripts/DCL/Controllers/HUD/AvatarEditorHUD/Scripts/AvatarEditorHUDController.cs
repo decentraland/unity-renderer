@@ -10,6 +10,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -83,6 +84,8 @@ public class AvatarEditorHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
+    public Service<IEmotesCatalogService> emotesCatalogService;
+
     public AvatarEditorHUDController(
         DataStore_FeatureFlag featureFlags,
         IAnalytics analytics,
@@ -124,6 +127,13 @@ public class AvatarEditorHUDController : IHUD
 
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, false);
 
+        InitializeAsyncEmoteController();
+    }
+
+    private async void InitializeAsyncEmoteController()
+    {
+        EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.Ref.GetEmbeddedEmotes();
+
         emotesCustomizationComponentController = CreateEmotesController();
         IEmotesCustomizationComponentView emotesSectionView = emotesCustomizationComponentController.Initialize(
             DataStore.i.emotesCustomization,
@@ -131,7 +141,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.exploreV2,
             DataStore.i.HUDs);
         //Initialize with embedded emotes
-        emotesCustomizationComponentController.SetEmotes(EmbeddedEmotesSO.Provide().emotes.ToArray());
+        emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.emotes);
         emotesSectionView.viewTransform.SetParent(view.emotesSection.transform, false);
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
@@ -271,7 +281,8 @@ public class AvatarEditorHUDController : IHUD
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
         try
         {
-            var embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes").emotes;
+            EmbeddedEmotesSO embeddedEmoteTask = await emotesCatalogService.Ref.GetEmbeddedEmotes();
+            var embeddedEmotes = embeddedEmoteTask.emotes;
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
             var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
             var emotesFilter = new HashSet<string>();

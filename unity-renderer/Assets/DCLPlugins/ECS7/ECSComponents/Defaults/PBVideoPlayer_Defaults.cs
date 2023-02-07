@@ -21,5 +21,10 @@
         {
             return self.HasPosition ? self.Position : 0.0f;
         }
+
+        public static bool GetLoop(this PBVideoPlayer self)
+        {
+            return self.HasLoop && self.Loop; // default: loop=false
+        }
     }
 }

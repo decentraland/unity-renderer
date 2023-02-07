@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCL.Providers;
 using GPUSkinning;
 using NSubstitute;
 using NUnit.Framework;
@@ -48,7 +50,9 @@ public class GPUSkinningVisualTests : VisualTestsBase
         CommonScriptableObjects.playerCoords.Set(new Vector2(0, 0));
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(7.5f, 1.8f, 11), new Vector3(7.5f, 1.75f, 8));
 
-        AnimationClip animationClip = Resources.Load<AnimationClip>("Male/dab");
+        UniTask<AnimationClip>.Awaiter embeddedEmotesTask = new AddressableResourceProvider().GetAddressable<AnimationClip>("dab.anim").GetAwaiter();
+        yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+        AnimationClip animationClip = embeddedEmotesTask.GetResult();
 
         // Loading the wearable twice is far from ideal,
         // but our loading process is so convoluted that it made impossible to reuse the same wearableController.

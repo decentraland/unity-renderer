@@ -28,7 +28,6 @@ public class NFTShape_Tests : IntegrationTestSuite
 
         scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
-        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(true);
         TestUtils_NFT.RegisterMockedNFTShape(Environment.i.world.componentFactory);
     }

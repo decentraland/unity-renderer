@@ -464,6 +464,7 @@ namespace DCL
                 await UniTask.Yield();
             }
         }
+
         private void ThreadedDecodeAndEnqueue(CancellationToken cancellationToken)
         {
             while (chunksToDecode.TryDequeue(out string chunk))
