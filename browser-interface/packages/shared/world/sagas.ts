@@ -1,18 +1,18 @@
+import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { apply, call, fork, put, race, select, take, takeLatest } from 'redux-saga/effects'
 import { SceneStart, SCENE_CHANGED, SCENE_START } from 'shared/loading/actions'
 import { SetParcelPosition, SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
 import { getParcelPositionAsString } from 'shared/scene-loader/selectors'
-import { setCurrentScene, RendererSignalSceneReady, RENDERER_SIGNAL_SCENE_READY } from './actions'
+import { getCurrentUserId } from 'shared/session/selectors'
+import { RendererSignalSceneReady, RENDERER_SIGNAL_SCENE_READY, setCurrentScene } from './actions'
 import {
   getLoadedParcelSceneByParcel,
   getSceneWorkerBySceneID,
   getSceneWorkerBySceneNumber,
   loadedSceneWorkers
 } from './parcelSceneManager'
-import { SceneWorker } from './SceneWorker'
-import { getCurrentUserId } from 'shared/session/selectors'
 import { positionObservable } from './positionThings'
-import { encodeParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { SceneWorker } from './SceneWorker'
 
 export function* worldSagas() {
   // FIRST bind all sagas

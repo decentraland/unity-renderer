@@ -19,6 +19,7 @@ namespace SocialFeaturesAnalytics
         void SendCopyWallet(PlayerActionSource source);
         void SendCopyUsername(PlayerActionSource source);
         void SendJumpInToPlayer(PlayerActionSource source);
+        void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source);
         void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source);
         void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage);

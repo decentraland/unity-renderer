@@ -72,6 +72,8 @@ async function checkFileSizes() {
       if (buffer.byteLength > MAX_FILE_SIZE) {
         console.error(`The file ${file} exceeds the maximum cacheable file size: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)
         process.exitCode = 1
+      }else{
+        console.log(`The file ${file} has a compressed file size of: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)        
       }
     }
   }
