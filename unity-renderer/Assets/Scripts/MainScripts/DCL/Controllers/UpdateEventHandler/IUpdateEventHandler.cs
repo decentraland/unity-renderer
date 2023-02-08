@@ -9,7 +9,6 @@ namespace DCL
             Update,
             LateUpdate,
             FixedUpdate,
-            OnGui,
             OnDestroy
         }
 

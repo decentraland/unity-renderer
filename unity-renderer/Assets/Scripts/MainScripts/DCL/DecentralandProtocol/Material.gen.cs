@@ -27,47 +27,47 @@ namespace DCL.ECSComponents {
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
             "bW1vbi9jb2xvcnMucHJvdG8aIWRlY2VudHJhbGFuZC9jb21tb24vdGV4dHVy",
-            "ZS5wcm90byKmCwoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
+            "ZS5wcm90byKoCwoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
             "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFsLlVubGl0TWF0ZXJp",
             "YWxIABJCCgNwYnIYAiABKAsyMy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
-            "dHMuUEJNYXRlcmlhbC5QYnJNYXRlcmlhbEgAGvEBCg1VbmxpdE1hdGVyaWFs",
+            "dHMuUEJNYXRlcmlhbC5QYnJNYXRlcmlhbEgAGvMBCg1VbmxpdE1hdGVyaWFs",
             "EjcKB3RleHR1cmUYASABKAsyIS5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1",
             "cmVVbmlvbkgAiAEBEhcKCmFscGhhX3Rlc3QYAiABKAJIAYgBARIZCgxjYXN0",
-            "X3NoYWRvd3MYAyABKAhIAogBARI2CgxhbGJlZG9fY29sb3IYBCABKAsyGy5k",
-            "ZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yNEgDiAEBQgoKCF90ZXh0dXJlQg0K",
-            "C19hbHBoYV90ZXN0Qg8KDV9jYXN0X3NoYWRvd3NCDwoNX2FsYmVkb19jb2xv",
-            "chqLCAoLUGJyTWF0ZXJpYWwSNwoHdGV4dHVyZRgBIAEoCzIhLmRlY2VudHJh",
-            "bGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSACIAQESFwoKYWxwaGFfdGVzdBgC",
-            "IAEoAkgBiAEBEhkKDGNhc3Rfc2hhZG93cxgDIAEoCEgCiAEBEj0KDWFscGhh",
-            "X3RleHR1cmUYBCABKAsyIS5kZWNlbnRyYWxhbmQuY29tbW9uLlRleHR1cmVV",
-            "bmlvbkgDiAEBEkAKEGVtaXNzaXZlX3RleHR1cmUYBSABKAsyIS5kZWNlbnRy",
-            "YWxhbmQuY29tbW9uLlRleHR1cmVVbmlvbkgEiAEBEjwKDGJ1bXBfdGV4dHVy",
-            "ZRgGIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSAWI",
-            "AQESNgoMYWxiZWRvX2NvbG9yGAcgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1v",
-            "bi5Db2xvcjRIBogBARI4Cg5lbWlzc2l2ZV9jb2xvchgIIAEoCzIbLmRlY2Vu",
-            "dHJhbGFuZC5jb21tb24uQ29sb3IzSAeIAQESPAoScmVmbGVjdGl2aXR5X2Nv",
-            "bG9yGAkgASgLMhsuZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNICIgBARJV",
-            "ChF0cmFuc3BhcmVuY3lfbW9kZRgKIAEoDjI1LmRlY2VudHJhbGFuZC5zZGsu",
-            "Y29tcG9uZW50cy5NYXRlcmlhbFRyYW5zcGFyZW5jeU1vZGVICYgBARIVCght",
-            "ZXRhbGxpYxgLIAEoAkgKiAEBEhYKCXJvdWdobmVzcxgMIAEoAkgLiAEBEhcK",
-            "Cmdsb3NzaW5lc3MYDSABKAJIDIgBARIfChJzcGVjdWxhcl9pbnRlbnNpdHkY",
-            "DiABKAJIDYgBARIfChJlbWlzc2l2ZV9pbnRlbnNpdHkYDyABKAJIDogBARId",
-            "ChBkaXJlY3RfaW50ZW5zaXR5GBAgASgCSA+IAQFCCgoIX3RleHR1cmVCDQoL",
-            "X2FscGhhX3Rlc3RCDwoNX2Nhc3Rfc2hhZG93c0IQCg5fYWxwaGFfdGV4dHVy",
-            "ZUITChFfZW1pc3NpdmVfdGV4dHVyZUIPCg1fYnVtcF90ZXh0dXJlQg8KDV9h",
-            "bGJlZG9fY29sb3JCEQoPX2VtaXNzaXZlX2NvbG9yQhUKE19yZWZsZWN0aXZp",
-            "dHlfY29sb3JCFAoSX3RyYW5zcGFyZW5jeV9tb2RlQgsKCV9tZXRhbGxpY0IM",
-            "Cgpfcm91Z2huZXNzQg0KC19nbG9zc2luZXNzQhUKE19zcGVjdWxhcl9pbnRl",
-            "bnNpdHlCFQoTX2VtaXNzaXZlX2ludGVuc2l0eUITChFfZGlyZWN0X2ludGVu",
-            "c2l0eUIKCghtYXRlcmlhbCqFAQoYTWF0ZXJpYWxUcmFuc3BhcmVuY3lNb2Rl",
-            "Eg4KCk1UTV9PUEFRVUUQABISCg5NVE1fQUxQSEFfVEVTVBABEhMKD01UTV9B",
-            "TFBIQV9CTEVORBACEiIKHk1UTV9BTFBIQV9URVNUX0FORF9BTFBIQV9CTEVO",
-            "RBADEgwKCE1UTV9BVVRPEARCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
-            "bzM="));
+            "X3NoYWRvd3MYAyABKAhIAogBARI3Cg1kaWZmdXNlX2NvbG9yGAQgASgLMhsu",
+            "ZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjRIA4gBAUIKCghfdGV4dHVyZUIN",
+            "CgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9kaWZmdXNlX2Nv",
+            "bG9yGosICgtQYnJNYXRlcmlhbBI3Cgd0ZXh0dXJlGAEgASgLMiEuZGVjZW50",
+            "cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5pb25IAIgBARIXCgphbHBoYV90ZXN0",
+            "GAIgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAMgASgISAKIAQESPQoNYWxw",
+            "aGFfdGV4dHVyZRgEIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVy",
+            "ZVVuaW9uSAOIAQESQAoQZW1pc3NpdmVfdGV4dHVyZRgFIAEoCzIhLmRlY2Vu",
+            "dHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSASIAQESPAoMYnVtcF90ZXh0",
+            "dXJlGAYgASgLMiEuZGVjZW50cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5pb25I",
+            "BYgBARI2CgxhbGJlZG9fY29sb3IYByABKAsyGy5kZWNlbnRyYWxhbmQuY29t",
+            "bW9uLkNvbG9yNEgGiAEBEjgKDmVtaXNzaXZlX2NvbG9yGAggASgLMhsuZGVj",
+            "ZW50cmFsYW5kLmNvbW1vbi5Db2xvcjNIB4gBARI8ChJyZWZsZWN0aXZpdHlf",
+            "Y29sb3IYCSABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9yM0gIiAEB",
+            "ElUKEXRyYW5zcGFyZW5jeV9tb2RlGAogASgOMjUuZGVjZW50cmFsYW5kLnNk",
+            "ay5jb21wb25lbnRzLk1hdGVyaWFsVHJhbnNwYXJlbmN5TW9kZUgJiAEBEhUK",
+            "CG1ldGFsbGljGAsgASgCSAqIAQESFgoJcm91Z2huZXNzGAwgASgCSAuIAQES",
+            "FwoKZ2xvc3NpbmVzcxgNIAEoAkgMiAEBEh8KEnNwZWN1bGFyX2ludGVuc2l0",
+            "eRgOIAEoAkgNiAEBEh8KEmVtaXNzaXZlX2ludGVuc2l0eRgPIAEoAkgOiAEB",
+            "Eh0KEGRpcmVjdF9pbnRlbnNpdHkYECABKAJID4gBAUIKCghfdGV4dHVyZUIN",
+            "CgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9hbHBoYV90ZXh0",
+            "dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJlQg8KDV9idW1wX3RleHR1cmVCDwoN",
+            "X2FsYmVkb19jb2xvckIRCg9fZW1pc3NpdmVfY29sb3JCFQoTX3JlZmxlY3Rp",
+            "dml0eV9jb2xvckIUChJfdHJhbnNwYXJlbmN5X21vZGVCCwoJX21ldGFsbGlj",
+            "QgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NCFQoTX3NwZWN1bGFyX2lu",
+            "dGVuc2l0eUIVChNfZW1pc3NpdmVfaW50ZW5zaXR5QhMKEV9kaXJlY3RfaW50",
+            "ZW5zaXR5QgoKCG1hdGVyaWFsKoUBChhNYXRlcmlhbFRyYW5zcGFyZW5jeU1v",
+            "ZGUSDgoKTVRNX09QQVFVRRAAEhIKDk1UTV9BTFBIQV9URVNUEAESEwoPTVRN",
+            "X0FMUEhBX0JMRU5EEAISIgoeTVRNX0FMUEhBX1RFU1RfQU5EX0FMUEhBX0JM",
+            "RU5EEAMSDAoITVRNX0FVVE8QBEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Unlit", "Pbr" }, new[]{ "Material" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial), global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlbedoColor" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlbedoColor" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Unlit", "Pbr" }, new[]{ "Material" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial), global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "DiffuseColor" }, new[]{ "Texture", "AlphaTest", "CastShadows", "DiffuseColor" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial), global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, null)})
           }));
     }
@@ -413,7 +413,7 @@ namespace DCL.ECSComponents {
           texture_ = other.texture_ != null ? other.texture_.Clone() : null;
           alphaTest_ = other.alphaTest_;
           castShadows_ = other.castShadows_;
-          albedoColor_ = other.albedoColor_ != null ? other.albedoColor_.Clone() : null;
+          diffuseColor_ = other.diffuseColor_ != null ? other.diffuseColor_.Clone() : null;
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -494,18 +494,18 @@ namespace DCL.ECSComponents {
           _hasBits0 &= ~2;
         }
 
-        /// <summary>Field number for the "albedo_color" field.</summary>
-        public const int AlbedoColorFieldNumber = 4;
-        private global::Decentraland.Common.Color4 albedoColor_;
+        /// <summary>Field number for the "diffuse_color" field.</summary>
+        public const int DiffuseColorFieldNumber = 4;
+        private global::Decentraland.Common.Color4 diffuseColor_;
         /// <summary>
         /// default = white;
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public global::Decentraland.Common.Color4 AlbedoColor {
-          get { return albedoColor_; }
+        public global::Decentraland.Common.Color4 DiffuseColor {
+          get { return diffuseColor_; }
           set {
-            albedoColor_ = value;
+            diffuseColor_ = value;
           }
         }
 
@@ -527,7 +527,7 @@ namespace DCL.ECSComponents {
           if (!object.Equals(Texture, other.Texture)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(AlphaTest, other.AlphaTest)) return false;
           if (CastShadows != other.CastShadows) return false;
-          if (!object.Equals(AlbedoColor, other.AlbedoColor)) return false;
+          if (!object.Equals(DiffuseColor, other.DiffuseColor)) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -538,7 +538,7 @@ namespace DCL.ECSComponents {
           if (texture_ != null) hash ^= Texture.GetHashCode();
           if (HasAlphaTest) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(AlphaTest);
           if (HasCastShadows) hash ^= CastShadows.GetHashCode();
-          if (albedoColor_ != null) hash ^= AlbedoColor.GetHashCode();
+          if (diffuseColor_ != null) hash ^= DiffuseColor.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -569,9 +569,9 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(24);
             output.WriteBool(CastShadows);
           }
-          if (albedoColor_ != null) {
+          if (diffuseColor_ != null) {
             output.WriteRawTag(34);
-            output.WriteMessage(AlbedoColor);
+            output.WriteMessage(DiffuseColor);
           }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
@@ -595,9 +595,9 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(24);
             output.WriteBool(CastShadows);
           }
-          if (albedoColor_ != null) {
+          if (diffuseColor_ != null) {
             output.WriteRawTag(34);
-            output.WriteMessage(AlbedoColor);
+            output.WriteMessage(DiffuseColor);
           }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
@@ -618,8 +618,8 @@ namespace DCL.ECSComponents {
           if (HasCastShadows) {
             size += 1 + 1;
           }
-          if (albedoColor_ != null) {
-            size += 1 + pb::CodedOutputStream.ComputeMessageSize(AlbedoColor);
+          if (diffuseColor_ != null) {
+            size += 1 + pb::CodedOutputStream.ComputeMessageSize(DiffuseColor);
           }
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
@@ -645,11 +645,11 @@ namespace DCL.ECSComponents {
           if (other.HasCastShadows) {
             CastShadows = other.CastShadows;
           }
-          if (other.albedoColor_ != null) {
-            if (albedoColor_ == null) {
-              AlbedoColor = new global::Decentraland.Common.Color4();
+          if (other.diffuseColor_ != null) {
+            if (diffuseColor_ == null) {
+              DiffuseColor = new global::Decentraland.Common.Color4();
             }
-            AlbedoColor.MergeFrom(other.AlbedoColor);
+            DiffuseColor.MergeFrom(other.DiffuseColor);
           }
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
@@ -682,10 +682,10 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 34: {
-                if (albedoColor_ == null) {
-                  AlbedoColor = new global::Decentraland.Common.Color4();
+                if (diffuseColor_ == null) {
+                  DiffuseColor = new global::Decentraland.Common.Color4();
                 }
-                input.ReadMessage(AlbedoColor);
+                input.ReadMessage(DiffuseColor);
                 break;
               }
             }
@@ -719,10 +719,10 @@ namespace DCL.ECSComponents {
                 break;
               }
               case 34: {
-                if (albedoColor_ == null) {
-                  AlbedoColor = new global::Decentraland.Common.Color4();
+                if (diffuseColor_ == null) {
+                  DiffuseColor = new global::Decentraland.Common.Color4();
                 }
-                input.ReadMessage(AlbedoColor);
+                input.ReadMessage(DiffuseColor);
                 break;
               }
             }
