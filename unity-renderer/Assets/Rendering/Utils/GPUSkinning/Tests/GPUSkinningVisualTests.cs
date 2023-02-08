@@ -1,4 +1,4 @@
-/*using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AvatarSystem;
@@ -6,8 +6,8 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Providers;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,13 +18,12 @@ public class GPUSkinningVisualTests : VisualTestsBase
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
-    private GameObject newCatalog;
+    private IWearablesCatalogService wearablesCatalogService;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        EnsureCatalog();
-        catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+        catalog = EnsureCatalog();
 
         avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
@@ -32,10 +31,11 @@ public class GPUSkinningVisualTests : VisualTestsBase
         Assert.NotNull(avatarMaterial);
     }
 
-    void EnsureCatalog()
+    private BaseDictionary<string, WearableItem> EnsureCatalog()
     {
-        if (CatalogController.i == null)
-            newCatalog = TestUtils.CreateComponentWithGameObject<CatalogController>("Catalog Controller").gameObject;
+        wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+        wearablesCatalogService.Initialize();
+        return AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
     }
 
     [UnityTest, VisualTest]
@@ -117,8 +117,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
-        if (newCatalog == null)
-            Object.Destroy(newCatalog);
+        wearablesCatalogService.Dispose();
         yield return base.TearDown();
     }
-}*/
+}

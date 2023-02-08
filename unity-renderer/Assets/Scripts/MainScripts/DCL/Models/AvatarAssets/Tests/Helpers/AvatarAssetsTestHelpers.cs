@@ -1,15 +1,11 @@
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using System.Linq;
 using UnityEngine;
 
 public static class AvatarAssetsTestHelpers
 {
-    public static WearableItemDummy CreateWearableItemDummy(string json)
-    {
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItemDummy>(json);
-    }
-
     public static void PrepareWearableItemDummy(WearableItemDummy wid)
     {
         wid.emoteDataV0 = null;
@@ -28,7 +24,7 @@ public static class AvatarAssetsTestHelpers
         wid.thumbnail = "";
     }
 
-    public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal()
+    public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal(IWearablesCatalogService wearablesCatalogService)
     {
         List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
 
@@ -37,13 +33,12 @@ public static class AvatarAssetsTestHelpers
             PrepareWearableItemDummy(wearableItem);
         }
 
-        //CatalogController.Clear();
+        wearablesCatalogService.Clear();
 
         var wearables = dummyWearables.Select(x => x as WearableItem).ToArray();
 
-        //CatalogController.i.AddWearablesToCatalog(wearables);
+        wearablesCatalogService.AddWearablesToCatalog(wearables);
 
-        //return CatalogController.wearableCatalog;
-        return new BaseDictionary<string, WearableItem>();
+        return wearablesCatalogService.WearablesCatalog;
     }
 }
