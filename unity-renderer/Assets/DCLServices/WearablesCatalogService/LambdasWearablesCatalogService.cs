@@ -13,7 +13,7 @@ namespace DCLServices.WearablesCatalogService
     /// <summary>
     /// This service implements a direct way of getting wearables sending the requests directly to lambdas.
     /// </summary>
-    public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableResponse>
+    public class LambdasWearablesCatalogService : IWearablesCatalogService, ILambdaServiceConsumer<WearableWithDefinitionResponse>
     {
         public BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
@@ -27,8 +27,8 @@ namespace DCLServices.WearablesCatalogService
         private Service<ILambdasService> lambdasService;
         private CancellationTokenSource serviceCts;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
-        private readonly Dictionary<string, LambdaResponsePagePointer<WearableResponse>> ownerWearablesPagePointers = new ();
-        private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableResponse>> thirdPartyCollectionPagePointers = new ();
+        private readonly Dictionary<string, LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
+        private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
@@ -65,7 +65,7 @@ namespace DCLServices.WearablesCatalogService
 
             if (createNewPointer)
             {
-                ownerWearablesPagePointers[userId] = pagePointer = new LambdaResponsePagePointer<WearableResponse>(
+                ownerWearablesPagePointers[userId] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
                     PAGINATED_WEARABLES_END_POINT + userId,
                     pageSize, ct, this);
             }
@@ -75,15 +75,16 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the owned wearables for '{userId}' failed!");
 
-            MapLambdasDataIntoWearableItem(pageResponse.response.wearables);
-            AddWearablesToCatalog(pageResponse.response.wearables);
+            var wearables = pageResponse.response.wearables.Select(x => x.definition).ToList();
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
 
-            return pageResponse.response.wearables;
+            return wearables;
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            var serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
+            var serviceResponse = await lambdasService.Ref.Get<WearableWithoutDefinitionResponse>(
                 NON_PAGINATED_WEARABLES_END_POINT,
                 NON_PAGINATED_WEARABLES_END_POINT,
                 REQUESTS_TIME_OUT_SECONDS,
@@ -115,7 +116,7 @@ namespace DCLServices.WearablesCatalogService
 
             if (createNewPointer)
             {
-                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new LambdaResponsePagePointer<WearableResponse>(
+                thirdPartyCollectionPagePointers[(userId, collectionId)] = pagePointer = new LambdaResponsePagePointer<WearableWithDefinitionResponse>(
                     PAGINATED_WEARABLES_END_POINT + $"{userId}?collectionId={collectionId}",
                     pageSize, ct, this);
             }
@@ -125,10 +126,11 @@ namespace DCLServices.WearablesCatalogService
             if (!pageResponse.success)
                 throw new Exception($"The request of the '{collectionId}' third party wearables collection of '{userId}' failed!");
 
-            MapLambdasDataIntoWearableItem(pageResponse.response.wearables);
-            AddWearablesToCatalog(pageResponse.response.wearables);
+            var wearables = pageResponse.response.wearables.Select(x => x.definition).ToList();
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
 
-            return pageResponse.response.wearables;
+            return wearables;
         }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
@@ -218,16 +220,17 @@ namespace DCLServices.WearablesCatalogService
             return wearable != null;
         }
 
-        UniTask<(WearableResponse response, bool success)> ILambdaServiceConsumer<WearableResponse>.CreateRequest
+        UniTask<(WearableWithDefinitionResponse response, bool success)> ILambdaServiceConsumer<WearableWithDefinitionResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
-            lambdasService.Ref.Get<WearableResponse>(
+            lambdasService.Ref.Get<WearableWithDefinitionResponse>(
                 PAGINATED_WEARABLES_END_POINT,
                 endPoint,
                 REQUESTS_TIME_OUT_SECONDS,
                 ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
                 cancellationToken,
                 LambdaPaginatedResponseHelper.GetPageSizeParam(pageSize),
-                LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber));
+                LambdaPaginatedResponseHelper.GetPageNumParam(pageNumber),
+                ("includeDefinitions", "true"));
 
         private async UniTask<WearableItem> SyncWearablesRequestsAsync(string newWearableId, CancellationToken ct)
         {
@@ -248,11 +251,11 @@ namespace DCLServices.WearablesCatalogService
                 wearableIds.AddRange(pendingWearablesToRequest);
                 pendingWearablesToRequest.Clear();
 
-                (WearableResponse response, bool success) serviceResponse;
+                (WearableWithoutDefinitionResponse response, bool success) serviceResponse;
 
                 try
                 {
-                    serviceResponse = await lambdasService.Ref.Get<WearableResponse>(
+                    serviceResponse = await lambdasService.Ref.Get<WearableWithoutDefinitionResponse>(
                         NON_PAGINATED_WEARABLES_END_POINT,
                         NON_PAGINATED_WEARABLES_END_POINT,
                         REQUESTS_TIME_OUT_SECONDS,
@@ -285,7 +288,7 @@ namespace DCLServices.WearablesCatalogService
             return result.FirstOrDefault(x => x.id == newWearableId);
         }
 
-        private static void MapLambdasDataIntoWearableItem(List<WearableItem> wearablesFromLambdas)
+        private static void MapLambdasDataIntoWearableItem(IEnumerable<WearableItem> wearablesFromLambdas)
         {
             foreach (var wearable in wearablesFromLambdas)
             {
