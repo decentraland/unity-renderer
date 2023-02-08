@@ -2,6 +2,7 @@ using AvatarSystem;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using System;
 using UnityEngine;
 
 namespace DCL.Components
@@ -19,6 +20,7 @@ namespace DCL.Components
         public event System.Action OnPointerEnterReport;
         public event System.Action OnPointerExitReport;
         private OnPointerEvent.Model model;
+        private bool isHoveringEnabled;
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
@@ -29,32 +31,13 @@ namespace DCL.Components
             CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
         }
 
-        private void AllUIHiddenChanged(bool isAllUIHidden, bool _)
-        {
-            if (isAllUIHidden)
-                ResetAvatarOutlined();
-        }
-
-        private void ResetAvatarOutlined()
-        {
-            DataStore.i.outliner.avatarOutlined.Set((null, -1, -1));
-        }
-
-        private void SetAvatarOutlined()
-        {
-            if (avatar.status == IAvatar.Status.Loaded)
-            {
-                var renderer = avatar.GetMainRenderer();
-
-                if (renderer != null && !CommonScriptableObjects.allUIHidden.Get())
-                    DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
-            }
-        }
-
         private void OnDestroy()
         {
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
+
+        public void SetEnabled(bool enabled) =>
+            isHoveringEnabled = enabled;
 
         public Transform GetTransform() =>
             transform;
@@ -63,8 +46,8 @@ namespace DCL.Components
 
         public void SetHoverState(bool state)
         {
-            if (isHovered == state)
-                return;
+            if (!isHoveringEnabled) return;
+            if (isHovered == state) return;
 
             isHovered = state;
 
@@ -92,5 +75,27 @@ namespace DCL.Components
         }
 
         public void OnPoolGet() { }
+
+        private void AllUIHiddenChanged(bool isAllUIHidden, bool _)
+        {
+            if (isAllUIHidden)
+                ResetAvatarOutlined();
+        }
+
+        private void ResetAvatarOutlined()
+        {
+            DataStore.i.outliner.avatarOutlined.Set((null, -1, -1));
+        }
+
+        private void SetAvatarOutlined()
+        {
+            if (avatar.status == IAvatar.Status.Loaded)
+            {
+                var renderer = avatar.GetMainRenderer();
+
+                if (renderer != null && !CommonScriptableObjects.allUIHidden.Get())
+                    DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
+            }
+        }
     }
 }
