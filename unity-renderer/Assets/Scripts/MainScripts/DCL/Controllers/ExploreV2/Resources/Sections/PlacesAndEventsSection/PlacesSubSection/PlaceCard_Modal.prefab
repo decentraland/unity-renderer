@@ -1129,6 +1129,7 @@ MonoBehaviour:
   infoVerticalLayout: {fileID: 8391442166639773757}
   cardAnimator: {fileID: 0}
   favoriteButton: {fileID: 0}
+  favoriteButtonContainer: {fileID: 0}
   defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   model:
     placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
@@ -1151,6 +1152,9 @@ MonoBehaviour:
       parcels: []
       usersTotalCount: 0
       realms: []
+  onFavoriteClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3371963031403288175
 GameObject:
   m_ObjectHideFlags: 0
@@ -1417,7 +1421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2435194396389998009
 RectTransform:
   m_ObjectHideFlags: 0

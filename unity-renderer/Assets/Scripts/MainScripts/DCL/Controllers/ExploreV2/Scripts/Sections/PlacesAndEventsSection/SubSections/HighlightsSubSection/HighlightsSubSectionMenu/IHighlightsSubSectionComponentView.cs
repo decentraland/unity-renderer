@@ -30,6 +30,11 @@ public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionC
     event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
 
     /// <summary>
+    /// It will be triggered when the place favorite button is clicked.
+    /// </summary>
+    event Action<HotScenesController.HotSceneInfo> OnFavoriteClicked;
+
+    /// <summary>
     /// It will be triggered when the event JumpIn button is clicked.
     /// </summary>
     event Action<EventFromAPIModel> OnEventJumpInClicked;

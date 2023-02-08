@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
 {
+    event Action<string, bool> OnFavoritePlaceChange;
+
     FriendsHandler friendsHandler { get; set; }
 
     /// <summary>
@@ -112,6 +114,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
     [SerializeField] internal FavoriteButtonComponentView favoriteButton;
+    [SerializeField] internal GameObject favoriteButtonContainer;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -125,7 +128,11 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
     public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
 
+    public Button.ButtonClickedEvent onFavoriteClick;
+
+
     private bool thumbnailFromMarketPlaceRequested;
+    public event Action<string, bool> OnFavoritePlaceChange;
 
     public override void Awake()
     {
@@ -190,6 +197,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void SetFavoriteButton()
     {
+        if (favoriteButton == null)
+            return;
+
         favoriteButton.Configure(new FavoriteButtonComponentModel()
         {
             isFavorite = true,
@@ -202,7 +212,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
-        //TODO: wire Places API request once completed
+        onFavoriteClick?.Invoke();
     }
 
     public override void OnFocus()

@@ -73,7 +73,7 @@ public class ExplorePlacesCommonTests
         PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
 
         // Act
-        PlacesCardsConfigurator.Configure(testPlaceCard, testPlaceInfo, null, null);
+        PlacesCardsConfigurator.Configure(testPlaceCard, testPlaceInfo, null, null, null);
 
         // Assert
         Assert.AreEqual(testPlaceInfo, testPlaceCard.model, "The place card model does not match.");
