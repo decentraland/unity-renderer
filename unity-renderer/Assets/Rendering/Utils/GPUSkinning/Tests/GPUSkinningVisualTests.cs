@@ -14,7 +14,6 @@ using UnityEngine.TestTools;
 
 public class GPUSkinningVisualTests : VisualTestsBase
 {
-    private BaseDictionary<string, WearableItem> catalog;
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
@@ -23,7 +22,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        catalog = EnsureCatalog();
+        PrepareCatalog();
 
         avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
@@ -31,11 +30,11 @@ public class GPUSkinningVisualTests : VisualTestsBase
         Assert.NotNull(avatarMaterial);
     }
 
-    private BaseDictionary<string, WearableItem> EnsureCatalog()
+    private void PrepareCatalog()
     {
         wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
         wearablesCatalogService.Initialize();
-        return AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
+        AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
     }
 
     [UnityTest, VisualTest]
@@ -93,7 +92,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject container, AvatarMeshCombinerHelper combiner)
     {
-        catalog.TryGetValue(wearableId, out WearableItem wearableItem);
+        wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
         WearableLoader wearableLoader = new WearableLoader(new WearableRetriever(), wearableItem);

@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,8 +7,8 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Shaders;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
@@ -29,6 +29,7 @@ namespace Test.AvatarSystem
         private IRetrieverFactory retrieverFactory;
         private GameObject container = null;
         private readonly List<Material> materialsToBeDisposed = new List<Material>();
+        private IWearablesCatalogService wearablesCatalogService;
 
         private class BodyParts
         {
@@ -53,17 +54,17 @@ namespace Test.AvatarSystem
 
             bodyshapeLoader = new BodyShapeLoader(
                 retrieverFactory,
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID]);
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID]);
         }
 
         private void PrepareCatalog()
         {
-            //This is really, really ugly. There's no other way to solve it until the catalog is in our service locator
-            container.AddComponent<CatalogController>();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+            wearablesCatalogService.Initialize();
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
 
         [UnityTest]
@@ -336,12 +337,10 @@ namespace Test.AvatarSystem
         public void TearDown()
         {
             bodyshapeLoader?.Dispose();
-            CatalogController.Clear();
             if (container != null)
                 Object.Destroy(container);
 
-            if (CatalogController.i != null)
-                Object.Destroy(CatalogController.i);
+            wearablesCatalogService.Dispose();
 
             for (int i = 0; i < materialsToBeDisposed.Count; i++)
             {
@@ -351,4 +350,4 @@ namespace Test.AvatarSystem
             }
         }
     }
-}*/
+}

@@ -24,7 +24,7 @@ public static class AvatarAssetsTestHelpers
         wid.thumbnail = "";
     }
 
-    public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal(IWearablesCatalogService wearablesCatalogService)
+    public static void CreateTestCatalogLocal(IWearablesCatalogService wearablesCatalogService)
     {
         List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
 
@@ -38,7 +38,5 @@ public static class AvatarAssetsTestHelpers
         var wearables = dummyWearables.Select(x => x as WearableItem).ToArray();
 
         wearablesCatalogService.AddWearablesToCatalog(wearables);
-
-        return wearablesCatalogService.WearablesCatalog;
     }
 }
