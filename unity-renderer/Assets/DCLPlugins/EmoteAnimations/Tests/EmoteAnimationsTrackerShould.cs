@@ -1,12 +1,10 @@
-/*using System.Threading;
+using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using DCL.Providers;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -19,13 +17,13 @@ namespace DCL.Emotes
         private EmoteAnimationLoaderFactory loaderFactory;
         private IWearableItemResolver resolver;
         private IEmotesCatalogService emoteCatalog;
-        private CatalogController catalogController;
+        private IWearablesCatalogService wearablesCatalogService;
 
 
         [SetUp]
         public void SetUp()
         {
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+            wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
             dataStore = new DataStore_Emotes();
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
@@ -34,7 +32,7 @@ namespace DCL.Emotes
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
             emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
 
-            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog);
+            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog, wearablesCatalogService);
         }
 
         private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
@@ -43,9 +41,6 @@ namespace DCL.Emotes
             embeddedEmotes.emotes = new EmbeddedEmote [] { };
             return embeddedEmotes;
         }
-
-        [TearDown]
-        public void TearDown() { Object.Destroy(catalogController.gameObject); }
 
 
         [UnityTest]
@@ -59,7 +54,7 @@ namespace DCL.Emotes
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.clip, emote.maleAnimation);
                 Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
-                Assert.AreEqual(CatalogController.wearableCatalog[emote.id], emote);
+                Assert.AreEqual(wearablesCatalogService.WearablesCatalog[emote.id], emote);
             }
         }
 
@@ -116,4 +111,4 @@ namespace DCL.Emotes
             Assert.IsFalse(dataStore.animations.ContainsKey((bodyshapeId, "emote0")));
         }
     }
-}*/
+}
