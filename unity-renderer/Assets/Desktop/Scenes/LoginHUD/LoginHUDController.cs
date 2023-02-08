@@ -40,7 +40,7 @@ namespace Login
         private void ChangeMainScene()
         {
             view.SetLoading(true);
-            SceneManager.LoadSceneAsync(sceneName: $"MainScene", LoadSceneMode.Single);
+            SceneManager.LoadSceneAsync(sceneName: "MainScene", LoadSceneMode.Single);
         }
 
         public void Dispose()

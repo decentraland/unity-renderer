@@ -36,6 +36,9 @@ namespace DCL
             InitializeSettings();
 
             base.Awake();
+
+            preloadingController = new PreloadingController(Environment.i.serviceLocator.Get<IAddressableResourceProvider>());
+
             DataStore.i.wsCommunication.communicationEstablished.OnChange += OnCommunicationEstablished;
             DataStore.i.performance.multithreading.Set(true);
             DataStore.i.performance.maxDownloads.Set(50);
@@ -145,12 +148,6 @@ namespace DCL
                 SettingsDesktop.i.displaySettings.Apply(newDisplaySettings);
                 SettingsDesktop.i.displaySettings.Save();
             }
-        }
-
-        protected override void InitializeSceneDependencies()
-        {
-            base.InitializeSceneDependencies();
-            preloadingController = new PreloadingController(new AddressableResourceProvider());
         }
 
         protected override void SetupServices()
