@@ -6,6 +6,7 @@ using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 #if UNITY_EDITOR
 using DG.Tweening;
@@ -175,6 +176,7 @@ namespace DCL
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
