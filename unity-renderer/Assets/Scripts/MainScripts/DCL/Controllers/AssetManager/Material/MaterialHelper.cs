@@ -14,12 +14,13 @@ namespace DCL
             return new Material(Utils.EnsureResourcesMaterial(MATERIAL_PATH));
         }
 
-        public static void SetUp(Material material, float alphaTest)
+        public static void SetUp(Material material, float alphaTest, Color diffuseColor)
         {
             material.EnableKeyword("_ALPHATEST_ON");
             material.SetInt(ShaderUtils.ZWrite, 1);
             material.SetFloat(ShaderUtils.AlphaClip, 1);
             material.SetFloat(ShaderUtils.Cutoff, alphaTest);
+            material.SetColor(ShaderUtils.BaseColor, diffuseColor);
             material.renderQueue = (int)RenderQueue.AlphaTest;
         }
     }

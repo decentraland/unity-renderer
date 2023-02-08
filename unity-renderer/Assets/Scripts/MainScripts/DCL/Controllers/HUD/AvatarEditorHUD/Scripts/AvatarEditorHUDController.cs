@@ -289,8 +289,8 @@ public class AvatarEditorHUDController : IHUD
             foreach (var e in emotesList)
                 emotesFilter.Add(e.id);
 
-            if(loadingWearables)
-                await UniTask.WaitWhile(() => loadingWearables, cancellationToken: ct);
+            if (loadingWearables)
+                await UniTaskUtils.WaitForBoolean(ref loadingWearables, false, cancellationToken: ct);
 
             if (emotesLoadedAsWearables != null)
             {
