@@ -1,8 +1,10 @@
-using DCL;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
+using NSubstitute;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public static class AvatarAssetsTestHelpers
@@ -27,17 +29,53 @@ public static class AvatarAssetsTestHelpers
 
     public static IWearablesCatalogService CreateTestCatalogLocal()
     {
-        IWearablesCatalogService wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-        wearablesCatalogService.Initialize();
-
+        IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
         List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
+        BaseDictionary<string, WearableItem> dummyCatalog = new ();
+
         foreach (var wearableItem in dummyWearables)
+        {
             PrepareWearableItemDummy(wearableItem);
+            dummyCatalog.Add(wearableItem.id, wearableItem);
+        }
 
-        wearablesCatalogService.Clear();
+        wearablesCatalogService.WearablesCatalog.Returns(dummyCatalog);
 
-        var wearables = dummyWearables.Select(x => x as WearableItem).ToArray();
-        wearablesCatalogService.AddWearablesToCatalog(wearables);
+        wearablesCatalogService
+           .RequestOwnedWearablesAsync( Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+           .Returns(_ =>
+            {
+                UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+                mockedResult.TrySetResult(new List<WearableItem>());
+                return mockedResult.Task;
+            });
+
+        wearablesCatalogService
+           .RequestBaseWearablesAsync(Arg.Any<CancellationToken>())
+           .Returns(_ =>
+            {
+                UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+                mockedResult.TrySetResult(new List<WearableItem>());
+                return mockedResult.Task;
+            });
+
+        wearablesCatalogService
+           .RequestThirdPartyWearablesByCollectionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+           .Returns(_ =>
+            {
+                UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+                mockedResult.TrySetResult(new List<WearableItem>());
+                return mockedResult.Task;
+            });
+
+        wearablesCatalogService
+           .RequestWearableAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+           .Returns(_ =>
+            {
+                UniTaskCompletionSource<WearableItem> mockedResult = new UniTaskCompletionSource<WearableItem>();
+                mockedResult.TrySetResult(null);
+                return mockedResult.Task;
+            });
 
         return wearablesCatalogService;
     }
