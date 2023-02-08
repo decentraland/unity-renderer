@@ -1,10 +1,9 @@
-/*using AvatarShape_Tests;
 using DCL;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using UnityEngine.TestTools;
 using NSubstitute;
@@ -18,8 +17,7 @@ namespace AvatarEditorHUD_Tests
 
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
-        private CatalogController catalogController;
-        private BaseDictionary<string, WearableItem> catalog;
+        private IWearablesCatalogService wearablesCatalogService;
         private ColorList skinColorList;
         private ColorList hairColorList;
         private ColorList eyeColorList;
@@ -40,14 +38,13 @@ namespace AvatarEditorHUD_Tests
             }
 
             analytics = Substitute.For<IAnalytics>();
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
-            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
+            PrepareCatalog();
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
             // TODO: We should convert the WearablesFetchingHelper static class into a non-static one and make it implement an interface. It would allow us to inject it
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
@@ -68,7 +65,7 @@ namespace AvatarEditorHUD_Tests
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
-            Object.Destroy(catalogController.gameObject);
+            wearablesCatalogService.Dispose();
             controller.Dispose();
             yield return base.TearDown();
         }
@@ -340,9 +337,12 @@ namespace AvatarEditorHUD_Tests
                 i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped2" } }
             };
 
-            catalog.Add(alreadyExistingTestWearable.id, alreadyExistingTestWearable);
-            catalog.Add(newTestWearableequipped1.id, newTestWearableequipped1);
-            catalog.Add(newTestWearableequipped2.id, newTestWearableequipped2);
+            wearablesCatalogService.AddWearablesToCatalog(new[]
+            {
+                alreadyExistingTestWearable,
+                newTestWearableequipped1,
+                newTestWearableequipped2
+            });
 
             List<string> oldWearables = new List<string>
             {
@@ -377,5 +377,12 @@ namespace AvatarEditorHUD_Tests
             Assert.AreEqual(avatarModel.hairColor, avatarEditorHUDModel.hairColor);
             Assert.AreEqual(avatarModel.eyeColor, avatarEditorHUDModel.eyesColor);
         }
+
+        private void PrepareCatalog()
+        {
+            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+            wearablesCatalogService.Initialize();
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
+        }
     }
-}*/
+}

@@ -1,5 +1,5 @@
-/*using DCL;
-using DCL.Helpers;
+using DCL;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
@@ -12,8 +12,9 @@ namespace AvatarEditorHUD_Tests
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
         public AvatarEditorHUDController_Mock(DataStore_FeatureFlag featureFlags,
-            IAnalytics analytics)
-            : base(featureFlags, analytics)
+            IAnalytics analytics,
+            IWearablesCatalogService wearablesCatalogService)
+            : base(featureFlags, analytics, wearablesCatalogService)
         {
         }
 
@@ -25,11 +26,10 @@ namespace AvatarEditorHUD_Tests
 
     public class WearableItemsShould : IntegrationTestSuite_Legacy
     {
-        private CatalogController catalogController;
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
-        private BaseDictionary<string, WearableItem> catalog;
         private IAnalytics analytics;
+        private IWearablesCatalogService wearablesCatalogService;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -50,18 +50,17 @@ namespace AvatarEditorHUD_Tests
             });
 
             analytics = Substitute.For<IAnalytics>();
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
-            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
+            PrepareCatalog();
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
-            Object.Destroy(catalogController.gameObject);
+            wearablesCatalogService.Dispose();
             controller.CleanUp();
             Object.Destroy(userProfile);
             yield return base.TearDown();
@@ -71,7 +70,7 @@ namespace AvatarEditorHUD_Tests
         public void BeAddedWhenEquiped()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
+            var sunglasses = wearablesCatalogService.WearablesCatalog.Get(sunglassesId);
 
             controller.WearableClicked(sunglassesId);
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
@@ -81,9 +80,9 @@ namespace AvatarEditorHUD_Tests
         public void BeReplacedByGeneralReplaces()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
+            var sunglasses = wearablesCatalogService.WearablesCatalog.Get(sunglassesId);
             var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var bandana = wearablesCatalogService.WearablesCatalog.Get(bandanaId);
 
             bandana.data.replaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
@@ -97,9 +96,9 @@ namespace AvatarEditorHUD_Tests
         public void NotBeReplacedByWrongGeneralReplaces()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
+            var sunglasses = wearablesCatalogService.WearablesCatalog.Get(sunglassesId);
             var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var bandana = wearablesCatalogService.WearablesCatalog.Get(bandanaId);
 
             bandana.data.replaces = new[] { "NonExistentCategory" };
             controller.WearableClicked(sunglassesId);
@@ -113,9 +112,9 @@ namespace AvatarEditorHUD_Tests
         public void BeReplacedByOverrideReplaces()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
+            var sunglasses = wearablesCatalogService.WearablesCatalog.Get(sunglassesId);
             var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var bandana = wearablesCatalogService.WearablesCatalog.Get(bandanaId);
 
             bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
@@ -129,9 +128,9 @@ namespace AvatarEditorHUD_Tests
         public void NotBeReplacedByWrongOverrideReplaces()
         {
             var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
+            var sunglasses = wearablesCatalogService.WearablesCatalog.Get(sunglassesId);
             var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var bandana = wearablesCatalogService.WearablesCatalog.Get(bandanaId);
 
             bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE)
                 .overrideReplaces = new[] { sunglasses.data.category };
@@ -141,5 +140,12 @@ namespace AvatarEditorHUD_Tests
             Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
+
+        private void PrepareCatalog()
+        {
+            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+            wearablesCatalogService.Initialize();
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
+        }
     }
-}*/
+}
