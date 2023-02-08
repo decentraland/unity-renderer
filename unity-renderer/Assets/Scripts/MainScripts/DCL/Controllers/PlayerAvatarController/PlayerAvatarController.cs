@@ -2,10 +2,8 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
-using DCL.Emotes;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
-using DCL.Models;
 using DCL.NotificationModel;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
@@ -264,24 +262,19 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             CommonScriptableObjects.rendererState.RemoveLock(this);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
-            var entity = new DecentralandEntity
-            {
-                gameObject = gameObject,
-            };
-
             onPointerDown.Initialize(
-                new OnPointerDown.Model
+                new OnPointerEvent.Model
                 {
                     type = OnPointerDown.NAME,
                     button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
                     hoverText = "View My Profile",
                 },
-                entity,
+                null,
                 player
             );
             onPointerDown.SetPassportEnabled(true);
 
-            outlineOnHover.Initialize(new OnPointerDown.Model(), entity, avatar);
+            outlineOnHover.Initialize(new OnPointerEvent.Model(), null, avatar);
         }
     }
 

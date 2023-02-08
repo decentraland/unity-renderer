@@ -422,9 +422,12 @@ namespace DCL
                 WebInterface.ReportGlobalPointerEvent(eventType, buttonId, raycastInfoGlobalLayer.ray, Vector3.zero, Vector3.zero, 0, sceneNumber);
         }
 
-        private static bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo) =>
-            pointerInputEvent != null && colliderInfo.entity != null &&
-            pointerInputEvent.entity == colliderInfo.entity;
+        private static bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo)
+        {
+            if (pointerInputEvent == null) return false;
+            if (pointerInputEvent.entity == null && colliderInfo.entity == null) return true;
+            return pointerInputEvent.entity == colliderInfo.entity;
+        }
 
         private bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit) =>
             potentialBlockerHit.hit.collider != null // Does a potential blocker hit exist?

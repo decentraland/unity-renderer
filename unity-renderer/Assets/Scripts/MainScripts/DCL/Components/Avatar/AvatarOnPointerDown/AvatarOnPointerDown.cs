@@ -15,7 +15,6 @@ namespace DCL.Components
         private OnPointerEvent.Model model;
         private OnPointerEventHandler eventHandler;
 
-        public InteractionHoverCanvasController hoverCanvas;
         public IDCLEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
         public event System.Action OnPointerEnterReport;
@@ -26,10 +25,8 @@ namespace DCL.Components
         private bool onClickReportEnabled = true;
         private Player avatarPlayer;
 
-        public WebInterface.ACTION_BUTTON GetActionButton()
-        {
-            return model.GetActionButton();
-        }
+        public WebInterface.ACTION_BUTTON GetActionButton() =>
+            model.GetActionButton();
 
         public void SetHoverState(bool state)
         {
@@ -55,16 +52,18 @@ namespace DCL.Components
             OnPointerExitReport?.Invoke();
         }
 
-        void Awake()
+        private void Awake()
         {
             CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed;
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             CommonScriptableObjects.playerInfoCardVisibleState.OnChange -= ReEnableOnInfoCardClosed;
             eventHandler?.Dispose();
-            CollidersManager.i.RemoveEntityCollider(entity, collider);
+
+            if (entity != null)
+                CollidersManager.i.RemoveEntityCollider(entity, collider);
         }
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, Player player)
@@ -76,17 +75,18 @@ namespace DCL.Components
             if (eventHandler == null)
                 eventHandler = new OnPointerEventHandler();
 
-            eventHandler?.SetColliders(entity);
-            CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
+            if (entity != null)
+            {
+                eventHandler?.SetColliders(entity);
+                CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
+            }
         }
 
         public bool IsAtHoverDistance(float distance) =>
             !Utils.IsCursorLocked || distance <= model.distance;
 
-        public bool IsVisible()
-        {
-            return true;
-        }
+        public bool IsVisible() =>
+            true;
 
         private bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit) =>
             isHovering && (model.button == "ANY" || buttonId.ToString() == model.button);
@@ -117,10 +117,8 @@ namespace DCL.Components
             }
         }
 
-        public PointerInputEventType GetEventType()
-        {
-            return PointerInputEventType.DOWN;
-        }
+        public PointerInputEventType GetEventType() =>
+            PointerInputEventType.DOWN;
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
@@ -146,10 +144,8 @@ namespace DCL.Components
             onClickReportEnabled = newEnabledState;
         }
 
-        public Transform GetTransform()
-        {
-            return transform;
-        }
+        public Transform GetTransform() =>
+            transform;
 
         public void OnPoolRelease()
         {
@@ -177,9 +173,7 @@ namespace DCL.Components
                 PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
         }
 
-        public bool ShouldShowHoverFeedback()
-        {
-            return enabled && model.showFeedback;
-        }
+        public bool ShouldShowHoverFeedback() =>
+            enabled && model.showFeedback;
     }
 }
