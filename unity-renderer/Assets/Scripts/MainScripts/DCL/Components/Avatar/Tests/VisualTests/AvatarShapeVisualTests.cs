@@ -1,6 +1,7 @@
-/*using AvatarShape_Tests;
+using AvatarShape_Tests;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -11,17 +12,17 @@ namespace Tests
     // Visual tests are disabled until we fix the resolution issue
     public class AvatarShapeVisualTests : VisualTestsBase
     {
-        private CatalogController catalogController;
+        private IWearablesCatalogService wearablesCatalogService;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+            PrepareCatalog();
         }
 
         protected override IEnumerator TearDown()
         {
-            Object.Destroy(catalogController.gameObject);
+            wearablesCatalogService.Dispose();
             yield return base.TearDown();
         }
 
@@ -37,7 +38,6 @@ namespace Tests
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest1()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
@@ -64,7 +64,6 @@ namespace Tests
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest2()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
@@ -76,5 +75,12 @@ namespace Tests
 
             yield return VisualTestUtils.TakeSnapshot("AvatarShape_B", camera);
         }
+
+        private void PrepareCatalog()
+        {
+            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+            wearablesCatalogService.Initialize();
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
+        }
     }
-}*/
+}
