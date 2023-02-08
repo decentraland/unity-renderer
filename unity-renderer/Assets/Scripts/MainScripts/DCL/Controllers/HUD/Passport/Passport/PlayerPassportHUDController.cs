@@ -97,7 +97,7 @@ namespace DCL.Social.Passports
             isOpen = false;
 
             passportNavigationController.CloseAllNFTItemInfos();
-            passportNavigationController.SetViewInitialPage();
+            passportNavigationController.ResetNavigationTab();
             playerInfoController.ClosePassport();
             currentPlayerId.Set(null);
         }

@@ -76,10 +76,16 @@ namespace DCL.Social.Passports
         [SerializeField] internal ScrollRect nftLandsScrollRect;
         [SerializeField] internal ScrollRect collectiblesMainScrollRect;
 
+        [SerializeField] private ButtonComponentView viewAllWearables;
+        [SerializeField] private ButtonComponentView viewAllEmotes;
+        [SerializeField] private ButtonComponentView viewAllNAMEs;
+        [SerializeField] private ButtonComponentView viewAllLANDs;
+
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
+        public event Action<string> OnClickedViewAll;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
@@ -105,6 +111,22 @@ namespace DCL.Social.Passports
             nftNamesScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             nftLandsScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             collectiblesMainScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
+
+            viewAllWearables.onClick.AddListener(()=>OpenViewAllSection("wearables"));
+            viewAllEmotes.onClick.AddListener(()=>OpenViewAllSection("emotes"));
+            viewAllNAMEs.onClick.AddListener(()=>OpenViewAllSection("names"));
+            viewAllLANDs.onClick.AddListener(()=>OpenViewAllSection("lands"));
+        }
+
+        private void OpenViewAllSection(string sectionName)
+        {
+            OnClickedViewAll?.Invoke(sectionName);
+        }
+
+        public void CloseAllSections()
+        {
+            aboutPanel.SetActive(false);
+            wearablesPanel.SetActive(false);
         }
 
         private void EnableAboutSection(bool isActive)
@@ -330,6 +352,11 @@ namespace DCL.Social.Passports
         public void SetHasBlockedOwnUser(bool isBlocked)
         {
             hasBlockedPanel.SetActive(isBlocked);
+        }
+
+        public void OpenCollectiblesTab()
+        {
+            wearablesPanel.SetActive(true);
         }
 
         public void SetInitialPage()

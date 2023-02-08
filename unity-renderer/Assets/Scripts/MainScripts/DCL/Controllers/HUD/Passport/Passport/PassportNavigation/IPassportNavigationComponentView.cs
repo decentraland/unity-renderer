@@ -8,6 +8,7 @@ namespace DCL.Social.Passports
     {
         event Action<string, string> OnClickBuyNft;
         event Action OnClickCollectibles;
+        event Action<string> OnClickedViewAll;
         void InitializeView();
         void SetGuestUser(bool isGuest);
         void SetName(string username);
@@ -24,6 +25,8 @@ namespace DCL.Social.Passports
         void SetCollectibleLandsLoadingActive(bool isActive);
         void SetHasBlockedOwnUser(bool isBlocked);
         void CloseAllNFTItemInfos();
+        void CloseAllSections();
+        void OpenCollectiblesTab();
         void SetInitialPage();
     }
 }

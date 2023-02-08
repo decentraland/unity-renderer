@@ -24,6 +24,7 @@ namespace DCL.Social.Passports
         private readonly ILandsService landsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
+        private readonly ViewAllComponentController viewAllController;
         private string currentUserId;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
@@ -33,6 +34,7 @@ namespace DCL.Social.Passports
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
+
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Promise<WearableItem[]> wearablesPromise;
         private Promise<WearableItem[]> emotesPromise;
@@ -46,7 +48,8 @@ namespace DCL.Social.Passports
             INamesService namesService,
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
-            DataStore dataStore)
+            DataStore dataStore,
+            ViewAllComponentController viewAllController)
         {
             this.view = view;
             this.profanityFilter = profanityFilter;
@@ -57,8 +60,24 @@ namespace DCL.Social.Passports
             this.landsService = landsService;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
+            this.viewAllController = viewAllController;
+
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
+            view.OnClickedViewAll += ClickedViewAll;
+            viewAllController.OnBackFromViewAll += BackFromViewAll;
+        }
+
+        private void BackFromViewAll()
+        {
+            view.OpenCollectiblesTab();
+        }
+
+        private void ClickedViewAll(string sectionName)
+        {
+            view.CloseAllSections();
+            viewAllController.SetViewAllVisibility(true);
+            viewAllController.OpenViewAllSection(sectionName);
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -92,8 +111,11 @@ namespace DCL.Social.Passports
 
         public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
 
-        public void SetViewInitialPage() =>
+        public void ResetNavigationTab()
+        {
             view.SetInitialPage();
+            viewAllController.SetViewAllVisibility(false);
+        }
 
         public void Dispose()
         {
