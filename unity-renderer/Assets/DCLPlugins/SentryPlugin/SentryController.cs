@@ -11,7 +11,7 @@ namespace DCLPlugins.SentryPlugin
         private readonly DataStore_Realm realmStore;
         private readonly IHub sentryHub;
         private static string prefix = "explorer.";
-        private Vector3 currentPlayerPosition, previousPlayerPosition;
+        private Vector3 currentTeleportPosition, previousTeleportPosition;
 
         public SentryController(DataStore_Player playerStore, DataStore_Realm realmStore, IHub sentryHub)
         {
@@ -38,8 +38,8 @@ namespace DCLPlugins.SentryPlugin
 
         private void LastTeleportPositionOnOnChange(Vector3 current, Vector3 previous)
         {
-            currentPlayerPosition = current;
-            previousPlayerPosition = previous;
+            currentTeleportPosition = current;
+            previousTeleportPosition = previous;
             UpdatePlayerContext();
         }
 
@@ -54,8 +54,8 @@ namespace DCLPlugins.SentryPlugin
             {
                 scope.Contexts[$"{prefix}teleport"] = new
                 {
-                    current_teleport_position = $"{currentPlayerPosition.x},{currentPlayerPosition.y}",
-                    previous_teleport_position = $"{previousPlayerPosition.x},{previousPlayerPosition.y}",
+                    current_teleport_position = $"{currentTeleportPosition.x},{currentTeleportPosition.y}",
+                    previous_teleport_position = $"{previousTeleportPosition.x},{previousTeleportPosition.y}",
                     total_other_players = this.playerStore.otherPlayers.Count(),
                 };
             });
