@@ -16,10 +16,8 @@ export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
   await ensureRealmAdapterPromise()
   const url = getHotScenesService(store.getState())
   const response = await fetch(url)
-  console.log("url is " + url)
   if (response.ok) {
     const info = await response.json()
-    console.log("response from places is " + info)
     return info.map((scene: any) => {
       return {
         ...scene,
