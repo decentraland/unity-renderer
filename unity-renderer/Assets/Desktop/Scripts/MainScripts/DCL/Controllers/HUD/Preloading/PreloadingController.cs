@@ -11,13 +11,13 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
 {
     public class PreloadingController : IDisposable
     {
-        private GameObject view;
         private readonly DataStoreRef<DataStore_LoadingScreen> loadingScreenRef;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
-        private BaseVariable<bool> isSignUpFlow => DataStore.i.common.isSignUpFlow;
+        private GameObject view;
         private bool isDisposed;
 
-        private readonly CancellationTokenSource cancellationTokenSource;
+        private BaseVariable<bool> isSignUpFlow => DataStore.i.common.isSignUpFlow;
 
         public PreloadingController(IAddressableResourceProvider addressableResourceProvider)
         {
@@ -41,7 +41,7 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
             cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
 
-            WaitForViewsToFadeOut();
+            WaitForViewsToFadeOut().Forget();
         }
 
         private void OnDecoupledLoadingScreenVisibilityChange(bool current, bool _)
@@ -50,14 +50,17 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
                 Dispose();
         }
 
-        async UniTask WaitForViewsToFadeOut()
+        private async UniTask WaitForViewsToFadeOut()
         {
             //This wait will be removed when we merge both loading screen into a single decoupled loading screen
             await UniTask.Delay(TimeSpan.FromSeconds(2), ignoreTimeScale: false);
+
             loadingScreenRef.Ref.loadingHUD.message.OnChange -= OnMessageChange;
             loadingScreenRef.Ref.decoupledLoadingHUD.visible.OnChange -= OnDecoupledLoadingScreenVisibilityChange;
             isSignUpFlow.OnChange -= SignUpFlowChanged;
-            Object.Destroy(view.gameObject);
+
+            if(view != null)
+                Object.Destroy(view.gameObject);
         }
 
         private void OnMessageChange(string current, string previous)
