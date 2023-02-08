@@ -32,7 +32,7 @@ public interface IHighlightsSubSectionComponentView: IPlacesAndEventsSubSectionC
     /// <summary>
     /// It will be triggered when the place favorite button is clicked.
     /// </summary>
-    event Action<HotScenesController.HotSceneInfo> OnFavoriteClicked;
+    event Action<string, bool> OnFavoriteClicked;
 
     /// <summary>
     /// It will be triggered when the event JumpIn button is clicked.

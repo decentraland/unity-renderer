@@ -128,7 +128,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
     public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
 
-    public Button.ButtonClickedEvent onFavoriteClick;
+    public event Action<string, bool> onFavoriteClick;
 
 
     private bool thumbnailFromMarketPlaceRequested;
@@ -212,7 +212,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
-        onFavoriteClick?.Invoke();
+        onFavoriteClick?.Invoke(placeUUID, isFavorite);
     }
 
     public override void OnFocus()

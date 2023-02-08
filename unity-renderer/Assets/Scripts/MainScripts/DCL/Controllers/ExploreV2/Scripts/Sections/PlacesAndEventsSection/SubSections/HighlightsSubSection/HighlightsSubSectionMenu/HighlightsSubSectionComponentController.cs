@@ -64,7 +64,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.ConfigurePools();
     }
 
-    private void FavoritePlace(HotSceneInfo obj)
+    private void FavoritePlace(string placeUUID, bool isFavorite)
     {
         //TODO: wire add/remove favorite request when places API is ready
     }

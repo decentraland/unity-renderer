@@ -44,7 +44,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
     public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnFavoriteClicked;
+    public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
     public event Action OnShowMorePlacesClicked;

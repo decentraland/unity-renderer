@@ -54,12 +54,12 @@ public class PlacesAPIController : IPlacesAPIController
 
     public void AddFavorite(string placeUUID)
     {
-        throw new NotImplementedException();
+        //TODO: wire the request once kernel part is ready
     }
 
     public void RemoveFavorite(string placeUUID)
     {
-        throw new NotImplementedException();
+        //TODO: wire the request once kernel part is ready
     }
 
     private void OnFetchHotScenes()
