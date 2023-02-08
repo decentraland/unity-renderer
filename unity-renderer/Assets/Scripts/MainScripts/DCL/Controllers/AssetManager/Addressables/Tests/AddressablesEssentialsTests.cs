@@ -39,9 +39,13 @@ namespace DCL.Tests
             var addressableProvider = new AddressableResourceProvider();
 
             //Act
+            var dabAnim = await addressableProvider.GetAddressable<AnimationClip>("dab.anim");
+            var tikAnim = await addressableProvider.GetAddressable<AnimationClip>("tik.anim");
             var loadingScreen = await addressableProvider.GetAddressable<GameObject>("_LoadingScreen");
 
             //Assert
+            Assert.NotNull(dabAnim);
+            Assert.NotNull(tikAnim);
             Assert.NotNull(loadingScreen);
         }
 
