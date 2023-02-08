@@ -17,20 +17,30 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 using static HUDAssetPath;
 using Environment = DCL.Environment;
 
 public class HUDFactory : IHUDFactory
 {
-    private readonly IAddressableResourceProvider assetsProvider;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
     private readonly List<IDisposable> disposableViews;
 
+    private Service<IAddressableResourceProvider> assetsProviderService;
+    private IAddressableResourceProvider assetsProviderRef;
+
+    private IAddressableResourceProvider assetsProvider => assetsProviderRef ??= assetsProviderService.Ref;
+
+    protected HUDFactory()
+    {
+        disposableViews = new List<IDisposable>();
+    }
+
     public HUDFactory(IAddressableResourceProvider assetsProvider)
     {
-        this.assetsProvider = assetsProvider;
         disposableViews = new List<IDisposable>();
+        assetsProviderRef = assetsProvider;
     }
 
     public void Initialize() { }

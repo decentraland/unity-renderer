@@ -12,7 +12,7 @@ namespace DCL
             result.Register<IMemoryManager>(() => new MemoryManagerDesktop());
 
             // HUD
-            result.Register<IHUDFactory>(() => new HUDDesktopFactory(result.Get<IAddressableResourceProvider>()));
+            result.Register<IHUDFactory>(() => new HUDDesktopFactory());
 
             return result;
         }
