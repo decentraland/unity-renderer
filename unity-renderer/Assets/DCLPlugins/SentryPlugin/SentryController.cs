@@ -55,7 +55,7 @@ namespace DCLPlugins.SentryPlugin
                 scope.Contexts[$"{prefix}teleport"] = new
                 {
                     current_teleport_position = $"{currentPlayerPosition.x},{currentPlayerPosition.y}",
-                    previous_teleport_position = $"{currentPlayerPosition.x},{currentPlayerPosition.y}",
+                    previous_teleport_position = $"{previousPlayerPosition.x},{previousPlayerPosition.y}",
                     total_other_players = this.playerStore.otherPlayers.Count(),
                 };
             });
