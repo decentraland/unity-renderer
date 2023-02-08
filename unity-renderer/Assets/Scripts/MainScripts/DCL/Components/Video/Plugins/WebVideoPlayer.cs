@@ -5,7 +5,6 @@ namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
-        private const string VIDEO_LOADING_PATH = "Textures/VideoLoading";
         private const string VIDEO_FAILED_PATH = "Textures/VideoFailed";
         private const float DEFAULT_ASPECT_RATIO = 4f / 3f;
 
@@ -33,8 +32,6 @@ namespace DCL.Components.Video.Plugin
             this.plugin = plugin;
             this.url = url;
             plugin.Create(id, url, useHls);
-
-            SetAsLoading();
         }
         
         public void Update()
@@ -161,11 +158,6 @@ namespace DCL.Components.Video.Plugin
         public VideoState GetState()
         {
             return plugin.GetState(videoPlayerId);
-        }
-
-        public void SetAsLoading()
-        {
-            UpdateTextureConservingAspectRatio(Resources.Load<Texture2D>(VIDEO_LOADING_PATH), true);
         }
         
         public void SetAsError()
