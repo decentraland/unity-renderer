@@ -126,7 +126,8 @@ namespace DCLServices.Lambdas
         internal string GetLambdasUrl()
         {
             // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
-            return "https://peer.decentraland.org/lambdas/";
+            //return "https://peer.decentraland.org/lambdas/";
+            return "https://peer-testing-4.decentraland.org/lambdas/"; // TODO: TEMPORAL!!
         }
 
         private static void PrintError<TResponse>(string endPoint, string message)
