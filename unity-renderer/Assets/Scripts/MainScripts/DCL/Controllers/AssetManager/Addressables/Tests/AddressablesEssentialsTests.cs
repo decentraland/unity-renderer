@@ -3,6 +3,7 @@ using DCL.Providers;
 using DCL.Skybox;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -32,17 +33,29 @@ namespace DCL.Tests
         }
 
         [Test]
+        public async Task EnsureEssentials()
+        {
+            // Arrange
+            var addressableProvider = new AddressableResourceProvider();
+
+            //Act
+            var loadingScreen = await addressableProvider.GetAddressable<GameObject>("_LoadingScreen");
+
+            //Assert
+            Assert.NotNull(loadingScreen);
+        }
+
+        [Test]
         public async Task EnsureSkyboxEssentials()
         {
             // Arrange
             var addressableProvider = new AddressableResourceProvider();
 
             //Act
-            SkyboxConfiguration skyboxConfiguration = await addressableProvider.GetAddressable<SkyboxConfiguration>("Generic_Skybox.asset");
-            GameObject skyboxElements = await addressableProvider.GetAddressable<GameObject>("SkyboxElements.prefab");
-            GameObject skyboxPrefab = await addressableProvider.GetAddressable<GameObject>("SkyboxProbe.prefab");
-            MaterialReferenceContainer materialReferenceContainer = await addressableProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
-
+            var skyboxConfiguration = await addressableProvider.GetAddressable<SkyboxConfiguration>("Generic_Skybox.asset");
+            var skyboxElements = await addressableProvider.GetAddressable<GameObject>("SkyboxElements.prefab");
+            var skyboxPrefab = await addressableProvider.GetAddressable<GameObject>("SkyboxProbe.prefab");
+            var materialReferenceContainer = await addressableProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
 
             //Assert
             Assert.NotNull(skyboxConfiguration);
