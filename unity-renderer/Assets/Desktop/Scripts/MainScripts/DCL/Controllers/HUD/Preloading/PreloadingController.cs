@@ -17,7 +17,8 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
         private BaseVariable<bool> isSignUpFlow => DataStore.i.common.isSignUpFlow;
         private bool isDisposed;
 
-        private CancellationTokenSource cancellationTokenSource;
+        private readonly CancellationTokenSource cancellationTokenSource;
+
         public PreloadingController(IAddressableResourceProvider addressableResourceProvider)
         {
             cancellationTokenSource = new CancellationTokenSource();
