@@ -84,8 +84,8 @@ references:
         only:
           - dev
           - main
-          - release*
-          - hotfix*
+          -  /^release\/.*/
+          -  /^hotfix\/.*/
 
 commands:
   build-unity-generic:
@@ -346,7 +346,7 @@ jobs:
       - run:
           working_directory: *node_workspace
           name: run build
-          command: make build-essentials build-release build-deploy
+          command: make build
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
@@ -415,6 +415,8 @@ workflows:
             - build-unity-for-linux
             - build-unity-for-windows
             - build-unity-for-mac
+            - build-js-interface
+            - playmode-tests
 
       - build-js-interface:
           <<: *all_branches

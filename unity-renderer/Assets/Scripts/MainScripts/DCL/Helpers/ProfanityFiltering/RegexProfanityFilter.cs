@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace DCL.ProfanityFiltering
 {
@@ -26,8 +27,9 @@ namespace DCL.ProfanityFiltering
         {
         }
 
-        public async UniTask<string> Filter(string message)
+        public async UniTask<string> Filter(string message, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (string.IsNullOrEmpty(message)) return message;
             return regex.Replace(message,
                 match => new StringBuilder().Append('*', match.Value.Length).ToString());

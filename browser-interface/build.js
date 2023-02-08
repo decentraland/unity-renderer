@@ -149,9 +149,9 @@ const nodeBuiltIns = () => {
 const commonOptions = {
   bundle: true,
   minify: !cliopts.watch,
-  sourcemap: cliopts.watch ? 'both' : undefined,
+  sourcemap: 'external',
   sourceRoot: path.resolve('./packages'),
-  sourcesContent: !!cliopts.watch,
+  sourcesContent: true,
   treeShaking: true,
   plugins: [nodeBuiltIns(), workerLoader()]
 }
@@ -162,7 +162,8 @@ function createWorker(entry, outfile) {
     entry,
     outfile,
     tsconfig: path.join(path.dirname(entry), 'tsconfig.json'),
-    inject: ['packages/entryPoints/inject.js']
+    inject: ['packages/entryPoints/inject.js'],
+    sourcemap: true
   })
 }
 
@@ -191,7 +192,8 @@ async function compileJs() {
       outfile: 'static/index.js',
       tsconfig: 'packages/entryPoints/tsconfig.json',
       inject: ['packages/entryPoints/inject.js'],
-      banner: {js: readFileSync(injectUnityPath).toString() }
+      banner: {js: readFileSync(injectUnityPath).toString() },
+      sourcemap: true
     })
 
     build({

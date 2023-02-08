@@ -92,7 +92,7 @@ public class BaseAvatarReveal : MonoBehaviour, IBaseAvatarRevealer
 
             isRevealing = true;
             animation.Play();
-            await UniTask.WaitUntil(() => !isRevealing, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
+            await UniTaskUtils.WaitForBoolean(ref isRevealing, false, cancellationToken: cancellationToken).AttachExternalCancellation(cancellationToken);
         }
         catch (OperationCanceledException) { SetFullRendered(); }
         finally

@@ -1,7 +1,9 @@
+using DCL.Providers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,9 +38,18 @@ namespace DCL.Skybox
         private CopyFunctionality copyPasteObj;
         private SkyboxElements skyboxElements;
 
+        private SkyboxConfiguration[] tConfigurations;
+        private MaterialReferenceContainer materialReferenceContainer;
         [MenuItem("Window/Skybox Editor")]
-        static void Init()
+        private async void Init()
         {
+            AddressableResourceProvider addressableResourceProvider = new AddressableResourceProvider();
+            materialReferenceContainer = await addressableResourceProvider.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset");
+            IList<SkyboxConfiguration> configurations = await addressableResourceProvider.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration");
+            tConfigurations = configurations.ToArray();
+            skyboxElements = new SkyboxElements();
+            await skyboxElements.Initialize(addressableResourceProvider, materialReferenceContainer);
+
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
             window.minSize = new Vector2(500, 500);
             window.Initialize();
@@ -533,11 +544,6 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
-
-            if (skyboxElements == null)
-            {
-                skyboxElements = new SkyboxElements();
-            }
         }
 
         void TakeControlAtRuntime()
@@ -556,8 +562,8 @@ namespace DCL.Skybox
 
         void InitializeMaterial()
         {
-            selectedMat = MaterialReferenceContainer.i.skyboxMat;
-            selectedConfiguration.ResetMaterial(selectedMat, MaterialReferenceContainer.i.skyboxMatSlots);
+            selectedMat = materialReferenceContainer.skyboxMat;
+            selectedConfiguration.ResetMaterial(selectedMat, materialReferenceContainer.skyboxMatSlots);
             RenderSettings.skybox = selectedMat;
         }
 
@@ -568,8 +574,7 @@ namespace DCL.Skybox
             SkyboxConfiguration temp = null;
             temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
             temp.skyboxID = name;
-
-            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/Resources/Skybox Configurations/" + name + ".asset");
+            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/SkyboxAddressables/Skybox Configurations/" + name + ".asset");
             AssetDatabase.CreateAsset(temp, path);
             AssetDatabase.SaveAssets();
 
@@ -578,7 +583,6 @@ namespace DCL.Skybox
 
         private void UpdateConfigurationsList()
         {
-            SkyboxConfiguration[] tConfigurations = Resources.LoadAll<SkyboxConfiguration>("Skybox Configurations/");
             configurations = new List<SkyboxConfiguration>(tConfigurations);
             configurationNames = new List<string>();
 
@@ -623,7 +627,7 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             float normalizedDayTime = SkyboxUtils.GetNormalizedDayTime(timeOfTheDay);
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, MaterialReferenceContainer.i.skyboxMatSlots, directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, materialReferenceContainer.skyboxMatSlots, directionalLight);
 
             skyboxElements?.ApplyConfigTo3DElements(selectedConfiguration, timeOfTheDay, normalizedDayTime, directionalLight, SkyboxUtils.CYCLE_TIME, isEditor);
 

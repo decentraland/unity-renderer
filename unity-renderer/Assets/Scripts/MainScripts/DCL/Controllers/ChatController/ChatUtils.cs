@@ -3,7 +3,8 @@ namespace DCL.Chat
     public static class ChatUtils
     {
         public const string NEARBY_CHANNEL_ID = "nearby";
-        
+        public const string CONVERSATION_LIST_ID = "conversationList";
+
         public static string AddNoParse(string message)
         {
             var filteredMessage = message.Replace("<noparse", "")

@@ -45,7 +45,8 @@ public class ChatNotificationMessageComponentViewTest
             messageSender = "SpottyGoat",
             isPrivate = false,
             imageUri = null,
-            notificationTargetId = "testId"
+            notificationTargetId = "testId",
+            isImageVisible = false,
         };
 
         // Act
@@ -54,6 +55,7 @@ public class ChatNotificationMessageComponentViewTest
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
         Assert.False(chatNotificationComponent.image.gameObject.activeInHierarchy);
+        Assert.False(chatNotificationComponent.imageContainer.activeInHierarchy);
     }
 
     [Test]
@@ -68,7 +70,8 @@ public class ChatNotificationMessageComponentViewTest
             messageSender = "SpottyGoat",
             isPrivate = true,
             imageUri = null,
-            notificationTargetId = "testId"
+            notificationTargetId = "testId",
+            isImageVisible = true
         };
 
         // Act
@@ -77,6 +80,7 @@ public class ChatNotificationMessageComponentViewTest
         // Assert
         Assert.AreEqual(testModel, chatNotificationComponent.model, "The model does not match after configuring the notification.");
         Assert.True(chatNotificationComponent.image.gameObject.activeInHierarchy);
+        Assert.True(chatNotificationComponent.imageContainer.activeInHierarchy);
     }
 
     [Test]

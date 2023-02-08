@@ -8,10 +8,28 @@
 
 # Specific subteams
 
-# Unity Team (disabled)
-#unity-client/**/*                            @decentraland/unity-team 
 
-# ECS and SDK packages
-kernel/packages/build-ecs/**/*               @decentraland/kernel-team
-kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
-kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
+# explorer
+# unity-renderer/**/*               @decentraland/explorer-team
+
+# comms
+browser-interface/packages/shared/comms/logic/rfc-4-room-connection.ts   @decentraland/platform
+browser-interface/packages/shared/comms/v2/*                             @decentraland/platform
+browser-interface/packages/shared/comms/adapters/*.ts                    @decentraland/platform
+browser-interface/packages/shared/comms/sagas.ts                         @decentraland/platform
+
+# dServices
+browser-interface/packages/shared/friends/**/*    @decentraland/dservices
+browser-interface/packages/shared/chat/**/*       @decentraland/dservices
+
+# sdk packages
+unity-renderer/Assets/Scripts/MainScripts/DCL/CRDTProtocol/**/*                       @decentraland/sdk-team
+unity-renderer/Assets/Scripts/MainScripts/DCL/WorldRuntime/ECSRuntime/**/*            @decentraland/sdk-team
+unity-renderer/Assets/DCLPlugins/ECS7/**/*                                            @decentraland/sdk-team
+browser-interface/packages/shared/apis/**/*                                           @decentraland/sdk-team
+browser-interface/packages/shared/world/SceneWorker.ts                                @decentraland/sdk-team
+browser-interface/packages/shared/sceneEvents/sagas.ts                                @decentraland/sdk-team
+browser-interface/packages/entryPoints/logger.ts                                      @decentraland/sdk-team
+browser-interface/packages/unity-interface/nativeMessagesBridge.ts                    @decentraland/sdk-team
+browser-interface/packages/unity-interface/protobufMessagesBridge.ts                  @decentraland/sdk-team
+browser-interface/packages/entryPoints/startPreview.ts                                @decentraland/sdk-team

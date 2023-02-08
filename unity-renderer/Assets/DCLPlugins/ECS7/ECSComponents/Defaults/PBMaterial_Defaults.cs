@@ -27,6 +27,14 @@ namespace DCL.ECSComponents
             return true;
         }
 
+        public static Color4 GetDiffuseColor(this PBMaterial self)
+        {
+            if (self.Unlit != null)
+                return self.Unlit.DiffuseColor ?? new Color4(Color_Defaults.color4White);
+
+            return new Color4(Color_Defaults.color4White);
+        }
+
         public static Color4 GetAlbedoColor(this PBMaterial self)
         {
             if (self.Pbr != null)
