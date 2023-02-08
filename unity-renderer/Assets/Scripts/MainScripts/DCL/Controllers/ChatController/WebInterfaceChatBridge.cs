@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using DCL.Chat.Channels;
 using DCL.Chat.WebApi;
+using DCL.Helpers;
 using DCL.Interface;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -17,7 +18,13 @@ namespace DCL.Social.Chat
         private const string GET_CHANNELS_TASK_ID = "GetChannelsAsync";
         private const double REQUEST_TIMEOUT_SECONDS = 30;
 
-        public static WebInterfaceChatBridge i { get; private set; }
+        public static IChatApiBridge GetOrCreate()
+        {
+            var bridgeObj = SceneReferences.i?.bridgeGameObject;
+            return bridgeObj == null
+                ? new GameObject("Bridges").AddComponent<WebInterfaceChatBridge>()
+                : bridgeObj.GetOrCreateComponent<WebInterfaceChatBridge>();
+        }
 
         public event Action<InitializeChatPayload> OnInitialized;
         public event Action<ChatMessage[]> OnAddMessage;
@@ -33,11 +40,6 @@ namespace DCL.Social.Chat
         public event Action<ChannelSearchResultsPayload> OnChannelSearchResults;
 
         private readonly Dictionary<string, IUniTaskSource> pendingTasks = new ();
-
-        private void Awake()
-        {
-            i ??= this;
-        }
 
         [PublicAPI]
         public void InitializeChat(string json) =>

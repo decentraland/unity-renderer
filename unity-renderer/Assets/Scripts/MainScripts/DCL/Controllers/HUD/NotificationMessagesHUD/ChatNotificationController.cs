@@ -161,7 +161,7 @@ namespace DCL.Chat.Notifications
                 string senderName = senderProfile?.userName ?? message.sender;
 
                 var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
-                    message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
+                    isMyMessage ? peerId : message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
                     peerProfilePicture);
 
                 mainChatNotificationView.AddNewChatNotification(privateModel);

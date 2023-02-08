@@ -3,7 +3,6 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
-using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using UnityEngine;
@@ -164,7 +163,6 @@ namespace DCL
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();

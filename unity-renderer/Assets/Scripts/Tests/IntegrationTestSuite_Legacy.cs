@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
+using DCL.Configuration;
 using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
@@ -9,18 +10,13 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
-using Channel = DCL.Chat.Channels.Channel;
-using Environment = DCL.Environment;
-using Object = UnityEngine.Object;
 
 public class IntegrationTestSuite_Legacy
 {
@@ -38,7 +34,7 @@ public class IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
-        DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+        EnvironmentSettings.RUNNING_TESTS = true;
         AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
@@ -88,16 +84,6 @@ public class IntegrationTestSuite_Legacy
         emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
         result.Register<IEmotesCatalogService>(() => emotesCatalogService);
 
-        result.Register<IChatController>(() =>
-        {
-            IChatController chatController = Substitute.For<IChatController>();
-
-            chatController.GetChannelsByNameAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                                          .ReturnsForAnyArgs(UniTask.FromResult(("", Array.Empty<Channel>())));
-
-            return chatController;
-        });
-
         return result;
     }
 
@@ -121,7 +107,7 @@ public class IntegrationTestSuite_Legacy
 
         foreach ( var go in legacySystems )
         {
-            UnityEngine.Object.Destroy(go);
+            Object.Destroy(go);
         }
 
         yield return null;
