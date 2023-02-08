@@ -33,7 +33,7 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
             }
 
             CommonScriptableObjectsDesktop.disableVSync.Set(currentDisplaySettings.windowMode == WindowMode.Windowed);
-            CommonScriptableObjectsDesktop.disableScreenResolution.Set(currentDisplaySettings.windowMode == WindowMode.Borderless);
+            CommonScriptableObjectsDesktop.disableScreenResolution.Set(currentDisplaySettings.windowMode == WindowMode.Borderless || currentDisplaySettings.windowMode == WindowMode.Windowed);
         }
 
         private void SetupBorderless()
