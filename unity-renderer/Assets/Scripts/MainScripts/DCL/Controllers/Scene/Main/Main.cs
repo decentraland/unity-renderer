@@ -3,7 +3,6 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
-using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
@@ -51,9 +50,6 @@ namespace DCL
             #endif
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
-
-            // TODO: migrate chat controller singleton into a service in the service locator
-            ChatController.CreateSharedInstance(GetComponent<WebInterfaceChatBridge>(), DataStore.i);
 
             if (!EnvironmentSettings.RUNNING_TESTS)
             {
@@ -178,7 +174,6 @@ namespace DCL
             gameObject.AddComponent<CatalogController>();
             gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
             gameObject.AddComponent<MinimapMetadataController>();
-            gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
