@@ -84,7 +84,8 @@ import {
   isToPendingRequest,
   getNumberOfFriendRequests,
   getCoolDownOfFriendRequests,
-  isFromPendingRequest
+  isFromPendingRequest,
+  isPendingRequest
 } from 'shared/friends/selectors'
 import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import { SEND_PRIVATE_MESSAGE, SendPrivateMessage } from 'shared/chat/actions'
@@ -377,6 +378,11 @@ function* configureMatrixClient(action: SetMatrixClient) {
 
       if (message.sender === ownId && !isChannelType) {
         // ignore messages sent to private chats by the local user
+        return
+      }
+
+      if (isPendingRequest(store.getState(), getUserIdFromMatrix(message.sender))) {
+        // ignore messages sent in the request event
         return
       }
 
