@@ -22,6 +22,13 @@ namespace DCL.Chat
             apiBridge = Substitute.For<IChatApiBridge>();
             dataStore = new DataStore();
             controller = new ChatController(apiBridge, dataStore);
+            controller.Initialize();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            controller.Dispose();
         }
 
         [Test]
