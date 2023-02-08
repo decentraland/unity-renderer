@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers.HUD;
-using DCL.Providers;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
@@ -10,10 +9,6 @@ using System.Threading;
 public class HUDDesktopFactory : HUDFactory
 {
     private const string LOADING_HUD_ADDRESS = "LoadingHUDDesktop";
-
-    public HUDDesktopFactory(IAddressableResourceProvider assetsProvider) : base(assetsProvider)
-    {
-    }
 
     public override async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
     {
