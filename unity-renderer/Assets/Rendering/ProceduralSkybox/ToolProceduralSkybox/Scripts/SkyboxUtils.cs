@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +24,9 @@ namespace DCL.Skybox
 
     public static class SkyboxShaderUtils
     {
-        public static Dictionary<string, int> shaderLayersProperties;
+        public const int TOTAL_SKYBOX_LAYERS = 5;
+
+        private static Dictionary<string, int>[] shaderLayersProperties = null;
         public static readonly int LightTint = Shader.PropertyToID("_lightTint");
         public static readonly int LightDirection = Shader.PropertyToID("_lightDirection");
         public static readonly int SkyColor = Shader.PropertyToID("_skyColor");
@@ -47,52 +49,60 @@ namespace DCL.Skybox
 
         static void CacheShaderProperties()
         {
-            shaderLayersProperties = new Dictionary<string, int>();
-            for (int i = 0; i < 5; i++)
+            if (shaderLayersProperties != null) return;
+            shaderLayersProperties = new Dictionary<string, int>[TOTAL_SKYBOX_LAYERS];
+            for (int i = 0; i < TOTAL_SKYBOX_LAYERS; i++)
             {
-                shaderLayersProperties.Add("_layerType_" + i, Shader.PropertyToID("_layerType_" + i));
-                shaderLayersProperties.Add("_fadeTime_" + i, Shader.PropertyToID("_fadeTime_" + i));
+                shaderLayersProperties[i] = new Dictionary<string, int>();
 
-                shaderLayersProperties.Add("_RenderDistance_" + i, Shader.PropertyToID("_RenderDistance_" + i));
-                shaderLayersProperties.Add("_tex_" + i, Shader.PropertyToID("_tex_" + i));
-                shaderLayersProperties.Add("_cubemap_" + i, Shader.PropertyToID("_cubemap_" + i));
-                shaderLayersProperties.Add("_normals_" + i, Shader.PropertyToID("_normals_" + i));
-                shaderLayersProperties.Add("_color_" + i, Shader.PropertyToID("_color_" + i));
-                shaderLayersProperties.Add("_timeFrame_" + i, Shader.PropertyToID("_timeFrame_" + i));
-                shaderLayersProperties.Add("_rowAndCollumns_" + i, Shader.PropertyToID("_rowAndCollumns_" + i));
+                shaderLayersProperties[i].Add("_layerType_", Shader.PropertyToID("_layerType_" + i));
+                shaderLayersProperties[i].Add("_fadeTime_" , Shader.PropertyToID("_fadeTime_" + i));
 
-                shaderLayersProperties.Add("_lightIntensity_" + i, Shader.PropertyToID("_lightIntensity_" + i));
-                shaderLayersProperties.Add("_normalIntensity_" + i, Shader.PropertyToID("_normalIntensity_" + i));
+                shaderLayersProperties[i].Add("_RenderDistance_" , Shader.PropertyToID("_RenderDistance_" + i));
+                shaderLayersProperties[i].Add("_tex_" , Shader.PropertyToID("_tex_" + i));
+                shaderLayersProperties[i].Add("_cubemap_" , Shader.PropertyToID("_cubemap_" + i));
+                shaderLayersProperties[i].Add("_normals_" , Shader.PropertyToID("_normals_" + i));
+                shaderLayersProperties[i].Add("_color_" , Shader.PropertyToID("_color_" + i));
+                shaderLayersProperties[i].Add("_timeFrame_" , Shader.PropertyToID("_timeFrame_" + i));
+                shaderLayersProperties[i].Add("_rowAndCollumns_" , Shader.PropertyToID("_rowAndCollumns_" + i));
 
-                shaderLayersProperties.Add("_distortIntAndSize_" + i, Shader.PropertyToID("_distortIntAndSize_" + i));
-                shaderLayersProperties.Add("_distortSpeedAndSharp_" + i, Shader.PropertyToID("_distortSpeedAndSharp_" + i));
+                shaderLayersProperties[i].Add("_lightIntensity_" , Shader.PropertyToID("_lightIntensity_" + i));
+                shaderLayersProperties[i].Add("_normalIntensity_" , Shader.PropertyToID("_normalIntensity_" + i));
+
+                shaderLayersProperties[i].Add("_distortIntAndSize_" , Shader.PropertyToID("_distortIntAndSize_" + i));
+                shaderLayersProperties[i].Add("_distortSpeedAndSharp_" , Shader.PropertyToID("_distortSpeedAndSharp_" + i));
 
 
-                shaderLayersProperties.Add("_particlesMainParameters_" + i, Shader.PropertyToID("_particlesMainParameters_" + i));
-                shaderLayersProperties.Add("_particlesSecondaryParameters_" + i, Shader.PropertyToID("_particlesSecondaryParameters_" + i));
+                shaderLayersProperties[i].Add("_particlesMainParameters_" , Shader.PropertyToID("_particlesMainParameters_" + i));
+                shaderLayersProperties[i].Add("_particlesSecondaryParameters_" , Shader.PropertyToID("_particlesSecondaryParameters_" + i));
 
-                shaderLayersProperties.Add("_tilingAndOffset_" + i, Shader.PropertyToID("_tilingAndOffset_" + i));
-                shaderLayersProperties.Add("_speedAndRotation_" + i, Shader.PropertyToID("_speedAndRotation_" + i));
+                shaderLayersProperties[i].Add("_tilingAndOffset_" , Shader.PropertyToID("_tilingAndOffset_" + i ));
+                shaderLayersProperties[i].Add("_speedAndRotation_" , Shader.PropertyToID("_speedAndRotation_" + i));
             }
 
         }
 
-        public static int GetLayerProperty(string name)
+        public static int GetLayerProperty(string name, int layer)
         {
+            if (layer >= TOTAL_SKYBOX_LAYERS)
+            {
+                throw new ArgumentException($"Maximum Skybox Layers is {TOTAL_SKYBOX_LAYERS}");
+            }
+
             int propertyInt;
-            if (shaderLayersProperties == null || shaderLayersProperties.Count <= 0)
+            if (shaderLayersProperties is not { Length: > 0 })
             {
                 CacheShaderProperties();
             }
 
-            if (!shaderLayersProperties.ContainsKey(name))
+            if (shaderLayersProperties[layer].TryGetValue(name, out int val))
             {
-                propertyInt = Shader.PropertyToID(name);
-                shaderLayersProperties.Add(name, propertyInt);
+                propertyInt = val;
             }
             else
             {
-                propertyInt = shaderLayersProperties[name];
+                propertyInt = Shader.PropertyToID(name);
+                shaderLayersProperties[layer].Add(name, propertyInt);
             }
 
             return propertyInt;

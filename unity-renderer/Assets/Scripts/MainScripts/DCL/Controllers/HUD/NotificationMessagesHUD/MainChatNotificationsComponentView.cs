@@ -41,7 +41,6 @@ namespace DCL.Chat.Notifications
         private int notificationCount = 1;
         private TMP_Text notificationMessage;
         private CancellationTokenSource animationCancellationToken = new CancellationTokenSource();
-        private BaseVariable<string> openedChat => DataStore.i.HUDs.openedChat;
 
         public static MainChatNotificationsComponentView Create()
         {
@@ -59,7 +58,6 @@ namespace DCL.Chat.Notifications
 
         public override void Show(bool instant = false)
         {
-            openedChat.Set("");
             gameObject.SetActive(true);
         }
 
@@ -280,30 +278,47 @@ namespace DCL.Chat.Notifications
             ResetNotificationButton();
         }
 
-        private void PopulatePrivateNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
+        private void PopulatePrivateNotification(ChatNotificationMessageComponentView view,
             PrivateChatMessageNotificationModel model)
         {
-            chatNotificationComponentView.SetIsPrivate(true);
-            chatNotificationComponentView.SetMessage(model.Body);
-            chatNotificationComponentView.SetNotificationHeader("Private message");
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
-            chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
+            string senderName = model.ImTheSender ? "You" : model.SenderUsername;
+
+            view.SetIsPrivate(true);
+            view.SetMaxContentCharacters(40 - senderName.Length);
+            view.SetMessage(model.Body);
+            view.SetNotificationHeader($"DM - {model.PeerUsername}");
+            view.SetNotificationSender($"{senderName}:");
+            view.SetNotificationTargetId(model.SenderId);
+            view.SetImageVisibility(!model.ImTheSender);
+
             if (!string.IsNullOrEmpty(model.ProfilePicture))
-                chatNotificationComponentView.SetImage(model.ProfilePicture);
+                view.SetImage(model.ProfilePicture);
+
+            if (model.ImTheSender)
+                view.DockRight();
+            else
+                view.DockLeft();
         }
 
-        private void PopulatePublicNotification(ChatNotificationMessageComponentView chatNotificationComponentView,
+        private void PopulatePublicNotification(ChatNotificationMessageComponentView view,
             PublicChannelMessageNotificationModel model)
         {
-            chatNotificationComponentView.SetIsPrivate(false);
-            chatNotificationComponentView.SetMessage(model.Body);
+            string channelId = model.ChannelId;
+            string channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            string senderName = model.ImTheSender ? "You" : model.Username;
 
-            var channelId = model.ChannelId;
-            var channelName = model.ChannelName == "nearby" ? "~nearby" : $"#{model.ChannelName}";
+            view.SetIsPrivate(false);
+            view.SetMaxContentCharacters(40 - senderName.Length);
+            view.SetMessage(model.Body);
+            view.SetNotificationTargetId(channelId);
+            view.SetNotificationHeader(channelName);
+            view.SetNotificationSender($"{senderName}:");
+            view.SetImageVisibility(false);
 
-            chatNotificationComponentView.SetNotificationTargetId(channelId);
-            chatNotificationComponentView.SetNotificationHeader(channelName);
-            chatNotificationComponentView.SetNotificationSender($"{model.Username}:");
+            if (model.ImTheSender)
+                view.DockRight();
+            else
+                view.DockLeft();
         }
 
         private void ClickedOnNotification(string targetId)
