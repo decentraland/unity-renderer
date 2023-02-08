@@ -29,7 +29,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             CreateLoadingScreen(cancellationTokenSource.Token).Forget();
         }
 
-        private async UniTask CreateLoadingScreen(CancellationToken cancellationToken = default)
+        private async UniTaskVoid CreateLoadingScreen(CancellationToken cancellationToken = default)
         {
             loadingScreenController = new LoadingScreenController(
                 await CreateLoadingScreenView(assetsProvider, cancellationToken),

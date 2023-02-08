@@ -47,7 +47,7 @@ namespace DCL.Providers
             return request.Result;
         }
 
-        public async UniTask<T> Instantiate<T>(string address, string name = "", CancellationToken cancellationToken = default)
+        public async UniTask<T> Instantiate<T>(string address, string name = default, CancellationToken cancellationToken = default)
         {
             //This function does nothing if initialization has already occurred
             await Addressables.InitializeAsync().WithCancellation(cancellationToken);
@@ -55,7 +55,7 @@ namespace DCL.Providers
             AsyncOperationHandle<GameObject> request = Addressables.InstantiateAsync(address);
             await request.WithCancellation(cancellationToken);
 
-            if(!string.IsNullOrEmpty(name))
+            if(Application.isEditor && name != default(string))
                 request.Result.name = name;
 
             return request.Result.GetComponent<T>();
