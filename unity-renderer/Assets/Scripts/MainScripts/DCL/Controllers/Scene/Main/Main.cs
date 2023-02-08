@@ -5,7 +5,11 @@ using DCL.Interface;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
+#if UNITY_EDITOR
+using DG.Tweening;
+#endif
 
 namespace DCL
 {
@@ -38,6 +42,12 @@ namespace DCL
 
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
+
+            #if UNITY_EDITOR
+            // Prevent warning when starting on unity editor mode
+            // TODO: Are we instantiating 500 different kinds of animations?
+            DOTween.SetTweensCapacity(500,50);
+            #endif
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
@@ -162,6 +172,7 @@ namespace DCL
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();

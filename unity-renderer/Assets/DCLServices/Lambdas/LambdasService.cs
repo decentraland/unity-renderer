@@ -6,9 +6,7 @@ using System;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.Pool;
-using Transaction = Sentry.Transaction;
 
 namespace DCLServices.Lambdas
 {
@@ -76,7 +74,6 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(GetLambdasUrl());
-            urlBuilder.Append('/');
 
             var endPointSpan = endPoint.AsSpan();
 
@@ -90,7 +87,7 @@ namespace DCLServices.Lambdas
 
             if (urlEncodedParams.Length > 0)
             {
-                urlBuilder.Append('?');
+                urlBuilder.Append(endPoint.Contains('?') ? '&' : '?');
 
                 for (var i = 0; i < urlEncodedParams.Length; i++)
                 {
@@ -129,7 +126,7 @@ namespace DCLServices.Lambdas
         internal string GetLambdasUrl()
         {
             // TODO (Santi): This should use catalyst.lambdasUrl instead the hardcode string
-            return "https://peer.decentraland.org/lambdas";
+            return "https://peer.decentraland.org/lambdas/";
         }
 
         private static void PrintError<TResponse>(string endPoint, string message)
