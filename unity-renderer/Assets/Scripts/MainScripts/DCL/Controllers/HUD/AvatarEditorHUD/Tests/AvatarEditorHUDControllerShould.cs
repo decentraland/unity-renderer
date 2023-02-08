@@ -337,12 +337,9 @@ namespace AvatarEditorHUD_Tests
                 i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped2" } }
             };
 
-            wearablesCatalogService.AddWearablesToCatalog(new[]
-            {
-                alreadyExistingTestWearable,
-                newTestWearableequipped1,
-                newTestWearableequipped2
-            });
+            wearablesCatalogService.WearablesCatalog.Add(alreadyExistingTestWearable.id, alreadyExistingTestWearable);
+            wearablesCatalogService.WearablesCatalog.Add(newTestWearableequipped1.id, newTestWearableequipped1);
+            wearablesCatalogService.WearablesCatalog.Add(newTestWearableequipped2.id, newTestWearableequipped2);
 
             List<string> oldWearables = new List<string>
             {
