@@ -17,7 +17,7 @@ import {
 } from 'dcl-social-client'
 
 import { DEBUG_KERNEL_LOG, ethereumConfigurations, CHANNEL_TO_JOIN_CONFIG_URL } from 'config'
-import { deepEqual } from 'atomicHelpers/deepEqual'
+import { deepEqual } from 'lib/javascript/deepEqual'
 
 import defaultLogger, { createLogger, createDummyLogger } from 'shared/logger'
 import {
@@ -143,7 +143,7 @@ import { mutePlayers, unmutePlayers } from 'shared/social/actions'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { OFFLINE_REALM } from 'shared/realm/types'
 import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
-import { uuid } from 'atomicHelpers/math'
+import { uuid } from 'lib/javascript/uuid'
 import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
 import { isAddress } from 'eth-connect/eth-connect'
 import { getSelectedNetwork } from 'shared/dao/selectors'

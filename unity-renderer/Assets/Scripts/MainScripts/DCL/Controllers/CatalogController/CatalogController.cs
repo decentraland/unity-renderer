@@ -131,6 +131,9 @@ public class CatalogController : MonoBehaviour
     {
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
 
+		if (requestFailedResponse?.context == null)
+            return;
+
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
             requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT) ||
             requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT))

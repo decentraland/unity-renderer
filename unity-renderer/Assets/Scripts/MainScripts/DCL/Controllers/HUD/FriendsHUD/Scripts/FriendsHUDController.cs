@@ -34,6 +34,7 @@ namespace DCL.Social.Friends
         private int lastSkipForFriends;
         private int lastSkipForFriendRequests;
 
+        public bool IsVisible { get; private set; }
         public IFriendsHUDComponentView View { get; private set; }
 
         public event Action<string> OnPressWhisper;
@@ -56,7 +57,7 @@ namespace DCL.Social.Friends
             this.mouseCatcher = mouseCatcher;
         }
 
-        public void Initialize(IFriendsHUDComponentView view = null)
+        public void Initialize(IFriendsHUDComponentView view = null, bool isVisible = true)
         {
             view ??= FriendsHUDComponentView.Create();
             View = view;
@@ -75,6 +76,7 @@ namespace DCL.Social.Friends
             view.OnSearchFriendsRequested += SearchFriends;
             view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
             view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
+            view.OnDeleteConfirmation += HandleUnfriend;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += HandleViewClosed;
@@ -90,7 +92,8 @@ namespace DCL.Social.Friends
                 friendsController.OnFriendNotFound += OnFriendNotFound;
                 friendsController.OnFriendRequestReceived += ShowFriendRequest;
 
-                if (friendsController.IsInitialized) { view.HideLoadingSpinner(); }
+                if (friendsController.IsInitialized)
+                    view.HideLoadingSpinner();
                 else
                 {
                     view.ShowLoadingSpinner();
@@ -101,6 +104,9 @@ namespace DCL.Social.Friends
 
             ShowOrHideMoreFriendsToLoadHint();
             ShowOrHideMoreFriendRequestsToLoadHint();
+
+            SetVisibility(isVisible);
+            IsVisible = isVisible;
         }
 
         private void SetVisiblePanelList(bool visible)
@@ -162,6 +168,10 @@ namespace DCL.Social.Friends
 
         public void SetVisibility(bool visible)
         {
+            if (IsVisible == visible)
+                return;
+
+            IsVisible = visible;
             SetVisiblePanelList(visible);
 
             if (visible)
@@ -493,8 +503,12 @@ namespace DCL.Social.Friends
         private void HandleOpenWhisperChat(FriendEntryModel entry) =>
             OnPressWhisper?.Invoke(entry.userId);
 
-        private void HandleUnfriend(string userId) =>
-            friendsController.RemoveFriend(userId);
+        private void HandleUnfriend(string userId)
+        {
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
+                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
+                () => friendsController.RemoveFriend(userId)), true);
+        }
 
         private void HandleRequestRejected(FriendRequestEntryModel entry)
         {

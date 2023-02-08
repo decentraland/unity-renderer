@@ -8,11 +8,10 @@ globalThis['isRunningTests'] = true
 beforeEach(() => history.replaceState({}, '', `?`))
 
 /* HELPERS */
-import './atomicHelpers/parcelScenePositions.test'
-import './atomicHelpers/landHelpers.test'
-import './atomicHelpers/vectorHelpers.test'
-import './atomicHelpers/OrderedRingBuffer.test'
-import './atomicHelpers/SortedLimitedQueue.test'
+import './lib/landHelpers.test'
+import './lib/vectorHelpers.test'
+import './lib/OrderedRingBuffer.test'
+import './lib/SortedLimitedQueue.test'
 
 /* UNIT */
 import './unit/ethereum.test'

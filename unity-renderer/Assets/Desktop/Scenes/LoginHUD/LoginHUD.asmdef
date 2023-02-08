@@ -1,0 +1,26 @@
+{
+    "name": "Launcher",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:1cd9f56ea305aae458297148eecef98c"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

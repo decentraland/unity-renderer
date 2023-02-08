@@ -1,4 +1,4 @@
-import { RingBuffer } from 'atomicHelpers/RingBuffer'
+import { RingBuffer } from 'lib/data-structures/RingBuffer'
 import { OPUS_SAMPLES_PER_FRAME, VOICE_CHAT_SAMPLE_RATE } from './constants'
 import { InputWorkletRequestTopic, OutputWorkletRequestTopic } from './types'
 

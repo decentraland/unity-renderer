@@ -1,4 +1,6 @@
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +14,11 @@ public class ShowHideAnimator : MonoBehaviour
     public float animSpeedFactor = 1.0f;
     public bool disableAfterFadeOut;
 
-    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
-
     [SerializeField] private CanvasGroup canvasGroup;
 
     private GraphicRaycaster raycaster;
+
+    public bool isVisible => canvasGroup == null || canvasGroup.blocksRaycasts;
 
     public event Action<ShowHideAnimator> OnWillFinishHide;
     public event Action<ShowHideAnimator> OnWillFinishStart;
@@ -56,12 +58,23 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
-    private void SetVisibility(bool visible, TweenCallback onComplete, bool instant = false)
+    /// <summary>
+    /// Show and then hide after delay (Show->Delay->Hide)
+    /// </summary>
+    public void ShowDelayHide(float delay)
+    {
+        SetVisibility(visible: true, onComplete: HideAfterDelay);
+
+        void HideAfterDelay() =>
+            SetVisibility(visible: false, null).SetDelay(delay);
+    }
+
+    private TweenerCore<float, float, FloatOptions> SetVisibility(bool visible, TweenCallback onComplete, bool instant = false)
     {
         if (canvasGroup == null)
         {
             Debug.LogError($"Show Hide Animator in GameObject: {gameObject.name} has no canvasGroup assigned", gameObject);
-            return;
+            return null;
         }
 
         if (raycaster != null)
@@ -70,12 +83,10 @@ public class ShowHideAnimator : MonoBehaviour
         // When instant, we use duration 0 instead of just modifying the canvas group to mock the old animator behaviour which needs a frame.
         float duration = instant ? 0 : BASE_DURATION * animSpeedFactor;
 
-        canvasGroup.interactable = visible;
         canvasGroup.blocksRaycasts = visible;
-
         canvasGroup.DOKill();
 
-        canvasGroup.DOFade(visible ? 1 : 0, duration)
+        return canvasGroup.DOFade(visible ? 1 : 0, duration)
                    .SetEase(Ease.InOutQuad)
                    .OnComplete(onComplete)
                    .SetLink(canvasGroup.gameObject, LinkBehaviour.KillOnDestroy)
