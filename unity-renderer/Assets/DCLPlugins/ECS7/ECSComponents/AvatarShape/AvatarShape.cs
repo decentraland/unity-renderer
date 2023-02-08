@@ -76,6 +76,7 @@ namespace DCL.ECSComponents
         internal CancellationTokenSource loadingCts;
         private ILazyTextureObserver currentLazyObserver;
         private IUserProfileBridge userProfileBridge;
+        private IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private bool isGlobalSceneAvatar = true;
 
         public IPoolableObject poolableObject { get; set; }
@@ -105,7 +106,7 @@ namespace DCL.ECSComponents
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
+                gpuSkinningThrottlerService,
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
@@ -121,8 +122,13 @@ namespace DCL.ECSComponents
         public void Init()
         {
             // The avatars have an offset in the Y axis, so we set the offset after the avatar has been restored from the pool
-            transform.position = new UnityEngine.Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
+            transform.position = new Vector3(transform.position.x, AVATAR_Y_AXIS_OFFSET, transform.position.z);
             SetPlayerNameReference();
+        }
+
+        public void SetUp(IGPUSkinningThrottlerService gpuSkinningThrottlerService)
+        {
+            this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
         }
 
         private void SetPlayerNameReference()
