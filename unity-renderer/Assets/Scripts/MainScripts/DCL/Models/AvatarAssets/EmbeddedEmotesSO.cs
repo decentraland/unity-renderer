@@ -7,8 +7,6 @@ namespace DCL.Emotes
     public class EmbeddedEmotesSO : ScriptableObject
     {
         public EmbeddedEmote[] emotes;
-
-        public static EmbeddedEmotesSO Provide() => Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
     }
 
     [Serializable]

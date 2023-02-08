@@ -5,6 +5,7 @@ using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
@@ -35,6 +36,7 @@ namespace DCL
                 subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
                 return subs;
             });
+            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
 
             result.Register<IServiceProviders>(
                 () =>

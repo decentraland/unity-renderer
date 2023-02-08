@@ -149,9 +149,9 @@ const nodeBuiltIns = () => {
 const commonOptions = {
   bundle: true,
   minify: !cliopts.watch,
-  sourcemap: cliopts.watch ? 'both' : undefined,
+  sourcemap: 'external',
   sourceRoot: path.resolve('./packages'),
-  sourcesContent: !!cliopts.watch,
+  sourcesContent: true,
   treeShaking: true,
   plugins: [nodeBuiltIns(), workerLoader()]
 }

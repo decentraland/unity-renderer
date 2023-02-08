@@ -28,7 +28,7 @@ namespace AssetPromiseKeeper_Material_Tests
         private AssetPromise_Material_Model CreateMaterialModel()
         {
             return AssetPromise_Material_Model.CreateBasicMaterial(new AssetPromise_Material_Model.Texture(
-                TestAssetsUtils.GetPath() + "/Images/atlas.png", TextureWrapMode.Clamp, FilterMode.Bilinear), 1f);
+                TestAssetsUtils.GetPath() + "/Images/atlas.png", TextureWrapMode.Clamp, FilterMode.Bilinear), 1f, Color.white);
         }
     }
 }

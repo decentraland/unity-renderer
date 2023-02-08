@@ -124,7 +124,7 @@ namespace DCL.ECSComponents
                 materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
                 {
                     material = materialAsset.material,
-                    castShadows = promiseModel.castShadows // FD:: added castShadow set
+                    castShadows = promiseModel.castShadows
                 });
 
                 // Run task to forget previous material after update to avoid forgetting a
@@ -168,7 +168,7 @@ namespace DCL.ECSComponents
 
         private static AssetPromise_Material_Model CreateBasicMaterialPromiseModel(PBMaterial model, AssetPromise_Material_Model.Texture? albedoTexture)
         {
-            return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest());
+            return AssetPromise_Material_Model.CreateBasicMaterial(albedoTexture, model.GetAlphaTest(), model.GetDiffuseColor().ToUnityColor());
         }
 
         private static AssetPromise_Material_Model.Texture? CreateMaterialPromiseTextureModel(string textureUrl, UnityEngine.TextureWrapMode wrapMode, FilterMode filterMode, bool videoTexture = false)
