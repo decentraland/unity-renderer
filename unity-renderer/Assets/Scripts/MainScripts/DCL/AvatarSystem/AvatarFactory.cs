@@ -1,4 +1,5 @@
 using DCL;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
 
@@ -49,6 +50,6 @@ namespace AvatarSystem
             new (new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper());
 
         private AvatarCurator CreateAvatarCurator() =>
-            new (new WearableItemResolver(), serviceLocator.Get<IEmotesCatalogService>());
+            new (new WearableItemResolver(serviceLocator.Get<IWearablesCatalogService>()), serviceLocator.Get<IEmotesCatalogService>());
     }
 }

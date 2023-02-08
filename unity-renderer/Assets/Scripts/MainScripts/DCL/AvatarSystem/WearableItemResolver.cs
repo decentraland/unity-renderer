@@ -12,6 +12,12 @@ namespace AvatarSystem
     {
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
+        private readonly IWearablesCatalogService wearablesCatalogService;
+
+        public WearableItemResolver(IWearablesCatalogService wearablesCatalogService)
+        {
+            this.wearablesCatalogService = wearablesCatalogService;
+        }
 
         public async UniTask<(List<WearableItem> wearables, List<WearableItem> emotes)> ResolveAndSplit(IEnumerable<string> wearableIds, CancellationToken ct = default)
         {
@@ -74,7 +80,7 @@ namespace AvatarSystem
                 if (wearablesRetrieved.ContainsKey(wearableId))
                     return wearablesRetrieved[wearableId];
 
-                var wearable = await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestWearableAsync(wearableId, linkedCts.Token);
+                var wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token);
 
                 if (wearable != null)
                     wearablesRetrieved.Add(wearableId, wearable);
@@ -100,10 +106,10 @@ namespace AvatarSystem
             {
                 wearablesRetrieved.Remove(wearableId);
             }
-            DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RemoveWearablesInUse(wearableIds);
+            wearablesCatalogService.RemoveWearablesInUse(wearableIds);
         }
 
-        public void Forget(string wearableId) { DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RemoveWearablesInUse(new List<string> { wearableId }); }
+        public void Forget(string wearableId) { wearablesCatalogService.RemoveWearablesInUse(new List<string> { wearableId }); }
 
         public void Dispose()
         {

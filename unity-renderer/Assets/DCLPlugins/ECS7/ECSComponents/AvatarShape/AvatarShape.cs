@@ -12,6 +12,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
@@ -101,7 +102,7 @@ namespace DCL.ECSComponents
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             avatar = new AvatarWithHologram(
                 baseAvatar,
-                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
+                new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
                 visibility,

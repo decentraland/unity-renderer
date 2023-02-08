@@ -9,6 +9,7 @@ using DCL.Emotes;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -80,7 +81,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
         return new AvatarSystem.AvatarWithHologram(
             baseAvatar,
-            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
+            new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),
