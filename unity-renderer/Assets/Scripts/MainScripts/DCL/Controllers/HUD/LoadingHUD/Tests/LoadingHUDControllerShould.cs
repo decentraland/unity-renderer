@@ -16,7 +16,7 @@ public class LoadingHUDControllerShould
     private BaseVariable<bool> showTips => dataStoreLoadingScreen.Ref.loadingHUD.showTips;
 
     [SetUp]
-    public async void SetUp()
+    public void SetUp()
     {
         hudView = Object.Instantiate(
                              AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/LoadingHUD/Prefabs/LoadingHUD.prefab"))

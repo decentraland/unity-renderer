@@ -532,7 +532,6 @@ public class HUDController : IHUDController
     {
         Type enumType = typeof(HUDElementID);
         var enumName = enumType.GetEnumName(element);
-        Debug.Log(enumName);
         var fieldInfo = enumType.GetField(enumName);
         return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
     }
