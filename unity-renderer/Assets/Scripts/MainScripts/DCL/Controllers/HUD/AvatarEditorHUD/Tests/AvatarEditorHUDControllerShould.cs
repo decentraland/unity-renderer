@@ -38,7 +38,7 @@ namespace AvatarEditorHUD_Tests
             }
 
             analytics = Substitute.For<IAnalytics>();
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
             // TODO: We should convert the WearablesFetchingHelper static class into a non-static one and make it implement an interface. It would allow us to inject it
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
@@ -376,13 +376,6 @@ namespace AvatarEditorHUD_Tests
             Assert.AreEqual(avatarModel.skinColor, avatarEditorHUDModel.skinColor);
             Assert.AreEqual(avatarModel.hairColor, avatarEditorHUDModel.hairColor);
             Assert.AreEqual(avatarModel.eyeColor, avatarEditorHUDModel.eyesColor);
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
     }
 }

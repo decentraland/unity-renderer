@@ -17,7 +17,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         protected override IEnumerator TearDown()
@@ -74,13 +74,6 @@ namespace Tests
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
             yield return VisualTestUtils.TakeSnapshot("AvatarShape_B", camera);
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
     }
 }

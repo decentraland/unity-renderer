@@ -31,15 +31,8 @@ namespace Test.AvatarSystem
         public void SetUp()
         {
             container = new GameObject("Container");
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             retriever = Substitute.For<IWearableRetriever>();
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
 
         [UnityTest]

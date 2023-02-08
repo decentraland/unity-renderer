@@ -22,7 +22,7 @@ namespace Tests
             yield return base.SetUp();
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         protected override IEnumerator TearDown()
@@ -143,13 +143,6 @@ namespace Tests
 
             AssertMaterialsAreCorrect(avatar.transform);
             AssertMaterialsAreCorrect(avatar2.transform);
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
     }
 }

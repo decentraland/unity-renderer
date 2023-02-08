@@ -1,3 +1,4 @@
+using DCL;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
@@ -24,19 +25,20 @@ public static class AvatarAssetsTestHelpers
         wid.thumbnail = "";
     }
 
-    public static void CreateTestCatalogLocal(IWearablesCatalogService wearablesCatalogService)
+    public static IWearablesCatalogService CreateTestCatalogLocal()
     {
-        List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
+        IWearablesCatalogService wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
+        wearablesCatalogService.Initialize();
 
+        List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
         foreach (var wearableItem in dummyWearables)
-        {
             PrepareWearableItemDummy(wearableItem);
-        }
 
         wearablesCatalogService.Clear();
 
         var wearables = dummyWearables.Select(x => x as WearableItem).ToArray();
-
         wearablesCatalogService.AddWearablesToCatalog(wearables);
+
+        return wearablesCatalogService;
     }
 }

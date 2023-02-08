@@ -26,7 +26,7 @@ public class WearablesVisualTests : VisualTestsBase
         combiner.uploadMeshToGpu = false;
         combiner.prepareMeshForGpuSkinning = false;
 
-        PrepareCatalog();
+        wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#1C1C1C", out hairColor));
@@ -202,13 +202,6 @@ public class WearablesVisualTests : VisualTestsBase
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;
         container.transform.position = cachedPos;
-    }
-
-    private void PrepareCatalog()
-    {
-        wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-        wearablesCatalogService.Initialize();
-        AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
     }
 
     protected override IEnumerator TearDown()

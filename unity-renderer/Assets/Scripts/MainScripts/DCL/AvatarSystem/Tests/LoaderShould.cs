@@ -42,18 +42,11 @@ namespace Test.AvatarSystem
         public void SetUp()
         {
             container = new GameObject("Container");
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
             meshCombiner = Substitute.For<IAvatarMeshCombinerHelper>();
             wearableLoaderFactory = Substitute.For<IWearableLoaderFactory>();
             loader = new Loader(wearableLoaderFactory, container, meshCombiner);
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
 
         [Test]

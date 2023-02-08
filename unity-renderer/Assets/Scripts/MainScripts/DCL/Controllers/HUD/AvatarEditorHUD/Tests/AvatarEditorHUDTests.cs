@@ -50,7 +50,7 @@ namespace AvatarEditorHUD_Tests
             });
 
             analytics = Substitute.For<IAnalytics>();
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
             controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
@@ -139,13 +139,6 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
             Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
-        }
-
-        private void PrepareCatalog()
-        {
-            wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-            wearablesCatalogService.Initialize();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
         }
     }
 }

@@ -22,19 +22,12 @@ public class GPUSkinningVisualTests : VisualTestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        PrepareCatalog();
+        wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
         avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#1C1C1C", out hairColor));
         Assert.NotNull(avatarMaterial);
-    }
-
-    private void PrepareCatalog()
-    {
-        wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-        wearablesCatalogService.Initialize();
-        AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
     }
 
     [UnityTest, VisualTest]

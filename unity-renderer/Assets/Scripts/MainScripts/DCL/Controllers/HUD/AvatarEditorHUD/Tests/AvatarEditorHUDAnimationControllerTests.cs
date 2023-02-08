@@ -1,4 +1,3 @@
-using DCL;
 using System;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
@@ -16,7 +15,7 @@ public class AvatarEditorHUDAnimationControllerTests
     [SetUp]
     public void SetUp()
     {
-        PrepareCatalog();
+        wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         editorHUDView = Substitute.For<IAvatarEditorHUDView>();
         characterPreviewController = Substitute.For<ICharacterPreviewController>();
         editorHUDView.CharacterPreview.Returns(characterPreviewController);
@@ -65,12 +64,5 @@ public class AvatarEditorHUDAnimationControllerTests
     {
         wearablesCatalogService.Dispose();
         editorHUDView.Dispose();
-    }
-
-    private void PrepareCatalog()
-    {
-        wearablesCatalogService = new LambdasWearablesCatalogService(DataStore.i.common.wearables);
-        wearablesCatalogService.Initialize();
-        AvatarAssetsTestHelpers.CreateTestCatalogLocal(wearablesCatalogService);
     }
 }
