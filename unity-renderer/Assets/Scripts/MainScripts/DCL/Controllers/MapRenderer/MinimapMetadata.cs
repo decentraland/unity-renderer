@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MinimapMetadata", menuName = "MinimapMetadata")]
@@ -20,46 +21,20 @@ public class MinimapMetadata : ScriptableObject
         OnSale = 10,
         Unowned = 11,
         Background = 12,
-        Loading = 13
+        Loading = 13,
     }
 
-    [Serializable]
-    public class MinimapSceneInfo
-    {
-        public string name;
-        public TileType type;
-        public List<Vector2Int> parcels;
+    private static MinimapMetadata minimapMetadata;
 
-        public bool isPOI;
-        public string owner;
-        public string description;
-        public string previewImageUrl;
-
-        public override bool Equals(object obj)
-        {
-            if (obj is not MinimapSceneInfo) return false;
-            return Equals(obj as MinimapSceneInfo);
-        }
-
-        private bool Equals(MinimapSceneInfo other) =>
-            name.Equals(other.name) && owner.Equals(other.owner) && description.Equals(other.description);
-
-        public override int GetHashCode() =>
-            (name+owner+description).GetHashCode();
-    }
+    private readonly HashSet<MinimapSceneInfo> scenesInfo = new ();
+    private readonly Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new ();
 
     public event Action<MinimapSceneInfo> OnSceneInfoUpdated;
 
-    HashSet<MinimapSceneInfo> scenesInfo = new HashSet<MinimapSceneInfo>();
-    Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new Dictionary<Vector2Int, MinimapSceneInfo>();
-
-    public MinimapSceneInfo GetSceneInfo(int x, int y)
-    {
-        if (sceneInfoMap.TryGetValue(new Vector2Int(x, y), out MinimapSceneInfo result))
-            return result;
-
-        return null;
-    }
+    public MinimapSceneInfo GetSceneInfo(int x, int y) =>
+        sceneInfoMap.TryGetValue(new Vector2Int(x, y), out MinimapSceneInfo result)
+            ? result
+            : null;
 
     public void AddSceneInfo(MinimapSceneInfo sceneInfo)
     {
@@ -68,16 +43,15 @@ public class MinimapMetadata : ScriptableObject
 
         int parcelsCount = sceneInfo.parcels.Count;
 
-        for (int i = 0; i < parcelsCount; i++)
+        for (var i = 0; i < parcelsCount; i++)
         {
             if (sceneInfoMap.ContainsKey(sceneInfo.parcels[i]))
-            {
+
                 //NOTE(Brian): I intended at first to just return; here. But turns out kernel is sending
                 //             overlapping coordinates, sending first gigantic 'Estate' and 'Roads' scenes to
                 //             send the proper scenes later. This will be fixed when we implement the content v3 data
                 //             plumbing.
                 sceneInfoMap.Remove(sceneInfo.parcels[i]);
-            }
 
             sceneInfoMap.Add(sceneInfo.parcels[i], sceneInfo);
         }
@@ -93,14 +67,47 @@ public class MinimapMetadata : ScriptableObject
         sceneInfoMap.Clear();
     }
 
-    private static MinimapMetadata minimapMetadata;
     public static MinimapMetadata GetMetadata()
     {
         if (minimapMetadata == null)
-        {
             minimapMetadata = Resources.Load<MinimapMetadata>("ScriptableObjects/MinimapMetadata");
-        }
 
         return minimapMetadata;
+    }
+
+    [Serializable]
+    public class MinimapSceneInfo
+    {
+        static readonly ProfilerMarker s_PreparePerfMarker = new ("Vitaly.Equals");
+
+        public string name;
+        public TileType type;
+        public List<Vector2Int> parcels;
+
+        public bool isPOI;
+        public string owner;
+        public string description;
+        public string previewImageUrl;
+
+        [NonSerialized]
+        private int hashCode = -1;
+
+        public override bool Equals(object obj)
+        {
+            using (s_PreparePerfMarker.Auto())
+                return obj is MinimapSceneInfo info && Equals(info);
+        }
+
+        private bool Equals(MinimapSceneInfo other) =>
+            this.GetHashCode() == other.GetHashCode();
+
+        public override int GetHashCode()
+        {
+            if(hashCode == -1)
+                hashCode = (name + type + parcels + isPOI + owner + description + previewImageUrl).GetHashCode();
+
+            return hashCode;
+        }
+
     }
 }
