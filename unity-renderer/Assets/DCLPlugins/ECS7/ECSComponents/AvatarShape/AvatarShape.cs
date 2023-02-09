@@ -82,6 +82,7 @@ namespace DCL.ECSComponents
         internal PBAvatarShape model;
         internal IDCLEntity entity;
 
+        private Service<IGPUSkinningThrottlerService> skinningThrottlerService;
         private Service<IEmotesCatalogService> emotesCatalog;
 
         private void Awake()
@@ -107,7 +108,7 @@ namespace DCL.ECSComponents
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
+                skinningThrottlerService.Ref,
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes));
 
             if (avatarReporterController == null)
