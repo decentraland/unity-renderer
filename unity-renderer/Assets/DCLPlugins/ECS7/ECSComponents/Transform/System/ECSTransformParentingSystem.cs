@@ -1,11 +1,15 @@
 using DCL.ECS7.InternalComponents;
 using DCL.Models;
+using System;
 
 public static class ECSTransformParentingSystem
 {
-    public static IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent;
+    public static Action CreateSystem(IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent)
+    {
+        return () => Update(internalSceneBoundsCheckComponent);
+    }
 
-    public static void Update()
+    private static void Update(IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent)
     {
         if (ECSTransformUtils.orphanEntities == null || ECSTransformUtils.orphanEntities.Count == 0)
         {

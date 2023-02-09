@@ -4,6 +4,7 @@ using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 
 namespace Tests
@@ -14,6 +15,7 @@ namespace Tests
         private ECS7TestScene scene;
         private ECS7TestUtilsScenesAndEntities sceneTestHelper;
         private ECSTransformHandler handler;
+        private Action parentingSystemUpdate;
 
         [SetUp]
         public void SetUp()
@@ -22,9 +24,9 @@ namespace Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(42);
 
-            var sbcInternalComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
-            ECSTransformParentingSystem.internalSceneBoundsCheckComponent = sbcInternalComponent;
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>(), sbcInternalComponent);
+            var sbcInternalComponentSubs = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>(), sbcInternalComponentSubs);
+            parentingSystemUpdate = ECSTransformParentingSystem.CreateSystem(sbcInternalComponentSubs);
         }
 
         [TearDown]
@@ -41,14 +43,14 @@ namespace Tests
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
             // parent does not exist yet, so it should keep waiting
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
             // create parent for entity
             var parent = scene.CreateEntity(model.parentId);
 
             // parent exist so it should apply parenting
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
             Assert.AreEqual(entity.entityId, parent.childrenId[0]);
             Assert.AreEqual(parent.gameObject.transform, entity.gameObject.transform.parent);
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
@@ -63,7 +65,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
             Assert.AreEqual(scene.GetSceneTransform(), entity.gameObject.transform.parent);
         }
@@ -79,12 +81,12 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new ECSTransform());
             handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = entity.entityId });
 
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
 
             handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = 0 });
             handler.OnComponentRemoved(scene, entity);
             scene.RemoveEntity(entity.entityId, true);
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
         }
     }
 }

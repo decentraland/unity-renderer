@@ -8,8 +8,8 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
-using ECSSystems.VideoPlayerSystem;
 using ECSSystems.UIInputSenderSystem;
+using ECSSystems.VideoPlayerSystem;
 using ECSSystems.VisibilitySystem;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,6 @@ public class ECSSystemsController : IDisposable
     private readonly GameObject scenesUi;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-
     public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
@@ -60,7 +59,6 @@ public class ECSSystemsController : IDisposable
             loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
         else
             loadingScreenVisible = dataStoreLoadingScreen.Ref.loadingHUD.visible;
-
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
@@ -86,14 +84,12 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.audioSourceComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 
-        ECSTransformParentingSystem.internalSceneBoundsCheckComponent = context.internalEcsComponents.sceneBoundsCheckComponent;
-
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
         updateSystems = new ECS7System[]
         {
-            ECSTransformParentingSystem.Update,
+            ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
