@@ -174,6 +174,37 @@ commands:
           root: *working_directory
           paths:
             - Builds
+  publish-webgl-artifacts:
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Set up NPM access tokens
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-artifacts
+      - run:
+          working_directory: *node_workspace
+          name: print files to publish
+          command: find static
+      - run:
+          working_directory: *node_workspace
+          name: npm run publish
+          command: npm run publish
+  publish-desktop-artifacts:
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Prepare image
+          command: |
+            sudo apt-get update
+            sudo apt-get -y -qq install awscli
+      - run:
+          name: Upload artifacts
+          command: |
+            ./ci-publish-preview-artifacts.sh
 
 
 jobs:
@@ -301,31 +332,14 @@ jobs:
     docker:
       - image: cimg/base:2021.04
     steps:
-      - <<: *attach_root
-      - run:
-          name: Prepare image
-          command: |
-            sudo apt-get update
-            sudo apt-get -y -qq install awscli
-      - run:
-          name: Upload artifacts
-          command: |
-            ./ci-publish-preview-artifacts.sh
+      - publish-desktop-artifacts
+
   publish-desktop-artifacts-release:
     <<: *working_directory_root
     docker:
       - image: cimg/base:2021.04
     steps:
-      - <<: *attach_root
-      - run:
-          name: Prepare image
-          command: |
-            sudo apt-get update
-            sudo apt-get -y -qq install awscli
-      - run:
-          name: Upload artifacts
-          command: |
-            ./ci-publish-preview-artifacts.sh
+      - publish-desktop-artifacts
 
   test-browser-interface:
     <<: *working_directory_root
@@ -370,46 +384,14 @@ jobs:
     docker: *image_kernel
 
     steps:
-      - <<: *attach_root
-      - run:
-          name: Set up NPM access tokens
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          when: on_success
-      - run:
-          working_directory: *node_workspace
-          name: Deploy artifacts
-          command: npm run publish-artifacts
-      - run:
-          working_directory: *node_workspace
-          name: print files to publish
-          command: find static
-      - run:
-          working_directory: *node_workspace
-          name: npm run publish
-          command: npm run publish
+      - publish-webgl-artifacts
 
   publish-webgl-artifacts:
     <<: *working_directory_root
     docker: *image_kernel
 
     steps:
-      - <<: *attach_root
-      - run:
-          name: Set up NPM access tokens
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          when: on_success
-      - run:
-          working_directory: *node_workspace
-          name: Deploy artifacts
-          command: npm run publish-artifacts
-      - run:
-          working_directory: *node_workspace
-          name: print files to publish
-          command: find static
-      - run:
-          working_directory: *node_workspace
-          name: npm run publish
-          command: npm run publish
+      - publish-webgl-artifacts
 
 workflows:
   version: 2
