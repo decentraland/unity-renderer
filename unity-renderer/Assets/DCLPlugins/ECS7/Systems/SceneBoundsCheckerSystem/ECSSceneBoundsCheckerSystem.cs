@@ -96,16 +96,16 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     continue;
                 }
 
-                RunEntityEvaluation(scene, entity, model, outOfBoundsVisualFeedback, visibilityComponent);
+                RunEntityEvaluation(scene, entity, model, outOfBoundsVisualFeedback, IsEntityVisible(scene, entity, visibilityComponent));
             }
         }
 
         private static void RunEntityEvaluation(IParcelScene scene, IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel,
-            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, IInternalECSComponent<InternalVisibility> visibilityComponent)
+            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
             if (sbcComponentModel.entityLocalMeshBounds.size != Vector3.zero) // has a mesh/collider
-                EvaluateMeshBounds(scene, entity, sbcComponentModel, outOfBoundsVisualFeedback, visibilityComponent);
+                EvaluateMeshBounds(scene, entity, sbcComponentModel, outOfBoundsVisualFeedback, isVisible);
             else
                 EvaluateEntityPosition(scene, entity, sbcComponentModel);
 
@@ -125,7 +125,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         }
 
         private static void EvaluateMeshBounds(IParcelScene scene, IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel,
-            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, IInternalECSComponent<InternalVisibility> visibilityComponent)
+            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
         {
             Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
             Vector3 entityGlobalPosition = sbcComponentModel.entityPosition;
@@ -152,7 +152,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
 
             SetInsideBoundsStateForMeshComponents(outOfBoundsVisualFeedback, entity, sbcComponentModel,
-                IsEntityVisible(scene, entity, visibilityComponent), entity.isInsideSceneBoundaries);
+                isVisible, entity.isInsideSceneBoundaries);
         }
 
         private static bool AreSubMeshesAndCollidersInsideBounds(IParcelScene scene, IDCLEntity entity,
