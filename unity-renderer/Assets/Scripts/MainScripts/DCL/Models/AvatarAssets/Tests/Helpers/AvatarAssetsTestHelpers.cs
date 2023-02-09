@@ -9,7 +9,7 @@ using UnityEngine;
 
 public static class AvatarAssetsTestHelpers
 {
-    public static void PrepareWearableItemDummy(WearableItemDummy wid)
+    private static void PrepareWearableItemDummy(WearableItemDummy wid)
     {
         wid.emoteDataV0 = null;
         wid.baseUrl = TestAssetsUtils.GetPath() + "/Avatar/Assets/";
@@ -42,7 +42,12 @@ public static class AvatarAssetsTestHelpers
         wearablesCatalogService.WearablesCatalog.Returns(dummyCatalog);
 
         wearablesCatalogService
-           .RequestOwnedWearablesAsync( Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+           .RequestOwnedWearablesAsync(
+                Arg.Any<string>(),
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<bool>(),
+                Arg.Any<CancellationToken>())
            .Returns(_ =>
             {
                 UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
@@ -60,7 +65,13 @@ public static class AvatarAssetsTestHelpers
             });
 
         wearablesCatalogService
-           .RequestThirdPartyWearablesByCollectionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+           .RequestThirdPartyWearablesByCollectionAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<bool>(),
+                Arg.Any<CancellationToken>())
            .Returns(_ =>
             {
                 UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
