@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using DCL.Controllers;
+using System.Threading;
 using UnityEngine.SceneManagement;
 
 namespace DCL
@@ -9,6 +10,8 @@ namespace DCL
     {
         public static Model i = new Model(new ServiceLocator());
 
+        private static CancellationTokenSource cancellationTokenSource;
+
         /// <summary>
         /// Setup the environment with the configured builder funcs.
         /// </summary>
@@ -16,7 +19,8 @@ namespace DCL
         {
             i.Dispose();
             i = new Model(serviceLocator);
-            serviceLocator.Initialize();
+            cancellationTokenSource = new CancellationTokenSource();
+            serviceLocator.Initialize(cancellationTokenSource.Token).Forget();
         }
 
         /// <summary>
@@ -25,6 +29,8 @@ namespace DCL
         public static void Dispose()
         {
             i?.Dispose();
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
         }
 
         public class Model : IDisposable

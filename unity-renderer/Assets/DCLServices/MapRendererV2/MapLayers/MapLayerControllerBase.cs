@@ -1,0 +1,36 @@
+﻿using DCLServices.MapRendererV2.CoordsUtils;
+using DCLServices.MapRendererV2.Culling;
+using System.Threading;
+using UnityEngine;
+
+namespace DCLServices.MapRendererV2.MapLayers
+{
+    internal abstract class MapLayerControllerBase
+    {
+        protected int drawOrder { get; }
+        protected ICoordsUtils coordsUtils { get; }
+        protected CancellationTokenSource ctsDisposing { get; }
+        protected Transform instantiationParent { get; }
+        protected IMapCullingController mapCullingController { get; }
+
+        protected MapLayerControllerBase(Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
+        {
+            ctsDisposing = new CancellationTokenSource();
+            this.drawOrder = drawOrder;
+            this.coordsUtils = coordsUtils;
+            this.instantiationParent = instantiationParent;
+            this.mapCullingController = mapCullingController;
+        }
+
+        public void Dispose()
+        {
+            ctsDisposing.Cancel();
+            ctsDisposing.Dispose();
+            DisposeImpl();
+        }
+
+        protected virtual void DisposeImpl()
+        {
+        }
+    }
+}

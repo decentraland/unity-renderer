@@ -267,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 231615edc4a34282b96a4b78e28fc8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab: {fileID: 5191401156417962899, guid: f80a8f4fcad2b4246b66c94221314244, type: 3}
   chunkSize: 1000
   parcelSize: 20
   selector: {fileID: 1784492176}

@@ -10,6 +10,8 @@ using DCL.Services;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.ComponentsFactory;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
@@ -82,6 +84,9 @@ namespace DCL
                 { AssetSource.EMBEDDED, new EmbeddedFontProvider() },
                 { AssetSource.ADDRESSABLE, new AddressableFontProvider(addressableResourceProvider) },
             }, DataStore.i.featureFlags));
+
+            // Map
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory()));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory());

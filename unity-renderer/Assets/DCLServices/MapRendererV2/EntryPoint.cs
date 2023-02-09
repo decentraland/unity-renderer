@@ -1,23 +1,32 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
+using DCLServices.MapRendererV2.CoordsUtils;
+using DCLServices.MapRendererV2.MapLayers.Atlas;
 using UnityEngine;
 
-public class EntryPoint : MonoBehaviour
+namespace DCLServices.MapRendererV2
 {
-    public int chunkSize = 250;
-    public int parcelSize = 5;
-    public Transform selector;
-    private ChunkAtlasController atlasController;
-
-    void Awake()
+    public class EntryPoint : MonoBehaviour
     {
-        atlasController = new ChunkAtlasController(transform, chunkSize, parcelSize, ChunkController.CreateChunk);
-        atlasController.Initialize(default).Forget();
-        selector.localScale = Vector3.one * parcelSize / 2f;
-    }
+        [SerializeField] private SpriteRenderer prefab;
 
-    private void Update()
-    {
-        Debug.Log(atlasController.PositionToCoords(selector.position));
+        public int chunkSize = 250;
+        public int parcelSize = 5;
+        public Transform selector;
+        private ChunkAtlasController atlasController;
+        private ICoordsUtils coordsUtils;
+
+        void Awake()
+        {
+            coordsUtils = new ChunkCoordsUtils(parcelSize);
+
+            atlasController = new ChunkAtlasController(transform, prefab, 1, chunkSize, coordsUtils, null, ChunkController.CreateChunk);
+            atlasController.Initialize(default).Forget();
+            selector.localScale = Vector3.one * parcelSize / 2f;
+        }
+
+        private void Update()
+        {
+            Debug.Log(coordsUtils.PositionToCoords(selector.position));
+        }
     }
 }
