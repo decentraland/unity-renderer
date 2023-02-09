@@ -49,8 +49,6 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 
             var finalUrl = $"{contentUrl}{SceneAssetBundles.MANIFEST_ENDPOINT}{hash}.json";
 
-            Debug.Log($"[Asset Bundle] {finalUrl}");
-
             try
             {
                 var result = await webRequestController.Ref.GetAsync(finalUrl, cancellationToken: cancellationTokenSource.Token);
