@@ -13,10 +13,17 @@ public class ViewAllComponentController : IDisposable
     {
         this.view = view;
         view.OnBackFromViewAll += BackFromViewAll;
+        view.OnRequestCollectibleElements += RequestCollectibleElements;
+    }
+
+    private void RequestCollectibleElements(int pageNumber, int pageSize)
+    {
+        //TODO: Wire request to new refactored implementation
     }
 
     public void OpenViewAllSection(string sectionName)
     {
+        view.Initialize(300);
         view.SetSectionName(sectionName);
     }
 

@@ -322,7 +322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 931, y: 0}
   m_SizeDelta: {x: 839, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &7495219606995685376
@@ -815,6 +815,7 @@ MonoBehaviour:
   sectionName: {fileID: 1673276692702230722}
   backButton: {fileID: 8227208812451131387}
   itemsContainer: {fileID: 3729021012962335220}
+  pageSelector: {fileID: 2039047561875341192}
 --- !u!1 &523446783765681292
 GameObject:
   m_ObjectHideFlags: 0
@@ -13662,6 +13663,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2039047561875341192 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4448660594294678546, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
+    type: 3}
+  m_PrefabInstance: {fileID: 2445727043888012186}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983955439945875542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf6becda7df52fd419849837a8deb405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8311382973572153973 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5955730194940385775, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
