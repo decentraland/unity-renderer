@@ -182,7 +182,7 @@ commands:
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
       - run:
-          working_directory: *node_workspace
+          working_directory: &node_workspace browser-interface
           name: Deploy artifacts
           command: npm run publish-artifacts
       - run:
@@ -348,7 +348,7 @@ jobs:
     steps:
       - <<: *attach_root
       - run:
-          working_directory: &node_workspace browser-interface
+          working_directory: *node_workspace
           name: clean install
           command: |
             sudo apt-get install xvfb
