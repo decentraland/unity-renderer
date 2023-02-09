@@ -3,6 +3,7 @@ using System.Collections;
 using DCL;
 using DCL.Chat;
 using DCL.Helpers;
+using DCL.Providers;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
@@ -24,7 +25,7 @@ namespace Tests
             yield return base.SetUp();
 
             FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
-            hudController = new HUDController(new DataStore_FeatureFlag(), new HUDFactory());
+            hudController = new HUDController(new DataStore_FeatureFlag(), new HUDFactory(new AddressableResourceProvider()));
             hudController.Initialize();
             yield return null;
         }
