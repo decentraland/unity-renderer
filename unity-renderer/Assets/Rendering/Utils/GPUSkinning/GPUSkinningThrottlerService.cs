@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +18,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
             return;
         }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        CoroutineStarter.Start(ThrottleUpdate());
-#else
         ThrottleUpdateAsync();
-#endif
     }
 
     public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates = 1)
@@ -62,25 +57,6 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         if (initializeOnSpawn)
             service.Initialize();
         return service;
-    }
-
-
-    private IEnumerator ThrottleUpdate()
-    {
-        WaitForEndOfFrame wait = new WaitForEndOfFrame();
-
-        yield return wait;
-        while (!stopAsked)
-        {
-            foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
-            {
-                if (Time.frameCount % entry.Value == 0)
-                    entry.Key.Update();
-            }
-            yield return wait;
-        }
-
-        stopAsked = false;
     }
 
     private async UniTaskVoid ThrottleUpdateAsync()
