@@ -1,17 +1,15 @@
-/*
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
-using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -23,7 +21,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private PlayerInfoCardHUDController controller;
     private Dictionary<string, UserProfile> userProfiles;
     private DataStore dataStore;
-    private IWearableCatalogBridge wearableCatalogBridge;
+    private IWearablesCatalogService wearablesCatalogService;
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
@@ -56,7 +54,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
-            wearableCatalogBridge,
+            wearablesCatalogService,
             socialAnalytics,
             profanityFilter,
             dataStore,
@@ -296,17 +294,20 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             new WearableItem { id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE }
         };
 
-        wearableCatalogBridge = Substitute.For<IWearableCatalogBridge>();
-        wearableCatalogBridge.IsValidWearable(Arg.Any<string>()).Returns(true);
+        wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+        wearablesCatalogService.IsValidWearable(Arg.Any<string>()).Returns(true);
 
-        Func<CallInfo, Promise<WearableItem[]>> requestOwnedWearables = info =>
+        foreach (string id in IDS)
         {
-            var promise = new Promise<WearableItem[]>();
-            promise.Resolve(wearables);
-            return promise;
-        };
-
-        foreach (string id in IDS) { wearableCatalogBridge.RequestOwnedWearables(id).Returns(requestOwnedWearables); }
+            wearablesCatalogService
+               .RequestOwnedWearablesAsync(id, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+               .Returns(_ =>
+                {
+                    UniTaskCompletionSource<IReadOnlyList<WearableItem>> mockedResult = new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+                    mockedResult.TrySetResult(wearables);
+                    return mockedResult.Task;
+                });
+        }
     }
 
     private UserProfile GivenMyOwnUserProfile()
@@ -333,4 +334,3 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         dataStore.settings.profanityChatFilteringEnabled.Set(enabled);
     }
 }
-*/
