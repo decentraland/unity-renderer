@@ -7,6 +7,7 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using DCL.Services;
+using DCL.Social.Chat;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -62,7 +63,7 @@ namespace DCL
             result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             result.Register<IAvatarFactory>(() => new AvatarFactory(result));
             result.Register<ICharacterPreviewFactory>(() => new CharacterPreviewFactory());
-
+            result.Register<IChatController>(() => new ChatController(WebInterfaceChatBridge.GetOrCreate(), DataStore.i));
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
             result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
             result.Register<ITeleportController>(() => new TeleportController());
@@ -71,8 +72,6 @@ namespace DCL
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
-
-
 
             // Asset Providers
             result.Register<ITextureAssetResolver>(() => new TextureAssetResolver(new Dictionary<AssetSource, ITextureAssetProvider>
