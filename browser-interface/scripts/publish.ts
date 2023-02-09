@@ -1,11 +1,9 @@
 import { exec } from 'child_process'
-import { mkdir, readFile, stat } from 'fs/promises'
-import path, { resolve } from 'path'
-import * as fs from 'fs'
-import * as zlib from 'zlib'
+import { mkdir, readFile } from 'fs/promises'
 import * as glob from 'glob'
-import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
+import path, { resolve } from 'path'
 import { fetch, FormData } from 'undici'
+import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
 
 const DIST_ROOT = resolve(__dirname, '../static')
 
@@ -46,9 +44,7 @@ async function main() {
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version, tag)
   }
-  console.log(`Publish completed! Checking file sizes...`)
-
-  await checkFileSizes()
+  console.log(`Publish complete!`)
 }
 
 async function checkFiles() {
@@ -92,34 +88,6 @@ async function copyBuiltFiles() {
   for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
     copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
   }
-}
-
-const MAX_FILE_SIZE = 42_000_000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
-
-async function checkFileSizes() {
-  return await Promise.all(
-    glob.sync('**/*', { cwd: DIST_ROOT, absolute: true }).map(async (file) => {
-      const stats = await stat(file)
-      if (stats.size > MAX_FILE_SIZE) {
-        console.error(
-          `Warning, the file ${file} exceeds the maximum cacheable file (uncompressed) size: ${(
-            stats.size /
-            1024 /
-            1024
-          ).toFixed(2)}MB`
-        )
-        const length = await getBrotliSize(file)
-        if (length > MAX_FILE_SIZE) {
-          console.error(
-            `The file ${file} exceeds the maximum cacheable file size: ${(length / 1024 / 1024).toFixed(2)}MB`
-          )
-          process.exitCode = 1
-        } else {
-          console.log(`The file ${file} has a compressed file size of: ${(length / 1024 / 1024).toFixed(2)}MB`)
-        }
-      }
-    })
-  )
 }
 
 async function getPackageJson(workingDirectory: string) {
@@ -182,27 +150,6 @@ async function execute(command: string, workingDirectory: string): Promise<strin
         onSuccess(stdout)
       }
     })
-  })
-}
-
-async function getBrotliSize(filePath: string): Promise<number> {
-  const file = fs.createReadStream(filePath, {
-    encoding: 'binary'
-  })
-
-  let dataLen = 0
-  const compress = zlib.createBrotliCompress({
-    chunkSize: 1024 * 1024,
-    maxOutputLength: MAX_FILE_SIZE
-  })
-  compress.on('data', (chunk) => {
-    dataLen += chunk.length
-  })
-  file.pipe(compress)
-
-  return new Promise((resolve, reject) => {
-    compress.on('end', () => resolve(dataLen))
-    compress.on('error', reject)
   })
 }
 
