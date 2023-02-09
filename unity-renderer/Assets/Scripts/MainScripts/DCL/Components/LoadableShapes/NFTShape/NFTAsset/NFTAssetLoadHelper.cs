@@ -69,7 +69,7 @@ namespace DCL
             bool isGif = string.Equals(contentType, CONTENT_TYPE_GIF, StringComparison.InvariantCultureIgnoreCase);
             bool isWebp = string.Equals(contentType, CONTENT_TYPE_WEBP, StringComparison.InvariantCultureIgnoreCase);
 
-            if (!isGif)
+            if (isWebp)
             {
                 // We are going to fallback into gifs until we have proper support
                 yield return FetchGif(url + "&fm=gif",
