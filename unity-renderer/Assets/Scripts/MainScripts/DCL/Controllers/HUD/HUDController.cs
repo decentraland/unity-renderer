@@ -467,11 +467,19 @@ public class HUDController : IHUDController
 
         if (config.active && !controllerCreated)
         {
-            IHUD hudElement = await hudFactory.CreateHUD(id, cancellationToken);
-            hudElements.Add(id, hudElement);
+            try
+            {
+                IHUD hudElement = await hudFactory.CreateHUD(id, cancellationToken);
+                hudElements.Add(id, hudElement);
 
-            if (VERBOSE)
-                Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
+                if (VERBOSE)
+                    Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Retrying HUD {hudElements[id].GetType().Name} addressables async request...");
+                await CreateHudElement(config, id, cancellationToken);
+            }
         }
     }
 
