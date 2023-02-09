@@ -94,10 +94,15 @@ public class MinimapMetadata : ScriptableObject
         public override int GetHashCode()
         {
             if (hashCode == -1)
-                hashCode = name.GetHashCode() + type.GetHashCode() + isPOI.GetHashCode() + owner.GetHashCode() + description.GetHashCode() + previewImageUrl.GetHashCode()
-                           + parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + parcels[0].y * 600 : 0);
+                hashCode = name.GetHashCode() + type.GetHashCode() + GenerateParcelHashCode() + isPOI.GetHashCode() + GenerateOwnerInfo();
 
             return hashCode;
+
+            int GenerateOwnerInfo() =>
+                owner == null ? 0 : owner.GetHashCode() + description.GetHashCode() + previewImageUrl.GetHashCode();
+
+            int GenerateParcelHashCode() =>
+                parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + (parcels[0].y * 600) : 0);
         }
     }
 }
