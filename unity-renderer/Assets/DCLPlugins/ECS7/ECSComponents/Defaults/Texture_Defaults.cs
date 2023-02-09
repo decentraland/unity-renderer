@@ -66,9 +66,10 @@ namespace DCL.ECSComponents
             if (string.IsNullOrEmpty(self.Src))
                 return self.Src;
 
-            scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl);
+            if (scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl))
+                return textureUrl;
 
-            return textureUrl;
+            return string.Empty;
         }
 
         public static string GetTextureUrl(this AvatarTexture self)

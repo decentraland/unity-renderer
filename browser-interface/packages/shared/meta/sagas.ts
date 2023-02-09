@@ -38,7 +38,6 @@ function* initMeta() {
 
   const merge: Partial<MetaConfiguration> = {
     ...config,
-    comms: config.comms,
     featureFlagsV2: flagsAndVariants
   }
 
@@ -154,10 +153,6 @@ async function fetchMetaConfiguration(network: ETHEREUM_NETWORK): Promise<Partia
         network === ETHEREUM_NETWORK.MAINNET ? 'https://social.decentraland.org' : 'https://social.decentraland.zone',
       world: {
         pois: []
-      },
-      comms: {
-        targetConnections: 4,
-        maxConnections: 6
       }
     }
   }

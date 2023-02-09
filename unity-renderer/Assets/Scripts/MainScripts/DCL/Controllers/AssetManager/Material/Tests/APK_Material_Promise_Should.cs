@@ -30,7 +30,7 @@ namespace AssetPromiseKeeper_Material_Tests
         
         private AssetPromise_Material_Model CreateMaterialModel(AssetPromise_Material_Model.Texture texture)
         {
-            return AssetPromise_Material_Model.CreateBasicMaterial(texture, 1f);
+            return AssetPromise_Material_Model.CreateBasicMaterial(texture, 1f, Color.white);
         }
 
         protected AssetPromise_Material_Model.Texture CreateTextureModel(TextureWrapMode wrapmode = TextureWrapMode.Clamp, 

@@ -25,16 +25,16 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdmlkZW9fcGxheWVyLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMisAEKDVBCVmlkZW9Q",
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMizAEKDVBCVmlkZW9Q",
             "bGF5ZXISCwoDc3JjGAEgASgJEhQKB3BsYXlpbmcYAiABKAhIAIgBARIVCghw",
             "b3NpdGlvbhgDIAEoAkgBiAEBEhMKBnZvbHVtZRgEIAEoAkgCiAEBEhoKDXBs",
-            "YXliYWNrX3JhdGUYBSABKAJIA4gBAUIKCghfcGxheWluZ0ILCglfcG9zaXRp",
-            "b25CCQoHX3ZvbHVtZUIQCg5fcGxheWJhY2tfcmF0ZUIUqgIRRENMLkVDU0Nv",
-            "bXBvbmVudHNiBnByb3RvMw=="));
+            "YXliYWNrX3JhdGUYBSABKAJIA4gBARIRCgRsb29wGAYgASgISASIAQFCCgoI",
+            "X3BsYXlpbmdCCwoJX3Bvc2l0aW9uQgkKB192b2x1bWVCEAoOX3BsYXliYWNr",
+            "X3JhdGVCBwoFX2xvb3BCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoPlayer), global::DCL.ECSComponents.PBVideoPlayer.Parser, new[]{ "Src", "Playing", "Position", "Volume", "PlaybackRate" }, new[]{ "Playing", "Position", "Volume", "PlaybackRate" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBVideoPlayer), global::DCL.ECSComponents.PBVideoPlayer.Parser, new[]{ "Src", "Playing", "Position", "Volume", "PlaybackRate", "Loop" }, new[]{ "Playing", "Position", "Volume", "PlaybackRate", "Loop" }, null, null, null)
           }));
     }
     #endregion
@@ -82,6 +82,7 @@ namespace DCL.ECSComponents {
       position_ = other.position_;
       volume_ = other.volume_;
       playbackRate_ = other.playbackRate_;
+      loop_ = other.loop_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -218,6 +219,34 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~8;
     }
 
+    /// <summary>Field number for the "loop" field.</summary>
+    public const int LoopFieldNumber = 6;
+    private bool loop_;
+    /// <summary>
+    /// default false
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Loop {
+      get { if ((_hasBits0 & 16) != 0) { return loop_; } else { return false; } }
+      set {
+        _hasBits0 |= 16;
+        loop_ = value;
+      }
+    }
+    /// <summary>Gets whether the "loop" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasLoop {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "loop" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearLoop() {
+      _hasBits0 &= ~16;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -238,6 +267,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Position, other.Position)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Volume, other.Volume)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PlaybackRate, other.PlaybackRate)) return false;
+      if (Loop != other.Loop) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -250,6 +280,7 @@ namespace DCL.ECSComponents {
       if (HasPosition) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Position);
       if (HasVolume) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Volume);
       if (HasPlaybackRate) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PlaybackRate);
+      if (HasLoop) hash ^= Loop.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -288,6 +319,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(45);
         output.WriteFloat(PlaybackRate);
       }
+      if (HasLoop) {
+        output.WriteRawTag(48);
+        output.WriteBool(Loop);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -318,6 +353,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(45);
         output.WriteFloat(PlaybackRate);
       }
+      if (HasLoop) {
+        output.WriteRawTag(48);
+        output.WriteBool(Loop);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -342,6 +381,9 @@ namespace DCL.ECSComponents {
       }
       if (HasPlaybackRate) {
         size += 1 + 4;
+      }
+      if (HasLoop) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -369,6 +411,9 @@ namespace DCL.ECSComponents {
       }
       if (other.HasPlaybackRate) {
         PlaybackRate = other.PlaybackRate;
+      }
+      if (other.HasLoop) {
+        Loop = other.Loop;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -405,6 +450,10 @@ namespace DCL.ECSComponents {
             PlaybackRate = input.ReadFloat();
             break;
           }
+          case 48: {
+            Loop = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -438,6 +487,10 @@ namespace DCL.ECSComponents {
           }
           case 45: {
             PlaybackRate = input.ReadFloat();
+            break;
+          }
+          case 48: {
+            Loop = input.ReadBool();
             break;
           }
         }

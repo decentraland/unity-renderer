@@ -23,7 +23,10 @@ namespace DCL.Controllers
         private ISceneBoundsFeedbackStyle feedbackStyle;
         private Coroutine entitiesCheckRoutine = null;
         private float lastCheckTime;
-        private MessagingControllersManager messagingManager;
+
+        private Service<IMessagingControllersManager> messagingManagerService;
+        private IMessagingControllersManager messagingManager => messagingManagerService.Ref;
+
         private bool isNerfed;
 
         public void Initialize()
@@ -34,7 +37,6 @@ namespace DCL.Controllers
         public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
         {
             this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
-            messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
             isNerfed = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("NERF_SBC");
         }
 
@@ -226,11 +228,6 @@ namespace DCL.Controllers
 
         private void EvaluateMeshBounds(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
-            // TODO: Can we cache the MaterialTransitionController somewhere to avoid this GetComponent() call?
-            // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
-            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-                return;
-
             var loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
