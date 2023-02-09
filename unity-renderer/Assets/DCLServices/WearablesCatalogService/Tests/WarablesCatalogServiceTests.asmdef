@@ -7,7 +7,9 @@
         "WearablesCatalogService",
         "AvatarAssets",
         "BaseVariable",
-        "LambdasService"
+        "LambdasService",
+        "UniTask",
+        "IService"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

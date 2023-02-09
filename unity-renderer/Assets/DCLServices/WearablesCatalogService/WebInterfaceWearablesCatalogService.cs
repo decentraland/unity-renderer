@@ -220,7 +220,7 @@ namespace DCLServices.WearablesCatalogService
 
                 wearablesInUseCounters[wearableToRemove]--;
 
-                if (wearablesInUseCounters[wearableToRemove] <= 0)
+                if (wearablesInUseCounters[wearableToRemove] > 0)
                     continue;
 
                 WearablesCatalog.Remove(wearableToRemove);

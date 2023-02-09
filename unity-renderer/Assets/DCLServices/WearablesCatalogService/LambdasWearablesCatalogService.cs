@@ -188,7 +188,7 @@ namespace DCLServices.WearablesCatalogService
 
                 wearablesInUseCounters[wearableToRemove]--;
 
-                if (wearablesInUseCounters[wearableToRemove] <= 0)
+                if (wearablesInUseCounters[wearableToRemove] > 0)
                     continue;
 
                 WearablesCatalog.Remove(wearableToRemove);
@@ -300,9 +300,10 @@ namespace DCLServices.WearablesCatalogService
                         representationContent.hash = representationContent.url[(representationContent.url.LastIndexOf('/') + 1)..];
                 }
 
-                int index = wearable.thumbnail.LastIndexOf('/');
-                string newThumbnail = wearable.thumbnail[(index + 1)..];
-                string newBaseUrl = wearable.thumbnail[..(index + 1)];
+                string thumbnail = wearable.thumbnail ?? "";
+                int index = thumbnail.LastIndexOf('/');
+                string newThumbnail = thumbnail[(index + 1)..];
+                string newBaseUrl = thumbnail[..(index + 1)];
                 wearable.thumbnail = newThumbnail;
                 wearable.baseUrl = string.IsNullOrEmpty(newBaseUrl) ? TEXTURES_URL_ORG : newBaseUrl;
                 wearable.baseUrlBundles = ASSET_BUNDLES_URL_ORG;
