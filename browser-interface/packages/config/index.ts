@@ -180,7 +180,7 @@ export const ENABLE_EMPTY_SCENES = !location.search.includes('DISABLE_EMPTY_SCEN
 export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const state = store.getState()
 
-  if (getFeatureFlagEnabled(state, 'ab_new_cdn')) {
+  if (getFeatureFlagEnabled(state, 'ab-new-cdn')) {
     // IMPORTANT: The new ab-cdn supports versioning, so the global config is now
     //            ignored.
     // TODO: this will be customizable per scene/world/wearable. for now it only
