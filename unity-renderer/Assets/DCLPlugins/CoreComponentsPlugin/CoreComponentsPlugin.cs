@@ -57,9 +57,9 @@ public class CoreComponentsPlugin : IPlugin
         factory.RegisterBuilder((int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
             () =>
         {
-            AvatarShape avatarShape = (AvatarShape)BuildPoolableComponent((int)CLASS_ID_COMPONENT.AVATAR_SHAPE);
-            avatarShape.SetUp(Environment.i.serviceLocator.Get<GPUSkinningThrottlerService>());
-            return null;
+            IComponent component = BuildPoolableComponent((int)CLASS_ID_COMPONENT.AVATAR_SHAPE);
+            (component as AvatarShape).SetUp(Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>());
+            return component;
         });
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.ANIMATOR,
             () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.ANIMATOR));

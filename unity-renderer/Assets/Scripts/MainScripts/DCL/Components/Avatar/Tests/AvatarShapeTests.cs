@@ -25,6 +25,14 @@ namespace Tests
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         }
 
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var result = base.InitializeServiceLocator();
+            result.Register<IGPUSkinningThrottlerService>(() => GPUSkinningThrottlerService.Create(true));
+
+            return result;
+        }
+
         protected override IEnumerator TearDown()
         {
             DataStore.Clear();
@@ -63,7 +71,7 @@ namespace Tests
         {
             DataStore.i.avatarConfig.useHologramAvatar.Set(true);
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
-            Assert.IsTrue(avatar.avatar is AvatarSystem.AvatarWithHologram);
+            Assert.IsTrue(avatar.avatar is AvatarWithHologram);
             TestUtils.RemoveSceneEntity(scene, avatar.entity);
         }
 
