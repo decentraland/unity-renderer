@@ -19,6 +19,7 @@ namespace DCL.ECSComponents
         private IParcelScene scene;
         private IDCLEntity entity;
         private Renderer renderer;
+        private PBAvatarShape prevModel;
 
         private bool isAvatarInitialized = false;
 
@@ -46,6 +47,7 @@ namespace DCL.ECSComponents
                 return;
 
             avatar.internalAvatar.OnCombinedRendererUpdate -= OnCombinedRendererUpdate;
+
             if (renderer)
             {
                 renderersInternalComponent.RemoveRenderer(scene, entity, renderer);
@@ -64,6 +66,17 @@ namespace DCL.ECSComponents
                 avatar.Init();
                 isAvatarInitialized = true;
             }
+
+            // We assume avatar combined renderer is going to change by checking equality
+            // between model update
+            // we should refactor this avatar shape handler
+            // so the assumption is fair enough for the moment
+            if (renderer && IsRendererGoingToChange(model, prevModel))
+            {
+                renderersInternalComponent.RemoveRenderer(scene, entity, renderer);
+            }
+
+            prevModel = model;
             avatar.ApplyModel(scene, entity, model);
         }
 
@@ -76,6 +89,17 @@ namespace DCL.ECSComponents
 
             renderersInternalComponent.AddRenderer(scene, entity, newRenderer);
             renderer = newRenderer;
+        }
+
+        private static bool IsRendererGoingToChange(PBAvatarShape newModel, PBAvatarShape prevModel)
+        {
+            if (prevModel == null) return false;
+
+            prevModel.ExpressionTriggerId = newModel.ExpressionTriggerId;
+            prevModel.ExpressionTriggerTimestamp = newModel.ExpressionTriggerTimestamp;
+            prevModel.Talking = newModel.Talking;
+
+            return !prevModel.Equals(newModel);
         }
     }
 }
