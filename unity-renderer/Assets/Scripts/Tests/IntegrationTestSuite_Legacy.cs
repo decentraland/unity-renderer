@@ -83,7 +83,10 @@ public class IntegrationTestSuite_Legacy
         IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
         emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
         result.Register<IEmotesCatalogService>(() => emotesCatalogService);
-        result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
+
+        IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+        wearablesCatalogService.WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>());
+        result.Register<IWearablesCatalogService>(() => wearablesCatalogService);
 
         return result;
     }

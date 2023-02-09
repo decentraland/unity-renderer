@@ -1,9 +1,9 @@
-/*
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 
 public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
@@ -139,10 +139,10 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
             }
         };
 
-        CatalogController.wearableCatalog.Remove(rarity);
-        CatalogController.wearableCatalog.Add(rarity, wearable);
+        var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+        wearablesCatalogService.WearablesCatalog.Remove(rarity);
+        wearablesCatalogService.WearablesCatalog.Add(rarity, wearable);
 
         return wearable;
     }
 }
-*/
