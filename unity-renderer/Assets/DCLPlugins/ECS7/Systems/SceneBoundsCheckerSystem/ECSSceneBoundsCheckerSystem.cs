@@ -76,7 +76,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     if (renderersRemoved)
                         model.renderers = null;
 
-                    sceneBoundsCheckComponent.RecalculateEntityMeshBounds(scene, entity);
+                    model = RecalculateEntityMeshBounds(entity, model);
 
                     // If all meshes were removed we need to reset the feedback.
                     if (model.entityLocalMeshBounds.size == Vector3.zero)
@@ -293,6 +293,66 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private static bool IsEntityVisible(IParcelScene scene, IDCLEntity entity, IInternalECSComponent<InternalVisibility> visibilityComponent)
         {
             return visibilityComponent.GetFor(scene, entity)?.model.visible ?? true;
+        }
+
+        private static InternalSceneBoundsCheck RecalculateEntityMeshBounds(IDCLEntity entity, InternalSceneBoundsCheck sbcInternalComponentModel)
+        {
+            // Clean existing bounds object
+            sbcInternalComponentModel.entityLocalMeshBounds.size = Vector3.zero;
+
+            // Note: the center shouldn't be modified beyond this point as it affects the bounds relative values
+            sbcInternalComponentModel.entityLocalMeshBounds.center = entity.gameObject.transform.position;
+
+            // Encapsulate with global bounds
+            if (sbcInternalComponentModel.renderers != null)
+            {
+                for (var i = 0; i < sbcInternalComponentModel.renderers.Count; i++)
+                {
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(sbcInternalComponentModel.renderers[i].bounds);
+                }
+            }
+
+            if (sbcInternalComponentModel.physicsColliders != null)
+            {
+                for (var i = 0; i < sbcInternalComponentModel.physicsColliders.Count; i++)
+                {
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.physicsColliders[i]));
+                }
+            }
+
+            if (sbcInternalComponentModel.pointerColliders != null)
+            {
+                for (var i = 0; i < sbcInternalComponentModel.pointerColliders.Count; i++)
+                {
+                    sbcInternalComponentModel.entityLocalMeshBounds.Encapsulate(GetColliderBounds(sbcInternalComponentModel.pointerColliders[i]));
+                }
+            }
+
+            // Turn min-max values to local/relative to be usable when the entity has moved
+            Vector3 entityPosition = entity.gameObject.transform.position;
+
+            sbcInternalComponentModel.entityLocalMeshBounds.SetMinMax(sbcInternalComponentModel.entityLocalMeshBounds.min - entityPosition,
+                sbcInternalComponentModel.entityLocalMeshBounds.max - entityPosition);
+
+            return sbcInternalComponentModel;
+        }
+
+        private static Bounds GetColliderBounds(Collider collider)
+        {
+            // Disabled colliders return a size-0 bounds object, so we enable it only to get its bounds
+            if (!collider.enabled)
+            {
+                // Enable collider to copy its real bounds
+                collider.enabled = true;
+                Bounds returnedBounds = collider.bounds;
+
+                // Reset modified values
+                collider.enabled = false;
+
+                return returnedBounds;
+            }
+
+            return collider.bounds;
         }
     }
 }
