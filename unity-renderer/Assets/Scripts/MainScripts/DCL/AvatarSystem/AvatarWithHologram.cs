@@ -24,7 +24,7 @@ namespace AvatarSystem
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly IBaseAvatar baseAvatar;
 
-        public Action<Renderer> OnCombinedRendererUpdate { get; set; }
+        public event Action<Renderer> OnCombinedRendererUpdate;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }

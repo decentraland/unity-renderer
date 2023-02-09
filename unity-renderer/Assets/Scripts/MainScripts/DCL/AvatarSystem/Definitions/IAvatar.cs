@@ -30,7 +30,7 @@ namespace AvatarSystem
 
         Renderer GetMainRenderer();
 
-        Action<Renderer> OnCombinedRendererUpdate { get; set; }
+        event Action<Renderer> OnCombinedRendererUpdate;
     }
 
 }
