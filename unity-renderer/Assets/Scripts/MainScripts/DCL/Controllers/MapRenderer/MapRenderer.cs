@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using KernelConfigurationTypes;
 using TMPro;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -395,54 +393,48 @@ namespace DCL
             return false;
         }
 
-        static readonly ProfilerMarker s_PreparePerfMarker = new ("Vitaly.Contains");
-
         private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-                Debug.Log($"VV: {Time.frameCount} CALL = {scenesOfInterest.Contains(sceneInfo)}");
+            Debug.Log($"VV: {Time.frameCount} CALL = {scenesOfInterest.Contains(sceneInfo)}");
 
-                using (s_PreparePerfMarker.Auto())
+            if (!sceneInfo.isPOI)
+                return;
 
+            if (scenesOfInterest.Contains(sceneInfo))
+                return;
+
+            if (IsEmptyParcel(sceneInfo))
+                return;
+
+            scenesOfInterest.Add(sceneInfo);
+
+            GameObject go = Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
+
+            Vector2 centerTile = Vector2.zero;
+
+            foreach (var parcel in sceneInfo.parcels) { centerTile += parcel; }
+
+            centerTile /= (float)sceneInfo.parcels.Count;
+            float distance = float.PositiveInfinity;
+            Vector2 centerParcel = Vector2.zero;
+
+            foreach (var parcel in sceneInfo.parcels)
+            {
+                if (Vector2.Distance(centerTile, parcel) < distance)
                 {
-                    if (!sceneInfo.isPOI)
-                        return;
-
-                    if (scenesOfInterest.Contains(sceneInfo))
-                        return;
-
-                    if (IsEmptyParcel(sceneInfo))
-                        return;
-
-                    scenesOfInterest.Add(sceneInfo);
-
-                    GameObject go = Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
-
-                    Vector2 centerTile = Vector2.zero;
-
-                    foreach (var parcel in sceneInfo.parcels) { centerTile += parcel; }
-
-                    centerTile /= (float)sceneInfo.parcels.Count;
-                    float distance = float.PositiveInfinity;
-                    Vector2 centerParcel = Vector2.zero;
-
-                    foreach (var parcel in sceneInfo.parcels)
-                    {
-                        if (Vector2.Distance(centerTile, parcel) < distance)
-                        {
-                            distance = Vector2.Distance(centerParcel, parcel);
-                            centerParcel = parcel;
-                        }
-                    }
-
-                    (go.transform as RectTransform).anchoredPosition = MapUtils.CoordsToPosition(centerParcel);
-
-                    MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
-
-                    if (icon.title != null)
-                        icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
-
-                    scenesOfInterestMarkers.Add(sceneInfo, go);
+                    distance = Vector2.Distance(centerParcel, parcel);
+                    centerParcel = parcel;
                 }
+            }
+
+            (go.transform as RectTransform).anchoredPosition = MapUtils.CoordsToPosition(centerParcel);
+
+            MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
+
+            if (icon.title != null)
+                icon.title.text = sceneInfo.name.Length > MAX_SCENE_CHARACTER_TITLE ? sceneInfo.name.Substring(0, MAX_SCENE_CHARACTER_TITLE - 1) : sceneInfo.name;
+
+            scenesOfInterestMarkers.Add(sceneInfo, go);
         }
 
         public void SetPointOfInterestActive(bool areActive)

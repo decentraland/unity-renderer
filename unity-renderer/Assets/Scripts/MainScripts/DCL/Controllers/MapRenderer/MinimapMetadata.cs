@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Profiling;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MinimapMetadata", menuName = "MinimapMetadata")]
@@ -78,8 +77,6 @@ public class MinimapMetadata : ScriptableObject
     [Serializable]
     public class MinimapSceneInfo
     {
-        static readonly ProfilerMarker s_PreparePerfMarker = new ("Vitaly.Equals");
-
         public string name;
         public TileType type;
         public List<Vector2Int> parcels;
@@ -92,22 +89,15 @@ public class MinimapMetadata : ScriptableObject
         [NonSerialized]
         private int hashCode = -1;
 
-        public override bool Equals(object obj)
-        {
-            using (s_PreparePerfMarker.Auto())
-                return obj is MinimapSceneInfo info && Equals(info);
-        }
-
-        private bool Equals(MinimapSceneInfo other) =>
-            this.GetHashCode() == other.GetHashCode();
+        public override bool Equals(object obj) =>
+            obj != null && obj.GetHashCode() == GetHashCode();
 
         public override int GetHashCode()
         {
-            if(hashCode == -1)
+            if (hashCode == -1)
                 hashCode = (name + type + parcels + isPOI + owner + description + previewImageUrl).GetHashCode();
 
             return hashCode;
         }
-
     }
 }
