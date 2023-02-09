@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 {
+    // this datatype is defined by https://github.com/decentraland/asset-bundle-converter
     [Serializable]
     public class SceneAbDto
     {

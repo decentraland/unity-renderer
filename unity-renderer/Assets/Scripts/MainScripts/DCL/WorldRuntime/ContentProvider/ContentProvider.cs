@@ -13,6 +13,8 @@ namespace DCL
 
         public string baseUrl;
         public string assetBundlesBaseUrl;
+        public string sceneCid;
+
         public List<MappingPair> contents = new ();
         public Dictionary<string, string> fileToHash = new ();
         public HashSet<string> assetBundles = new ();
@@ -75,10 +77,7 @@ namespace DCL
             if (string.IsNullOrEmpty(url)) { return false; }
 
 #if UNITY_EDITOR
-            if (HasTestSchema(url))
-            {
-                return true;
-            }
+            if (HasTestSchema(url)) { return true; }
 #endif
             if (fileToHash == null) { return false; }
 
@@ -101,10 +100,7 @@ namespace DCL
             result = url;
 
 #if UNITY_EDITOR
-            if (HasTestSchema(url))
-            {
-                return true;
-            }
+            if (HasTestSchema(url)) { return true; }
 #endif
             if (fileToHash != null)
             {
@@ -151,15 +147,9 @@ namespace DCL
             url = url.ToLower();
 
 #if UNITY_EDITOR
-            if (url.StartsWith("file://"))
-            {
-                return true;
-            }
+            if (url.StartsWith("file://")) { return true; }
 
-            if (url.StartsWith(TestAssetsUtils.GetPath()))
-            {
-                return true;
-            }
+            if (url.StartsWith(TestAssetsUtils.GetPath())) { return true; }
 #endif
             return false;
         }

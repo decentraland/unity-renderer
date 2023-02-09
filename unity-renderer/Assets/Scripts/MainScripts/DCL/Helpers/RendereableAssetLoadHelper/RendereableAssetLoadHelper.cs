@@ -1,4 +1,5 @@
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using Sentry;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -182,14 +183,19 @@ namespace DCL.Components
             if (featureFlags.IsFeatureEnabled(SceneAssetBundles.FEATURE_FLAG))
             {
                 if (contentProvider.assetBundles.Contains(hash))
-                {
                     bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
-
-                    Debug.Log("[Asset Bundle] " + bundlesBaseUrl + hash);
-                }
                 else
                 {
-                    OnFailWrapper(OnFail, new Exception("Hash " + hash + " not available as asset bundle"), hasFallback);
+                    // we track the failing asset for it to be fixed in the asset bundle converter
+                    SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
+                    {
+                        scope.SetExtra("hash", hash);
+                        scope.SetExtra("baseUrl", contentProvider.assetBundlesBaseUrl);
+                        scope.SetExtra("sceneCid", contentProvider.sceneCid);
+                    });
+
+                    // exception is null since we are expected to fallback
+                    OnFailWrapper(OnFail, null, hasFallback);
                     return;
                 }
             }
