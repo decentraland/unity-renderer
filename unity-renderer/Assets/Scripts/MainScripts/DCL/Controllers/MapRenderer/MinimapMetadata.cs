@@ -1,3 +1,4 @@
+using Castle.Components.DictionaryAdapter.Xml;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,10 +47,8 @@ public class MinimapMetadata : ScriptableObject
         {
             if (sceneInfoMap.ContainsKey(sceneInfo.parcels[i]))
 
-                //NOTE(Brian): I intended at first to just return; here. But turns out kernel is sending
-                //             overlapping coordinates, sending first gigantic 'Estate' and 'Roads' scenes to
-                //             send the proper scenes later. This will be fixed when we implement the content v3 data
-                //             plumbing.
+                // NOTE: This removes outdated information for a particular parcel. Subsequent calls to update the
+                // information for a parcel must override previously submitted information.
                 sceneInfoMap.Remove(sceneInfo.parcels[i]);
 
             sceneInfoMap.Add(sceneInfo.parcels[i], sceneInfo);
@@ -95,7 +94,8 @@ public class MinimapMetadata : ScriptableObject
         public override int GetHashCode()
         {
             if (hashCode == -1)
-                hashCode = (name + type + parcels + isPOI + owner + description + previewImageUrl).GetHashCode();
+                hashCode = name.GetHashCode() + type.GetHashCode() + isPOI.GetHashCode() + owner.GetHashCode() + description.GetHashCode() + previewImageUrl.GetHashCode()
+                           + parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + parcels[0].y * 600 : 0);
 
             return hashCode;
         }

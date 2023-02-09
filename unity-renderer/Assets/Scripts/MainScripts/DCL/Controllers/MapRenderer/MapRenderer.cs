@@ -395,8 +395,6 @@ namespace DCL
 
         private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            Debug.Log($"VV: {Time.frameCount} CALL = {scenesOfInterest.Contains(sceneInfo)}");
-
             if (!sceneInfo.isPOI)
                 return;
 
