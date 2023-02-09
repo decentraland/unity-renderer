@@ -21,7 +21,7 @@ public class GPUSkinningThrottlerShould
     [UnityTest]
     [TestCase(1, 10, 10, ExpectedResult = null)]
     [TestCase(2, 10, 5, ExpectedResult = null)]
-    [TestCase(4, 10, 2, ExpectedResult = null)]
+    [TestCase(5, 10, 2, ExpectedResult = null)]
     public IEnumerator CallWaitForFramesProperly(int framesBetweenUpdates, int framesToCheck, int expectedCalls) => UniTask.ToCoroutine(async () =>
     {
         throttler.ModifyThrottling(gpuSkinning, framesBetweenUpdates);
