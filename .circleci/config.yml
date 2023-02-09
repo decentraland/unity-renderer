@@ -238,7 +238,7 @@ jobs:
       - <<: *attach_root
       - build-unity-generic
       - persist-unity-web
-  playmode-tests:
+  test-unity-playmode:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
@@ -316,7 +316,7 @@ jobs:
           command: |
             ./ci-publish-preview-artifacts.sh
 
-  test-js-interface:
+  test-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
 
@@ -333,7 +333,7 @@ jobs:
           name: test
           command: make test-ci
 
-  build-js-interface:
+  build-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
 
@@ -347,10 +347,6 @@ jobs:
           working_directory: *node_workspace
           name: run build
           command: make build
-      - run:
-          working_directory: *node_workspace
-          name: Deploy artifacts
-          command: npm run publish-artifacts
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -368,6 +364,10 @@ jobs:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-artifacts
       - run:
           working_directory: *node_workspace
           name: print files to publish
@@ -404,7 +404,7 @@ workflows:
           requires:
             - checkout
 
-      - playmode-tests:
+      - test-unity-playmode:
           <<: *all_branches
           requires:
             - checkout
@@ -415,15 +415,16 @@ workflows:
             - build-unity-for-linux
             - build-unity-for-windows
             - build-unity-for-mac
-            - build-js-interface
-            - playmode-tests
+            - build-browser-interface
+            - test-unity-playmode
+            - test-browser-interface
 
-      - build-js-interface:
+      - build-browser-interface:
           <<: *all_branches
           requires:
-            - build-unity-for-webgl
+            - checkout
 
-      - test-js-interface:
+      - test-browser-interface:
           <<: *all_branches
           requires:
             - checkout
@@ -431,7 +432,6 @@ workflows:
       - publish-webgl-artifacts:
           requires:
             - build-unity-for-webgl
-            - build-js-interface
-            - test-js-interface
-            - playmode-tests
-            # - editmode-tests
+            - build-browser-interface
+            - test-unity-playmode
+            - test-browser-interface
