@@ -290,23 +290,14 @@ namespace Tests
             Assert.AreEqual(outlineColor.g, textShapeComponentHandler.textComponent.outlineColor.g / 255f);
         }
 
-        [UnityTest]
-        public IEnumerator AddRendererOnTextMeshUpdated()
+        [Test]
+        public void AddRendererOnCreated()
         {
-            textShapeComponentHandler.OnComponentModelUpdated(scene, entity, new PBTextShape()
-            {
-                Text = "test"
-            });
-
-            // TMPro takes a frame to update the text mesh
-            yield return null;
-
             renderersInternalComponent.Received(1)
                                       .PutFor(scene, entity,
                                            Arg.Is<InternalRenderers>(
                                                i => i.renderers.Contains(textShapeComponentHandler.textComponent.GetComponent<MeshRenderer>())));
         }
-
 
         [Test]
         public void RemoveRendererOnRemoved()
@@ -315,7 +306,7 @@ namespace Tests
 
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
 
-            renderersInternalComponent.Received(1).RemoveFor(scene, entity);
+            renderersInternalComponent.Received(1).RemoveFor(scene, entity, Arg.Any<InternalRenderers>());
         }
     }
 }
