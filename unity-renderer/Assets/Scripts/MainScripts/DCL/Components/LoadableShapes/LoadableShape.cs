@@ -162,7 +162,6 @@ namespace DCL.Components
                 entity.meshesInfo.currentShape = this;
 
                 loadableShape.entity = entity;
-                loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 
                 bool initialVisibility = model.visible;
                 if (!DataStore.i.debugConfig.isDebugMode.Get())
@@ -212,7 +211,7 @@ namespace DCL.Components
             OnFinishCallbacks = null;
         }
 
-        void CleanFailedWrapper(LoadWrapper loadWrapper)
+        private void CleanFailedWrapper(LoadWrapper loadWrapper)
         {
             if (loadWrapper == null)
                 return;
@@ -224,15 +223,6 @@ namespace DCL.Components
             GameObject go = loadWrapper.entity.gameObject;
 
             go.name += " - Failed loading";
-
-            MaterialTransitionController[] transitionController =
-                go.GetComponentsInChildren<MaterialTransitionController>(true);
-
-            for (int i = 0; i < transitionController.Length; i++)
-            {
-                MaterialTransitionController material = transitionController[i];
-                Object.Destroy(material);
-            }
         }
 
         protected void OnLoadCompleted(LoadWrapper loadWrapper)

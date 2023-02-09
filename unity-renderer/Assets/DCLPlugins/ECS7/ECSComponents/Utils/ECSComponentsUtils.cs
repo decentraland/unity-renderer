@@ -1,26 +1,12 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
-using DCL.Controllers;
-using DCL.ECSComponents;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public static class ECSComponentsUtils
 {
-    public static void RemoveMaterialTransition(GameObject go)
-    {
-        MaterialTransitionController[] materialTransitionControllers = go.GetComponentsInChildren<MaterialTransitionController>();
-
-        for (var i = 0; i < materialTransitionControllers.Length; i++)
-        {
-            GameObject.Destroy(materialTransitionControllers[i]);
-        }
-    }
-
     public static void UpdateMeshInfo(bool isVisible, bool withCollisions, bool isPointerBlocker, MeshesInfo meshesInfo)
     {
         foreach (Renderer renderer in meshesInfo.renderers)

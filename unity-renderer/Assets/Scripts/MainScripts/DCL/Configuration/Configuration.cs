@@ -180,7 +180,6 @@ namespace DCL.Configuration
         public static float PARCEL_SIZE = 16f;
         public static float PARCEL_BOUNDARIES_THRESHOLD = 0.01f;
         public static float UNLOAD_DISTANCE = PARCEL_SIZE * 12f;
-        public static bool VISUAL_LOADING_ENABLED = true;
     }
 
     public static class TestSettings

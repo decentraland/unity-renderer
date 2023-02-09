@@ -354,12 +354,15 @@ MonoBehaviour:
   nftTextInsteadOfImage: {fileID: 1993908361139128636}
   typeImage: {fileID: 7422578994069641759}
   backgroundImage: {fileID: 4192340701056741648}
+  backgroundImageGradient: {fileID: 6334812375382215234}
   rarityBackgroundImage: {fileID: 9034444005350581713}
   nftTypesIcons: {fileID: 11400000, guid: c4c1fb78d1c9a4db5ba93b000ce13026, type: 2}
   skinFactory: {fileID: 11400000, guid: 7083ed082c0f14ddfbc1bd87a56460f7, type: 2}
   sizeOnHoverComponent: {fileID: 7371599230136950535}
   nftItemInfoPositionRightRef: {fileID: 8027957110173332362}
   nftItemInfoPositionLeftRef: {fileID: 1797047629133483939}
+  normalBackground: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
+  nameBackground: {fileID: 21300000, guid: 686758069f8a14776994a397af7581cd, type: 3}
   model:
     showType: 0
     showMarketplaceButton: 0

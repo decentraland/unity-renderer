@@ -17,7 +17,7 @@ This repository contains the reference implementation of the [decentraland explo
 * The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
 * [node.js](https://nodejs.com), version 16 or later
 
-## Developer mode, without running the `browser-interface`
+### Steps
 
 1. Download and install Unity 2021.3.14f1
 2. Open the scene named `InitialScene`
@@ -25,7 +25,7 @@ This repository contains the reference implementation of the [decentraland explo
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
    and `Base url custom` is set to `https://play.decentraland.zone/?`
 5. Run the Initial Scene in the Unity editor
-6. A browser tab with `explorer` should open automatically and steal your focus, don't close it!. Login with your wallet, go back to Unity and explorer should start running on the `Game View`.
+6. A browser tab with `explorer` should open automatically and steal your focus, don't close it! Login with your wallet, go back to Unity and explorer should start running on the `Game View`.
 7. As you can see, `DebugConfig` has other special options like the starting position, etc. You are welcome to use them as you see fit, but you'll have to close the tab and restart the scene for them to make effect.
 
 ### Troubleshooting
@@ -69,7 +69,7 @@ If the CI for both branches succeeds, you can browse to the generated link and t
 
 Use this approach when working on any features that need both Kernel and Unity modifications, and you need to watch Unity code changes fast without the need of injecting a wasm targeted build in the browser.
 
-When the steps are followed, you will be able to test your changes with just pressing the "Play" button within Unity. This will open a tab running the local Kernel build and Unity will connect to it using websocket.
+When the steps are followed, you will be able to test your changes by just pressing the "Play" button within Unity. This will open a tab running the local Kernel build and Unity will connect to it using websocket.
 
 This is the most useful debugging scenario for advanced feature implementation.
 
@@ -102,7 +102,7 @@ Alternatively you can go through these 2 steps after step 3 and load the build l
 1. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
 2. Make sure you have the local website up and running by executing `npm run start:linked` in the cloned repo directory (`npm i` first just in case).
 3. When the WebGL build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/unity-renderer`.
-4. Access using using `localhost:3000`
+4. Access using `localhost:3000`
 
 ### Troubleshooting
 
