@@ -3,7 +3,7 @@ import * as codegen from '@dcl/rpc/dist/codegen'
 import { FriendRequestRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
 import defaultLogger from 'lib/logger'
 
-export function registerFriendRequestRendererService<Context>(
+export function registerFriendRequestRendererService<Context extends {}>(
   clientPort: RpcClientPort
 ): codegen.RpcClientModule<FriendRequestRendererServiceDefinition, Context> | undefined {
   try {
