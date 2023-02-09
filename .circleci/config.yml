@@ -78,6 +78,13 @@ references:
       branches:
         only: /(.*)/
 
+  .except_dev_and_main: &except_dev_and_main
+    filters:
+      branches:
+        ignore:
+          - dev
+          - main
+
   .only_dev_and_main: &only_dev_and_main
     filters:
       branches:
@@ -304,6 +311,21 @@ jobs:
           name: Upload artifacts
           command: |
             ./ci-publish-preview-artifacts.sh
+  publish-desktop-artifacts-release:
+    <<: *working_directory_root
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Prepare image
+          command: |
+            sudo apt-get update
+            sudo apt-get -y -qq install awscli
+      - run:
+          name: Upload artifacts
+          command: |
+            ./ci-publish-preview-artifacts.sh
 
   test-browser-interface:
     <<: *working_directory_root
@@ -342,6 +364,29 @@ jobs:
           root: *working_directory
           paths:
             - *node_workspace
+
+  publish-webgl-artifacts-release:
+    <<: *working_directory_root
+    docker: *image_kernel
+
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Set up NPM access tokens
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-artifacts
+      - run:
+          working_directory: *node_workspace
+          name: print files to publish
+          command: find static
+      - run:
+          working_directory: *node_workspace
+          name: npm run publish
+          command: npm run publish
 
   publish-webgl-artifacts:
     <<: *working_directory_root
@@ -398,8 +443,18 @@ workflows:
           requires:
             - checkout
 
+      - publish-desktop-artifacts-release:
+          <<: *only_dev_and_main
+          requires:
+            - build-unity-for-linux
+            - build-unity-for-windows
+            - build-unity-for-mac
+            - build-browser-interface
+            - test-browser-interface
+            - test-unity-playmode
+
       - publish-desktop-artifacts:
-          <<: *all_branches
+          <<: *except_dev_and_main
           requires:
             - build-unity-for-linux
             - build-unity-for-windows
@@ -417,6 +472,15 @@ workflows:
             - checkout
 
       - publish-webgl-artifacts:
+          <<: *except_dev_and_main
           requires:
             - build-unity-for-webgl
             - build-browser-interface
+
+      - publish-webgl-artifacts-release:
+          <<: *only_dev_and_main
+          requires:
+            - build-unity-for-webgl
+            - build-browser-interface
+            - test-browser-interface
+            - test-unity-playmode
