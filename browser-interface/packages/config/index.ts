@@ -54,11 +54,7 @@ function ensureSingleString(value: string | string[] | null): string | null {
 }
 
 // Comms
-const USE_LOCAL_COMMS = location.search.includes('LOCAL_COMMS') || PREVIEW
-export const COMMS =
-  !qs.has('COMMS') && USE_LOCAL_COMMS ? 'v1' : qs.get('COMMS') ? ensureSingleString(qs.get('COMMS'))! : 'v2' // by default
 export const COMMS_PROFILE_TIMEOUT = 15000
-
 export const DECENTRALAND_SPACE = qs.get('SPACE')
 
 export const PARCEL_LOADING_ENABLED = !DECENTRALAND_SPACE || qs.has('DISABLE_PARCEL_LOADING')
@@ -67,14 +63,12 @@ export const UPDATE_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('UPDATE_CONTEN
 export const FETCH_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('FETCH_CONTENT_SERVICE'))
 export const HOTSCENES_SERVICE = ensureSingleString(qs.get('HOTSCENES_SERVICE'))
 export const POI_SERVICE = ensureSingleString(qs.get('POI_SERVICE'))
-export const PREFERED_ISLAND = ensureSingleString(qs.get('island'))
 
 export const TRACE_RENDERER = ensureSingleString(qs.get('TRACE_RENDERER'))
 
 export const LOS = ensureSingleString(qs.get('LOS'))
 
 export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW
-export const DEBUG_COMMS = qs.has('DEBUG_COMMS')
 export const COMMS_GRAPH = qs.has('COMMS_GRAPH')
 export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')

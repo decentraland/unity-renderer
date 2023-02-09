@@ -99,21 +99,7 @@ namespace DCL.Components
             meshFilter.sharedMesh = currentMesh;
             meshFilter.gameObject.tag = PARAMETRIZED_SHAPE_TAG;
 
-            if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
-            {
-                MaterialTransitionController transition = entity.meshRootGameObject.AddComponent<MaterialTransitionController>();
-                Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
-                transition.delay = 0;
-                transition.useHologram = false;
-                transition.fadeThickness = 20;
-                transition.OnDidFinishLoading(finalMaterial);
-
-                transition.onFinishedLoading += () => { OnShapeFinishedLoading(entity); };
-            }
-            else
-            {
-                meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
-            }
+            meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
 
             visibilityDirty = true;
             collisionsDirty = true;

@@ -15,7 +15,6 @@ export type MetaConfiguration = {
   synapseUrl: string
   socialServerUrl: string
   world: WorldConfig
-  comms: CommsConfig
   minCatalystVersion?: string
   featureFlagsV2?: FeatureFlag
   bannedUsers?: BannedUsers
@@ -75,14 +74,6 @@ export type MetaState = {
 
 export type RootMetaState = {
   meta: MetaState
-}
-
-export type CommsConfig = {
-  targetConnections?: number
-  maxConnections?: number
-  relaySuspensionDisabled?: boolean
-  relaySuspensionInterval?: number
-  relaySuspensionDuration?: number
 }
 
 export type FeatureFlag = {
