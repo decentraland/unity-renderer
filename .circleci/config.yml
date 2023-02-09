@@ -416,8 +416,6 @@ workflows:
             - build-unity-for-windows
             - build-unity-for-mac
             - build-browser-interface
-            - test-unity-playmode
-            - test-browser-interface
 
       - build-browser-interface:
           <<: *all_branches
@@ -433,5 +431,3 @@ workflows:
           requires:
             - build-unity-for-webgl
             - build-browser-interface
-            - test-unity-playmode
-            - test-browser-interface
