@@ -127,14 +127,18 @@ namespace DCL.Helpers
             where T : BaseComponent
             where K : new()
         {
-            IPoolableComponentFactory poolableFactory = Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+            IPoolableComponentFactory poolableFactory =
+                Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
 
+            ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
+
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
-                ? inferredId
-                : (int)classId;
+                ? (int) inferredId
+                : (int) classId;
 
             string data;
+
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
                 data = GetB64TransformFromModelJson(JsonUtility.ToJson(model));
@@ -143,7 +147,7 @@ namespace DCL.Helpers
             {
                 data = JsonUtility.ToJson(model);
             }
-            
+
             return scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(
                 entity.entityId,
                 (CLASS_ID_COMPONENT) componentClassId,
