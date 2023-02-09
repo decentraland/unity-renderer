@@ -21,7 +21,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "NSubstitute.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "nunit.framework.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
