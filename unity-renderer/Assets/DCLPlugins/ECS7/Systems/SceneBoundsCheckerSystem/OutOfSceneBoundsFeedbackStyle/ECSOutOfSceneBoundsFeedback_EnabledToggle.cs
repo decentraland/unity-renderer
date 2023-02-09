@@ -1,5 +1,7 @@
 using DCL.ECS7.InternalComponents;
 using DCL.Models;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
 {
@@ -7,33 +9,37 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
     {
         public void ApplyFeedback(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel, bool isVisible, bool isInsideBounds)
         {
-            if (sbcComponentModel.renderers != null)
+            IList<Renderer> renderers = sbcComponentModel.renderers;
+            IList<Collider> physicsColliders = sbcComponentModel.physicsColliders;
+            IList<Collider> pointerColliders = sbcComponentModel.pointerColliders;
+
+            if (renderers != null)
             {
-                int count = sbcComponentModel.renderers.Count;
+                int count = renderers.Count;
 
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentModel.renderers[i].enabled = isInsideBounds && isVisible;
+                    renderers[i].enabled = isInsideBounds && isVisible;
                 }
             }
 
-            if (sbcComponentModel.physicsColliders != null)
+            if (physicsColliders != null)
             {
-                int count = sbcComponentModel.physicsColliders.Count;
+                int count = physicsColliders.Count;
 
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentModel.physicsColliders[i].enabled = isInsideBounds;
+                    physicsColliders[i].enabled = isInsideBounds;
                 }
             }
 
-            if (sbcComponentModel.pointerColliders != null)
+            if (pointerColliders != null)
             {
-                int count = sbcComponentModel.pointerColliders.Count;
+                int count = pointerColliders.Count;
 
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentModel.pointerColliders[i].enabled = isInsideBounds;
+                    pointerColliders[i].enabled = isInsideBounds;
                 }
             }
         }
