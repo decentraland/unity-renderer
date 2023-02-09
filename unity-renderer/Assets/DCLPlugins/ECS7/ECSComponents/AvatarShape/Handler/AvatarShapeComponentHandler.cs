@@ -18,6 +18,7 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
         private IParcelScene scene;
         private IDCLEntity entity;
+        private Renderer renderer;
 
         private bool isAvatarInitialized = false;
 
@@ -45,7 +46,10 @@ namespace DCL.ECSComponents
                 return;
 
             avatar.internalAvatar.OnCombinedRendererUpdate -= OnCombinedRendererUpdate;
-            renderersInternalComponent.RemoveFor(scene, entity);
+            if (renderer)
+            {
+                renderersInternalComponent.RemoveRenderer(scene, entity, renderer);
+            }
 
             avatar.Cleanup();
             pool.Release(poolableObject);
@@ -65,8 +69,13 @@ namespace DCL.ECSComponents
 
         private void OnCombinedRendererUpdate(Renderer newRenderer)
         {
-            renderersInternalComponent.RemoveFor(scene, entity);
+            if (renderer)
+            {
+                renderersInternalComponent.RemoveRenderer(scene, entity, renderer);
+            }
+
             renderersInternalComponent.AddRenderer(scene, entity, newRenderer);
+            renderer = newRenderer;
         }
     }
 }
