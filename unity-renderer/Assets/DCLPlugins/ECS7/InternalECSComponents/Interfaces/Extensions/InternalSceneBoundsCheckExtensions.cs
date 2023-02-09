@@ -1,4 +1,3 @@
-using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections.Generic;
@@ -114,6 +113,7 @@ namespace DCL.ECS7.InternalComponents
 
             // Turn min-max values to local/relative to be usable when the entity has moved
             Vector3 entityPosition = entity.gameObject.transform.position;
+
             model.entityLocalMeshBounds.SetMinMax(model.entityLocalMeshBounds.min - entityPosition,
                 model.entityLocalMeshBounds.max - entityPosition);
 
@@ -122,27 +122,20 @@ namespace DCL.ECS7.InternalComponents
 
         private static Bounds GetColliderBounds(Collider collider)
         {
-            Bounds returnedBounds = collider.bounds;
-
             // Disabled colliders return a size-0 bounds object, so we enable it only to get its bounds
             if (!collider.enabled)
             {
-                GameObject colliderGO = collider.gameObject;
-                int colliderLayer = colliderGO.layer;
-
-                // Temporarily change the collider GO layer to avoid it colliding with anything.
-                colliderGO.layer = PhysicsLayers.gizmosLayer;
-
                 // Enable collider to copy its real bounds
                 collider.enabled = true;
-                returnedBounds = collider.bounds;
+                Bounds returnedBounds = collider.bounds;
 
                 // Reset modified values
                 collider.enabled = false;
-                colliderGO.layer = colliderLayer;
+
+                return returnedBounds;
             }
 
-            return returnedBounds;
+            return collider.bounds;
         }
 
         public static bool IsFullyDefaulted(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
@@ -151,8 +144,8 @@ namespace DCL.ECS7.InternalComponents
             var model = sbcInternalComponent.GetFor(scene, entity)?.model;
 
             return model == null || (model.entityPosition == Vector3.zero
-                       && model.entityLocalMeshBounds.size == Vector3.zero
-                       && model.audioSource == null);
+                                     && model.entityLocalMeshBounds.size == Vector3.zero
+                                     && model.audioSource == null);
         }
     }
 }
