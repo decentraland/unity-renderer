@@ -2,7 +2,6 @@ using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
-using DCL.ECSComponents;
 using DCL.Models;
 using UnityEngine;
 
@@ -54,13 +53,8 @@ public class CoreComponentsPlugin : IPlugin
         
         // Others
         factory.RegisterBuilder((int) CLASS_ID.FONT, BuildComponent<DCLFont>);
-        factory.RegisterBuilder((int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
-            () =>
-        {
-            AvatarShape avatarShape = (AvatarShape)BuildPoolableComponent((int)CLASS_ID_COMPONENT.AVATAR_SHAPE);
-            avatarShape.SetUp(Environment.i.serviceLocator.Get<GPUSkinningThrottlerService>());
-            return null;
-        });
+        factory.RegisterBuilder((int) CLASS_ID_COMPONENT.AVATAR_SHAPE,
+            () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.AVATAR_SHAPE));
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.ANIMATOR,
             () => BuildPoolableComponent((int) CLASS_ID_COMPONENT.ANIMATOR));
         factory.RegisterBuilder((int) CLASS_ID_COMPONENT.GIZMOS,

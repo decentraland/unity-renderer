@@ -83,11 +83,6 @@ namespace DCL
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
         }
 
-        public void Setup()
-        {
-            
-        }
-
         private IAvatar GetStandardAvatar()
         {
             var visibility = new Visibility();

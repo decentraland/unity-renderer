@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Emotes;
 using DCL.FatalErrorReporter;
+using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
@@ -67,24 +68,25 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
     }
 
-    private IAvatar GetStandardAvatar()
-    {
-        return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatar(
-            avatarContainer,
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
-            NoLODs.i,
-            new Visibility());
-    }
-    
+    private IAvatar GetStandardAvatar() =>
+        Environment.i.serviceLocator.Get<IAvatarFactory>()
+                   .CreateAvatar(avatarContainer, GetComponentInChildren<AvatarAnimatorLegacy>(), NoLODs.i, new Visibility());
+
     private IAvatar GetAvatarWithHologram()
     {
-        return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
-            avatarContainer,
-            loadingAvatarContainer,
-            armatureContainer,
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
-            NoLODs.i,
-            new Visibility());
+        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+        AvatarSystem.NoLODs noLod = new NoLODs();
+        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
+        return new AvatarSystem.AvatarWithHologram(
+            baseAvatar,
+            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
+            animator,
+            new Visibility(),
+            noLod,
+            new SimpleGPUSkinning(),
+            Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
+            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
     }
 
     private void OnBaseWereablesFail()

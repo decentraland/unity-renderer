@@ -21,7 +21,7 @@ namespace AvatarSystem
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
-                serviceLocator.Get<IGPUSkinningThrottlerService>(),
+                Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes)
             );
 
@@ -41,7 +41,7 @@ namespace AvatarSystem
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
-                serviceLocator.Get<IGPUSkinningThrottlerService>(),
+                Environment.i.serviceLocator.Get<IGPUSkinningThrottlerService>(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes)
             );
 
