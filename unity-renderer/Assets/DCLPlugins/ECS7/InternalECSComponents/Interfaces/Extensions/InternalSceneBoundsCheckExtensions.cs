@@ -25,9 +25,11 @@ namespace DCL.ECS7.InternalComponents
             sbcInternalComponent.PutFor(scene, entity, model);
 
             // Update children position in their SBCComponent as well
-            foreach (long entityId in entity.childrenId)
+            IList<long> childrenId = entity.childrenId;
+
+            for (int i = 0; i < childrenId.Count; i++)
             {
-                if (scene.entities.TryGetValue(entityId, out IDCLEntity childEntity))
+                if (scene.entities.TryGetValue(childrenId[i], out IDCLEntity childEntity))
                 {
                     sbcInternalComponent.SetPosition(scene, childEntity, childEntity.gameObject.transform.position, createComponentIfMissing);
                 }
