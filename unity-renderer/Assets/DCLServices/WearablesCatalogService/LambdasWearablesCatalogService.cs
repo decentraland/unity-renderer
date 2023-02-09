@@ -24,16 +24,18 @@ namespace DCLServices.WearablesCatalogService
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
 
-        private Service<ILambdasService> lambdasService;
-        private CancellationTokenSource serviceCts;
+        private readonly ILambdasService lambdasService;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
         private readonly Dictionary<string, LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string, string), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
+        private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
-        public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog)
+        public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
+            ILambdasService lambdasService)
         {
+            this.lambdasService = lambdasService;
             WearablesCatalog = wearablesCatalog;
         }
 
@@ -84,7 +86,7 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct)
         {
-            var serviceResponse = await lambdasService.Ref.Get<WearableWithoutDefinitionResponse>(
+            var serviceResponse = await lambdasService.Get<WearableWithoutDefinitionResponse>(
                 NON_PAGINATED_WEARABLES_END_POINT,
                 NON_PAGINATED_WEARABLES_END_POINT,
                 REQUESTS_TIME_OUT_SECONDS,
@@ -222,7 +224,7 @@ namespace DCLServices.WearablesCatalogService
 
         UniTask<(WearableWithDefinitionResponse response, bool success)> ILambdaServiceConsumer<WearableWithDefinitionResponse>.CreateRequest
             (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
-            lambdasService.Ref.Get<WearableWithDefinitionResponse>(
+            lambdasService.Get<WearableWithDefinitionResponse>(
                 PAGINATED_WEARABLES_END_POINT,
                 endPoint,
                 REQUESTS_TIME_OUT_SECONDS,
@@ -255,7 +257,7 @@ namespace DCLServices.WearablesCatalogService
 
                 try
                 {
-                    serviceResponse = await lambdasService.Ref.Get<WearableWithoutDefinitionResponse>(
+                    serviceResponse = await lambdasService.Get<WearableWithoutDefinitionResponse>(
                         NON_PAGINATED_WEARABLES_END_POINT,
                         NON_PAGINATED_WEARABLES_END_POINT,
                         REQUESTS_TIME_OUT_SECONDS,

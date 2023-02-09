@@ -46,7 +46,7 @@ namespace DCL
             result.Register<IRPC>(() => new RPC());
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
-                new LambdasWearablesCatalogService(DataStore.i.common.wearables),
+                new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
