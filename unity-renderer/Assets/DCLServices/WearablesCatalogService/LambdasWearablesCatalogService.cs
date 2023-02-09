@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
 using MainScripts.DCL.Helpers.Utils;
@@ -23,6 +22,7 @@ namespace DCLServices.WearablesCatalogService
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
+        private const int MAX_WEARABLES_PER_REQUEST = 200;
 
         private readonly ILambdasService lambdasService;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
@@ -242,7 +242,7 @@ namespace DCLServices.WearablesCatalogService
 
             await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cancellationToken: ct);
 
-            IReadOnlyList<WearableItem> result;
+            List<WearableItem> result = new List<WearableItem>();
 
             if (pendingWearablesToRequest.Count > 0)
             {
@@ -253,16 +253,36 @@ namespace DCLServices.WearablesCatalogService
                 wearableIds.AddRange(pendingWearablesToRequest);
                 pendingWearablesToRequest.Clear();
 
-                (WearableWithoutDefinitionResponse response, bool success) serviceResponse;
-
-                try
+                // When the number of wearables to request is greater than MAX_WEARABLES_PER_REQUEST, we split the request into several smaller ones.
+                // In this way we avoid to send a very long url string that would fail due to the web request size limitations.
+                int numberOfPartialRequests = (wearableIds.Count + MAX_WEARABLES_PER_REQUEST - 1) / MAX_WEARABLES_PER_REQUEST;
+                var awaitingPartialTasksPool = PoolUtils.RentList<(UniTask<(WearableWithoutDefinitionResponse response, bool success)> task, IEnumerable<string> wearablesRequested)>();
+                var awaitingPartialTasks = awaitingPartialTasksPool.GetList();
+                for (var i = 0; i < numberOfPartialRequests; i++)
                 {
-                    serviceResponse = await lambdasService.Get<WearableWithoutDefinitionResponse>(
+                    int numberOfWearablesToRequest = wearableIds.Count < MAX_WEARABLES_PER_REQUEST
+                        ? wearableIds.Count
+                        : MAX_WEARABLES_PER_REQUEST;
+                    var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
+
+                    var partialTask = lambdasService.Get<WearableWithoutDefinitionResponse>(
                         NON_PAGINATED_WEARABLES_END_POINT,
                         NON_PAGINATED_WEARABLES_END_POINT,
                         REQUESTS_TIME_OUT_SECONDS,
-                        urlEncodedParams: GetWearablesUrlParams(wearableIds),
+                        urlEncodedParams: GetWearablesUrlParams(wearablesToRequest),
                         cancellationToken: serviceCts.Token);
+
+                    wearableIds.RemoveRange(0, numberOfWearablesToRequest);
+                    awaitingPartialTasks.Add((partialTask, wearablesToRequest));
+                }
+
+                var servicePartialResponsesPool = PoolUtils.RentList<((WearableWithoutDefinitionResponse response, bool success) taskResponse, IEnumerable<string> wearablesRequested)>();
+                var servicePartialResponses = servicePartialResponsesPool.GetList();
+
+                try
+                {
+                    foreach (var partialTask in awaitingPartialTasks)
+                        servicePartialResponses.Add((await partialTask.task, partialTask.wearablesRequested));
                 }
                 catch (Exception e)
                 {
@@ -270,20 +290,24 @@ namespace DCLServices.WearablesCatalogService
                     throw;
                 }
 
-                if (!serviceResponse.success)
+                foreach (var partialResponse in servicePartialResponses)
                 {
-                    Exception e = new Exception($"The request of the wearables ('{string.Join(", ", wearableIds)}') failed!");
-                    sourceToAwait.TrySetException(e);
-                    throw e;
+                    if (!partialResponse.taskResponse.success)
+                    {
+                        Exception e = new Exception($"The request of the wearables ('{string.Join(", ", partialResponse.wearablesRequested)}') failed!");
+                        sourceToAwait.TrySetException(e);
+                        throw e;
+                    }
+
+                    MapLambdasDataIntoWearableItem(partialResponse.taskResponse.response.wearables);
+                    AddWearablesToCatalog(partialResponse.taskResponse.response.wearables);
+                    result.AddRange(partialResponse.taskResponse.response.wearables);
                 }
 
-                MapLambdasDataIntoWearableItem(serviceResponse.response.wearables);
-                AddWearablesToCatalog(serviceResponse.response.wearables);
-                result = serviceResponse.response.wearables;
                 sourceToAwait.TrySetResult(result);
             }
             else
-                result = await sourceToAwait.Task;
+                result = (List<WearableItem>)await sourceToAwait.Task;
 
             ct.ThrowIfCancellationRequested();
 
