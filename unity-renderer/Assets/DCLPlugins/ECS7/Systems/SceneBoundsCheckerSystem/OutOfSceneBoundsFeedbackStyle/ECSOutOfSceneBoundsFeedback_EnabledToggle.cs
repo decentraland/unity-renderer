@@ -1,39 +1,39 @@
-
 using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
+using DCL.Models;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
 {
     public class ECSOutOfSceneBoundsFeedback_EnabledToggle : IECSOutOfSceneBoundsFeedbackStyle
     {
-        public void ApplyFeedback(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, IECSReadOnlyComponentData<InternalVisibility> visibilityComponentData, bool isInsideBounds)
+        public void ApplyFeedback(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel, bool isVisible, bool isInsideBounds)
         {
-            if (sbcComponentData.model.renderers != null)
+            if (sbcComponentModel.renderers != null)
             {
-                int count = sbcComponentData.model.renderers.Count;
+                int count = sbcComponentModel.renderers.Count;
+
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentData.model.renderers[i].enabled = isInsideBounds
-                                                                  && (visibilityComponentData == null
-                                                                  || visibilityComponentData.model.visible);
+                    sbcComponentModel.renderers[i].enabled = isInsideBounds && isVisible;
                 }
             }
 
-            if (sbcComponentData.model.physicsColliders != null)
+            if (sbcComponentModel.physicsColliders != null)
             {
-                int count = sbcComponentData.model.physicsColliders.Count;
+                int count = sbcComponentModel.physicsColliders.Count;
+
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentData.model.physicsColliders[i].enabled = isInsideBounds;
+                    sbcComponentModel.physicsColliders[i].enabled = isInsideBounds;
                 }
             }
 
-            if (sbcComponentData.model.pointerColliders != null)
+            if (sbcComponentModel.pointerColliders != null)
             {
-                int count = sbcComponentData.model.pointerColliders.Count;
+                int count = sbcComponentModel.pointerColliders.Count;
+
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentData.model.pointerColliders[i].enabled = isInsideBounds;
+                    sbcComponentModel.pointerColliders[i].enabled = isInsideBounds;
                 }
             }
         }

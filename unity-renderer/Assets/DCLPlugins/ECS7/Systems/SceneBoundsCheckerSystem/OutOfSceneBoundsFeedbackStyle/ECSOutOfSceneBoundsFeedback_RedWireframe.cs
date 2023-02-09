@@ -1,8 +1,6 @@
-
 using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
-using DCL.Models;
 using DCL.Helpers;
+using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,54 +12,56 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private Dictionary<IDCLEntity, GameObject> wireframeGameObjects = new Dictionary<IDCLEntity, GameObject>();
 
-        public void ApplyFeedback(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData, IECSReadOnlyComponentData<InternalVisibility> visibilityComponentData, bool isInsideBounds)
+        public void ApplyFeedback(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel, bool isVisible, bool isInsideBounds)
         {
             if (isInsideBounds)
-                RemoveInvalidMeshEffect(sbcComponentData);
+                RemoveInvalidMeshEffect(entity);
             else
-                AddInvalidMeshEffect(sbcComponentData);
+                AddInvalidMeshEffect(entity, sbcComponentModel);
 
-            if (sbcComponentData.model.physicsColliders != null)
+            if (sbcComponentModel.physicsColliders != null)
             {
-                int count = sbcComponentData.model.physicsColliders.Count;
+                int count = sbcComponentModel.physicsColliders.Count;
+
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentData.model.physicsColliders[i].enabled = isInsideBounds;
+                    sbcComponentModel.physicsColliders[i].enabled = isInsideBounds;
                 }
             }
 
-            if (sbcComponentData.model.pointerColliders != null)
+            if (sbcComponentModel.pointerColliders != null)
             {
-                int count = sbcComponentData.model.pointerColliders.Count;
+                int count = sbcComponentModel.pointerColliders.Count;
+
                 for (var i = 0; i < count; i++)
                 {
-                    sbcComponentData.model.pointerColliders[i].enabled = isInsideBounds;
+                    sbcComponentModel.pointerColliders[i].enabled = isInsideBounds;
                 }
             }
         }
 
-        private void AddInvalidMeshEffect(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        private void AddInvalidMeshEffect(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel)
         {
-            if (wireframeGameObjects.ContainsKey(sbcComponentData.entity)) return;
+            if (wireframeGameObjects.ContainsKey(entity)) return;
 
             // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
             // overload because we need to set the position and scale before parenting, to deal with scaled objects)
-            wireframeGameObjects.Add(sbcComponentData.entity, PutWireframeAroundObject(sbcComponentData.model.entityLocalMeshBounds, sbcComponentData.entity.gameObject.transform));
+            wireframeGameObjects.Add(entity, PutWireframeAroundObject(sbcComponentModel.entityLocalMeshBounds, entity.gameObject.transform));
         }
 
-        private void RemoveInvalidMeshEffect(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData)
+        private void RemoveInvalidMeshEffect(IDCLEntity entity)
         {
-            if (!wireframeGameObjects.ContainsKey(sbcComponentData.entity)) return;
+            if (!wireframeGameObjects.ContainsKey(entity)) return;
 
-            Utils.SafeDestroy(wireframeGameObjects[sbcComponentData.entity]);
-            wireframeGameObjects.Remove(sbcComponentData.entity);
+            Utils.SafeDestroy(wireframeGameObjects[entity]);
+            wireframeGameObjects.Remove(entity);
         }
 
         private GameObject PutWireframeAroundObject(Bounds target, Transform parent)
         {
             // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
             // overload because we need to set the position and scale before parenting, to deal with scaled objects)
-            GameObject wireframeGO = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
+            GameObject wireframeGO = Object.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
             wireframeGO.transform.localScale = target.size * 1.01f;
             wireframeGO.transform.SetParent(parent);
             wireframeGO.transform.localPosition = target.min + (target.max - target.min) * 0.5f;

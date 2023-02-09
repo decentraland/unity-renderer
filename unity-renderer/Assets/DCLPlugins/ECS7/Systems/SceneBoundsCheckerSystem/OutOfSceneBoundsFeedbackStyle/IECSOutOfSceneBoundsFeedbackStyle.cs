@@ -1,12 +1,10 @@
-
 using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
+using DCL.Models;
 
 namespace ECSSystems.ECSSceneBoundsCheckerSystem
 {
     public interface IECSOutOfSceneBoundsFeedbackStyle
     {
-        void ApplyFeedback(ECSComponentData<InternalSceneBoundsCheck> sbcComponentData,
-            IECSReadOnlyComponentData<InternalVisibility> visibilityComponentData, bool isInsideBounds);
+        void ApplyFeedback(IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel, bool isVisible, bool isInsideBounds);
     }
 }
