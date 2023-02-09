@@ -73,6 +73,8 @@ namespace DCL.ECSComponents
 
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
 
+            videoPlayer.SetLoop(model.GetLoop());
+
             lastModel = model;
         }
     }
