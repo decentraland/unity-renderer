@@ -34,6 +34,8 @@ async function main() {
 
   const { version, name } = await getPackageJson(DIST_ROOT)
 
+  const checkFileSizeFuture = checkFileSizes()
+
   if (process.env.CIRCLE_BRANCH == 'dev') {
     const tag = 'next'
     await publish([tag], 'public', DIST_ROOT)
@@ -46,7 +48,7 @@ async function main() {
     await triggerPipeline(name, version, tag)
   }
 
-  await checkFileSizes()
+  await checkFileSizeFuture
 }
 
 async function checkFiles() {
