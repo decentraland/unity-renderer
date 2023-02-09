@@ -9,6 +9,9 @@ namespace DCLServices.MapRendererV2.MapLayers
         Atlas = 1,
         HomePoint = 1 << 1,
         PointsOfInterest = 1 << 2,
+        PlayerMarker = 1 << 3,
+        HotUsersMarkers = 1 << 4,
+        ColdUsersMarkers = 1 << 5
         // Add yours
     }
 }

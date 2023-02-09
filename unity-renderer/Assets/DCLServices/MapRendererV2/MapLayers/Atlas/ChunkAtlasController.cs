@@ -18,7 +18,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             SpriteRenderer prefab,
             CancellationToken ct);
 
-        private const int CHUNKS_CREATED_PER_FRAME = 10;
+        public const int CHUNKS_CREATED_PER_BATCH = 10;
 
         public static readonly Vector2Int WORLD_MIN_COORDS = new (-150, -150);
         public static readonly Vector2Int WORLD_MAX_COORDS = new (175, 175); // DCL map is not squared, there are some extra parcels in the top right
@@ -53,13 +53,13 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             ClearCurrentChunks();
             float halfParcelSize = parcelSize * 0.5f;
 
-            List<UniTask<IChunkController>> chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_FRAME);
+            List<UniTask<IChunkController>> chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_BATCH);
 
             for (int i = WORLD_MIN_COORDS.x; i <= WORLD_MAX_COORDS.x; i += parcelsInsideChunk)
             {
                 for (int j = WORLD_MIN_COORDS.y; j <= WORLD_MAX_COORDS.y; j += parcelsInsideChunk)
                 {
-                    if (chunksCreating.Count >= CHUNKS_CREATED_PER_FRAME)
+                    if (chunksCreating.Count >= CHUNKS_CREATED_PER_BATCH)
                     {
                         chunks.AddRange(await UniTask.WhenAll(chunksCreating));
                         chunksCreating.Clear();

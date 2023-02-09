@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace DCLServices.MapRendererV2
 {
-    public class MapRenderer : IMapRenderer
+    public partial class MapRenderer : IMapRenderer
     {
         private class MapLayerStatus
         {
@@ -27,7 +27,7 @@ namespace DCLServices.MapRendererV2
 
         private CancellationToken cancellationToken;
 
-        private IMapRendererComponentsFactory componentsFactory;
+        private readonly IMapRendererComponentsFactory componentsFactory;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
