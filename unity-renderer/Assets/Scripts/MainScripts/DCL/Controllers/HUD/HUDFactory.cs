@@ -59,14 +59,14 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 hudElement = new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     DataStore.i,
                     SceneReferences.i.mouseCatcher,
                     new SocialAnalytics(
@@ -80,7 +80,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
@@ -90,7 +90,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PUBLIC_CHAT:
                 hudElement = new PublicChatWindowController(
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
@@ -101,7 +101,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new ChatChannelHUDController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new SocialAnalytics(
@@ -111,7 +111,7 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.CHANNELS_SEARCH:
                 hudElement = new SearchChannelsWindowController(
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
                     DataStore.i,
                     new SocialAnalytics(
@@ -120,13 +120,15 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
                 break;
             case HUDElementID.CHANNELS_CREATE:
-                hudElement = new CreateChannelWindowController(ChatController.i, DataStore.i);
+                hudElement = new CreateChannelWindowController(Environment.i.serviceLocator.Get<IChatController>(),
+                    DataStore.i);
                 break;
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
-                hudElement = new LeaveChannelConfirmationWindowController(ChatController.i);
+                hudElement = new LeaveChannelConfirmationWindowController(Environment.i.serviceLocator.Get<IChatController>());
                 break;
             case HUDElementID.TASKBAR:
-                hudElement = new TaskbarHUDController(ChatController.i, FriendsController.i);
+                hudElement = new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(),
+                    FriendsController.i);
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 hudElement = new ExternalUrlPromptHUDController();

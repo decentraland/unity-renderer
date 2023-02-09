@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
+using DCL.Configuration;
 using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
@@ -33,7 +34,7 @@ public class IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
-        DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+        EnvironmentSettings.RUNNING_TESTS = true;
         AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
@@ -106,7 +107,7 @@ public class IntegrationTestSuite_Legacy
 
         foreach ( var go in legacySystems )
         {
-            UnityEngine.Object.Destroy(go);
+            Object.Destroy(go);
         }
 
         yield return null;
