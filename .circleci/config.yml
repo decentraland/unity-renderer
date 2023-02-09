@@ -2,7 +2,7 @@ version: 2.1
 
 references:
   .working_directory: &working_directory /tmp/workspace/unity-renderer
-  #                                                     ~~~~~~~~~~~~~~~~ <- repo name
+  #                                                     ~~~~~~~~~~~~~~ <- repo name
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
@@ -19,8 +19,8 @@ references:
         BUILD_TARGET: StandaloneLinux64
         BUILD_NAME: unity-renderer-linux
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-linux/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_mac_image: &unity_mac_image
     - image: unityci/editor:ubuntu-2021.3.14f1-mac-mono-1.0.1
@@ -30,8 +30,8 @@ references:
         BUILD_TARGET: StandaloneOSX
         BUILD_NAME: unity-renderer-mac
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-mac/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_windows_image: &unity_windows_image
     - image: unityci/editor:ubuntu-2021.3.14f1-windows-mono-1.0.1
@@ -41,8 +41,8 @@ references:
         BUILD_TARGET: StandaloneWindows64
         BUILD_NAME: unity-renderer-windows
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-windows/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_webgl_image: &unity_webgl_image
     - image: unityci/editor:2021.3.14f1-webgl-1
@@ -52,15 +52,15 @@ references:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~ <- folder name
 
   .image_kernel: &image_kernel
     - image: cimg/node:16.18.1-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
         #                          ~~~~~~~~~~~~~~ <- repo name
-        #                                         ~~~~~~~~~~~~~~ <- folder name
+        #                                                ~~~~~ <- folder name
 
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
@@ -97,14 +97,7 @@ commands:
             apt-get install -y zip jq gpg
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
-          command: |
-            # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -iname '*SentryOptions.asset*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-
-            # hash pipeline files
-            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
-
-            cat ../.unitysources-checksum
+          command: ./scripts/hash-unity-files.sh
       - run: &STORE_TARGET
           name: Save target to file
           command: |
@@ -246,11 +239,7 @@ jobs:
       - <<: *attach_root
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
-          command: |
-            # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -path '*node_modules*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-            # hash pipeline files
-            find ./ -type f \( -not -path '*node_modules*' \) \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+          command: ./scripts/hash-unity-files.sh
       - run: *STORE_TARGET
       - restore_cache:
           name: Restore hashed files if they exist
