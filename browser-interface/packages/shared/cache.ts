@@ -1,5 +1,5 @@
 import future from 'fp-future'
-import { createLogger } from './logger'
+import { createLogger } from 'lib/logger'
 
 const logger = createLogger('cache: ')
 const DEBUG = false

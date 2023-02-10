@@ -7,9 +7,8 @@ import {
   PREVIEW,
   DEBUG,
   getTLD,
-  ETHEREUM_NETWORK
-} from 'config'
-import { nameValidCharacterRegex, nameValidRegex } from 'shared/profiles/utils/names'
+  ETHEREUM_NETWORK } from 'config'
+import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
 import { getWorld } from '@dcl/schemas'
 import { injectVersions } from 'shared/rolloutVersions'
 import { store } from 'shared/store/isolatedStore'

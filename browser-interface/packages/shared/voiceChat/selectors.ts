@@ -1,16 +1,17 @@
-import { Avatar } from '@dcl/schemas'
+import type { Avatar } from '@dcl/schemas'
 import { isFeatureToggleEnabled } from 'shared/selectors'
 import { isFriend } from 'shared/friends/selectors'
-import { RootFriendsState } from 'shared/friends/types'
+import type { RootFriendsState } from 'shared/friends/types'
 import { getBannedUsers } from 'shared/meta/selectors'
-import { BannedUsers, RootMetaState } from 'shared/meta/types'
-import { getProfile } from 'shared/profiles/selectors'
-import { RootProfileState } from 'shared/profiles/types'
-import { RootVoiceChatState, VoicePolicy } from './types'
+import type { BannedUsers, RootMetaState } from 'shared/meta/types'
+import { getProfile as profileSelector } from 'shared/profiles/selectors'
+import type { RootProfileState } from 'shared/profiles/types'
+import { VoicePolicy } from './types'
+import type { RootVoiceChatState } from './types'
 import { VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
-import { RootWorldState } from 'shared/world/types'
+import type { RootWorldState } from 'shared/world/types'
 import { getCurrentIdentity } from 'shared/session/selectors'
-import { RootSessionState } from 'shared/session/types'
+import type { RootSessionState } from 'shared/session/types'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
 
 export const hasJoinedVoiceChat = (store: RootVoiceChatState) => store.voiceChat.joined
@@ -44,7 +45,7 @@ function isBlocked(profile: Avatar, userId: string): boolean {
 }
 
 function hasBlockedMe(state: RootProfileState, myAddress: string | undefined, theirAddress: string): boolean {
-  const profile = getProfile(state, theirAddress)
+  const profile = profileSelector(state, theirAddress)
 
   return !!profile && !!myAddress && isBlocked(profile, myAddress)
 }
@@ -78,7 +79,7 @@ export function isVoiceAllowedByPolicy(
     case VoicePolicy.ALLOW_FRIENDS_ONLY:
       return isFriend(state, voiceUserId)
     case VoicePolicy.ALLOW_VERIFIED_ONLY:
-      const theirProfile = getProfile(state, voiceUserId)
+      const theirProfile = profileSelector(state, voiceUserId)
       return !!theirProfile?.hasClaimedName
     default:
       return true

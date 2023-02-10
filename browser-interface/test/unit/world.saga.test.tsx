@@ -73,12 +73,12 @@ describe('World', () => {
       .provide([
         [select(getParcelPositionAsString), SCENE_POSITION],
         [call(getLoadedParcelSceneByParcel, SCENE_POSITION), SCENE_WORKER],
-        [select(getCurrentUserId), 'el-menduco']
+        [select(getCurrentUserId), 'userid1']
       ])
       .dispatch(action)
       .run()
 
-    expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'el-menduco' })
+    expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'userid1' })
   })
 
   it('anounceOnEnterOnSceneStart -> portableExperience', async () => {
@@ -102,11 +102,11 @@ describe('World', () => {
       .provide([
         [select(getParcelPositionAsString), SCENE_POSITION],
         [call(getLoadedParcelSceneByParcel, SCENE_POSITION), SCENE_WORKER],
-        [select(getCurrentUserId), 'el-menduco']
+        [select(getCurrentUserId), 'userid1']
       ])
       .dispatch(action)
       .run()
 
-    expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'el-menduco' })
+    expect({ userIdFromCall }).to.deep.eq({ userIdFromCall: 'userid1' })
   })
 })

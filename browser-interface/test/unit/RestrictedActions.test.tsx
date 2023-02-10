@@ -1,6 +1,6 @@
 import * as sinon from 'sinon'
 import { getUnityInstance, setUnityInstance } from '../../packages/unity-interface/IUnityInterface'
-import defaultLogger from '../../packages/shared/logger'
+import defaultLogger from '../../packages/lib/logger'
 import { lastPlayerPosition } from '../../packages/shared/world/positionThings'
 import { PermissionItem, permissionItemToJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
 import { movePlayerTo, triggerEmote } from 'shared/apis/host/RestrictedActions'
