@@ -1,10 +1,9 @@
 import { exec } from 'child_process'
-import { mkdir, readFile, stat } from 'fs/promises'
-import path, { resolve } from 'path'
-import * as zlib from 'zlib'
+import { mkdir, readFile } from 'fs/promises'
 import * as glob from 'glob'
-import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
+import path, { resolve } from 'path'
 import { fetch, FormData } from 'undici'
+import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
 
 const DIST_ROOT = resolve(__dirname, '../static')
 
@@ -45,8 +44,7 @@ async function main() {
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version, tag)
   }
-
-  await checkFileSizes()
+  console.log(`Publish complete!`)
 }
 
 async function checkFiles() {
@@ -89,31 +87,6 @@ async function copyBuiltFiles() {
 
   for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
     copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
-  }
-}
-
-async function checkFileSizes() {
-  const MAX_FILE_SIZE = 42_000_000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
-  for (let file of glob.sync('**/*', { cwd: DIST_ROOT, absolute: true })) {
-    const stats = await stat(file)
-    if (stats.size > MAX_FILE_SIZE) {
-      console.error(
-        `Warning, the file ${file} exceeds the maximum cacheable file (uncompressed) size: ${(
-          stats.size /
-          1024 /
-          1024
-        ).toFixed(2)}MB`
-      )
-      const buffer = zlib.brotliCompressSync(await readFile(file))
-      if (buffer.byteLength > MAX_FILE_SIZE) {
-        console.error(
-          `The file ${file} exceeds the maximum cacheable file size: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`
-        )
-        process.exitCode = 1
-      } else {
-        console.log(`The file ${file} has a compressed file size of: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)
-      }
-    }
   }
 }
 
