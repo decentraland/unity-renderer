@@ -15,7 +15,7 @@ namespace DCL.Helpers
                 action();
                 return;
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
@@ -35,7 +35,7 @@ namespace DCL.Helpers
                 action();
                 return;
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())
@@ -47,7 +47,7 @@ namespace DCL.Helpers
                 await UniTask.Create(action).AttachExternalCancellation(cancellationToken);
             }
         }
-        
+
         public static async UniTask<T> Run<T>(Func<UniTask<T>> action, CancellationToken cancellationToken = default, bool returnToMainThread = true)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -59,14 +59,14 @@ namespace DCL.Helpers
 
             return await UniTask.Create(action).AttachExternalCancellation(cancellationToken);
         }
-        
+
         public static async UniTask<T> Run<T>(Func<T> action, CancellationToken cancellationToken = default, bool returnToMainThread = true)
         {
             if (Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 return action();
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (multithreading.Get())

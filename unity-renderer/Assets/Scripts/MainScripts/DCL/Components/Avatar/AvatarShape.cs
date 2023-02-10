@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
+using System.Threading.Tasks;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -56,7 +58,7 @@ namespace DCL
         private bool isGlobalSceneAvatar = true;
         private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
         private IUserProfileBridge userProfileBridge;
-
+        private Service<IEmotesCatalogService> emotesCatalogService;
         public override string componentName => "avatarShape";
 
         private void Awake()
@@ -176,8 +178,9 @@ namespace DCL
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
-                var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-                var embeddedEmoteIds = embeddedEmotesSo.emotes.Select(x => x.id);
+                UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = emotesCatalogService.Ref.GetEmbeddedEmotes().GetAwaiter();
+                yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+                var embeddedEmoteIds = embeddedEmotesTask.GetResult().emotes.Select(x => x.id);
                 //here we add emote ids to both new and old emote loading flow to merge the results later
                 //because some users might have emotes as wearables and others only as emotes
                 foreach (var emoteId in embeddedEmoteIds)
