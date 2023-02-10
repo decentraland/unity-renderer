@@ -105,6 +105,9 @@ commands:
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: ./scripts/hash-unity-files.sh
+      - store_artifacts:
+          path: /tmp/workspace/.unitysources-checksum
+          destination: unitysources-checksum.txt
       - run: &STORE_TARGET
           name: Save target to file
           command: |
@@ -183,12 +186,16 @@ commands:
           when: on_success
       - run:
           working_directory: &node_workspace browser-interface
-          name: Deploy artifacts
-          command: npm run publish-artifacts
-      - run:
-          working_directory: *node_workspace
           name: print files to publish
           command: find static
+      - run:
+          working_directory: *node_workspace
+          name: npm run copy-built-files
+          command: npm run copy-built-files
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-preview
       - run:
           working_directory: *node_workspace
           name: npm run publish
@@ -344,7 +351,6 @@ jobs:
   test-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
-
     steps:
       - <<: *attach_root
       - run:
@@ -357,6 +363,16 @@ jobs:
           working_directory: *node_workspace
           name: test
           command: make test-ci
+
+  test-browser-file-size:
+    <<: *working_directory_root
+    docker: *image_kernel
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: *node_workspace
+          name: Check file size
+          command: npm run check-file-size
 
   build-browser-interface:
     <<: *working_directory_root
@@ -433,6 +449,7 @@ workflows:
             - build-unity-for-mac
             - build-browser-interface
             - test-browser-interface
+            - test-browser-file-size
             - test-unity-playmode
 
       - publish-desktop-artifacts:
@@ -465,4 +482,11 @@ workflows:
             - build-unity-for-webgl
             - build-browser-interface
             - test-browser-interface
+            - test-browser-file-size
             - test-unity-playmode
+
+      - test-browser-file-size:
+          <<: *all_branches
+          requires:
+            - build-unity-for-webgl
+            - build-browser-interface
