@@ -1,4 +1,4 @@
-import type { KernelOptions } from '@dcl/kernel-interface'
+import type { KernelOptions } from 'kernel-web-interface'
 import { trackEvent } from 'shared/analytics'
 import { changeRealm, realmInitialized } from 'shared/dao'
 import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'

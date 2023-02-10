@@ -1,4 +1,4 @@
-import defaultLogger from '../../logger'
+import defaultLogger from 'lib/logger'
 import { PingResult, AskResult, ServerConnectionStatus } from '../types'
 
 export async function ask(url: string, timeoutMs: number = 5000): Promise<AskResult> {

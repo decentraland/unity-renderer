@@ -1,3 +1,3 @@
 import mitt from 'mitt'
-import type { NamedEvents } from '@dcl/kernel-interface'
+import type { NamedEvents } from 'kernel-web-interface'
 export const globalObservable = mitt<NamedEvents>()

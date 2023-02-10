@@ -1,6 +1,5 @@
 import { select, takeEvery } from 'redux-saga/effects'
 import { trackEvent } from '../analytics'
-import { SAVE_PROFILE } from '../profiles/actions'
 import {
   NETWORK_MISMATCH,
   COMMS_ESTABLISHED,
@@ -24,6 +23,7 @@ import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { INIT_SESSION } from 'shared/session/actions'
 import { Avatar } from '@dcl/schemas'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { SAVE_DELTA_PROFILE_REQUEST } from 'shared/profiles/actions'
 
 const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   // lifecycle events
@@ -54,7 +54,7 @@ export function* metricSaga() {
       trackEvent('lifecycle event', toTrackingEvent(event, _action.payload))
     })
   }
-  yield takeEvery(SAVE_PROFILE, function* () {
+  yield takeEvery(SAVE_DELTA_PROFILE_REQUEST, function* () {
     const profile: Avatar | null = yield select(getCurrentUserProfile)
     if (profile) {
       trackEvent('avatar_edit_success', {
