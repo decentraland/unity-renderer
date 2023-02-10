@@ -1,14 +1,12 @@
 import { exec } from 'child_process'
-import { mkdir, readFile } from 'fs/promises'
-import * as glob from 'glob'
-import path, { resolve } from 'path'
+import { readFile } from 'fs/promises'
+import { resolve } from 'path'
 import { fetch, FormData } from 'undici'
-import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
+import { ensureFileExists } from './utils'
 
 const DIST_ROOT = resolve(__dirname, '../static')
 
 async function main() {
-  await copyBuiltFiles()
   await checkFiles()
 
   if (!process.env.GITLAB_PIPELINE_URL) {
@@ -58,36 +56,6 @@ async function checkFiles() {
   ensureFileExists(DIST_ROOT, 'unity.framework.js')
   ensureFileExists(DIST_ROOT, 'index.html')
   ensureFileExists(DIST_ROOT, 'preview.html')
-}
-
-const DIST_PATH = path.resolve(__dirname, '../static')
-// This function copies the built files from unity into the target folder
-async function copyBuiltFiles() {
-  await mkdir(DIST_PATH, { recursive: true })
-
-  const basePath = path.resolve(process.env.BUILD_PATH!, 'Build')
-  try {
-    ensureEqualFiles(path.resolve(basePath, 'unity.loader.js'), path.resolve(DIST_PATH, 'unity.loader.js'))
-  } catch (e) {
-    console.log(`
-      unity.loader.js is checked out in the repository, as it seldom changes, to avoid coupling
-      the build step of 'browser-interface' with 'unity-renderer'. If the file changes, make sure
-      to update the version stored on \`static/unity.loader.js\` (this is frequently the case when
-      updating the unity version).
-   `)
-    throw e
-  }
-
-  for (const file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
-    copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + '/', './')))
-  }
-
-  const streamingPath = path.resolve(process.env.BUILD_PATH!, 'StreamingAssets')
-  const streamingDistPath = path.resolve(DIST_PATH, 'StreamingAssets')
-
-  for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
-    copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
-  }
 }
 
 async function getPackageJson(workingDirectory: string) {
