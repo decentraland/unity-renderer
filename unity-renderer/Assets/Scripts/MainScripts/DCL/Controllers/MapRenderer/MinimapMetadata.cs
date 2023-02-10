@@ -98,7 +98,7 @@ public class MinimapMetadata : ScriptableObject
             return hashCode;
 
             int GenerateOwnerInfo() =>
-                owner == null ? 0 : owner.GetHashCode() + description.GetHashCode() + previewImageUrl.GetHashCode();
+                owner == null ? 0 : owner.GetHashCode() + description.GetHashCode();
 
             int GenerateParcelHashCode() =>
                 parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + (parcels[0].y * 600) : 0);
