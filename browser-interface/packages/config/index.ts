@@ -54,7 +54,8 @@ function ensureSingleString(value: string | string[] | null): string | null {
 }
 
 // Comms
-export const COMMS_PROFILE_TIMEOUT = 4000
+export const COMMS_PROFILE_TIMEOUT = 1500
+export const FETCH_REMOTE_PROFILE_RETRIES = 3
 export const MAXIMUM_NETWORK_MSG_LENGTH = 65000
 
 export const DECENTRALAND_SPACE = qs.get('SPACE')

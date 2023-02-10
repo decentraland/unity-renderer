@@ -12,6 +12,7 @@ import { ensureAvatarCompatibilityFormat } from '../../../../lib/decentraland/pr
 import type { ProfileStatus } from '../../types'
 import { fetchPeerProfile } from '../comms'
 import { fetchCatalystProfile } from '../content'
+import { FETCH_REMOTE_PROFILE_RETRIES } from 'config'
 
 export function* fetchProfile(action: ProfileRequestAction): any {
   const { userId, minimumVersion } = action.payload
@@ -76,9 +77,12 @@ function* fetchWithBestStrategy(
 ) {
   const version = +(options.minimumVersion || 0)
   if (options.canFetchFromComms && !!options.roomConnection) {
-    const remote = yield call(fetchPeerProfile, options.roomConnection, userId, version)
-    if (remote) {
-      return remote
+    // Retry three times
+    for (let i = 0; i < FETCH_REMOTE_PROFILE_RETRIES; i++) {
+      const remote = yield call(fetchPeerProfile, options.roomConnection, userId, version)
+      if (remote) {
+        return remote
+      }
     }
   }
   if (options.canFetchFromCatalyst) {
