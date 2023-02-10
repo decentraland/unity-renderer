@@ -9,11 +9,12 @@ import {
 } from 'shared/selectors'
 import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
-import { ensureRealmAdapterPromise, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 
 export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
-  await ensureRealmAdapterPromise()
+  await ensureRealmAdapter()
   const url = getHotScenesService(store.getState())
   const response = await fetch(url)
   if (response.ok) {
@@ -55,7 +56,7 @@ export async function reportHotScenes() {
 async function fetchPOIsAsHotSceneInfo(): Promise<HotSceneInfo[]> {
   const tiles = getPoiTiles(store.getState())
   const scenesLand = (await fetchScenesByLocation(tiles)).filter((land) => land.entity.metadata)
-  const bff = await ensureRealmAdapterPromise()
+  const bff = await ensureRealmAdapter()
   const baseContentUrl = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
   return scenesLand.map((land) => {
