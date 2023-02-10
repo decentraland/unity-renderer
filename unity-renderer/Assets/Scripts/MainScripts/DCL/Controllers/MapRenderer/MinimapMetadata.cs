@@ -20,34 +20,20 @@ public class MinimapMetadata : ScriptableObject
         OnSale = 10,
         Unowned = 11,
         Background = 12,
-        Loading = 13
+        Loading = 13,
     }
 
-    [Serializable]
-    public class MinimapSceneInfo
-    {
-        public string name;
-        public TileType type;
-        public List<Vector2Int> parcels;
+    private static MinimapMetadata minimapMetadata;
 
-        public bool isPOI;
-        public string owner;
-        public string description;
-        public string previewImageUrl;
-    }
+    private readonly HashSet<MinimapSceneInfo> scenesInfo = new ();
+    private readonly Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new ();
 
     public event Action<MinimapSceneInfo> OnSceneInfoUpdated;
 
-    HashSet<MinimapSceneInfo> scenesInfo = new HashSet<MinimapSceneInfo>();
-    Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new Dictionary<Vector2Int, MinimapSceneInfo>();
-
-    public MinimapSceneInfo GetSceneInfo(int x, int y)
-    {
-        if (sceneInfoMap.TryGetValue(new Vector2Int(x, y), out MinimapSceneInfo result))
-            return result;
-
-        return null;
-    }
+    public MinimapSceneInfo GetSceneInfo(int x, int y) =>
+        sceneInfoMap.TryGetValue(new Vector2Int(x, y), out MinimapSceneInfo result)
+            ? result
+            : null;
 
     public void AddSceneInfo(MinimapSceneInfo sceneInfo)
     {
@@ -56,16 +42,13 @@ public class MinimapMetadata : ScriptableObject
 
         int parcelsCount = sceneInfo.parcels.Count;
 
-        for (int i = 0; i < parcelsCount; i++)
+        for (var i = 0; i < parcelsCount; i++)
         {
             if (sceneInfoMap.ContainsKey(sceneInfo.parcels[i]))
-            {
-                //NOTE(Brian): I intended at first to just return; here. But turns out kernel is sending
-                //             overlapping coordinates, sending first gigantic 'Estate' and 'Roads' scenes to
-                //             send the proper scenes later. This will be fixed when we implement the content v3 data
-                //             plumbing.
+
+                // NOTE: This removes outdated information for a particular parcel. Subsequent calls to update the
+                // information for a parcel must override previously submitted information.
                 sceneInfoMap.Remove(sceneInfo.parcels[i]);
-            }
 
             sceneInfoMap.Add(sceneInfo.parcels[i], sceneInfo);
         }
@@ -81,14 +64,44 @@ public class MinimapMetadata : ScriptableObject
         sceneInfoMap.Clear();
     }
 
-    private static MinimapMetadata minimapMetadata;
     public static MinimapMetadata GetMetadata()
     {
         if (minimapMetadata == null)
-        {
             minimapMetadata = Resources.Load<MinimapMetadata>("ScriptableObjects/MinimapMetadata");
-        }
 
         return minimapMetadata;
+    }
+
+    [Serializable]
+    public class MinimapSceneInfo
+    {
+        public string name;
+        public TileType type;
+        public List<Vector2Int> parcels;
+
+        public bool isPOI;
+        public string owner;
+        public string description;
+        public string previewImageUrl;
+
+        [NonSerialized]
+        private int hashCode = -1;
+
+        public override bool Equals(object obj) =>
+            obj != null && obj.GetHashCode() == GetHashCode();
+
+        public override int GetHashCode()
+        {
+            if (hashCode == -1)
+                hashCode = name.GetHashCode() + type.GetHashCode() + GenerateParcelHashCode() + isPOI.GetHashCode() + GenerateOwnerInfo();
+
+            return hashCode;
+
+            int GenerateOwnerInfo() =>
+                owner == null ? 0 : owner.GetHashCode() + description.GetHashCode();
+
+            int GenerateParcelHashCode() =>
+                parcels.GetHashCode() + parcels.Count + (parcels.Count > 0 ? parcels[0].x + (parcels[0].y * 600) : 0);
+        }
     }
 }
