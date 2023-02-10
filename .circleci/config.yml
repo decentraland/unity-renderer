@@ -93,6 +93,7 @@ references:
           - main
           -  /^release\/.*/
           -  /^hotfix\/.*/
+          -  /^gh-readonly-queue\/main.*/
 
 commands:
   build-unity-generic:
