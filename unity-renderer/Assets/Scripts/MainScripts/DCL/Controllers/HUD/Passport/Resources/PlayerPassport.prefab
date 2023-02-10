@@ -13530,6 +13530,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIPageSelector
       objectReference: {fileID: 0}
+    - target: {fileID: 4448660594294678546, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
+        type: 3}
+      propertyPath: limitedPages
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448660594294678546, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
+        type: 3}
+      propertyPath: maxVisiblePages
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5955730194940385775, guid: 8c9ed1f628f2dc14cba7feb822bd5693,
         type: 3}
       propertyPath: m_Pivot.x
