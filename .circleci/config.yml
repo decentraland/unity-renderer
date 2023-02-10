@@ -105,6 +105,9 @@ commands:
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: ./scripts/hash-unity-files.sh
+      - store_artifacts:
+          path: /tmp/workspace/.unitysources-checksum
+          destination: unitysources-checksum.txt
       - run: &STORE_TARGET
           name: Save target to file
           command: |
@@ -183,12 +186,16 @@ commands:
           when: on_success
       - run:
           working_directory: &node_workspace browser-interface
-          name: Deploy artifacts
-          command: npm run publish-artifacts
-      - run:
-          working_directory: *node_workspace
           name: print files to publish
           command: find static
+      - run:
+          working_directory: *node_workspace
+          name: npm run copy-built-files
+          command: npm run copy-built-files
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-preview
       - run:
           working_directory: *node_workspace
           name: npm run publish
