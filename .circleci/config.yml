@@ -105,6 +105,9 @@ commands:
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: ./scripts/hash-unity-files.sh
+      - store_artifacts:
+          path: /tmp/workspace/.unitysources-checksum
+          destination: unitysources-checksum.txt
       - run: &STORE_TARGET
           name: Save target to file
           command: |
