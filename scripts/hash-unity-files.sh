@@ -31,9 +31,13 @@ find ./unity-renderer -type f \
 # hash pipeline files
 find ./ -type f \
     \( -not -path '*node_modules*' \) \
-    \( -iname \*.sh \ -o -iname \*.yml \ \) \
+    \( -not -path '*unity-renderer*' \) \
+    \( -not -path '*browser-interface*' \) \
+    \( -iname \*.sh \
+    -o -iname \*.yml \) \
     \( -exec md5sum "$PWD"/{} \; \) |
-    sort >> ../.unitysources-checksum
+    sort >>../.unitysources-checksum
 
 # print the result
-cat ../.unitysources-checksum
+# disabled -- feel free to enable it to debug the pipeline
+# cat ../.unitysources-checksum
