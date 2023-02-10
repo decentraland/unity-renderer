@@ -45,12 +45,6 @@ namespace DCL
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
             result.Register<IRPC>(() => new RPC());
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
-            result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
-                new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
-                WebInterfaceWearablesCatalogService.Instance,
-                DataStore.i.common.wearables,
-                KernelConfig.i,
-                new WearablesWebInterfaceBridge()));
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
@@ -69,6 +63,13 @@ namespace DCL
             result.Register<ITeleportController>(() => new TeleportController());
             result.Register<IApplicationFocusService>(() => new ApplicationFocusService());
             result.Register<IBillboardsController>(BillboardsController.Create);
+            result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
+                new LambdasWearablesCatalogService(DataStore.i.common.wearables, result.Get<ILambdasService>()),
+                WebInterfaceWearablesCatalogService.Instance,
+                DataStore.i.common.wearables,
+                KernelConfig.i,
+                new WearablesWebInterfaceBridge(),
+                DataStore.i.featureFlags.flags));
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
