@@ -23,7 +23,7 @@ namespace DCL.Components
         public Action<LoadableShape> OnLoaded;
 
         protected Model previousModel = new Model();
-        
+
         protected LoadableShape() { model = new Model(); }
 
         public override int GetClassId() { return -1; }
@@ -162,12 +162,12 @@ namespace DCL.Components
                 entity.meshesInfo.currentShape = this;
 
                 loadableShape.entity = entity;
-                
+
                 bool initialVisibility = model.visible;
                 if (!DataStore.i.debugConfig.isDebugMode.Get())
                     initialVisibility &= entity.isInsideSceneBoundaries;
                 loadableShape.initialVisibility = initialVisibility;
-                
+
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
@@ -186,14 +186,23 @@ namespace DCL.Components
             bool initialVisibility = model.visible;
             if (!DataStore.i.debugConfig.isDebugMode.Get())
                 initialVisibility &= entity.isInsideSceneBoundaries;
-            
+
             if (loadable != null)
                 loadable.initialVisibility = initialVisibility;
 
             ConfigureVisibility(entity.meshRootGameObject, initialVisibility, entity.meshesInfo.renderers);
-            
-            if(!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) && entity.meshesInfo.animation != null)
-                entity.meshesInfo.animation.enabled = initialVisibility;
+
+            UpdateAnimationStatus(entity, initialVisibility);
+        }
+
+        private void UpdateAnimationStatus(IDCLEntity entity, bool enabled)
+        {
+            if (!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) &&
+                entity.meshesInfo.animation != null)
+            {
+                Debug.Log($"{entity.meshesInfo.animation.gameObject.name} {entity.meshesInfo.animation.enabled} -> {enabled}");
+                entity.meshesInfo.animation.enabled = enabled;
+            }
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity)
@@ -239,7 +248,9 @@ namespace DCL.Components
             OnLoaded?.Invoke(this);
 
             entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
-            
+
+            entity.OnInsideBoundariesChanged += s => OnInsideBoundariesChanged(entity, s);
+
             ConfigureVisibility(entity);
             ConfigureColliders(entity);
             RaiseOnShapeUpdated(entity);
@@ -249,13 +260,24 @@ namespace DCL.Components
             OnFinishCallbacks = null;
         }
 
+        private void OnInsideBoundariesChanged(IDCLEntity entity, bool isInsideBoundaries)
+        {
+            UpdateAnimationStatus(entity, isInsideBoundaries);
+        }
+
         protected virtual void DetachShape(IDCLEntity entity)
         {
             if (entity == null || entity.meshRootGameObject == null)
                 return;
 
             LoadWrapper loadWrapper = Environment.i.world.state.GetLoaderForEntity(entity);
-            loadWrapper?.Unload();
+
+            if (loadWrapper != null)
+            {
+                entity.OnInsideBoundariesChanged -= s => OnInsideBoundariesChanged(entity, s);
+                loadWrapper.Unload();
+            }
+
             Environment.i.world.state.RemoveLoaderForEntity(entity);
             entity.meshesInfo.CleanReferences();
         }
