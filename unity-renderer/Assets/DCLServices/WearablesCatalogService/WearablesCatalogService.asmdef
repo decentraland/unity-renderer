@@ -1,0 +1,26 @@
+{
+    "name": "WearablesCatalogService",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:6c1761dc8f737004198eb333521bd665",
+        "GUID:68069f49d86442cd9618861b4d74b1aa",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:e99faafecbf8dd74d8130597511b9b27",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:4d3366a36e77f41cfb7436340334e236",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
