@@ -1308,17 +1308,17 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           // Send message to renderer via rpc
           yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
 
-          // TODO: send notification
-          const conversationId = yield select(getConversationId, userId)
+          // Update notification badges
+          const conversationId = yield select(getConversationId, getUserIdFromMatrix(userId))
           const unreadMessages = client.getConversationUnreadMessages(conversationId).length
           getUnityInstance().UpdateUserUnseenMessages({
-            userId,
+            userId: getUserIdFromMatrix(userId),
             total: unreadMessages
           })
 
-          // TODO: send notification
+          // Update notification badges
           const friends = yield select(getFriendIds)
-          const totalUnseenMessages = getTotalUnseenMessages(client, ownId, friends)
+          const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
           getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
         }
       }
