@@ -13,5 +13,7 @@ npx @dcl/cdn-uploader@next \
   --local-folder "/tmp/workspace/unity-renderer/browser-interface/static" \
   --bucket-folder "branch/${CIRCLE_BRANCH}" \
   --concurrency 10
+  --config cdn-uploader-config.yml
+
 
 set +u # unbound variables
