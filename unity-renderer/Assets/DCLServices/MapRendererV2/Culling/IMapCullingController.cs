@@ -1,7 +1,18 @@
-﻿namespace DCLServices.MapRendererV2.Culling
+﻿using DCLServices.MapRendererV2.MapCameraController;
+
+namespace DCLServices.MapRendererV2.Culling
 {
-    public interface IMapCullingController
+    internal interface IMapCullingController
     {
+        void OnCameraAdded(IMapCameraControllerInternal cameraController);
+
+        void OnCameraRemoved(IMapCameraControllerInternal cameraController);
+
+        /// <summary>
+        /// Marks position of the object as dirty. <see cref="StartTracking{T}"/> must have been called for the object before.
+        /// </summary>
+        void SetTrackedObjectPositionDirty<T>(T obj) where T: IMapPositionProvider;
+
         /// <summary>
         /// Starts tracking visibility of the object represented by a single position.
         /// Does nothing if the object is already tracked

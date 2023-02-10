@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.CoordsUtils
 {
-    public class ChunkCoordsUtils : ICoordsUtils
+    internal class ChunkCoordsUtils : ICoordsUtils
     {
         public int ParcelSize { get; }
 

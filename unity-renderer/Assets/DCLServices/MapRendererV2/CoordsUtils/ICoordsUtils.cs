@@ -2,7 +2,7 @@
 
 namespace DCLServices.MapRendererV2.CoordsUtils
 {
-    public interface ICoordsUtils
+    internal interface ICoordsUtils
     {
         public int ParcelSize { get; }
 

@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
@@ -31,6 +32,8 @@ namespace DCLServices.MapRendererV2
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
+        private IMapCullingController cullingController;
+
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
             this.componentsFactory = componentsFactory;
@@ -43,7 +46,10 @@ namespace DCLServices.MapRendererV2
             this.cancellationToken = cancellationToken;
             layers = new Dictionary<MapLayer, MapLayerStatus>();
 
-            await foreach (var (layerType, layer) in componentsFactory.Create(cancellationToken))
+            var components = componentsFactory.Create(cancellationToken);
+            cullingController = components.CullingController;
+
+            await foreach (var (layerType, layer) in components.Layers)
                 layers[layerType] = new MapLayerStatus(layer);
         }
 

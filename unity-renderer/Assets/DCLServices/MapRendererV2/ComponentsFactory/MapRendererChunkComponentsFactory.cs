@@ -25,15 +25,15 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
-        public IUniTaskAsyncEnumerable<(MapLayer, IMapLayerController)> Create(CancellationToken cancellationToken)
+        MapRendererComponents IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
-            return UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
+            // TODO implement Culling Controller
+            IMapCullingController cullingController = null;
+
+            var enumerator = UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
             {
                 var configuration = await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken);
                 var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
-
-                // TODO implement Culling Controller
-                IMapCullingController cullingController = null;
 
                 async UniTask CreateAtlas()
                 {
@@ -49,6 +49,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
                 await UniTask.WhenAll(CreateAtlas() /* List of other creators that can be executed in parallel */);
             });
+
+            return new MapRendererComponents(enumerator, cullingController);
         }
     }
 }
