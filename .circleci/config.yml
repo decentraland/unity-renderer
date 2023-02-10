@@ -195,7 +195,7 @@ commands:
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
-          command: npm run publish-preview-artifacts
+          command: npm run publish-preview
       - run:
           working_directory: *node_workspace
           name: npm run publish
