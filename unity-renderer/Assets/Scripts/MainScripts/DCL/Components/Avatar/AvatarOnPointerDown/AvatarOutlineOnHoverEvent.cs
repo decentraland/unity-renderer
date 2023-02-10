@@ -17,10 +17,9 @@ namespace DCL.Components
 
         private bool isHovered;
 
-        public event System.Action OnPointerEnterReport;
-        public event System.Action OnPointerExitReport;
+        public event Action OnPointerEnterReport;
+        public event Action OnPointerExitReport;
         private OnPointerEvent.Model model;
-        private bool isHoveringEnabled = true;
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
@@ -36,9 +35,6 @@ namespace DCL.Components
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
 
-        public void SetEnabled(bool enabled) =>
-            isHoveringEnabled = enabled;
-
         public Transform GetTransform() =>
             transform;
 
@@ -46,7 +42,7 @@ namespace DCL.Components
 
         public void SetHoverState(bool state)
         {
-            if (!isHoveringEnabled) return;
+            if (!enabled) return;
             if (isHovered == state) return;
 
             isHovered = state;

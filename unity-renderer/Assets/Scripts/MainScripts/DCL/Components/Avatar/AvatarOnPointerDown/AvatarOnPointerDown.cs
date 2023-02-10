@@ -30,6 +30,7 @@ namespace DCL.Components
 
         public void SetHoverState(bool state)
         {
+            if (!enabled) return;
             bool isHoveringDirty = state != isHovering;
             isHovering = state;
             eventHandler?.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);

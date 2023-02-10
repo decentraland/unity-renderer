@@ -276,8 +276,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             outlineOnHover.Initialize(new OnPointerEvent.Model(), null, avatar);
 
             bool isClickingOwnAvatarEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("click_own_avatar_passport");
-            onPointerDown.SetPassportEnabled(isClickingOwnAvatarEnabled);
-            outlineOnHover.SetEnabled(isClickingOwnAvatarEnabled);
+            onPointerDown.enabled = isClickingOwnAvatarEnabled;
+            outlineOnHover.enabled = isClickingOwnAvatarEnabled;
         }
     }
 
