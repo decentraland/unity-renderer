@@ -10,7 +10,7 @@
     "publish": "ts-node --project scripts/tsconfig.json scripts/publish.ts",
     "check-file-size": "ts-node --project scripts/tsconfig.json scripts/checkFileSizes.ts",
     "copy-built-files": "ts-node --project scripts/tsconfig.json scripts/copyBuiltFiles.ts",
-    "publish-preview": "./scripts/publish-preview-artifacts.sh"
+    "publish-preview": "./scripts/publish-preview.sh"
   },
   "generatedFiles": {
     "frameworkUrl": "unity.framework.js",
