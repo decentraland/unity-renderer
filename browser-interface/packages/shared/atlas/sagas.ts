@@ -4,7 +4,7 @@ import {
   getSceneDescriptionFromJsonData,
   getThumbnailUrlFromJsonDataAndContent
 } from 'shared/selectors'
-import defaultLogger from '../logger'
+import defaultLogger from 'lib/logger'
 import { lastPlayerPosition } from '../world/positionThings'
 import {
   ReportScenesAroundParcel,
@@ -41,7 +41,7 @@ import { saveToPersistentStorage } from 'lib/browser/persistentStorage'
 import { homePointKey } from './utils'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { trackEvent } from 'shared/analytics'
-import { waitForRealmAdapter } from 'shared/realm/selectors'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { parcelSize } from 'lib/decentraland/parcels/limits'
 import { Vector2 } from 'lib/math/Vector2'
 
@@ -96,7 +96,7 @@ function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
 }
 
 function* initializePois() {
-  yield call(waitForRealmAdapter)
+  yield call(waitForRealm)
 
   const daoPOIs: string[] | undefined = yield call(fetchPOIsFromDAO)
 

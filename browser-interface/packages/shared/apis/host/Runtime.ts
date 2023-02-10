@@ -1,16 +1,13 @@
-import { store } from '../../store/isolatedStore'
-import { getRealmAdapter } from '../../realm/selectors'
+import { store } from 'shared/store/isolatedStore'
+import { getRealmAdapter } from 'shared/realm/selectors'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
-import {
-  GetRealmResponse,
-  GetWorldTimeResponse,
-  RuntimeServiceDefinition
-} from '@dcl/protocol/out-ts/decentraland/kernel/apis/runtime.gen'
-import { PortContextService } from './context'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { GetRealmResponse, GetWorldTimeResponse } from '@dcl/protocol/out-ts/decentraland/kernel/apis/runtime.gen'
+import { RuntimeServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/runtime.gen'
+import type { PortContextService } from './context'
 import { getDecentralandTime } from './EnvironmentAPI'
-import { urlWithProtocol } from '../../realm/resolver'
-import { PREVIEW } from '../../../config'
+import { urlWithProtocol } from 'shared/realm/resolver'
+import { PREVIEW } from 'config'
 
 export function registerRuntimeServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
   codegen.registerService(port, RuntimeServiceDefinition, async () => ({

@@ -54,7 +54,10 @@ function ensureSingleString(value: string | string[] | null): string | null {
 }
 
 // Comms
-export const COMMS_PROFILE_TIMEOUT = 15000
+export const COMMS_PROFILE_TIMEOUT = 1500
+export const FETCH_REMOTE_PROFILE_RETRIES = 3
+export const MAXIMUM_NETWORK_MSG_LENGTH = 65000
+
 export const DECENTRALAND_SPACE = qs.get('SPACE')
 
 export const PARCEL_LOADING_ENABLED = !DECENTRALAND_SPACE || qs.has('DISABLE_PARCEL_LOADING')
@@ -74,6 +77,7 @@ export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
+export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
 export const DEBUG_LOGIN = location.search.includes('DEBUG_LOGIN')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
@@ -234,11 +238,6 @@ export namespace ethereumConfigurations {
 }
 
 export const isRunningTest: boolean = (globalThis as any)['isRunningTests'] === true
-
-export const genericAvatarSnapshots = {
-  body: 'QmSav1o6QK37Jj1yhbmhYk9MJc6c2H5DWbWzPVsg9JLYfF',
-  face256: 'QmSqZ2npVD4RLdqe17FzGCFcN29RfvmqmEd2FcQUctxaKk'
-} as const
 
 function addHttpsIfNoProtocolIsSet(domain: string): string
 function addHttpsIfNoProtocolIsSet(domain: undefined): undefined

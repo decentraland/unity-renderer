@@ -1,5 +1,5 @@
-import { RpcServerPort } from '@dcl/rpc/dist/types'
-import { PortContext } from './context'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { PortContext } from './context'
 
 import { registerEthereumControllerServiceServerImplementation } from './EthereumController'
 import { registerDevToolsServiceServerImplementation } from './DevTools'
