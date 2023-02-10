@@ -6,6 +6,7 @@ matches:
   - match: "**/unity.data"
     variants:
       - brotli
+      - uncompressed
   - match: "**/unity.wasm"
     variants:
       - brotli
