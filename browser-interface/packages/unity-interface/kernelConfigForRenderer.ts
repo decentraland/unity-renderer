@@ -28,18 +28,11 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
 
   const COLLECTIONS_OR_ITEMS_ALLOWED =
     PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
+  
   const urlParamsForWearablesDebug =
     !!((WITH_FIXED_ITEMS && COLLECTIONS_OR_ITEMS_ALLOWED) || (WITH_FIXED_COLLECTIONS && COLLECTIONS_OR_ITEMS_ALLOWED))
 
-  // temporal logs (for debugging purposes)
-  console.log('[SANTI LOGS] PREVIEW: ' + PREVIEW)
-  console.log('[SANTI LOGS] DEBUG: ' + DEBUG)
-  console.log('[SANTI LOGS] TLD: ' + getTLD())
-  console.log('[SANTI LOGS] network: ' + network)
-  console.log('[SANTI LOGS] WITH_FIXED_ITEMS: ' + WITH_FIXED_ITEMS)
-  console.log('[SANTI LOGS] WITH_FIXED_COLLECTIONS: ' + WITH_FIXED_COLLECTIONS)
-  console.log('[SANTI LOGS] COLLECTIONS_OR_ITEMS_ALLOWED: ' + COLLECTIONS_OR_ITEMS_ALLOWED)
-  console.log('[SANTI LOGS] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug)
+  console.log('[KERNEL CONFIG LOG] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug) // temporal log (for debugging purposes)
 
   return {
     ...globalState.meta.config.world,
