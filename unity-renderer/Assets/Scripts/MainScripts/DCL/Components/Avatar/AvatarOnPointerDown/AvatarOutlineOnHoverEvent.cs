@@ -20,7 +20,7 @@ namespace DCL.Components
         public event System.Action OnPointerEnterReport;
         public event System.Action OnPointerExitReport;
         private OnPointerEvent.Model model;
-        private bool isHoveringEnabled;
+        private bool isHoveringEnabled = true;
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
