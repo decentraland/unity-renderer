@@ -3,17 +3,17 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 
 import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 
+import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { createDummyLogger, createLogger } from 'lib/logger'
 import { initializeReferral } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
 import { RequestManager } from 'eth-connect'
+import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
 import { Store } from 'redux'
 import { setRoomConnection } from 'shared/comms/actions'
 import { selectNetwork } from 'shared/dao/actions'
@@ -21,6 +21,8 @@ import { getSelectedNetwork } from 'shared/dao/selectors'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { globalObservable } from 'shared/observables'
 import { initialRemoteProfileLoad } from 'shared/profiles/sagas/initialRemoteProfileLoad'
+import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -47,9 +49,6 @@ import {
 import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
-import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { debug } from 'util'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -126,7 +125,6 @@ function* authenticate(action: AuthenticateAction) {
   // 2. then ask for our profile when we selected a catalyst
   yield call(waitForRealm)
   const avatar = yield call(initialRemoteProfileLoad)
-  debugger
 
   // 3. continue with signin/signup (only not in preview)
   const isSignUp = avatar.version <= 0 && !PREVIEW

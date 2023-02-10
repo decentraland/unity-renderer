@@ -36,15 +36,12 @@ export function* fetchProfile(action: ProfileRequestAction): any {
     const canFetchFromComms = !loadingCurrentUser && hasRoomConnection
     const canFetchFromCatalyst = !isCurrentUserGuest
 
-    const profile = yield call(
-      fetchWithBestStrategy,
-      userId, {
-        canFetchFromComms,
-        canFetchFromCatalyst,
-        roomConnection,
-        minimumVersion
-      }
-    )
+    const profile = yield call(fetchWithBestStrategy, userId, {
+      canFetchFromComms,
+      canFetchFromCatalyst,
+      roomConnection,
+      minimumVersion
+    })
 
     const avatar: Avatar = ensureAvatarCompatibilityFormat(profile)
     avatar.userId = userId
@@ -69,9 +66,9 @@ export function* fetchProfile(action: ProfileRequestAction): any {
 function* fetchWithBestStrategy(
   userId: string,
   options: {
-    canFetchFromComms: boolean,
-    canFetchFromCatalyst: boolean,
-    roomConnection: RoomConnection | undefined,
+    canFetchFromComms: boolean
+    canFetchFromCatalyst: boolean
+    roomConnection: RoomConnection | undefined
     minimumVersion: number | undefined
   }
 ) {
