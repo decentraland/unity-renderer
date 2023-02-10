@@ -185,10 +185,6 @@ commands:
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
       - run:
-          working_directory: &node_workspace browser-interface
-          name: Deploy artifacts
-          command: npm run publish-artifacts
-      - run:
           working_directory: *node_workspace
           name: print files to publish
           command: find static
@@ -196,6 +192,10 @@ commands:
           working_directory: *node_workspace
           name: npm run publish
           command: npm run publish
+      - run:
+          working_directory: &node_workspace browser-interface
+          name: Deploy artifacts
+          command: npm run publish-artifacts
   publish-desktop-artifacts:
     steps:
       - <<: *attach_root
