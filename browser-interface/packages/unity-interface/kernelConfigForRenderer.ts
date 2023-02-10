@@ -1,5 +1,14 @@
 import { KernelConfigForRenderer } from 'shared/types'
-import { getAvatarTextureAPIBaseUrl, commConfigurations, WSS_ENABLED } from 'config'
+import { 
+  getAvatarTextureAPIBaseUrl,
+  commConfigurations,
+  WSS_ENABLED, WITH_FIXED_ITEMS,
+  WITH_FIXED_COLLECTIONS,
+  PREVIEW,
+  DEBUG,
+  getTLD,
+  ETHEREUM_NETWORK
+} from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'shared/profiles/utils/names'
 import { getWorld } from '@dcl/schemas'
 import { injectVersions } from 'shared/rolloutVersions'
@@ -16,6 +25,17 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
   try {
     network = getSelectedNetwork(globalState)
   } catch {}
+
+  const COLLECTIONS_OR_ITEMS_ALLOWED =
+    PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
+
+    // temporal logs (for debugging purposes)
+    console.log('[SANTI LOGS] PREVIEW: ' + PREVIEW)
+    console.log('[SANTI LOGS] DEBUG: ' + DEBUG)
+    console.log('[SANTI LOGS] TLD: ' + getTLD())
+    console.log('[SANTI LOGS] network: ' + network)
+    console.log('[SANTI LOGS] COLLECTIONS_OR_ITEMS_ALLOWED: ' + COLLECTIONS_OR_ITEMS_ALLOWED)
+    console.log('[SANTI LOGS] urlParamsForWearablesDebug: ' + (WITH_FIXED_ITEMS && COLLECTIONS_OR_ITEMS_ALLOWED) || (WITH_FIXED_COLLECTIONS && COLLECTIONS_OR_ITEMS_ALLOWED))
 
   return {
     ...globalState.meta.config.world,
@@ -37,6 +57,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     validWorldRanges: getWorld().validWorldRanges,
     kernelVersion: versions['@dcl/explorer'] || 'unknown-kernel-version',
     rendererVersion: versions['@dcl/explorer'] || 'unknown-renderer-version',
-    avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState))
+    avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState)),
+    urlParamsForWearablesDebug: (WITH_FIXED_ITEMS && COLLECTIONS_OR_ITEMS_ALLOWED) || (WITH_FIXED_COLLECTIONS && COLLECTIONS_OR_ITEMS_ALLOWED) ? true : false
   }
 }

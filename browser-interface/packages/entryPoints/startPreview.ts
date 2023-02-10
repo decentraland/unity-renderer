@@ -4,17 +4,18 @@ import type { IUnityInterface } from 'unity-interface/IUnityInterface'
 import { DEBUG_WS_MESSAGES } from 'config/index'
 import { getPreviewSceneId, loadPreviewScene, reloadPlaygroundScene } from 'unity-interface/dcl'
 import { logger } from './logger'
+import { kernelConfigForRenderer } from 'unity-interface/kernelConfigForRenderer'
 
 export async function startPreview(unityInterface: IUnityInterface) {
   getPreviewSceneId()
     .then((sceneData) => {
       if (sceneData.sceneId) {
-        unityInterface.SetKernelConfiguration({
-          debugConfig: {
-            sceneDebugPanelTargetSceneId: sceneData.sceneId,
-            sceneLimitsWarningSceneId: sceneData.sceneId
-          }
-        })
+        let kernelConfig = kernelConfigForRenderer()
+        kernelConfig.debugConfig = {
+          sceneDebugPanelTargetSceneId: sceneData.sceneId,
+          sceneLimitsWarningSceneId: sceneData.sceneId
+        }
+        unityInterface.SetKernelConfiguration(kernelConfig)
         clientDebug.ToggleSceneBoundingBoxes(sceneData.sceneId, false).catch((e) => logger.error(e))
         unityInterface.SendMessageToUnity('Main', 'TogglePreviewMenu', JSON.stringify({ enabled: true }))
       }
