@@ -1307,6 +1307,19 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
 
           // Send message to renderer via rpc
           yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
+
+          // TODO: send notification
+          const conversationId = yield select(getConversationId, userId)
+          const unreadMessages = client.getConversationUnreadMessages(conversationId).length
+          getUnityInstance().UpdateUserUnseenMessages({
+            userId,
+            total: unreadMessages
+          })
+
+          // TODO: send notification
+          const friends = yield select(getFriendIds)
+          const totalUnseenMessages = getTotalUnseenMessages(client, ownId, friends)
+          getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
         }
       }
       // The approved should not have a break since it should execute all the code as the rejected case
