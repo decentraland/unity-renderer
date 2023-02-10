@@ -1,27 +1,31 @@
 import type { Avatar } from '@dcl/schemas'
 import { ethereumConfigurations, ETHEREUM_NETWORK, RESET_TUTORIAL } from 'config'
+import defaultLogger from 'lib/logger'
 import { call, put, select } from 'redux-saga/effects'
 import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
-import defaultLogger from 'lib/logger'
 import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { fetchOwnedENS } from 'shared/web3'
 import { profileRequest, profileSuccess, saveProfileDelta } from '../actions'
 import { fetchProfile } from './fetchProfile'
+import { fetchLocalProfile } from './local/index'
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
-  let profile: Avatar | null = null
-
+  let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
-    profile = yield call(fetchProfile, profileRequest(userId, 0))
+    profile = yield call(
+      fetchProfile,
+      profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
+    )
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
     throw e
   }
+
   if (!profile) {
     const error = new Error('Could not initialize profile')
     BringDownClientAndReportFatalError(error, ErrorContext.KERNEL_INIT, { userId })

@@ -49,6 +49,7 @@ import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { debug } from 'util'
 
 const TOS_KEY = 'tos'
 const logger = DEBUG_KERNEL_LOG ? createLogger('session: ') : createDummyLogger()
@@ -125,6 +126,7 @@ function* authenticate(action: AuthenticateAction) {
   // 2. then ask for our profile when we selected a catalyst
   yield call(waitForRealm)
   const avatar = yield call(initialRemoteProfileLoad)
+  debugger
 
   // 3. continue with signin/signup (only not in preview)
   const isSignUp = avatar.version <= 0 && !PREVIEW

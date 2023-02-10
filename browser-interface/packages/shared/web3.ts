@@ -282,7 +282,6 @@ const catalystABI = [
 
 export async function fetchCatalystNodesFromDAO(): Promise<CatalystNode[]> {
   if (!requestManager.provider) {
-    debugger
     throw new Error('requestManager.provider not set')
   }
 

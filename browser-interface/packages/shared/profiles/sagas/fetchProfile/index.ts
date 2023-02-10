@@ -37,11 +37,12 @@ export function* fetchProfile(action: ProfileRequestAction): any {
 
     const profile = yield call(
       fetchWithBestStrategy,
-      userId,
-      canFetchFromComms,
-      canFetchFromCatalyst,
-      roomConnection,
-      minimumVersion
+      userId, {
+        canFetchFromComms,
+        canFetchFromCatalyst,
+        roomConnection,
+        minimumVersion
+      }
     )
 
     const avatar: Avatar = ensureAvatarCompatibilityFormat(profile)
@@ -66,23 +67,25 @@ export function* fetchProfile(action: ProfileRequestAction): any {
 
 function* fetchWithBestStrategy(
   userId: string,
-  canFetchFromComms: boolean,
-  canFetchFromCatalyst: boolean,
-  roomConnection: RoomConnection | undefined,
-  minimumVersion: number | undefined
+  options: {
+    canFetchFromComms: boolean,
+    canFetchFromCatalyst: boolean,
+    roomConnection: RoomConnection | undefined,
+    minimumVersion: number | undefined
+  }
 ) {
-  const version = +(minimumVersion || 1)
-  if (canFetchFromComms && !!roomConnection) {
-    const remote = yield call(fetchPeerProfile, roomConnection, userId, version)
+  const version = +(options.minimumVersion || 0)
+  if (options.canFetchFromComms && !!options.roomConnection) {
+    const remote = yield call(fetchPeerProfile, options.roomConnection, userId, version)
     if (remote) {
-      return ensureAvatarCompatibilityFormat(remote)
+      return remote
     }
   }
-  if (canFetchFromCatalyst) {
-    const catalyst = yield call(fetchCatalystProfile, userId, minimumVersion)
+  if (options.canFetchFromCatalyst) {
+    const catalyst = yield call(fetchCatalystProfile, userId, version)
     if (catalyst) {
-      return ensureAvatarCompatibilityFormat(catalyst)
+      return catalyst
     }
   }
-  return ensureAvatarCompatibilityFormat(generateRandomUserProfile(userId))
+  return generateRandomUserProfile(userId)
 }
