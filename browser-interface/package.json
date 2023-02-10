@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .ts --fix",
     "test": "make test-ci",
     "publish": "ts-node --project scripts/tsconfig.json scripts/publish.ts",
+    "check-file-size": "ts-node --project scripts/tsconfig.json scripts/checkFileSizes.ts",
     "publish-artifacts": "./scripts/publish-artifacts.sh"
   },
   "generatedFiles": {
