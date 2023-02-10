@@ -3,7 +3,6 @@
     "outDir": "../../dist",
     "baseUrl": "..",
     "strictNullChecks": true,
-    "inlineSources": true,
     "experimentalDecorators": true,
     "strict": true,
     "types": ["@dcl/posix"]
