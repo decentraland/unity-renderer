@@ -15,7 +15,10 @@ namespace DCL.Components
             public string src;
             public string assetId;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public bool isLoaded { get; protected set; }
@@ -24,34 +27,43 @@ namespace DCL.Components
 
         protected Model previousModel = new Model();
 
-        protected LoadableShape() { model = new Model(); }
+        protected LoadableShape()
+        {
+            model = new Model();
+        }
 
-        public override int GetClassId() { return -1; }
+        public override int GetClassId()
+        {
+            return -1;
+        }
 
-        public override IEnumerator ApplyChanges(BaseModel newModel) { return null; }
+        public override IEnumerator ApplyChanges(BaseModel newModel)
+        {
+            return null;
+        }
 
         public override bool IsVisible()
         {
-            Model model = (Model) this.model;
+            Model model = (Model)this.model;
             return model.visible;
         }
 
         public override bool HasCollisions()
         {
-            Model model = (Model) this.model;
+            Model model = (Model)this.model;
             return model.withCollisions;
         }
 
         public string GetAssetId()
         {
-            Model model = (Model) this.model;
+            Model model = (Model)this.model;
             return model.assetId;
         }
     }
 
     public class LoadableShape<LoadWrapperType, LoadWrapperModelType> : LoadableShape
-        where LoadWrapperType : LoadWrapper, new()
-        where LoadWrapperModelType : LoadableShape.Model, new()
+        where LoadWrapperType: LoadWrapper, new()
+        where LoadWrapperModelType: LoadableShape.Model, new()
     {
         private bool failed = false;
         private event Action<BaseDisposable> OnFinishCallbacks;
@@ -66,7 +78,11 @@ namespace DCL.Components
 
                 return base.model as LoadWrapperModelType;
             }
-            set { base.model = value; }
+
+            set
+            {
+                base.model = value;
+            }
         }
 
         new protected LoadWrapperModelType previousModel
@@ -78,7 +94,11 @@ namespace DCL.Components
 
                 return base.previousModel as LoadWrapperModelType;
             }
-            set { base.previousModel = value; }
+
+            set
+            {
+                base.previousModel = value;
+            }
         }
 
         public LoadableShape()
@@ -89,7 +109,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            LoadWrapperModelType model = (LoadWrapperModelType) newModel;
+            LoadWrapperModelType model = (LoadWrapperModelType)newModel;
 
             bool updateVisibility = true;
             bool updateCollisions = true;
@@ -99,6 +119,7 @@ namespace DCL.Components
             {
                 updateVisibility = previousModel.visible != model.visible;
                 updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
+
                 triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
                                     (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
             }
@@ -128,9 +149,11 @@ namespace DCL.Components
             if (!string.IsNullOrEmpty(model.assetId))
             {
                 provider = AssetCatalogBridge.i.GetContentProviderForAssetIdInSceneObjectCatalog(model.assetId);
+
                 if (string.IsNullOrEmpty(model.src))
                 {
                     SceneObject sceneObject = AssetCatalogBridge.i.GetSceneObjectById(model.assetId);
+
                     if (sceneObject == null)
                     {
 #if UNITY_EDITOR
@@ -164,8 +187,10 @@ namespace DCL.Components
                 loadableShape.entity = entity;
 
                 bool initialVisibility = model.visible;
+
                 if (!DataStore.i.debugConfig.isDebugMode.Get())
                     initialVisibility &= entity.isInsideSceneBoundaries;
+
                 loadableShape.initialVisibility = initialVisibility;
 
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
@@ -184,6 +209,7 @@ namespace DCL.Components
             var loadable = Environment.i.world.state.GetLoaderForEntity(entity);
 
             bool initialVisibility = model.visible;
+
             if (!DataStore.i.debugConfig.isDebugMode.Get())
                 initialVisibility &= entity.isInsideSceneBoundaries;
 
@@ -199,10 +225,7 @@ namespace DCL.Components
         {
             if (!scene.componentsManagerLegacy.HasComponent(entity, CLASS_ID_COMPONENT.ANIMATOR) &&
                 entity.meshesInfo.animation != null)
-            {
-                Debug.Log($"{entity.meshesInfo.animation.gameObject.name} {entity.meshesInfo.animation.enabled} -> {enabled}");
                 entity.meshesInfo.animation.enabled = enabled;
-            }
         }
 
         protected virtual void ConfigureColliders(IDCLEntity entity)
@@ -224,8 +247,10 @@ namespace DCL.Components
         {
             if (loadWrapper == null)
                 return;
+
             if (loadWrapper.entity == null)
                 return;
+
             if (loadWrapper.entity.gameObject == null)
                 return;
 
@@ -283,14 +308,8 @@ namespace DCL.Components
 
         public override void CallWhenReady(Action<ISharedComponent> callback)
         {
-            if (attachedEntities.Count == 0 || isLoaded || failed)
-            {
-                callback.Invoke(this);
-            }
-            else
-            {
-                OnFinishCallbacks += callback;
-            }
+            if (attachedEntities.Count == 0 || isLoaded || failed) { callback.Invoke(this); }
+            else { OnFinishCallbacks += callback; }
         }
 
         private void RaiseOnShapeUpdated(IDCLEntity entity)
