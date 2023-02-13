@@ -86,6 +86,7 @@ export const DEBUG_DISABLE_LOADING = qs.has('DEBUG_DISABLE_LOADING')
 
 export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
+export const HARDCODED_CATALYST_LIST = true
 export const ENGINE_DEBUG_PANEL = location.search.includes('ENGINE_DEBUG_PANEL')
 export const SCENE_DEBUG_PANEL = location.search.includes('SCENE_DEBUG_PANEL') && !ENGINE_DEBUG_PANEL
 export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || location.search.includes('DEBUG_MODE')
