@@ -33,8 +33,8 @@ namespace DCL.Models
         public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
         public Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
-        public Action<bool> OnInsideBoundariesChanged { get; set; }
-        public Action<bool> OnOuterBoundariesChanged { get; set; }
+        public Action<IDCLEntity, bool> OnInsideBoundariesChanged { get; set; }
+        public Action<IDCLEntity, bool> OnOuterBoundariesChanged { get; set; }
 
         public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 
@@ -133,13 +133,13 @@ namespace DCL.Models
         public void UpdateInsideBoundariesStatus(bool isInsideBoundaries)
         {
             isInsideSceneBoundaries = isInsideBoundaries;
-            OnInsideBoundariesChanged?.Invoke(isInsideSceneBoundaries);
+            OnInsideBoundariesChanged?.Invoke(this, isInsideSceneBoundaries);
         }
 
         public void UpdateOuterBoundariesStatus(bool isInsideOuterBoundaries)
         {
             isInsideSceneOuterBoundaries = isInsideOuterBoundaries;
-            OnOuterBoundariesChanged?.Invoke(isInsideSceneOuterBoundaries);
+            OnOuterBoundariesChanged?.Invoke(this, isInsideSceneOuterBoundaries);
         }
     }
 }

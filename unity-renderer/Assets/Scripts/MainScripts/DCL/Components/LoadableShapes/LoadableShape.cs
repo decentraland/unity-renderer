@@ -248,8 +248,7 @@ namespace DCL.Components
             OnLoaded?.Invoke(this);
 
             entity.meshesInfo.meshRootGameObject = entity.meshRootGameObject;
-
-            entity.OnInsideBoundariesChanged += s => OnInsideBoundariesChanged(entity, s);
+            entity.OnInsideBoundariesChanged += OnInsideBoundariesChanged;
 
             ConfigureVisibility(entity);
             ConfigureColliders(entity);
@@ -274,7 +273,7 @@ namespace DCL.Components
 
             if (loadWrapper != null)
             {
-                entity.OnInsideBoundariesChanged -= s => OnInsideBoundariesChanged(entity, s);
+                entity.OnInsideBoundariesChanged -= OnInsideBoundariesChanged;
                 loadWrapper.Unload();
             }
 

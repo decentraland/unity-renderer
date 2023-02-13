@@ -32,8 +32,8 @@ namespace DCL.Models
 
         Action<object> OnNameChange { get; set; }
         Action<object> OnTransformChange { get; set; }
-        Action<bool> OnInsideBoundariesChanged { get; set; }
-        Action<bool> OnOuterBoundariesChanged { get; set; }
+        Action<IDCLEntity, bool> OnInsideBoundariesChanged { get; set; }
+        Action<IDCLEntity, bool> OnOuterBoundariesChanged { get; set; }
         long parentId { get; set; }
         IList<long> childrenId { get; }
 

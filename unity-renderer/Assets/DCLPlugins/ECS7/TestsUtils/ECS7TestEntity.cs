@@ -138,13 +138,13 @@ public class ECS7TestEntity : IDCLEntity
         set => throw new NotImplementedException();
     }
 
-    public Action<bool> OnOuterBoundariesChanged
+    public Action<IDCLEntity, bool> OnOuterBoundariesChanged
     {
         get => throw new NotImplementedException();
         set => throw new NotImplementedException();
     }
 
-    public Action<bool> OnInsideBoundariesChanged
+    public Action<IDCLEntity, bool> OnInsideBoundariesChanged
     {
         get => throw new NotImplementedException();
         set => throw new NotImplementedException();
