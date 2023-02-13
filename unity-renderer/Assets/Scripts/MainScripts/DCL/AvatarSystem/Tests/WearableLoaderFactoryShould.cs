@@ -1,8 +1,6 @@
 ﻿using System;
 using AvatarSystem;
 using DCL;
-using DCLServices.WearablesCatalogService;
-using NSubstitute;
 using NUnit.Framework;
 
 namespace Test.AvatarSystem
@@ -15,7 +13,6 @@ namespace Test.AvatarSystem
         public void SetUp()
         {
             ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            serviceLocator.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
             DCL.Environment.Setup(serviceLocator);
 
             wearableLoaderFactory = new WearableLoaderFactory();
