@@ -22,7 +22,6 @@ import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { globalObservable } from 'shared/observables'
 import { initialRemoteProfileLoad } from 'shared/profiles/sagas/initialRemoteProfileLoad'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -122,8 +121,7 @@ function* authenticate(action: AuthenticateAction) {
 
   // 1. authenticate our user
   yield put(userAuthenticated(identity, net, isGuest))
-  // 2. then ask for our profile when we selected a catalyst
-  yield call(waitForRealm)
+  // 2. then ask for our profile
   const avatar = yield call(initialRemoteProfileLoad)
 
   // 3. continue with signin/signup (only not in preview)
