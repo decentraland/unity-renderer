@@ -49,6 +49,7 @@ namespace DCL.EmotesWheel
         private readonly IWearablesCatalogService wearablesCatalogService;
         private bool ownedWearablesAlreadyRequested = false;
         private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
+        private CancellationTokenSource loadOwnedWearablesCTS = new CancellationTokenSource();
 
         public EmotesWheelController(
             UserProfile userProfile,
@@ -200,7 +201,10 @@ namespace DCL.EmotesWheel
                     !string.IsNullOrEmpty(userProfile.userId) &&
                     !ownedWearablesAlreadyRequested)
                 {
-                    RequestOwnedWearablesAsync(CancellationToken.None).Forget();
+                    loadOwnedWearablesCTS?.Cancel();
+                    loadOwnedWearablesCTS?.Dispose();
+                    loadOwnedWearablesCTS = new CancellationTokenSource();
+                    RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
                 }
             }
 
@@ -237,6 +241,10 @@ namespace DCL.EmotesWheel
             auxShortcut7InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
+
+            loadOwnedWearablesCTS?.Cancel();
+            loadOwnedWearablesCTS?.Dispose();
+            loadOwnedWearablesCTS = null;
 
             if (view != null)
             {
