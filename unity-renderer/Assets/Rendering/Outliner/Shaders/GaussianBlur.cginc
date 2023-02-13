@@ -3,7 +3,7 @@
 #define OUTLINER_PI 3.14159265
 
 //#define KERNEL_SIZE 35
-#define KERNEL_SIZE 127
+//#define KERNEL_SIZE 8
 //#define KERNEL_SIZE 7
 
 float gauss(float x, float sigma)
@@ -23,6 +23,8 @@ struct pixel_info
 	float4 texelSize;
 };
 
+int gaussianBlurKernelSize;
+
 float4 GaussianBlur(pixel_info pinfo, float sigma, float2 dir)
 {
 	float4 o = 0;
@@ -30,7 +32,7 @@ float4 GaussianBlur(pixel_info pinfo, float sigma, float2 dir)
 	float2 uvOffset;
 	float weight;
 	
-	for(int kernelStep = - KERNEL_SIZE / 2; kernelStep <= KERNEL_SIZE / 2; ++kernelStep)
+	for(int kernelStep = - gaussianBlurKernelSize / 2; kernelStep <= gaussianBlurKernelSize / 2; ++kernelStep)
 	{
 		uvOffset = pinfo.uv;
 		uvOffset.x += ((kernelStep) * pinfo.texelSize.x) * dir.x;
