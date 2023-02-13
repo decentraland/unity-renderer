@@ -54,8 +54,8 @@ namespace DCL.Emotes
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.clip, emote.maleAnimation);
                 Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
-                Assert.AreEqual(wearablesCatalogService.WearablesCatalog[emote.id], emote);
             }
+            wearablesCatalogService.Received(1).EmbedWearables(Arg.Any<WearableItem[]>());
         }
 
 
