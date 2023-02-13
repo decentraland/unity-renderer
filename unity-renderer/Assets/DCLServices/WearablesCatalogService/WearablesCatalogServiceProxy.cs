@@ -98,13 +98,19 @@ namespace DCLServices.WearablesCatalogService
 
         private void CheckFeatureFlag(FeatureFlag currentFeatureFlags, FeatureFlag _ = null)
         {
+            async UniTaskVoid SetServiceInUseDependingOnKernelConfig()
+            {
+                var currentKernelConfig = kernelConfig.EnsureConfigInitialized();
+                await currentKernelConfig;
+                SetServiceInUse(debugMode: currentKernelConfig.value.urlParamsForWearablesDebug);
+            }
+
             featureFlags.OnChange -= CheckFeatureFlag;
 
             if (currentFeatureFlags.IsFeatureEnabled(FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF))
                 SetServiceInUse(debugMode: true);
             else
-                kernelConfig.EnsureConfigInitialized().Then((currentKernelConfig) =>
-                    SetServiceInUse(debugMode: currentKernelConfig.urlParamsForWearablesDebug));
+                SetServiceInUseDependingOnKernelConfig().Forget();
         }
 
         private void SetServiceInUse(bool debugMode)
