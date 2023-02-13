@@ -5,6 +5,7 @@ using AvatarSystem;
 using DCL;
 using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

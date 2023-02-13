@@ -8,6 +8,7 @@ using DCL.Helpers;
 using DCL.Providers;
 using DCLServices.WearablesCatalogService;
 using GPUSkinning;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

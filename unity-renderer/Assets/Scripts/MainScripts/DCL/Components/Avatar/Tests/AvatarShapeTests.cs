@@ -8,6 +8,7 @@ using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 
 namespace Tests
 {

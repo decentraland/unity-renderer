@@ -2,6 +2,7 @@ using AvatarShape_Tests;
 using DCL;
 using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
