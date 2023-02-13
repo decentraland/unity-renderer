@@ -160,7 +160,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateFriendshipStatus"] = "Main";
         messageTypeToBridgeName["UpdateUserPresence"] = "Main";
         messageTypeToBridgeName["FriendNotFound"] = "Main";
-        messageTypeToBridgeName["AddMessageToChatWindow"] = "Bridges";
         messageTypeToBridgeName["UpdateMinimapSceneInformation"] = "Main";
         messageTypeToBridgeName["UpdateHotScenesList"] = "Main";
         messageTypeToBridgeName["SetRenderProfile"] = "Main";
@@ -185,22 +184,9 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["AddFriendsWithDirectMessages"] = "Main";
         messageTypeToBridgeName["AddFriends"] = "Main";
         messageTypeToBridgeName["AddFriendRequests"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Bridges";
         messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
         messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
-        messageTypeToBridgeName["InitializeChat"] = "Bridges";
-        messageTypeToBridgeName["AddChatMessages"] = "Bridges";
-        messageTypeToBridgeName["UpdateUserUnseenMessages"] = "Bridges";
-        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Bridges";
-        messageTypeToBridgeName["UpdateChannelInfo"] = "Bridges";
-        messageTypeToBridgeName["JoinChannelConfirmation"] = "Bridges";
-        messageTypeToBridgeName["JoinChannelError"] = "Bridges";
-        messageTypeToBridgeName["LeaveChannelError"] = "Bridges";
-        messageTypeToBridgeName["MuteChannelError"] = "Bridges";
-        messageTypeToBridgeName["UpdateTotalUnseenMessagesByChannel"] = "Bridges";
-        messageTypeToBridgeName["UpdateChannelMembers"] = "Bridges";
         messageTypeToBridgeName["UpdateHomeScene"] = "Main";
-        messageTypeToBridgeName["UpdateChannelSearchResults"] = "Bridges";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

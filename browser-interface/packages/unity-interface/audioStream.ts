@@ -1,4 +1,4 @@
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 
 /////////////////////////////////// AUDIO STREAMING ///////////////////////////////////
 

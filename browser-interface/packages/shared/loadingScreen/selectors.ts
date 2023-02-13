@@ -1,7 +1,7 @@
 ﻿import { RootState } from '../store/rootTypes'
 import { DEBUG_DISABLE_LOADING } from 'config'
-import { LoginState } from '@dcl/kernel-interface'
-import { getIsSignUp } from '../session/selectors'
+import { LoginState } from 'kernel-web-interface'
+import { isSignupInProgress } from '../session/selectors'
 import { RootRendererState } from '../renderer/types'
 
 /** @deprecated #3642 */
@@ -52,7 +52,7 @@ export function isRendererVisible(state: RootState) {
 
   // some login stages requires the renderer to be turned off
   const { loginState } = state.session
-  if (loginState === LoginState.WAITING_PROFILE && getIsSignUp(state)) {
+  if (loginState === LoginState.WAITING_PROFILE && isSignupInProgress(state)) {
     return true
   }
 

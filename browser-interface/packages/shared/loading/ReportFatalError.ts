@@ -10,7 +10,7 @@ import { action } from 'typesafe-actions'
 import { globalObservable } from '../observables'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 
 export function BringDownClientAndShowError(event: ExecutionLifecycleEvent | string) {
   if (ExecutionLifecycleEventsList.includes(event as any)) {

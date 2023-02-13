@@ -170,7 +170,7 @@ describe('when the island change: SET_COMMS_ISLAND', () => {
 })
 
 describe('when the profile updates successfully: SAVE_PROFILE_SUCCESS', () => {
-  it('should call allScene events with profileChanged using information from getCurrentUserProfile', () => {
+  it('should call allScene events with profileChanged using information from currentUserProfile', () => {
     const userId = 'user-id'
     const action = saveProfileDelta({ userId })
     const payload = {
