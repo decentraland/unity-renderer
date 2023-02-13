@@ -246,9 +246,9 @@ public class AvatarEditorHUDController : IHUD
         if (ownedWearablesAlreadyLoaded && IsWearableUpdateInCooldown())
             return;
 
-        loadEmotesCTS?.Cancel();
-        loadEmotesCTS?.Dispose();
-        loadEmotesCTS = new CancellationTokenSource();
+        loadOwnedWearablesCTS?.Cancel();
+        loadOwnedWearablesCTS?.Dispose();
+        loadOwnedWearablesCTS = new CancellationTokenSource();
         RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
     }
 
