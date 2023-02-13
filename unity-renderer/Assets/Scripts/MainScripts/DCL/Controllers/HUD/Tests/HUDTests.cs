@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using NUnit.Framework;
 using UnityEngine;
 using NSubstitute;
@@ -21,7 +22,7 @@ namespace Tests
             yield return base.SetUp();
 
             FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
-            hudController = new HUDController(new DataStore_FeatureFlag(), new HUDFactory());
+            hudController = new HUDController(Environment.i.serviceLocator.Get<IWearablesCatalogService>(), new DataStore_FeatureFlag(), new HUDFactory());
             hudController.Initialize();
             yield return null;
         }

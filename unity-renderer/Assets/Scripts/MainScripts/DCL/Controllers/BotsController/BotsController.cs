@@ -33,6 +33,12 @@ namespace DCL.Bots
         private List<string> bodyshapeWearableIds = new List<string>();
 
         private Coroutine movementRoutine = null;
+        private IWearablesCatalogService wearablesCatalogService;
+
+        public BotsController(IWearablesCatalogService wearablesCatalogService)
+        {
+            this.wearablesCatalogService = wearablesCatalogService;
+        }
 
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
@@ -44,7 +50,7 @@ namespace DCL.Bots
 
             globalScene = Environment.i.world.state.GetGlobalScenes().First();
 
-            Environment.i.serviceLocator.Get<IWearablesCatalogService>().WearablesCatalog.Clear();
+            wearablesCatalogService.WearablesCatalog.Clear();
 
             // We stopped using random collections by default because the wearables API changes frequently and is very inconsistent...
             if(randomCollections)
@@ -114,7 +120,7 @@ namespace DCL.Bots
                 }
             }
 
-            Environment.i.serviceLocator.Get<IWearablesCatalogService>().AddWearablesToCatalog(newWearables);
+            wearablesCatalogService.AddWearablesToCatalog(newWearables);
         }
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
