@@ -50,6 +50,11 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         sectionName.text = sectionNameText;
     }
 
+    public void SetSectionQuantity(int totalCount)
+    {
+        sectionName.text = $"{sectionName.text} ({totalCount})";
+    }
+
     public void SetVisible(bool isVisible)
     {
         gameObject.SetActive(isVisible);

@@ -8,5 +8,6 @@ public interface IViewAllComponentView
 
     void Initialize(int totalCollectiblesElements);
     void SetSectionName(string sectionNameText);
+    void SetSectionQuantity(int totalCount);
     void SetVisible(bool isVisible);
 }
