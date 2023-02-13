@@ -193,6 +193,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetCoords(model.coords);
         SetFavoriteButton();
 
+        //Temporary untill the release of the functionality
         if (!DataStore.i.HUDs.enableFavoritePlaces.Get())
         {
             if(favoriteButtonContainer != null)
