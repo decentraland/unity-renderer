@@ -42,34 +42,14 @@ namespace DCLServices.WearablesCatalogService
             GivenPaginatedCollectionInLambdas(TPW_COLLECTION_ID,
                 new List<WearableDefinition>
                 {
-                    new ()
-                    {
-                        amount = 1,
-                        definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"),
-                        urn = "tpw:urn",
-                    },
-                    new ()
-                    {
-                        amount = 1,
-                        definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null),
-                        urn = "tpw:urn",
-                    },
+                    new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"),},
+                    new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
                 });
 
             GivenPaginatedWearableInLambdas(new List<WearableDefinition>
             {
-                new ()
-                {
-                    amount = 1,
-                    definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail"),
-                    urn = "owned:urn",
-                },
-                new ()
-                {
-                    amount = 1,
-                    definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null),
-                    urn = "owned:urn",
-                },
+                new () { definition = GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") },
+                new () { definition = GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) },
             });
 
             initialCatalog = new BaseDictionary<string, WearableItem>();

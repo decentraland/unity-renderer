@@ -19,8 +19,6 @@ namespace DCLServices.WearablesCatalogService
     [Serializable]
     public class WearableDefinition
     {
-        public string urn;
-        public int amount;
         public WearableItem definition;
     }
 }
