@@ -41,6 +41,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         friendsController = Substitute.For<IFriendsController>();
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
+
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         var ownProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownProfile.UpdateData(new UserProfileModel { name = "myself", userId = "myUserId" });

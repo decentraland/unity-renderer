@@ -2,7 +2,7 @@ version: 2.1
 
 references:
   .working_directory: &working_directory /tmp/workspace/unity-renderer
-  #                                                     ~~~~~~~~~~~~~~~~ <- repo name
+  #                                                     ~~~~~~~~~~~~~~ <- repo name
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
@@ -19,8 +19,8 @@ references:
         BUILD_TARGET: StandaloneLinux64
         BUILD_NAME: unity-renderer-linux
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-linux/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_mac_image: &unity_mac_image
     - image: unityci/editor:ubuntu-2021.3.14f1-mac-mono-1.0.1
@@ -30,8 +30,8 @@ references:
         BUILD_TARGET: StandaloneOSX
         BUILD_NAME: unity-renderer-mac
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-mac/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_windows_image: &unity_windows_image
     - image: unityci/editor:ubuntu-2021.3.14f1-windows-mono-1.0.1
@@ -41,8 +41,8 @@ references:
         BUILD_TARGET: StandaloneWindows64
         BUILD_NAME: unity-renderer-windows
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity-renderer-windows/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_webgl_image: &unity_webgl_image
     - image: unityci/editor:2021.3.14f1-webgl-1
@@ -52,15 +52,15 @@ references:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
-        #                          ~~~~~~~~~~~~~~~~ <- repo name
-        #                                                  ~~~~~~~~~~~~~~~~~~ <- folder name
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                                ~~~~~ <- folder name
 
   .image_kernel: &image_kernel
     - image: cimg/node:16.18.1-browsers
       environment:
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity/
         #                          ~~~~~~~~~~~~~~ <- repo name
-        #                                         ~~~~~~~~~~~~~~ <- folder name
+        #                                                ~~~~~ <- folder name
 
   .cached_paths: &CACHED_PATHS
     - ./unity-renderer/test-results
@@ -78,6 +78,13 @@ references:
       branches:
         only: /(.*)/
 
+  .except_dev_and_main: &except_dev_and_main
+    filters:
+      branches:
+        ignore:
+          - dev
+          - main
+
   .only_dev_and_main: &only_dev_and_main
     filters:
       branches:
@@ -86,6 +93,7 @@ references:
           - main
           -  /^release\/.*/
           -  /^hotfix\/.*/
+          -  /^gh-readonly-queue\/main.*/
 
 commands:
   build-unity-generic:
@@ -97,14 +105,10 @@ commands:
             apt-get install -y zip jq gpg
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
-          command: |
-            # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -iname '*SentryOptions.asset*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-
-            # hash pipeline files
-            find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
-
-            cat ../.unitysources-checksum
+          command: ./scripts/hash-unity-files.sh
+      - store_artifacts:
+          path: /tmp/workspace/.unitysources-checksum
+          destination: unitysources-checksum.txt
       - run: &STORE_TARGET
           name: Save target to file
           command: |
@@ -174,6 +178,41 @@ commands:
           root: *working_directory
           paths:
             - Builds
+  publish-webgl-artifacts:
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Set up NPM access tokens
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+      - run:
+          working_directory: &node_workspace browser-interface
+          name: print files to publish
+          command: find static
+      - run:
+          working_directory: *node_workspace
+          name: npm run copy-built-files
+          command: npm run copy-built-files
+      - run:
+          working_directory: *node_workspace
+          name: Deploy artifacts
+          command: npm run publish-preview
+      - run:
+          working_directory: *node_workspace
+          name: npm run publish
+          command: npm run publish
+  publish-desktop-artifacts:
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Prepare image
+          command: |
+            sudo apt-get update
+            sudo apt-get -y -qq install awscli
+      - run:
+          name: Upload artifacts
+          command: |
+            ./ci-publish-preview-artifacts.sh
 
 
 jobs:
@@ -238,7 +277,7 @@ jobs:
       - <<: *attach_root
       - build-unity-generic
       - persist-unity-web
-  playmode-tests:
+  test-unity-playmode:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
@@ -246,11 +285,7 @@ jobs:
       - <<: *attach_root
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
-          command: |
-            # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -not -path '*node_modules*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-            # hash pipeline files
-            find ./ -type f \( -not -path '*node_modules*' \) \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
+          command: ./scripts/hash-unity-files.sh
       - run: *STORE_TARGET
       - restore_cache:
           name: Restore hashed files if they exist
@@ -305,25 +340,22 @@ jobs:
     docker:
       - image: cimg/base:2021.04
     steps:
-      - <<: *attach_root
-      - run:
-          name: Prepare image
-          command: |
-            sudo apt-get update
-            sudo apt-get -y -qq install awscli
-      - run:
-          name: Upload artifacts
-          command: |
-            ./ci-publish-preview-artifacts.sh
+      - publish-desktop-artifacts
 
-  test-js-interface:
+  publish-desktop-artifacts-release:
+    <<: *working_directory_root
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - publish-desktop-artifacts
+
+  test-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
-
     steps:
       - <<: *attach_root
       - run:
-          working_directory: &node_workspace browser-interface
+          working_directory: *node_workspace
           name: clean install
           command: |
             sudo apt-get install xvfb
@@ -333,7 +365,18 @@ jobs:
           name: test
           command: make test-ci
 
-  build-js-interface:
+  test-browser-file-size:
+    <<: *working_directory_root
+    docker: *image_kernel
+    resource_class: large
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: *node_workspace
+          name: Check file size
+          command: npm run check-file-size
+
+  build-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
 
@@ -347,10 +390,6 @@ jobs:
           working_directory: *node_workspace
           name: run build
           command: make build
-      - run:
-          working_directory: *node_workspace
-          name: Deploy artifacts
-          command: npm run publish-artifacts
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -358,24 +397,19 @@ jobs:
           paths:
             - *node_workspace
 
+  publish-webgl-artifacts-release:
+    <<: *working_directory_root
+    docker: *image_kernel
+
+    steps:
+      - publish-webgl-artifacts
+
   publish-webgl-artifacts:
     <<: *working_directory_root
     docker: *image_kernel
 
     steps:
-      - <<: *attach_root
-      - run:
-          name: Set up NPM access tokens
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          when: on_success
-      - run:
-          working_directory: *node_workspace
-          name: print files to publish
-          command: find static
-      - run:
-          working_directory: *node_workspace
-          name: npm run publish
-          command: npm run publish
+      - publish-webgl-artifacts
 
 workflows:
   version: 2
@@ -404,34 +438,57 @@ workflows:
           requires:
             - checkout
 
-      - playmode-tests:
+      - test-unity-playmode:
           <<: *all_branches
           requires:
             - checkout
 
-      - publish-desktop-artifacts:
-          <<: *all_branches
+      - publish-desktop-artifacts-release:
+          <<: *only_dev_and_main
           requires:
             - build-unity-for-linux
             - build-unity-for-windows
             - build-unity-for-mac
-            - build-js-interface
-            - playmode-tests
+            - build-browser-interface
+            - test-browser-interface
+            - test-browser-file-size
+            - test-unity-playmode
 
-      - build-js-interface:
+      - publish-desktop-artifacts:
+          <<: *except_dev_and_main
+          requires:
+            - build-unity-for-linux
+            - build-unity-for-windows
+            - build-unity-for-mac
+            - build-browser-interface
+
+      - build-browser-interface:
           <<: *all_branches
           requires:
-            - build-unity-for-webgl
+            - checkout
 
-      - test-js-interface:
+      - test-browser-interface:
           <<: *all_branches
           requires:
             - checkout
 
       - publish-webgl-artifacts:
+          <<: *except_dev_and_main
           requires:
             - build-unity-for-webgl
-            - build-js-interface
-            - test-js-interface
-            - playmode-tests
-            # - editmode-tests
+            - build-browser-interface
+
+      - publish-webgl-artifacts-release:
+          <<: *only_dev_and_main
+          requires:
+            - build-unity-for-webgl
+            - build-browser-interface
+            - test-browser-interface
+            - test-browser-file-size
+            - test-unity-playmode
+
+      - test-browser-file-size:
+          <<: *only_dev_and_main
+          requires:
+            - build-unity-for-webgl
+            - build-browser-interface

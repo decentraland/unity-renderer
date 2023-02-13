@@ -1,7 +1,6 @@
-import { Avatar } from '@dcl/schemas'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { ProfileType } from 'shared/profiles/types'
+import type { Avatar } from '@dcl/schemas'
+import { retrieveProfileFromCatalyst } from 'shared/profiles/retrieveProfile'
 
 export function ensureFriendProfile(userId: string): Promise<Avatar> {
-  return ProfileAsPromise(userId, undefined, ProfileType.DEPLOYED) // Friends are always deployed ATM
+  return retrieveProfileFromCatalyst(userId, undefined)
 }
