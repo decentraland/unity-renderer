@@ -43,7 +43,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void Initialize()
         {
-            if (featureFlags.Get().flags.Count == 0)
+            if (!featureFlags.Get().IsInitialized)
                 featureFlags.OnChange += CheckFeatureFlag;
             else
                 CheckFeatureFlag(featureFlags.Get());
