@@ -477,8 +477,7 @@ public class HUDController : IHUDController
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Retrying HUD {hudElements[id].GetType().Name} addressables async request...");
-                await CreateHudElement(config, id, cancellationToken);
+                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
             }
         }
     }
