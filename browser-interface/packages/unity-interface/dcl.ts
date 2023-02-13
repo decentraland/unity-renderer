@@ -58,16 +58,14 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
 
   await ensureMetaConfigurationInitialized()
 
-  let kernelConfig = kernelConfigForRenderer()
-  getUnityInstance().SetKernelConfiguration(kernelConfig)
+  getUnityInstance().SetKernelConfiguration(kernelConfigForRenderer())
 
   if (DEBUG) {
     getUnityInstance().SetDebug()
   }
 
   if (SCENE_DEBUG_PANEL) {
-    kernelConfig.debugConfig = { sceneDebugPanelEnabled: true } 
-    getUnityInstance().SetKernelConfiguration(kernelConfig)
+    getUnityInstance().SetKernelConfiguration({ debugConfig: { sceneDebugPanelEnabled: true } })
     getUnityInstance().ShowFPSPanel()
   }
 
