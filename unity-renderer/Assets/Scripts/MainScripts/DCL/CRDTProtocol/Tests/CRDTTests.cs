@@ -45,8 +45,8 @@ namespace Tests
         static bool AreStatesEqual(CRDTProtocol.CrdtState stateA, CRDTProtocol.CrdtState stateB, out string reason)
         {
             // different amount
-            int componentDataAmountA = stateA.components.Aggregate(0, (accum, current) => accum + current.Value.Count);
-            int componentDataAmountB = stateB.components.Aggregate(0, (accum, current) => accum + current.Value.Count);
+            int componentDataAmountA = stateA.singleComponents.Aggregate(0, (accum, current) => accum + current.Value.Count);
+            int componentDataAmountB = stateB.singleComponents.Aggregate(0, (accum, current) => accum + current.Value.Count);
 
             if (componentDataAmountA != componentDataAmountB)
             {
@@ -54,13 +54,13 @@ namespace Tests
                 return false;
             }
 
-            foreach (var componentA in stateA.components)
+            foreach (var componentA in stateA.singleComponents)
             {
                 // The component A is not in the state B
-                if (!stateB.components.TryGetValue(componentA.Key, out var componentB))
+                if (!stateB.singleComponents.TryGetValue(componentA.Key, out var componentB))
                 {
 
-                    if (stateB.components.Count == 0)
+                    if (stateB.singleComponents.Count == 0)
                     {
                         continue;
                     }

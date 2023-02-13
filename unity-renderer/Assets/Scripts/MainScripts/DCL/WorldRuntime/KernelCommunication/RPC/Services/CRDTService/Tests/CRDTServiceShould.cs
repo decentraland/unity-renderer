@@ -128,8 +128,8 @@ namespace Tests
                 CRDTProtocol sceneState1 = new CRDTProtocol();
                 CRDTProtocol sceneState2 = new CRDTProtocol();
 
-                CRDTMessage messageToScene1 = sceneState1.Create(1, 34, new byte[] { 1, 0, 2, 45, 67 });
-                CRDTMessage messageToScene2 = sceneState2.Create(45, 9, new byte[] { 42, 42, 42, 41 });
+                CRDTMessage messageToScene1 = sceneState1.CreateLwwMessage(1, 34, new byte[] { 1, 0, 2, 45, 67 });
+                CRDTMessage messageToScene2 = sceneState2.CreateLwwMessage(45, 9, new byte[] { 42, 42, 42, 41 });
 
                 sceneState1.ProcessMessage(messageToScene1);
                 sceneState2.ProcessMessage(messageToScene2);
