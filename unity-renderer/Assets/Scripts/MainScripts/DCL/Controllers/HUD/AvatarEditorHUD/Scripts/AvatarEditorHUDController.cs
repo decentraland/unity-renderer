@@ -10,7 +10,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -21,13 +20,13 @@ using Type = DCL.NotificationModel.Type;
 
 public class AvatarEditorHUDController : IHUD
 {
-    private const int LOADING_OWNED_WEARABLES_RETRIES = 3;
     private const string LOADING_OWNED_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
     private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
     private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
     private const string THIRD_PARTY_COLLECTIONS_FEATURE_FLAG = "third_party_collections";
+    private const int REQUESTS_COOLDOWN_TIME = 60;
     internal const string EQUIP_WEARABLE_METRIC = "equip_wearable";
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
@@ -57,8 +56,6 @@ public class AvatarEditorHUDController : IHUD
     private ColorList eyeColorList;
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
-    private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
-    private const int ownedWearableEmotesRequestRetryTime = 60;
     private bool ownedWearablesAlreadyLoaded = false;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
@@ -71,6 +68,7 @@ public class AvatarEditorHUDController : IHUD
     private List<string> thirdPartyWearablesLoaded = new List<string>();
     private List<string> thirdPartyCollectionsActive = new List<string>();
     private CancellationTokenSource loadEmotesCTS = new CancellationTokenSource();
+    private CancellationTokenSource loadOwnedWearablesCTS = new CancellationTokenSource();
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
@@ -219,30 +217,24 @@ public class AvatarEditorHUDController : IHUD
                 LoadUserProfile(userProfile, true);
                 if (userProfile != null && userProfile.avatar != null)
                     emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
-                loadingWearables = false;
             }
             catch (Exception e)
             {
-                ownedWearablesRemainingRequests--;
-                if (ownedWearablesRemainingRequests > 0)
-                {
-                    Debug.LogWarning("Retrying owned wereables loading...");
-                    LoadOwnedWereables(userProfile);
-                }
-                else
-                {
-                    LoadUserProfile(userProfile, true);
-                    NotificationsController.i.ShowNotification(new Model
-                    {
-                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = Type.GENERIC,
-                        timer = 10f,
-                        destroyOnFinish = true
-                    });
+                LoadUserProfile(userProfile, true);
 
-                    Debug.LogError(e.Message);
-                    loadingWearables = false;
-                }
+                NotificationsController.i.ShowNotification(new Model
+                {
+                    message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                    type = Type.GENERIC,
+                    timer = 10f,
+                    destroyOnFinish = true
+                });
+
+                Debug.LogError(e.Message);
+            }
+            finally
+            {
+                loadingWearables = false;
             }
         }
 
@@ -251,10 +243,13 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         // If wearables are loaded, we are in wearable cooldown, we dont fetch again owned wearables
-        if (AreWearablesAlreadyLoaded() && IsWearableUpdateInCooldown())
+        if (ownedWearablesAlreadyLoaded && IsWearableUpdateInCooldown())
             return;
 
-        RequestOwnedWearablesAsync(CancellationToken.None).Forget();
+        loadEmotesCTS?.Cancel();
+        loadEmotesCTS?.Dispose();
+        loadEmotesCTS = new CancellationTokenSource();
+        RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
     }
 
     private void LoadOwnedEmotes()
@@ -276,7 +271,7 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    private async UniTaskVoid LoadOwnedEmotesTask(CancellationToken ct = default, int retries = LOADING_OWNED_WEARABLES_RETRIES)
+    private async UniTaskVoid LoadOwnedEmotesTask(CancellationToken ct = default, int retries = 3)
     {
         var emotesCatalog = Environment.i.serviceLocator.Get<IEmotesCatalogService>();
         try
@@ -348,13 +343,6 @@ public class AvatarEditorHUDController : IHUD
         Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
            .Then((nfts) => ownedNftCollectionsL2 = nfts)
            .Catch((error) => Debug.LogError(error));
-    }
-
-    public void ReloadOwnedWearablesOnRefocus()
-    {
-        ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
-        LoadOwnedWereables(userProfile);
-        LoadOwnedEmotes();
     }
 
     private void PlayerRendererLoaded(bool current, bool previous)
@@ -864,6 +852,10 @@ public class AvatarEditorHUDController : IHUD
         loadEmotesCTS?.Dispose();
         loadEmotesCTS = null;
 
+        loadOwnedWearablesCTS?.Cancel();
+        loadOwnedWearablesCTS?.Dispose();
+        loadOwnedWearablesCTS = null;
+
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
@@ -1002,15 +994,15 @@ public class AvatarEditorHUDController : IHUD
         }
     }
 
-    public void ToggleThirdPartyCollection(bool isOn, string collectionId, string collectionName)
+    public void ToggleThirdPartyCollection(bool isOn, string collectionId, string _)
     {
         if (isOn)
-            FetchAndShowThirdPartyCollection(collectionId, collectionName);
+            FetchAndShowThirdPartyCollection(collectionId);
         else
             RemoveThirdPartyCollection(collectionId);
     }
 
-    private void FetchAndShowThirdPartyCollection(string collectionId, string collectionName)
+    private void FetchAndShowThirdPartyCollection(string collectionId)
     {
         async UniTaskVoid RequestThirdPartyWearablesAsync(CancellationToken ct)
         {
@@ -1024,8 +1016,7 @@ public class AvatarEditorHUDController : IHUD
                     true,
                     ct);
 
-                wearables = wearables.Where(x => x.ThirdPartyCollectionId == collectionId).ToArray();
-                if (wearables.Count().Equals(0)) view.ShowNoItemOfWearableCollectionWarning();
+                if (wearables.Count.Equals(0)) view.ShowNoItemOfWearableCollectionWarning();
                 thirdPartyCollectionsActive.Add(collectionId);
                 foreach (var wearable in wearables)
                 {
@@ -1180,22 +1171,17 @@ public class AvatarEditorHUDController : IHUD
 
     private bool IsWearableUpdateInCooldown()
     {
-        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + ownedWearableEmotesRequestRetryTime;
+        return Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + REQUESTS_COOLDOWN_TIME;
     }
 
     private bool IsEmotesUpdateInCooldown()
     {
-        return Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + ownedWearableEmotesRequestRetryTime;
-    }
-
-    private bool AreWearablesAlreadyLoaded()
-    {
-        return ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0;
+        return Time.realtimeSinceStartup < lastTimeOwnedEmotesChecked + REQUESTS_COOLDOWN_TIME;
     }
 
     private void OnApplicationFocus()
     {
-        lastTimeOwnedWearablesChecked = -ownedWearableEmotesRequestRetryTime;
-        lastTimeOwnedEmotesChecked = -ownedWearableEmotesRequestRetryTime;
+        lastTimeOwnedWearablesChecked = -REQUESTS_COOLDOWN_TIME;
+        lastTimeOwnedEmotesChecked = -REQUESTS_COOLDOWN_TIME;
     }
 }
