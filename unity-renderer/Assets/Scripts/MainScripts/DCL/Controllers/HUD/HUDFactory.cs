@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
-using static HUDAssetPath;
+using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 
 public class HUDFactory : IHUDFactory

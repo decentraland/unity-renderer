@@ -1,10 +1,11 @@
 using DCL.Emotes;
 using DCL.Providers;
 using DCL.Skybox;
+using MainScripts.DCL.Controllers.HUD;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -24,8 +25,10 @@ namespace DCL.Tests
 
             //Assert
             Assert.NotNull(asset);
+
             //We check that the 31 embedded emotes are present
             Assert.AreEqual(asset.emotes.Count(), 31);
+
             //We validate just the first emote, wave
             Assert.AreEqual(asset.emotes[0].id, "wave");
             Assert.NotNull(asset.emotes[0].femaleAnimation);
@@ -67,6 +70,15 @@ namespace DCL.Tests
             Assert.NotNull(skyboxPrefab);
             Assert.NotNull(materialReferenceContainer);
         }
+
+        [TestCaseSource(nameof(AllHUDAssets))]
+        public async Task CanLoadHUDAsset(string hudAssetAddress) =>
+            Assert.IsNotNull(await new AddressableResourceProvider().Instantiate<Transform>(hudAssetAddress));
+
+        private static IEnumerable<string> AllHUDAssets() =>
+            typeof(HUDAssetPath).GetFields(BindingFlags.Static | BindingFlags.Public)
+                                .Where(x => x.IsLiteral && !x.IsInitOnly)
+                                .Select(x => x.GetValue(null)).Cast<string>();
     }
 }
 
