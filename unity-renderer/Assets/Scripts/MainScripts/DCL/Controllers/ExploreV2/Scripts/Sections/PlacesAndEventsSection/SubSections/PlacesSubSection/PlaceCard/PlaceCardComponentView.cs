@@ -192,6 +192,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
         SetFavoriteButton();
+
+        if (!DataStore.i.HUDs.enableFavoritePlaces.Get())
+        {
+            if(favoriteButtonContainer != null)
+                favoriteButtonContainer.SetActive(false);
+        }
+
         RebuildCardLayouts();
     }
 
