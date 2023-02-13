@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Emotes;
+using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -246,9 +247,7 @@ public class AvatarEditorHUDController : IHUD
         if (ownedWearablesAlreadyLoaded && IsWearableUpdateInCooldown())
             return;
 
-        loadOwnedWearablesCTS?.Cancel();
-        loadOwnedWearablesCTS?.Dispose();
-        loadOwnedWearablesCTS = new CancellationTokenSource();
+        loadOwnedWearablesCTS = loadOwnedWearablesCTS.SafeRestart();
         RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
     }
 
@@ -260,13 +259,12 @@ public class AvatarEditorHUDController : IHUD
 
         lastTimeOwnedEmotesChecked = Time.realtimeSinceStartup;
         //TODO only request OwnedEmotes once every minute
-        loadEmotesCTS?.Cancel();
-        loadEmotesCTS?.Dispose();
-        loadEmotesCTS = null;
+
+        loadEmotesCTS.SafeCancelAndDispose();
         // we only follow this flow with new profiles
         if (userProfile?.avatar != null)
         {
-            loadEmotesCTS = new CancellationTokenSource();
+            loadEmotesCTS = loadEmotesCTS.SafeRestart();
             LoadOwnedEmotesTask(loadEmotesCTS.Token);
         }
     }
@@ -848,12 +846,10 @@ public class AvatarEditorHUDController : IHUD
 
     public void Dispose()
     {
-        loadEmotesCTS?.Cancel();
-        loadEmotesCTS?.Dispose();
+        loadEmotesCTS.SafeCancelAndDispose();
         loadEmotesCTS = null;
 
-        loadOwnedWearablesCTS?.Cancel();
-        loadOwnedWearablesCTS?.Dispose();
+        loadOwnedWearablesCTS.SafeCancelAndDispose();
         loadOwnedWearablesCTS = null;
 
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
