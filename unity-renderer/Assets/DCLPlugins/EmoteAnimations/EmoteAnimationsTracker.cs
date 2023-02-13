@@ -16,7 +16,6 @@ namespace DCL.Emotes
     {
         internal readonly DataStore_Emotes dataStore;
         internal readonly EmoteAnimationLoaderFactory emoteAnimationLoaderFactory;
-        internal readonly IWearableItemResolver wearableItemResolver;
         private readonly IEmotesCatalogService emotesCatalogService;
         private readonly IWearablesCatalogService wearablesCatalogService;
 
@@ -26,12 +25,9 @@ namespace DCL.Emotes
 
         internal GameObject animationsModelsContainer;
 
-
-        // Alex: While we are supporting the old Emotes flow, we need the wearableItemResolver
         public EmoteAnimationsTracker(
             DataStore_Emotes dataStore,
             EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
-            IWearableItemResolver wearableItemResolver,
             IEmotesCatalogService emotesCatalogService,
             IWearablesCatalogService wearablesCatalogService)
         {
@@ -39,7 +35,6 @@ namespace DCL.Emotes
             animationsModelsContainer.transform.position = EnvironmentSettings.MORDOR;
             this.dataStore = dataStore;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
-            this.wearableItemResolver = wearableItemResolver;
             this.emotesCatalogService = emotesCatalogService;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStore.animations.Clear();

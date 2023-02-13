@@ -1,4 +1,3 @@
-using AvatarSystem;
 using DCLServices.WearablesCatalogService;
 
 namespace DCL.Emotes
@@ -15,7 +14,6 @@ namespace DCL.Emotes
             emotesAnimationTracker = new EmoteAnimationsTracker(
                 DataStore.i.emotes,
                 new EmoteAnimationLoaderFactory(),
-                new WearableItemResolver(wearablesCatalogService),
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
                 wearablesCatalogService);
         }

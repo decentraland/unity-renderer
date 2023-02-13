@@ -32,7 +32,7 @@ namespace DCL.Emotes
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
             emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
 
-            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog, wearablesCatalogService);
+            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, emoteCatalog, wearablesCatalogService);
         }
 
         private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
