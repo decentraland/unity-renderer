@@ -24,11 +24,15 @@ export async function startLoopback(stream: MediaStream) {
   const offer = await rtcConnection.createOffer(offerOptions)
   await rtcConnection.setLocalDescription(offer)
 
-  await rtcLoopbackConnection.setRemoteDescription(offer)
+  if (rtcLoopbackConnection.signalingState !== 'stable') {
+    await rtcLoopbackConnection.setRemoteDescription(offer)
+  }
   const answer = await rtcLoopbackConnection.createAnswer()
   await rtcLoopbackConnection.setLocalDescription(answer)
 
-  await rtcConnection.setRemoteDescription(answer)
+  if (rtcConnection.signalingState !== 'stable') {
+    await rtcConnection.setRemoteDescription(answer)
+  }
 
   return loopbackStream
 }
