@@ -70,6 +70,7 @@ public class AvatarEditorHUDController : IHUD
     private List<string> thirdPartyCollectionsActive = new List<string>();
     private CancellationTokenSource loadEmotesCTS = new CancellationTokenSource();
     private CancellationTokenSource loadOwnedWearablesCTS = new CancellationTokenSource();
+    private CancellationTokenSource loadThirdPartyWearablesCTS = new CancellationTokenSource();
 
     internal IEmotesCustomizationComponentController emotesCustomizationComponentController;
 
@@ -852,6 +853,9 @@ public class AvatarEditorHUDController : IHUD
         loadOwnedWearablesCTS.SafeCancelAndDispose();
         loadOwnedWearablesCTS = null;
 
+        loadThirdPartyWearablesCTS.SafeCancelAndDispose();
+        loadThirdPartyWearablesCTS = null;
+
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
@@ -1037,7 +1041,7 @@ public class AvatarEditorHUDController : IHUD
         }
 
         view.BlockCollectionsDropdown(true);
-        RequestThirdPartyWearablesAsync(CancellationToken.None).Forget();
+        RequestThirdPartyWearablesAsync(loadThirdPartyWearablesCTS.Token).Forget();
     }
 
     private void RemoveThirdPartyCollection(string collectionId)
