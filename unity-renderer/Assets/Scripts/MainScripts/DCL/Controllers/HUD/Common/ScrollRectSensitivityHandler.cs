@@ -11,10 +11,10 @@ namespace DCL.HUD.Common
     [RequireComponent(typeof(ScrollRect))]
     public class ScrollRectSensitivityHandler : MonoBehaviour
     {
-        private const float WINDOWS_SENSITIVITY_MULTIPLIER = 15f;
-        private const float MAC_SENSITIVITY_MULTIPLIER = 4f;
-        private const float LINUX_SENSITIVITY_MULTIPLIER = 3f;
-        private const float DEFAULT_SENSITIVITY_MULTIPLIER = 3.5f;
+        private const float WINDOWS_SENSITIVITY_MULTIPLIER = 7.5f;
+        private const float MAC_SENSITIVITY_MULTIPLIER = 2f;
+        private const float LINUX_SENSITIVITY_MULTIPLIER = 1.5f;
+        private const float DEFAULT_SENSITIVITY_MULTIPLIER = 1.75f;
 
         private ScrollRect myScrollRect;
         private float defaultSens;
