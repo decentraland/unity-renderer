@@ -66,6 +66,8 @@ namespace DCL.CRDT
             StateElementAddedToSet = 8,
         };
 
+        private int MAX_ELEMENT_SET = 100;
+
         public class CrdtEntityComponentData
         {
             public long entityId;
@@ -389,6 +391,11 @@ namespace DCL.CRDT
                 {
                     index = ~index;
                     currentSetState.Insert(index, newState);
+
+                    if (currentSetState.Count > MAX_ELEMENT_SET)
+                    {
+                        currentSetState.RemoveRange(MAX_ELEMENT_SET, currentSetState.Count - MAX_ELEMENT_SET);
+                    }
                 }
                 else
                 {
