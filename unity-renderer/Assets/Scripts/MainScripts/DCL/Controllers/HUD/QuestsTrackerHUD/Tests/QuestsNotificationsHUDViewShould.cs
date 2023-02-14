@@ -2,6 +2,7 @@ using DCL;
 using DCL.Huds.QuestsTracker;
 using NUnit.Framework;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,7 +18,9 @@ namespace Tests.QuestsNotificationsHUD
             // Even though we set duration to 0, we have to wait a frame anyway for the yields to be performed.
             QuestsNotificationsController.DEFAULT_NOTIFICATION_DURATION = 0f;
             QuestsNotificationsController.NOTIFICATIONS_SEPARATION = 0f;
-            controller = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerHUD")).GetComponentInChildren<QuestsNotificationsController>();
+            controller = Object.Instantiate(
+                                    AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/QuestsTrackerHUD/Prefabs/QuestsTrackerHUD.prefab"))
+                               .GetComponentInChildren<QuestsNotificationsController>();
         }
 
         [Test]

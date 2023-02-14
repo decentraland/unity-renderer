@@ -1,4 +1,6 @@
-﻿namespace DCL
+﻿using DCL.Providers;
+
+namespace DCL
 {
     public static class ServiceLocatorDesktopFactory
     {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 
 namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
@@ -33,7 +34,8 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
         public static IWearablesCatalogService CreateTestCatalogLocal()
         {
             IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
-            List<WearableItemDummy> dummyWearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
+            List<WearableItemDummy> dummyWearables = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<WearableItemDummyListVariable>("Assets/Scripts/MainScripts/DCL/Models/AvatarAssets/Tests/Helpers/TestCatalogArrayLocalAssets.asset")).list;
             BaseDictionary<string, WearableItem> dummyCatalog = new ();
 
             foreach (var wearableItem in dummyWearables)

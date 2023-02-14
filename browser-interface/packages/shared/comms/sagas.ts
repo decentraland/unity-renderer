@@ -209,7 +209,7 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
     const candidates = yield select(getCatalystCandidates)
     for (const candidate of candidates) {
-      if (candidate.domain === realmAdapter!.baseUrl) {
+      if (candidate.domain === realmAdapter?.baseUrl) {
         candidate.lastConnectionAttempt = Date.now()
         break
       }

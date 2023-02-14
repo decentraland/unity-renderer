@@ -93,7 +93,7 @@ namespace DCL
             }, DataStore.i.featureFlags));
 
             // HUD
-            result.Register<IHUDFactory>(() => new HUDFactory());
+            result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
             result.Register<IHUDController>(() => new HUDController(result.Get<IWearablesCatalogService>(), DataStore.i.featureFlags));
 
             result.Register<IChannelsFeatureFlagService>(() =>
