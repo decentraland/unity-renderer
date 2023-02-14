@@ -58,7 +58,6 @@ public class AvatarMeshCombinerUtilsCan
         // Act
         AvatarMeshCombinerUtils.ResetBones(renderer.sharedMesh.bindposes, renderer.bones);
 
-
         // Assert
         var expectedBonePositions = new Vector3[]
         {
@@ -113,7 +112,7 @@ public class AvatarMeshCombinerUtilsCan
     public void ComputeBoneWeights()
     {
         // Arrange
-        var layers = new List<CombineLayer>();
+        using var layers = CombineLayersList.Rent();
         int counter = 0;
 
         SkinnedMeshRenderer CreateRendererWithWeights()
@@ -137,23 +136,16 @@ public class AvatarMeshCombinerUtilsCan
             return renderer;
         }
 
-        for ( int i = 0; i < 2; i++ )
+        for (int i = 0; i < 2; i++)
         {
-            layers.Add(
-                new CombineLayer()
-                {
-                    renderers = new List<SkinnedMeshRenderer>()
-                    {
-                        CreateRendererWithWeights(),
-                        CreateRendererWithWeights(),
-                    }
-                }
-            );
+            var cl = CombineLayer.Rent();
+            cl.AddRenderer(CreateRendererWithWeights());
+            cl.AddRenderer(CreateRendererWithWeights());
+            layers.Add(cl);
         }
 
         // Act
-        var weights = AvatarMeshCombinerUtils.CombineBonesWeights(layers);
-        var bonesPerVertex = AvatarMeshCombinerUtils.CombineBonesPerVertex(layers);
+        var (bonesPerVertex, weights) = AvatarMeshCombinerUtils.CombineBones(layers);
 
         // Assert
         Assert.That(weights.Length, Is.EqualTo(96));
@@ -172,9 +164,11 @@ public class AvatarMeshCombinerUtilsCan
 
         Assert.That(assertCounter, Is.EqualTo(counter));
 
-        layers.SelectMany( (x) => x.renderers ).ToList().ForEach(
-            DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload
-        );
+        layers.Layers.SelectMany((x) => x.Renderers)
+              .ToList()
+              .ForEach(
+                   DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload
+               );
 
         weights.Dispose();
         bonesPerVertex.Dispose();
@@ -184,15 +178,14 @@ public class AvatarMeshCombinerUtilsCan
     public void FlattenMaterialsWithOpaques()
     {
         // Arrange
-        // TODO(Brian): Construct layers manually
         Material material = DCL.Helpers.Material.CreateOpaque();
-        var layers = GetMockedLayers(isOpaque: true);
+        using var layers = GetMockedLayers(isOpaque: true);
 
         // Act
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(layers.TotalVerticesCount, 24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -216,9 +209,9 @@ public class AvatarMeshCombinerUtilsCan
 
         // Materials count is 2 because FlattenMaterials doesn't combine layers.
         // Layer combining is CombineLayerUtils.Slice responsibility.
-        Assert.That( result.materials.Count, Is.EqualTo(2) );
-        Assert.That( CombineLayerUtils.IsOpaque(result.materials[0]), Is.True );
-        Assert.That( CombineLayerUtils.IsOpaque(result.materials[1]), Is.True );
+        Assert.That(result.materials.Count, Is.EqualTo(2));
+        Assert.That(SliceByRenderState.IsOpaque(result.materials[0]), Is.True);
+        Assert.That(SliceByRenderState.IsOpaque(result.materials[1]), Is.True);
     }
 
     [Test]
@@ -233,7 +226,7 @@ public class AvatarMeshCombinerUtilsCan
         FlattenedMaterialsData result = AvatarMeshCombinerUtils.FlattenMaterials(layers, material);
 
         // Assert
-        FlattenedMaterialsData expected = new FlattenedMaterialsData(24);
+        FlattenedMaterialsData expected = new FlattenedMaterialsData(layers.TotalVerticesCount, 24);
 
         var colors = new List<Vector4>();
         var texturePointers = new List<Vector3>();
@@ -257,26 +250,25 @@ public class AvatarMeshCombinerUtilsCan
 
         // Materials count is 2 because FlattenMaterials doesn't combine layers.
         // Layer combining is CombineLayerUtils.Slice responsibility.
-        Assert.That( result.materials.Count, Is.EqualTo(2) );
-        Assert.That( CombineLayerUtils.IsOpaque(result.materials[0]), Is.False );
-        Assert.That( CombineLayerUtils.IsOpaque(result.materials[1]), Is.False );
+        Assert.That(result.materials.Count, Is.EqualTo(2));
+        Assert.That(SliceByRenderState.IsOpaque(result.materials[0]), Is.False);
+        Assert.That(SliceByRenderState.IsOpaque(result.materials[1]), Is.False);
     }
 
     [Test]
     public void ComputeSubMeshes()
     {
         // Arrange
-        var layers = new List<CombineLayer>();
-        layers.Add( new CombineLayer() );
-        layers.Add( new CombineLayer() );
+        using var layers = CombineLayersList.Rent();
+        layers.Add(CombineLayer.Rent());
+        layers.Add(CombineLayer.Rent());
 
         Material tmpMat = DCL.Helpers.Material.Create();
 
-        layers[0].renderers.Add(DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
-        layers[0].renderers.Add(DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
-
-        layers[1].renderers.Add(DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
-        layers[1].renderers.Add(DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
+        layers.AddRenderer(layers[0], DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
+        layers.AddRenderer(layers[0], DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
+        layers.AddRenderer(layers[1], DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
+        layers.AddRenderer(layers[1], DCL.Helpers.SkinnedMeshRenderer.Create(tmpMat));
 
         // Act
         var result = AvatarMeshCombinerUtils.ComputeSubMeshes(layers);
@@ -293,24 +285,11 @@ public class AvatarMeshCombinerUtilsCan
         Assert.That(result[1].vertexCount, Is.EqualTo(48));
     }
 
-    public void ComputeCombineInstancesData()
+    private CombineLayersList GetMockedLayers(bool isOpaque = true)
     {
-        // Arrange
-        var layers = new List<CombineLayer>();
-
-        // Act
-        AvatarMeshCombinerUtils.ComputeCombineInstancesData(layers);
-
-        // Assert
-        Assert.That(true, Is.False);
-    }
-
-    private List<CombineLayer> GetMockedLayers(bool isOpaque = true)
-    {
-        var layers = new List<CombineLayer>();
-        layers.Add(new CombineLayer());
-        layers.Add(new CombineLayer());
-
+        var layers = CombineLayersList.Rent();
+        layers.Add(CombineLayer.Rent());
+        layers.Add(CombineLayer.Rent());
 
         // Material 1 setup
         //
@@ -318,13 +297,13 @@ public class AvatarMeshCombinerUtilsCan
         var albedo1 = Texture2D.grayTexture;
         var emission1 = Texture2D.redTexture;
 
-        if ( isOpaque )
+        if (isOpaque)
             material1 = DCL.Helpers.Material.CreateOpaque(CullMode.Back, albedo1, emission1);
         else
             material1 = DCL.Helpers.Material.CreateTransparent(CullMode.Back, albedo1, emission1);
 
-        material1.SetColor( ShaderUtils.BaseColor, Color.blue);
-        material1.SetColor( ShaderUtils.EmissionColor, Color.yellow);
+        material1.SetColor(ShaderUtils.BaseColor, Color.blue);
+        material1.SetColor(ShaderUtils.EmissionColor, Color.yellow);
 
         // Material 2 setup
         //
@@ -332,31 +311,27 @@ public class AvatarMeshCombinerUtilsCan
         var albedo2 = Texture2D.grayTexture;
         var emission2 = Texture2D.redTexture;
 
-        if ( isOpaque )
+        if (isOpaque)
             material2 = DCL.Helpers.Material.CreateOpaque(CullMode.Back, albedo2, emission2);
         else
             material2 = DCL.Helpers.Material.CreateTransparent(CullMode.Back, albedo2, emission2);
 
-        material2.SetColor( ShaderUtils.BaseColor, Color.red);
-        material2.SetColor( ShaderUtils.EmissionColor, Color.white);
+        material2.SetColor(ShaderUtils.BaseColor, Color.red);
+        material2.SetColor(ShaderUtils.EmissionColor, Color.white);
 
         // Layer setup
         //
-        layers[0].renderers = new List<SkinnedMeshRenderer>() { DCL.Helpers.SkinnedMeshRenderer.Create(material1) };
-        layers[0].textureToId = new Dictionary<Texture2D, int>()
-        {
-            { albedo1, 6 },
-            { emission1, 11 }
-        };
+        layers.AddRenderer(layers[0], DCL.Helpers.SkinnedMeshRenderer.Create(material1));
+        layers[0].textureToId.Add(albedo1, 6);
+        layers[0].textureToId.Add(emission1, 11);
+
         layers[0].cullMode = CullMode.Back;
         layers[0].isOpaque = isOpaque;
 
-        layers[1].renderers = new List<SkinnedMeshRenderer>() { DCL.Helpers.SkinnedMeshRenderer.Create(material2) };
-        layers[1].textureToId = new Dictionary<Texture2D, int>()
-        {
-            { albedo2, 4 },
-            { emission2, 10 }
-        };
+        layers.AddRenderer(layers[1], DCL.Helpers.SkinnedMeshRenderer.Create(material2));
+
+        layers[1].textureToId.Add(albedo2, 4);
+        layers[1].textureToId.Add(emission2, 10);
         layers[1].cullMode = CullMode.Back;
         layers[1].isOpaque = isOpaque;
 
