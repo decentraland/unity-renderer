@@ -1,26 +1,25 @@
 import { fork } from 'redux-saga/effects'
-import { atlasSaga } from '../atlas/sagas'
-import { loadingSaga } from '../loading/sagas'
-import { profileSaga } from '../profiles/sagas'
-import { rendererSaga } from '../renderer/sagas'
+import { atlasSaga } from 'shared/atlas/sagas'
+import { loadingSaga } from 'shared/loading/sagas'
+import { profileSaga } from 'shared/profiles/sagas'
+import { rendererSaga } from 'shared/renderer/sagas'
 import { metricSaga } from './metricSaga'
-import { daoSaga } from '../dao/sagas'
-import { metaSaga } from '../meta/sagas'
-import { chatSaga } from '../chat/sagas'
-import { sessionSaga } from '../session/sagas'
-import { friendsSaga } from '../friends/sagas'
-import { commsSaga } from '../comms/sagas'
-import { voiceChatSaga } from '../voiceChat/sagas'
-import { socialSaga } from '../social/sagas'
-import { catalogsSaga } from '../catalogs/sagas'
-import { questsSaga } from '../quests/sagas'
-import { portableExperienceSaga } from '../portableExperiences/sagas'
-import { wearablesPortableExperienceSaga } from '../wearablesPortableExperience/sagas'
-import { sceneEventsSaga } from '../sceneEvents/sagas'
-import { sceneLoaderSaga } from '../scene-loader/sagas'
-import { worldSagas } from '../world/sagas'
+import { daoSaga } from 'shared/dao/sagas'
+import { metaSaga } from 'shared/meta/sagas'
+import { chatSaga } from 'shared/chat/sagas'
+import { sessionSaga } from 'shared/session/sagas'
+import { friendsSaga } from 'shared/friends/sagas'
+import { commsSaga } from 'shared/comms/sagas'
+import { voiceChatSaga } from 'shared/voiceChat/sagas'
+import { socialSaga } from 'shared/social/sagas'
+import { catalogsSaga } from 'shared/catalogs/sagas'
+import { questsSaga } from 'shared/quests/sagas'
+import { portableExperienceSaga } from 'shared/portableExperiences/sagas'
+import { wearablesPortableExperienceSaga } from 'shared/wearablesPortableExperience/sagas'
+import { sceneEventsSaga } from 'shared/sceneEvents/sagas'
+import { sceneLoaderSaga } from 'shared/scene-loader/sagas'
+import { worldSagas } from 'shared/world/sagas'
 import { bffSaga } from 'shared/realm/sagas'
-import { loadingScreenSaga } from '../loadingScreen/sagas'
 
 export function createRootSaga() {
   return function* rootSaga() {
@@ -37,7 +36,6 @@ export function createRootSaga() {
     yield fork(daoSaga)
     yield fork(metricSaga)
     yield fork(loadingSaga)
-    yield fork(loadingScreenSaga)
     yield fork(socialSaga)
     yield fork(questsSaga)
     yield fork(rendererSaga)

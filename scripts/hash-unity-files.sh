@@ -7,6 +7,7 @@ find ./unity-renderer -type f \
     \( -not -path '*Library*' \) \
     \( -not -path '*browser-interface*' \) \
     \( -not -path '*node_modules*' \) \
+    \( -not -path '*Sentry/SentryOptions.asset' \) \
     \( -iname \*.unity \
     -o -iname \*.sh \
     -o -iname \*.cs \

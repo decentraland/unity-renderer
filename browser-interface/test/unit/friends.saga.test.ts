@@ -11,12 +11,12 @@ import {
   FriendshipAction
 } from 'shared/types'
 import sinon, { assert } from 'sinon'
-import * as friendsSagas from '../../packages/shared/friends/sagas'
+import * as friendsSagas from 'shared/friends/sagas'
 import { setMatrixClient } from 'shared/friends/actions'
 import * as friendsSelectors from 'shared/friends/selectors'
 import { ProfileState, ProfileUserInfo } from 'shared/profiles/types'
-import { getUnityInstance, setUnityInstance } from '../../packages/unity-interface/IUnityInterface'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { FriendRequest, FriendsState } from 'shared/friends/types'
 import {
   Conversation,
@@ -27,7 +27,7 @@ import {
   SocialAPI,
   TextMessage
 } from 'dcl-social-client'
-import { AddUserProfilesToCatalogPayload } from 'shared/profiles/transformations/types'
+import { AddUserProfilesToCatalogPayload } from 'lib/decentraland/profiles/transformations/types'
 import { expectSaga } from 'redux-saga-test-plan'
 import { select } from 'redux-saga/effects'
 import { getRealmConnectionString } from 'shared/realm/selectors'

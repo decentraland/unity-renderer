@@ -1,10 +1,10 @@
-import { ILogger } from './../../logger'
-import { EntityAction, LoadableScene } from './../../types'
-import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { EventData } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
-import { RpcClientPort } from '@dcl/rpc'
-import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
-import { RpcClientModule } from '@dcl/rpc/dist/codegen'
+import type { ILogger } from 'lib/logger'
+import type { EntityAction, LoadableScene } from 'shared/types'
+import type { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import type { EventData } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
+import type { RpcClientPort } from '@dcl/rpc'
+import type { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
+import type { RpcClientModule } from '@dcl/rpc/dist/codegen'
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 

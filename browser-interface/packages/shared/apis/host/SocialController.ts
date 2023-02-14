@@ -1,12 +1,12 @@
-import { RpcServerPort } from '@dcl/rpc'
-import { PortContext } from './context'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
+import type { PortContext } from './context'
 
-import {
+import type {
   GetAvatarEventsResponse,
-  SocialControllerServiceDefinition,
   SocialEvent
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/social_controller.gen'
+import { SocialControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/social_controller.gen'
 import { avatarMessageObservable } from 'shared/comms/peers'
 
 export function registerSocialControllerServiceServerImplementation(port: RpcServerPort<PortContext>) {
