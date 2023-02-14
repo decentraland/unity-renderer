@@ -26,7 +26,6 @@ import { startPreview } from './startPreview'
 
 export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']) {
   const renderer = await getRendererInterface()
-
   /**
    * MetaConfiguration is the combination of three main aspects of the environment in which we are running:
    * - which Ethereum network are we connected to

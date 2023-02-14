@@ -1,9 +1,7 @@
-import type { PersistentAsyncStorage } from 'kernel-web-interface'
-
 declare let window: any
 
-class PersistentLocalStorage implements PersistentAsyncStorage {
-  storage: any
+class PersistentLocalStorage {
+  private storage: any
   constructor(storage: any) {
     if (storage) {
       this.storage = storage
@@ -37,12 +35,12 @@ class PersistentLocalStorage implements PersistentAsyncStorage {
   }
 }
 
-let persistentStorage: PersistentAsyncStorage | null = null
+let persistentStorage: PersistentLocalStorage | null = null
 if (window && window.localStorage) {
   persistentStorage = new PersistentLocalStorage(window.localStorage)
 }
 
-export function setPersistentStorage(storage: PersistentAsyncStorage) {
+export function setPersistentStorage(storage: PersistentLocalStorage) {
   persistentStorage = storage
 }
 
