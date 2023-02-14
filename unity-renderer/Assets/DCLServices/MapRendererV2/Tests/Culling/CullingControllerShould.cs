@@ -199,7 +199,7 @@ namespace DCLServices.MapRendererV2.Tests.Culling
         }
 
         [Test]
-        public void ResolveDirtyCameras_MultiplCameraDirty()
+        public void ResolveDirtyCameras_MultipleCameraDirty()
         {
             // Arrange
             culling.DirtyCamerasFlag = 0b00000110; // Camera 1 and Camera 2 are dirty
@@ -262,8 +262,10 @@ namespace DCLServices.MapRendererV2.Tests.Culling
             var obj1 = AddTrackedObjectAndSetDirtyCamerasFlag(0b00000110); // Dirty for Camera 1 and Camera 2
             var obj2 = AddTrackedObjectAndSetDirtyCamerasFlag(0b00000101); // Dirty for Camera 0 and Camera 2
 
+            // Act
             culling.ResolveDirtyObjects_Test(2); //obj2 should not be checked
 
+            // Assert
             // Object 0
             visibilityChecker.Received().IsVisible(obj0, culling.Cameras[0]);
             visibilityChecker.Received().IsVisible(obj0, culling.Cameras[1]);
