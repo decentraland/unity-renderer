@@ -25,13 +25,18 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
         SetScrollRectSensitivity();
     }
 
-    private void SetScrollRectSensitivity() 
+    private void SetScrollRectSensitivity()
     {
         myScrollRect.scrollSensitivity = defaultSens * GetScrollMultiplier();
     }
 
-    private float GetScrollMultiplier() {
-        switch (GetCurrentOperatingSystem())
+    private float GetScrollMultiplier()
+    {
+        OperatingSystemFamily currentOperatingSystem = GetCurrentOperatingSystem();
+
+        Debug.Log($"ScrollRectSens.GetCurrentOperatingSystem: {currentOperatingSystem}");
+
+        switch (currentOperatingSystem)
         {
             case OperatingSystemFamily.Windows:
                 return WINDOWS_SENSITIVITY_MULTIPLIER;
