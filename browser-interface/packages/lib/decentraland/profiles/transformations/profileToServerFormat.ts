@@ -1,11 +1,11 @@
 import type { Avatar, AvatarInfo, Profile } from '@dcl/schemas'
+import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
 import type { AvatarForUserData } from 'lib/decentraland/profiles/sceneRuntime'
 import defaultLogger from 'lib/logger'
 import { trackEvent } from 'shared/analytics'
-import { generateRandomUserProfile } from 'lib/decentraland/profiles/generateRandomUserProfile'
+import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { analizeColorPart, stripAlpha } from './analizeColorPart'
 import { isValidBodyShape } from './isValidBodyShape'
-import { validateAvatar } from 'shared/profiles/schemaValidation'
 
 type OldAvatar = Omit<Avatar, 'avatar'> & {
   avatar: AvatarForUserData

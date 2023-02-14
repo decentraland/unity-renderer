@@ -4,7 +4,7 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
-import { resolveUrlFromUrn } from '@dcl/urn-resolver'
+import { resolveBaseUrl } from 'lib/decentraland/url/resolveBaseUrl'
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
 import { getFromPersistentStorage, setPersistentStorage } from 'lib/browser/persistentStorage'
@@ -27,17 +27,6 @@ import { initializeUnity } from 'unity-interface/initializer'
 import 'unity-interface/trace'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
-
-async function resolveBaseUrl(urn: string): Promise<string> {
-  if (urn.startsWith('urn:')) {
-    const t = await resolveUrlFromUrn(urn)
-    if (t) {
-      return (t + '/').replace(/(\/)+$/, '/')
-    }
-    throw new Error('Cannot resolve content for URN ' + urn)
-  }
-  return (urn + '/').replace(/(\/)+$/, '/')
-}
 
 function orFail(withError: string): never {
   throw new Error(withError)
@@ -83,7 +72,7 @@ globalThis.DecentralandKernel = {
     )
 
     if (options.kernelOptions.persistentStorage) {
-      setPersistentStorage(options.kernelOptions.persistentStorage)
+      setPersistentStorage(options.kernelOptions.persistentStorage as any)
     }
 
     const { container } = options.rendererOptions
