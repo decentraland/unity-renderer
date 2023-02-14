@@ -29,7 +29,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
   
   const urlParamsForWearablesDebug =
-    !!((WITH_FIXED_ITEMS && COLLECTIONS_OR_ITEMS_ALLOWED) || (WITH_FIXED_COLLECTIONS && COLLECTIONS_OR_ITEMS_ALLOWED))
+    !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
 
   console.log('[KERNEL CONFIG LOG] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug) // temporal log (for debugging purposes)
 
