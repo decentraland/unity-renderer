@@ -1045,7 +1045,8 @@ public class AvatarEditorHUDController : IHUD
         var wearablesToRemove = wearablesCatalogService.WearablesCatalog
                                                        .Where(wearable => !userProfile.HasEquipped(wearable.Key)
                                                                           && wearable.Value.ThirdPartyCollectionId == collectionId)
-                                                       .Select(item => item.Key);
+                                                       .Select(item => item.Key)
+                                                       .ToList();
 
         thirdPartyCollectionsActive.Remove(collectionId);
 
