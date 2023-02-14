@@ -283,7 +283,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (friendsGrid != null)
             friendsGrid.Dispose();
 
-        favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
+        if(favoriteButton != null)
+            favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
     }
 
     public void SetPlacePicture(Sprite sprite)
