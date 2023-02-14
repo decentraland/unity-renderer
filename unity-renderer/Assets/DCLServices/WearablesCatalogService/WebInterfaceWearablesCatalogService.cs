@@ -203,10 +203,13 @@ namespace DCLServices.WearablesCatalogService
         public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
         {
             foreach (string wearableId in wearableIds)
-            {
-                WearablesCatalog.Remove(wearableId);
-                wearablesInUseCounters.Remove(wearableId);
-            }
+                RemoveWearableFromCatalog(wearableId);
+        }
+
+        public void RemoveWearableFromCatalog(string wearableId)
+        {
+            WearablesCatalog.Remove(wearableId);
+            wearablesInUseCounters.Remove(wearableId);
         }
 
         public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)

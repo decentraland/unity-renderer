@@ -1042,16 +1042,16 @@ public class AvatarEditorHUDController : IHUD
 
     private void RemoveThirdPartyCollection(string collectionId)
     {
-        var wearablesToRemove = wearablesCatalogService.WearablesCatalog.GetValues()
-                                                       .Where(wearable => !userProfile.HasEquipped(wearable.id)
-                                                                          && wearable.ThirdPartyCollectionId == collectionId)
-                                                       .Select(item => item.id)
-                                                       .ToList();
-        wearablesCatalogService.RemoveWearablesFromCatalog(wearablesToRemove);
+        var wearablesToRemove = wearablesCatalogService.WearablesCatalog
+                                                       .Where(wearable => !userProfile.HasEquipped(wearable.Key)
+                                                                          && wearable.Value.ThirdPartyCollectionId == collectionId)
+                                                       .Select(item => item.Key);
+
         thirdPartyCollectionsActive.Remove(collectionId);
 
         foreach (string wearableId in wearablesToRemove)
         {
+            wearablesCatalogService.RemoveWearableFromCatalog(wearableId);
             userProfile.RemoveFromInventory(wearableId);
             thirdPartyWearablesLoaded.Remove(wearableId);
         }
