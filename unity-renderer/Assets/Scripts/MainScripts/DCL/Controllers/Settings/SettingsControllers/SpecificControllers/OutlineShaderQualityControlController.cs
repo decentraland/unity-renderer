@@ -8,7 +8,11 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Outline Shader Quality", fileName = "OutlineShaderQualityControlController")]
     public class OutlineShaderQualityControlController : SpinBoxSettingsControlController
     {
-        private static readonly int GAUSSIAN_BLUR_KERNEL_SIZE = Shader.PropertyToID("gaussianBlurKernelSize");
+        [SerializeField] private FloatVariable blurSize;
+        [SerializeField] private FloatVariable blurSigma;
+        [SerializeField] private FloatVariable outlineThickness;
+
+        private static readonly int GAUSSIAN_BLUR_KERNEL_SIZE = Shader.PropertyToID("gaussianBlurQuality");
 
         public override object GetStoredValue() =>
             (int)currentQualitySetting.outlineShaderQuality;
@@ -20,13 +24,22 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
             switch (currentQualitySetting.outlineShaderQuality)
             {
                 case OutlineShaderQuality.LOW:
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 8);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 0);
+                    blurSize.Set(2);
+                    blurSigma.Set(7);
+                    outlineThickness.Set(1.5f);
                     break;
                 case OutlineShaderQuality.MID:
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 32);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 1);
+                    blurSize.Set(1.5f);
+                    blurSigma.Set(6);
+                    outlineThickness.Set(1f);
                     break;
                 case OutlineShaderQuality.HIGH:
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 64);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 2);
+                    blurSize.Set(1);
+                    blurSigma.Set(5);
+                    outlineThickness.Set(0.5f);
                     break;
                 default: throw new ArgumentOutOfRangeException();
             }

@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9912b829be49079552a71f8e99eb54, type: 3}
   m_Name: OutlineShaderQualityControlController
   m_EditorClassIdentifier: 
+  blurSize: {fileID: 11400000, guid: 71984a406e9d00c4eb55991db791d8d2, type: 2}
+  blurSigma: {fileID: 11400000, guid: 15aeca967a14da64882661d82afedba4, type: 2}
+  outlineThickness: {fileID: 11400000, guid: 3b2a0097ac4974c4dbd22fdfcbd5cfeb, type: 2}

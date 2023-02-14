@@ -87,5 +87,6 @@ namespace DCL.SettingsCommon
         public ReflectionResolution reflectionResolution;
 
         [Tooltip("Outline Shader Quality")] public OutlineShaderQuality outlineShaderQuality;
+        [Tooltip("Outline Shader Resolution")] public OutlineShaderQuality outlineShaderResolution;
     }
 }
