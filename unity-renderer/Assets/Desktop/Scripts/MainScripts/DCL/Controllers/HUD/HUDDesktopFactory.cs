@@ -1,12 +1,16 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers.HUD;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
+using System.Threading;
 
 public class HUDDesktopFactory : HUDFactory
 {
-    public override IHUD CreateHUD(HUDElementID hudElementId)
+    private const string LOADING_HUD_ADDRESS = "LoadingHUDDesktop";
+
+    public override async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
     {
         IHUD hudElement = null;
 
@@ -26,11 +30,14 @@ public class HUDDesktopFactory : HUDFactory
             case HUDElementID.MINIMAP:
                 hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
                 break;
+
             case HUDElementID.LOADING:
-                hudElement = new LoadingHUDControllerDesktop();
-                break;
+                var loadingHUDView = await CreateHUDView<LoadingHUDView>(LOADING_HUD_ADDRESS, cancellationToken);
+                loadingHUDView.Initialize();
+                return new LoadingHUDController(loadingHUDView);
+
             default:
-                hudElement = base.CreateHUD(hudElementId);
+                hudElement = await base.CreateHUD(hudElementId, cancellationToken);
                 break;
         }
 
