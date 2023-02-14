@@ -101,6 +101,8 @@ namespace RPC.Services
                     baseUrl = request.BaseUrl,
                     sceneNumber = sceneNumber,
                     isPortableExperience = request.IsPortableExperience,
+                    requiredPermissions = parsedMetadata.requiredPermissions,
+                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
                     icon = string.Empty // TODO: add icon url!
                 };
 
@@ -117,7 +119,9 @@ namespace RPC.Services
                     baseUrlBundles = request.BaseUrlAssetBundles,
                     basePosition = Utils.StringToVector2Int(parsedMetadata.scene.@base),
                     parcels = parsedParcels,
-                    contents = parsedContent
+                    contents = parsedContent,
+                    requiredPermissions = parsedMetadata.requiredPermissions,
+                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames
                 };
 
                 context.crdt.SceneController.LoadUnityParcelScene(unityParcelScene);
