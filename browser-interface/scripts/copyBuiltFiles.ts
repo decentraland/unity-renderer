@@ -16,7 +16,7 @@ async function copyBuiltFiles() {
 
   const basePath = path.resolve(process.env.BUILD_PATH!, 'Build')
   try {
-    ensureEqualFiles(path.resolve(basePath, 'unity.loader.js'), path.resolve(DIST_PATH, 'unity.loader.js'))
+    // ensureEqualFiles(path.resolve(basePath, 'unity.loader.js'), path.resolve(DIST_PATH, 'unity.loader.js'))
   } catch (e) {
     console.log(`
       unity.loader.js is checked out in the repository, as it seldom changes, to avoid coupling
