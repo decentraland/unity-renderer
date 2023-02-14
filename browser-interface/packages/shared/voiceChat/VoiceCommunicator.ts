@@ -341,9 +341,12 @@ export class VoiceCommunicator {
 
       answer.sdp = write(answerSdp)
 
-      await dst.setLocalDescription(answer)
-
-      await src.setRemoteDescription(answer)
+      if (dst.signalingState !== 'stable') {
+        await dst.setLocalDescription(answer)
+      }
+      if (src.signalingState !== 'stable') {
+        await src.setRemoteDescription(answer)
+      }
     })().catch((e) => {
       defaultLogger.error('Error creating loopback connection', e)
       src.close()
