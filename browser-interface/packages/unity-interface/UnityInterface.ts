@@ -1,5 +1,4 @@
 import { Vector3 } from '@dcl/ecs-math'
-import lodash from 'lodash'
 import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
 import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
 import {
@@ -266,7 +265,7 @@ export class UnityInterface implements IUnityInterface {
       this.SendMessageToUnity('Main', 'AddWearablesToCatalog', JSON.stringify({ wearables, context }))
     } else {
       //First, we remove the duplicate wearables entries.
-      wearables = lodash.uniqBy(wearables, 'id')
+      wearables = uniqBy(wearables, 'id')
 
       //Then, we map to a string array to find the limit of wearables we can add
       function stringifyWearable(num) {
@@ -741,3 +740,7 @@ export class UnityInterface implements IUnityInterface {
 }
 
 setUnityInstance(new UnityInterface())
+
+function uniqBy(arr: any[], key: string) {
+  return Array.from(new Map(arr.map(item => [item[key], item])).values())
+}
