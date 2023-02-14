@@ -1,6 +1,7 @@
 using System;
 using DCL.SettingsCommon;
 using DCL.Components;
+using DCL.Providers;
 using MainScripts.DCL.Controllers.HUD.Preloading;
 using MainScripts.DCL.Controllers.LoadingFlow;
 using MainScripts.DCL.Controllers.SettingsDesktop;
@@ -35,6 +36,9 @@ namespace DCL
             InitializeSettings();
 
             base.Awake();
+
+            preloadingController = new PreloadingController(Environment.i.serviceLocator.Get<IAddressableResourceProvider>());
+
             DataStore.i.wsCommunication.communicationEstablished.OnChange += OnCommunicationEstablished;
             DataStore.i.performance.multithreading.Set(true);
             DataStore.i.performance.maxDownloads.Set(50);
@@ -144,12 +148,6 @@ namespace DCL
                 SettingsDesktop.i.displaySettings.Apply(newDisplaySettings);
                 SettingsDesktop.i.displaySettings.Save();
             }
-        }
-
-        protected override void InitializeSceneDependencies()
-        {
-            base.InitializeSceneDependencies();
-            preloadingController = new PreloadingController();
         }
 
         protected override void SetupServices()

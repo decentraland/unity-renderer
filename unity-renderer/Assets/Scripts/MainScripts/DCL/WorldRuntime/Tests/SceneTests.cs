@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
 using RPC.Context;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -170,7 +171,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadScene()
     {
-        sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
         yield return new WaitForAllMessagesProcessed();
 
         string loadedSceneID = "0,0";
@@ -183,7 +184,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator UnloadScene()
     {
-        sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+        sceneController.LoadParcelScenes(AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -220,7 +221,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator LoadManyParcelsFromJSON()
     {
-        string severalParcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
+        string severalParcelsJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/TestSceneSeveralParcels.json").text;
 
         //Not really elegant, but does the trick
         var jsonScenes = JsonConvert
@@ -470,7 +471,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ReloadedSceneShouldBeCleanedProperly()
     {
         const int loadedSceneNumber = 666;
-        string sceneJson = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+        string sceneJson = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/MainScripts/DCL/WorldRuntime/Tests/TestJSON/SceneLoadingTest.json").text;
         sceneController.LoadParcelScenes(sceneJson);
         yield return new WaitForAllMessagesProcessed();
 
