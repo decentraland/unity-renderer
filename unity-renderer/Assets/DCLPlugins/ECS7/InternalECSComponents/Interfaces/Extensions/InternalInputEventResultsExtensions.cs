@@ -17,7 +17,6 @@ namespace DCL.ECS7.InternalComponents
                             events = new Queue<InternalInputEventResults.EventData>()
                         };
 
-            data.timestamp = model.lastTimestamp++;
             model.events.Enqueue(data);
 
             component.PutFor(scene, entityId, model);

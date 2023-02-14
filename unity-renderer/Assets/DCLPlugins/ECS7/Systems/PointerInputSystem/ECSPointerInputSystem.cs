@@ -22,6 +22,7 @@ namespace ECSSystems.PointerInputSystem
             public IWorldState worldState;
             public IECSInteractionHoverCanvas interactionHoverCanvas;
             public bool[] inputActionState;
+            public int lastTimestamp = 0;
         }
 
         private class EntityInput
@@ -255,7 +256,8 @@ namespace ECSSystems.PointerInputSystem
                 button = buttonId,
                 hit = ProtoConvertUtils.ToPBRaycasHit(entityId, null,
                     ray, raycastHit.distance, raycastHit.point, raycastHit.normal, entityId != -1),
-                type = pointerEventType
+                type = pointerEventType,
+                timestamp = state.lastTimestamp++
             });
         }
 
