@@ -126,8 +126,10 @@ globalThis.DecentralandKernel = {
       // Initializes the Session Saga
       store.dispatch(initSession())
 
-      await initializeUnity(options.rendererOptions)
-      await loadWebsiteSystems(options.kernelOptions)
+      await Promise.all([
+        initializeUnity(options.rendererOptions),
+        loadWebsiteSystems(options.kernelOptions)
+      ])
     }
 
     setTimeout(
