@@ -109,16 +109,16 @@ function* authenticate(action: AuthenticateAction) {
     }
   }
 
+  // set the etherum network to start loading profiles
+  const net: ETHEREUM_NETWORK = yield call(getAppNetwork)
+  yield put(selectNetwork(net))
+  registerProviderNetChanges()
+
   yield put(changeLoginState(LoginState.WAITING_RENDERER))
 
   yield call(waitForRendererInstance)
 
   yield put(changeLoginState(LoginState.WAITING_PROFILE))
-
-  // set the etherum network to start loading profiles
-  const net: ETHEREUM_NETWORK = yield call(getAppNetwork)
-  yield put(selectNetwork(net))
-  registerProviderNetChanges()
 
   // 1. authenticate our user
   yield put(userAuthenticated(identity, net, isGuest))
