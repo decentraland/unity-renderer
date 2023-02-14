@@ -3,9 +3,10 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// Scene utils file for media related stuff
-/// </summary>
+/*
+* Scene utils file for media related stuff
+*/
+
 public static partial class UtilsScene
 {
     // We are currently accepting all scene's required permissions.
