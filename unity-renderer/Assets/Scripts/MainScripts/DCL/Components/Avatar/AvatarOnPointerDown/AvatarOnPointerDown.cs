@@ -11,19 +11,20 @@ namespace DCL.Components
     public class AvatarOnPointerDown : MonoBehaviour, IAvatarOnPointerDown, IPoolLifecycleHandler,
         IAvatarOnPointerDownCollider, IUnlockedCursorInputEvent
     {
-        public new Collider collider;
         private OnPointerEvent.Model model;
         private OnPointerEventHandler eventHandler;
+        private bool isHovering;
+        private bool passportEnabled = true;
+        private bool onClickReportEnabled = true;
+        private Player avatarPlayer;
 
         public IDCLEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
         public event System.Action OnPointerEnterReport;
         public event System.Action OnPointerExitReport;
-        private bool isHovering = false;
 
-        private bool passportEnabled = true;
-        private bool onClickReportEnabled = true;
-        private Player avatarPlayer;
+        public bool ShouldBeInteractableWhenMouseIsLocked { get; set; } = true;
+        public new Collider collider;
 
         public WebInterface.ACTION_BUTTON GetActionButton() =>
             model.GetActionButton();
@@ -83,8 +84,12 @@ namespace DCL.Components
             }
         }
 
-        public bool IsAtHoverDistance(float distance) =>
-            !Utils.IsCursorLocked || distance <= model.distance;
+        public bool IsAtHoverDistance(float distance)
+        {
+            bool isCursorLocked = Utils.IsCursorLocked;
+            if (!ShouldBeInteractableWhenMouseIsLocked && isCursorLocked) return false;
+            return !isCursorLocked || distance <= model.distance;
+        }
 
         public bool IsVisible() =>
             true;
@@ -94,8 +99,8 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled)
-                return;
+            if (!enabled) return;
+            if (!ShouldBeInteractableWhenMouseIsLocked && !isHovering) return;
 
             if (passportEnabled && ShouldReportPassportInputEvent(buttonId, hit))
             {

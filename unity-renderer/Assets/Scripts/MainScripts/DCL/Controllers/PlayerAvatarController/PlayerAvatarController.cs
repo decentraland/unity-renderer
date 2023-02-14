@@ -273,7 +273,10 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 player
             );
 
+            onPointerDown.ShouldBeInteractableWhenMouseIsLocked = false;
+
             outlineOnHover.Initialize(new OnPointerEvent.Model(), null, avatar);
+            outlineOnHover.ShouldBeHoveredWhenMouseIsLocked = false;
 
             bool isClickingOwnAvatarEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("click_own_avatar_passport");
             onPointerDown.enabled = isClickingOwnAvatarEnabled;

@@ -14,12 +14,13 @@ namespace DCL.Components
     public class AvatarOutlineOnHoverEvent : MonoBehaviour, IUnlockedCursorInputEvent, IPoolLifecycleHandler
     {
         private IAvatar avatar;
-
+        private OnPointerEvent.Model model;
         private bool isHovered;
+
+        public bool ShouldBeHoveredWhenMouseIsLocked { get; set; } = true;
 
         public event Action OnPointerEnterReport;
         public event Action OnPointerExitReport;
-        private OnPointerEvent.Model model;
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
@@ -59,8 +60,12 @@ namespace DCL.Components
             }
         }
 
-        public bool IsAtHoverDistance(float distance) =>
-            !Utils.IsCursorLocked || distance <= model.distance;
+        public bool IsAtHoverDistance(float distance)
+        {
+            bool isCursorLocked = Utils.IsCursorLocked;
+            if (!ShouldBeHoveredWhenMouseIsLocked && isCursorLocked) return false;
+            return !isCursorLocked || distance <= model.distance;
+        }
 
         public bool IsVisible() =>
             true;
