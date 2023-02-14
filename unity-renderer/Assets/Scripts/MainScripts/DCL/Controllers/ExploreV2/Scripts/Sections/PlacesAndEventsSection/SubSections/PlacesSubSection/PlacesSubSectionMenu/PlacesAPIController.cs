@@ -17,18 +17,6 @@ public interface IPlacesAPIController
     /// </summary>
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
     void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted);
-
-    /// <summary>
-    /// Add a place to favorites
-    /// </summary>
-    /// <param name="placeUUID">UUID to identify the place.</param>
-    void AddFavorite(string placeUUID);
-
-    /// <summary>
-    /// Remove a place from favorites
-    /// </summary>
-    /// <param name="placeUUID">UUID to identify the place.</param>
-    void RemoveFavorite(string placeUUID);
 }
 
 [ExcludeFromCodeCoverage]
@@ -50,16 +38,6 @@ public class PlacesAPIController : IPlacesAPIController
     public void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted)
     {
         OnCompleted?.Invoke(new List<HotSceneInfo>());
-    }
-
-    public void AddFavorite(string placeUUID)
-    {
-        //TODO: wire the request once kernel part is ready
-    }
-
-    public void RemoveFavorite(string placeUUID)
-    {
-        //TODO: wire the request once kernel part is ready
     }
 
     private void OnFetchHotScenes()

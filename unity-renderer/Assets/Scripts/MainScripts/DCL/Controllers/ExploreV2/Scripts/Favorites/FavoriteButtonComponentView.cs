@@ -38,27 +38,13 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
     private void SetFavorite()
     {
         isFavorite = !isFavorite;
-        if (isFavorite)
-        {
-            SetFavoriteVisuals();
-        }
-        else
-        {
-            SetNoFavoriteVisuals();
-        }
+        SetButtonVisuals(isFavorite);
 
         OnFavoriteChange?.Invoke(placeUUID, isFavorite);
     }
 
-    private void SetNoFavoriteVisuals()
-    {
-        buttonFill.color = noFavoriteFillColor;
-    }
-
-    private void SetFavoriteVisuals()
-    {
-        buttonFill.color = favoriteFillColor;
-    }
+    private void SetButtonVisuals(bool isFavorite) =>
+        buttonFill.color = isFavorite ? favoriteFillColor : noFavoriteFillColor;
 
     public void Configure(FavoriteButtonComponentModel newModel)
     {

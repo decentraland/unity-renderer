@@ -130,7 +130,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public event Action<string, bool> onFavoriteClick;
 
-
     private bool thumbnailFromMarketPlaceRequested;
     public event Action<string, bool> OnFavoritePlaceChange;
 
@@ -214,7 +213,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             placeUUID = ""
         });
 
-        favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
     }
 
@@ -284,6 +282,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (friendsGrid != null)
             friendsGrid.Dispose();
+
+        favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
     }
 
     public void SetPlacePicture(Sprite sprite)
