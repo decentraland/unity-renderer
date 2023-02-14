@@ -17,7 +17,7 @@ import {
 } from './actions'
 import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded } from './types'
 import { getCurrentUserId } from 'shared/session/selectors'
-import { LoginState } from '@dcl/kernel-interface'
+import { LoginState } from 'kernel-web-interface'
 import { call } from 'redux-saga-test-plan/matchers'
 import { RootState } from 'shared/store/rootTypes'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'

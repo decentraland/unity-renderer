@@ -1,5 +1,5 @@
 import { store } from 'shared/store/isolatedStore'
-import { commsLogger } from './context'
+import { commsLogger } from './logger'
 import { getCommsRoom } from './selectors'
 
 export function sendPublicChatMessage(message: string) {

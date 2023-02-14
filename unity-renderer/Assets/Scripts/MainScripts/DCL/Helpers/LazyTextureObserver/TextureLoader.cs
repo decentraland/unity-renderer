@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.Helpers
 {
     internal class TextureLoader : ITextureLoader
     {
+        private const bool VERBOSE = false;
+        
         private AssetPromise_Texture currentPromise;
         public event Action<Texture2D> OnSuccess;
         public event Action<Exception> OnFail;
@@ -29,7 +31,8 @@ namespace DCL.Helpers
             currentPromise.OnFailEvent += (x, e) =>
             {
                 OnFail?.Invoke(e);
-                Debug.LogError($"Texture loading failed! {uri} {e.Message}");
+                if (VERBOSE)
+                    Debug.Log($"Texture loading failed! {uri} {e.Message}");
             };
 
             AssetPromiseKeeper_Texture.i.Keep(currentPromise);

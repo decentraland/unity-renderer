@@ -34,7 +34,7 @@ import {
   SCENE_START
 } from 'shared/loading/actions'
 import { EntityAction, LoadableScene } from 'shared/types'
-import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'shared/logger'
+import defaultLogger, { createDummyLogger, createLogger, ILogger } from 'lib/logger'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'

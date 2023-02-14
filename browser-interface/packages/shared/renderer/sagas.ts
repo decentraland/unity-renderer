@@ -8,12 +8,12 @@ import { RendererModules, RENDERER_INITIALIZE } from './types'
 import { trackEvent } from 'shared/analytics'
 import {
   SendProfileToRenderer,
-  SEND_PROFILE_TO_RENDERER,
+  SEND_PROFILE_TO_RENDERER_REQUEST,
   sendProfileToRenderer,
   addProfileToLastSentProfileVersionAndCatalog
 } from 'shared/profiles/actions'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { isCurrentUserId, getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -21,17 +21,14 @@ import { SignUpSetIsSignUp, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
 import { isFeatureToggleEnabled } from 'shared/selectors'
 import { CurrentRealmInfoForRenderer, NotificationType, VOICE_CHAT_FEATURE_TOGGLE } from 'shared/types'
 import { ProfileUserInfo } from 'shared/profiles/types'
-import {
-  getFetchContentServerFromRealmAdapter,
-  getFetchContentUrlPrefixFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
+import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getExploreRealmsService } from 'shared/dao/selectors'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { receivePeerUserData } from 'shared/comms/peers'
 import { deepEqual } from 'lib/javascript/deepEqual'
 import { waitForRendererInstance } from './sagas-helper'
-import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import {
   SetVoiceChatErrorAction,
   SET_VOICE_CHAT_ERROR,
@@ -56,7 +53,7 @@ import { createRpcTransportService } from 'renderer-protocol/services/transportS
 import { registerFriendRequestRendererService } from 'renderer-protocol/services/friendRequestService'
 
 export function* rendererSaga() {
-  yield takeEvery(SEND_PROFILE_TO_RENDERER, handleSubmitProfileToRenderer)
+  yield takeEvery(SEND_PROFILE_TO_RENDERER_REQUEST, handleSubmitProfileToRenderer)
   yield takeLatest(SIGNUP_SET_IS_SIGNUP, sendSignUpToRenderer)
   yield takeEvery(VOICE_PLAYING_UPDATE, updateUserVoicePlayingRenderer)
   yield takeEvery(VOICE_RECORDING_UPDATE, updatePlayerVoiceRecordingRenderer)
@@ -99,10 +96,10 @@ function* reportRealmChangeToRenderer() {
   yield call(waitForRendererInstance)
 
   while (true) {
-    const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+    const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
     try {
-      const configuredContentServer: string = yield call(getFetchContentServerFromRealmAdapter, realmAdapter)
+      const configuredContentServer: string = getFetchContentServerFromRealmAdapter(realmAdapter)
       const contentServerUrl: string = yield select(getAllowedContentServer, configuredContentServer)
       const current = convertCurrentRealmType(realmAdapter, contentServerUrl)
       defaultLogger.info('UpdateRealmsInfo', current)
@@ -272,7 +269,7 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
     return
   }
 
-  const bff: IRealmAdapter = yield call(waitForRealmAdapter)
+  const bff: IRealmAdapter = yield call(waitForRealm)
   const fetchContentServerWithPrefix = yield call(getFetchContentUrlPrefixFromRealmAdapter, bff)
 
   if (yield select(isCurrentUserId, userId)) {

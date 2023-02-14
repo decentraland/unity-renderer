@@ -1,15 +1,12 @@
 import { exec } from 'child_process'
-import { mkdir, readFile, stat } from 'fs/promises'
-import path, { resolve } from 'path'
-import * as zlib from 'zlib'
-import * as glob from 'glob'
-import { copyFile, ensureEqualFiles, ensureFileExists } from './utils'
+import { readFile } from 'fs/promises'
+import { resolve } from 'path'
 import { fetch, FormData } from 'undici'
+import { ensureFileExists } from './utils'
 
 const DIST_ROOT = resolve(__dirname, '../static')
 
 async function main() {
-  await copyBuiltFiles()
   await checkFiles()
 
   if (!process.env.GITLAB_PIPELINE_URL) {
@@ -45,8 +42,7 @@ async function main() {
     // inform cdn-pipeline about new version
     await triggerPipeline(name, version, tag)
   }
-
-  await checkFileSizes()
+  console.log(`Publish complete!`)
 }
 
 async function checkFiles() {
@@ -60,61 +56,6 @@ async function checkFiles() {
   ensureFileExists(DIST_ROOT, 'unity.framework.js')
   ensureFileExists(DIST_ROOT, 'index.html')
   ensureFileExists(DIST_ROOT, 'preview.html')
-}
-
-const DIST_PATH = path.resolve(__dirname, '../static')
-// This function copies the built files from unity into the target folder
-async function copyBuiltFiles() {
-  await mkdir(DIST_PATH, { recursive: true })
-
-  const basePath = path.resolve(process.env.BUILD_PATH!, 'Build')
-  try {
-    ensureEqualFiles(path.resolve(basePath, 'unity.loader.js'), path.resolve(DIST_PATH, 'unity.loader.js'))
-  } catch (e) {
-    console.log(`
-      unity.loader.js is checked out in the repository, as it seldom changes, to avoid coupling
-      the build step of 'browser-interface' with 'unity-renderer'. If the file changes, make sure
-      to update the version stored on \`static/unity.loader.js\` (this is frequently the case when
-      updating the unity version).
-   `)
-    throw e
-  }
-
-  for (const file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
-    copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + '/', './')))
-  }
-
-  const streamingPath = path.resolve(process.env.BUILD_PATH!, 'StreamingAssets')
-  const streamingDistPath = path.resolve(DIST_PATH, 'StreamingAssets')
-
-  for (const file of glob.sync('**/*', { cwd: streamingPath, absolute: true })) {
-    copyFile(file, path.resolve(streamingDistPath, file.replace(streamingPath + '/', './')))
-  }
-}
-
-async function checkFileSizes() {
-  const MAX_FILE_SIZE = 42_000_000 // rougly 42mb https://www.notion.so/Cache-unity-data-br-on-explore-4382b0cb78184973af415943f708cba1
-  for (let file of glob.sync('**/*', { cwd: DIST_ROOT, absolute: true })) {
-    const stats = await stat(file)
-    if (stats.size > MAX_FILE_SIZE) {
-      console.error(
-        `Warning, the file ${file} exceeds the maximum cacheable file (uncompressed) size: ${(
-          stats.size /
-          1024 /
-          1024
-        ).toFixed(2)}MB`
-      )
-      const buffer = zlib.brotliCompressSync(await readFile(file))
-      if (buffer.byteLength > MAX_FILE_SIZE) {
-        console.error(
-          `The file ${file} exceeds the maximum cacheable file size: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`
-        )
-        process.exitCode = 1
-      } else {
-        console.log(`The file ${file} has a compressed file size of: ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`)
-      }
-    }
-  }
 }
 
 async function getPackageJson(workingDirectory: string) {

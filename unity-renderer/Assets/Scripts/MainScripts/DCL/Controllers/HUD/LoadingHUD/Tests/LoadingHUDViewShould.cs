@@ -1,5 +1,6 @@
 using LoadingHUD;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Tests.LoadingHUD
@@ -9,10 +10,12 @@ namespace Tests.LoadingHUD
         private LoadingHUDView hudView;
 
         [SetUp]
-        public void SetUp() 
-        { 
-            hudView = Object.Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>(); 
-            hudView.Initialize(); 
+        public void SetUp()
+        {
+            hudView = Object.Instantiate(
+                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/LoadingHUD/Prefabs/LoadingHUD.prefab"))
+                            .GetComponent<LoadingHUDView>();
+            hudView.Initialize();
         }
 
         [Test]

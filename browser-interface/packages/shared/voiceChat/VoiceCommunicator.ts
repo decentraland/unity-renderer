@@ -1,6 +1,6 @@
 import { VoiceChatCodecWorkerMain, EncodeStream } from 'voice-chat-codec/VoiceChatCodecWorkerMain'
 import { SortedLimitedQueue } from 'lib/data-structures/SortedLimitedQueue'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { VOICE_CHAT_SAMPLE_RATE, OPUS_FRAME_SIZE_MS } from 'voice-chat-codec/constants'
 import { parse, write } from 'sdp-transform'
 import { InputWorkletRequestTopic, OutputWorkletRequestTopic } from 'voice-chat-codec/types'
@@ -341,9 +341,12 @@ export class VoiceCommunicator {
 
       answer.sdp = write(answerSdp)
 
-      await dst.setLocalDescription(answer)
-
-      await src.setRemoteDescription(answer)
+      if (dst.signalingState !== 'stable') {
+        await dst.setLocalDescription(answer)
+      }
+      if (src.signalingState !== 'stable') {
+        await src.setRemoteDescription(answer)
+      }
     })().catch((e) => {
       defaultLogger.error('Error creating loopback connection', e)
       src.close()

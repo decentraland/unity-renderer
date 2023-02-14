@@ -13,7 +13,7 @@ import {
 } from 'config'
 
 import { authorizeBuilderHeaders } from 'lib/decentraland/authentication/authorizeBuilderHeaders'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import {
   EmotesRequest,
   emotesFailure,
@@ -53,13 +53,10 @@ import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { ExplorerIdentity } from 'shared/session/types'
 import { trackEvent } from 'shared/analytics'
 import { IRealmAdapter } from 'shared/realm/types'
-import {
-  getFetchContentServerFromRealmAdapter,
-  getFetchContentUrlPrefixFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
+import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/LambdasAPI'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 
 export const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
 export const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
@@ -87,7 +84,7 @@ export function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
   const isRequestingEmotes = action.type === EMOTES_REQUEST
   const failureAction = isRequestingEmotes ? emotesFailure : wearablesFailure
   if (valid) {
-    const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+    const realmAdapter: IRealmAdapter = yield call(waitForRealm)
     const contentBaseUrl: string = yield call(getFetchContentUrlPrefixFromRealmAdapter, realmAdapter)
 
     try {
@@ -118,8 +115,8 @@ function* fetchItemsFromCatalyst(
   action: EmotesRequest | WearablesRequest,
   filters: EmotesRequestFilters | WearablesRequestFilters
 ) {
-  const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
-  const contentBaseUrl: string = yield call(getFetchContentServerFromRealmAdapter, realmAdapter)
+  const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+  const contentBaseUrl: string = getFetchContentServerFromRealmAdapter(realmAdapter)
   // TODO: stop using CatalystClient and move endpoints to BFF
   const catalystUrl: string = contentBaseUrl.replace(/\/content\/?.*$/, '')
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
