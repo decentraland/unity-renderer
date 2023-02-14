@@ -238,7 +238,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         userProfiles = IDS.ToDictionary(x => x, x => GetUserProfile(x, wearables));
     }
 
-    private UserProfile GetUserProfile(string id, string[] inventory)
+    private UserProfile GetUserProfile(string id, IEnumerable<string> inventory)
     {
         UserProfile userProfile = ScriptableObject.CreateInstance<UserProfile>();
 

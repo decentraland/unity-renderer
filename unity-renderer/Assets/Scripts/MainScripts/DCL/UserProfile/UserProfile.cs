@@ -123,7 +123,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnAvatarEmoteSet?.Invoke(id, timestamp, source);
     }
 
-    public void SetInventory(string[] inventoryIds)
+    public void SetInventory(IEnumerable<string> inventoryIds)
     {
         inventory.Clear();
         inventory = inventoryIds.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());

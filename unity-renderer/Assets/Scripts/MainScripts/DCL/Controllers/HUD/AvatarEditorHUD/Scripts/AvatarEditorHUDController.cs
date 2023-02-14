@@ -214,7 +214,7 @@ public class AvatarEditorHUDController : IHUD
 
                 ownedWearablesAlreadyLoaded = true;
                 //Prior profile V1 emotes must be retrieved along the wearables, onwards they will be requested separatedly
-                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded).ToArray());
+                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).Concat(thirdPartyWearablesLoaded));
                 LoadUserProfile(userProfile, true);
                 if (userProfile != null && userProfile.avatar != null)
                     emotesLoadedAsWearables = ownedWearables.Where(x => x.IsEmote()).ToArray();
@@ -360,7 +360,7 @@ public class AvatarEditorHUDController : IHUD
                 }
             }
 
-            userProfile.SetInventory(equippedOwnedWearables.ToArray());
+            userProfile.SetInventory(equippedOwnedWearables);
         }
 
         LoadUserProfile(userProfile, true);

@@ -205,7 +205,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmount(int amount)
         {
             var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
-            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount));
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -232,7 +232,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmountInCollectibleTab(int amount)
         {
             var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
-            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount));
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
