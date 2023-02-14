@@ -111,13 +111,6 @@ namespace SignupHUD
 
         private void OnFaceSnapshotReady(Texture2D texture) { avatarPic.texture = texture; }
 
-        public static SignupHUDView CreateView()
-        {
-            SignupHUDView view = Instantiate(Resources.Load<GameObject>("SignupHUD")).GetComponent<SignupHUDView>();
-            view.gameObject.name = "_SignupHUD";
-            return view;
-        }
-
         public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
 
         public void ShowNameScreen()

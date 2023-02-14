@@ -4,7 +4,6 @@
     "references": [
         "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
         "GUID:d7f1765642f0c22cda30addd0275b5e1",
-        "GUID:9d475ab28d70a5a399fc98ae8845969e",
         "GUID:012093226beb0234c97a809109f7086d",
         "GUID:69d6f2dcc90814e5a89a06138c216dd8",
         "GUID:eee78afb8bb175c46bd6c5112e6c105c",
@@ -21,7 +20,9 @@
         "GUID:55b66aa56b81d2d4cafb4a5f02bc90ca",
         "GUID:dffbb581f2650ea4990781f603ac258a",
         "GUID:0663fad624d836944b40ae27c3414652",
-        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:a3ceb534947fac14da25035bc5c24788"
     ],
     "includePlatforms": [
         "Editor",

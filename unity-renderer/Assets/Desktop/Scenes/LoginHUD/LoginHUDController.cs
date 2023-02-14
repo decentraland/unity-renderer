@@ -9,15 +9,15 @@ namespace Login
 {
     public class LoginHUDController : IDisposable
     {
-        internal ILoginHUDView view;
+        private readonly ILoginHUDView view;
 
-        internal virtual ILoginHUDView CreateView() =>
-            LoginHUDView.CreateView();
+        public LoginHUDController(ILoginHUDView view)
+        {
+            this.view = view;
+        }
 
         public void Initialize()
         {
-            view = CreateView();
-
             if (view == null)
                 return;
 

@@ -214,7 +214,7 @@ public class IntegrationTestSuite_Legacy
         RenderSettings.customReflection = AssetDatabase.LoadAssetAtPath<Cubemap>(VISUAL_TEST_CUBEMAP_PATH);
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
-        RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");
+        RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/Scripts/Tests/VisualTests/VisualTest Skybox.mat");
         RenderSettings.ambientEquatorColor = new Color(0.98039216f, 0.8352941f, 0.74509805f);
         RenderSettings.ambientSkyColor = new Color(0.60784316f, 0.92941177f, 1);
         RenderSettings.ambientGroundColor = Color.white;
