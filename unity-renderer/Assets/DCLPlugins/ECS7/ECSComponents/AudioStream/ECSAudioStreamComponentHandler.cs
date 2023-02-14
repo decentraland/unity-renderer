@@ -18,7 +18,7 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal PBAudioStream model;
         internal IParcelScene scene;
-        private string url;
+        internal string url;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
