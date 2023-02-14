@@ -74,7 +74,7 @@ namespace DCL
             }
             else
             {
-                BasicMaterial.SetUp(material, model.alphaTest);
+                BasicMaterial.SetUp(material, model.alphaTest, model.diffuseColor);
             }
 
             albedoTexturePromise = CreateTexturePromise(model.albedoTexture);

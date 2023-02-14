@@ -1,13 +1,13 @@
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
-import { Scene } from '@dcl/schemas'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { Scene } from '@dcl/schemas'
 import {
   PermissionsServiceDefinition,
-  PermissionItem,
   permissionItemFromJSON,
   permissionItemToJSON
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
-import { PortContext } from './context'
+import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
+import type { PortContext } from './context'
 
 export const defaultParcelPermissions: PermissionItem[] = [
   PermissionItem.PI_USE_WEB3_API,

@@ -1,5 +1,5 @@
 import { DEBUG_ANALYTICS } from 'config'
-import { defaultLogger } from 'shared/logger'
+import { defaultLogger } from 'lib/logger'
 import { globalObservable } from '../observables'
 import { TrackEvents } from './types'
 

@@ -5,7 +5,6 @@ using DCL.CRDT;
 using DCL.Models;
 using Decentraland.Renderer.RendererServices;
 using Google.Protobuf;
-using KernelCommunication;
 using NSubstitute;
 using NUnit.Framework;
 using RPC;
@@ -14,6 +13,7 @@ using rpc_csharp.transport;
 using RPC.Services;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
@@ -73,7 +73,8 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = 7693,
+                    type = CrdtMessageType.PUT_COMPONENT,
+                    entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
@@ -84,7 +85,7 @@ namespace Tests
                 void OnCrdtMessageReceived(int incommingSceneNumber, CRDTMessage incommingCrdtMessage)
                 {
                     Assert.AreEqual(sceneNumber, incommingSceneNumber);
-                    Assert.AreEqual(crdtMessage.key1, incommingCrdtMessage.key1);
+                    Assert.AreEqual(crdtMessage.entityId, incommingCrdtMessage.entityId);
                     Assert.AreEqual(crdtMessage.timestamp, incommingCrdtMessage.timestamp);
                     Assert.IsTrue(AreEqual((byte[])incommingCrdtMessage.data, (byte[])crdtMessage.data));
                     messageReceived = true;
@@ -133,8 +134,11 @@ namespace Tests
                 sceneState1.ProcessMessage(messageToScene1);
                 sceneState2.ProcessMessage(messageToScene2);
 
-                context.crdt.scenesOutgoingCrdts.Add(scene1, sceneState1);
-                context.crdt.scenesOutgoingCrdts.Add(scene2, sceneState2);
+                context.crdt.scenesOutgoingCrdts.Add(scene1, new DualKeyValueSet<int, long, CRDTMessage> { });
+                context.crdt.scenesOutgoingCrdts.Add(scene2, new DualKeyValueSet<int, long, CRDTMessage> { });
+
+                context.crdt.scenesOutgoingCrdts[scene1].Add(messageToScene1.componentId, messageToScene1.entityId, messageToScene1);
+                context.crdt.scenesOutgoingCrdts[scene2].Add(messageToScene2.componentId, messageToScene2.entityId, messageToScene2);
 
                 // Simulate client requesting scene's crdt
                 try
@@ -148,7 +152,7 @@ namespace Tests
                     deserializer.MoveNext();
                     CRDTMessage message = (CRDTMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene1.key1, message.key1);
+                    Assert.AreEqual(messageToScene1.entityId, message.entityId);
                     Assert.AreEqual(messageToScene1.timestamp, message.timestamp);
                     Assert.IsTrue(AreEqual((byte[])messageToScene1.data, (byte[])message.data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene1));
@@ -160,7 +164,7 @@ namespace Tests
                     deserializer.MoveNext();
                     message = (CRDTMessage)deserializer.Current;
 
-                    Assert.AreEqual(messageToScene2.key1, message.key1);
+                    Assert.AreEqual(messageToScene2.entityId, message.entityId);
                     Assert.AreEqual(messageToScene2.timestamp, message.timestamp);
                     Assert.IsTrue(AreEqual((byte[])messageToScene2.data, (byte[])message.data));
                     Assert.IsFalse(context.crdt.scenesOutgoingCrdts.ContainsKey(scene2));
@@ -206,7 +210,8 @@ namespace Tests
 
                 CRDTMessage crdtMessage = new CRDTMessage()
                 {
-                    key1 = 7693,
+                    type = CrdtMessageType.PUT_COMPONENT,
+                    entityId = 7693,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 };
@@ -253,7 +258,7 @@ namespace Tests
             {
                 using (BinaryWriter msgWriter = new BinaryWriter(msgStream))
                 {
-                    KernelBinaryMessageSerializer.Serialize(msgWriter, message);
+                    CRDTSerializer.Serialize(msgWriter, message);
                     return msgStream.ToArray();
                 }
             }

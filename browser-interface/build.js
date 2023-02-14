@@ -149,9 +149,9 @@ const nodeBuiltIns = () => {
 const commonOptions = {
   bundle: true,
   minify: !cliopts.watch,
-  sourcemap: cliopts.watch ? 'both' : undefined,
+  sourcemap: 'external',
   sourceRoot: path.resolve('./packages'),
-  sourcesContent: !!cliopts.watch,
+  sourcesContent: true,
   treeShaking: true,
   plugins: [nodeBuiltIns(), workerLoader()]
 }
@@ -168,12 +168,7 @@ function createWorker(entry, outfile) {
 }
 
 async function compileJs() {
-  ensureFileExists(DIST_PATH, 'unity.loader.js')
-  const injectUnityPath = path.resolve(DIST_PATH, 'unity.loader.js')
-
-  for (let file of Object.values(generatedFiles)) {
-    ensureFileExists(DIST_PATH, file)
-  }
+  const injectUnityPath = path.resolve(__dirname, 'static', 'unity.loader.js')
 
   if (!process.env.BUNDLES_ONLY) {
     createWorker('packages/gif-processor/worker.ts', 'static/gif-processor/worker.js.txt')

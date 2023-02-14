@@ -82,6 +82,8 @@ namespace DCL.ECSComponents
         internal PBAvatarShape model;
         internal IDCLEntity entity;
 
+        private Service<IEmotesCatalogService> emotesCatalog;
+
         private void Awake()
         {
             avatarMovementController = GetComponent<IAvatarMovementController>();
@@ -179,7 +181,7 @@ namespace DCL.ECSComponents
             wearableItems.Add(model.GetBodyShape());
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             HashSet<string> emotes = new HashSet<string>();
             emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));

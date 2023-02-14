@@ -1,9 +1,10 @@
 import { RpcClientPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { EmotesRendererServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/emotes_renderer.gen'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 
-export function registerEmotesService<Context>(
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function registerEmotesService<Context extends {}>(
   clientPort: RpcClientPort
 ): codegen.RpcClientModule<EmotesRendererServiceDefinition, Context> | undefined {
   try {

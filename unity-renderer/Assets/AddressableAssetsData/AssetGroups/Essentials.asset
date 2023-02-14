@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Essentials
+  m_EditorClassIdentifier: 
+  m_GroupName: Essentials
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2ba95c866c28abd43a150e06c782a8a7
+  m_SerializeEntries:
+  - m_GUID: 6745a35c8e98aa2499b4b7d6372c581a
+    m_Address: Generic_Skybox.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - SkyboxConfiguration
+  - m_GUID: fc948706d8d335241a2349aa97f0767d
+    m_Address: SkyboxElements.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c8b11fb3e63ab6f41b65f3cb2035d5d7
+    m_Address: SkyboxProbe.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4b89ee2270ac7d54ab7e4ab2b4cf1e47
+    m_Address: SkyboxMaterialData.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1d1d09408e4e00c4b99f60953e0f4569
+    m_Address: EmbeddedEmotes.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d46b1af13bd8fd94eabb1ee09e49475e
+    m_Address: dab.anim
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TestResources
+  - m_GUID: 155565c20994e334ea44df2fc77b9097
+    m_Address: tik.anim
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TestResources
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9b92735e6c543c54aa85afbc937f992a, type: 2}
+    - {fileID: 11400000, guid: f42bcd5c601ebbd4f9cf3d3a51390bab, type: 2}

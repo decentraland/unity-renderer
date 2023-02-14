@@ -2,9 +2,13 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCL.Providers;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.Emotes
 {
@@ -17,6 +21,7 @@ namespace DCL.Emotes
         private IEmotesCatalogService emoteCatalog;
         private CatalogController catalogController;
 
+
         [SetUp]
         public void SetUp()
         {
@@ -25,18 +30,31 @@ namespace DCL.Emotes
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
             resolver = Substitute.For<IWearableItemResolver>();
+
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
+            emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
+
             tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog);
+        }
+
+        private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+        {
+            EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+            embeddedEmotes.emotes = new EmbeddedEmote [] { };
+            return embeddedEmotes;
         }
 
         [TearDown]
         public void TearDown() { Object.Destroy(catalogController.gameObject); }
 
-        [Test]
-        public void InitializeEmbeddedEmotesOnConstructor()
+
+        [UnityTest]
+        public IEnumerator InitializeEmbeddedEmotesOnConstructor()
         {
-            EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-            foreach (EmbeddedEmote emote in embeddedEmotes.emotes)
+            UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = GetEmbeddedEmotesSO().GetAwaiter();
+            yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+            EmbeddedEmotesSO embeddedEmotesSo = embeddedEmotesTask.GetResult();
+            foreach (EmbeddedEmote emote in embeddedEmotesSo.emotes)
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.clip, emote.maleAnimation);
@@ -44,6 +62,7 @@ namespace DCL.Emotes
                 Assert.AreEqual(CatalogController.wearableCatalog[emote.id], emote);
             }
         }
+
 
         [Test]
         [Category("Explicit")]

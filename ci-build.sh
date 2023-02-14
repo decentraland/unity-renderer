@@ -6,11 +6,6 @@ echo "Building for $BUILD_TARGET at $PROJECT_PATH in $BUILD_PATH"
 
 mkdir -p "$BUILD_PATH"
 
-if [[ "$CIRCLE_BRANCH" == "main" ]]; then
-    echo "Sentry disabled on prod!"
-    disable_sentry
-fi
-
 # Only import AVPro for Desktop Builds
 if [[ "$BUILD_TARGET" != "WebGL" ]]; then
   ./ci-import-avpro.sh

@@ -37,7 +37,7 @@ namespace DCL.ECSRuntime
         }
 
         public delegate void WriteComponent(int sceneNumber, long entityId, int componentId, byte[] data,
-            long minTimeStamp, ECSComponentWriteType writeType);
+            int minTimeStamp, ECSComponentWriteType writeType);
 
         private readonly Dictionary<int, Serializer> serializers = new ();
         private WriteComponent writeComponent;
@@ -67,7 +67,7 @@ namespace DCL.ECSRuntime
             PutComponent(sceneNumber, entityId, componentId, model, -1, writeType);
         }
 
-        public void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, long minTimeStamp, ECSComponentWriteType writeType)
+        public void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, int minTimeStamp, ECSComponentWriteType writeType)
         {
             PutComponent(typeof(T), sceneNumber, entityId, componentId, model, minTimeStamp, writeType);
         }
@@ -78,7 +78,7 @@ namespace DCL.ECSRuntime
         }
 
         public void PutComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model,
-            long minTimeStamp, ECSComponentWriteType writeType)
+            int minTimeStamp, ECSComponentWriteType writeType)
         {
             if (!serializers.TryGetValue(componentId, out Serializer serializer))
             {
@@ -106,7 +106,7 @@ namespace DCL.ECSRuntime
             RemoveComponent(sceneNumber, entityId, componentId, -1, writeType);
         }
 
-        public void RemoveComponent(int sceneNumber, long entityId, int componentId, long minTimeStamp, ECSComponentWriteType writeType)
+        public void RemoveComponent(int sceneNumber, long entityId, int componentId, int minTimeStamp, ECSComponentWriteType writeType)
         {
             writeComponent(sceneNumber, entityId, componentId, null, minTimeStamp, writeType);
         }

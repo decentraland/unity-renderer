@@ -342,7 +342,6 @@ namespace UnityGLTF
             sceneImporter.SceneParent = gameObject.transform;
             sceneImporter.Collider = Collider;
             sceneImporter.maximumLod = MaximumLod;
-            sceneImporter.useMaterialTransition = UseVisualFeedback;
             sceneImporter.maxTextureSize = DataStore.i.textureConfig.gltfMaxSize.Get();
             sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
             sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
