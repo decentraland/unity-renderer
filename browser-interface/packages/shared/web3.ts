@@ -1,4 +1,4 @@
-import { ethereumConfigurations, ETHEREUM_NETWORK, HARDCODED_CATALYST_LIST } from 'config'
+import { CATALYSTS_FROM_DAO_CONTRACT, ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 import { bytesToHex, ContractFactory } from 'eth-connect'
 import { retry } from 'lib/javascript/retry'
 import { defaultLogger } from 'lib/logger'
@@ -291,7 +291,7 @@ export async function fetchCatalystNodesFromDAO(): Promise<CatalystNode[]> {
 
   const net = await getAppNetwork()
 
-  if (HARDCODED_CATALYST_LIST) {
+  if (!CATALYSTS_FROM_DAO_CONTRACT) {
     if (net === ETHEREUM_NETWORK.MAINNET) {
       return [
         { domain: 'https://peer-wc1.decentraland.org' },
