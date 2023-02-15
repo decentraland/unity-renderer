@@ -65,7 +65,12 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
                 RenderTextureDescriptor lowResDescriptor = renderingData.cameraData.cameraTargetDescriptor;
                 RenderTextureDescriptor mainDescriptor = renderingData.cameraData.cameraTargetDescriptor;
 
-                float resolutionScale = settings.outlineResolutionScale.Get();
+                // For high resolutions we dont need so much quality and the blur effect gets exponentially expensive so we lower the resolution to full-hd (1920x1080) but maintaining the aspect ratio
+                float resolutionScale = 1;
+
+                if (lowResDescriptor.width > 1920)
+                    resolutionScale = (1920f * 100f / lowResDescriptor.width) / 100f;
+
                 lowResDescriptor.width = Mathf.RoundToInt(lowResDescriptor.width * resolutionScale);
                 lowResDescriptor.height = Mathf.RoundToInt(lowResDescriptor.height * resolutionScale);
                 lowResDescriptor.depthBufferBits = 0;
