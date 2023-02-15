@@ -107,10 +107,13 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
     spawnPoints = [{
       position: {
         x: [1, 15],
-        y: [1, 15],
+        y: [0, 0],
         z: [1, 15]
       },
     }]
+  }
+  if (!spawnPoints) {
+    throw new Error(`Invalid spawnpoint definition`)
   }
 
   // 1 - default spawn points
