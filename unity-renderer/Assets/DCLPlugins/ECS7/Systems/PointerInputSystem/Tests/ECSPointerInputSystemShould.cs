@@ -562,7 +562,8 @@ namespace Tests
 
             // 2. position collider entity inside scene space
             ECSTransformHandler transformHandler = new ECSTransformHandler(worldState,
-                Substitute.For<BaseVariable<UnityEngine.Vector3>>());
+                Substitute.For<BaseVariable<UnityEngine.Vector3>>(),
+                Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             var entityLocalPosition = new UnityEngine.Vector3(8, 1, 8);
             var transformModel = new ECSTransform() { position = entityLocalPosition };

@@ -1,8 +1,8 @@
 using DCL.Models;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.Controllers
 {
@@ -157,7 +157,11 @@ namespace DCL.Controllers
 
         public void AddEntityToBeChecked(IDCLEntity entity, bool isPersistent = false, bool runPreliminaryEvaluation = false)
         {
-            if (!enabled || (entity.scene != null && entity.scene.isPersistent))
+            IParcelScene entityScene = entity.scene;
+
+            // Entities from global or sdk7 scenes should not be added to this boundaries checker system
+            bool isInvalidEntity = entityScene != null && (entityScene.isPersistent || entityScene.sceneData.sdk7);
+            if (!enabled || isInvalidEntity)
                 return;
 
             if (runPreliminaryEvaluation)
