@@ -20,10 +20,6 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         public const int CHUNKS_CREATED_PER_BATCH = 10;
 
-        public static readonly Vector2Int WORLD_MIN_COORDS = new (-150, -150);
-        public static readonly Vector2Int WORLD_MAX_COORDS = new (175, 175); // DCL map is not squared, there are some extra parcels in the top right
-        public static readonly int TOTAL_ROWS = WORLD_MAX_COORDS.x - WORLD_MIN_COORDS.x; //We can use a single dimension due to the world/chunks being squared
-
         private readonly SpriteRenderer prefab;
         private readonly int chunkSize;
         private readonly int parcelsInsideChunk;
@@ -40,9 +36,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             this.chunkSize = chunkSize;
             this.chunkBuilder = chunkBuilder;
 
-            var worldSize = TOTAL_ROWS * parcelSize;
-            var chunkRows = Mathf.CeilToInt((float)worldSize / this.chunkSize);
-            chunks = new List<IChunkController>(chunkRows * chunkRows);
+            var worldSize = ((Vector2)coordsUtils.WorldMaxCoords - coordsUtils.WorldMinCoords) * parcelSize;
+            var chunkAmounts = new Vector2Int(Mathf.CeilToInt(worldSize.x / this.chunkSize), Mathf.CeilToInt(worldSize.y / this.chunkSize));
+            chunks = new List<IChunkController>(chunkAmounts.x * chunkAmounts.y);
             parcelsInsideChunk = chunkSize / parcelSize;
         }
 
@@ -55,9 +51,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
             List<UniTask<IChunkController>> chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_BATCH);
 
-            for (int i = WORLD_MIN_COORDS.x; i <= WORLD_MAX_COORDS.x; i += parcelsInsideChunk)
+            for (int i = coordsUtils.WorldMinCoords.x; i <= coordsUtils.WorldMaxCoords.x; i += parcelsInsideChunk)
             {
-                for (int j = WORLD_MIN_COORDS.y; j <= WORLD_MAX_COORDS.y; j += parcelsInsideChunk)
+                for (int j = coordsUtils.WorldMinCoords.y; j <= coordsUtils.WorldMaxCoords.y; j += parcelsInsideChunk)
                 {
                     if (chunksCreating.Count >= CHUNKS_CREATED_PER_BATCH)
                     {

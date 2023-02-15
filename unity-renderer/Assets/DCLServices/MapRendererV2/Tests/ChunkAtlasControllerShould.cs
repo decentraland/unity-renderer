@@ -28,6 +28,8 @@ namespace DCLServices.MapRendererV2.Tests
         {
             var coordUtils = Substitute.For<ICoordsUtils>();
             coordUtils.ParcelSize.Returns(PARCEL_SIZE);
+            coordUtils.WorldMinCoords.Returns(new Vector2Int(-150, -150));
+            coordUtils.WorldMaxCoords.Returns(new Vector2Int(175, 175));
 
             builder = Substitute.For<ChunkAtlasController.ChunkBuilder>();
 
@@ -36,8 +38,8 @@ namespace DCLServices.MapRendererV2.Tests
             var parcelsInsideChunk = CHUNK_SIZE / PARCEL_SIZE;
 
             iterationsNumber =
-                Mathf.CeilToInt((ChunkAtlasController.WORLD_MAX_COORDS.x - ChunkAtlasController.WORLD_MIN_COORDS.x) / (float)parcelsInsideChunk)
-                * Mathf.CeilToInt((ChunkAtlasController.WORLD_MAX_COORDS.y - ChunkAtlasController.WORLD_MIN_COORDS.y) / (float)parcelsInsideChunk);
+                Mathf.CeilToInt((coordUtils.WorldMaxCoords.x - coordUtils.WorldMinCoords.x) / (float)parcelsInsideChunk)
+                * Mathf.CeilToInt((coordUtils.WorldMaxCoords.y - coordUtils.WorldMinCoords.y) / (float)parcelsInsideChunk);
         }
 
         [Test]
