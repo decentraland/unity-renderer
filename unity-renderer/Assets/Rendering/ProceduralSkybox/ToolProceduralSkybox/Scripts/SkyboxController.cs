@@ -55,7 +55,6 @@ namespace DCL.Skybox
         private Service<IAddressableResourceProvider> addresableResolver;
         private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
         private MaterialReferenceContainer materialReferenceContainer;
-        private int currentRetryCount = 3;
         private CancellationTokenSource addressableCTS;
 
         public SkyboxController()
@@ -96,13 +95,9 @@ namespace DCL.Skybox
             }
             catch (Exception e)
             {
-                currentRetryCount--;
-                if (currentRetryCount < 0)
-                    throw new Exception("Skybox retry limit reached. Please check the Essentials group is set up correctly");
-
                 Debug.LogWarning("Retrying skybox addressables async request...");
                 DisposeCT();
-                DoAsyncInitializations();
+                DoAsyncInitializations().Forget();
                 return;
             }
 

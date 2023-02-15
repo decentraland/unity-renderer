@@ -1,19 +1,28 @@
 import {
-  ICommunicationsController,
   subscribeParcelSceneToCommsMessages,
   unsubscribeParcelSceneToCommsMessages
-} from '../../comms/sceneSubscriptions'
+} from 'shared/comms/sceneSubscriptions'
+import type { ICommunicationsController } from 'shared/comms/sceneSubscriptions'
 
-import { PeerInformation } from '../../comms/interface/types'
+import type { PeerInformation } from 'shared/comms/interface/types'
 
-import { RpcServerPort } from '@dcl/rpc'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { sendParcelSceneCommsMessage } from '../../comms'
-import { PortContext } from './context'
+import { sendParcelSceneCommsMessage } from 'shared/comms'
+import type { PortContext } from './context'
 import { CommunicationsControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/communications_controller.gen'
 
+/**
+ * The CommunicationsControllerService connects messages from the comms controller with the scenes of Decentraland,
+ * particularly the `AvatarScene` that hosts the avatars of other players.
+ *
+ * @param port connection to scene
+ */
 export function registerCommunicationsControllerServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, CommunicationsControllerServiceDefinition, async (port, ctx) => {
+    /**
+     * The `receiveCommsMessage` relays messages in direction: scene -> comms
+     */
     const commsController: ICommunicationsController = {
       cid: ctx.sceneData.id,
       receiveCommsMessage(data: Uint8Array, sender: PeerInformation) {
@@ -25,6 +34,9 @@ export function registerCommunicationsControllerServiceServerImplementation(port
       }
     }
 
+    /**
+     * Subscribe and unsubscribe to relay mesages in direction: comms -> scene
+     */
     subscribeParcelSceneToCommsMessages(commsController)
 
     port.on('close', () => {

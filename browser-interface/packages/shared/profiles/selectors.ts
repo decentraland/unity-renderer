@@ -1,8 +1,8 @@
-import { ProfileStatus, ProfileUserInfo, RootProfileState } from './types'
-import { getCurrentUserId } from 'shared/session/selectors'
-import { RootSessionState } from 'shared/session/types'
-import { Avatar } from '@dcl/schemas'
-import { calculateDisplayName } from './transformations/processServerProfile'
+import type { ProfileStatus, ProfileUserInfo, RootProfileState } from './types'
+import type { RootSessionState } from 'shared/session/types'
+import type { Avatar } from '@dcl/schemas'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
+import { getCurrentUserId as selectCurrentUserId } from 'shared/session/selectors'
 
 export const getProfileStatusAndData = (
   store: RootProfileState,
@@ -38,12 +38,12 @@ export const getProfile = (store: RootProfileState, userId: string): Avatar | nu
   )
 
 export const getCurrentUserProfile = (store: RootProfileState & RootSessionState): Avatar | null => {
-  const currentUserId = getCurrentUserId(store)
-  return currentUserId ? getProfile(store, currentUserId) : null
+  const userId = selectCurrentUserId(store)
+  return userId ? getProfile(store, userId) : null
 }
 
 export const getCurrentUserProfileDirty = (store: RootProfileState & RootSessionState): Avatar | null => {
-  const currentUserId = getCurrentUserId(store)
+  const currentUserId = selectCurrentUserId(store)
   if (!currentUserId) return null
   const [_status, data] = getProfileStatusAndData(store, currentUserId)
   return data || null
@@ -52,7 +52,7 @@ export const getCurrentUserProfileDirty = (store: RootProfileState & RootSession
 export const getCurrentUserProfileStatusAndData = (
   store: RootProfileState & RootSessionState
 ): [ProfileStatus | undefined, Avatar | undefined] => {
-  const currentUserId = getCurrentUserId(store)
+  const currentUserId = selectCurrentUserId(store)
   return currentUserId ? getProfileStatusAndData(store, currentUserId) : [undefined, undefined]
 }
 

@@ -13,8 +13,8 @@ namespace DCL.Models
         public bool markedForCleanup { get; set; } = false;
 
         // We let the SceneBoundsChecker update these values later
-        public bool isInsideSceneOuterBoundaries { get; set; } = true;
-        public bool isInsideSceneBoundaries { get; set; } = true;
+        public bool isInsideSceneOuterBoundaries { get; private set; } = true;
+        public bool isInsideSceneBoundaries { get; private set; } = true;
 
         public Dictionary<long, IDCLEntity> children { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IDCLEntity parent { get; private set; }
@@ -24,7 +24,7 @@ namespace DCL.Models
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;
 
-        
+
         public Action<IDCLEntity> OnShapeUpdated { get; set; }
         public Action<IDCLEntity> OnShapeLoaded { get; set; }
         public Action<object> OnNameChange { get; set; }
@@ -33,11 +33,13 @@ namespace DCL.Models
         public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
         public Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
+        public Action<IDCLEntity, bool> OnInsideBoundariesChanged { get; set; }
+        public Action<IDCLEntity, bool> OnOuterBoundariesChanged { get; set; }
 
         public Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 
         public long parentId { get; set; }
-        public IList<long> childrenId { get; } = new List<long>(); 
+        public IList<long> childrenId { get; } = new List<long>();
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
@@ -50,29 +52,20 @@ namespace DCL.Models
             meshesInfo.OnUpdated += () => OnMeshesInfoUpdated?.Invoke(this);
             meshesInfo.OnCleanup += () => OnMeshesInfoCleaned?.Invoke(this);
         }
-        
+
         public void AddChild(IDCLEntity entity)
         {
-            if (!children.ContainsKey(entity.entityId))
-            {
-                children.Add(entity.entityId, entity);
-            }
+            if (!children.ContainsKey(entity.entityId)) { children.Add(entity.entityId, entity); }
         }
 
         public void RemoveChild(IDCLEntity entity)
         {
-            if (children.ContainsKey(entity.entityId))
-            {
-                children.Remove(entity.entityId);
-            }
+            if (children.ContainsKey(entity.entityId)) { children.Remove(entity.entityId); }
         }
 
         public void SetParent(IDCLEntity entity)
         {
-            if (parent != null)
-            {
-                parent.RemoveChild(this);
-            }
+            if (parent != null) { parent.RemoveChild(this); }
 
             if (entity != null)
             {
@@ -82,10 +75,7 @@ namespace DCL.Models
                 if (entity.gameObject && gameObject)
                     gameObject.transform.SetParent(entity.gameObject.transform, false);
             }
-            else if (gameObject)
-            {
-                gameObject.transform.SetParent(null, false);
-            }
+            else if (gameObject) { gameObject.transform.SetParent(null, false); }
 
             parent = entity;
         }
@@ -101,7 +91,10 @@ namespace DCL.Models
             }
         }
 
-        public void ResetRelease() { isReleased = false; }
+        public void ResetRelease()
+        {
+            isReleased = false;
+        }
 
         public void Cleanup()
         {
@@ -127,10 +120,7 @@ namespace DCL.Models
                 int childCount = gameObject.transform.childCount;
 
                 // Destroy any other children
-                for (int i = 0; i < childCount; i++)
-                {
-                    Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
-                }
+                for (int i = 0; i < childCount; i++) { Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject); }
 
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
                 gameObject = null;
@@ -138,6 +128,18 @@ namespace DCL.Models
 
             OnTransformChange = null;
             isReleased = true;
+        }
+
+        public void UpdateInsideBoundariesStatus(bool isInsideBoundaries)
+        {
+            isInsideSceneBoundaries = isInsideBoundaries;
+            OnInsideBoundariesChanged?.Invoke(this, isInsideSceneBoundaries);
+        }
+
+        public void UpdateOuterBoundariesStatus(bool isInsideOuterBoundaries)
+        {
+            isInsideSceneOuterBoundaries = isInsideOuterBoundaries;
+            OnOuterBoundariesChanged?.Invoke(this, isInsideSceneOuterBoundaries);
         }
     }
 }

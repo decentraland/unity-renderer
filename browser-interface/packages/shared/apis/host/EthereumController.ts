@@ -4,11 +4,11 @@ import * as EthService from 'shared/ethereum/EthereumService'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
-import {
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import { EthereumControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
+import type {
   ConvertMessageToObjectRequest,
   ConvertMessageToObjectResponse,
-  EthereumControllerServiceDefinition,
   GetUserAccountRequest,
   GetUserAccountResponse,
   RequirePaymentRequest,
@@ -18,8 +18,8 @@ import {
   SignMessageRequest,
   SignMessageResponse
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/ethereum_controller.gen'
-import { PortContext } from './context'
-import { RPCSendableMessage } from 'shared/types'
+import type { PortContext } from './context'
+import type { RPCSendableMessage } from 'shared/types'
 import { PermissionItem } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
 import { assertHasPermission } from './Permissions'
 

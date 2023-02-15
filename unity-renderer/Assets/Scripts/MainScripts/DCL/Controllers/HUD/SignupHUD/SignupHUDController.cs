@@ -6,31 +6,30 @@ namespace SignupHUD
 {
     public class SignupHUDController : IHUD
     {
-        internal ISignupHUDView view;
+        private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
+        private readonly DataStore_LoadingScreen loadingScreenDataStore;
+        internal readonly ISignupHUDView view;
 
         internal string name;
         internal string email;
-        internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
         internal IHUD avatarEditorHUD;
-        private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
-        private readonly DataStore_LoadingScreen loadingScreenDataStore;
 
-        internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
+        public SignupHUDController(ISignupHUDView view)
+        {
+            this.view = view;
+        }
 
-        [UsedImplicitly]
-        public SignupHUDController() { }
-
-        public SignupHUDController(IAnalytics analytics, DataStore_LoadingScreen loadingScreenDataStore)
+        public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
+            this.view = view;
             this.loadingScreenDataStore = loadingScreenDataStore;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
         }
 
         public void Initialize(IHUD avatarEditorHUD)
         {
-            view = CreateView();
-
             if (view == null)
                 return;
 
