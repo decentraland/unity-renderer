@@ -1,5 +1,5 @@
 import { mkdir } from 'fs/promises'
-import { copyFile, ensureEqualFiles } from './utils'
+import { copyFile/*, ensureEqualFiles*/ } from './utils'
 import * as glob from 'glob'
 import path from 'path'
 
