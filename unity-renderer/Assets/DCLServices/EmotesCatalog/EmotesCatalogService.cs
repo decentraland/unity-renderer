@@ -31,10 +31,16 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
     {
+        bool taskCancelled = false;
+
         try
         {
             addressableCTS = new CancellationTokenSource();
             embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
+        }
+        catch (OperationCanceledException e)
+        {
+            taskCancelled = true;
         }
         catch (Exception e)
         {
@@ -52,7 +58,8 @@ public class EmotesCatalogService : IEmotesCatalogService
         }
         finally
         {
-            EmbedEmotes();
+            if (!taskCancelled)
+                EmbedEmotes();
         }
     }
 
