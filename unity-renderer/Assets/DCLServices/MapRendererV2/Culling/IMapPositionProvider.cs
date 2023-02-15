@@ -4,6 +4,6 @@ namespace DCLServices.MapRendererV2.Culling
 {
     public interface IMapPositionProvider
     {
-        Vector2 CurrentPosition { get; }
+        Vector3 CurrentPosition { get; }
     }
 }

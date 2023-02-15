@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.Controllers.HotScenes;
 
 public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsSubSectionComponentView
 {
@@ -68,7 +69,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    public event Action<IHotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;
     public event Action<string> OnEventUnsubscribeEventClicked;

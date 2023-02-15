@@ -13,6 +13,7 @@ using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using System.Collections.Generic;
@@ -86,6 +87,7 @@ namespace DCL
             }, DataStore.i.featureFlags));
 
             // Map
+            result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
             result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory()));
 
             // HUD

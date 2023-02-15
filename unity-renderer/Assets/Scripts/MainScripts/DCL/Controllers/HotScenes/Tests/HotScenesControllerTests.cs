@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HotScenes;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+[Obsolete("MapRenderer")]
 public class HotScenesControllerTests : IntegrationTestSuite_Legacy
 {
     private HotScenesController hotScenesController;
@@ -52,22 +53,22 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
         yield return null;
     }
 
-    List<HotScenesController.HotSceneInfo> GetTestHotSceneList()
+    List<IHotScenesController.HotSceneInfo> GetTestHotSceneList()
     {
-        var hotSceneList = new List<HotScenesController.HotSceneInfo>();
-        hotSceneList.Add(new HotScenesController.HotSceneInfo()
+        var hotSceneList = new List<IHotScenesController.HotSceneInfo>();
+        hotSceneList.Add(new IHotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(0, 0),
-            realms = new HotScenesController.HotSceneInfo.Realm[]
+            realms = new IHotScenesController.HotSceneInfo.Realm[]
             {
-                new HotScenesController.HotSceneInfo.Realm()
+                new IHotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "amber",
                     serverName = "fenrir",
                     usersCount = 10,
                     maxUsers = 50
                 },
-                new HotScenesController.HotSceneInfo.Realm()
+                new IHotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "blue",
                     serverName = "unicorn",
@@ -78,12 +79,12 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
             usersTotalCount = 12
         });
 
-        hotSceneList.Add(new HotScenesController.HotSceneInfo()
+        hotSceneList.Add(new IHotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(20, 20),
-            realms = new HotScenesController.HotSceneInfo.Realm[]
+            realms = new IHotScenesController.HotSceneInfo.Realm[]
             {
-                new HotScenesController.HotSceneInfo.Realm()
+                new IHotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "amber",
                     serverName = "fenrir",
@@ -94,12 +95,12 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
             usersTotalCount = 1
         });
 
-        hotSceneList.Add(new HotScenesController.HotSceneInfo()
+        hotSceneList.Add(new IHotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(70, -135),
-            realms = new HotScenesController.HotSceneInfo.Realm[]
+            realms = new IHotScenesController.HotSceneInfo.Realm[]
             {
-                new HotScenesController.HotSceneInfo.Realm()
+                new IHotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "red",
                     serverName = "temptation",
@@ -113,7 +114,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
         return hotSceneList;
     }
 
-    void CheckListEquals(List<HotScenesController.HotSceneInfo> l1, List<HotScenesController.HotSceneInfo> l2)
+    void CheckListEquals(List<IHotScenesController.HotSceneInfo> l1, List<IHotScenesController.HotSceneInfo> l2)
     {
         Assert.IsTrue(l1.Count == l2.Count, "HotScenesLists length mismatch");
 

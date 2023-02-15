@@ -29,8 +29,9 @@ namespace DCLServices.MapRendererV2.MapLayers
             DisposeImpl();
         }
 
-        protected virtual void DisposeImpl()
-        {
-        }
+        protected virtual void DisposeImpl() { }
+
+        protected CancellationTokenSource LinkWithDisposeToken(CancellationToken globalCancellation) =>
+            CancellationTokenSource.CreateLinkedTokenSource(globalCancellation, ctsDisposing.Token);
     }
 }

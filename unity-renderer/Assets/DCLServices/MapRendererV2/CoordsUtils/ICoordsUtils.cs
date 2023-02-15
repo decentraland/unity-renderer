@@ -15,13 +15,9 @@ namespace DCLServices.MapRendererV2.CoordsUtils
 
         public bool IsInsideWorldCoords(Vector2Int coords);
 
-        public Vector2 CoordsToPositionUnclamped(Vector2Int coords);
+        public Vector3 CoordsToPositionUnclamped(Vector2 coords);
 
-        public Vector2 CoordsToPositionUnclamped(Vector2Int coords, int parcelSize);
-
-        public Vector2 CoordsToPosition(Vector2Int coords);
-
-        public Vector2 CoordsToPosition(Vector2Int coords, int parcelSize);
+        public Vector3 CoordsToPosition(Vector2Int coords);
 
         public Vector2 CoordsToPositionWithOffset(Vector3 coords);
 

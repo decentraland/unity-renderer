@@ -6,6 +6,7 @@ using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using MainScripts.DCL.Controllers.HotScenes;
 using UnityEngine;
 
 namespace DCL

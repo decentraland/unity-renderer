@@ -1,0 +1,98 @@
+﻿using Cysharp.Threading.Tasks;
+using DCLServices.MapRendererV2.CoordsUtils;
+using DCLServices.MapRendererV2.Culling;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
+using UnityEngine.Pool;
+
+namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
+{
+    /// <summary>
+    /// Updates players' positions within the comms radius
+    /// </summary>
+    internal class UsersMarkersHotAreaController : MapLayerControllerBase, IMapCullingListener<IHotUserMarker>, IMapLayerController
+    {
+        private readonly IObjectPool<HotUserMarkerObject> objectsPool;
+        private readonly IObjectPool<IHotUserMarker> wrapsPool;
+
+        private readonly BaseDictionary<string, Player> otherPlayers;
+
+        private readonly Func<IHotUserMarker> poolObjectBuilder;
+
+        private readonly Dictionary<string, IHotUserMarker> markers = new ();
+
+        public UsersMarkersHotAreaController(BaseDictionary<string, Player> otherPlayers,
+            IObjectPool<HotUserMarkerObject> objectsPool, IObjectPool<IHotUserMarker> wrapsPool,
+            Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
+            : base(parent, coordsUtils, cullingController, drawOrder)
+        {
+            this.otherPlayers = otherPlayers;
+            this.objectsPool = objectsPool;
+
+            this.wrapsPool = wrapsPool;
+        }
+
+        public UniTask Initialize(CancellationToken cancellationToken) =>
+            UniTask.CompletedTask;
+
+        protected override void DisposeImpl()
+        {
+            objectsPool.Clear();
+            wrapsPool.Clear();
+
+            otherPlayers.OnAdded -= OnOtherPlayerAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
+        }
+
+        private void OnOtherPlayerAdded(string id, Player player)
+        {
+            var wrap = wrapsPool.Get();
+            wrap.TrackPlayer(player);
+            mapCullingController.StartTracking(wrap, this);
+            markers.Add(id, wrap);
+        }
+
+        private void OnOtherPlayerRemoved(string id, Player player)
+        {
+            if (markers.TryGetValue(id, out var marker))
+            {
+                wrapsPool.Release(marker);
+                markers.Remove(id);
+            }
+        }
+
+        public void OnMapObjectBecameVisible(IHotUserMarker obj)
+        {
+            obj.OnBecameVisible();
+        }
+
+        public void OnMapObjectCulled(IHotUserMarker obj)
+        {
+            obj.OnBecameInvisible();
+        }
+
+        public UniTask Enable(CancellationToken cancellationToken)
+        {
+            foreach (var pair in otherPlayers.Get())
+                OnOtherPlayerAdded(pair.Key, pair.Value);
+
+            otherPlayers.OnAdded += OnOtherPlayerAdded;
+            otherPlayers.OnRemoved += OnOtherPlayerRemoved;
+            return UniTask.CompletedTask;
+        }
+
+        public UniTask Disable(CancellationToken cancellationToken)
+        {
+            otherPlayers.OnAdded -= OnOtherPlayerAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
+
+            foreach (IHotUserMarker marker in markers.Values)
+                wrapsPool.Release(marker);
+
+            markers.Clear();
+            return UniTask.CompletedTask;
+        }
+    }
+}
