@@ -3,6 +3,7 @@ matches:
   - match: "**/unity.framework.js"
     variants:
       - brotli
+      - uncompressed
   - match: "**/unity.data"
     variants:
       - brotli
@@ -10,6 +11,7 @@ matches:
   - match: "**/unity.wasm"
     variants:
       - brotli
+      - uncompressed
 
   # Uncompressed by default
   - match: "**/*"
