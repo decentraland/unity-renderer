@@ -1,7 +1,6 @@
+using MainScripts.DCL.WebPlugin;
 using UnityEngine;
 using UnityEngine.UI;
-using MainScripts.DCL.WebPlugin;
-using System;
 
 namespace DCL.HUD.Common
 {
@@ -11,10 +10,10 @@ namespace DCL.HUD.Common
     [RequireComponent(typeof(ScrollRect))]
     public class ScrollRectSensitivityHandler : MonoBehaviour
     {
-        private const float WINDOWS_SENSITIVITY_MULTIPLIER = 7.5f;
-        private const float MAC_SENSITIVITY_MULTIPLIER = 2f;
-        private const float LINUX_SENSITIVITY_MULTIPLIER = 1.5f;
-        private const float DEFAULT_SENSITIVITY_MULTIPLIER = 1.75f;
+        private const float WINDOWS_SENSITIVITY_MULTIPLIER = 4.5f;
+        private const float MAC_SENSITIVITY_MULTIPLIER = 1.5f;
+        private const float LINUX_SENSITIVITY_MULTIPLIER = 1.125f;
+        private const float DEFAULT_SENSITIVITY_MULTIPLIER = 1.32f;
 
         private ScrollRect myScrollRect;
         private float defaultSens;
@@ -29,15 +28,12 @@ namespace DCL.HUD.Common
         private void SetScrollRectSensitivity()
         {
             float scrollSensitivity = defaultSens * GetScrollMultiplier();
-            Debug.Log($"ScrollRectSens.scrollSensitivity: {scrollSensitivity}, root: {transform.root}, go: {gameObject.name}");
             myScrollRect.scrollSensitivity = scrollSensitivity;
         }
 
         private float GetScrollMultiplier()
         {
             OperatingSystemFamily currentOperatingSystem = GetCurrentOperatingSystem();
-
-            Debug.Log($"ScrollRectSens.GetCurrentOperatingSystem: {currentOperatingSystem}");
 
             switch (currentOperatingSystem)
             {
@@ -54,30 +50,25 @@ namespace DCL.HUD.Common
 
         private OperatingSystemFamily GetCurrentOperatingSystem() {
 #if UNITY_WEBGL
-        return ObtainOsFromWebGLAgent();
+            return ObtainOsFromWebGLAgent();
 #else
             return SystemInfo.operatingSystemFamily;
 #endif
         }
 
         private OperatingSystemFamily ObtainOsFromWebGLAgent() {
-            String agentInfo = WebGLPlugin.GetUserAgent();
+            string agentInfo = WebGLPlugin.GetUserAgent();
+
             if (agentInfo.ToLower().Contains("windows"))
-            {
                 return OperatingSystemFamily.Windows;
-            }
-            else if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
-            {
+
+            if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
                 return OperatingSystemFamily.MacOSX;
-            }
-            else if (agentInfo.ToLower().Contains("linux"))
-            {
+
+            if (agentInfo.ToLower().Contains("linux"))
                 return OperatingSystemFamily.Linux;
-            }
-            else
-            {
-                return OperatingSystemFamily.Other;
-            }
+
+            return OperatingSystemFamily.Other;
         }
 
     }
