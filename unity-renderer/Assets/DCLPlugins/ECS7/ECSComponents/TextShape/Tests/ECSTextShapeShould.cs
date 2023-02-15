@@ -306,7 +306,7 @@ namespace Tests
 
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
 
-            renderersInternalComponent.Received(1).RemoveFor(scene, entity);
+            renderersInternalComponent.Received(1).RemoveFor(scene, entity, Arg.Any<InternalRenderers>());
         }
     }
 }

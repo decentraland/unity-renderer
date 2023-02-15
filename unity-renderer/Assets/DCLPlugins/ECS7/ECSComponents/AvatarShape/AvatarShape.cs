@@ -43,6 +43,11 @@ namespace DCL.ECSComponents
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
+
+        /// <summary>
+        /// Get non-monobehaviour internal IAvatar object that contains the merged renderer
+        /// </summary>
+        IAvatar internalAvatar { get; }
     }
 
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
@@ -84,6 +89,7 @@ namespace DCL.ECSComponents
         internal IDCLEntity entity;
 
         private Service<IEmotesCatalogService> emotesCatalog;
+        public IAvatar internalAvatar => avatar;
 
         private void Awake()
         {
