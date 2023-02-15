@@ -80,11 +80,16 @@ namespace AvatarSystem
                 if (wearablesRetrieved.ContainsKey(wearableId))
                     return wearablesRetrieved[wearableId];
 
-                var wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token);
+                // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
+                var wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token).AttachExternalCancellation(ct);
 
+                // Cancelling is irrelevant at this point,
+                // either we have the wearable and we have to add it to forget it later
+                // or it's null and we just return it
                 if (wearable != null)
                     wearablesRetrieved.Add(wearableId, wearable);
 
+                // return promise.value;
                 return wearable;
 
             }

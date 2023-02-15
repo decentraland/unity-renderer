@@ -147,8 +147,12 @@ namespace DCLServices.WearablesCatalogService
 
             ct.ThrowIfCancellationRequested();
 
-            // All the requests happened during the same frames interval are sent together
-            return await SyncWearablesRequestsAsync(wearableId, ct).AttachExternalCancellation(ct);
+            try
+            {
+                // All the requests happened during the same frames interval are sent together
+                return await SyncWearablesRequestsAsync(wearableId, ct);
+            }
+            catch (OperationCanceledException) { return null; }
         }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
