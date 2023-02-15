@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Chat;
 using DCL.Social.Friends;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -162,17 +164,9 @@ public class HUDController : IHUDController
         }
     }
 
-    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration,
+    public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, CancellationToken cancellationToken = default,
         string extraPayload = null)
     {
-        //TODO(Brian): For now, the factory code is using this switch approach.
-        //             In order to avoid the factory upkeep we can transform the IHUD elements
-        //             To ScriptableObjects. In this scenario, we can make each element handle its own
-        //             specific initialization details.
-        //
-        //             This will allow us to unify the serialized factory objects design,
-        //             like we already do with ECS components.
-
         switch (hudElementId)
         {
             case HUDElementID.NONE:
@@ -180,41 +174,37 @@ public class HUDController : IHUDController
             case HUDElementID.MINIMAP:
                 if (minimapHud == null)
                 {
-                    CreateHudElement(configuration, hudElementId);
-
-                    if (minimapHud != null)
-                    {
-                        minimapHud.Initialize();
-                    }
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
+                    minimapHud?.Initialize();
                 }
 
                 break;
             case HUDElementID.PROFILE_HUD:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.NOTIFICATION:
-                CreateHudElement(configuration, hudElementId);
-                NotificationsController.i?.Initialize(notificationHud, DataStore.i.notifications);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
+                if (NotificationsController.i != null)
+                    NotificationsController.i.Initialize(notificationHud, DataStore.i.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 avatarEditorHud?.Initialize(ownUserProfile, wearableCatalog);
                 break;
             case HUDElementID.SETTINGS_PANEL:
-                CreateHudElement(configuration, hudElementId);
-                if (settingsPanelHud != null)
-                    settingsPanelHud.Initialize();
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
+                settingsPanelHud?.Initialize();
                 break;
             case HUDElementID.AIRDROPPING:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.TERMS_OF_SERVICE:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 if (worldChatWindowHud == null)
                 {
-                    CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
 
                     if (worldChatWindowHud != null)
                     {
@@ -237,22 +227,26 @@ public class HUDController : IHUDController
 
                 if (PublicChatWindowHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT);
-                    PublicChatWindowHud.Initialize();
-                    PublicChatWindowHud.Setup(ChatUtils.NEARBY_CHANNEL_ID);
-                    PublicChatWindowHud.SetVisibility(false);
-                    PublicChatWindowHud.OnBack -= HandlePublicChatChannelBacked;
-                    PublicChatWindowHud.OnBack += HandlePublicChatChannelBacked;
-                    PublicChatWindowHud.OnClosed -= HandlePublicChatChannelClosed;
-                    PublicChatWindowHud.OnClosed += HandlePublicChatChannelClosed;
-                    taskbarHud?.AddPublicChatChannel(PublicChatWindowHud);
+                    await CreateHudElement(configuration, HUDElementID.PUBLIC_CHAT, cancellationToken);
+
+                    if (PublicChatWindowHud != null)
+                    {
+                        PublicChatWindowHud.Initialize();
+                        PublicChatWindowHud.Setup(ChatUtils.NEARBY_CHANNEL_ID);
+                        PublicChatWindowHud.SetVisibility(false);
+                        PublicChatWindowHud.OnBack -= HandlePublicChatChannelBacked;
+                        PublicChatWindowHud.OnBack += HandlePublicChatChannelBacked;
+                        PublicChatWindowHud.OnClosed -= HandlePublicChatChannelClosed;
+                        PublicChatWindowHud.OnClosed += HandlePublicChatChannelClosed;
+                        taskbarHud?.AddPublicChatChannel(PublicChatWindowHud);
+                    }
                 }
                 else
                     UpdateHudElement(configuration, HUDElementID.PUBLIC_CHAT);
 
                 if (PrivateChatWindow == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
+                    await CreateHudElement(configuration, HUDElementID.PRIVATE_CHAT_WINDOW, cancellationToken);
 
                     if (PrivateChatWindow != null)
                     {
@@ -260,7 +254,6 @@ public class HUDController : IHUDController
                         PrivateChatWindow.SetVisibility(false);
                         PrivateChatWindow.OnBack -= PrivateChatWindowHud_OnPressBack;
                         PrivateChatWindow.OnBack += PrivateChatWindowHud_OnPressBack;
-
                         taskbarHud?.AddPrivateChatWindow(PrivateChatWindow);
                     }
                 }
@@ -269,45 +262,60 @@ public class HUDController : IHUDController
 
                 if (chatChannelHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_CHAT);
+                    await CreateHudElement(configuration, HUDElementID.CHANNELS_CHAT, cancellationToken);
 
-                    chatChannelHud.Initialize();
-                    chatChannelHud.SetVisibility(false);
-                    chatChannelHud.OnPressBack -= HandleChannelBacked;
-                    chatChannelHud.OnPressBack += HandleChannelBacked;
+                    if (chatChannelHud != null)
+                    {
+                        chatChannelHud.Initialize();
+                        chatChannelHud.SetVisibility(false);
+                        chatChannelHud.OnPressBack -= HandleChannelBacked;
+                        chatChannelHud.OnPressBack += HandleChannelBacked;
 
-                    taskbarHud?.AddChatChannel(chatChannelHud);
+                        taskbarHud?.AddChatChannel(chatChannelHud);
+                    }
                 }
 
                 if (channelSearchHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_SEARCH);
-                    channelSearchHud.Initialize(SearchChannelsWindowComponentView.Create());
-                    channelSearchHud.SetVisibility(false);
-                    taskbarHud?.AddChannelSearch(channelSearchHud);
+                    await CreateHudElement(configuration, HUDElementID.CHANNELS_SEARCH, cancellationToken);
+
+                    if (channelSearchHud != null)
+                    {
+                        channelSearchHud.Initialize(SearchChannelsWindowComponentView.Create());
+                        channelSearchHud.SetVisibility(false);
+                        taskbarHud?.AddChannelSearch(channelSearchHud);
+                    }
                 }
 
                 if (channelCreateHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_CREATE);
-                    channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
-                    channelCreateHud.SetVisibility(false);
-                    taskbarHud?.AddChannelCreation(channelCreateHud);
+                    await CreateHudElement(configuration, HUDElementID.CHANNELS_CREATE, cancellationToken);
+
+                    if (channelCreateHud != null)
+                    {
+                        channelCreateHud.Initialize(CreateChannelWindowComponentView.Create());
+                        channelCreateHud.SetVisibility(false);
+                        taskbarHud?.AddChannelCreation(channelCreateHud);
+                    }
                 }
 
                 if (channelLeaveHud == null)
                 {
-                    CreateHudElement(configuration, HUDElementID.CHANNELS_LEAVE_CONFIRMATION);
-                    channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
-                    channelLeaveHud.SetVisibility(false);
-                    taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
+                    await CreateHudElement(configuration, HUDElementID.CHANNELS_LEAVE_CONFIRMATION, cancellationToken);
+
+                    if (channelLeaveHud != null)
+                    {
+                        channelLeaveHud.Initialize(LeaveChannelConfirmationWindowComponentView.Create());
+                        channelLeaveHud.SetVisibility(false);
+                        taskbarHud?.AddChannelLeaveConfirmation(channelLeaveHud);
+                    }
                 }
 
                 break;
             case HUDElementID.FRIENDS:
                 if (friendsHud == null)
                 {
-                    CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
 
                     if (friendsHud != null)
                     {
@@ -330,7 +338,7 @@ public class HUDController : IHUDController
             case HUDElementID.TASKBAR:
                 if (taskbarHud == null)
                 {
-                    CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
 
                     if (taskbarHud != null)
                     {
@@ -348,48 +356,48 @@ public class HUDController : IHUDController
 
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.NFT_INFO_DIALOG:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.TELEPORT_DIALOG:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.CONTROLS_HUD:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 settingsPanelHud?.AddHelpAndSupportWindow(helpAndSupportHud);
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (voiceChatHud != null)
                     taskbarHud?.AddVoiceChatWindow(voiceChatHud);
 
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
             case HUDElementID.QUESTS_PANEL:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsPanelHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.QUESTS_TRACKER:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.SIGNUP:
-                CreateHudElement(configuration, hudElementId);
+                await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (configuration.active)
                 {
-                    //Same race condition risks as with the ProfileHUD
-                    //TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
-                    //Then this reference can be removed so we just work with a BaseVariable<bool>.
-                    //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
+                    // Same race condition risks as with the ProfileHUD
+                    // TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
+                    // Then this reference can be removed so we just work with a BaseVariable<bool>.
+                    // This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
 
@@ -397,7 +405,7 @@ public class HUDController : IHUDController
             case HUDElementID.LOADING:
                 if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
                 {
-                    CreateHudElement(configuration, hudElementId);
+                    await CreateHudElement(configuration, hudElementId, cancellationToken);
                     if (loadingHud != null && configuration.active)
                         loadingController.Initialize();
                 }
@@ -407,10 +415,8 @@ public class HUDController : IHUDController
                 break;
         }
 
-        var hudElement = GetHUDElement(hudElementId);
-
-        if (hudElement != null)
-            hudElement.SetVisibility(configuration.active && configuration.visible);
+        GetHUDElement(hudElementId)?
+           .SetVisibility(configuration.active && configuration.visible);
     }
 
     private void OpenChannelSearchWindow()
@@ -455,27 +461,34 @@ public class HUDController : IHUDController
     {
     }
 
-    public void CreateHudElement(HUDConfiguration config, HUDElementID id)
+    private async UniTask CreateHudElement(HUDConfiguration config, HUDElementID id, CancellationToken cancellationToken = default)
     {
         bool controllerCreated = hudElements.ContainsKey(id);
 
         if (config.active && !controllerCreated)
         {
-            hudElements.Add(id, hudFactory.CreateHUD(id));
+            try
+            {
+                IHUD hudElement = await hudFactory.CreateHUD(id, cancellationToken);
+                hudElements.Add(id, hudElement);
 
-            if (VERBOSE)
-                Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
+                if (VERBOSE)
+                    Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to load HUD element resource {hudElements[id].GetType().Name}. Exception message: {e.Message}");
+            }
         }
     }
 
-    public void UpdateHudElement(HUDConfiguration config, HUDElementID id)
+    private void UpdateHudElement(HUDConfiguration config, HUDElementID id)
     {
         if (!hudElements.ContainsKey(id))
             return;
 
         if (VERBOSE)
-            Debug.Log(
-                $"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
+            Debug.Log($"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
 
         hudElements[id].SetVisibility(config.visible);
     }
@@ -523,13 +536,8 @@ public class HUDController : IHUDController
         PublicChatWindowHud.SetVisibility(false);
     }
 
-    public IHUD GetHUDElement(HUDElementID id)
-    {
-        if (!hudElements.ContainsKey(id))
-            return null;
-
-        return hudElements[id];
-    }
+    public IHUD GetHUDElement(HUDElementID id) =>
+        hudElements.ContainsKey(id) ? hudElements[id] : null;
 
     public static bool IsHUDElementDeprecated(HUDElementID element)
     {

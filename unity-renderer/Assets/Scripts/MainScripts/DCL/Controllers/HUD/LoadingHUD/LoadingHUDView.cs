@@ -1,10 +1,10 @@
-using System;
 using DCL;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoadingHUDView : MonoBehaviour
+public class LoadingHUDView : MonoBehaviour, IDisposable
 {
     [SerializeField] internal TextMeshProUGUI text;
     [SerializeField] internal Image loadingBar;
@@ -13,14 +13,7 @@ public class LoadingHUDView : MonoBehaviour
     [SerializeField] internal ShowHideAnimator showHideAnimator;
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
-    private bool isDestroyed = false;
-
-    public static LoadingHUDView CreateView()
-    {
-        LoadingHUDView view = Instantiate(Resources.Load<GameObject>("LoadingHUD")).GetComponent<LoadingHUDView>();
-        view.gameObject.name = "_LoadingHUD";
-        return view;
-    }
+    private bool isDestroyed;
 
     public void Initialize()
     {

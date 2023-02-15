@@ -228,7 +228,8 @@ namespace DCL.Controllers
             if (loadWrapper != null && !loadWrapper.alreadyLoaded)
                 return;
 
-            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds);
+            entity.UpdateOuterBoundariesStatus(entity.scene.IsInsideSceneOuterBoundaries(entity.meshesInfo.mergedBounds));
+
 
             if (!entity.isInsideSceneOuterBoundaries)
                 SetMeshesAndComponentsInsideBoundariesState(entity, false);
@@ -242,7 +243,7 @@ namespace DCL.Controllers
         private void EvaluateEntityPosition(IDCLEntity entity, bool onlyOuterBoundsCheck = false)
         {
             Vector3 entityGOPosition = entity.gameObject.transform.position;
-            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition);
+            entity.UpdateOuterBoundariesStatus(entity.scene.IsInsideSceneOuterBoundaries(entityGOPosition));
 
             if (!entity.isInsideSceneOuterBoundaries)
             {
@@ -268,7 +269,7 @@ namespace DCL.Controllers
             avatarBounds.center = entityGOPosition;
             avatarBounds.size = entity.gameObject.transform.lossyScale;
 
-            entity.isInsideSceneOuterBoundaries = entity.scene.IsInsideSceneOuterBoundaries(avatarBounds);
+            entity.UpdateOuterBoundariesStatus(entity.scene.IsInsideSceneOuterBoundaries(avatarBounds));
 
             if (!entity.isInsideSceneOuterBoundaries)
             {
@@ -289,7 +290,7 @@ namespace DCL.Controllers
             if (entity.isInsideSceneBoundaries == isInsideBoundaries)
                 return;
 
-            entity.isInsideSceneBoundaries = isInsideBoundaries;
+            entity.UpdateInsideBoundariesStatus(isInsideBoundaries);
             OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
         }
 
