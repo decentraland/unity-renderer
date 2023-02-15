@@ -1,8 +1,8 @@
-import { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { DevToolsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/dev_tools.gen'
-import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping'
-import { PortContext } from './context'
+import type { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping'
+import type { PortContext } from './context'
 
 export function registerDevToolsServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, DevToolsServiceDefinition, async () => ({

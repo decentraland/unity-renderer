@@ -1,13 +1,17 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using DCL;
 using DCL.Chat;
 using DCL.Helpers;
+using DCL.Providers;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using NUnit.Framework;
 using UnityEngine;
 using NSubstitute;
+using System;
+using System.Collections.Generic;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -21,7 +25,7 @@ namespace Tests
             yield return base.SetUp();
 
             FriendsController.CreateSharedInstance(Substitute.For<IFriendsApiBridge>());
-            hudController = new HUDController(new DataStore_FeatureFlag(), new HUDFactory());
+            hudController = new HUDController(new DataStore_FeatureFlag(), new HUDFactory(new AddressableResourceProvider()));
             hudController.Initialize();
             yield return null;
         }
@@ -46,11 +50,10 @@ namespace Tests
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
             hudController.Cleanup();
+
             // HUD controllers are created
-            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
-            {
-                Assert.IsNull(hudController.GetHUDElement((HUDElementID) i));
-            }
+            foreach (HUDElementID element in Enum.GetValues(typeof(HUDElementID)))
+                Assert.IsNull(hudController.GetHUDElement(element));
 
             yield break;
         }
@@ -63,21 +66,18 @@ namespace Tests
 
             HUDConfiguration config = new HUDConfiguration() { active = true, visible = true };
 
-            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
+            foreach (HUDElementID element in Enum.GetValues(typeof(HUDElementID)))
             {
-                hudController.ConfigureHUDElement((HUDElementID) i, config, null);
-            }
-
-            yield return null;
-
-            // HUD controllers are created
-            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
-            {
-                HUDElementID elementID = (HUDElementID) i;
-                if (HUDController.IsHUDElementDeprecated(elementID))
+                if (HUDController.IsHUDElementDeprecated(element) || element == HUDElementID.NONE)
                     continue;
 
-                Assert.IsNotNull(hudController.GetHUDElement(elementID), $"Failed to create {elementID}");
+                yield return hudController.ConfigureHUDElement(element, config).ToCoroutine();
+
+                // HUD controllers are created
+                for (var i = 0; i < 5; i++)
+                    yield return null;
+
+                Assert.IsNotNull(hudController.GetHUDElement(element), $"Failed to create {element}");
             }
         }
     }

@@ -5,10 +5,10 @@ import {
 } from 'shared/selectors'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { UserActionModuleServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_action_module.gen'
-import { PortContext } from './context'
-import { RpcServerPort } from '@dcl/rpc'
+import type { PortContext } from './context'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { Scene } from '@dcl/schemas'
+import type { Scene } from '@dcl/schemas'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 

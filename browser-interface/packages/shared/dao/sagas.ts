@@ -22,27 +22,21 @@ import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalEr
 import { createAlgorithm } from './pick-realm-algorithm/index'
 import { AlgorithmChainConfig } from './pick-realm-algorithm/types'
 import { defaultChainConfig } from './pick-realm-algorithm/defaults'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
 import { getCommsRoom } from 'shared/comms/selectors'
 import { CatalystNode } from 'shared/types'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
 import { getCurrentIdentity } from 'shared/session/selectors'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
-import {
-  getFetchContentServerFromRealmAdapter,
-  getProfilesContentServerFromRealmAdapter,
-  waitForRealmAdapter
-} from 'shared/realm/selectors'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { IRealmAdapter } from 'shared/realm/types'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { waitFor } from 'lib/redux'
 
-function* waitForExplorerIdentity() {
-  while (!(yield select(getCurrentIdentity))) {
-    yield take(USER_AUTHENTIFIED)
-  }
-}
+const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
 function getLastRealmCacheKey(network: ETHEREUM_NETWORK) {
   return 'last_realm_string_' + network
@@ -209,7 +203,7 @@ function* cacheCatalystRealm() {
   const network: ETHEREUM_NETWORK = yield call(waitForNetworkSelected)
   // PRINT DEBUG INFO
   const dao: string = yield select((state) => state.dao)
-  const realmAdapter: IRealmAdapter = yield call(waitForRealmAdapter)
+  const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
   if (realmAdapter) {
     yield call(saveToPersistentStorage, getLastRealmCacheKey(network), realmAdapter.baseUrl)
@@ -233,8 +227,4 @@ function* cacheCatalystCandidates(_action: SetCatalystCandidates) {
   yield call(saveToPersistentStorage, getLastRealmCandidatesCacheKey(network), allCandidates)
 }
 
-export function* waitForRoomConnection() {
-  while (!(yield select(getCommsRoom))) {
-    yield take(SET_ROOM_CONNECTION)
-  }
-}
+export const waitForRoomConnection = waitFor(getCommsRoom, SET_ROOM_CONNECTION)

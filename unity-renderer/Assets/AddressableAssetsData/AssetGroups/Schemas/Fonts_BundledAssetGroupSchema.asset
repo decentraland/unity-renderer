@@ -16,8 +16,8 @@ MonoBehaviour:
   m_InternalBundleIdMode: 1
   m_Compression: 1
   m_IncludeAddressInCatalog: 1
-  m_IncludeGUIDInCatalog: 1
-  m_IncludeLabelsInCatalog: 1
+  m_IncludeGUIDInCatalog: 0
+  m_IncludeLabelsInCatalog: 0
   m_InternalIdNamingMode: 0
   m_CacheClearBehavior: 0
   m_IncludeInBuild: 1
@@ -26,13 +26,13 @@ MonoBehaviour:
     m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider
   m_ForceUniqueProvider: 0
   m_UseAssetBundleCache: 1
-  m_UseAssetBundleCrc: 1
+  m_UseAssetBundleCrc: 0
   m_UseAssetBundleCrcForCachedBundles: 1
   m_UseUWRForLocalBundles: 0
   m_Timeout: 0
   m_ChunkedTransfer: 0
   m_RedirectLimit: -1
-  m_RetryCount: 0
+  m_RetryCount: 3
   m_BuildPath:
     m_Id: 0f0c8053dfdfc8948bf4fe3581dcae4b
   m_LoadPath:
