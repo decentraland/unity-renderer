@@ -1,4 +1,4 @@
-﻿// unset:none
+﻿using DCL;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -49,6 +49,8 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if (!IsOutlineAvailable()) return;
+
             material.SetColor(INNER_COLOR, settings.innerColor);
             material.SetColor(OUTLINE_COLOR, settings.outlineColor);
             material.SetFloat(OUTLINE_SIZE, settings.outlineThickness.Get());
@@ -94,6 +96,9 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
         }
+
+        private static bool IsOutlineAvailable() =>
+            DataStore.i.outliner.avatarOutlined.Get().renderer != null;
 
         public override void FrameCleanup(CommandBuffer cmd) { }
     }
