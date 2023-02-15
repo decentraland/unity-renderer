@@ -1,8 +1,15 @@
+using DCL.ECS7.InternalComponents;
 using DCL.Models;
+using System;
 
 public static class ECSTransformParentingSystem
 {
-    public static void Update()
+    public static Action CreateSystem(IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent)
+    {
+        return () => Update(internalSceneBoundsCheckComponent);
+    }
+
+    private static void Update(IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent)
     {
         if (ECSTransformUtils.orphanEntities == null || ECSTransformUtils.orphanEntities.Count == 0)
         {
@@ -18,10 +25,11 @@ public static class ECSTransformParentingSystem
             if (ECSTransformUtils.TrySetParent(data.scene, data.entity, data.parentId, out IDCLEntity parent))
             {
                 if (data.entity.parentId != SpecialEntityId.SCENE_ROOT_ENTITY)
-                {
                     parent.childrenId.Add(data.entity.entityId);
-                }
+
                 ECSTransformUtils.orphanEntities.RemoveAt(i);
+
+                internalSceneBoundsCheckComponent.SetPosition(data.scene, data.entity, data.entity.gameObject.transform.position);
             }
         }
     }

@@ -56,8 +56,17 @@ namespace DCL.CRDT
            * @state CHANGE
            * @reason the state is storing old entities
            */
-            EntityDeleted = 7
+            EntityDeleted = 7,
+
+            /**
+           * An APPEND with a success insert
+           * @state CHANGE
+           * @reason the element is not in set set yet
+           */
+            StateElementAddedToSet = 8,
         };
+
+        private int MAX_ELEMENT_SET = 100;
 
         public class CrdtEntityComponentData
         {
@@ -67,15 +76,30 @@ namespace DCL.CRDT
             public object data;
         }
 
-        public class EntityComponentData
+        public class EntityComponentData: IComparable<EntityComponentData>
         {
             public int timestamp;
             public object data;
+
+            public int CompareTo(EntityComponentData other)
+            {
+                int timestampDiff = this.timestamp - other.timestamp;
+
+                if (timestampDiff == 0)
+                {
+                    return CompareData(this.data, other.data);
+                }
+                else
+                {
+                    return Math.Sign(timestampDiff);
+                }
+            }
         }
 
         public class CrdtState
         {
-            public readonly Dictionary<int, Dictionary<long, EntityComponentData>> components = new Dictionary<int, Dictionary<long, EntityComponentData>>();
+            public readonly Dictionary<int, Dictionary<long, EntityComponentData>> singleComponents = new Dictionary<int, Dictionary<long, EntityComponentData>>();
+            public readonly Dictionary<int, Dictionary<long, List<EntityComponentData>>> setComponents = new Dictionary<int, Dictionary<long, List<EntityComponentData>>>();
             public readonly Dictionary<int, int> deletedEntitiesSet = new Dictionary<int, int>();
         }
 
@@ -114,9 +138,14 @@ namespace DCL.CRDT
                     state.deletedEntitiesSet.Add(entityNumber, entityVersion);
                 }
 
-                foreach (var component in state.components)
+                foreach (var component in state.singleComponents)
                 {
                     component.Value.Remove(entityId);
+                }
+
+                foreach (var componentSet in state.setComponents)
+                {
+                    componentSet.Value.Remove(entityId);
                 }
 
                 // TODO: clean the state with this entityId
@@ -124,12 +153,26 @@ namespace DCL.CRDT
                 return ProcessMessageResultType.EntityDeleted;
             }
 
-            TryGetState(message.entityId, message.componentId, out EntityComponentData storedData);
+            if (message.type == CrdtMessageType.APPEND_COMPONENT)
+            {
+                bool elementAdded = TryAddSetComponentState(message.entityId, message.componentId, message.data, message.timestamp);
+
+                if (elementAdded)
+                {
+                    return ProcessMessageResultType.StateElementAddedToSet;
+                }
+                else
+                {
+                    return ProcessMessageResultType.NoChanges;
+                }
+            }
+
+            TryGetSingleComponentState(message.entityId, message.componentId, out EntityComponentData storedData);
 
             // The received message is > than our current value, update our state.components.
             if (storedData == null || storedData.timestamp < message.timestamp)
             {
-                UpdateState(message.entityId, message.componentId, message.data, message.timestamp);
+                UpdateSingleComponentState(message.entityId, message.componentId, message.data, message.timestamp);
                 return ProcessMessageResultType.StateUpdatedTimestamp;
             }
 
@@ -154,19 +197,19 @@ namespace DCL.CRDT
             }
 
             // Curent data is lower
-            UpdateState(message.entityId, message.componentId, message.data, message.timestamp);
+            UpdateSingleComponentState(message.entityId, message.componentId, message.data, message.timestamp);
             return ProcessMessageResultType.StateUpdatedData;
         }
 
         public EntityComponentData GetState(long entityId, int componentId)
         {
-            TryGetState(entityId, componentId, out EntityComponentData entityComponentData);
+            TryGetSingleComponentState(entityId, componentId, out EntityComponentData entityComponentData);
             return entityComponentData;
         }
 
-        public bool TryGetState(long entityId, int componentId, out EntityComponentData entityComponentData)
+        public bool TryGetSingleComponentState(long entityId, int componentId, out EntityComponentData entityComponentData)
         {
-            if (state.components.TryGetValue(componentId, out Dictionary<long, EntityComponentData> innerDictionary))
+            if (state.singleComponents.TryGetValue(componentId, out Dictionary<long, EntityComponentData> innerDictionary))
             {
                 if (innerDictionary.TryGetValue(entityId, out entityComponentData))
                 {
@@ -176,6 +219,21 @@ namespace DCL.CRDT
             entityComponentData = null;
             return false;
         }
+
+
+        public bool TryGetComponentSetState(long entityId, int componentId, out List<EntityComponentData> entityComponentSet)
+        {
+            if (state.setComponents.TryGetValue(componentId, out Dictionary<long, List<EntityComponentData>> innerDictionary))
+            {
+                if (innerDictionary.TryGetValue(entityId, out entityComponentSet))
+                {
+                    return true;
+                }
+            }
+            entityComponentSet = null;
+            return false;
+        }
+
 
         internal CrdtState GetState()
         {
@@ -187,7 +245,7 @@ namespace DCL.CRDT
         {
             List<CRDTMessage> crdtMessagesList = new List<CRDTMessage>();
 
-            foreach (var component in state.components)
+            foreach (var component in state.singleComponents)
             {
                 foreach (var entityComponentData in component.Value)
                 {
@@ -199,7 +257,25 @@ namespace DCL.CRDT
                         data = entityComponentData.Value.data
                     });
                 }
+            }
 
+
+            foreach (var component in state.setComponents)
+            {
+                foreach (var set in component.Value)
+                {
+                    foreach (var entityComponentData in set.Value)
+                    {
+                        crdtMessagesList.Add(new CRDTMessage()
+                        {
+                            type = CrdtMessageType.APPEND_COMPONENT,
+                            entityId = set.Key,
+                            componentId = component.Key,
+                            timestamp = entityComponentData.timestamp,
+                            data = entityComponentData.data
+                        });
+                    }
+                }
             }
 
             foreach (var entity in state.deletedEntitiesSet)
@@ -217,7 +293,7 @@ namespace DCL.CRDT
             return crdtMessagesList;
         }
 
-        public CRDTMessage Create(int entityId, int componentId, byte[] data)
+        public CRDTMessage CreateLwwMessage(int entityId, int componentId, byte[] data)
         {
             var result = new CRDTMessage()
             {
@@ -227,7 +303,24 @@ namespace DCL.CRDT
                 timestamp = 0,
                 type = data == null ? CrdtMessageType.DELETE_COMPONENT : CrdtMessageType.PUT_COMPONENT,
             };
-            if (TryGetState(result.entityId, result.componentId, out EntityComponentData storedMessage))
+            if (TryGetSingleComponentState(result.entityId, result.componentId, out EntityComponentData storedMessage))
+            {
+                result.timestamp = storedMessage.timestamp + 1;
+            }
+            return result;
+        }
+
+        public CRDTMessage CreateSetMessage(int entityId, int componentId, byte[] data)
+        {
+            var result = new CRDTMessage()
+            {
+                entityId = entityId,
+                componentId = componentId,
+                data = data,
+                timestamp = 0,
+                type = CrdtMessageType.APPEND_COMPONENT
+            };
+            if (TryGetSingleComponentState(result.entityId, result.componentId, out EntityComponentData storedMessage))
             {
                 result.timestamp = storedMessage.timestamp + 1;
             }
@@ -236,7 +329,7 @@ namespace DCL.CRDT
 
         public void Clear()
         {
-            state.components.Clear();
+            state.singleComponents.Clear();
             state.deletedEntitiesSet.Clear();
             clearOnUpdated = false;
         }
@@ -246,9 +339,9 @@ namespace DCL.CRDT
             clearOnUpdated = true;
         }
 
-        private void UpdateState(long entityId, int componentId, object data, int remoteTimestamp)
+        private void UpdateSingleComponentState(long entityId, int componentId, object data, int remoteTimestamp)
         {
-            bool stateExists = TryGetState(entityId, componentId, out EntityComponentData currentStateValue);
+            bool stateExists = TryGetSingleComponentState(entityId, componentId, out EntityComponentData currentStateValue);
             if (stateExists)
             {
                 currentStateValue.data = data;
@@ -262,17 +355,71 @@ namespace DCL.CRDT
                     data = data
                 };
 
-                state.components.TryGetValue(componentId, out Dictionary<long, EntityComponentData> componentSet);
+                state.singleComponents.TryGetValue(componentId, out Dictionary<long, EntityComponentData> componentSet);
                 if (componentSet != null)
                 {
                     componentSet.Add(entityId, newState);
                 }
                 else
                 {
-                    state.components.Add(componentId, new Dictionary<long, EntityComponentData>());
-                    state.components[componentId].Add(entityId, newState);
+                    state.singleComponents.Add(componentId, new Dictionary<long, EntityComponentData>());
+                    state.singleComponents[componentId].Add(entityId, newState);
                 }
             }
+        }
+
+
+        /**
+         * @returns true if the element is added or false if it already exists
+         */
+        private bool TryAddSetComponentState(long entityId, int componentId, object data, int remoteTimestamp)
+        {
+            bool stateExists = TryGetComponentSetState(entityId, componentId, out List<EntityComponentData> currentSetState);
+
+            EntityComponentData newState = new EntityComponentData()
+            {
+                timestamp = remoteTimestamp,
+                data = data
+            };
+
+            // The entity already has a Set
+            if (stateExists)
+            {
+                int index = currentSetState.BinarySearch(newState);
+
+                if (index < 0)
+                {
+                    index = ~index;
+                    currentSetState.Insert(index, newState);
+
+                    if (currentSetState.Count > MAX_ELEMENT_SET)
+                    {
+                        currentSetState.RemoveRange(MAX_ELEMENT_SET, currentSetState.Count - MAX_ELEMENT_SET);
+                    }
+                }
+                else
+                {
+                    // If the element already exist, we don't add it twice.
+                    return false;
+                }
+            }
+            else
+            {
+                state.setComponents.TryGetValue(componentId, out Dictionary<long, List<EntityComponentData>> componentSet);
+
+                // The component is already in the dictionary, we have to create the new List for the Entity
+                if (componentSet != null)
+                {
+                    componentSet.Add(entityId, new List<EntityComponentData>() { newState });
+                }
+                else
+                {
+                    state.setComponents.Add(componentId, new Dictionary<long, List<EntityComponentData>>());
+                    state.setComponents[componentId].Add(entityId, new List<EntityComponentData>() { newState });
+                }
+            }
+
+            return true;
         }
 
         /**

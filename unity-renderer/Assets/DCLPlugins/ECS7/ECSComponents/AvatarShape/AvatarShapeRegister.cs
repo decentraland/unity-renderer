@@ -8,18 +8,18 @@ namespace DCL.ECSComponents
     {
         private const string AVATAR_POOL_NAME = "AvatarShapeECS7";
         private const string AVATAR_PREFAB_PATH = "NewAvatarShape";
-        
+
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
         private Pool pool;
-        
-        public AvatarShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+
+        public AvatarShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>(AVATAR_PREFAB_PATH);
             ConfigurePool(avatarShapePrefab.gameObject);
-            factory.AddOrReplaceComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler(pool));
+            factory.AddOrReplaceComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler(pool, internalComponents.renderersComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarShape>(componentId, AvatarShapeSerializer.Serialize);
 
             this.factory = factory;
@@ -31,7 +31,7 @@ namespace DCL.ECSComponents
         {
             factory.RemoveComponent(componentId);
             componentWriter.RemoveComponentSerializer(componentId);
-            
+
             PoolManager.i.RemovePool(AVATAR_POOL_NAME);
             pool.ReleaseAll();
         }

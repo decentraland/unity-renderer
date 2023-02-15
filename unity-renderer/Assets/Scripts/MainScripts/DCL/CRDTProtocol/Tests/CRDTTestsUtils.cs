@@ -162,12 +162,12 @@ namespace Tests
                 };
 
 
-                if (!state.components.TryGetValue(componentId, out var componentCollection))
+                if (!state.singleComponents.TryGetValue(componentId, out var componentCollection))
                 {
-                    state.components.Add(componentId, new Dictionary<long, CRDTProtocol.EntityComponentData>());
+                    state.singleComponents.Add(componentId, new Dictionary<long, CRDTProtocol.EntityComponentData>());
                 }
 
-                state.components[componentId].Add(entityId, realData);
+                state.singleComponents[componentId].Add(entityId, realData);
             }
 
             foreach (var entity in finalState.deletedEntities)
