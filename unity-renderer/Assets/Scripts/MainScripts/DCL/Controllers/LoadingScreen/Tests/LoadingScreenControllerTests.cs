@@ -2,8 +2,11 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using DCL.Helpers;
+using DCL.Providers;
+using DCLPlugins.LoadingScreenPlugin;
 using Decentraland.Bff;
 using System;
+using System.Threading;
 using UnityEngine.Playables;
 
 namespace DCL.LoadingScreen.Test
@@ -25,7 +28,7 @@ namespace DCL.LoadingScreen.Test
 
 
         [SetUp]
-        public void SetUp()
+        public async void SetUp()
         {
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
@@ -37,7 +40,7 @@ namespace DCL.LoadingScreen.Test
             realmDataStore.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration());
 
 
-            LoadingScreenView auxiliaryViews = LoadingScreenView.Create();
+            LoadingScreenView auxiliaryViews = await LoadingScreenPlugin.CreateLoadingScreenView(new AddressableResourceProvider(), CancellationToken.None);;
             loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
 

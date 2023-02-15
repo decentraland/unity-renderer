@@ -7,7 +7,7 @@ import {
 } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/transport.gen'
 import { createRendererProtocolInverseRpcServer } from '../inverseRpc/rpcServer'
 import { AsyncQueue } from '@well-known-components/pushable-channel'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 
 /*
  * Create Transport thought the Rpc using the TransportService
@@ -56,7 +56,8 @@ function createRpcTransport<Context>(
  * This functions creates a inverse transport using the `TransportService`
  * which is used for the Kernel Services
  */
-export function createRpcTransportService<Context>(clientPort: RpcClientPort) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function createRpcTransportService<Context extends {}>(clientPort: RpcClientPort) {
   try {
     const transportService = codegen.loadService<Context, TransportServiceDefinition>(
       clientPort,

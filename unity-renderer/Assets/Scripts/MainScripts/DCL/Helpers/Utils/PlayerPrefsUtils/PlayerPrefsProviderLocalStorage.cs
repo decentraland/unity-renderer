@@ -28,6 +28,7 @@ namespace DCL.Helpers
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetInt(key);
                 SetInt(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;
@@ -39,7 +40,7 @@ namespace DCL.Helpers
         }
 
         public bool GetBool(string key, bool defaultValue) =>
-            GetInt(key, defaultValue ? 1 : 0) == 1;
+             GetInt(key, defaultValue ? 1 : 0) == 1;
 
         public void SetBool(string key, bool value) =>
             SetInt(key, value ? 1 : 0);
@@ -53,6 +54,7 @@ namespace DCL.Helpers
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetString(key);
                 SetString(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;
@@ -72,6 +74,7 @@ namespace DCL.Helpers
                 // We get the saved value in PlayerPrefs and move it to LocalStorage
                 valueGotFromLocalStorage = PlayerPrefs.GetFloat(key);
                 SetFloat(key, valueGotFromLocalStorage);
+                PlayerPrefs.DeleteKey(key);
             }
 
             return valueGotFromLocalStorage;

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Huds.QuestsTracker;
 using UnityEngine;
 
 namespace DCL.Huds.QuestsTracker
@@ -10,21 +9,12 @@ namespace DCL.Huds.QuestsTracker
         internal static float NOTIFICATIONS_SEPARATION { get; set; } = 0.5f;
         public static float DEFAULT_NOTIFICATION_DURATION { get; set; } = 2.5f;
 
-        internal readonly Queue<IQuestNotification> notificationsQueue = new Queue<IQuestNotification>();
+        internal readonly Queue<IQuestNotification> notificationsQueue = new ();
         private IQuestNotification currentNotification;
 
         [SerializeField] private GameObject questCompletedPrefab;
         [SerializeField] private GameObject rewardObtainedPrefab;
-        private bool isDestroyed = false;
-
-        internal static QuestsNotificationsController Create()
-        {
-            QuestsNotificationsController view = Instantiate(Resources.Load<GameObject>("QuestsNotificationsHUD")).GetComponent<QuestsNotificationsController>();
-#if UNITY_EDITOR
-            view.gameObject.name = "_QuestsNotificationsHUDView";
-#endif
-            return view;
-        }
+        private bool isDestroyed;
 
         private void Awake() { StartCoroutine(ProcessSectionsNotificationQueue()); }
 

@@ -1,50 +1,20 @@
 import { store } from 'shared/store/isolatedStore'
 
 import { getProfileFromStore } from 'shared/profiles/selectors'
-import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
 
-import { AvatarInfo, Snapshots, WearableId } from '@dcl/schemas'
-import { rgbToHex } from 'shared/profiles/transformations/convertToRGBObject'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { getInSceneAvatarsUserId } from 'shared/social/avatarTracker'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 
-export type AvatarForUserData = {
-  bodyShape: WearableId
-  skinColor: string
-  hairColor: string
-  eyeColor: string
-  wearables: WearableId[]
-  emotes?: {
-    slot: number
-    urn: string
-  }[]
-  snapshots: Snapshots
-}
-
-export function sdkCompatibilityAvatar(avatar: AvatarInfo): AvatarForUserData {
-  return {
-    ...avatar,
-    bodyShape: avatar?.bodyShape,
-    wearables: avatar?.wearables || [],
-    snapshots: {
-      ...avatar.snapshots,
-      face: avatar.snapshots.face256,
-      face128: avatar.snapshots.face256
-    } as any,
-    eyeColor: rgbToHex(avatar.eyes.color),
-    hairColor: rgbToHex(avatar.hair.color),
-    skinColor: rgbToHex(avatar.skin.color)
-  }
-}
-
-import { RpcServerPort } from '@dcl/rpc'
+import type { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { PortContext } from './context'
+import type { PortContext } from './context'
 
 import { PlayersServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/players.gen'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
-import { getAllPeers } from 'shared/comms/peers'
+import { getVisiblePeerEthereumAddresses } from 'shared/comms/peers'
+import { sceneRuntimeCompatibleAvatar } from 'lib/decentraland/profiles'
 
 export function registerPlayersServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, PlayersServiceDefinition, async () => ({
@@ -63,7 +33,7 @@ export function registerPlayersServiceServerImplementation(port: RpcServerPort<P
           hasConnectedWeb3: !!profile.data.hasConnectedWeb3,
           userId: userId,
           version: profile.data.version,
-          avatar: sdkCompatibilityAvatar(profile.data.avatar)
+          avatar: sceneRuntimeCompatibleAvatar(profile.data.avatar)
         }
       }
     },
@@ -92,11 +62,7 @@ export function registerPlayersServiceServerImplementation(port: RpcServerPort<P
     },
     async getConnectedPlayers() {
       return {
-        players: Array.from(getAllPeers().values())
-          .filter(($) => $.visible)
-          .map((peer) => {
-            return { userId: peer.ethereumAddress }
-          })
+        players: getVisiblePeerEthereumAddresses()
       }
     }
   }))
