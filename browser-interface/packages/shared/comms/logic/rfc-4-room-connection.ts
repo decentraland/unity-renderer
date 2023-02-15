@@ -75,6 +75,7 @@ export class Rfc4RoomConnection implements RoomConnection {
         break
       }
       case 'scene': {
+        console.log('BOEDO: scene', { message })
         this.events.emit('sceneMessageBus', { address, data: message.scene })
         break
       }

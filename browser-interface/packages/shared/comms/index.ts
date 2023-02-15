@@ -15,7 +15,7 @@ export function sendPublicChatMessage(message: string) {
 
 export function sendParcelSceneCommsMessage(sceneId: string, data: Uint8Array) {
   const commsContext = getCommsRoom(store.getState())
-
+  console.log('BOEDO: ', { commsContext, data, sceneId })
   commsContext
     ?.sendParcelSceneMessage({
       data,

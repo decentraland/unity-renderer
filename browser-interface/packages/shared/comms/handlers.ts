@@ -120,7 +120,7 @@ function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVers
 
 function processParcelSceneCommsMessage(message: Package<proto.Scene>) {
   const peer = getPeer(message.address)
-
+  console.log('BOEDO: ', { peer, data: message.data, scenesSubscribedToCommsEvents })
   if (peer) {
     const { sceneId, data } = message.data
     scenesSubscribedToCommsEvents.forEach(($) => {

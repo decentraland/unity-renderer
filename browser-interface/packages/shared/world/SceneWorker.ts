@@ -177,6 +177,7 @@ export class SceneWorker {
       subscribedEvents: new Set(['sceneStart']),
       events: [],
       sendSceneEvent: (type, data) => {
+        console.log('BOEDO: sendSceneEvent', { type, data, subsc: this.rpcContext.events })
         if (this.rpcContext.subscribedEvents.has(type)) {
           this.rpcContext.events.push({
             type: EventDataType.EDT_GENERIC,
@@ -274,6 +275,7 @@ export class SceneWorker {
 
   // when an user enters the scene
   onEnter(userId: string) {
+    console.log('BOEDO: onEnterScene')
     // if the scene is a portable experience, then people never enters the scene
     if (this.rpcContext.sceneData.isPortableExperience) return
     this.rpcContext.sendSceneEvent('onEnterScene', { userId })

@@ -27,6 +27,7 @@ export function registerCommunicationsControllerServiceServerImplementation(port
       cid: ctx.sceneData.id,
       receiveCommsMessage(data: Uint8Array, sender: PeerInformation) {
         const message = new TextDecoder().decode(data)
+        console.log('BOEDO: ', { message, sender })
         ctx.sendSceneEvent('comms', {
           message,
           sender: sender.ethereumAddress
