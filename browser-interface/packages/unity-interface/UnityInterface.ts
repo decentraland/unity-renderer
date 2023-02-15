@@ -1,4 +1,5 @@
 import { Vector3 } from '@dcl/ecs-math'
+import { uniqBy } from 'lib/javascript/uniqBy'
 import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
 import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
 import {
@@ -741,6 +742,3 @@ export class UnityInterface implements IUnityInterface {
 
 setUnityInstance(new UnityInterface())
 
-function uniqBy(arr: any[], key: string) {
-  return Array.from(new Map(arr.map(item => [item[key], item])).values())
-}
