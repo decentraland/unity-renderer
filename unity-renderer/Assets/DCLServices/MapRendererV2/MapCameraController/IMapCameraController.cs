@@ -18,6 +18,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void SetPosition(Vector2Int coordinates);
 
+        void SetActive(bool active);
+
         void IDisposable.Dispose()
         {
             OnDisposed(this);
