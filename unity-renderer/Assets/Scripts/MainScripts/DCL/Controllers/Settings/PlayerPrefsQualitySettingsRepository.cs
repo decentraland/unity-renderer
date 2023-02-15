@@ -21,8 +21,7 @@ namespace DCL.SettingsCommon
         private const string SSAO_QUALITY = "ssaoQuality";
         private const string MAX_HQ_AVATARS = "maxHQAvatars";
         private const string REFLECTION_RESOLUTION = "reflectionResolution";
-        private const string OUTLINE_SHADER_QUALITY = "outlineShaderQuality";
-        private const string OUTLINE_SHADER_RESOLUTION = "outlineShaderResolution";
+        private const string SHADER_QUALITY = "shaderQuality";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly QualitySettings defaultSettings;
@@ -69,8 +68,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetEnum(SSAO_QUALITY, currentSettings.ssaoQuality);
             settingsByKey.SetInt(MAX_HQ_AVATARS, currentSettings.maxHQAvatars);
             settingsByKey.SetEnum(REFLECTION_RESOLUTION, currentSettings.reflectionResolution);
-            settingsByKey.SetEnum(OUTLINE_SHADER_QUALITY, currentSettings.outlineShaderQuality);
-            settingsByKey.SetEnum(OUTLINE_SHADER_RESOLUTION, currentSettings.outlineShaderResolution);
+            settingsByKey.SetEnum(SHADER_QUALITY, currentSettings.shaderQuality);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -97,8 +95,7 @@ namespace DCL.SettingsCommon
                 settings.ssaoQuality = settingsByKey.GetEnum(SSAO_QUALITY, defaultSettings.ssaoQuality);
                 settings.maxHQAvatars = settingsByKey.GetInt(MAX_HQ_AVATARS, defaultSettings.maxHQAvatars);
                 settings.reflectionResolution = settingsByKey.GetEnum(REFLECTION_RESOLUTION, defaultSettings.reflectionResolution);
-                settings.outlineShaderQuality = settingsByKey.GetEnum(OUTLINE_SHADER_QUALITY, defaultSettings.outlineShaderQuality);
-                settings.outlineShaderResolution = settingsByKey.GetEnum(OUTLINE_SHADER_RESOLUTION, QualitySettings.OutlineShaderQuality.MID);
+                settings.shaderQuality = settingsByKey.GetEnum(SHADER_QUALITY, defaultSettings.shaderQuality);
             }
             catch (Exception e)
             {

@@ -7,7 +7,7 @@ namespace DCL.SettingsCommon
     [Serializable]
     public struct QualitySettings
     {
-        public enum OutlineShaderQuality
+        public enum ShaderQuality
         {
             LOW,
             MID,
@@ -86,7 +86,6 @@ namespace DCL.SettingsCommon
 
         public ReflectionResolution reflectionResolution;
 
-        [Tooltip("Outline Shader Quality")] public OutlineShaderQuality outlineShaderQuality;
-        [Tooltip("Outline Shader Resolution")] public OutlineShaderQuality outlineShaderResolution;
+        [Tooltip("Shader Quality")] public ShaderQuality shaderQuality;
     }
 }
