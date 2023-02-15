@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PassportAtlas
+  m_Name: Experiences
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -32,14 +32,23 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: e067ff3c556704d6798e8abe55c9ecb2, type: 3}
-    - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
+    - {fileID: 102900000, guid: e07df8ecf907342408770e8ca2ca1185, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites: []
-  m_PackedSpriteNamesToIndex: []
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24, type: 3}
+  - {fileID: 21300000, guid: 3e119603a7cc61744b63c95d90495efc, type: 3}
+  - {fileID: 21300000, guid: 2cc1bc54dd98f77459c059ab58670f74, type: 3}
+  - {fileID: 21300000, guid: c319fd971d09e1745b925fff3aa3012a, type: 3}
+  - {fileID: 21300000, guid: bc1386f864ce3b64baafbb1e74763408, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - ExperienceIconOn
+  - ExperienceIconOff
+  - HideIcon
+  - ShowIcon
+  - QuitIcon
   m_RenderDataMap: {}
-  m_Tag: PassportAtlas
+  m_Tag: Experiences
   m_IsVariant: 0

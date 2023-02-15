@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PassportAtlas
+  m_Name: StartMenuButton
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -32,14 +32,27 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: e067ff3c556704d6798e8abe55c9ecb2, type: 3}
-    - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
+    - {fileID: 102900000, guid: de534aaeac58d0b479ef9d6a71e423f8, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites: []
-  m_PackedSpriteNamesToIndex: []
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 8be7de606f9c7ca4cbc9d31a3a82dfd5, type: 3}
+  - {fileID: 21300000, guid: 193e9383359b56b4da3f682336ed6cec, type: 3}
+  - {fileID: 21300000, guid: 51517794ebfef5b49b08d321c661cee2, type: 3}
+  - {fileID: 21300000, guid: 3bdf32a4d196e1d429119d1477906987, type: 3}
+  - {fileID: 21300000, guid: b24c28e9e04cdb24aa579e22a738c402, type: 3}
+  - {fileID: 21300000, guid: 5e3b705ca4d7f6b45ba6ea1b7cf43785, type: 3}
+  - {fileID: 21300000, guid: 665522fd810d78f4c91dd7e9a0ce6e3b, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - DclLogoBg
+  - DclLogoMountain
+  - DclLogoCircle
+  - DclLogoLine3
+  - DclLogoLine2
+  - DclLogoLine1
+  - Ellipse128Stroke
   m_RenderDataMap: {}
-  m_Tag: PassportAtlas
+  m_Tag: StartMenuButton
   m_IsVariant: 0

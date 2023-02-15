@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PassportAtlas
+  m_Name: Realms
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -32,14 +32,21 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: e067ff3c556704d6798e8abe55c9ecb2, type: 3}
-    - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
+    - {fileID: 102900000, guid: 4e5899095f38eb94db79f95c12147141, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites: []
-  m_PackedSpriteNamesToIndex: []
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 25cfbec1e937f574abd4894b73b3ad4f, type: 3}
+  - {fileID: 21300000, guid: 4954043cce4126343ae4a4459625cb4a, type: 3}
+  - {fileID: 21300000, guid: 2c936c4ed0d0fad44ade3455d950ebb4, type: 3}
+  - {fileID: 21300000, guid: 64036ccffced12d48a00a842b7c6f3e8, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - WarpIcon
+  - CurrentRealmContainer
+  - RealmsHeader
+  - RealmsIcon
   m_RenderDataMap: {}
-  m_Tag: PassportAtlas
+  m_Tag: Realms
   m_IsVariant: 0
