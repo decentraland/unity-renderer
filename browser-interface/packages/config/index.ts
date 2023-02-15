@@ -93,6 +93,7 @@ export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || 
 export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
 export const WSS_ENABLED = !!ensureSingleString(qs.get('ws'))
 export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
+export const ALLOW_SWIFT_SHADER = location.search.includes('ALLOW_SWIFT_SHADER')
 
 export const ASSET_BUNDLES_DOMAIN = ensureSingleString(qs.get('ASSET_BUNDLES_DOMAIN'))
 export const SOCIAL_SERVER_URL = ensureSingleString(qs.get('SOCIAL_SERVER_URL'))
