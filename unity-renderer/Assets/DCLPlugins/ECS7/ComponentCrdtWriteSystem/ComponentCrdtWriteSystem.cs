@@ -10,6 +10,7 @@ public class ComponentCrdtWriteSystem : IDisposable
 {
     private class MessageData
     {
+        public CrdtMessageType messageType;
         public int sceneNumber;
         public long entityId;
         public int componentId;
@@ -41,10 +42,11 @@ public class ComponentCrdtWriteSystem : IDisposable
     }
 
     public void WriteMessage(int sceneNumber, long entityId, int componentId, byte[] data, int minTimeStamp,
-        ECSComponentWriteType writeType)
+        ECSComponentWriteType writeType, CrdtMessageType messageType)
     {
         MessageData messageData = messagesPool.Count > 0 ? messagesPool.Dequeue() : new MessageData();
 
+        messageData.messageType = messageType;
         messageData.sceneNumber = sceneNumber;
         messageData.entityId = entityId;
         messageData.componentId = componentId;
@@ -72,7 +74,16 @@ public class ComponentCrdtWriteSystem : IDisposable
             if (!crdtExecutors.TryGetValue(message.sceneNumber, out ICRDTExecutor crdtExecutor))
                 continue;
 
-            CRDTMessage crdt = crdtExecutor.crdtProtocol.Create((int)message.entityId, message.componentId, message.data);
+            CRDTMessage crdt;
+            if (message.messageType == CrdtMessageType.APPEND_COMPONENT)
+            {
+                crdt = crdtExecutor.crdtProtocol.CreateSetMessage((int)message.entityId, message.componentId, message.data);
+            }
+            else
+            {
+                crdt = crdtExecutor.crdtProtocol.CreateLwwMessage((int)message.entityId, message.componentId, message.data);
+
+            }
 
             if (message.minTimeStamp >= 0 && message.minTimeStamp > crdt.timestamp)
             {

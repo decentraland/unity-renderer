@@ -13,6 +13,7 @@ import { TELEPORT_TRIGGERED } from '../loading/types'
 import { SET_REALM_ADAPTER } from '../realm/actions'
 import { POSITION_SETTLED, POSITION_UNSETTLED, SET_SCENE_LOADER } from '../scene-loader/actions'
 import { RENDERING_ACTIVATED, RENDERING_BACKGROUND, RENDERING_DEACTIVATED, RENDERING_FOREGROUND } from './types'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 
 // The following actions may change the status of the loginVisible
 // Reaction on them will be ported to Renderer
@@ -52,7 +53,17 @@ export function* loadingScreenSaga() {
  * @deprecated #3642 Loading Screen Visualisation will be moved to Renderer
  */
 function* updateLoadingScreenInternal() {
+  function shouldWaitMetaConfiguration(state: RootState) {
+    return !state.meta.initialized
+  }
+
   yield call(waitForRendererInstance)
+
+  while (yield select(shouldWaitMetaConfiguration)) {}
+
+  const isDecoupledLoadingScreen = yield select(getFeatureFlagEnabled, 'decoupled_loading_screen')
+
+  if (isDecoupledLoadingScreen) return
 
   const isVisible = yield select(isLoadingScreenVisible)
 
