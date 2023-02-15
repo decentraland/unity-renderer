@@ -35,9 +35,9 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
                     break;
                 case OutlineShaderQuality.MID:
                     Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 1);
-                    blurSize.Set(1);
-                    blurSigma.Set(5);
-                    outlineThickness.Set(0.5f);
+                    blurSize.Set(1.5f);
+                    blurSigma.Set(5.5f);
+                    outlineThickness.Set(0.75f);
 
                     //blurSize.Set(1.5f);
                     //blurSigma.Set(6);
@@ -45,9 +45,9 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
                     break;
                 case OutlineShaderQuality.HIGH: // old production values
                     Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 2);
-                    blurSize.Set(1);
-                    blurSigma.Set(5);
-                    outlineThickness.Set(0.5f);
+                    blurSize.Set(2);
+                    blurSigma.Set(6);
+                    outlineThickness.Set(1f);
                     break;
                 default: throw new ArgumentOutOfRangeException();
             }
