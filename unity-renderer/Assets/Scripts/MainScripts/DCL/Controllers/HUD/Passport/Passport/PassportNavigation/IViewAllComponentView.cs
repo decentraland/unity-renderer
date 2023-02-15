@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public interface IViewAllComponentView
 {
     event Action OnBackFromViewAll;
-    event Action<int, int> OnRequestCollectibleElements;
+    event Action<string, int, int> OnRequestCollectibleElements;
 
     void Initialize(int totalCollectiblesElements);
     void SetSectionName(string sectionNameText);

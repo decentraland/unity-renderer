@@ -17,11 +17,12 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     [SerializeField] private GameObject nftPageElement;
 
     public event Action OnBackFromViewAll;
-    public event Action<int, int> OnRequestCollectibleElements;
+    public event Action<string, int, int> OnRequestCollectibleElements;
 
 
     private List<PoolableObject> nftElementsPoolableQueue = new List<PoolableObject>();
     private Pool nftElementsEntryPool;
+    private string section;
 
     public override void Start()
     {
@@ -42,7 +43,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     private void RequestPage(int pageNumber)
     {
-        OnRequestCollectibleElements?.Invoke(pageNumber, ELEMENTS_PER_PAGE);
+        OnRequestCollectibleElements?.Invoke(section, pageNumber, ELEMENTS_PER_PAGE);
     }
 
     public override void RefreshControl()
@@ -51,6 +52,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public void SetSectionName(string sectionNameText)
     {
+        section = sectionNameText;
         sectionName.text = sectionNameText;
     }
 
