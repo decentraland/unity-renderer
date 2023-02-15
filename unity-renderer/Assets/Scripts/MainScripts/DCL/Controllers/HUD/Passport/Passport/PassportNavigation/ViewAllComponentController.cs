@@ -38,6 +38,11 @@ public class ViewAllComponentController : IDisposable
         SetViewAllVisibility(false);
     }
 
+    public void ShowNftIcons(List<NFTIconComponentModel> models)
+    {
+        view.ShowNftIcons(models);
+    }
+
     public void Dispose()
     {
         view.OnBackFromViewAll -= BackFromViewAll;

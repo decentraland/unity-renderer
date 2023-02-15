@@ -1,5 +1,5 @@
-
 using System;
+using System.Collections.Generic;
 
 public interface IViewAllComponentView
 {
@@ -10,4 +10,5 @@ public interface IViewAllComponentView
     void SetSectionName(string sectionNameText);
     void SetSectionQuantity(int totalCount);
     void SetVisible(bool isVisible);
+    void ShowNftIcons(List<NFTIconComponentModel> models);
 }

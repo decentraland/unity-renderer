@@ -78,6 +78,7 @@ namespace DCL.Social.Passports
             view.CloseAllSections();
             viewAllController.SetViewAllVisibility(true);
             viewAllController.OpenViewAllSection(sectionName);
+
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)

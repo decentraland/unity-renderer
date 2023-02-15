@@ -26,7 +26,11 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     public override void Start()
     {
         backButton.onClick.RemoveAllListeners();
-        backButton.onClick.AddListener(()=>OnBackFromViewAll?.Invoke());
+        backButton.onClick.AddListener(()=>
+        {
+            ClearNftPool();
+            OnBackFromViewAll?.Invoke();
+        });
         pageSelector.OnValueChanged += RequestPage;
     }
 
@@ -60,6 +64,17 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         gameObject.SetActive(isVisible);
     }
 
+    public void ShowNftIcons(List<NFTIconComponentModel> models)
+    {
+        for (int i = 0; i < models.Count; i++)
+        {
+            PoolableObject poolableObject = nftElementsEntryPool.Get();
+            nftElementsPoolableQueue.Add(poolableObject);
+            poolableObject.gameObject.transform.SetParent(itemsContainer, false);
+            poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(models[i]);
+        }
+    }
+
     private Pool GetNftElementsEntryPool()
     {
         var pool = PoolManager.i.GetPool(NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID());
@@ -73,5 +88,12 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
         pool.ForcePrewarm();
         return pool;
+    }
+
+    private void ClearNftPool()
+    {
+        foreach (var poolObject in nftElementsPoolableQueue) { nftElementsEntryPool.Release(poolObject); }
+
+        nftElementsPoolableQueue = new List<PoolableObject>();
     }
 }
