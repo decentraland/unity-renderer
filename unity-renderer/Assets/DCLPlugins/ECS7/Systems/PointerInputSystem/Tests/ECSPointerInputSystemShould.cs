@@ -101,7 +101,7 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
@@ -127,7 +127,7 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             result.model.events.Dequeue(); // first event would be pointerDown;
             result.model.events.Dequeue(); // second event would be pointerHoverEnter
             var enqueuedEvent = result.model.events.Dequeue();
@@ -158,10 +158,11 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             result.model.events.Dequeue(); // first event would be pointerDown
-            result.model.events.Dequeue(); // second event would be pointerHoverEnter
-            var enqueuedEvent = result.model.events.Dequeue();
+
+            var result2 = inputEventResultsComponent.GetFor(scene, entity2.entityId);
+            var enqueuedEvent = result2.model.events.Dequeue();
 
             Assert.AreEqual(enqueuedEvent.type, PointerEventType.PetUp);
             Assert.AreEqual(enqueuedEvent.hit.EntityId, entity2.entityId);
@@ -189,16 +190,16 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            result.model.events.Dequeue(); // first event would be pointerDown
-            result.model.events.Dequeue(); // second event would be pointerHoverEnter
-            var enqueuedEvent = result.model.events.Dequeue();
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
+            Assert.AreEqual(result.model.events.Count, 3);
+            // up, hover and leave
+
+            var result2 = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var enqueuedEvent = result2.model.events.Dequeue();
 
             Assert.AreEqual(enqueuedEvent.type, PointerEventType.PetUp);
             Assert.IsFalse(enqueuedEvent.hit.HasEntityId);
 
-            // remaining the pointerHoverLeave of entity1
-            Assert.AreEqual(result.model.events.Count, 1);
         }
 
         [Test]
@@ -212,7 +213,7 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(entity1.entityId, enqueuedEvent.hit.EntityId);
@@ -236,15 +237,17 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             result.model.events.Dequeue(); // hoverEnter - entity1
-            var enqueuedEventHoverExit = result.model.events.Dequeue();
-            var enqueuedEventNewHoverEnter = result.model.events.Dequeue();
+            var enqueuedEventHoverExitEntity1 = result.model.events.Dequeue();
+
+            var result2 = inputEventResultsComponent.GetFor(scene, entity2.entityId);
+            var enqueuedEventNewHoverEnter = result2.model.events.Dequeue();
 
             Assert.AreEqual(entity2.entityId, enqueuedEventNewHoverEnter.hit.EntityId);
-            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExit.hit.EntityId);
+            Assert.AreEqual(entity1.entityId, enqueuedEventHoverExitEntity1.hit.EntityId);
             Assert.IsTrue(enqueuedEventNewHoverEnter.type == PointerEventType.PetHoverEnter);
-            Assert.IsTrue(enqueuedEventHoverExit.type == PointerEventType.PetHoverLeave);
+            Assert.IsTrue(enqueuedEventHoverExitEntity1.type == PointerEventType.PetHoverLeave);
         }
 
         [Test]
@@ -264,7 +267,7 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
             result.model.events.Dequeue(); // hoverEnter - entity1
             var enqueuedEventHoverExit = result.model.events.Dequeue();
 
@@ -580,7 +583,7 @@ namespace Tests
             // 4. Update to enqueue new events
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(newTestScene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(newTestScene, testEntity.entityId);
             var enqueuedEvent = result.model.events.Dequeue();
 
             Assert.AreEqual(testEntity.entityId, enqueuedEvent.hit.EntityId);
@@ -617,7 +620,7 @@ namespace Tests
 
             systemUpdate();
 
-            var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
 
             var enqueuedEvent1 = result.model.events.Dequeue();
             Assert.AreEqual(InputAction.IaPrimary, enqueuedEvent1.button);
