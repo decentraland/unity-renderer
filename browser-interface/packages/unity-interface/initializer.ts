@@ -1,6 +1,7 @@
 // This file contains code that selects which renderer to use and loads it
 import { storeCondition } from 'lib/redux/storeCondition'
 import { initializeRenderer } from 'shared/renderer/actions'
+import { ALLOW_SWIFT_SHADER } from 'config'
 import { CommonRendererOptions, loadUnity } from './loader'
 import type { UnityGame } from '@dcl/unity-renderer/src/index'
 import type { KernelOptions } from 'kernel-web-interface'
