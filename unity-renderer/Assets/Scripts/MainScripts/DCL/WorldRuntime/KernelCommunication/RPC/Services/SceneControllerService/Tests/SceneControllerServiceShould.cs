@@ -274,7 +274,7 @@ namespace Tests
                           });
 
                 var protocol = new CRDTProtocol() { };
-                var msg = protocol.Create(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
+                var msg = protocol.CreateLwwMessage(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
                 context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CRDTMessage>());
                 context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(msg.componentId, msg.entityId, msg);
                 await new WaitUntil(() => getCurrentStateFinished, 1);
