@@ -4,7 +4,6 @@ const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('fs')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
-const { generatedFiles } = require('./package.json')
 const { mkdir } = require('fs/promises')
 
 const builtIns = {

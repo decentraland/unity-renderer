@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -12,6 +11,8 @@ namespace DCLServices.WearablesCatalogService
     /// </summary>
     public class WearablesCatalogServiceProxy : IWearablesCatalogService
     {
+        private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
+
         public BaseDictionary<string, WearableItem> WearablesCatalog =>
             wearablesCatalogServiceInUse.WearablesCatalog;
 
@@ -21,6 +22,7 @@ namespace DCLServices.WearablesCatalogService
         private readonly BaseDictionary<string, WearableItem> wearablesCatalog;
         private readonly KernelConfig kernelConfig;
         private readonly WearablesWebInterfaceBridge wearablesWebInterfaceBridge;
+        private readonly BaseVariable<FeatureFlag> featureFlags;
         private bool isInitialized;
 
         public WearablesCatalogServiceProxy(
@@ -28,18 +30,23 @@ namespace DCLServices.WearablesCatalogService
             WebInterfaceWearablesCatalogService webInterfaceWearablesCatalogService,
             BaseDictionary<string, WearableItem> wearablesCatalog,
             KernelConfig kernelConfig,
-            WearablesWebInterfaceBridge wearablesWebInterfaceBridge)
+            WearablesWebInterfaceBridge wearablesWebInterfaceBridge,
+            BaseVariable<FeatureFlag> featureFlags)
         {
             this.lambdasWearablesCatalogService = lambdasWearablesCatalogService;
             this.webInterfaceWearablesCatalogService = webInterfaceWearablesCatalogService;
             this.wearablesCatalog = wearablesCatalog;
             this.kernelConfig = kernelConfig;
             this.wearablesWebInterfaceBridge = wearablesWebInterfaceBridge;
+            this.featureFlags = featureFlags;
         }
 
         public void Initialize()
         {
-            kernelConfig.EnsureConfigInitialized().Then(SetServiceInUse);
+            if (!featureFlags.Get().IsInitialized)
+                featureFlags.OnChange += CheckFeatureFlag;
+            else
+                CheckFeatureFlag(featureFlags.Get());
         }
 
         public void Dispose()
@@ -77,6 +84,9 @@ namespace DCLServices.WearablesCatalogService
         public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds) =>
             wearablesCatalogServiceInUse?.RemoveWearablesFromCatalog(wearableIds);
 
+        public void RemoveWearableFromCatalog(string wearableId) =>
+            wearablesCatalogServiceInUse?.RemoveWearableFromCatalog(wearableId);
+
         public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove) =>
             wearablesCatalogServiceInUse?.RemoveWearablesInUse(wearablesInUseToRemove);
 
@@ -89,9 +99,26 @@ namespace DCLServices.WearablesCatalogService
         public bool IsValidWearable(string wearableId) =>
             wearablesCatalogServiceInUse.IsValidWearable(wearableId);
 
-        private void SetServiceInUse(KernelConfigModel currentKernelConfig)
+        private void CheckFeatureFlag(FeatureFlag currentFeatureFlags, FeatureFlag _ = null)
         {
-            if (currentKernelConfig.urlParamsForWearablesDebug)
+            async UniTaskVoid SetServiceInUseDependingOnKernelConfig()
+            {
+                var currentKernelConfig = kernelConfig.EnsureConfigInitialized();
+                await currentKernelConfig;
+                SetServiceInUse(debugMode: currentKernelConfig.value.urlParamsForWearablesDebug);
+            }
+
+            featureFlags.OnChange -= CheckFeatureFlag;
+
+            if (currentFeatureFlags.IsFeatureEnabled(FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF))
+                SetServiceInUse(debugMode: true);
+            else
+                SetServiceInUseDependingOnKernelConfig().Forget();
+        }
+
+        private void SetServiceInUse(bool debugMode)
+        {
+            if (debugMode)
             {
                 webInterfaceWearablesCatalogService.Initialize(wearablesWebInterfaceBridge, wearablesCatalog);
                 wearablesCatalogServiceInUse = webInterfaceWearablesCatalogService;

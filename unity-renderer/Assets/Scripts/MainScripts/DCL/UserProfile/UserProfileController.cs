@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
+using DCLServices.WearablesCatalogService;
 using System;
-using DCL;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -37,17 +38,26 @@ public class UserProfileController : MonoBehaviour
         ownUserProfile = UserProfile.GetOwnUserProfile();
     }
 
+    [PublicAPI]
     public void LoadProfile(string payload)
     {
+        async UniTaskVoid RequestBaseWearablesAsync(CancellationToken ct)
+        {
+            try
+            {
+                await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct);
+            }
+            catch (Exception e)
+            {
+                OnBaseWereablesFail?.Invoke();
+                Debug.LogError(e.Message);
+            }
+        }
+
         if (!baseWearablesAlreadyRequested)
         {
             baseWearablesAlreadyRequested = true;
-            CatalogController.RequestBaseWearables()
-                             .Catch((error) =>
-                             {
-                                 OnBaseWereablesFail?.Invoke();
-                                 Debug.LogError(error);
-                             });
+            RequestBaseWearablesAsync(CancellationToken.None).Forget();
         }
 
         if (payload == null)
