@@ -1,50 +1,40 @@
-declare let window: any
+import { PersistentAsyncStorage } from "kernel-web-interface"
 
-class PersistentLocalStorage {
-  private storage: any
-  constructor(storage: any) {
-    if (storage) {
-      this.storage = storage
-    } else {
-      throw new Error('Cannot create PersistentLocalStorage without localStorage object')
-    }
-  }
+declare let window: WindowLocalStorage
 
-  async clear(): Promise<void> {
-    this.storage.clear()
-  }
-
-  async getItem(key: string): Promise<string | null> {
-    return this.storage.getItem(key)
-  }
-
-  async keys(): Promise<string[]> {
+export const asyncLocalStorage: PersistentAsyncStorage = {
+  clear: async function () {
+    return Promise.resolve(window.localStorage.clear())
+  },
+  getItem: async function (key: string) {
+    return Promise.resolve(window.localStorage.getItem(key))
+  },
+  keys: async function () {
     const keys: string[] = []
-    for (let i = 0; i < this.storage.length; i++) {
-      keys.push(this.storage.key(i) as string)
+    for (let i = 0; i < window.localStorage.length; i++) {
+      keys.push(window.localStorage.key(i) as string)
     }
-    return keys
-  }
-
-  async removeItem(key: string): Promise<void> {
-    this.storage.removeItem(key)
-  }
-
-  async setItem(key: string, value: string): Promise<void> {
-    this.storage.setItem(key, value)
+    return Promise.resolve(keys)
+  },
+  removeItem: async function (key: string): Promise<void> {
+    return Promise.resolve(window.localStorage.removeItem(key))
+  },
+  setItem(key: string, value: string): Promise<void> {
+    return Promise.resolve(window.localStorage.setItem(key, value))
   }
 }
-
-let persistentStorage: PersistentLocalStorage | null = null
+let persistentStorage: PersistentAsyncStorage | null = null
 if (window && window.localStorage) {
-  persistentStorage = new PersistentLocalStorage(window.localStorage)
+  persistentStorage = asyncLocalStorage
 }
 
-export function setPersistentStorage(storage: PersistentLocalStorage) {
+export function setPersistentStorage(storage: PersistentAsyncStorage) {
   persistentStorage = storage
 }
 
-export default persistentStorage
+export function getPersistentStorage() {
+  return persistentStorage
+}
 
 export async function saveToPersistentStorage(key: string, data: any) {
   if (!persistentStorage) {
