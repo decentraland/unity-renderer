@@ -166,8 +166,7 @@ public class ViewAllComponentController : IDisposable
 
     public void OpenViewAllSection(string sectionName)
     {
-        view.Initialize(300);
-        view.SetSectionName(sectionName);
+        view.Initialize(sectionName, 300);
     }
 
     public void SetViewAllVisibility(bool isVisible)

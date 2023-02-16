@@ -36,10 +36,13 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         pageSelector.OnValueChanged += RequestPage;
     }
 
-    public void Initialize(int totalCollectiblesElements)
+    public void Initialize(string sectionNameText, int totalCollectiblesElements)
     {
         pageSelector.Setup(totalCollectiblesElements/ELEMENTS_PER_PAGE, false);
         nftElementsEntryPool = GetNftElementsEntryPool();
+        section = sectionNameText;
+        sectionName.text = sectionNameText;
+        RequestPage(1);
     }
 
     private void RequestPage(int pageNumber)
@@ -50,12 +53,6 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public override void RefreshControl()
     {
-    }
-
-    public void SetSectionName(string sectionNameText)
-    {
-        section = sectionNameText;
-        sectionName.text = sectionNameText;
     }
 
     public void SetSectionQuantity(int totalCount)
@@ -70,13 +67,13 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public void ShowNftIcons(List<NFTIconComponentModel> models)
     {
-        for (int i = 0; i < models.Count; i++)
+        foreach (var model in models)
         {
             PoolableObject poolableObject = nftElementsEntryPool.Get();
             nftElementsPoolableQueue.Add(poolableObject);
             poolableObject.gameObject.transform.SetParent(itemsContainer, false);
             poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
-            poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(models[i]);
+            poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(model);
         }
     }
 
