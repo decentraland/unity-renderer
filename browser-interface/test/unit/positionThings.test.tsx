@@ -93,8 +93,6 @@ describe('pickWorldSpawnPoint unit tests', function () {
         parcels: ['10,10']
       }
     }
-    const basePosition = gridToWorld(10, 10)
-
     const pick = pickWorldSpawnpoint(land)
 
     expect(pick.position.x).to.be.at.least(160) 
