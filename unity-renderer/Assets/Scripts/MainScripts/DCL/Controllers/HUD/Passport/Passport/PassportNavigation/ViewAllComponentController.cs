@@ -42,6 +42,7 @@ public class ViewAllComponentController : IDisposable
         async UniTask RequestOwnedWearablesAsync(CancellationToken ct)
         {
             (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems = await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
+            view.SetTotalElements(ownedWearableItems.totalAmount);
             ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
         }
 
@@ -54,6 +55,7 @@ public class ViewAllComponentController : IDisposable
             if (response.success)
                 namesResult = response.response.Names.ToArray();
 
+            view.SetTotalElements(response.response.TotalAmount);
             ProcessReceivedNames(namesResult);
         }
 
@@ -66,6 +68,7 @@ public class ViewAllComponentController : IDisposable
             if (response.success)
                 landsResult = response.response.Lands.ToArray();
 
+            view.SetTotalElements(response.response.TotalAmount);
             ProcessReceivedLands(landsResult);
         }
 
@@ -166,7 +169,7 @@ public class ViewAllComponentController : IDisposable
 
     public void OpenViewAllSection(string sectionName)
     {
-        view.Initialize(sectionName, 300);
+        view.Initialize(sectionName);
     }
 
     public void SetViewAllVisibility(bool isVisible)

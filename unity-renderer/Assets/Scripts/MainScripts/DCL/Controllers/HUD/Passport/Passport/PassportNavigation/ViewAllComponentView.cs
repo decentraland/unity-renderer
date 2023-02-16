@@ -36,13 +36,17 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         pageSelector.OnValueChanged += RequestPage;
     }
 
-    public void Initialize(string sectionNameText, int totalCollectiblesElements)
+    public void Initialize(string sectionNameText)
     {
-        pageSelector.Setup(totalCollectiblesElements/ELEMENTS_PER_PAGE, false);
         nftElementsEntryPool = GetNftElementsEntryPool();
         section = sectionNameText;
         sectionName.text = sectionNameText;
         RequestPage(1);
+    }
+
+    public void SetTotalElements(int totalElements)
+    {
+        pageSelector.Setup((totalElements + ELEMENTS_PER_PAGE - 1) / ELEMENTS_PER_PAGE);
     }
 
     private void RequestPage(int pageNumber)
