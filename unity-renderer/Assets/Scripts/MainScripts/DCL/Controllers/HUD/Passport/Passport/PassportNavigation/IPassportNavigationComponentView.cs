@@ -28,5 +28,6 @@ namespace DCL.Social.Passports
         void CloseAllSections();
         void OpenCollectiblesTab();
         void SetInitialPage();
+        void SetViewAllButtonActive(PassportSection section, bool isActive);
     }
 }

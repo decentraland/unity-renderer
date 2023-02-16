@@ -98,20 +98,25 @@ public class ViewAllComponentController : IDisposable
     {
         try
         {
+            view.SetLoadingActive(true);
+
             (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems =
                 await wearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, true, ct);
 
             ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
             view.SetTotalElements(ownedWearableItems.totalAmount);
+            view.SetLoadingActive(false);
         }
-        catch (OperationCanceledException)
+        catch (Exception)
         {
-            Debug.Log("SANTI ----> OPERATION CANCELLED!!");
+            // Show error feedback in the UI...
         }
     }
 
     private async UniTask RequestOwnedNamesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
+        view.SetLoadingActive(true);
+
         using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
         var response = await pagePointer.GetPageAsync(pageNumber, ct);
 
@@ -119,6 +124,7 @@ public class ViewAllComponentController : IDisposable
         {
             ProcessReceivedNames(response.response.Names.ToArray());
             view.SetTotalElements(response.response.TotalAmount);
+            view.SetLoadingActive(false);
         }
         else
         {
@@ -128,6 +134,8 @@ public class ViewAllComponentController : IDisposable
 
     private async UniTask RequestOwnedLandsAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
+        view.SetLoadingActive(true);
+
         using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
         var response = await pagePointer.GetPageAsync(pageNumber, ct);
 
@@ -135,11 +143,14 @@ public class ViewAllComponentController : IDisposable
         {
             ProcessReceivedLands(response.response.Lands.ToArray());
             view.SetTotalElements(response.response.TotalAmount);
+            view.SetLoadingActive(false);
         }
         else
         {
             // Show error feedback in the UI...
         }
+
+        view.SetLoadingActive(false);
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
@@ -166,18 +177,17 @@ public class ViewAllComponentController : IDisposable
         List<NFTIconComponentModel> emoteModels = new List<NFTIconComponentModel>();
         foreach (var emote in emotes)
         {
-            emoteModels.Add(
-                new NFTIconComponentModel
-                {
-                    showMarketplaceButton = true,
-                    showType = true,
-                    type = EMOTE_TYPE,
-                    marketplaceURI = "",
-                    name = emote.GetName(),
-                    rarity = emote.rarity,
-                    imageURI = emote.ComposeThumbnailUrl(),
-                    nftId = (emote.id, EMOTE_TYPE)
-                });
+            emoteModels.Add(new NFTIconComponentModel
+            {
+                showMarketplaceButton = true,
+                showType = true,
+                type = EMOTE_TYPE,
+                marketplaceURI = "",
+                name = emote.GetName(),
+                rarity = emote.rarity,
+                imageURI = emote.ComposeThumbnailUrl(),
+                nftId = (emote.id, EMOTE_TYPE)
+            });
         }
         ShowNftIcons(emoteModels);
     }

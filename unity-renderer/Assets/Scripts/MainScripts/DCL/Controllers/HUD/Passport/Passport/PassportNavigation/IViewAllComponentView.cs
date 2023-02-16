@@ -11,4 +11,5 @@ public interface IViewAllComponentView
     void SetSectionQuantity(int totalCount);
     void SetVisible(bool isVisible);
     void ShowNftIcons(List<NFTIconComponentModel> models);
+    void SetLoadingActive(bool isLoading);
 }

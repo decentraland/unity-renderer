@@ -364,6 +364,25 @@ namespace DCL.Social.Passports
             aboutToggle.isOn = true;
         }
 
+        public void SetViewAllButtonActive(PassportSection section, bool isActive)
+        {
+            switch (section)
+            {
+                case PassportSection.Wearables:
+                    viewAllWearables.gameObject.SetActive(isActive);
+                    break;
+                case PassportSection.Emotes:
+                    viewAllEmotes.gameObject.SetActive(isActive);
+                    break;
+                case PassportSection.Names:
+                    viewAllNAMEs.gameObject.SetActive(isActive);
+                    break;
+                case PassportSection.Lands:
+                    viewAllLANDs.gameObject.SetActive(isActive);
+                    break;
+            }
+        }
+
         public void CloseAllNFTItemInfos()
         {
             for (int i = 0; i < equippedNftWearableViews.Count; i++)

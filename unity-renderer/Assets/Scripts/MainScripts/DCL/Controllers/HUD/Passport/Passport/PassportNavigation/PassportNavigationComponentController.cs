@@ -152,6 +152,7 @@ namespace DCL.Social.Passports
             {
                 try
                 {
+                    view.SetViewAllButtonActive(PassportSection.Wearables, false);
                     var wearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
                         userProfile.userId,
                         1,
@@ -159,6 +160,7 @@ namespace DCL.Social.Passports
                         true,
                         ct);
 
+                    view.SetViewAllButtonActive(PassportSection.Wearables, wearables.totalAmount > MAX_NFT_COUNT);
                     IGrouping<string, WearableItem>[] wearableItems = wearables.wearables.GroupBy(i => i.id).ToArray();
                     string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
                     userProfile.SetInventory(wearableIds);
@@ -185,7 +187,6 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedEmotes(UserProfile userProfile)
         {
             view.SetCollectibleEmotesLoadingActive(true);
-
             WearableItem[] emotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfile.userId, cts.Token);
             WearableItem[] emoteItems = emotes.GroupBy(i => i.id).Select(g => g.First()).Take(MAX_NFT_COUNT).ToArray();
             view.SetCollectibleEmotes(emoteItems);
@@ -195,9 +196,11 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedNamesAsync(UserProfile userProfile, CancellationToken ct)
         {
             view.SetCollectibleNamesLoadingActive(true);
+            view.SetViewAllButtonActive(PassportSection.Names, false);
             using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var namesResult = Array.Empty<NamesResponse.NameEntry>();
+            view.SetViewAllButtonActive(PassportSection.Names, response.response.TotalAmount > MAX_NFT_COUNT);
 
             if (response.success)
                 namesResult = response.response.Names.ToArray();
@@ -211,10 +214,11 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile, CancellationToken ct)
         {
             view.SetCollectibleLandsLoadingActive(true);
-            // TODO (Santi): Use userProfile.userId here!!
+            view.SetViewAllButtonActive(PassportSection.Lands, false);
             using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var landsResult = Array.Empty<LandsResponse.LandEntry>();
+            view.SetViewAllButtonActive(PassportSection.Lands, response.response.TotalAmount > MAX_NFT_COUNT);
 
             if (response.success)
                 landsResult = response.response.Lands.ToArray();

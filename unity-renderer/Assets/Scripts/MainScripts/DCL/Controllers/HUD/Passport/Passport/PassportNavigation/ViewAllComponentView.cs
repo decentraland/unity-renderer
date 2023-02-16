@@ -11,10 +11,12 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
 
     [SerializeField] private TMP_Text sectionName;
+    [SerializeField] private TMP_Text sectionAmount;
     [SerializeField] private ButtonComponentView backButton;
     [SerializeField] private Transform itemsContainer;
     [SerializeField] private UIPageSelector pageSelector;
     [SerializeField] private GameObject nftPageElement;
+    [SerializeField] private GameObject loadingSpinner;
 
     public event Action OnBackFromViewAll;
     public event Action<PassportSection, int, int> OnRequestCollectibleElements;
@@ -41,12 +43,17 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         nftElementsEntryPool = GetNftElementsEntryPool();
         section = passportSection;
         sectionName.text = passportSection.ToString();
+        pageSelector.Setup(0);
+        sectionAmount.gameObject.SetActive(false);
         RequestPage(0);
     }
 
     public void SetTotalElements(int totalElements)
     {
         pageSelector.Setup((totalElements + ELEMENTS_PER_PAGE - 1) / ELEMENTS_PER_PAGE);
+        sectionAmount.text = $"({totalElements})";
+        if (!sectionAmount.gameObject.activeSelf)
+            sectionAmount.gameObject.SetActive(true);
     }
 
     private void RequestPage(int pageNumber)
@@ -77,6 +84,12 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
             poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(model);
         }
+    }
+
+    public void SetLoadingActive(bool isLoading)
+    {
+        loadingSpinner.SetActive(isLoading);
+        itemsContainer.gameObject.SetActive(!isLoading);
     }
 
     private Pool GetNftElementsEntryPool()
