@@ -21,16 +21,14 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public MapCameraController(
             int width,
             int height,
-            Transform cameraParent,
-            MapCameraObject prefab,
+            MapCameraObject mapCameraObject,
             MapLayer enabledLayers,
             ICoordsUtils coordsUtils
-        ) : this(new RenderTexture(width, height, 0), cameraParent, prefab, enabledLayers, coordsUtils) { }
+        ) : this(new RenderTexture(width, height, 0), mapCameraObject, enabledLayers, coordsUtils) { }
 
         public MapCameraController(
             RenderTexture renderTexture,
-            Transform cameraParent,
-            MapCameraObject prefab,
+            MapCameraObject mapCameraObject,
             MapLayer enabledLayers,
             ICoordsUtils coordsUtils
         )
@@ -39,7 +37,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
             this.EnabledLayers = enabledLayers;
             this.coordsUtils = coordsUtils;
 
-            mapCameraObject = Object.Instantiate(prefab, cameraParent);
             mapCameraObject.transform.localPosition = Vector3.up * CAMERA_HEIGHT;
             mapCameraObject.mapCamera.orthographic = true;
         }
@@ -55,7 +52,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void SetPosition(Vector2 coordinates)
         {
-            Vector2 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
+            Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             mapCameraObject.transform.position = new Vector3(position.x, CAMERA_HEIGHT, position.y);
         }
 
