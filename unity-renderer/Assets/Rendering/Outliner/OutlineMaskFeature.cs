@@ -64,7 +64,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         {
             CommandBuffer cmd = CommandBufferPool.Get(PROFILER_TAG);
 
-            //using (new ProfilingScope(cmd, new ProfilingSampler(PROFILER_TAG)))
+            using (new ProfilingScope(cmd, new ProfilingSampler(PROFILER_TAG)))
             {
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
