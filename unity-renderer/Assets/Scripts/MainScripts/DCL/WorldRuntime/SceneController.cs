@@ -807,7 +807,9 @@ namespace DCL
                 basePosition = new Vector2Int(0, 0),
                 baseUrl = globalScene.baseUrl,
                 contents = globalScene.contents,
-                sdk7 = globalScene.sdk7
+                sdk7 = globalScene.sdk7,
+                requiredPermissions = globalScene.requiredPermissions,
+                allowedMediaHostnames = globalScene.allowedMediaHostnames
             };
 
             newScene.SetData(sceneData);

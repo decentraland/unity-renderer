@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace DCL.Models
 {
+    public static class ScenePermissionNames
+    {
+        public const string ALLOW_MEDIA_HOSTNAMES = "ALLOW_MEDIA_HOSTNAMES";
+    }
+
     [Serializable]
     public struct CreateGlobalSceneMessage
     {
@@ -15,6 +20,8 @@ namespace DCL.Models
         public string icon;
         public bool isPortableExperience;
         public bool sdk7;
+        public string[] requiredPermissions;
+        public string[] allowedMediaHostnames;
     }
 
     [Serializable]
@@ -44,6 +51,8 @@ namespace DCL.Models
 
             // Indicates if it's a sdk7 scene
             public bool sdk7 = false;
+            public string[] requiredPermissions;
+            public string[] allowedMediaHostnames;
         }
     }
 }
