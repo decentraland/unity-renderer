@@ -1,19 +1,16 @@
-import { reportScenesFromTiles } from 'shared/atlas/actions'
-import { postProcessSceneName, getPoiTiles } from 'shared/atlas/selectors'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { reportScenesFromTiles } from 'shared/atlas/actions'
+import { getPoiTiles, postProcessSceneName } from 'shared/atlas/selectors'
 import { getHotScenesService } from 'shared/dao/selectors'
-import {
-  getOwnerNameFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent,
-  getSceneDescriptionFromJsonData,
-  getSceneNameFromJsonData
-} from 'shared/selectors'
-import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnityInterface'
-import { store } from 'shared/store/isolatedStore'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import { parse } from 'sdp-transform'
+import {
+  getOwnerNameFromJsonData, getSceneDescriptionFromJsonData,
+  getSceneNameFromJsonData, getThumbnailUrlFromJsonDataAndContent
+} from 'shared/selectors'
+import { store } from 'shared/store/isolatedStore'
+import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnityInterface'
 
 export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
   await ensureRealmAdapter()
