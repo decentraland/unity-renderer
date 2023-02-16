@@ -111,6 +111,7 @@ namespace DCL
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
             result.Register<IHotScenesFetcher>(() => Substitute.For<IHotScenesFetcher>());
+            result.Register<IHotScenesController>(() => Substitute.For<IHotScenesController>());
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());

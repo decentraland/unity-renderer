@@ -37,6 +37,10 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
         public void Initialize()
         {
+            // dirty hack to prevent any logic from execution as it can be invoked in tests that are using the realtime ServiceLocatorFactory
+            if (hotScenesController.Ref == null)
+                return;
+
             cts = new CancellationTokenSource();
             scenes.AddTo(cts.Token);
 

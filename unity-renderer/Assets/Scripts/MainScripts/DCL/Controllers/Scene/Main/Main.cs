@@ -19,6 +19,8 @@ namespace DCL
     {
         [SerializeField] private bool disableSceneDependencies;
 
+        private HotScenesController hotScenesController;
+
         public PoolableComponentFactory componentFactory;
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
         protected IKernelCommunication kernelCommunication;
@@ -129,7 +131,9 @@ namespace DCL
 
         protected virtual void SetupServices()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IHotScenesController>(() => hotScenesController);
+            Environment.Setup(serviceLocator);
         }
 
         [RuntimeInitializeOnLoadMethod]
@@ -170,7 +174,7 @@ namespace DCL
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
-            gameObject.AddComponent<HotScenesController>();
+            hotScenesController = gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
             gameObject.AddComponent<AssetCatalogBridge>();
