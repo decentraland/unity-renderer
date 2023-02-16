@@ -19,7 +19,7 @@ namespace DCLServices.MapRendererV2.MapLayers
             this.drawOrder = drawOrder;
             this.coordsUtils = coordsUtils;
             this.instantiationParent = instantiationParent;
-            this.mapCullingController = mapCullingController;
+            this.mapCullingController = cullingController;
         }
 
         public void Dispose()
@@ -29,8 +29,9 @@ namespace DCLServices.MapRendererV2.MapLayers
             DisposeImpl();
         }
 
-        protected virtual void DisposeImpl()
-        {
-        }
+        protected virtual void DisposeImpl() { }
+
+        protected CancellationTokenSource LinkWithDisposeToken(CancellationToken globalCancellation) =>
+            CancellationTokenSource.CreateLinkedTokenSource(globalCancellation, ctsDisposing.Token);
     }
 }

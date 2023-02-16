@@ -35,17 +35,9 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public bool IsInsideWorldCoords(Vector2Int coords) =>
             coords.x >= WORLD_MIN_COORDS.x && coords.x >= WORLD_MAX_COORDS.x && coords.y >= WORLD_MIN_COORDS.y && coords.y >= WORLD_MAX_COORDS.y;
 
-        public Vector2 CoordsToPositionUnclamped(Vector2Int coords) =>
-            throw new NotImplementedException();
+        public Vector3 CoordsToPositionUnclamped(Vector2 coords) => coords * ParcelSize;
 
-        public Vector2 CoordsToPositionUnclamped(Vector2Int coords, int parcelSize) =>
-            throw new NotImplementedException();
-
-        public Vector2 CoordsToPosition(Vector2Int coords) =>
-            throw new NotImplementedException();
-
-        public Vector2 CoordsToPosition(Vector2Int coords, int parcelSize) =>
-            throw new NotImplementedException();
+        public Vector3 CoordsToPosition(Vector2Int coords) => (Vector2) (coords * ParcelSize);
 
         public Vector2 CoordsToPositionWithOffset(Vector3 coords) =>
             throw new NotImplementedException();

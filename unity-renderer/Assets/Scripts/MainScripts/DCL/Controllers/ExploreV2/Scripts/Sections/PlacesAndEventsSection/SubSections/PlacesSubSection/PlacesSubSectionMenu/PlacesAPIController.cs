@@ -2,7 +2,8 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
 public interface IPlacesAPIController
 {

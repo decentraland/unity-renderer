@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
-using static HotScenesController;
+using MainScripts.DCL.Controllers.HotScenes;
+using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using Environment = DCL.Environment;
 
 /// <summary>

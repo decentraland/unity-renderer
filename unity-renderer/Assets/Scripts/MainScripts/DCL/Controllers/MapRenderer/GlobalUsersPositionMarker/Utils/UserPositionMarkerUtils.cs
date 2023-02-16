@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MainScripts.DCL.Controllers.HotScenes;
+using System.Collections.Generic;
 using UnityEngine;
 
 internal class ExclusionArea
@@ -25,7 +26,7 @@ internal class ParcelData
 
 internal class ScenesFilter
 {
-    public List<ParcelData> Filter(List<HotScenesController.HotSceneInfo> hotScenesList, int maxMarkers)
+    public List<ParcelData> Filter(List<IHotScenesController.HotSceneInfo> hotScenesList, int maxMarkers)
     {
         List<ParcelData> result = new List<ParcelData>(maxMarkers);
         List<ParcelData> rawParcelCoords = GetRawParcelCoords(hotScenesList);
@@ -49,12 +50,12 @@ internal class ScenesFilter
         return result;
     }
 
-    private List<ParcelData> GetRawParcelCoords(List<HotScenesController.HotSceneInfo> hotScenesList)
+    private List<ParcelData> GetRawParcelCoords(List<IHotScenesController.HotSceneInfo> hotScenesList)
     {
         List<ParcelData> result = new List<ParcelData>();
 
-        HotScenesController.HotSceneInfo sceneInfo;
-        HotScenesController.HotSceneInfo.Realm realm;
+        IHotScenesController.HotSceneInfo sceneInfo;
+        IHotScenesController.HotSceneInfo.Realm realm;
         int scenesCount = hotScenesList.Count;
 
         for (int sceneIdx = 0; sceneIdx < scenesCount; sceneIdx++)

@@ -9,5 +9,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     {
         [field: SerializeField]
         public Transform AtlasRoot { get; private set; }
+
+        [field: SerializeField]
+        public Transform ColdUserMarkersRoot { get; private set; }
+
+        [field: SerializeField]
+        public Transform HotUserMarkersRoot { get; private set; }
     }
 }

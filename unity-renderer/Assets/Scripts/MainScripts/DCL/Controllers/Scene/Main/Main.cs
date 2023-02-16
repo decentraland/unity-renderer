@@ -6,6 +6,7 @@ using DCL.SettingsCommon;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using MainScripts.DCL.Controllers.HotScenes;
 using UnityEngine;
 
 namespace DCL
@@ -17,6 +18,8 @@ namespace DCL
     public class Main : MonoBehaviour
     {
         [SerializeField] private bool disableSceneDependencies;
+
+        private HotScenesController hotScenesController;
 
         public PoolableComponentFactory componentFactory;
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
@@ -128,7 +131,9 @@ namespace DCL
 
         protected virtual void SetupServices()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IHotScenesController>(() => hotScenesController);
+            Environment.Setup(serviceLocator);
         }
 
         [RuntimeInitializeOnLoadMethod]
@@ -169,7 +174,7 @@ namespace DCL
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceChatBridge>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
-            gameObject.AddComponent<HotScenesController>();
+            hotScenesController = gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
             gameObject.AddComponent<AssetCatalogBridge>();
