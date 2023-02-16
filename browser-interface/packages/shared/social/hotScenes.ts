@@ -1,5 +1,6 @@
 import { reportScenesFromTiles } from 'shared/atlas/actions'
 import { postProcessSceneName, getPoiTiles } from 'shared/atlas/selectors'
+import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getHotScenesService } from 'shared/dao/selectors'
 import {
   getOwnerNameFromJsonData,
@@ -12,6 +13,7 @@ import { store } from 'shared/store/isolatedStore'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { parse } from 'sdp-transform'
 
 export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
   await ensureRealmAdapter()
@@ -66,20 +68,12 @@ async function fetchPOIsAsHotSceneInfo(): Promise<HotSceneInfo[]> {
       creator: getOwnerNameFromJsonData(land.entity.metadata),
       description: getSceneDescriptionFromJsonData(land.entity.metadata),
       thumbnail: getThumbnailUrlFromJsonDataAndContent(land.entity.metadata, land.entity.content, baseContentUrl) ?? '',
-      baseCoords: TileStringToVector2(land.entity.metadata.scene.base),
+      baseCoords: parseParcelPosition(land.entity.metadata.scene.base),
       parcels: land.entity.metadata
-        ? land.entity.metadata.scene.parcels.map((parcel) => {
-            const coord = parcel.split(',').map((str) => parseInt(str, 10)) as [number, number]
-            return { x: coord[0], y: coord[1] }
-          })
+        ? land.entity.metadata.scene.parcels.map(parseParcelPosition)
         : [],
       realms: [{ serverName: '', layer: '', usersMax: 0, usersCount: 0, userParcels: [] }],
       usersTotalCount: 0
     }
   })
-}
-
-function TileStringToVector2(tileValue: string): { x: number; y: number } {
-  const tile = tileValue.split(',').map((str) => parseInt(str, 10)) as [number, number]
-  return { x: tile[0], y: tile[1] }
 }
