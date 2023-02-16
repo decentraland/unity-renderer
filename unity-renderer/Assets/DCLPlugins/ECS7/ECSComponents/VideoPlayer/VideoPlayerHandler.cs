@@ -1,15 +1,12 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Components.Video.Plugin;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
-using Decentraland.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -47,7 +44,9 @@ namespace DCL.ECSComponents
 
                 var id = entity.entityId.ToString();
                 bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
-                videoPlayer = new WebVideoPlayer(id, model.Src, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+                string videoUrl = model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
+                videoPlayer = new WebVideoPlayer(id, videoUrl, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
@@ -64,6 +63,7 @@ namespace DCL.ECSComponents
 
             // detect change of the state
             float lastPosition = lastModel?.GetPosition() ?? 0.0f;
+
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
             {
                 videoPlayer.SetTime(model.GetPosition());
