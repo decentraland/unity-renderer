@@ -12,11 +12,13 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         RenderTexture GetRenderTexture();
 
-        void TrackPlayer(/*TODO argument as needed*/);
-
+        /// <summary>
+        /// Zoom level normalized between 0 and 1
+        /// </summary>
+        /// <param name="value"></param>
         void SetZoom(float value);
 
-        void SetPosition(Vector2Int coordinates);
+        void SetPosition(Vector2 coordinates);
 
         void SetActive(bool active);
 
