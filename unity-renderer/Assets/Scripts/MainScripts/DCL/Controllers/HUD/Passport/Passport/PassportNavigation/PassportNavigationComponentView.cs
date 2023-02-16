@@ -85,7 +85,7 @@ namespace DCL.Social.Passports
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
-        public event Action<string> OnClickedViewAll;
+        public event Action<PassportSection> OnClickedViewAll;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
@@ -112,15 +112,15 @@ namespace DCL.Social.Passports
             nftLandsScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             collectiblesMainScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
 
-            viewAllWearables.onClick.AddListener(()=>OpenViewAllSection("wearables"));
-            viewAllEmotes.onClick.AddListener(()=>OpenViewAllSection("emotes"));
-            viewAllNAMEs.onClick.AddListener(()=>OpenViewAllSection("names"));
-            viewAllLANDs.onClick.AddListener(()=>OpenViewAllSection("lands"));
+            viewAllWearables.onClick.AddListener(()=>OpenViewAllSection(PassportSection.Wearables));
+            viewAllEmotes.onClick.AddListener(()=>OpenViewAllSection(PassportSection.Emotes));
+            viewAllNAMEs.onClick.AddListener(()=>OpenViewAllSection(PassportSection.Names));
+            viewAllLANDs.onClick.AddListener(()=>OpenViewAllSection(PassportSection.Lands));
         }
 
-        private void OpenViewAllSection(string sectionName)
+        private void OpenViewAllSection(PassportSection section)
         {
-            OnClickedViewAll?.Invoke(sectionName);
+            OnClickedViewAll?.Invoke(section);
         }
 
         public void CloseAllSections()

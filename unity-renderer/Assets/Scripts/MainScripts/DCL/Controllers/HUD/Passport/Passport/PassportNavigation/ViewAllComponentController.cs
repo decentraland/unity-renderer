@@ -37,53 +37,82 @@ public class ViewAllComponentController : IDisposable
         view.OnRequestCollectibleElements += RequestCollectibleElements;
     }
 
-    private void RequestCollectibleElements(string type, int pageNumber, int pageSize)
+    public void OpenViewAllSection(PassportSection section)
     {
-        async UniTask RequestOwnedWearablesAsync(CancellationToken ct)
+        view.Initialize(section);
+    }
+
+    public void SetViewAllVisibility(bool isVisible)
+    {
+        view.SetVisible(isVisible);
+    }
+
+    private void BackFromViewAll()
+    {
+        OnBackFromViewAll?.Invoke();
+        SetViewAllVisibility(false);
+    }
+
+    private void ShowNftIcons(List<NFTIconComponentModel> models)
+    {
+        view.ShowNftIcons(models);
+    }
+
+    public void Dispose()
+    {
+        view.OnBackFromViewAll -= BackFromViewAll;
+        view.OnRequestCollectibleElements -= RequestCollectibleElements;
+    }
+
+    private void RequestCollectibleElements(PassportSection section, int pageNumber, int pageSize)
+    {
+        switch (section)
         {
-            (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems = await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
-            view.SetTotalElements(ownedWearableItems.totalAmount);
-            ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
-        }
-
-        async UniTask RequestOwnedNamesAsync(CancellationToken ct)
-        {
-            using var pagePointer = namesService.GetPaginationPointer(currentPlayerId, pageSize, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(pageNumber, ct);
-            var namesResult = Array.Empty<NamesResponse.NameEntry>();
-
-            if (response.success)
-                namesResult = response.response.Names.ToArray();
-
-            view.SetTotalElements(response.response.TotalAmount);
-            ProcessReceivedNames(namesResult);
-        }
-
-        async UniTask RequestOwnedLandsAsync(CancellationToken ct)
-        {
-            using var pagePointer = landsService.GetPaginationPointer(currentPlayerId, pageSize, CancellationToken.None);
-            var response = await pagePointer.GetPageAsync(pageNumber, ct);
-            var landsResult = Array.Empty<LandsResponse.LandEntry>();
-
-            if (response.success)
-                landsResult = response.response.Lands.ToArray();
-
-            view.SetTotalElements(response.response.TotalAmount);
-            ProcessReceivedLands(landsResult);
-        }
-
-        switch (type)
-        {
-            case "wearables":
-                RequestOwnedWearablesAsync(CancellationToken.None).Forget();
+            case PassportSection.Wearables:
+                RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
                 break;
-            case "names":
-                RequestOwnedNamesAsync(CancellationToken.None).Forget();
+            case PassportSection.Names:
+                RequestOwnedNamesAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
                 break;
-            case "lands":
-                RequestOwnedLandsAsync(CancellationToken.None).Forget();
+            case PassportSection.Lands:
+                RequestOwnedLandsAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
                 break;
         }
+    }
+
+    private async UniTask RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems =
+            await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
+
+        view.SetTotalElements(ownedWearableItems.totalAmount);
+        ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
+    }
+
+    private async UniTask RequestOwnedNamesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
+        var response = await pagePointer.GetPageAsync(pageNumber, ct);
+        var namesResult = Array.Empty<NamesResponse.NameEntry>();
+
+        if (response.success)
+            namesResult = response.response.Names.ToArray();
+
+        view.SetTotalElements(response.response.TotalAmount);
+        ProcessReceivedNames(namesResult);
+    }
+
+    private async UniTask RequestOwnedLandsAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
+    {
+        using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
+        var response = await pagePointer.GetPageAsync(pageNumber, ct);
+        var landsResult = Array.Empty<LandsResponse.LandEntry>();
+
+        if (response.success)
+            landsResult = response.response.Lands.ToArray();
+
+        view.SetTotalElements(response.response.TotalAmount);
+        ProcessReceivedLands(landsResult);
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
@@ -164,32 +193,5 @@ public class ViewAllComponentController : IDisposable
             });
         }
         ShowNftIcons(landModels);
-    }
-
-
-    public void OpenViewAllSection(string sectionName)
-    {
-        view.Initialize(sectionName);
-    }
-
-    public void SetViewAllVisibility(bool isVisible)
-    {
-        view.SetVisible(isVisible);
-    }
-
-    private void BackFromViewAll()
-    {
-        OnBackFromViewAll?.Invoke();
-        SetViewAllVisibility(false);
-    }
-
-    private void ShowNftIcons(List<NFTIconComponentModel> models)
-    {
-        view.ShowNftIcons(models);
-    }
-
-    public void Dispose()
-    {
-        view.OnBackFromViewAll -= BackFromViewAll;
     }
 }

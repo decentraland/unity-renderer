@@ -74,11 +74,11 @@ namespace DCL.Social.Passports
             view.OpenCollectiblesTab();
         }
 
-        private void ClickedViewAll(string sectionName)
+        private void ClickedViewAll(PassportSection section)
         {
             view.CloseAllSections();
             viewAllController.SetViewAllVisibility(true);
-            viewAllController.OpenViewAllSection(sectionName);
+            viewAllController.OpenViewAllSection(section);
 
         }
 

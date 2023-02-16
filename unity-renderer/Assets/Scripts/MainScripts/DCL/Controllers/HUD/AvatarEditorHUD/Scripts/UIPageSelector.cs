@@ -108,6 +108,7 @@ public class UIPageSelector : MonoBehaviour
 
             uiPageButton.Initialize(i);
             uiPageButton.gameObject.SetActive(true);
+            uiPageButton.OnPageClicked -= OnPageClicked;
             uiPageButton.OnPageClicked += OnPageClicked;
         }
     }
