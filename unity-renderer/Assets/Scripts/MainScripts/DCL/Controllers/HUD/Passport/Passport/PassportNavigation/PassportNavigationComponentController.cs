@@ -60,6 +60,7 @@ namespace DCL.Social.Passports
             this.dataStore = dataStore;
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
+            view.OnClickDescriptionCoordinates += OpenGoToPanel;
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -209,5 +210,11 @@ namespace DCL.Social.Passports
 
         private bool IsProfanityFilteringEnabled() =>
             dataStore.settings.profanityChatFilteringEnabled.Get();
+
+        private void OpenGoToPanel(ParcelCoordinates coordinates)
+        {
+            dataStore.HUDs.gotoPanelVisible.Set(true, true);
+            dataStore.HUDs.gotoPanelCoordinates.Set(coordinates, true);
+        }
     }
 }

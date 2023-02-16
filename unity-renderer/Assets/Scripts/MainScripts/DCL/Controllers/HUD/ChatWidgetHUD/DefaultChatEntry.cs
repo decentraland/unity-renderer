@@ -53,7 +53,7 @@ namespace DCL.Chat.HUD
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-            // TODO: Remove hack in a newer Unity/TMPro version 
+            // TODO: Remove hack in a newer Unity/TMPro version
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
@@ -179,23 +179,22 @@ namespace DCL.Chat.HUD
 
         public void OnPointerClick(PointerEventData pointerEventData)
         {
-            if (pointerEventData.button == PointerEventData.InputButton.Left)
+            if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex =
+                TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+
+            if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                var linkIndex =
-                    TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
-                if (linkIndex == -1) return;
-
-                var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
-
-                if (CoordinateUtils.HasValidTextCoordinates(link))
-                {
-                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
-                    var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
-                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
-                }
-                else if (link.StartsWith("username://"))
-                    OnUserNameClicked?.Invoke(this);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
+            else if (link.StartsWith("username://"))
+                OnUserNameClicked?.Invoke(this);
         }
 
         public void OnPointerEnter(PointerEventData pointerEventData)
@@ -274,7 +273,7 @@ namespace DCL.Chat.HUD
 
             var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
             if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
-        
+
             isOverCoordinates = true;
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
             hoverGotoPanelTimer = timeToHoverGotoPanel;
