@@ -67,6 +67,9 @@ const server = http.createServer(app)
 
   app.use(express.static(path.resolve(__dirname, 'static')))
 
+  // compatibility with CLI for preview.html
+  app.use('/@/explorer',express.static(path.resolve(__dirname, 'static')))
+
   server.listen(port, function () {
     console.info('==>     Listening on port %s. Open up http://localhost:%s/test to run tests', port, port)
     console.info('                              Open up http://localhost:%s/ to test the client.', port)
