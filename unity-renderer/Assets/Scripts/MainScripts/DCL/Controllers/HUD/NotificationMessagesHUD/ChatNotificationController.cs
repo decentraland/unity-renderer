@@ -259,6 +259,9 @@ namespace DCL.Chat.Notifications
 
         private void TogglePanelBackground(bool isInFocus)
         {
+            if (mainChatNotificationView.GetNotificationsCount() == 0)
+                return;
+
             if (isInFocus)
                 mainChatNotificationView.ShowPanel();
             else
