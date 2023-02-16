@@ -32,7 +32,7 @@ namespace DCL.ECSComponents
         public static string GetVideoUrl(this PBVideoPlayer self, ContentProvider sceneContentProvider,
             IReadOnlyList<string> sceneRequiredPermissions, IReadOnlyList<string> sceneAllowedMediaHostnames)
         {
-            UtilsScene.TrySetMediaUrl(self.Src, sceneContentProvider,
+            UtilsScene.TryGetMediaUrl(self.Src, sceneContentProvider,
                 sceneRequiredPermissions, sceneAllowedMediaHostnames, out string url);
 
             return url;

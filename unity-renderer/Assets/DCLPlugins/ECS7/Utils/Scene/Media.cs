@@ -36,7 +36,7 @@ public static partial class UtilsScene
         return false;
     }
 
-    public static bool TrySetMediaUrl(string inputUrl, ContentProvider sceneContentProvider,
+    public static bool TryGetMediaUrl(string inputUrl, ContentProvider sceneContentProvider,
         IReadOnlyList<string> sceneRequiredPermissions, IReadOnlyList<string> sceneAllowedMediaHostnames,
         out string url)
     {

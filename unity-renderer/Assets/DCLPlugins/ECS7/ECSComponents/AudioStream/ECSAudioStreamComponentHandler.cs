@@ -65,7 +65,7 @@ namespace DCL.ECSComponents
             // We update the model and the volume
             UpdateModel(model);
 
-            isValidUrl = UtilsScene.TrySetMediaUrl(model.Url, scene.contentProvider,
+            isValidUrl = UtilsScene.TryGetMediaUrl(model.Url, scene.contentProvider,
                 scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string newUrl);
 
             if (!isValidUrl)
