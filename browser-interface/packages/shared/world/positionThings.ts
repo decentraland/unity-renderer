@@ -84,9 +84,7 @@ export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
  * @param land Scene on which the player is spawning
  */
 export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
-  const pick = pickSpawnpoint(land)
-
-  const spawnpoint = pick || { position: { x: 0, y: 0, z: 0 } }
+  const spawnpoint = pickSpawnpoint(land)
 
   const baseParcel = land.scene.base
   const [bx, by] = baseParcel.split(',')
@@ -103,16 +101,26 @@ export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
   }
 }
 
-function pickSpawnpoint(land: Scene): InstancedSpawnPoint | undefined {
-  if (!land || !land.spawnPoints || land.spawnPoints.length === 0) {
-    return undefined
+function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
+  let spawnPoints = land.spawnPoints
+  if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
+    spawnPoints = [{
+      position: {
+        x: [1, 15],
+        y: [0, 0],
+        z: [1, 15]
+      },
+    }]
+  }
+  if (!spawnPoints) {
+    throw new Error(`Invalid spawnpoint definition`)
   }
 
   // 1 - default spawn points
-  const defaults = land.spawnPoints.filter(($) => $.default)
+  const defaults = spawnPoints.filter(($) => $.default)
 
   // 2 - if no default spawn points => all existing spawn points
-  const eligiblePoints = defaults.length === 0 ? land.spawnPoints : defaults
+  const eligiblePoints = defaults.length === 0 ? spawnPoints : defaults
 
   // 3 - pick randomly between spawn points
   const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
@@ -138,8 +146,8 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint | undefined {
     }
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-      finalPosition.x = 0
-      finalPosition.z = 0
+      finalPosition.x = 8
+      finalPosition.z = 8
     }
   }
 

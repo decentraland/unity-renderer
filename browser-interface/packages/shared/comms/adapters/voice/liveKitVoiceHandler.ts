@@ -14,7 +14,8 @@ import Html from 'shared/Html'
 import { createLogger } from 'lib/logger'
 import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
 import { getPeer } from 'shared/comms/peers'
-import { getSpatialParamsFor, isChrome } from '../../../voiceChat/utils'
+import { getSpatialParamsFor } from '../../../voiceChat/utils'
+import { isChrome } from "lib/browser/isChrome"
 import { startLoopback } from './loopback'
 
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
