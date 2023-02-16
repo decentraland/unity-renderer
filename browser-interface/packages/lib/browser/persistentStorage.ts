@@ -1,4 +1,4 @@
-import { PersistentAsyncStorage } from "kernel-web-interface"
+import { PersistentAsyncStorage } from 'kernel-web-interface'
 
 declare let window: WindowLocalStorage
 

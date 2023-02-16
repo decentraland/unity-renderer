@@ -18,10 +18,37 @@ import { FeatureFlag } from 'shared/meta/types'
 import { incrementCounter } from 'shared/occurences'
 import { getProvider } from 'shared/session/index'
 import {
-  AddChatMessagesPayload, AddFriendRequestsPayload, AddFriendsPayload, AddFriendsWithDirectMessagesPayload, BuilderConfiguration, ChannelErrorPayload, ChannelInfoPayloads, ChannelSearchResultsPayload, ChatMessage, FriendshipUpdateStatusMessage, FriendsInitializationMessage, FriendsInitializeChatPayload, HeaderRequest, HUDConfiguration, HUDElementID, InstancedSpawnPoint,
-  Notification, NotificationType, RealmsInfoForRenderer, RenderProfile, SetAudioDevicesPayload, TutorialInitializationMessage, UpdateChannelMembersPayload, UpdateTotalFriendRequestsPayload,
+  AddChatMessagesPayload,
+  AddFriendRequestsPayload,
+  AddFriendsPayload,
+  AddFriendsWithDirectMessagesPayload,
+  BuilderConfiguration,
+  ChannelErrorPayload,
+  ChannelInfoPayloads,
+  ChannelSearchResultsPayload,
+  ChatMessage,
+  FriendshipUpdateStatusMessage,
+  FriendsInitializationMessage,
+  FriendsInitializeChatPayload,
+  HeaderRequest,
+  HUDConfiguration,
+  HUDElementID,
+  InstancedSpawnPoint,
+  Notification,
+  NotificationType,
+  RealmsInfoForRenderer,
+  RenderProfile,
+  SetAudioDevicesPayload,
+  TutorialInitializationMessage,
+  UpdateChannelMembersPayload,
+  UpdateTotalFriendRequestsPayload,
   UpdateTotalFriendsPayload,
-  UpdateTotalUnseenMessagesByChannelPayload, UpdateTotalUnseenMessagesByUserPayload, UpdateTotalUnseenMessagesPayload, UpdateUserStatusMessage, UpdateUserUnseenMessagesPayload, WorldPosition
+  UpdateTotalUnseenMessagesByChannelPayload,
+  UpdateTotalUnseenMessagesByUserPayload,
+  UpdateTotalUnseenMessagesPayload,
+  UpdateUserStatusMessage,
+  UpdateUserUnseenMessagesPayload,
+  WorldPosition
 } from 'shared/types'
 import { futures } from './BrowserInterface'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
