@@ -329,11 +329,11 @@
       "hash": "b42ca43f54f29c64bfb633e7655bfcb314bc1b8c"
     },
     "net.tnrd.nsubstitute": {
-      "version": "https://github.com/decentraland/Unity3D-NSubstitute.git",
+      "version": "https://github.com/decentraland/Unity3D-NSubstitute.git#chore/upgrade-to-4.4",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
+      "hash": "0d1ac0eb50274d9c88bcd75e48cc3ff6fb57d8f2"
     },
     "ru.threedisevenzeror.unitygifdecoder": {
       "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
