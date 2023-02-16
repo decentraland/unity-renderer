@@ -9,6 +9,7 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using System.Collections;
 using System.Collections.Generic;
@@ -61,7 +62,6 @@ public class IntegrationTestSuite_Legacy
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
-        result.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
         result.Register<IProfanityFilter>(() =>
         {
             IProfanityFilter profanityFilter = Substitute.For<IProfanityFilter>();
@@ -83,6 +83,10 @@ public class IntegrationTestSuite_Legacy
         IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
         emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
         result.Register<IEmotesCatalogService>(() => emotesCatalogService);
+
+        IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+        wearablesCatalogService.WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>());
+        result.Register<IWearablesCatalogService>(() => wearablesCatalogService);
 
         return result;
     }
@@ -132,8 +136,6 @@ public class IntegrationTestSuite_Legacy
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
-
-        CatalogController.Clear();
 
         Environment.Dispose();
 

@@ -65,6 +65,8 @@ namespace DCLServices.WearablesCatalogService
 
         public void Dispose()
         {
+            serviceCts?.Cancel();
+            serviceCts?.Dispose();
             Destroy(this);
         }
 
@@ -72,10 +74,11 @@ namespace DCLServices.WearablesCatalogService
             await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
-            await RequestWearablesByContextAsync(null, null, new [] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
+            await RequestWearablesByContextAsync(null, null, new[] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct) =>
-            await RequestWearablesByContextAsync(null, null, null, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
+        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
+            CancellationToken ct) =>
+            await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {
@@ -151,10 +154,7 @@ namespace DCLServices.WearablesCatalogService
                 // JsonUtility.FromJson doesn't allow null properties so we have to use Newtonsoft instead
                 request = JsonConvert.DeserializeObject<WearablesRequestResponse>(payload);
             }
-            catch (Exception e)
-            {
-                Debug.LogError($"Fail to parse wearables json {e}");
-            }
+            catch (Exception e) { Debug.LogError($"Fail to parse wearables json {e}"); }
 
             if (request == null)
                 return;
@@ -170,13 +170,11 @@ namespace DCLServices.WearablesCatalogService
 
             if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
                 requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT) ||
-                requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT))
-            {
-                ResolvePendingWearablesByContext(requestFailedResponse.context, null, requestFailedResponse.error);
-            }
+                requestFailedResponse.context.Contains(OWNED_WEARABLES_CONTEXT)) { ResolvePendingWearablesByContext(requestFailedResponse.context, null, requestFailedResponse.error); }
             else
             {
                 string[] failedWearablesIds = requestFailedResponse.context.Split(',');
+
                 foreach (string failedWearableId in failedWearablesIds)
                 {
                     ResolvePendingWearableById(
@@ -205,10 +203,13 @@ namespace DCLServices.WearablesCatalogService
         public void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds)
         {
             foreach (string wearableId in wearableIds)
-            {
-                WearablesCatalog.Remove(wearableId);
-                wearablesInUseCounters.Remove(wearableId);
-            }
+                RemoveWearableFromCatalog(wearableId);
+        }
+
+        public void RemoveWearableFromCatalog(string wearableId)
+        {
+            WearablesCatalog.Remove(wearableId);
+            wearablesInUseCounters.Remove(wearableId);
         }
 
         public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove)
@@ -220,7 +221,7 @@ namespace DCLServices.WearablesCatalogService
 
                 wearablesInUseCounters[wearableToRemove]--;
 
-                if (wearablesInUseCounters[wearableToRemove] <= 0)
+                if (wearablesInUseCounters[wearableToRemove] > 0)
                     continue;
 
                 WearablesCatalog.Remove(wearableToRemove);
@@ -249,10 +250,12 @@ namespace DCLServices.WearablesCatalogService
 
             foreach (var awaitingTask in awaitingWearableTasks)
                 awaitingTask.Value.TrySetCanceled();
+
             awaitingWearableTasks.Clear();
 
             foreach (var awaitingTask in awaitingWearablesByContextTasks)
                 awaitingTask.Value.TrySetCanceled();
+
             awaitingWearablesByContextTasks.Clear();
         }
 
@@ -284,6 +287,7 @@ namespace DCLServices.WearablesCatalogService
 
                 var requestedWearables = await RequestWearablesByContextAsync(null, wearablesToRequest, null, string.Join(",", wearablesToRequest), false, ct);
                 List<string> wearablesNotFound = wearablesToRequest.ToList();
+
                 foreach (WearableItem wearable in requestedWearables)
                 {
                     wearablesNotFound.Remove(wearable.id);
@@ -304,13 +308,14 @@ namespace DCLServices.WearablesCatalogService
                 if (pendingWearableRequestedTimes.Count <= 0)
                     continue;
 
-                var expiredRequests = from taskRequestedTime in pendingWearableRequestedTimes
+                var expiredRequests = (from taskRequestedTime in pendingWearableRequestedTimes
                     where Time.realtimeSinceStartup - taskRequestedTime.Value > REQUESTS_TIME_OUT_SECONDS
-                    select taskRequestedTime.Key;
+                    select taskRequestedTime.Key).ToList();
 
                 foreach (string expiredRequestId in expiredRequests)
                 {
                     pendingWearableRequestedTimes.Remove(expiredRequestId);
+
                     ResolvePendingWearableById(expiredRequestId, null,
                         $"The request for the wearable '{expiredRequestId}' has exceed the set timeout!");
                 }
@@ -326,9 +331,9 @@ namespace DCLServices.WearablesCatalogService
                 if (pendingWearablesByContextRequestedTimes.Count <= 0)
                     continue;
 
-                var expiredRequests = from promiseByContextRequestedTime in pendingWearablesByContextRequestedTimes
+                var expiredRequests = (from promiseByContextRequestedTime in pendingWearablesByContextRequestedTimes
                     where Time.realtimeSinceStartup - promiseByContextRequestedTime.Value > REQUESTS_TIME_OUT_SECONDS
-                    select promiseByContextRequestedTime.Key;
+                    select promiseByContextRequestedTime.Key).ToList();
 
                 foreach (string expiredRequestToRemove in expiredRequests)
                 {

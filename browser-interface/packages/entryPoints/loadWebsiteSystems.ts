@@ -76,9 +76,7 @@ export async function loadWebsiteSystems(options: KernelOptions['kernelOptions']
     renderer.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
   })()
 
-  const configForRenderer = kernelConfigForRenderer()
-
-  renderer.SetKernelConfiguration(configForRenderer)
+  renderer.SetKernelConfiguration(kernelConfigForRenderer())
   renderer.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: true, visible: false })
   renderer.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
 

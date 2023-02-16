@@ -5,6 +5,7 @@ using DCL.Components;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using SocialFeaturesAnalytics;
 using System;
@@ -93,7 +94,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
         return new AvatarWithHologram(
             baseAvatar,
-            new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
+            new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
             new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             animator,
             new Visibility(),

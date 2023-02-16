@@ -2,6 +2,7 @@ using DCL;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Helpers;
+using DCL.Models;
 using Decentraland.Common;
 using NSubstitute;
 using NUnit.Framework;
@@ -130,7 +131,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator ChangeMaterialWhenNoTextureSource()
+        public IEnumerator ChangeMaterialWhenNoTextureSourceChangeMaterialWhenNoTextureSource()
         {
             Debug.Log(TestAssetsUtils.GetPath() + "/Images/avatar.png");
 
@@ -387,7 +388,41 @@ namespace Tests
                     Src = "data:text/plain;base64",
                 }
             };
+
             Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
+        }
+
+        [Test]
+        public void DontAllowExternalTextureWithoutPermissionsSet()
+        {
+            TextureUnion texture = new TextureUnion()
+            {
+                Texture = new Texture()
+                {
+                    Src = "http://fake/sometexture.png",
+                }
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+
+            Assert.AreEqual(string.Empty, texture.GetTextureUrl(scene));
+        }
+
+        [Test]
+        public void AllowExternalTextureWithPermissionsSet()
+        {
+            TextureUnion texture = new TextureUnion()
+            {
+                Texture = new Texture()
+                {
+                    Src = "http://fake/sometexture.png",
+                }
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            Assert.AreEqual(texture.Texture.Src, texture.GetTextureUrl(scene));
         }
     }
 }
