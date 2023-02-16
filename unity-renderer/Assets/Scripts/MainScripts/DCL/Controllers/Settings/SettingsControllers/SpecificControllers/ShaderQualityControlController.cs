@@ -24,19 +24,19 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
             switch (currentQualitySetting.shaderQuality)
             {
                 case ShaderQuality.LOW:
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 0);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 4);
                     blurSize.Set(1);
                     blurSigma.Set(5);
                     outlineThickness.Set(0.5f);
                     break;
                 case ShaderQuality.MID:
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 1);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 32);
                     blurSize.Set(1.5f);
                     blurSigma.Set(5.5f);
                     outlineThickness.Set(0.75f);
                     break;
                 case ShaderQuality.HIGH: // old production values
-                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 2);
+                    Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 64);
                     blurSize.Set(2);
                     blurSigma.Set(6);
                     outlineThickness.Set(1f);
