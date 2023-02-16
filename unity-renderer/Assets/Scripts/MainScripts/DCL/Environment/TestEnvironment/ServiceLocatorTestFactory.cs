@@ -32,6 +32,7 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
 
             result.Register<IWebRequestMonitor>(() =>
             {
