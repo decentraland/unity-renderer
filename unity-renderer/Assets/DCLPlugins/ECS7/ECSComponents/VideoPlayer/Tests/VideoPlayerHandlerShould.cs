@@ -1,12 +1,13 @@
-using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Components.Video.Plugin;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -36,6 +37,10 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
+
+            scene.contentProvider.contents.Add(new ContentServerUtils.MappingPair() { file = "video.mp4", hash = "video.mp4" });
+            scene.contentProvider.contents.Add(new ContentServerUtils.MappingPair() { file = "other-video.mp4", hash = "other-video.mp4" });
+            scene.contentProvider.BakeHashes();
 
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
         }
@@ -109,6 +114,43 @@ namespace Tests
             Assert.AreEqual(videoPlayerHandler.videoPlayer.url, "other-video.mp4");
             Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, true);
             Assert.AreEqual(videoPlayerHandler.videoPlayer.volume, 0.5f);
+        }
+
+        [Test]
+        public void DontAllowExternalVideoWithoutPermissionsSet()
+        {
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "http://fake/video.mp4",
+                Playing = true,
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+
+            string outputUrl = model.GetVideoUrl(scene.contentProvider,
+                scene.sceneData.requiredPermissions,
+                scene.sceneData.allowedMediaHostnames);
+
+            Assert.AreEqual(string.Empty, outputUrl);
+        }
+
+        [Test]
+        public void AllowExternalVideoWithPermissionsSet()
+        {
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "http://fake/video.mp4",
+                Playing = true,
+            };
+
+            scene.sceneData.allowedMediaHostnames = new[] { "fake" };
+            scene.sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            string outputUrl = model.GetVideoUrl(scene.contentProvider,
+                scene.sceneData.requiredPermissions,
+                scene.sceneData.allowedMediaHostnames);
+
+            Assert.AreEqual(model.Src, outputUrl);
         }
     }
 }

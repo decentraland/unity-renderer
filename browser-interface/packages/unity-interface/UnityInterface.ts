@@ -52,6 +52,8 @@ import { Avatar, ContentMapping } from '@dcl/schemas'
 import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import { incrementCounter } from 'shared/occurences'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { uniqBy } from 'lib/javascript/uniqBy'
+import { stringify } from 'lib/javascript/stringify'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -268,10 +270,7 @@ export class UnityInterface implements IUnityInterface {
       wearables = uniqBy(wearables, 'id')
 
       //Then, we map to a string array to find the limit of wearables we can add
-      function stringifyWearable(num) {
-        return JSON.stringify(num)
-      }
-      const wearablesStringArray: string[] = wearables.map(stringifyWearable)
+      const wearablesStringArray: string[] = wearables.map(stringify)
 
       //Theoretical limit is at 1306299. Added a smaller value to keep it safe
       const SAFE_THRESHOLD = 1300000
@@ -740,7 +739,3 @@ export class UnityInterface implements IUnityInterface {
 }
 
 setUnityInstance(new UnityInterface())
-
-function uniqBy(arr: any[], key: string) {
-  return Array.from(new Map(arr.map(item => [item[key], item])).values())
-}

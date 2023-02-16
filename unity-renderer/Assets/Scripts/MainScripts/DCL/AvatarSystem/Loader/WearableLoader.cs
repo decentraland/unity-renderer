@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -10,7 +11,7 @@ namespace AvatarSystem
     public class WearableLoader : IWearableLoader
     {
         // TODO: This should be a service
-        internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver();
+        internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver(DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>());
         static WearableLoader()
         {
             // Prewarm default wearables

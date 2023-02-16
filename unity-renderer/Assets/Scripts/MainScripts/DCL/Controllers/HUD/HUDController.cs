@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using DCL.Chat.HUD;
 using DCL.Chat;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class HUDController : IHUDController
 {
@@ -24,6 +24,7 @@ public class HUDController : IHUDController
 
     public IHUDFactory hudFactory = null;
 
+    private readonly IWearablesCatalogService wearablesCatalogService;
     private InputAction_Trigger toggleUIVisibilityTrigger;
     private DataStore_FeatureFlag featureFlags;
 
@@ -34,8 +35,9 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
+    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
     {
+        this.wearablesCatalogService = wearablesCatalogService;
         this.hudFactory = hudFactory;
         this.featureFlags = featureFlags;
     }
@@ -128,7 +130,7 @@ public class HUDController : IHUDController
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private BaseDictionary<string, WearableItem> wearableCatalog => CatalogController.wearableCatalog;
+    private BaseDictionary<string, WearableItem> wearableCatalog => wearablesCatalogService.WearablesCatalog;
 
     private void ShowSettings()
     {
