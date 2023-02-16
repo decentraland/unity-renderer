@@ -9,6 +9,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 {
     private const int ELEMENTS_PER_PAGE = 20;
     private const string NFT_ELEMENTS_POOL_NAME_PREFIX = "NFTElementsEntriesPool_";
+    private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
 
     [SerializeField] private TMP_Text sectionName;
     [SerializeField] private ButtonComponentView backButton;
@@ -74,6 +75,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             PoolableObject poolableObject = nftElementsEntryPool.Get();
             nftElementsPoolableQueue.Add(poolableObject);
             poolableObject.gameObject.transform.SetParent(itemsContainer, false);
+            poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
             poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(models[i]);
         }
     }
