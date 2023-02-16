@@ -92,6 +92,9 @@ namespace DCL.Chat.Notifications
             scrollbarAnimator?.Hide();
         }
 
+        public int GetNotificationsCount() =>
+            notificationQueue.Count;
+
         public void ShowNotifications()
         {
             foreach (BaseComponentView notification in notificationQueue)
