@@ -53,13 +53,13 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void InitializeLayers()
         {
-            CollectionAssert.AreEquivalent(EnumUtils.Values<MapLayer>().Where(l => l != MapLayer.None), mapRenderer.initializedLayersInternal);
+            CollectionAssert.AreEquivalent(EnumUtils.Values<MapLayer>().Where(l => l != MapLayer.None), mapRenderer.initializedLayers_Test);
         }
 
         [Test]
         public void EnableLayerByMask([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayersInternal(mask);
+            mapRenderer.EnableLayers_Test(mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {
@@ -71,8 +71,8 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void DisableLayerByMask([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayersInternal(mask);
-            mapRenderer.DisableLayersInternal(mask);
+            mapRenderer.EnableLayers_Test(mask);
+            mapRenderer.DisableLayers_Test(mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {
@@ -84,10 +84,10 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void NotDisableLayerIfStillUsed([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayersInternal(mask);
-            mapRenderer.EnableLayersInternal(mask);
+            mapRenderer.EnableLayers_Test(mask);
+            mapRenderer.EnableLayers_Test(mask);
 
-            mapRenderer.DisableLayersInternal(mask);
+            mapRenderer.DisableLayers_Test(mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {

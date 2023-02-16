@@ -6,6 +6,7 @@ using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using MainScripts.DCL.Controllers.AssetManager;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
@@ -109,6 +110,7 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
+            result.Register<IHotScenesFetcher>(() => Substitute.For<IHotScenesFetcher>());
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());

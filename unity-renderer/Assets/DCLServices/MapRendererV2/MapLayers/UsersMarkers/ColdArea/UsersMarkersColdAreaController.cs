@@ -15,7 +15,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
     /// This controller is responsible for updating User Markers outside of the comms area.
     /// Whereas the comms area is the region around the player where avatars (and therefore the users) are fetched according to the completely different logic
     /// </summary>
-    internal class UsersMarkersColdAreaController : MapLayerControllerBase, IMapLayerController, IMapCullingListener<IColdUserMarker>
+    internal partial class UsersMarkersColdAreaController : MapLayerControllerBase, IMapLayerController, IMapCullingListener<IColdUserMarker>
     {
         internal delegate IColdUserMarker ColdUserMarkerBuilder(
             ColdUserMarkerObject prefab,
@@ -61,7 +61,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
             async UniTask InstantiateMarkers(CancellationToken ct)
             {
-                for (var i = 0; i < maxMarkers; i++)
+                for (var i = 0; i < maxMarkers;)
                 {
                     var batchSize = Mathf.Min(maxMarkers - i, CREATE_PER_BATCH);
 
@@ -73,7 +73,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
                         i++;
                     }
 
-                    await UniTask.NextFrame(ct);
+                    // NextFrame does not work in Tests (see the implementation, there is a special case if Application is not running)
+                    await UniTask.DelayFrame(1, cancellationToken: ct);
                 }
 
                 storage = new ColdUserMarkersStorage(instances, SetData);
@@ -114,9 +115,13 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
         private async UniTaskVoid ColdAreasUpdateLoop(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
-                await foreach (var data in hotScenesFetcher.Ref.ScenesInfo)
-                    RenewSceneInfos(data);
+            await foreach (var data in hotScenesFetcher.Ref.ScenesInfo)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                RenewSceneInfos(data);
+            }
         }
 
         private void RenewSceneInfos(IReadOnlyList<IHotScenesController.HotSceneInfo> sceneInfos)

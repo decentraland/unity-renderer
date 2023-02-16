@@ -8,12 +8,12 @@ namespace DCLServices.MapRendererV2
     /// </summary>
     public partial class MapRenderer
     {
-        internal IReadOnlyCollection<MapLayer> initializedLayersInternal => layers.Keys;
+        internal IReadOnlyCollection<MapLayer> initializedLayers_Test => layers.Keys;
 
-        internal void EnableLayersInternal(MapLayer mask) =>
+        internal void EnableLayers_Test(MapLayer mask) =>
             EnableLayers(mask);
 
-        internal void DisableLayersInternal(MapLayer mask) =>
+        internal void DisableLayers_Test(MapLayer mask) =>
             DisableLayers(mask);
     }
 }

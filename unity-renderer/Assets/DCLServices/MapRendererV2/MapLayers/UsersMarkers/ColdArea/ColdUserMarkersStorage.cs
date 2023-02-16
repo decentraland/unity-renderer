@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 {
-    internal struct ColdUserMarkersStorage
+    internal partial struct ColdUserMarkersStorage
     {
         private readonly IColdUserMarker[] markers;
         private readonly Action<IColdUserMarker, (string realmServer, Vector2Int coords)> setData;
@@ -21,6 +21,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         }
 
         internal ReadOnlySpan<IColdUserMarker> Markers => markers.AsSpan()[..usedMarkers];
+
+        internal int Capacity => markers.Length;
 
         internal void AdjustPoolSize(
             int newCount,
@@ -75,7 +77,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
             var partitionPointer = 0;
             var dataIndex = 0;
 
-            for (var i = 0; i < scenesCount && markersCount > 0; i++)
+            for (var i = 0; i < scenesCount; i++)
             {
                 var sceneInfo = scenesList[i];
 
@@ -86,7 +88,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
                 {
                     var realm = sceneInfo.realms[realmIdx];
 
-                    for (int parcelIdx = 0; parcelIdx < realm.userParcels.Length; parcelIdx++)
+                    for (int parcelIdx = 0; parcelIdx < realm.userParcels.Length && dataIndex < markersCount; parcelIdx++)
                     {
                         if (partitionPointer == 0)
                         {
@@ -94,7 +96,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
                             setData(obj, (realm.serverName, realm.userParcels[parcelIdx]));
 
                             dataIndex++;
-                            partitionPointer += step;
+                            partitionPointer += step - 1;
                         }
                         else
                         {

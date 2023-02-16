@@ -9,12 +9,9 @@ using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Helpers.Utils;
-using System;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
 {
@@ -52,6 +49,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 async UniTask CreateAtlas()
                 {
                     var atlasChunkPrefab = await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);
+
                     var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, ATLAS_DRAW_ORDER, ATLAS_CHUNK_SIZE,
                         coordsUtils, cullingController, ChunkController.CreateChunk);
 
@@ -76,24 +74,21 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 {
                     var prefab = await AddressableProvider.GetAddressable<HotUserMarkerObject>(HOT_USER_MARKER_ADDRESS, cancellationToken);
 
-                    HotUserMarkerObject CreateObject()
+                    void SetSortingOrder(HotUserMarkerObject obj)
                     {
-                        var instance = Object.Instantiate(prefab, configuration.HotUserMarkersRoot);
-                        instance.sprite.sortingOrder = HOT_USER_MARKERS_DRAW_ORDER;
-                        return instance;
+                        obj.sprite.sortingOrder = HOT_USER_MARKERS_DRAW_ORDER;
                     }
 
-                    var objectsPool = new ObjectPool<HotUserMarkerObject>(CreateObject, actionOnDestroy: Object.Destroy, defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
+                    var objectsPool = new UnityObjectPool<HotUserMarkerObject>(prefab, configuration.HotUserMarkersRoot, actionOnCreate: SetSortingOrder, defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
 
                     IHotUserMarker CreateWrap() =>
                         new HotUserMarker(objectsPool, cullingController, coordsUtils, CommonScriptableObjects.worldOffset);
 
                     var wrapsPool = new ObjectPool<IHotUserMarker>(CreateWrap, actionOnRelease: m => m.Dispose(), defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
-                    wrapsPool.Prewarm(HOT_USER_MARKERS_PREWARM_COUNT);
 
-                    var controller = new UsersMarkersHotAreaController(DataStore.i.player.otherPlayers, objectsPool, wrapsPool, configuration.HotUserMarkersRoot, coordsUtils, cullingController, HOT_USER_MARKERS_DRAW_ORDER);
+                    var controller = new UsersMarkersHotAreaController(DataStore.i.player.otherPlayers, objectsPool, wrapsPool, HOT_USER_MARKERS_PREWARM_COUNT, configuration.HotUserMarkersRoot, coordsUtils, cullingController, HOT_USER_MARKERS_DRAW_ORDER);
 
-                    await UniTask.WhenAll(objectsPool.PrewarmAsync(CreateObject, HOT_USER_MARKERS_PREWARM_COUNT, 20, cancellationToken), controller.Initialize(cancellationToken));
+                    await controller.Initialize(cancellationToken);
                     await writer.YieldAsync((MapLayer.HotUsersMarkers, controller));
                 }
 

@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,28 +15,36 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
     /// </summary>
     internal class UsersMarkersHotAreaController : MapLayerControllerBase, IMapCullingListener<IHotUserMarker>, IMapLayerController
     {
-        private readonly IObjectPool<HotUserMarkerObject> objectsPool;
+        internal const int PREWARM_PER_FRAME = 20;
+
+        private readonly IUnityObjectPool<HotUserMarkerObject> objectsPool;
         private readonly IObjectPool<IHotUserMarker> wrapsPool;
 
         private readonly BaseDictionary<string, Player> otherPlayers;
 
-        private readonly Func<IHotUserMarker> poolObjectBuilder;
+        private readonly int prewarmCount;
 
         private readonly Dictionary<string, IHotUserMarker> markers = new ();
 
+        internal IReadOnlyDictionary<string, IHotUserMarker> Markers => markers;
+
         public UsersMarkersHotAreaController(BaseDictionary<string, Player> otherPlayers,
-            IObjectPool<HotUserMarkerObject> objectsPool, IObjectPool<IHotUserMarker> wrapsPool,
-            Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
+            IUnityObjectPool<HotUserMarkerObject> objectsPool, IObjectPool<IHotUserMarker> wrapsPool,
+            int prewarmCount, Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder)
             : base(parent, coordsUtils, cullingController, drawOrder)
         {
             this.otherPlayers = otherPlayers;
             this.objectsPool = objectsPool;
+            this.prewarmCount = prewarmCount;
 
             this.wrapsPool = wrapsPool;
         }
 
-        public UniTask Initialize(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        public UniTask Initialize(CancellationToken cancellationToken)
+        {
+            wrapsPool.Prewarm(prewarmCount);
+            return objectsPool.PrewarmAsync(prewarmCount, PREWARM_PER_FRAME, LinkWithDisposeToken(cancellationToken).Token);
+        }
 
         protected override void DisposeImpl()
         {
