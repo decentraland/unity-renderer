@@ -39,52 +39,5 @@ export const ACTIONS_FOR_LOADING = [
   SCENE_UNLOAD
 ]
 
-/** @deprecated #3642 */
 export function* loadingScreenSaga() {
-  yield takeLatest(UPDATE_LOADING_SCREEN, updateLoadingScreenInternal)
-
-  yield takeLatest(ACTIONS_FOR_LOADING, function* () {
-    yield put(updateLoadingScreen())
-  })
-}
-
-/**
- * This saga hides, show and update the loading screen
- * @deprecated #3642 Loading Screen Visualisation will be moved to Renderer
- */
-function* updateLoadingScreenInternal() {
-  function shouldWaitMetaConfiguration(state: RootState) {
-    return !state.meta.initialized
-  }
-
-  yield call(waitForRendererInstance)
-
-  while (yield select(shouldWaitMetaConfiguration)) {}
-
-  const isDecoupledLoadingScreen = yield select(getFeatureFlagEnabled, 'decoupled_loading_screen')
-
-  if (isDecoupledLoadingScreen) return
-
-  const isVisible = yield select(isLoadingScreenVisible)
-
-  const parcelLoadingStarted = yield select(getParcelLoadingStarted)
-  const loadingState: LoadingState = yield select(getLoadingState)
-  const loadingMessage: string | undefined = yield select((state: RootState): string | undefined => {
-    const msgs: string[] = []
-    if (!state.realm.realmAdapter) msgs.push('Picking realm...')
-    else if (!state.sceneLoader) msgs.push('Initializing world loader...')
-    else if (!parcelLoadingStarted) msgs.push('Fetching initial parcels...')
-
-    if (!state.comms.context) msgs.push('Connecting to comms...')
-
-    msgs.push(loadingState.message)
-    return msgs.join('\n')
-  })
-
-  const loadingScreen = {
-    isVisible,
-    message: loadingMessage || loadingState.message || '',
-    showTips: loadingState.initialLoad || !parcelLoadingStarted
-  }
-  getUnityInstance().SetLoadingScreen(loadingScreen)
 }
