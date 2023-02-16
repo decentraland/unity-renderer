@@ -8,14 +8,12 @@ using UnityEngine;
 public class ViewAllComponentController : IDisposable
 {
     private const string NAME_TYPE = "name";
+    private const string EMOTE_TYPE = "emote";
+    private const string LAND_TYPE = "land";
 
     public event Action OnBackFromViewAll;
-    public event Action OnResultWearables;
-    public event Action OnResultEmotes;
-    public event Action OnResultNames;
-    public event Action OnResultLands;
 
-    private IViewAllComponentView view;
+    private readonly IViewAllComponentView view;
 
     public ViewAllComponentController(IViewAllComponentView view)
     {
@@ -32,9 +30,18 @@ public class ViewAllComponentController : IDisposable
     private void ProcessReceivedWearables(WearableItem[] wearables)
     {
         List<NFTIconComponentModel> wearableModels = new List<NFTIconComponentModel>();
-        for (int i = 0; i < wearables.Length; i++)
+        foreach (var wearable in wearables)
         {
-
+            wearableModels.Add(new NFTIconComponentModel
+            {
+                showMarketplaceButton = wearable.IsCollectible(),
+                showType = wearable.IsCollectible(),
+                type = wearable.data.category,
+                marketplaceURI = "",
+                name = wearable.GetName(),
+                rarity = wearable.rarity,
+                imageURI = wearable.ComposeThumbnailUrl()
+            });
         }
         ShowNftIcons(wearableModels);
     }
@@ -42,9 +49,20 @@ public class ViewAllComponentController : IDisposable
     private void ProcessReceivedEmotes(WearableItem[] emotes)
     {
         List<NFTIconComponentModel> emoteModels = new List<NFTIconComponentModel>();
-        for (int i = 0; i < emotes.Length; i++)
+        foreach (var emote in emotes)
         {
-
+            emoteModels.Add(
+                new NFTIconComponentModel
+                {
+                    showMarketplaceButton = true,
+                    showType = true,
+                    type = EMOTE_TYPE,
+                    marketplaceURI = "",
+                    name = emote.GetName(),
+                    rarity = emote.rarity,
+                    imageURI = emote.ComposeThumbnailUrl(),
+                    nftId = (emote.id, EMOTE_TYPE)
+                });
         }
         ShowNftIcons(emoteModels);
     }
@@ -52,7 +70,7 @@ public class ViewAllComponentController : IDisposable
     private void ProcessReceivedNames(NamesResponse.NameEntry[] names)
     {
         List<NFTIconComponentModel> nameModels = new List<NFTIconComponentModel>();
-        for (int i = 0; i < names.Length; i++)
+        foreach (var name in names)
         {
             nameModels.Add(new NFTIconComponentModel
             {
@@ -60,10 +78,10 @@ public class ViewAllComponentController : IDisposable
                 showType = true,
                 type = NAME_TYPE,
                 marketplaceURI = "",
-                name = names[i].Name,
+                name = name.Name,
                 rarity = NAME_TYPE,
                 imageURI = "",
-                nftId = (names[i].ContractAddress, NAME_TYPE)
+                nftId = (name.ContractAddress, NAME_TYPE)
             });
         }
         ShowNftIcons(nameModels);
@@ -74,7 +92,17 @@ public class ViewAllComponentController : IDisposable
         List<NFTIconComponentModel> landModels = new List<NFTIconComponentModel>();
         for (int i = 0; i < lands.Length; i++)
         {
-
+            landModels.Add(new()
+            {
+                showMarketplaceButton = true,
+                showType = true,
+                type = lands[i].Category,
+                marketplaceURI = "",
+                name = !string.IsNullOrEmpty(lands[i].Name) ? lands[i].Name : lands[i].Category,
+                rarity = LAND_TYPE,
+                imageURI = lands[i].Image,
+                nftId = (lands[i].ContractAddress, lands[i].Category)
+            });
         }
         ShowNftIcons(landModels);
     }
@@ -97,7 +125,7 @@ public class ViewAllComponentController : IDisposable
         SetViewAllVisibility(false);
     }
 
-    public void ShowNftIcons(List<NFTIconComponentModel> models)
+    private void ShowNftIcons(List<NFTIconComponentModel> models)
     {
         view.ShowNftIcons(models);
     }
