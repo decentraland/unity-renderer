@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 public class ViewAllComponentController : IDisposable
 {
@@ -20,6 +22,7 @@ public class ViewAllComponentController : IDisposable
     private readonly StringVariable currentPlayerId;
     private readonly ILandsService landsService;
     private readonly INamesService namesService;
+    private CancellationTokenSource sectionsCts = new ();
 
     public ViewAllComponentController(
         IViewAllComponentView view,
@@ -45,6 +48,12 @@ public class ViewAllComponentController : IDisposable
     public void SetViewAllVisibility(bool isVisible)
     {
         view.SetVisible(isVisible);
+
+        if (!isVisible)
+        {
+            sectionsCts.SafeCancelAndDispose();
+            sectionsCts = null;
+        }
     }
 
     private void BackFromViewAll()
@@ -62,57 +71,75 @@ public class ViewAllComponentController : IDisposable
     {
         view.OnBackFromViewAll -= BackFromViewAll;
         view.OnRequestCollectibleElements -= RequestCollectibleElements;
+
+        sectionsCts.SafeCancelAndDispose();
+        sectionsCts = null;
     }
 
     private void RequestCollectibleElements(PassportSection section, int pageNumber, int pageSize)
     {
+        sectionsCts = sectionsCts.SafeRestart();
+
         switch (section)
         {
             case PassportSection.Wearables:
-                RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
+                RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
             case PassportSection.Names:
-                RequestOwnedNamesAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
+                RequestOwnedNamesAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
             case PassportSection.Lands:
-                RequestOwnedLandsAsync(currentPlayerId, pageNumber, pageSize, CancellationToken.None).Forget();
+                RequestOwnedLandsAsync(currentPlayerId, pageNumber, pageSize, sectionsCts.Token).Forget();
                 break;
         }
     }
 
     private async UniTask RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
-        (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems =
-            await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
+        try
+        {
+            (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems =
+                await wearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, true, ct);
 
-        view.SetTotalElements(ownedWearableItems.totalAmount);
-        ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
+            ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
+            view.SetTotalElements(ownedWearableItems.totalAmount);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("SANTI ----> OPERATION CANCELLED!!");
+        }
     }
 
     private async UniTask RequestOwnedNamesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
         using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
         var response = await pagePointer.GetPageAsync(pageNumber, ct);
-        var namesResult = Array.Empty<NamesResponse.NameEntry>();
 
         if (response.success)
-            namesResult = response.response.Names.ToArray();
-
-        view.SetTotalElements(response.response.TotalAmount);
-        ProcessReceivedNames(namesResult);
+        {
+            ProcessReceivedNames(response.response.Names.ToArray());
+            view.SetTotalElements(response.response.TotalAmount);
+        }
+        else
+        {
+            // Show error feedback in the UI...
+        }
     }
 
     private async UniTask RequestOwnedLandsAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
         using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
         var response = await pagePointer.GetPageAsync(pageNumber, ct);
-        var landsResult = Array.Empty<LandsResponse.LandEntry>();
 
         if (response.success)
-            landsResult = response.response.Lands.ToArray();
-
-        view.SetTotalElements(response.response.TotalAmount);
-        ProcessReceivedLands(landsResult);
+        {
+            ProcessReceivedLands(response.response.Lands.ToArray());
+            view.SetTotalElements(response.response.TotalAmount);
+        }
+        else
+        {
+            // Show error feedback in the UI...
+        }
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)

@@ -41,7 +41,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         nftElementsEntryPool = GetNftElementsEntryPool();
         section = passportSection;
         sectionName.text = passportSection.ToString();
-        RequestPage(1);
+        RequestPage(0);
     }
 
     public void SetTotalElements(int totalElements)
@@ -52,7 +52,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     private void RequestPage(int pageNumber)
     {
         ClearNftPool();
-        OnRequestCollectibleElements?.Invoke(section, pageNumber+1, ELEMENTS_PER_PAGE);
+        OnRequestCollectibleElements?.Invoke(section, pageNumber + 1, ELEMENTS_PER_PAGE);
     }
 
     public override void RefreshControl() { }
