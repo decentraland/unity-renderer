@@ -1,4 +1,5 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
+import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
 export const NETWORK_HZ = 10
@@ -202,7 +203,7 @@ export function getServerConfigurations(network: ETHEREUM_NETWORK) {
     ensureSingleString(qs.get('QUESTS_SERVER_URL')) ?? `https://quests-api.decentraland.${network ? 'org' : 'io'}`
 
   return {
-    explorerConfiguration: `${metaConfigBaseUrl}?t=${new Date().getTime()}`,
+    explorerConfiguration: `${metaConfigBaseUrl}?t=${now()}`,
     questsUrl
   }
 }
