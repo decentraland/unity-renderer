@@ -70,15 +70,20 @@ namespace DCLServices.WearablesCatalogService
             Destroy(this);
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct) =>
-            await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        {
+            var wearables = await RequestWearablesByContextAsync(userId, null, null, $"{OWNED_WEARABLES_CONTEXT}{userId}", false, ct);
+            return (wearables, wearables.Count);
+        }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestBaseWearablesAsync(CancellationToken ct) =>
             await RequestWearablesByContextAsync(null, null, new[] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages,
-            CancellationToken ct) =>
-            await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
+        {
+            var wearables = await RequestWearablesByContextAsync(userId, null, new[] { collectionId }, $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", true, ct);
+            return (wearables, wearables.Count);
+        }
 
         public async UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct)
         {

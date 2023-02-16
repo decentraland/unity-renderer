@@ -178,7 +178,7 @@ namespace DCL.EmotesWheel
                     ct);
 
                 ownedWearablesAlreadyRequested = true;
-                userProfile.SetInventory(ownedWearables.Select(x => x.id));
+                userProfile.SetInventory(ownedWearables.wearables.Select(x => x.id));
                 UpdateEmoteSlots();
             }
 

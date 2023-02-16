@@ -159,7 +159,7 @@ namespace DCL.Social.Passports
                         true,
                         ct);
 
-                    IGrouping<string, WearableItem>[] wearableItems = wearables.GroupBy(i => i.id).ToArray();
+                    IGrouping<string, WearableItem>[] wearableItems = wearables.wearables.GroupBy(i => i.id).ToArray();
                     string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
                     userProfile.SetInventory(wearableIds);
                     loadedWearables.AddRange(wearableIds);

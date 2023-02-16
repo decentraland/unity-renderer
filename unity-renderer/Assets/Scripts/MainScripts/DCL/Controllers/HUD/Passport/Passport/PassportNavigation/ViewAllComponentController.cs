@@ -41,8 +41,8 @@ public class ViewAllComponentController : IDisposable
     {
         async UniTask RequestOwnedWearablesAsync(CancellationToken ct)
         {
-            IReadOnlyList<WearableItem> ownedWearableItems = await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
-            ProcessReceivedWearables(ownedWearableItems.ToArray());
+            (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems = await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
+            ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
         }
 
         async UniTask RequestOwnedNamesAsync(CancellationToken ct)
