@@ -103,7 +103,7 @@ export function pickWorldSpawnpoint(land: Scene): InstancedSpawnPoint {
 
 function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
   let spawnPoints = land.spawnPoints
-  if (!spawnPoints || spawnPoints.length === 0) {
+  if (!Array.isArray(spawnPoints) || spawnPoints.length === 0) {
     spawnPoints = [{
       position: {
         x: [1, 15],
