@@ -9,27 +9,29 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
         private static Resolution[] resolutions;
 
         // this offset was made for the 0 index to be Full HD instead of MAX
-        private static int defaultIndex;
+        public static int DefaultIndex { get; private set; }
         public static IReadOnlyList<Resolution> Resolutions => resolutions ??= GetResolutions();
 
         private static Resolution[] GetResolutions()
         {
             Resolution[] resolutions = Screen.resolutions;
+            UpdateDefaultIndex(resolutions);
+            return resolutions;
+        }
 
+        private static void UpdateDefaultIndex(Resolution[] resolutions)
+        {
             int resolutionsLength = resolutions.Length;
 
             for (int i = resolutionsLength - 1; i >= 0; i--)
             {
                 if (resolutions[i].width > 1920) continue;
-                defaultIndex = resolutionsLength - 1 - i;
+
+                DefaultIndex = resolutionsLength - 1 - i;
+
                 break;
             }
-
-            return resolutions;
         }
-
-        public static int GetDefaultIndex() =>
-            defaultIndex;
 
         public static void Apply(DisplaySettings displaySettings)
         {
@@ -44,7 +46,7 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
         {
             int resolutionsCount = Resolutions.Count;
             int settingsIndex = displaySettings.resolutionSizeIndex;
-            if (settingsIndex < 0) settingsIndex = GetDefaultIndex();
+            if (settingsIndex < 0) settingsIndex = DefaultIndex;
             return Resolutions[resolutionsCount - 1 - settingsIndex];
         }
     }

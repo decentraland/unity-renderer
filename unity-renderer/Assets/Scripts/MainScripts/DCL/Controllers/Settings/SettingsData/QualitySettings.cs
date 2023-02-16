@@ -86,6 +86,6 @@ namespace DCL.SettingsCommon
 
         public ReflectionResolution reflectionResolution;
 
-        [Tooltip("Shader Quality")] public ShaderQuality shaderQuality;
+        public ShaderQuality shaderQuality;
     }
 }

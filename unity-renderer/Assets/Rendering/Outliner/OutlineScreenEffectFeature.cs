@@ -53,10 +53,10 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
             material.SetColor(INNER_COLOR, settings.innerColor);
             material.SetColor(OUTLINE_COLOR, settings.outlineColor);
-            material.SetFloat(OUTLINE_SIZE, settings.outlineThickness.Get());
+            material.SetFloat(OUTLINE_SIZE, settings.outlineThickness);
             material.SetColor(BLUR_COLOR, settings.blurColor);
-            material.SetFloat(BLUR_SIZE, settings.blurSize.Get());
-            material.SetFloat(SIGMA, settings.blurSigma.Get());
+            material.SetFloat(BLUR_SIZE, settings.blurSize);
+            material.SetFloat(SIGMA, settings.blurSigma);
             material.SetFloat(FADE, settings.effectFade);
             CommandBuffer cmd = CommandBufferPool.Get(PROFILER_TAG);
 
@@ -111,14 +111,14 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
     [System.Serializable]
     public class OutlineSettings
     {
+        public float outlineThickness;
+        public float blurSize;
+        public float blurSigma;
         public Color outlineColor = Color.cyan;
         public Color blurColor = Color.cyan;
         public Color innerColor = Color.cyan;
         [Range(0, 1)] public float effectFade = 1;
-        public FloatVariable outlineThickness;
-        public FloatVariable outlineResolutionScale;
-        public FloatVariable blurSize;
-        public FloatVariable blurSigma;
+
         public int filterMode;
     }
 

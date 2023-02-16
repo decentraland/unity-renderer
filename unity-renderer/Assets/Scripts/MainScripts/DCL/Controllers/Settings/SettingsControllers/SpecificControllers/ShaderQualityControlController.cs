@@ -8,9 +8,7 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Shader Quality", fileName = "ShaderQualityControlController")]
     public class ShaderQualityControlController : SpinBoxSettingsControlController
     {
-        [SerializeField] private FloatVariable blurSize;
-        [SerializeField] private FloatVariable blurSigma;
-        [SerializeField] private FloatVariable outlineThickness;
+        [SerializeField] private OutlineScreenEffectFeature outlineScreenEffectFeature;
 
         private static readonly int GAUSSIAN_BLUR_KERNEL_SIZE = Shader.PropertyToID("gaussianBlurQuality");
 
@@ -19,27 +17,28 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
 
         public override void UpdateSetting(object newValue)
         {
+            OutlineScreenEffectFeature.OutlineSettings outlineSettings = outlineScreenEffectFeature.settings;
             currentQualitySetting.shaderQuality = (ShaderQuality)newValue;
 
             switch (currentQualitySetting.shaderQuality)
             {
                 case ShaderQuality.LOW:
                     Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 4);
-                    blurSize.Set(1);
-                    blurSigma.Set(5);
-                    outlineThickness.Set(0.5f);
+                    outlineSettings.blurSize = 1;
+                    outlineSettings.blurSigma = 5;
+                    outlineSettings.outlineThickness = 0.5f;
                     break;
                 case ShaderQuality.MID:
                     Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 32);
-                    blurSize.Set(1.5f);
-                    blurSigma.Set(5.5f);
-                    outlineThickness.Set(0.75f);
+                    outlineSettings.blurSize = 1.5f;
+                    outlineSettings.blurSigma = 5.5f;
+                    outlineSettings.outlineThickness = 0.75f;
                     break;
-                case ShaderQuality.HIGH: // old production values
+                case ShaderQuality.HIGH:
                     Shader.SetGlobalInt(GAUSSIAN_BLUR_KERNEL_SIZE, 64);
-                    blurSize.Set(2);
-                    blurSigma.Set(6);
-                    outlineThickness.Set(1f);
+                    outlineSettings.blurSize = 2;
+                    outlineSettings.blurSigma = 6;
+                    outlineSettings.outlineThickness = 1;
                     break;
                 default: throw new ArgumentOutOfRangeException();
             }

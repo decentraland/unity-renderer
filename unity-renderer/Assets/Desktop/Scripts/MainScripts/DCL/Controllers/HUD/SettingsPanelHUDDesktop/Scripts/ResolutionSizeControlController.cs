@@ -41,19 +41,13 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
             RaiseOnOverrideIndicatorLabel(resolutionLabels);
         }
 
-        private static string GetLabel(Resolution resolution)
-        {
-            return $"{resolution.width}x{resolution.height} ({GetAspectRatio(resolution.width, resolution.height)}) {resolution.refreshRate} Hz";
-        }
+        private static string GetLabel(Resolution resolution) =>
+            $"{resolution.width}x{resolution.height} ({GetAspectRatio(resolution.width, resolution.height)}) {resolution.refreshRate} Hz";
 
         public override object GetStoredValue()
         {
             int index = currentDisplaySettings.resolutionSizeIndex;
-
-            if (index < 0)
-                index = ScreenResolutionUtils.GetDefaultIndex();
-
-            return index;
+            return index >= 0 ? index : ScreenResolutionUtils.DefaultIndex;
         }
 
         private static string GetAspectRatio(int width, int height)
