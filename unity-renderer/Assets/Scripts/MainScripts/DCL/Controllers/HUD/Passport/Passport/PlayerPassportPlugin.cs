@@ -48,7 +48,13 @@ public class PlayerPassportPlugin : IPlugin
                             Environment.i.serviceLocator.Get<ILandsService>(),
                             new UserProfileWebInterfaceBridge(),
                             DataStore.i,
-                            new ViewAllComponentController(referenceContainer.ViewAllView)),
+                            new ViewAllComponentController(
+                                referenceContainer.ViewAllView,
+                                Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
+                                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                                Environment.i.serviceLocator.Get<ILandsService>(),
+                                Environment.i.serviceLocator.Get<INamesService>()
+                                )),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),

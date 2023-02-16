@@ -43,7 +43,8 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     private void RequestPage(int pageNumber)
     {
-        OnRequestCollectibleElements?.Invoke(section, pageNumber, ELEMENTS_PER_PAGE);
+        ClearNftPool();
+        OnRequestCollectibleElements?.Invoke(section, pageNumber+1, ELEMENTS_PER_PAGE);
     }
 
     public override void RefreshControl()

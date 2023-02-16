@@ -70,7 +70,13 @@ namespace DCL.Social.Passports
                                 Substitute.For<ILandsService>(),
                                 Substitute.For<IUserProfileBridge>(),
                                 dataStore,
-                                new ViewAllComponentController(Substitute.For<IViewAllComponentView>()));
+                                new ViewAllComponentController(
+                                    Substitute.For<IViewAllComponentView>(),
+                                    currentPlayerInfoCardId,
+                                    Substitute.For<IWearablesCatalogService>(),
+                                    Substitute.For<ILandsService>(),
+                                    Substitute.For<INamesService>()
+                                    ));
 
             controller = new PlayerPassportHUDController(
                 view,

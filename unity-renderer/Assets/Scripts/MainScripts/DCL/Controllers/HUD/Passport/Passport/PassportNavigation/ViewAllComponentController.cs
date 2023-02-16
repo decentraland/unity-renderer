@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using System.Threading;
 
 public class ViewAllComponentController : IDisposable
 {
@@ -13,18 +15,72 @@ public class ViewAllComponentController : IDisposable
 
     public event Action OnBackFromViewAll;
 
+    private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IViewAllComponentView view;
+    private readonly StringVariable currentPlayerId;
+    private readonly ILandsService landsService;
+    private readonly INamesService namesService;
 
-    public ViewAllComponentController(IViewAllComponentView view)
+    public ViewAllComponentController(
+        IViewAllComponentView view,
+        StringVariable currentPlayerId,
+        IWearablesCatalogService wearablesCatalogService,
+        ILandsService landsService,
+        INamesService namesService)
     {
         this.view = view;
+        this.currentPlayerId = currentPlayerId;
+        this.wearablesCatalogService = wearablesCatalogService;
+        this.landsService = landsService;
+        this.namesService = namesService;
         view.OnBackFromViewAll += BackFromViewAll;
         view.OnRequestCollectibleElements += RequestCollectibleElements;
     }
 
     private void RequestCollectibleElements(string type, int pageNumber, int pageSize)
     {
-        //TODO: Wire request to new refactored implementation
+        async UniTask RequestOwnedWearablesAsync(CancellationToken ct)
+        {
+            IReadOnlyList<WearableItem> ownedWearableItems = await wearablesCatalogService.RequestOwnedWearablesAsync(currentPlayerId, pageNumber, pageSize, true, CancellationToken.None);
+            ProcessReceivedWearables(ownedWearableItems.ToArray());
+        }
+
+        async UniTask RequestOwnedNamesAsync(CancellationToken ct)
+        {
+            using var pagePointer = namesService.GetPaginationPointer(currentPlayerId, pageSize, CancellationToken.None);
+            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+            var namesResult = Array.Empty<NamesResponse.NameEntry>();
+
+            if (response.success)
+                namesResult = response.response.Names.ToArray();
+
+            ProcessReceivedNames(namesResult);
+        }
+
+        async UniTask RequestOwnedLandsAsync(CancellationToken ct)
+        {
+            using var pagePointer = landsService.GetPaginationPointer(currentPlayerId, pageSize, CancellationToken.None);
+            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+            var landsResult = Array.Empty<LandsResponse.LandEntry>();
+
+            if (response.success)
+                landsResult = response.response.Lands.ToArray();
+
+            ProcessReceivedLands(landsResult);
+        }
+
+        switch (type)
+        {
+            case "wearables":
+                RequestOwnedWearablesAsync(CancellationToken.None).Forget();
+                break;
+            case "names":
+                RequestOwnedNamesAsync(CancellationToken.None).Forget();
+                break;
+            case "lands":
+                RequestOwnedLandsAsync(CancellationToken.None).Forget();
+                break;
+        }
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
