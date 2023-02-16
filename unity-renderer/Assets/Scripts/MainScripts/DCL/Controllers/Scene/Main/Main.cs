@@ -106,12 +106,12 @@ namespace DCL
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
 
-            kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
+            kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController, 5000);
 #else
 
             // TODO(Brian): Remove this branching once we finish migrating all tests out of the
             //              IntegrationTestSuite_Legacy base class.
-            if (!EnvironmentSettings.RUNNING_TESTS) { kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL); }
+            if (!EnvironmentSettings.RUNNING_TESTS) { kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL, 5000); }
 #endif
         }
 
