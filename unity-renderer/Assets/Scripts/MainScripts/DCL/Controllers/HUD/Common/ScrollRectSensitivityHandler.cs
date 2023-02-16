@@ -1,4 +1,5 @@
 using MainScripts.DCL.WebPlugin;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,13 +60,15 @@ namespace DCL.HUD.Common
         private OperatingSystemFamily ObtainOsFromWebGLAgent() {
             string agentInfo = WebGLPlugin.GetUserAgent();
 
-            if (agentInfo.ToLower().Contains("windows"))
+            if (agentInfo.Contains("windows", StringComparison.OrdinalIgnoreCase))
                 return OperatingSystemFamily.Windows;
 
-            if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
+            if (agentInfo.Contains("mac", StringComparison.OrdinalIgnoreCase)
+                || agentInfo.Contains("osx", StringComparison.OrdinalIgnoreCase)
+                || agentInfo.Contains("os x", StringComparison.OrdinalIgnoreCase))
                 return OperatingSystemFamily.MacOSX;
 
-            if (agentInfo.ToLower().Contains("linux"))
+            if (agentInfo.Contains("linux", StringComparison.OrdinalIgnoreCase))
                 return OperatingSystemFamily.Linux;
 
             return OperatingSystemFamily.Other;
