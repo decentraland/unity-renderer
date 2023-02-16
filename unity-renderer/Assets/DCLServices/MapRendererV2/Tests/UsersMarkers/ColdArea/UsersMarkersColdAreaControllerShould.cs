@@ -33,10 +33,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
         [SetUp]
         public void Setup()
         {
-            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
-            Environment.Setup(serviceLocator);
-
-            hotScenesFetcher = serviceLocator.Get<IHotScenesFetcher>();
+            hotScenesFetcher = Substitute.For<IHotScenesFetcher>();
 
             KernelConfig.i.Set(new KernelConfigModel {comms = new Comms {commRadius = 2}});
 
@@ -44,6 +41,7 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
                 null,
                 null,
                 builder = Substitute.For<UsersMarkersColdAreaController.ColdUserMarkerBuilder>(),
+                hotScenesFetcher,
                 realmName = new BaseVariable<string>("TEST_REALM"),
                 userPosition = ScriptableObject.CreateInstance<Vector2IntVariable>(),
                 KernelConfig.i,

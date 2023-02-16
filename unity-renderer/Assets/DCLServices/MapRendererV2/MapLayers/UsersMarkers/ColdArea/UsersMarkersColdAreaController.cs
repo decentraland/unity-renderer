@@ -25,7 +25,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         internal const int CREATE_PER_BATCH = 20;
         internal const int COMMS_RADIUS_THRESHOLD = 2;
 
-        private Service<IHotScenesFetcher> hotScenesFetcher;
+        private IHotScenesFetcher hotScenesFetcher;
 
         private readonly ColdUserMarkerObject prefab;
         private readonly int maxMarkers;
@@ -39,7 +39,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         private CancellationTokenSource cancellationTokenSource;
 
         public UsersMarkersColdAreaController(Transform parent, ColdUserMarkerObject prefab, ColdUserMarkerBuilder builder,
-            BaseVariable<string> realmName, Vector2IntVariable userPosition,
+            IHotScenesFetcher hotScenesFetcher, BaseVariable<string> realmName, Vector2IntVariable userPosition,
             KernelConfig kernelConfig, ICoordsUtils coordsUtils, IMapCullingController cullingController, int drawOrder, int maxMarkers)
             : base(parent, coordsUtils, cullingController, drawOrder)
         {
@@ -48,6 +48,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
             this.builder = builder;
             this.realmName = realmName;
             this.userPosition = userPosition;
+            this.hotScenesFetcher = hotScenesFetcher;
 
             exclusionArea = new ExclusionAreaProvider(kernelConfig, COMMS_RADIUS_THRESHOLD);
         }
@@ -115,7 +116,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
         private async UniTaskVoid ColdAreasUpdateLoop(CancellationToken cancellationToken)
         {
-            await foreach (var data in hotScenesFetcher.Ref.ScenesInfo)
+            await foreach (var data in hotScenesFetcher.ScenesInfo)
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
@@ -171,14 +172,14 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
 
         public UniTask Enable(CancellationToken cancellationToken)
         {
-            hotScenesFetcher.Ref.SetUpdateMode(IHotScenesFetcher.UpdateMode.FOREGROUND);
+            hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.FOREGROUND);
             ColdAreasUpdateLoop(LinkWithDisposeToken(cancellationToken).Token).Forget();
             return UniTask.CompletedTask;
         }
 
         public UniTask Disable(CancellationToken cancellationToken)
         {
-            hotScenesFetcher.Ref.SetUpdateMode(IHotScenesFetcher.UpdateMode.BACKGROUND);
+            hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.BACKGROUND);
 
             // cancellation of `ColdAreasUpdateLoop` is handled by the cancellation token
             return UniTask.CompletedTask;

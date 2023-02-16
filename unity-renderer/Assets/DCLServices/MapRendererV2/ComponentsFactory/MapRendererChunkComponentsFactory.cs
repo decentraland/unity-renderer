@@ -8,6 +8,7 @@ using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System.Threading;
 using UnityEngine;
@@ -33,6 +34,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private const int PARCEL_SIZE = 20;
 
         private Service<IAddressableResourceProvider> addressablesProvider;
+        private Service<IHotScenesFetcher> hotScenesFetcher;
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
@@ -64,7 +66,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                     var prefab = await AddressableProvider.GetAddressable<ColdUserMarkerObject>(COLD_USER_MARKER_ADDRESS, cancellationToken);
 
                     var controller = new UsersMarkersColdAreaController(configuration.ColdUserMarkersRoot, prefab, ColdUserMarker.Create,
-                        DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, COLD_USER_MARKERS_DRAW_ORDER, COLD_USER_MARKERS_LIMIT);
+                        hotScenesFetcher.Ref, DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, COLD_USER_MARKERS_DRAW_ORDER, COLD_USER_MARKERS_LIMIT);
 
                     await controller.Initialize(cancellationToken).SuppressCancellationThrow();
                     await writer.YieldAsync((MapLayer.ColdUsersMarkers, controller));
