@@ -30,7 +30,7 @@ namespace DCL.Map
             foreach (var sceneInfo in scenesInfo)
                 minimapMetadata.AddSceneInfo(sceneInfo);
 
-            if (pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
+            if (!pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
             var task = (UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID];
             task.TrySetResult(scenesInfo);
         }
@@ -43,6 +43,7 @@ namespace DCL.Map
                 return ((UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID]).Task;
 
             UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]> task = new ();
+            pendingTasks[GET_SCENES_INFO_ID] = task;
 
             WebInterface.RequestScenesInfoAroundParcel(coordinate, areaSize);
 
