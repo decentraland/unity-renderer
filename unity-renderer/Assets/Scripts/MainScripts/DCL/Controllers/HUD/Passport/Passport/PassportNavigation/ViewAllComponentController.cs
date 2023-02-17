@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.NotificationModel;
 using DCL.Tasks;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -7,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
+using Type = DCL.NotificationModel.Type;
 
 public class ViewAllComponentController : IDisposable
 {
     private const string NAME_TYPE = "name";
     private const string EMOTE_TYPE = "emote";
     private const string LAND_TYPE = "land";
+    private const string REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
 
     public event Action OnBackFromViewAll;
     public event Action<string, string> OnClickBuyNft;
@@ -62,6 +64,7 @@ public class ViewAllComponentController : IDisposable
     {
         OnBackFromViewAll?.Invoke();
         SetViewAllVisibility(false);
+        view.SetLoadingActive(false);
     }
 
     private void ShowNftIcons(List<NFTIconComponentModel> models)
@@ -111,7 +114,7 @@ public class ViewAllComponentController : IDisposable
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
-            view.ShowError();
+            ShowErrorAndGoBack();
         }
     }
 
@@ -130,7 +133,7 @@ public class ViewAllComponentController : IDisposable
         }
         else
         {
-            view.ShowError();
+            ShowErrorAndGoBack();
         }
     }
 
@@ -149,10 +152,23 @@ public class ViewAllComponentController : IDisposable
         }
         else
         {
-            view.ShowError();
+            ShowErrorAndGoBack();
         }
 
         view.SetLoadingActive(false);
+    }
+
+    private void ShowErrorAndGoBack()
+    {
+        NotificationsController.i.ShowNotification(new Model
+        {
+            message = REQUEST_ERROR_MESSAGE,
+            type = Type.ERROR,
+            timer = 10f,
+            destroyOnFinish = true,
+        });
+
+        BackFromViewAll();
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
