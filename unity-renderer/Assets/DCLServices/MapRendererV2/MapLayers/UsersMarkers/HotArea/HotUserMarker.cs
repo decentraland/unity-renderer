@@ -42,8 +42,12 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 
         public void OnBecameInvisible()
         {
-            objectPool.Release(instance);
-            instance = null;
+            if (instance)
+            {
+                objectPool.Release(instance);
+                instance = null;
+            }
+
             isVisible = false;
 
             // Keep tracking position

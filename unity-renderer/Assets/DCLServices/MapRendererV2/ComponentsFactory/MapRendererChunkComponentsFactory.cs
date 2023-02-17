@@ -46,7 +46,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             var enumerator = UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
             {
-                var configuration = await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken);
+                var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken));
+
                 var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
 
                 async UniTask CreateAtlas()
