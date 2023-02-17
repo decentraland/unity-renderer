@@ -8,8 +8,8 @@ public interface IViewAllComponentView
 
     void Initialize(PassportSection sectionName);
     void SetTotalElements(int totalElements);
-    void SetSectionQuantity(int totalCount);
     void SetVisible(bool isVisible);
+    void ShowError();
     void ShowNftIcons(List<NFTIconComponentModel> models);
     void SetLoadingActive(bool isLoading);
 }

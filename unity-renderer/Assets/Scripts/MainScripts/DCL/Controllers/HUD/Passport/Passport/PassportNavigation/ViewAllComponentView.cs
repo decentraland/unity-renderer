@@ -8,6 +8,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 {
     private const int ELEMENTS_PER_PAGE = 20;
     private const string NFT_ELEMENTS_POOL_NAME_PREFIX = "NFTElementsEntriesPool_";
+    private const string ERROR_MESSAGE = "An error was encountered when loading the {section}. \n Please try again shortly";
     private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
 
     [SerializeField] private TMP_Text sectionName;
@@ -17,6 +18,8 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     [SerializeField] private UIPageSelector pageSelector;
     [SerializeField] private GameObject nftPageElement;
     [SerializeField] private GameObject loadingSpinner;
+    [SerializeField] private GameObject errorPanel;
+    [SerializeField] private TMP_Text errorText;
 
     public event Action OnBackFromViewAll;
     public event Action<PassportSection, int, int> OnRequestCollectibleElements;
@@ -40,6 +43,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public void Initialize(PassportSection passportSection)
     {
+        errorPanel.SetActive(false);
         nftElementsEntryPool = GetNftElementsEntryPool();
         section = passportSection;
         sectionName.text = passportSection.ToString();
@@ -64,14 +68,15 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public override void RefreshControl() { }
 
-    public void SetSectionQuantity(int totalCount)
-    {
-        sectionName.text = $"{sectionName.text} ({totalCount})";
-    }
-
     public void SetVisible(bool isVisible)
     {
         gameObject.SetActive(isVisible);
+    }
+
+    public void ShowError()
+    {
+        errorPanel.SetActive(true);
+        errorText.text = ERROR_MESSAGE.Replace("{section}", section.ToString());
     }
 
     public void ShowNftIcons(List<NFTIconComponentModel> models)

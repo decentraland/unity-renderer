@@ -109,7 +109,7 @@ public class ViewAllComponentController : IDisposable
         }
         catch (Exception)
         {
-            // Show error feedback in the UI...
+            view.ShowError();
         }
     }
 
@@ -128,7 +128,7 @@ public class ViewAllComponentController : IDisposable
         }
         else
         {
-            // Show error feedback in the UI...
+            view.ShowError();
         }
     }
 
@@ -147,7 +147,7 @@ public class ViewAllComponentController : IDisposable
         }
         else
         {
-            // Show error feedback in the UI...
+            view.ShowError();
         }
 
         view.SetLoadingActive(false);
