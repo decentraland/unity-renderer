@@ -165,9 +165,13 @@ function* teleportHandler(action: TeleportToAction) {
   }
 }
 
+const waitForUserAuthenticated = waitFor(isLoginCompleted, CHANGE_LOGIN_STAGE)
+
 function* rendererPositionSettler() {
   // wait for renderer
   yield call(waitForRendererInstance)
+  // wait for signup to be finished (teleporting interferes with the signup logic on the renderer)
+  yield call(waitForUserAuthenticated)
 
   while (true) {
     const isSettled: boolean = yield select(isPositionSettled)
@@ -265,8 +269,6 @@ function* positionSettler() {
     }
   }
 }
-
-const waitForUserAuthenticated = waitFor(isLoginCompleted, CHANGE_LOGIN_STAGE)
 
 // This saga reacts to every parcel position change and signals the scene loader
 // about it

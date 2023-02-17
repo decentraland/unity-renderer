@@ -16,11 +16,16 @@ empty-parcels:
 	cp $(EMPTY_SCENES)/mappings.json static/loader/empty-scenes/mappings.json
 	cp -R $(EMPTY_SCENES)/contents static/loader/empty-scenes/contents
 
+SED_OPTION = -i
+ifeq ($(shell uname),Darwin)
+SED_OPTION= -i ""
+endif
+
 build: empty-parcels
 	echo 'declare module "env" {}' > node_modules/env.d.ts
 	echo 'declare module "dcl" {}' > node_modules/dcl.d.ts
 # Prevent error on `estrella` compatibility with typescript 4.9+ & @types/node 18.0+
-	sed -i 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts
+	sed ${SED_OPTION} 's/interface FileWriteOptionsObj .*/interface FileWriteOptionsObj {/g' node_modules/estrella/estrella.d.ts
 	ESSENTIALS_ONLY=true node ./build.js
 	BUNDLES_ONLY=true node ./build.js
 
@@ -60,6 +65,10 @@ touch-local:
 	touch static/unity.data
 	touch static/unity.wasm
 
+build-unity-local:
+	npm i --no-save @dcl/explorer@next
+	cp node_modules/\@dcl/explorer/unity* static/
+	cp -r node_modules/\@dcl/explorer/StreamingAssets static/
 watch: touch-local build ## Watch the files required for hacking the explorer
 	@NODE_ENV=development ./build.js -watch
 
