@@ -1,61 +1,71 @@
-using DCL;
-using DCL.Interface;
+using Cysharp.Threading.Tasks;
+using DCL.Map;
+using DCL.Tasks;
+using System.Threading;
 using UnityEngine;
 
-namespace GotoPanel
+namespace DCL.GoToPanel
 {
     public class GotoPanelHUDController
     {
-        internal IGotoPanelHUDView view { get; private set; }
+        private readonly DataStore dataStore;
+        private readonly ITeleportController teleportController;
+        private readonly IMinimapApiBridge minimapApiBridge;
+        private readonly IGotoPanelHUDView view;
+        private CancellationTokenSource cancellationToken = new ();
 
-        internal virtual IGotoPanelHUDView CreateView() => GotoPanelHUDView.CreateView();
-
-        public void Initialize()
+        public GotoPanelHUDController(IGotoPanelHUDView view,
+            DataStore dataStore,
+            ITeleportController teleportController,
+            IMinimapApiBridge minimapApiBridge)
         {
-            view = CreateView();
+            this.dataStore = dataStore;
+            this.teleportController = teleportController;
+            this.minimapApiBridge = minimapApiBridge;
+            this.view = view;
             view.OnTeleportPressed += Teleport;
             view.OnClosePressed += ClosePanel;
-            DataStore.i.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
-            DataStore.i.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
-        }
-
-        private void ChangeVisibility(bool current, bool previous)
-        {
-            SetVisibility(current);
-        }
-
-        private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
-        {
-            if (current == previous)
-                return;
-
-            view.SetPanelInfo(current);
+            dataStore.HUDs.gotoPanelVisible.OnChange += ChangeVisibility;
+            dataStore.HUDs.gotoPanelCoordinates.OnChange += SetCoordinates;
         }
 
         public void Dispose()
         {
             view.OnTeleportPressed -= Teleport;
             view.OnClosePressed -= ClosePanel;
-            DataStore.i.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
-            DataStore.i.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
+            dataStore.HUDs.gotoPanelVisible.OnChange -= ChangeVisibility;
+            dataStore.HUDs.gotoPanelCoordinates.OnChange -= SetCoordinates;
             view?.Dispose();
+            cancellationToken.SafeCancelAndDispose();
         }
 
-        public void SetVisibility(bool visible)
+        private void ChangeVisibility(bool current, bool previous) =>
+            view.SetVisible(current);
+
+        private void SetCoordinates(ParcelCoordinates current, ParcelCoordinates previous)
         {
-            view.SetVisible(visible);
+            if (current == previous) return;
+
+            async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, CancellationToken cancellationToken)
+            {
+                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),2,
+                    cancellationToken);
+                view.SetPanelInfo(coordinates);
+            }
+
+            cancellationToken = cancellationToken.SafeRestart();
+            SetCoordinatesAsync(current, cancellationToken.Token).Forget();
         }
 
-        public void Teleport(ParcelCoordinates parcelCoordinates)
+        private void Teleport(ParcelCoordinates parcelCoordinates)
         {
-            Environment.i.world.teleportController.Teleport(parcelCoordinates.x, parcelCoordinates.y);
+            teleportController.Teleport(parcelCoordinates.x, parcelCoordinates.y);
         }
 
-        public void ClosePanel()
+        private void ClosePanel()
         {
-            DataStore.i.HUDs.gotoPanelVisible.Set(false);
-            AudioScriptableObjects.dialogClose.Play(true);
+            dataStore.HUDs.gotoPanelVisible.Set(false);
+            view.SetVisible(false);
         }
-
     }
 }

@@ -1,11 +1,9 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using DCL.Interface;
-using DCL;
 using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
-namespace GotoPanel
+namespace DCL.GoToPanel
 {
     public class GotoPanelHUDView : MonoBehaviour, IGotoPanelHUDView
     {
@@ -21,11 +19,10 @@ namespace GotoPanel
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal ShowHideAnimator contentAnimator;
 
-        private bool isDestroyed = false;
+        private bool isDestroyed;
+        private AssetPromise_Texture texturePromise;
 
         internal ParcelCoordinates targetCoordinates;
-
-        AssetPromise_Texture texturePromise = null;
 
         public event Action<ParcelCoordinates> OnTeleportPressed;
         public event Action OnClosePressed;
@@ -40,9 +37,9 @@ namespace GotoPanel
             contentAnimator.OnWillFinishHide += (animator) => Hide();
         }
 
-        public static IGotoPanelHUDView CreateView()
+        public static GotoPanelHUDView CreateView()
         {
-            GotoPanelHUDView view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("GotoPanelHUD")).GetComponent<GotoPanelHUDView>();
+            GotoPanelHUDView view = Instantiate(Resources.Load<GameObject>("GotoPanelHUD")).GetComponent<GotoPanelHUDView>();
             view.name = "_GotoPanelHUD";
             return view;
         }
@@ -59,6 +56,9 @@ namespace GotoPanel
             contentAnimator.Show(!isVisible);
             loadingSpinner.SetActive(isVisible);
             scenePreviewImage.texture = null;
+
+            if (!isVisible)
+                AudioScriptableObjects.dialogClose.Play(true);
         }
 
         public void SetPanelInfo(ParcelCoordinates parcelCoordinates)
@@ -87,7 +87,7 @@ namespace GotoPanel
             {
                 if (texturePromise != null)
                     AssetPromiseKeeper_Texture.i.Forget(texturePromise);
-                
+
                 texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
                 texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
                 texturePromise.OnFailEvent += (textureAsset, error) => { DisplayThumbnail(scenePreviewFailImage.texture); };
@@ -115,7 +115,7 @@ namespace GotoPanel
         {
             if (isDestroyed)
                 return;
-            isDestroyed = true; 
+            isDestroyed = true;
             ClearPromise();
             Destroy(gameObject);
         }

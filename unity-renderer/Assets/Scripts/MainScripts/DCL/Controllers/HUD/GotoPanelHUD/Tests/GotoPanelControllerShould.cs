@@ -1,10 +1,8 @@
-using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
-using GotoPanel;
 
-namespace Test.GotoPanel
+namespace DCL.GoToPanel
 {
     public class GotoPanelControllerShould
     {
@@ -43,7 +41,7 @@ namespace Test.GotoPanel
         }
 
         [Test]
-        public void GetCoordinatesValueChange() 
+        public void GetCoordinatesValueChange()
         {
             ParcelCoordinates gotoCoords = new ParcelCoordinates(10,30);
             coords.Set(gotoCoords);

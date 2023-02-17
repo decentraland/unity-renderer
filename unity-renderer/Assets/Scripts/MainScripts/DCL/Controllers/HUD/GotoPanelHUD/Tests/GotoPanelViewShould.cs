@@ -1,8 +1,7 @@
 using UnityEngine;
 using NUnit.Framework;
-using GotoPanel;
 
-namespace Test.GotoPanel
+namespace DCL.GoToPanel
 {
     public class GotoPanelViewShould
     {
@@ -21,7 +20,7 @@ namespace Test.GotoPanel
         }
 
         [Test]
-        public void SetParcelCoordinatesProperly() 
+        public void SetParcelCoordinatesProperly()
         {
             ParcelCoordinates coords = new ParcelCoordinates(1, 2);
             hudView.SetPanelInfo(coords);

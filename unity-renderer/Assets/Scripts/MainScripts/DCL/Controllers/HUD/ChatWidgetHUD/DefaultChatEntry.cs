@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -111,18 +112,13 @@ namespace DCL.Chat.HUD
 
         private string GetCoordinatesLink(string body)
         {
-            if (!CoordinateUtils.HasValidTextCoordinates(body))
-                return body;
-            var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
+            if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
 
-            for (var i = 0; i < textCoordinates.Count; i++)
-            {
-                // TODO: the preload should not be here
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
+            List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body);
 
-                body = body.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
-            }
+            foreach (string coordinates in textCoordinates)
+                body = body.Replace(coordinates,
+                    $"</noparse><link={coordinates}><color=#4886E3><u>{coordinates}</u></color></link><noparse>");
 
             return body;
         }
@@ -169,12 +165,6 @@ namespace DCL.Chat.HUD
             return chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp
                    && (DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds((long) chatEntryModel.timestamp))
                    .TotalSeconds < 30;
-        }
-
-        private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
-        {
-            if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
         }
 
         public void OnPointerClick(PointerEventData pointerEventData)

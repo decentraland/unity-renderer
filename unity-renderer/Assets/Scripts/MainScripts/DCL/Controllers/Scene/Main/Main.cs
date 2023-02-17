@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Map;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
@@ -172,6 +173,7 @@ namespace DCL
             gameObject.AddComponent<UserProfileController>();
             gameObject.AddComponent<RenderingController>();
             gameObject.AddComponent<WebInterfaceWearablesCatalogService>();
+            gameObject.AddComponent<WebInterfaceMinimapApiBridge>();
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<WebInterfaceFriendsApiBridge>();
             gameObject.AddComponent<HotScenesController>();
