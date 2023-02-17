@@ -10,6 +10,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     /// </summary>
     public interface IMapRendererComponentsFactory
     {
-        internal MapRendererComponents Create(CancellationToken cancellationToken);
+        internal UniTask<MapRendererComponents> Create(CancellationToken cancellationToken);
     }
 }

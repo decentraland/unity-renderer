@@ -15,5 +15,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         [field: SerializeField]
         public Transform HotUserMarkersRoot { get; private set; }
+
+        [field: SerializeField]
+        public Transform MapCamerasRoot { get; private set; }
     }
 }

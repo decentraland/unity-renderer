@@ -7,6 +7,8 @@ using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2
 {
@@ -33,6 +35,7 @@ namespace DCLServices.MapRendererV2
         private Dictionary<MapLayer, MapLayerStatus> layers;
 
         private IMapCullingController cullingController;
+        private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
 
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
@@ -46,8 +49,9 @@ namespace DCLServices.MapRendererV2
             this.cancellationToken = cancellationToken;
             layers = new Dictionary<MapLayer, MapLayerStatus>();
 
-            var components = componentsFactory.Create(cancellationToken);
+            var components = await componentsFactory.Create(cancellationToken);
             cullingController = components.CullingController;
+            mapCameraPool = components.MapCameraControllers;
 
             await foreach (var (layerType, layer) in components.Layers)
                 layers[layerType] = new MapLayerStatus(layer);
@@ -55,19 +59,31 @@ namespace DCLServices.MapRendererV2
 
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
         {
-            // take in instance from the pool
-            // IMapCameraController.OnDisposed += ReleaseCamera
-            EnableLayers(cameraInput.EnabledLayers);
+            const int MAX_TEXTURE_SIZE = 2048;
+            const int MIN_ZOOM = 100;
+            const int MAX_ZOOM = 500;
 
-            throw new NotImplementedException();
+            // Clamp texture to the maximum size allowed, preserving aspect ratio
+            Vector2Int zoomValues = cameraInput.ZoomValues;
+            zoomValues.x = Mathf.Max(zoomValues.x, MIN_ZOOM);
+            zoomValues.y = Mathf.Min(zoomValues.y, MAX_ZOOM);
+            Vector2 textureRes = cameraInput.TextureResolution;
+            float factor = Mathf.Min(1, MAX_TEXTURE_SIZE / Mathf.Max(textureRes.x, textureRes.y));
+
+            EnableLayers(cameraInput.EnabledLayers);
+            var mapCameraController = mapCameraPool.Get();
+            mapCameraController.OnReleasing += ReleaseCamera;
+            mapCameraController.Initialize(Vector2Int.FloorToInt(textureRes * factor), zoomValues, cameraInput.EnabledLayers);
+            mapCameraController.SetZoom(cameraInput.Zoom);
+            mapCameraController.SetPosition(cameraInput.Position);
+            return mapCameraController;
         }
 
-        private void ReleaseCamera(IMapCameraController mapCameraController)
+        private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
         {
-            mapCameraController.OnDisposed -= ReleaseCamera;
+            mapCameraController.OnReleasing -= ReleaseCamera;
             DisableLayers(mapCameraController.EnabledLayers);
-            throw new NotImplementedException();
-            // return to pool
+            mapCameraPool.Release(mapCameraController);
         }
 
         private void EnableLayers(MapLayer mask)
