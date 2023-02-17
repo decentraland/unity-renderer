@@ -23,6 +23,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     public event Action OnBackFromViewAll;
     public event Action<PassportSection, int, int> OnRequestCollectibleElements;
+    public event Action<string, string> OnClickBuyNft;
 
     private List<PoolableObject> nftElementsPoolableQueue = new List<PoolableObject>();
     private Pool nftElementsEntryPool;
@@ -87,8 +88,16 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             nftElementsPoolableQueue.Add(poolableObject);
             poolableObject.gameObject.transform.SetParent(itemsContainer, false);
             poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
-            poolableObject.gameObject.GetComponent<NFTIconComponentView>().Configure(model);
+            NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
+            nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
+            nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(model.nftId.Item1, model.nftId.Item2));
+            nftIconComponentView.Configure(model);
         }
+    }
+
+    private void ClickOnBuyWearable(string wearableId, string wearableType)
+    {
+        OnClickBuyNft?.Invoke(wearableId, wearableType);
     }
 
     public void SetLoadingActive(bool isLoading)

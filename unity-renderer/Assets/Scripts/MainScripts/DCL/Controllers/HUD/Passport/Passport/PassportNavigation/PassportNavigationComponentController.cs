@@ -67,6 +67,7 @@ namespace DCL.Social.Passports
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
             view.OnClickedViewAll += ClickedViewAll;
             viewAllController.OnBackFromViewAll += BackFromViewAll;
+            viewAllController.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
         }
 
         private void BackFromViewAll()

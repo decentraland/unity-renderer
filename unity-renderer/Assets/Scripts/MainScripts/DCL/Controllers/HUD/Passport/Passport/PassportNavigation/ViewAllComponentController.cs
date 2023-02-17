@@ -16,6 +16,7 @@ public class ViewAllComponentController : IDisposable
     private const string LAND_TYPE = "land";
 
     public event Action OnBackFromViewAll;
+    public event Action<string, string> OnClickBuyNft;
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IViewAllComponentView view;
@@ -38,6 +39,7 @@ public class ViewAllComponentController : IDisposable
         this.namesService = namesService;
         view.OnBackFromViewAll += BackFromViewAll;
         view.OnRequestCollectibleElements += RequestCollectibleElements;
+        view.OnClickBuyNft += (s1, s2) => OnClickBuyNft?.Invoke(s1, s2);
     }
 
     public void OpenViewAllSection(PassportSection section)
@@ -166,7 +168,8 @@ public class ViewAllComponentController : IDisposable
                 marketplaceURI = "",
                 name = wearable.GetName(),
                 rarity = wearable.rarity,
-                imageURI = wearable.ComposeThumbnailUrl()
+                imageURI = wearable.ComposeThumbnailUrl(),
+                nftId = (wearable.id, wearable.data.category)
             });
         }
         ShowNftIcons(wearableModels);
