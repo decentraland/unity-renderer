@@ -4,12 +4,14 @@ using DCL;
 using DCL.Providers;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -42,6 +44,16 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         {
             // TODO implement Culling Controller
             IMapCullingController cullingController = null;
+
+            // TODO implement or get cameraControllerBuilder
+            Func<IMapCameraControllerInternal> cameraControllerBuilder = null;
+
+            IObjectPool<IMapCameraControllerInternal> pool = new ObjectPool<IMapCameraControllerInternal>(
+                cameraControllerBuilder,
+                x => x.SetActive(true),
+                x => x.SetActive(false),
+                x => x.Dispose()
+            );
 
             var enumerator = UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
             {
@@ -97,7 +109,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 await UniTask.WhenAll(CreateAtlas(), CreateColdUserMarkers(), CreateHotUserMarkers() /* List of other creators that can be executed in parallel */);
             });
 
-            return new MapRendererComponents(enumerator, cullingController);
+            return new MapRendererComponents(enumerator, cullingController, pool);
         }
     }
 }

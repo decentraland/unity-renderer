@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks.Linq;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
 using NSubstitute;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.Tests
 {
@@ -44,7 +46,8 @@ namespace DCLServices.MapRendererV2.Tests
                         layers[layer] = controller;
                         await writer.YieldAsync((layer, controller));
                     }
-                }), Substitute.For<IMapCullingController>()));
+                }), Substitute.For<IMapCullingController>(),
+                    Substitute.For<IObjectPool<IMapCameraControllerInternal>>()));
 
             mapRenderer = new MapRenderer(componentsFactory);
             await mapRenderer.InitializeAsync(CancellationToken.None);

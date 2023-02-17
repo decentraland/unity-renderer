@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapCameraController
 {
-    public interface IMapCameraController : IDisposable
+    public interface IMapCameraController
     {
-        public Action<IMapCameraController> OnDisposed { get; set; }
-
         MapLayer EnabledLayers { get; }
 
         RenderTexture GetRenderTexture();
@@ -20,11 +18,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void SetPosition(Vector2 coordinates);
 
-        void SetActive(bool active);
-
-        void IDisposable.Dispose()
-        {
-            OnDisposed(this);
-        }
+        void Release();
     }
 }
