@@ -6,8 +6,10 @@ import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import {
-  getOwnerNameFromJsonData, getSceneDescriptionFromJsonData,
-  getSceneNameFromJsonData, getThumbnailUrlFromJsonDataAndContent
+  getOwnerNameFromJsonData,
+  getSceneDescriptionFromJsonData,
+  getSceneNameFromJsonData,
+  getThumbnailUrlFromJsonDataAndContent
 } from 'shared/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnityInterface'
@@ -66,9 +68,7 @@ async function fetchPOIsAsHotSceneInfo(): Promise<HotSceneInfo[]> {
       description: getSceneDescriptionFromJsonData(land.entity.metadata),
       thumbnail: getThumbnailUrlFromJsonDataAndContent(land.entity.metadata, land.entity.content, baseContentUrl) ?? '',
       baseCoords: parseParcelPosition(land.entity.metadata.scene.base),
-      parcels: land.entity.metadata
-        ? land.entity.metadata.scene.parcels.map(parseParcelPosition)
-        : [],
+      parcels: land.entity.metadata ? land.entity.metadata.scene.parcels.map(parseParcelPosition) : [],
       realms: [{ serverName: '', layer: '', usersMax: 0, usersCount: 0, userParcels: [] }],
       usersTotalCount: 0
     }
