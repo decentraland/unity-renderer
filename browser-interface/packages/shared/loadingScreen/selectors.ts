@@ -1,5 +1,4 @@
 ﻿import { RootState } from '../store/rootTypes'
-import { DEBUG_DISABLE_LOADING } from 'config'
 import { LoginState } from 'kernel-web-interface'
 import { isSignupInProgress } from '../session/selectors'
 import { RootRendererState } from '../renderer/types'
@@ -8,7 +7,7 @@ import { RootRendererState } from '../renderer/types'
 export function isLoadingScreenVisible(state: RootState) {
   const { session, renderer, sceneLoader } = state
 
-  if (state.loading.renderingWasActivated && DEBUG_DISABLE_LOADING) {
+  if (state.loading.renderingWasActivated) {
     // hack, remove in RFC-1
     return false
   }
@@ -41,9 +40,9 @@ export function isLoadingScreenVisible(state: RootState) {
   return !state.loading.renderingWasActivated
 }
 
-/** @deprecated #3642 */
-// the strategy with this function is to fail fast with "false" and then
-// cascade until find a "true"
+/**
+ * @returns true if the renderer is currently visible
+ */
 export function isRendererVisible(state: RootState) {
   // of course, if the renderer is not initialized, it is not visible
   if (!state.renderer.initialized) {
@@ -53,11 +52,6 @@ export function isRendererVisible(state: RootState) {
   // some login stages requires the renderer to be turned off
   const { loginState } = state.session
   if (loginState === LoginState.WAITING_PROFILE && isSignupInProgress(state)) {
-    return true
-  }
-
-  // once the renderer starts, it should be visible forever
-  if (state.loading.renderingWasActivated) {
     return true
   }
 
@@ -74,11 +68,7 @@ export function isRendererVisible(state: RootState) {
     return false
   }
 
-  if (loginState === LoginState.COMPLETED) {
-    return true
-  }
-
-  return isLoadingScreenVisible(state)
+  return true
 }
 
 /** @deprecated #3642 It looks like it serves Loading Screen visibility only, and thus should be removed */
