@@ -1,5 +1,6 @@
 using DCL;
-using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
@@ -13,10 +14,9 @@ namespace AvatarEditorHUD_Tests
     public class AvatarEditorHUDViewShould : IntegrationTestSuite_Legacy
     {
         private UserProfile userProfile;
-        private CatalogController catalogController;
         private AvatarEditorHUDController_Mock controller;
-        private BaseDictionary<string, WearableItem> catalog;
         private IAnalytics analytics;
+        private IWearablesCatalogService wearablesCatalogService;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -33,7 +33,7 @@ namespace AvatarEditorHUD_Tests
 
         protected override IEnumerator TearDown()
         {
-            Object.Destroy(catalogController.gameObject);
+            wearablesCatalogService.Dispose();
             controller.Dispose();
             yield return base.TearDown();
         }
@@ -53,11 +53,10 @@ namespace AvatarEditorHUD_Tests
             });
 
             analytics = Substitute.For<IAnalytics>();
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
-            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics);
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService);
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize(userProfile, catalog);
+            controller.Initialize(userProfile, wearablesCatalogService.WearablesCatalog);
         }
 
         [Test]
@@ -75,7 +74,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
             });
-            var category = catalog.Get(wearableId).data.category;
+            var category = wearablesCatalogService.WearablesCatalog.Get(wearableId).data.category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
@@ -104,7 +103,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            var category = catalog.Get(wearableId).data.category;
+            var category = wearablesCatalogService.WearablesCatalog.Get(wearableId).data.category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
@@ -206,7 +205,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmount(int amount)
         {
             var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
-            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount));
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -233,7 +232,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmountInCollectibleTab(int amount)
         {
             var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
-            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount));
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -315,8 +314,8 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            catalog.Remove(dummyItem.id);
-            catalog.Add(dummyItem.id, dummyItem);
+            wearablesCatalogService.WearablesCatalog.Remove(dummyItem.id);
+            wearablesCatalogService.WearablesCatalog.Add(dummyItem.id, dummyItem);
             return dummyItem;
         }
 
@@ -356,8 +355,8 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            catalog.Remove(dummyItem.id);
-            catalog.Add(dummyItem.id, dummyItem);
+            wearablesCatalogService.WearablesCatalog.Remove(dummyItem.id);
+            wearablesCatalogService.WearablesCatalog.Add(dummyItem.id, dummyItem);
             return dummyItem;
         }
     }

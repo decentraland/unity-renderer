@@ -12,6 +12,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
@@ -42,6 +43,11 @@ namespace DCL.ECSComponents
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
+
+        /// <summary>
+        /// Get non-monobehaviour internal IAvatar object that contains the merged renderer
+        /// </summary>
+        IAvatar internalAvatar { get; }
     }
 
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
@@ -84,6 +90,7 @@ namespace DCL.ECSComponents
 
         private Service<IAvatarFactory> avatarFactory;
         private Service<IEmotesCatalogService> emotesCatalog;
+        public IAvatar internalAvatar => avatar;
 
         private void Awake()
         {

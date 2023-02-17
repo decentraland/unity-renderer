@@ -24,6 +24,8 @@ namespace AvatarSystem
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly IBaseAvatar baseAvatar;
 
+        public event Action<Renderer> OnCombinedRendererUpdate;
+
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
@@ -89,7 +91,10 @@ namespace AvatarSystem
                 lod.Bind(gpuSkinning.renderer);
 
                 status = IAvatar.Status.Loaded;
-                await baseAvatar.FadeOut(loader.combinedRenderer.GetComponent<MeshRenderer>(), visibility.IsMainRenderVisible(), linkedCt);
+
+                MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();
+                OnCombinedRendererUpdate?.Invoke(newCombinedRenderer);
+                await baseAvatar.FadeOut(newCombinedRenderer, visibility.IsMainRenderVisible(), linkedCt);
             }
             catch (OperationCanceledException)
             {

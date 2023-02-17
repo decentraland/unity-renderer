@@ -6,6 +6,8 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -35,23 +37,17 @@ namespace Test.AvatarSystem
         private Loader loader;
         private GameObject container;
         private IAvatarMeshCombinerHelper meshCombiner;
+        private IWearablesCatalogService wearablesCatalogService;
 
         [SetUp]
         public void SetUp()
         {
             container = new GameObject("Container");
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
             meshCombiner = Substitute.For<IAvatarMeshCombinerHelper>();
             wearableLoaderFactory = Substitute.For<IWearableLoaderFactory>();
             loader = new Loader(wearableLoaderFactory, container, meshCombiner);
-        }
-
-        private void PrepareCatalog()
-        {
-            //This is really, really ugly. There's no other way to solve it until the catalog is in our service locator
-            container.AddComponent<CatalogController>();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         [Test]
@@ -200,7 +196,7 @@ namespace Test.AvatarSystem
         public IEnumerator LoadCorrectly() => UniTask.ToCoroutine(async () =>
         {
             MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
-            MockWearableLoaderFactory(); 
+            MockWearableLoaderFactory();
             MockCombinesMesh();
 
             SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
@@ -211,10 +207,10 @@ namespace Test.AvatarSystem
                         .Returns(true);
 
             await loader.Load(
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID],
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                 IdsToWearables(WEARABLE_IDS),
                 new AvatarSettings()
                 {
@@ -251,10 +247,10 @@ namespace Test.AvatarSystem
             SkinnedMeshRenderer bonesContainer = CreatePrimitive(container.transform).GetComponent<SkinnedMeshRenderer>();
 
             await loader.Load(
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID],
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                 IdsToWearables(WEARABLE_IDS),
                 new AvatarSettings()
                 {
@@ -288,10 +284,10 @@ namespace Test.AvatarSystem
             MockCombinesMesh();
 
             await loader.Load(
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID],
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                 IdsToWearables(WEARABLE_IDS),
                 new AvatarSettings()
                 {
@@ -320,13 +316,13 @@ namespace Test.AvatarSystem
         [UnityTest]
         public IEnumerator DisablesFacialWhenHeadIsHidden() => UniTask.ToCoroutine(async () =>
         {
-            WearableItem wearableItem = CatalogController.wearableCatalog[WEARABLE_IDS[0]];
+            WearableItem wearableItem = wearablesCatalogService.WearablesCatalog[WEARABLE_IDS[0]];
             wearableItem.data.hides = new string[] { WearableLiterals.Misc.HEAD };
             var bodyShapeLoader = Substitute.For<IBodyshapeLoader>();
             wearableLoaderFactory.Configure()
                                  .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
                                  .Returns(x => bodyShapeLoader);
-           
+
             wearableLoaderFactory.Configure()
                                  .GetWearableLoader(Arg.Any<WearableItem>())
                                  .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
@@ -334,10 +330,10 @@ namespace Test.AvatarSystem
             MockCombinesMesh();
 
             await loader.Load(
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID],
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                 new List<WearableItem>() { wearableItem },
                 new AvatarSettings()
                 {
@@ -358,10 +354,10 @@ namespace Test.AvatarSystem
 
             TestUtils.ThrowsAsync<Exception>(
                 loader.Load(
-                    CatalogController.wearableCatalog[FEMALE_ID],
-                    CatalogController.wearableCatalog[EYES_ID],
-                    CatalogController.wearableCatalog[EYEBROWS_ID],
-                    CatalogController.wearableCatalog[MOUTH_ID],
+                    wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                    wearablesCatalogService.WearablesCatalog[EYES_ID],
+                    wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                    wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                     IdsToWearables(WEARABLE_IDS),
                     new AvatarSettings()
                     {
@@ -397,10 +393,10 @@ namespace Test.AvatarSystem
                         .Returns(true);
 
             await loader.Load(
-                CatalogController.wearableCatalog[FEMALE_ID],
-                CatalogController.wearableCatalog[EYES_ID],
-                CatalogController.wearableCatalog[EYEBROWS_ID],
-                CatalogController.wearableCatalog[MOUTH_ID],
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                 IdsToWearables(WEARABLE_IDS),
                 new AvatarSettings()
                 {
@@ -443,10 +439,10 @@ namespace Test.AvatarSystem
 
             TestUtils.ThrowsAsync<Exception>(
                 loader.Load(
-                    CatalogController.wearableCatalog[FEMALE_ID],
-                    CatalogController.wearableCatalog[EYES_ID],
-                    CatalogController.wearableCatalog[EYEBROWS_ID],
-                    CatalogController.wearableCatalog[MOUTH_ID],
+                    wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                    wearablesCatalogService.WearablesCatalog[EYES_ID],
+                    wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                    wearablesCatalogService.WearablesCatalog[MOUTH_ID],
                     IdsToWearables(WEARABLE_IDS),
                     new AvatarSettings()
                     {
@@ -555,7 +551,7 @@ namespace Test.AvatarSystem
             return loader;
         }
 
-        private List<WearableItem> IdsToWearables(IEnumerable<string> wearablesIds) { return wearablesIds.Where(x => CatalogController.wearableCatalog.ContainsKey(x)).Select(x => CatalogController.wearableCatalog[x]).ToList(); }
+        private List<WearableItem> IdsToWearables(IEnumerable<string> wearablesIds) { return wearablesIds.Where(x => wearablesCatalogService.WearablesCatalog.ContainsKey(x)).Select(x => wearablesCatalogService.WearablesCatalog[x]).ToList(); }
 
         private GameObject CreatePrimitive(Transform parent, string gameObjectName = "Name")
         {
@@ -591,12 +587,10 @@ namespace Test.AvatarSystem
         public void TearDown()
         {
             loader?.Dispose();
-            CatalogController.Clear();
             if (container != null)
                 Object.Destroy(container);
 
-            if (CatalogController.i != null)
-                Object.Destroy(CatalogController.i);
+            wearablesCatalogService.Dispose();
         }
     }
 }

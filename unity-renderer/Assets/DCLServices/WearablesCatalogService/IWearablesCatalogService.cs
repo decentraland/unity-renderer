@@ -16,6 +16,7 @@ namespace DCLServices.WearablesCatalogService
         UniTask<WearableItem> RequestWearableAsync(string wearableId, CancellationToken ct);
         void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems);
         void RemoveWearablesFromCatalog(IEnumerable<string> wearableIds);
+        void RemoveWearableFromCatalog(string wearableId);
         void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove);
         [Obsolete("Will be removed in the future, when emotes are in the content server.")]
         void EmbedWearables(IEnumerable<WearableItem> wearables);

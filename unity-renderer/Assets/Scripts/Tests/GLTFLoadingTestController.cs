@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System;
 using System.Collections;
 using DCL.Controllers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityGLTF;
@@ -18,7 +19,7 @@ public class GLTFLoadingTestController : MonoBehaviour
     {
         // ---------
         var sceneController = Environment.i.world.sceneController;
-        var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+        string scenesToLoad = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text;
 
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);

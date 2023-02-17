@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Desktop
+  m_EditorClassIdentifier: 
+  m_GroupName: Desktop
+  m_Data:
+    m_SerializedData: []
+  m_GUID: da0a8a83fb9dec845bb3f1f293c2f05e
+  m_SerializeEntries:
+  - m_GUID: d20c4bec5d35645a69ad001b0e73596d
+    m_Address: LoadingHUDDesktop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1c880bef015a4f0c99670027a7c6cec7
+    m_Address: Preloading
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 52e407ac531d7f47a8ebe361e507bf9b
+    m_Address: LoginHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6320ef77ba8e6c44495196665acf4646, type: 2}
+    - {fileID: 11400000, guid: 1f1d59e48896fe945bfb46f0cebdee10, type: 2}

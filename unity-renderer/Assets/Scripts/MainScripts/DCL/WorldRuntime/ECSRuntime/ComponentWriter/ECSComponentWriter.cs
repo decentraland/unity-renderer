@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL.Controllers;
+using DCL.CRDT;
 using DCL.Models;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ namespace DCL.ECSRuntime
         }
 
         public delegate void WriteComponent(int sceneNumber, long entityId, int componentId, byte[] data,
-            int minTimeStamp, ECSComponentWriteType writeType);
+            int minTimeStamp, ECSComponentWriteType writeType, CrdtMessageType messageType);
 
         private readonly Dictionary<int, Serializer> serializers = new ();
         private WriteComponent writeComponent;
@@ -88,7 +89,7 @@ namespace DCL.ECSRuntime
 
             if (serializer.CheckType(componentType))
             {
-                writeComponent(sceneNumber, entityId, componentId, serializer.Serialize(model), minTimeStamp, writeType);
+                writeComponent(sceneNumber, entityId, componentId, serializer.Serialize(model), minTimeStamp, writeType, CrdtMessageType.PUT_COMPONENT);
             }
             else
             {
@@ -108,8 +109,33 @@ namespace DCL.ECSRuntime
 
         public void RemoveComponent(int sceneNumber, long entityId, int componentId, int minTimeStamp, ECSComponentWriteType writeType)
         {
-            writeComponent(sceneNumber, entityId, componentId, null, minTimeStamp, writeType);
+            writeComponent(sceneNumber, entityId, componentId, null, minTimeStamp, writeType, CrdtMessageType.DELETE_COMPONENT);
         }
+
+        public void AppendComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model, ECSComponentWriteType writeType)
+        {
+            if (!serializers.TryGetValue(componentId, out Serializer serializer))
+            {
+                Debug.LogError($"Trying to write an append component but no serializer was found for {componentId}");
+                return;
+            }
+
+            if (serializer.CheckType(componentType))
+            {
+                writeComponent(sceneNumber, entityId, componentId, serializer.Serialize(model), -1, writeType, CrdtMessageType.APPEND_COMPONENT);
+            }
+            else
+            {
+                Debug.LogError($"Trying to write component but serializer for {componentId} does not match {componentType.Name}");
+            }
+        }
+
+        public void AppendComponent<T>(int sceneNumber, long entityId, int componentId, T model, ECSComponentWriteType writeType)
+        {
+            AppendComponent(typeof(T), sceneNumber, entityId, componentId, model, writeType);
+        }
+
+
 
         public void Dispose()
         {
