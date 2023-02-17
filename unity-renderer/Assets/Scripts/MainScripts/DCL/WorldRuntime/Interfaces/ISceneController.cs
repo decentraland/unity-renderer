@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using DCL.Controllers;
 using DCL.Models;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL
@@ -16,7 +18,7 @@ namespace DCL
         void SendSceneReady(int sceneNumber);
         void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene);
 
-        void LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad);
+        UniTaskVoid LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad);
         void UnloadScene(int sceneNumber);
         void LoadParcelScenes(string JSONScenePayload);
         void UpdateParcelScenes(string JSONScenePayload);

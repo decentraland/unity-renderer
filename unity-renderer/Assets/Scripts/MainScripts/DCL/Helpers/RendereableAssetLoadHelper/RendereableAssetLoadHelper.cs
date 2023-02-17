@@ -1,4 +1,7 @@
+using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using Sentry;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -6,6 +9,8 @@ namespace DCL.Components
 {
     public class RendereableAssetLoadHelper
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
 
@@ -30,7 +35,7 @@ namespace DCL.Components
         public static string customContentServerUrl;
         public static LoadingType defaultLoadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
 
-        public AssetPromiseSettings_Rendering settings = new();
+        public AssetPromiseSettings_Rendering settings = new ();
         public Rendereable loadedAsset { get; protected set; }
 
         private readonly string bundlesContentUrl;
@@ -40,6 +45,7 @@ namespace DCL.Components
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
         private string currentLoadingSystem;
+        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
         public bool isFinished
         {
@@ -66,12 +72,10 @@ namespace DCL.Components
             {
                 result = $"GLTF -> promise state = {gltfPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_GLTF.i.waitingPromisesCount}";
 
-                if (gltfPromise.state == AssetPromiseState.WAITING)
-                { result += $"\nmaster promise state... is blocked... {AssetPromiseKeeper_GLTF.i.GetMasterState(gltfPromise)}"; }
+                if (gltfPromise.state == AssetPromiseState.WAITING) { result += $"\nmaster promise state... is blocked... {AssetPromiseKeeper_GLTF.i.GetMasterState(gltfPromise)}"; }
             }
 
-            if (abPromise != null)
-            { result = $"ASSET BUNDLE -> promise state = {abPromise.ToString()} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_AB.i.waitingPromisesCount}"; }
+            if (abPromise != null) { result = $"ASSET BUNDLE -> promise state = {abPromise.ToString()} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_AB.i.waitingPromisesCount}"; }
 
             return result;
         }
@@ -123,6 +127,7 @@ namespace DCL.Components
                 {
                     if (VERBOSE)
                         Debug.Log($"GLTFast failed to load for {targetUrl} so we are going to fallback into old gltf");
+
                     LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent, hasFallback);
                 }, true);
             else
@@ -138,26 +143,23 @@ namespace DCL.Components
 
         void UnloadAB()
         {
-            if (abPromise != null)
-            { AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise); }
+            if (abPromise != null) { AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise); }
         }
 
         void UnloadGLTF()
         {
-            if (gltfPromise != null)
-            { AssetPromiseKeeper_GLTF.i.Forget(gltfPromise); }
+            if (gltfPromise != null) { AssetPromiseKeeper_GLTF.i.Forget(gltfPromise); }
         }
 
         void UnloadGLTFast()
         {
-            if (gltfastPromise != null)
-            { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
+            if (gltfastPromise != null) { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
         }
 
         void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = AB_GO_NAME_PREFIX;
-            
+
             if (abPromise != null)
             {
                 UnloadAB();
@@ -179,6 +181,27 @@ namespace DCL.Components
                 OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"), hasFallback);
                 return;
             }
+
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            {
+                if (contentProvider.assetBundles.Contains(hash))
+                    bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
+                else
+                {
+                    // we track the failing asset for it to be fixed in the asset bundle converter
+                    SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
+                    {
+                        scope.SetExtra("hash", hash);
+                        scope.SetExtra("baseUrl", contentProvider.assetBundlesBaseUrl);
+                        scope.SetExtra("sceneCid", contentProvider.sceneCid);
+                    });
+
+                    // exception is null since we are expected to fallback
+                    OnFailWrapper(OnFail, null, hasFallback);
+                    return;
+                }
+            }
+
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
@@ -216,7 +239,7 @@ namespace DCL.Components
         void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = GLTF_GO_NAME_PREFIX;
-            
+
             if (gltfPromise != null)
             {
                 UnloadGLTF();
@@ -267,7 +290,7 @@ namespace DCL.Components
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = GLTFAST_GO_NAME_PREFIX;
-            
+
             if (gltfastPromise != null)
             {
                 UnloadGLTFast();
@@ -291,16 +314,14 @@ namespace DCL.Components
                 x.container.name = GLTFAST_GO_NAME_PREFIX + x.container.name;
 #endif
                 Rendereable r = x.ToRendereable();
+
                 foreach (var someRenderer in r.renderers)
                     someRenderer.tag = FROM_RAW_GLTF_TAG;
 
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) =>
-            {
-                OnFailWrapper(OnFail, exception, hasFallback);
-            };
+            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }
@@ -319,9 +340,10 @@ namespace DCL.Components
                 else if (VERBOSE)
                 {
                     Debug.Log($"Load Fail Detected, trying to use a fallback, " +
-                        $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
+                              $"loading type was: {currentLoadingSystem} and error was: {exception.Message}");
                 }
             }
+
             OnFail?.Invoke(exception);
             ClearEvents();
         }
