@@ -28,7 +28,6 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private GameObject betaIndicator;
         [SerializeField] private ButtonComponentView infoButton;
         [SerializeField] private TooltipComponentView tooltip;
-        [SerializeField] private TooltipComponentModel model;
 
         [Space]
         [SerializeField] private List<TextMeshProUGUI> valueLabels;
