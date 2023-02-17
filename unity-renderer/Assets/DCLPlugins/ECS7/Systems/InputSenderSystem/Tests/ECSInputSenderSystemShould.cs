@@ -54,11 +54,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary, hit = new RaycastHit() {} },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary, hit = new RaycastHit() {}  },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4, hit = new RaycastHit() {}  },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3, hit = new RaycastHit() {}  },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5, hit = new RaycastHit() {}  },
             };
 
             foreach (var eventData in events)
@@ -68,18 +68,12 @@ namespace Tests
 
             updateSystems();
 
-            componentWriter.Received(1)
-                           .PutComponent(
+            componentWriter.Received(5)
+                           .AppendComponent(
                                scene.sceneData.sceneNumber,
                                SpecialEntityId.SCENE_ROOT_ENTITY,
                                ComponentID.POINTER_EVENTS_RESULT,
-                               Arg.Do<PBPointerEventsResult>(r =>
-                               {
-                                   for (int i = 0; i < r.Commands.Count; i++)
-                                   {
-                                       Assert.AreEqual(events[i].button, r.Commands[i].Button);
-                                   }
-                               }),
+                               Arg.Any<PBPointerEventsResult>(),
                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
         }
 

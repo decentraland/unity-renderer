@@ -12,6 +12,7 @@ using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
@@ -42,6 +43,11 @@ namespace DCL.ECSComponents
         /// Get the transform of the avatar shape
         /// </summary>
         Transform transform { get; }
+
+        /// <summary>
+        /// Get non-monobehaviour internal IAvatar object that contains the merged renderer
+        /// </summary>
+        IAvatar internalAvatar { get; }
     }
 
     public class AvatarShape : MonoBehaviour, IHideAvatarAreaHandler, IPoolableObjectContainer, IAvatarShape, IPoolLifecycleHandler
@@ -82,6 +88,9 @@ namespace DCL.ECSComponents
         internal PBAvatarShape model;
         internal IDCLEntity entity;
 
+        private Service<IEmotesCatalogService> emotesCatalog;
+        public IAvatar internalAvatar => avatar;
+
         private void Awake()
         {
             avatarMovementController = GetComponent<IAvatarMovementController>();
@@ -99,7 +108,7 @@ namespace DCL.ECSComponents
             BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
             avatar = new AvatarWithHologram(
                 baseAvatar,
-                new AvatarCurator(new WearableItemResolver(), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
+                new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
                 new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 animator,
                 visibility,
@@ -179,7 +188,7 @@ namespace DCL.ECSComponents
             wearableItems.Add(model.GetBodyShape());
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
-            var embeddedEmotesSo = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
             wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
             HashSet<string> emotes = new HashSet<string>();
             emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));

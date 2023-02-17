@@ -43,7 +43,7 @@ namespace DCL.QuestsController
 
         public QuestsController()
         {
-            var savedPinnedQuests = PlayerPrefs.GetString(PINNED_QUESTS_KEY, null);
+            var savedPinnedQuests = PlayerPrefsBridge.GetString(PINNED_QUESTS_KEY, null);
             if (!string.IsNullOrEmpty(savedPinnedQuests))
             {
                 pinnedQuests.Set(Utils.ParseJsonArray<string[]>(savedPinnedQuests));
@@ -196,7 +196,7 @@ namespace DCL.QuestsController
 
         public void RemoveQuest(QuestModel quest) { quests.Remove(quest.id); }
 
-        private void OnPinnedQuestUpdated(string questId) { PlayerPrefs.SetString(PINNED_QUESTS_KEY, JsonConvert.SerializeObject(pinnedQuests.Get())); }
+        private void OnPinnedQuestUpdated(string questId) { PlayerPrefsBridge.SetString(PINNED_QUESTS_KEY, JsonConvert.SerializeObject(pinnedQuests.Get())); }
 
         public void Dispose()
         {

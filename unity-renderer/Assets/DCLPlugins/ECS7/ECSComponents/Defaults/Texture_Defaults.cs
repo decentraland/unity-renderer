@@ -1,5 +1,8 @@
 using DCL.Controllers;
 using Decentraland.Common;
+using UnityEngine;
+using Texture = Decentraland.Common.Texture;
+using TextureWrapMode = UnityEngine.TextureWrapMode;
 
 namespace DCL.ECSComponents
 {
@@ -11,30 +14,50 @@ namespace DCL.ECSComponents
             {
                 case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetTextureUrl();
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return $"{scene.sceneData.sceneNumber}{self.VideoTexture.VideoPlayerEntity}";
                 case TextureUnion.TexOneofCase.Texture:
                 default:
                     return self.Texture.GetTextureUrl(scene);
             }
         }
 
-        public static UnityEngine.TextureWrapMode GetWrapMode(this TextureUnion self)
+        public static long GetVideoTextureId(this TextureUnion self)
+        {
+            switch (self.TexCase)
+            {
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return self.VideoTexture.VideoPlayerEntity;
+                default:
+                    return 0;
+            }
+        }
+
+        public static bool IsVideoTexture(this TextureUnion self) =>
+            self.TexCase == TextureUnion.TexOneofCase.VideoTexture;
+
+        public static TextureWrapMode GetWrapMode(this TextureUnion self)
         {
             switch (self.TexCase)
             {
                 case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetWrapMode();
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return self.VideoTexture.GetWrapMode();
                 case TextureUnion.TexOneofCase.Texture:
                 default:
                     return self.Texture.GetWrapMode();
             }
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this TextureUnion self)
+        public static FilterMode GetFilterMode(this TextureUnion self)
         {
             switch (self.TexCase)
             {
                 case TextureUnion.TexOneofCase.AvatarTexture:
                     return self.AvatarTexture.GetFilterMode();
+                case TextureUnion.TexOneofCase.VideoTexture:
+                    return self.VideoTexture.GetFilterMode();
                 case TextureUnion.TexOneofCase.Texture:
                 default:
                     return self.Texture.GetFilterMode();
@@ -43,12 +66,10 @@ namespace DCL.ECSComponents
 
         public static string GetTextureUrl(this Texture self, IParcelScene scene)
         {
-            if (string.IsNullOrEmpty(self.Src))
-                return self.Src;
+            UtilsScene.TryGetMediaUrl(self.Src, scene.contentProvider,
+                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string url);
 
-            scene.contentProvider.TryGetContentsUrl(self.Src, out string textureUrl);
-
-            return textureUrl;
+            return url;
         }
 
         public static string GetTextureUrl(this AvatarTexture self)
@@ -56,24 +77,34 @@ namespace DCL.ECSComponents
             return KernelConfig.i.Get().avatarTextureAPIBaseUrl + self.UserId;
         }
 
-        public static UnityEngine.TextureWrapMode GetWrapMode(this Texture self)
+        public static TextureWrapMode GetWrapMode(this Texture self)
         {
-            return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
+            return (TextureWrapMode)(self.HasWrapMode ? self.WrapMode : Decentraland.Common.TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.TextureWrapMode GetWrapMode(this AvatarTexture self)
+        public static TextureWrapMode GetWrapMode(this AvatarTexture self)
         {
-            return (UnityEngine.TextureWrapMode)(self.HasWrapMode ? self.WrapMode : TextureWrapMode.TwmClamp);
+            return (TextureWrapMode)(self.HasWrapMode ? self.WrapMode : Decentraland.Common.TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this Texture self)
+        public static TextureWrapMode GetWrapMode(this VideoTexture self)
         {
-            return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
+            return (TextureWrapMode)(self.HasWrapMode ? self.WrapMode : Decentraland.Common.TextureWrapMode.TwmClamp);
         }
 
-        public static UnityEngine.FilterMode GetFilterMode(this AvatarTexture self)
+        public static FilterMode GetFilterMode(this Texture self)
         {
-            return (UnityEngine.FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
+            return (FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
+        }
+
+        public static FilterMode GetFilterMode(this AvatarTexture self)
+        {
+            return (FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
+        }
+
+        public static FilterMode GetFilterMode(this VideoTexture self)
+        {
+            return (FilterMode)(self.HasFilterMode ? self.FilterMode : TextureFilterMode.TfmBilinear);
         }
     }
 }

@@ -1,4 +1,4 @@
-using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
@@ -7,66 +7,89 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
-using DCl.Social.Passports;
-using DCL.Social.Passports;
+using DCLServices.WearablesCatalogService;
 using SignupHUD;
 using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using UnityEditor;
 using UnityEngine;
-using DCLServices.Lambdas.NamesService;
-using DCLServices.Lambdas.LandsService;
+using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
+using Environment = DCL.Environment;
 
 public class HUDFactory : IHUDFactory
 {
     private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
+    private readonly List<IDisposable> disposableViews;
 
-    public virtual IHUD CreateHUD(HUDElementID hudElementId)
+    private Service<IAddressableResourceProvider> assetsProviderService;
+    private IAddressableResourceProvider assetsProviderRef;
+
+    private IAddressableResourceProvider assetsProvider => assetsProviderRef ??= assetsProviderService.Ref;
+
+    protected HUDFactory()
     {
-        IHUD hudElement = null;
+        disposableViews = new List<IDisposable>();
+    }
+
+    public HUDFactory(IAddressableResourceProvider assetsProvider)
+    {
+        disposableViews = new List<IDisposable>();
+        assetsProviderRef = assetsProvider;
+    }
+
+    public void Initialize() { }
+
+    public void Dispose()
+    {
+        foreach (IDisposable view in disposableViews)
+            view.Dispose();
+    }
+
+    public virtual async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
+    {
         switch (hudElementId)
         {
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
-                break;
+                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
-                break;
+                return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
+                    new SocialAnalytics(
+                        Environment.i.platform.serviceProviders.analytics,
+                        new UserProfileWebInterfaceBridge()));
             case HUDElementID.NOTIFICATION:
-                hudElement = new NotificationHUDController();
-                break;
+                return new NotificationHUDController();
             case HUDElementID.AVATAR_EDITOR:
-                hudElement = new AvatarEditorHUDController(DataStore.i.featureFlags,
-                    Environment.i.platform.serviceProviders.analytics);
-                break;
+                return new AvatarEditorHUDController(
+                    DataStore.i.featureFlags,
+                    Environment.i.platform.serviceProviders.analytics,
+                    Environment.i.serviceLocator.Get<IWearablesCatalogService>());
             case HUDElementID.SETTINGS_PANEL:
-                hudElement = new SettingsPanelHUDController();
-                break;
-            case HUDElementID.AIRDROPPING:
-                hudElement = new AirdroppingHUDController();
-                break;
+                return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:
-                hudElement = new TermsOfServiceHUDController();
-                break;
+                return new TermsOfServiceHUDController();
             case HUDElementID.FRIENDS:
-                hudElement = new FriendsHUDController(DataStore.i,
+                return new FriendsHUDController(DataStore.i,
                     FriendsController.i,
                     new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher);
-                break;
             case HUDElementID.WORLD_CHAT_WINDOW:
-                hudElement = new WorldChatWindowController(
+                return new WorldChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     DataStore.i,
                     SceneReferences.i.mouseCatcher,
                     new SocialAnalytics(
@@ -75,76 +98,63 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
                     new WebInterfaceBrowserBridge(),
                     CommonScriptableObjects.rendererState);
-                break;
             case HUDElementID.PRIVATE_CHAT_WINDOW:
-                hudElement = new PrivateChatWindowController(
+                return new PrivateChatWindowController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     FriendsController.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
-                break;
             case HUDElementID.PUBLIC_CHAT:
-                hudElement = new PublicChatWindowController(
-                    ChatController.i,
+                return new PublicChatWindowController(
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     new UserProfileWebInterfaceBridge(),
                     DataStore.i,
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
-                break;
             case HUDElementID.CHANNELS_CHAT:
-                hudElement = new ChatChannelHUDController(
+                return new ChatChannelHUDController(
                     DataStore.i,
                     new UserProfileWebInterfaceBridge(),
-                    ChatController.i,
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
                     Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IProfanityFilter>());
-                break;
             case HUDElementID.CHANNELS_SEARCH:
-                hudElement = new SearchChannelsWindowController(
-                    ChatController.i,
+                return new SearchChannelsWindowController(
+                    Environment.i.serviceLocator.Get<IChatController>(),
                     SceneReferences.i.mouseCatcher,
                     DataStore.i,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>());
-                break;
             case HUDElementID.CHANNELS_CREATE:
-                hudElement = new CreateChannelWindowController(ChatController.i, DataStore.i);
-                break;
+                return new CreateChannelWindowController(Environment.i.serviceLocator.Get<IChatController>(), DataStore.i);
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
-                hudElement = new LeaveChannelConfirmationWindowController(ChatController.i);
-                break;
+                return new LeaveChannelConfirmationWindowController(Environment.i.serviceLocator.Get<IChatController>());
             case HUDElementID.TASKBAR:
-                hudElement = new TaskbarHUDController(ChatController.i, FriendsController.i);
-                break;
+                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), FriendsController.i);
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
-                hudElement = new ExternalUrlPromptHUDController();
-                break;
+                return new ExternalUrlPromptHUDController();
             case HUDElementID.NFT_INFO_DIALOG:
-                hudElement = new NFTPromptHUDController();
-                break;
+                return new NFTPromptHUDController();
             case HUDElementID.TELEPORT_DIALOG:
-                hudElement = new TeleportPromptHUDController();
-                break;
+                return new TeleportPromptHUDController();
             case HUDElementID.CONTROLS_HUD:
-                hudElement = new ControlsHUDController();
-                break;
+                return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                hudElement = new HelpAndSupportHUDController();
-                break;
+                return new HelpAndSupportHUDController();
             case HUDElementID.USERS_AROUND_LIST_HUD:
-                hudElement = new VoiceChatWindowController(
+                return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),
                     FriendsController.i,
                     new SocialAnalytics(
@@ -153,37 +163,34 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     Settings.i,
                     SceneReferences.i.mouseCatcher);
-                break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
-                hudElement = new GraphicCardWarningHUDController();
-                break;
-            case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                break;
+                return new GraphicCardWarningHUDController();
             case HUDElementID.QUESTS_PANEL:
-                hudElement = new QuestsPanelHUDController();
-                break;
-            case HUDElementID.QUESTS_TRACKER:
-                hudElement = new QuestsTrackerHUDController();
-                break;
-            case HUDElementID.SIGNUP:
-                var analytics = Environment.i.platform.serviceProviders.analytics;
-                hudElement = new SignupHUDController(analytics, dataStoreLoadingScreen.Ref);
-                break;
-            case HUDElementID.BUILDER_PROJECTS_PANEL:
-                break;
+                return new QuestsPanelHUDController();
             case HUDElementID.LOADING:
-                hudElement = new LoadingHUDController();
-                break;
+                return new LoadingHUDController(await CreateHUDView<LoadingHUDView>(LOADING_HUD, cancellationToken));
+            case HUDElementID.QUESTS_TRACKER:
+                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
+            case HUDElementID.AIRDROPPING:
+                return new AirdroppingHUDController(await CreateAirdroppingHUDView(cancellationToken));
+            case HUDElementID.SIGNUP:
+                return new SignupHUDController(Environment.i.platform.serviceProviders.analytics, await CreateSignupHUDView(cancellationToken), dataStoreLoadingScreen.Ref);
         }
 
-        return hudElement;
+        return null;
     }
 
-    public void Dispose()
-    {
-    }
+    public async UniTask<AirdroppingHUDView> CreateAirdroppingHUDView(CancellationToken cancellationToken = default) =>
+        await CreateHUDView<AirdroppingHUDView>(AIRDROPPING_HUD, cancellationToken);
 
-    public void Initialize()
+    public async UniTask<ISignupHUDView> CreateSignupHUDView(CancellationToken cancellationToken = default) =>
+        await CreateHUDView<ISignupHUDView>(SIGNUP_HUD, cancellationToken);
+
+    protected async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default) where T:IDisposable
     {
+        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
+        disposableViews.Add(view);
+
+        return view;
     }
 }

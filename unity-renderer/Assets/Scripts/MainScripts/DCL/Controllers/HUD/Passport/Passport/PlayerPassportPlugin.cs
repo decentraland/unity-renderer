@@ -6,6 +6,7 @@ using DCl.Social.Passports;
 using DCL.Social.Passports;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class PlayerPassportPlugin : IPlugin
     public PlayerPassportPlugin()
     {
         PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
         passportController = new PlayerPassportHUDController(
                         referenceContainer.PassportView,
@@ -31,12 +33,16 @@ public class PlayerPassportPlugin : IPlugin
                                 new UserProfileWebInterfaceBridge()),
                             Environment.i.platform.clipboard,
                             new WebInterfacePassportApiBridge()),
-                        new PassportPlayerPreviewComponentController(referenceContainer.PlayerPreviewView),
+                        new PassportPlayerPreviewComponentController(
+                            referenceContainer.PlayerPreviewView,
+                            new SocialAnalytics(
+                                Environment.i.platform.serviceProviders.analytics,
+                                new UserProfileWebInterfaceBridge())),
                         new PassportNavigationComponentController(
                             referenceContainer.PassportNavigationView,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                            new WearableItemResolver(),
-                            new WearablesCatalogControllerBridge(),
+                            new WearableItemResolver(wearablesCatalogService),
+                            wearablesCatalogService,
                             Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
                             Environment.i.serviceLocator.Get<INamesService>(),
                             Environment.i.serviceLocator.Get<ILandsService>(),

@@ -18,11 +18,15 @@ import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPositio
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { TeleportController } from 'shared/world/TeleportController'
 import { notifyStatusThroughChat } from './index'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { changeRealm } from 'shared/dao'
 import { isValidExpression, validExpressions } from 'shared/apis/expressionExplainer'
 import { SHOW_FPS_COUNTER } from 'config'
-import { findProfileByName, getCurrentUserProfile, getProfile } from 'shared/profiles/selectors'
+import {
+  findProfileByName,
+  getCurrentUserProfile as currentUserProfileSelector,
+  getProfile
+} from 'shared/profiles/selectors'
 import { getSocialClient, isFriend } from 'shared/friends/selectors'
 import { fetchHotScenes } from 'shared/social/hotScenes'
 import { getCurrentUserId, hasWallet } from 'shared/session/selectors'
@@ -327,7 +331,7 @@ function initChatCommands() {
   )
 
   addChatCommand('getname', 'Gets your username', (_message) => {
-    const currentUserProfile = getCurrentUserProfile(store.getState())
+    const currentUserProfile = currentUserProfileSelector(store.getState())
     if (!currentUserProfile) throw new Error('profileNotInitialized')
     return {
       messageId: uuid(),

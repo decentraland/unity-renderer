@@ -2,6 +2,7 @@ using AvatarSystem;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
+using System;
 using UnityEngine;
 
 namespace DCL.Components
@@ -13,12 +14,13 @@ namespace DCL.Components
     public class AvatarOutlineOnHoverEvent : MonoBehaviour, IUnlockedCursorInputEvent, IPoolLifecycleHandler
     {
         private IAvatar avatar;
-
+        private OnPointerEvent.Model model;
         private bool isHovered;
 
-        public event System.Action OnPointerEnterReport;
-        public event System.Action OnPointerExitReport;
-        private OnPointerEvent.Model model;
+        public bool ShouldBeHoveredWhenMouseIsLocked { get; set; } = true;
+
+        public event Action OnPointerEnterReport;
+        public event Action OnPointerExitReport;
 
         public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
         {
@@ -28,6 +30,52 @@ namespace DCL.Components
 
             CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
         }
+
+        private void OnDestroy()
+        {
+            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
+        }
+
+        public Transform GetTransform() =>
+            transform;
+
+        public IDCLEntity entity { get; private set; }
+
+        public void SetHoverState(bool state)
+        {
+            if (!enabled) return;
+            if (isHovered == state) return;
+
+            isHovered = state;
+
+            if (isHovered)
+            {
+                SetAvatarOutlined();
+                OnPointerEnterReport?.Invoke();
+            }
+            else
+            {
+                ResetAvatarOutlined();
+                OnPointerExitReport?.Invoke();
+            }
+        }
+
+        public bool IsAtHoverDistance(float distance)
+        {
+            bool isCursorLocked = Utils.IsCursorLocked;
+            if (!ShouldBeHoveredWhenMouseIsLocked && isCursorLocked) return false;
+            return !isCursorLocked || distance <= model.distance;
+        }
+
+        public bool IsVisible() =>
+            true;
+
+        public void OnPoolRelease()
+        {
+            avatar = null;
+        }
+
+        public void OnPoolGet() { }
 
         private void AllUIHiddenChanged(bool isAllUIHidden, bool _)
         {
@@ -50,47 +98,5 @@ namespace DCL.Components
                     DataStore.i.outliner.avatarOutlined.Set((renderer, renderer.GetComponent<MeshFilter>().sharedMesh.subMeshCount, avatar.extents.y));
             }
         }
-
-        private void OnDestroy()
-        {
-            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
-        }
-
-        public Transform GetTransform() =>
-            transform;
-
-        public IDCLEntity entity { get; private set; }
-
-        public void SetHoverState(bool state)
-        {
-            if (isHovered == state)
-                return;
-
-            isHovered = state;
-
-            if (isHovered)
-            {
-                SetAvatarOutlined();
-                OnPointerEnterReport?.Invoke();
-            }
-            else
-            {
-                ResetAvatarOutlined();
-                OnPointerExitReport?.Invoke();
-            }
-        }
-
-        public bool IsAtHoverDistance(float distance) =>
-            !Utils.IsCursorLocked || distance <= model.distance;
-
-        public bool IsVisible() =>
-            true;
-
-        public void OnPoolRelease()
-        {
-            avatar = null;
-        }
-
-        public void OnPoolGet() { }
     }
 }

@@ -1,6 +1,6 @@
+using DCL.Components.Video.Plugin;
 using System.Collections.Generic;
 using DCL.ECSComponents;
-using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
@@ -24,6 +24,42 @@ namespace DCL.ECS7.InternalComponents
         public bool castShadows = true;
     }
 
+    public class InternalVideoMaterial : InternalComponent
+    {
+        public readonly struct VideoTextureData
+        {
+            public readonly long videoId;
+            public readonly int textureType;
+
+            public VideoTextureData(long videoId, int textureType)
+            {
+                this.videoId = videoId;
+                this.textureType = textureType;
+            }
+        }
+
+        public Material material = null;
+        public IList<VideoTextureData> videoTextureDatas;
+    }
+
+    public class InternalVideoPlayer : InternalComponent
+    {
+        public readonly struct MaterialAssigned
+        {
+            public readonly Material material;
+            public readonly int textureType;
+
+            public MaterialAssigned(Material material, int textureType)
+            {
+                this.material = material;
+                this.textureType = textureType;
+            }
+        }
+
+        public WebVideoPlayer videoPlayer = null;
+        public IList<MaterialAssigned> assignedMaterials;
+    }
+
     public class InternalColliders : InternalComponent
     {
         public IList<Collider> colliders = new List<Collider>();
@@ -32,6 +68,22 @@ namespace DCL.ECS7.InternalComponents
     public class InternalRenderers : InternalComponent
     {
         public IList<Renderer> renderers = new List<Renderer>();
+    }
+
+    public class InternalAudioSource : InternalComponent
+    {
+        public AudioSource audioSource;
+    }
+
+    public class InternalSceneBoundsCheck : InternalComponent
+    {
+        public Vector3 entityPosition = Vector3.zero;
+        public Bounds entityLocalMeshBounds = new Bounds();
+        public bool meshesDirty = false;
+        public IList<Renderer> renderers;
+        public IList<Collider> physicsColliders;
+        public IList<Collider> pointerColliders;
+        public AudioSource audioSource;
     }
 
     public class InternalVisibility : InternalComponent
@@ -51,6 +103,7 @@ namespace DCL.ECS7.InternalComponents
 
         public Queue<EventData> events;
         public int lastTimestamp;
+        public long lastEntity;
     }
 
     public class InternalUiContainer : InternalComponent

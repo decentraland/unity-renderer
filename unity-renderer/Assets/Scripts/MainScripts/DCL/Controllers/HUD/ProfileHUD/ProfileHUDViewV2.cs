@@ -115,7 +115,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     public void SetNonWalletSectionEnabled(bool isEnabled) => nonConnectedWalletSection.SetActive(isEnabled);
     public void SetStartMenuButtonActive(bool isActive) => isStartMenuInitialized = isActive;
     public override void RefreshControl() { }
-    
+
 
     public void SetProfile(UserProfile userProfile)
     {

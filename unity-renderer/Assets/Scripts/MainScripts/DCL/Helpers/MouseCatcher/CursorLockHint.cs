@@ -9,8 +9,6 @@ namespace DCL
 
         [SerializeField] private ShowHideAnimator toastRoot;
         [SerializeField] private float duration;
-        
-        private Coroutine hideRoutine;
 
         private void Start()
         {
@@ -29,24 +27,12 @@ namespace DCL
                 toastRoot.Hide();
                 return;
             }
-            if (DataStore.i.camera.panning.Get()) return;
-            if (hasBeenShown) return;
-            if (toastRoot.isVisible) return;
-            toastRoot.gameObject.SetActive(true);
-            toastRoot.Show();
-            hasBeenShown = true;
-            HideToastAfterDelay();
-        }
 
-        private void HideToastAfterDelay()
-        {
-            if (hideRoutine != null)
-                StopCoroutine(hideRoutine);
-            hideRoutine = StartCoroutine(Utils.Wait(duration, () =>
-            {
-                toastRoot.Hide();
-                hideRoutine = null;
-            }));
+            if (DataStore.i.camera.panning.Get() || hasBeenShown || toastRoot.isVisible)
+                return;
+
+            hasBeenShown = true;
+            toastRoot.ShowDelayHide(duration);
         }
     }
 }

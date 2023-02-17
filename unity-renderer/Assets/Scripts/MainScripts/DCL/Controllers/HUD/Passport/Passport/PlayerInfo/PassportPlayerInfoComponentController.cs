@@ -81,7 +81,7 @@ namespace DCL.Social.Passports
         private void UsernameCopy(string username)
         {
             clipboard.WriteText(username);
-            socialAnalytics.SendCopyWallet(PlayerActionSource.Passport);
+            socialAnalytics.SendCopyUsername(PlayerActionSource.Passport);
         }
 
         private void JumpInUser()
@@ -272,7 +272,7 @@ namespace DCL.Social.Passports
 
         private void WhisperUser(string userId)
         {
-            dataStore.HUDs.openPrivateChat.Set(userId);
+            dataStore.HUDs.openChat.Set(userId, true);
             socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
             OnClosePassport?.Invoke();
         }

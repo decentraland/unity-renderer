@@ -7,7 +7,7 @@ on: [deployment_status]
 jobs:
   set-rollouts-automatic:
     if: ${{ github.event.deployment.task == 'upload-to-cdn' && github.event.deployment_status.state == 'success' }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: hmarr/debug-action@v2
       - name: set-rollout-zone
@@ -62,4 +62,4 @@ jobs:
           # Rollout information
           deploymentDomain: "play.decentraland.org"
           deploymentName: "@dcl/explorer"
-          percentage: 100
+          percentage: 0

@@ -45,15 +45,6 @@ const server = http.createServer(app)
   })
 
   app.use(
-    '/@/artifacts/index.js',
-    express.static(resolve(__dirname, './static/index.js'), {
-      setHeaders: (res) => {
-        res.setHeader('Content-Type', 'application/javascript')
-      }
-    })
-  )
-
-  app.use(
     '/preview.html',
     express.static(resolve(__dirname, './static/preview.html'), {
       setHeaders: (res) => {
@@ -75,6 +66,9 @@ const server = http.createServer(app)
   app.use('/node_modules', express.static(resolve(__dirname, './node_modules')))
 
   app.use(express.static(path.resolve(__dirname, 'static')))
+
+  // compatibility with CLI for preview.html
+  app.use('/@/explorer',express.static(path.resolve(__dirname, 'static')))
 
   server.listen(port, function () {
     console.info('==>     Listening on port %s. Open up http://localhost:%s/test to run tests', port, port)

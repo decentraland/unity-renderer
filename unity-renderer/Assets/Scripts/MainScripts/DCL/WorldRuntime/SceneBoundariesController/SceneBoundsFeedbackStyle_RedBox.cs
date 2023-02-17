@@ -69,7 +69,7 @@ namespace DCL.Controllers
             if (meshesInfo == null)
                 return;
 
-            if (!invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
+            if (meshesInfo.innerGameObject == null || !invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
                 return;
 
             PoolableObject poolableObject = PoolManager.i.GetPoolable(meshesInfo.meshRootGameObject);
@@ -84,16 +84,16 @@ namespace DCL.Controllers
                 for (int i = 0; i < renderers.Length; i++)
                 {
                     Bounds target = renderers[i].bounds;
-                    
+
                     if (invalidObjects.Contains(target))
                         invalidObjects.Remove(target);
                 }
             }
-            
+
             foreach (Collider collider in meshesInfo.colliders)
             {
                 Bounds target = collider.bounds;
-                
+
                 if (invalidObjects.Contains(target))
                     invalidObjects.Remove(target);
             }
@@ -107,7 +107,7 @@ namespace DCL.Controllers
             if (meshesInfo == null)
                 return;
 
-            if (invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
+            if (meshesInfo.innerGameObject == null || invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
                 return;
 
             InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(meshesInfo);
@@ -125,7 +125,7 @@ namespace DCL.Controllers
             for (int i = 0; i < entityRenderers.Length; i++)
             {
                 Bounds target = entityRenderers[i].bounds;
-                
+
                 if (invalidObjects.Contains(target))
                     continue;
 
@@ -134,11 +134,11 @@ namespace DCL.Controllers
                 invalidMeshInfo.wireframeObjects.Add(box);
                 invalidObjects.Add(target);
             }
-            
+
             foreach (Collider collider in meshesInfo.colliders)
             {
                 Bounds target = collider.bounds;
-                
+
                 if (invalidObjects.Contains(target))
                     continue;
 

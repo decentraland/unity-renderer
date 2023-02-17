@@ -156,7 +156,7 @@ namespace DCL
 
         private void OpenWebBrowser()
         {
-#if (UNITY_EDITOR || UNITY_STANDALONE)
+#if (UNITY_EDITOR)
             string baseUrl = "";
             string debugString = "";
 

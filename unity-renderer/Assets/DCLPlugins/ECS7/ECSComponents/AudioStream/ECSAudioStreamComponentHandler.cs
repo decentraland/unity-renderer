@@ -1,10 +1,10 @@
-﻿using System;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using DCL.SettingsCommon;
+using System;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -18,16 +18,18 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal PBAudioStream model;
         internal IParcelScene scene;
+        internal string url;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
         internal bool isRendererActive = false;
         internal bool wasCursorLocked = false;
+        internal bool isValidUrl = false;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
-            
+
             // If it is a smart wearable, we don't look up to see if the scene has changed since the scene is global
             if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
@@ -41,6 +43,7 @@ namespace DCL.ECSComponents
             isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
 
             wasCursorLocked = Utils.IsCursorLocked;
+
             if (!wasCursorLocked)
             {
                 Utils.OnCursorLockChanged += OnCursorLockChanged;
@@ -62,9 +65,17 @@ namespace DCL.ECSComponents
             // We update the model and the volume
             UpdateModel(model);
 
+            isValidUrl = UtilsScene.TryGetMediaUrl(model.Url, scene.contentProvider,
+                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string newUrl);
+
+            if (!isValidUrl)
+                StopStreaming();
+
             // In case that the audio stream can't be played we do an early return
-            if (!CanAudioStreamBePlayed())
+            if (!CanAudioStreamBePlayed() || !isValidUrl)
                 return;
+
+            url = newUrl;
 
             // If everything went ok, we update the state
             SendUpdateAudioStreamEvent(model.Playing);
@@ -72,9 +83,9 @@ namespace DCL.ECSComponents
 
         private void Dispose()
         {
-            if(!scene.isPersistent)
+            if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
-            
+
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
@@ -107,7 +118,8 @@ namespace DCL.ECSComponents
 
             if (isPlaying && !canBePlayed)
                 StopStreaming();
-            if (!isPlaying && canBePlayed && model.Playing)
+
+            if (!isPlaying && canBePlayed && model.Playing && isValidUrl)
                 StartStreaming();
         }
 
@@ -131,10 +143,13 @@ namespace DCL.ECSComponents
         private void OnSettingsChanged(AudioSettings settings)
         {
             float newSettingsVolume = GetCalculatedSettingsVolume(settings);
+
             if (Math.Abs(settingsVolume - newSettingsVolume) > Mathf.Epsilon)
             {
                 settingsVolume = newSettingsVolume;
-                SendUpdateAudioStreamEvent(isPlaying);
+
+                if (isValidUrl)
+                    SendUpdateAudioStreamEvent(isPlaying);
             }
         }
 
@@ -161,7 +176,7 @@ namespace DCL.ECSComponents
         private void SendUpdateAudioStreamEvent(bool play)
         {
             isPlaying = play;
-            WebInterface.SendAudioStreamEvent(model.Url, isPlaying, currentVolume);
+            WebInterface.SendAudioStreamEvent(url, isPlaying, currentVolume);
         }
 
         private void OnCursorLockChanged(bool isLocked)

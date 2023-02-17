@@ -72,7 +72,7 @@ public class VoiceChatWindowControllerShould
         if (isVisible)
             voiceChatWindowComponentView.Received(1).Show();
         else
-            voiceChatWindowComponentView.Received(1).Hide();
+            voiceChatWindowComponentView.ReceivedWithAnyArgs(1).Hide();
     }
 
     [Test]
@@ -143,7 +143,7 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.CloseView();
 
         // Assert
-        voiceChatWindowComponentView.Received(1).Hide();
+        voiceChatWindowComponentView.ReceivedWithAnyArgs(1).Hide();
     }
 
     [Test]
@@ -201,8 +201,8 @@ public class VoiceChatWindowControllerShould
         // Arrange
         string testPlayerId = "playerId4";
         string testPlayerName = "Test Player";
-        Player testPlayer = new Player 
-        { 
+        Player testPlayer = new Player
+        {
             id = testPlayerId,
             name = testPlayerName
         };

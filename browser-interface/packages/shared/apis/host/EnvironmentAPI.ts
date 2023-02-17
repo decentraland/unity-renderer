@@ -1,24 +1,25 @@
-import { getSelectedNetwork } from './../../dao/selectors'
-import { getServerConfigurations, PREVIEW, RENDERER_WS } from './../../../config'
-import { store } from './../../store/isolatedStore'
-import { getCommsIsland } from './../../comms/selectors'
-import { getRealmAdapter } from '../../realm/selectors'
-import { getFeatureFlagEnabled } from './../../meta/selectors'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getServerConfigurations, PREVIEW, RENDERER_WS } from 'config'
+import { store } from 'shared/store/isolatedStore'
+import { getCommsIsland } from 'shared/comms/selectors'
+import { getRealmAdapter } from 'shared/realm/selectors'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
-import {
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
+import { EnvironmentApiServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/environment_api.gen'
+import type {
   AreUnsafeRequestAllowedResponse,
   BootstrapDataResponse,
-  EnvironmentApiServiceDefinition,
   GetCurrentRealmResponse,
   GetDecentralandTimeResponse,
   GetExplorerConfigurationResponse,
   GetPlatformResponse,
   PreviewModeResponse
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/environment_api.gen'
-import { EnvironmentRealm, Platform } from './../IEnvironmentAPI'
-import { PortContextService } from './context'
-import { IRealmAdapter } from 'shared/realm/types'
+import type { EnvironmentRealm } from '../IEnvironmentAPI'
+import { Platform } from '../IEnvironmentAPI'
+import type { PortContextService } from './context'
+import type { IRealmAdapter } from 'shared/realm/types'
 import { realmToConnectionString, urlWithProtocol } from 'shared/realm/resolver'
 
 export function registerEnvironmentApiServiceServerImplementation(

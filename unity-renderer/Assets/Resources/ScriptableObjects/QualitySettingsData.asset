@@ -30,6 +30,7 @@ MonoBehaviour:
     ssaoQuality: 1
     maxHQAvatars: 25
     reflectionResolution: 0
+    shaderQuality: 0
   - displayName: Medium
     baseResolution: 1
     antiAliasing: 1
@@ -46,6 +47,7 @@ MonoBehaviour:
     ssaoQuality: 2
     maxHQAvatars: 40
     reflectionResolution: 1
+    shaderQuality: 1
   - displayName: High
     baseResolution: 1
     antiAliasing: 4
@@ -62,8 +64,9 @@ MonoBehaviour:
     ssaoQuality: 2
     maxHQAvatars: 60
     reflectionResolution: 2
+    shaderQuality: 2
   - displayName: Ultra
-    baseResolution: 2
+    baseResolution: 1
     antiAliasing: 8
     renderScale: 1
     shadows: 1
@@ -78,3 +81,4 @@ MonoBehaviour:
     ssaoQuality: 3
     maxHQAvatars: 100
     reflectionResolution: 3
+    shaderQuality: 2

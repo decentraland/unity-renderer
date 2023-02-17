@@ -11,7 +11,8 @@ namespace SocialFeaturesAnalytics
         Passport,
         ProfileContextMenu,
         FriendsHUD,
-        Conversation
+        Conversation,
+        ProfileEditHUD
     }
 
     public enum ItemType

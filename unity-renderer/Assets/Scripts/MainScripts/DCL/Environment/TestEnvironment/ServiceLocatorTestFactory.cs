@@ -5,14 +5,17 @@ using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using Sentry;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL
 {
@@ -29,12 +32,15 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
+
             result.Register<IWebRequestMonitor>(() =>
             {
                 var subs = Substitute.For<IWebRequestMonitor>();
                 subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
                 return subs;
             });
+            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
 
             result.Register<IServiceProviders>(
                 () =>
@@ -109,6 +115,16 @@ namespace DCL
             result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
             result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
             result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
+
+            result.Register<IChatController>(() =>
+            {
+                IChatController chatController = Substitute.For<IChatController>();
+
+                chatController.GetChannelsByNameAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                              .ReturnsForAnyArgs(UniTask.FromResult(("", Array.Empty<Channel>())));
+
+                return chatController;
+            });
 
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());

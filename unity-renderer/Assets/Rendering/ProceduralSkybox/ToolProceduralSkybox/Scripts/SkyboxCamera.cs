@@ -24,6 +24,11 @@ namespace DCL.Skybox
 
             var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
             cameraData.renderShadows = false;
+
+            // This index is defined in UniversalRenderPipelineAsset
+            // We are using a custom ForwardRenderer with less features that increase the performance and lowers the passes
+            cameraData.SetRenderer(1);
+
             skyboxCamera.useOcclusionCulling = false;
             skyboxCamera.cullingMask = (1 << LayerMask.NameToLayer("Skybox"));
             skyboxCamera.farClipPlane = 5000;
