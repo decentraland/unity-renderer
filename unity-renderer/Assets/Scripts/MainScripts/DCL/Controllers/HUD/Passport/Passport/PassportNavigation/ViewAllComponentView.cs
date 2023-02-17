@@ -17,6 +17,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     [SerializeField] private UIPageSelector pageSelector;
     [SerializeField] private GameObject nftPageElement;
     [SerializeField] private GameObject loadingSpinner;
+    [SerializeField] internal NFTItemInfo nftItemInfo;
 
     public event Action OnBackFromViewAll;
     public event Action<PassportSection, int, int> OnRequestCollectibleElements;
@@ -25,6 +26,7 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     private List<PoolableObject> nftElementsPoolableQueue = new List<PoolableObject>();
     private Pool nftElementsEntryPool;
     private PassportSection section;
+    private readonly List<NFTIconComponentView> nftWearableViews = new List<NFTIconComponentView>();
 
     public override void Awake()
     {
@@ -69,9 +71,11 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         gameObject.SetActive(isVisible);
     }
 
-    public void ShowNftIcons(List<NFTIconComponentModel> models)
+    public void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem w)> wearables)
     {
-        foreach (var model in models)
+        nftWearableViews.Clear();
+
+        foreach (var wearableData in wearables)
         {
             PoolableObject poolableObject = nftElementsEntryPool.Get();
             nftElementsPoolableQueue.Add(poolableObject);
@@ -79,20 +83,46 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             poolableObject.gameObject.transform.localScale = NFT_ICON_SCALE;
             NFTIconComponentView nftIconComponentView = poolableObject.gameObject.GetComponent<NFTIconComponentView>();
             nftIconComponentView.onMarketplaceButtonClick.RemoveAllListeners();
-            nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(model.nftId.Item1, model.nftId.Item2));
-            nftIconComponentView.Configure(model);
-        }
-    }
+            nftIconComponentView.onMarketplaceButtonClick.AddListener(() => ClickOnBuyWearable(wearableData.model.nftId.Item1, wearableData.model.nftId.Item2));
+            nftIconComponentView.Configure(wearableData.model);
+            nftIconComponentView.onFocused -= FocusOnNFTIconView;
+            nftIconComponentView.onFocused += FocusOnNFTIconView;
 
-    private void ClickOnBuyWearable(string wearableId, string wearableType)
-    {
-        OnClickBuyNft?.Invoke(wearableId, wearableType);
+            if (wearableData.w != null)
+            {
+                nftIconComponentView.onDetailInfoButtonClick.AddListener(() => nftIconComponentView.SetNFTItemInfoActive(true));
+                nftIconComponentView.ConfigureNFTItemInfo(nftItemInfo, wearableData.w, !wearableData.w.IsEmote());
+            }
+            else
+                nftIconComponentView.onDetailInfoButtonClick.RemoveAllListeners();
+
+            nftWearableViews.Add(nftIconComponentView);
+        }
     }
 
     public void SetLoadingActive(bool isLoading)
     {
         loadingSpinner.SetActive(isLoading);
         itemsContainer.gameObject.SetActive(!isLoading);
+    }
+
+    public void CloseAllNftItemInfos()
+    {
+        foreach (var nftView in nftWearableViews)
+            nftView.SetNFTItemInfoActive(false);
+    }
+
+    private void FocusOnNFTIconView(bool isFocused)
+    {
+        if (!isFocused)
+            return;
+
+        CloseAllNftItemInfos();
+    }
+
+    private void ClickOnBuyWearable(string wearableId, string wearableType)
+    {
+        OnClickBuyNft?.Invoke(wearableId, wearableType);
     }
 
     private Pool GetNftElementsEntryPool()

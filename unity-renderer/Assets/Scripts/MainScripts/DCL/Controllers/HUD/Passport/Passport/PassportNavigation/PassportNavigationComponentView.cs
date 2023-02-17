@@ -120,6 +120,7 @@ namespace DCL.Social.Passports
 
         private void OpenViewAllSection(PassportSection section)
         {
+            CloseAllNFTItemInfos();
             OnClickedViewAll?.Invoke(section);
         }
 

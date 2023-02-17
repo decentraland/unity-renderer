@@ -65,11 +65,12 @@ public class ViewAllComponentController : IDisposable
         OnBackFromViewAll?.Invoke();
         SetViewAllVisibility(false);
         view.SetLoadingActive(false);
+        view.CloseAllNftItemInfos();
     }
 
-    private void ShowNftIcons(List<NFTIconComponentModel> models)
+    private void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem w)> wearables)
     {
-        view.ShowNftIcons(models);
+        view.ShowNftIcons(wearables);
     }
 
     public void Dispose()
@@ -83,6 +84,8 @@ public class ViewAllComponentController : IDisposable
 
     private void RequestCollectibleElements(PassportSection section, int pageNumber, int pageSize)
     {
+        view.CloseAllNftItemInfos();
+        
         sectionsCts = sectionsCts.SafeRestart();
 
         switch (section)
@@ -173,10 +176,10 @@ public class ViewAllComponentController : IDisposable
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
     {
-        List<NFTIconComponentModel> wearableModels = new List<NFTIconComponentModel>();
+        List<(NFTIconComponentModel Model, WearableItem w)> wearableModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var wearable in wearables)
         {
-            wearableModels.Add(new NFTIconComponentModel
+            wearableModels.Add((new NFTIconComponentModel
             {
                 showMarketplaceButton = wearable.IsCollectible(),
                 showType = wearable.IsCollectible(),
@@ -186,17 +189,17 @@ public class ViewAllComponentController : IDisposable
                 rarity = wearable.rarity,
                 imageURI = wearable.ComposeThumbnailUrl(),
                 nftId = (wearable.id, wearable.data.category)
-            });
+            }, wearable));
         }
         ShowNftIcons(wearableModels);
     }
 
     private void ProcessReceivedEmotes(WearableItem[] emotes)
     {
-        List<NFTIconComponentModel> emoteModels = new List<NFTIconComponentModel>();
+        List<(NFTIconComponentModel Model, WearableItem w)> emoteModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var emote in emotes)
         {
-            emoteModels.Add(new NFTIconComponentModel
+            emoteModels.Add((new NFTIconComponentModel
             {
                 showMarketplaceButton = true,
                 showType = true,
@@ -206,17 +209,17 @@ public class ViewAllComponentController : IDisposable
                 rarity = emote.rarity,
                 imageURI = emote.ComposeThumbnailUrl(),
                 nftId = (emote.id, EMOTE_TYPE)
-            });
+            }, emote));
         }
         ShowNftIcons(emoteModels);
     }
 
     private void ProcessReceivedNames(NamesResponse.NameEntry[] names)
     {
-        List<NFTIconComponentModel> nameModels = new List<NFTIconComponentModel>();
+        List<(NFTIconComponentModel Model, WearableItem w)> nameModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var name in names)
         {
-            nameModels.Add(new NFTIconComponentModel
+            nameModels.Add((new NFTIconComponentModel
             {
                 showMarketplaceButton = true,
                 showType = true,
@@ -226,17 +229,17 @@ public class ViewAllComponentController : IDisposable
                 rarity = NAME_TYPE,
                 imageURI = "",
                 nftId = (name.ContractAddress, NAME_TYPE)
-            });
+            }, null));
         }
         ShowNftIcons(nameModels);
     }
 
     private void ProcessReceivedLands(LandsResponse.LandEntry[] lands)
     {
-        List<NFTIconComponentModel> landModels = new List<NFTIconComponentModel>();
+        List<(NFTIconComponentModel Model, WearableItem w)> landModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         for (int i = 0; i < lands.Length; i++)
         {
-            landModels.Add(new()
+            landModels.Add((new()
             {
                 showMarketplaceButton = true,
                 showType = true,
@@ -246,7 +249,7 @@ public class ViewAllComponentController : IDisposable
                 rarity = LAND_TYPE,
                 imageURI = lands[i].Image,
                 nftId = (lands[i].ContractAddress, lands[i].Category)
-            });
+            }, null));
         }
         ShowNftIcons(landModels);
     }

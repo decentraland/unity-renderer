@@ -10,6 +10,7 @@ public interface IViewAllComponentView
     void Initialize(PassportSection sectionName);
     void SetTotalElements(int totalElements);
     void SetVisible(bool isVisible);
-    void ShowNftIcons(List<NFTIconComponentModel> models);
+    void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem w)> wearables);
     void SetLoadingActive(bool isLoading);
+    void CloseAllNftItemInfos();
 }

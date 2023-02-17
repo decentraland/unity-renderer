@@ -820,6 +820,7 @@ MonoBehaviour:
   nftPageElement: {fileID: 4667307376366643423, guid: 79e73d05107c94490a167f9282ea3552,
     type: 3}
   loadingSpinner: {fileID: 662044542340470358}
+  nftItemInfo: {fileID: 4240876911562652685}
 --- !u!1 &523446783765681292
 GameObject:
   m_ObjectHideFlags: 0
