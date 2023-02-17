@@ -1,23 +1,19 @@
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 {
     private readonly Dictionary<IGPUSkinning, int> gpuSkinnings = new ();
 
-    private bool stopAsked;
+    private CancellationTokenSource cts;
 
     public void Initialize()
     {
-        if (stopAsked)
-        {
-            Debug.LogError("GPUSkinningThrottlerService: Initialize called while stop was asked");
-            return;
-        }
-
-        ThrottleUpdateAsync().Forget();
+        cts = new CancellationTokenSource();
+        ThrottleUpdateAsync(cts.Token).Forget();
     }
 
     public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates = 1)
@@ -42,11 +38,12 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 
     public void ForceStop()
     {
-        stopAsked = true;
+        Cancel();
     }
 
     public void Dispose()
     {
+        Cancel();
         gpuSkinnings.Clear();
     }
 
@@ -60,11 +57,22 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         return service;
     }
 
-    private async UniTaskVoid ThrottleUpdateAsync()
+    private void Cancel()
+    {
+        if (cts != null)
+        {
+            cts.Cancel();
+            cts.Dispose();
+            cts = null;
+        }
+    }
+
+    private async UniTaskVoid ThrottleUpdateAsync(CancellationToken ct)
     {
         await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
 
-        while (!stopAsked)
+        // Cancel gracefully
+        while (!ct.IsCancellationRequested)
         {
             foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
             {
@@ -74,7 +82,5 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 
             await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
         }
-
-        stopAsked = false;
     }
 }
