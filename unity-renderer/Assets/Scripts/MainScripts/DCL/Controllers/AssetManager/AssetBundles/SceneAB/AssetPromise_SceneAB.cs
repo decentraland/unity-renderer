@@ -47,7 +47,7 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 id = hash,
             };
 
-            var finalUrl = $"{contentUrl}{SceneAssetBundles.MANIFEST_ENDPOINT}{hash}.json";
+            var finalUrl = $"{contentUrl}manifest/{hash}.json";
 
             try
             {

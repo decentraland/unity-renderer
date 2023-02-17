@@ -9,6 +9,8 @@ namespace DCL.Components
 {
     public class RendereableAssetLoadHelper
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         public event Action<Rendereable> OnSuccessEvent;
         public event Action<Exception> OnFailEvent;
 
@@ -180,7 +182,7 @@ namespace DCL.Components
                 return;
             }
 
-            if (featureFlags.IsFeatureEnabled(SceneAssetBundles.FEATURE_FLAG))
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
             {
                 if (contentProvider.assetBundles.Contains(hash))
                     bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;

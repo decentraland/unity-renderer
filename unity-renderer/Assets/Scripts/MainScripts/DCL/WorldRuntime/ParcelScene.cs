@@ -16,6 +16,8 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         [Header("Debug")]
         [SerializeField]
         private bool renderOuterBoundsGizmo = true;
@@ -101,7 +103,7 @@ namespace DCL.Controllers
 
             contentProvider.BakeHashes();
 
-            if (featureFlags.IsFeatureEnabled(SceneAssetBundles.FEATURE_FLAG))
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
             {
                 var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
                 if (sceneAb.IsSceneConverted())
