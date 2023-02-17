@@ -21,7 +21,7 @@ MonoBehaviour:
   flagsThatOverrideMe: []
   isBeta: 0
   infoButtonEnabled: 1
-  infoTooltipMessage: Try to lower this setting before switching to lower quality
+  infoTooltipMessage: Try lowering this setting before switching to a lower quality
     preset.
   sliderMinValue: 0.5
   sliderMaxValue: 1
