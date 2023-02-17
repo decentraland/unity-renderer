@@ -2,6 +2,7 @@
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Utils = DCL.Helpers.Utils;
 
 namespace DCLServices.MapRendererV2.MapCameraController
@@ -29,6 +30,12 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
             mapCameraObject.transform.localPosition = Vector3.up * CAMERA_HEIGHT;
             mapCameraObject.mapCamera.orthographic = true;
+        }
+
+        public static IMapCameraControllerInternal Create(MapCameraObject prefab, Transform parent, ICoordsUtils coordsUtils)
+        {
+            var instance = Object.Instantiate(prefab, parent);
+            return new MapCameraController(instance, coordsUtils);
         }
 
         void IMapCameraControllerInternal.Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers)

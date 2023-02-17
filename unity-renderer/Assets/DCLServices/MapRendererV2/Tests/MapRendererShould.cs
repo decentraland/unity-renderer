@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks.Linq;
+﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -35,6 +36,7 @@ namespace DCLServices.MapRendererV2.Tests
             var componentsFactory = Substitute.For<IMapRendererComponentsFactory>();
 
             componentsFactory.Create(Arg.Any<CancellationToken>()).Returns(
+                new UniTask<MapRendererComponents>(
                 new MapRendererComponents(
                     UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
                 {
@@ -47,7 +49,7 @@ namespace DCLServices.MapRendererV2.Tests
                         await writer.YieldAsync((layer, controller));
                     }
                 }), Substitute.For<IMapCullingController>(),
-                    Substitute.For<IObjectPool<IMapCameraControllerInternal>>()));
+                    Substitute.For<IObjectPool<IMapCameraControllerInternal>>())));
 
             mapRenderer = new MapRenderer(componentsFactory);
             await mapRenderer.InitializeAsync(CancellationToken.None);

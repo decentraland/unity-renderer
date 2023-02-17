@@ -24,6 +24,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private const string COLD_USER_MARKER_ADDRESS = "ColdUserMarker";
         private const string HOT_USER_MARKER_ADDRESS = "HotUserMarker";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
+        private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
 
         private const int ATLAS_DRAW_ORDER = 1;
         private const int COLD_USER_MARKERS_DRAW_ORDER = 10;
@@ -40,16 +41,21 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
-        MapRendererComponents IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
+        async UniTask<MapRendererComponents> IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
+            var configuration = await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken);
+            var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
+
             // TODO implement Culling Controller
             IMapCullingController cullingController = null;
 
-            // TODO implement or get cameraControllerBuilder
-            Func<IMapCameraControllerInternal> cameraControllerBuilder = null;
+            var mapCameraObjectPrefab = await AddressableProvider.GetAddressable<MapCameraObject>(MAP_CAMERA_OBJECT_ADDRESS, cancellationToken);
+
+            IMapCameraControllerInternal CameraControllerBuilder() =>
+                MapCameraController.MapCameraController.Create(mapCameraObjectPrefab, configuration.MapCamerasRoot, coordsUtils);
 
             IObjectPool<IMapCameraControllerInternal> pool = new ObjectPool<IMapCameraControllerInternal>(
-                cameraControllerBuilder,
+                CameraControllerBuilder,
                 x => x.SetActive(true),
                 x => x.SetActive(false),
                 x => x.Dispose()
@@ -57,8 +63,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             var enumerator = UniTaskAsyncEnumerable.Create<(MapLayer, IMapLayerController)>(async (writer, token) =>
             {
-                var configuration = await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken);
-                var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
 
                 async UniTask CreateAtlas()
                 {

@@ -49,7 +49,7 @@ namespace DCLServices.MapRendererV2
             this.cancellationToken = cancellationToken;
             layers = new Dictionary<MapLayer, MapLayerStatus>();
 
-            var components = componentsFactory.Create(cancellationToken);
+            var components = await componentsFactory.Create(cancellationToken);
             cullingController = components.CullingController;
             mapCameraPool = components.MapCameraControllers;
 
