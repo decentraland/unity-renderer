@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 
 namespace AvatarSystem
 {
@@ -11,6 +12,12 @@ namespace AvatarSystem
     {
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
+        private readonly IWearablesCatalogService wearablesCatalogService;
+
+        public WearableItemResolver(IWearablesCatalogService wearablesCatalogService)
+        {
+            this.wearablesCatalogService = wearablesCatalogService;
+        }
 
         public async UniTask<(List<WearableItem> wearables, List<WearableItem> emotes)> ResolveAndSplit(IEnumerable<string> wearableIds, CancellationToken ct = default)
         {
@@ -73,17 +80,17 @@ namespace AvatarSystem
                 if (wearablesRetrieved.ContainsKey(wearableId))
                     return wearablesRetrieved[wearableId];
 
-                Promise<WearableItem> promise = CatalogController.RequestWearable(wearableId);
                 // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
-                await promise.WithCancellation(linkedCts.Token);
+                var wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token).AttachExternalCancellation(ct);
 
                 // Cancelling is irrelevant at this point,
                 // either we have the wearable and we have to add it to forget it later
                 // or it's null and we just return it
-                if (promise.value != null)
-                    wearablesRetrieved.Add(wearableId, promise.value);
+                if (wearable != null)
+                    wearablesRetrieved.Add(wearableId, wearable);
 
-                return promise.value;
+                // return promise.value;
+                return wearable;
 
             }
             catch (Exception ex) when (ex is OperationCanceledException or PromiseException)
@@ -104,10 +111,10 @@ namespace AvatarSystem
             {
                 wearablesRetrieved.Remove(wearableId);
             }
-            CatalogController.RemoveWearablesInUse(wearableIds);
+            wearablesCatalogService.RemoveWearablesInUse(wearableIds);
         }
 
-        public void Forget(string wearableId) { CatalogController.RemoveWearablesInUse(new List<string> { wearableId }); }
+        public void Forget(string wearableId) { wearablesCatalogService.RemoveWearablesInUse(new List<string> { wearableId }); }
 
         public void Dispose()
         {

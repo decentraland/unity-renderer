@@ -1,5 +1,13 @@
 import { KernelConfigForRenderer } from 'shared/types'
-import { getAvatarTextureAPIBaseUrl, commConfigurations, WSS_ENABLED } from 'config'
+import { 
+  getAvatarTextureAPIBaseUrl,
+  commConfigurations,
+  WSS_ENABLED, WITH_FIXED_ITEMS,
+  WITH_FIXED_COLLECTIONS,
+  PREVIEW,
+  DEBUG,
+  getTLD,
+  ETHEREUM_NETWORK } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
 import { getWorld } from '@dcl/schemas'
 import { injectVersions } from 'shared/rolloutVersions'
@@ -16,6 +24,14 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
   try {
     network = getSelectedNetwork(globalState)
   } catch {}
+
+  const COLLECTIONS_OR_ITEMS_ALLOWED =
+    PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
+  
+  const urlParamsForWearablesDebug =
+    !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
+
+  console.log('[KERNEL CONFIG LOG] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug) // temporal log (for debugging purposes)
 
   return {
     ...globalState.meta.config.world,
@@ -37,6 +53,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     validWorldRanges: getWorld().validWorldRanges,
     kernelVersion: versions['@dcl/explorer'] || 'unknown-kernel-version',
     rendererVersion: versions['@dcl/explorer'] || 'unknown-renderer-version',
-    avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState))
+    avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState)),
+    urlParamsForWearablesDebug: urlParamsForWearablesDebug
   }
 }

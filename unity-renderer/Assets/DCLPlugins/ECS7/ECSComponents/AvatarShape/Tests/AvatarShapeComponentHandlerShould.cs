@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.Models;
 using Decentraland.Common;
 using NSubstitute;
@@ -30,7 +31,7 @@ namespace DCL.ECSComponents.Tests
 
             GameObject poolGameObject = new GameObject();
             ConfigurePool(poolGameObject);
-            componentHandler = new AvatarShapeComponentHandler(pool);
+            componentHandler = new AvatarShapeComponentHandler(pool, Substitute.For<IInternalECSComponent<InternalRenderers>>());
             avatarShape = Substitute.For<IAvatarShape>();
             avatarShape.Configure().transform.Returns(gameObject.transform);
             componentHandler.avatar = avatarShape;

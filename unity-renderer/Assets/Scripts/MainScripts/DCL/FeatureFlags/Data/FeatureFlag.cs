@@ -4,8 +4,13 @@ public class FeatureFlag
 {
     public readonly Dictionary<string, bool> flags  = new Dictionary<string, bool>();
     public readonly Dictionary<string, FeatureFlagVariant> variants  = new Dictionary<string, FeatureFlagVariant>();
-    
-    /// <summary>
+
+    public bool IsInitialized { get; private set; }
+
+    public void SetAsInitialized() =>
+        IsInitialized = true;
+
+        /// <summary>
     /// Will check if featureName contains variant to be checked.
     /// Supported formats: featureName, featureName:variantName
     /// </summary>
@@ -21,7 +26,7 @@ public class FeatureFlag
             string variantName = splitFeatureName[splitFeatureName.Length - 1];
             return variant.enabled && variant.name == variantName;
         }
-        
+
         if (flags.ContainsKey(featureName))
             return flags[featureName];
 
@@ -45,7 +50,7 @@ public class FeatureFlag
 
         return payloadResult;
     }
-   
+
     public string ToString()
     {
         string result = "";

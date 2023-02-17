@@ -8,14 +8,11 @@ namespace ECSSystems.InputSenderSystem
 {
     public static class ECSInputSenderSystem
     {
-        // Entities' number as buffer for PointerEventResult, the range is [MIN_ENTITY_TARGET, MAX_ENTITY_TARGET]
-        private const long MIN_ENTITY_TARGET = 32;
-        private const long MAX_ENTITY_TARGET = 64;
-
         private class State
         {
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
             public IECSComponentWriter componentWriter;
+            public int lastTimestamp = 0;
         }
 
         public static Action CreateSystem(
@@ -41,36 +38,26 @@ namespace ECSSystems.InputSenderSystem
                 if (!model.dirty)
                     continue;
 
-                inputResults[i].value.model.lastEntity++;
-                if (inputResults[i].value.model.lastEntity < MIN_ENTITY_TARGET || inputResults[i].value.model.lastEntity >= MAX_ENTITY_TARGET)
-                {
-                    inputResults[i].value.model.lastEntity = MIN_ENTITY_TARGET;
-                }
-
                 var scene = inputResults[i].value.scene;
-
-                PBPointerEventsResult result = new PBPointerEventsResult();
-                result.Commands.Capacity = model.events.Count;
-
+                var entity = inputResults[i].value.entity;
                 // using foreach to iterate through queue without removing it elements
                 // if it proves too slow we should switch the queue for a list
                 foreach (InternalInputEventResults.EventData inputEvent in model.events)
                 {
-                    result.Commands.Add(new PBPointerEventsResult.Types.PointerCommand()
-                    {
-                        Button = inputEvent.button,
-                        Hit = inputEvent.hit,
-                        State = inputEvent.type,
-                        Timestamp = inputEvent.timestamp
-                    });
+                    writer.AppendComponent(scene.sceneData.sceneNumber,
+                        entity.entityId,
+                        ComponentID.POINTER_EVENTS_RESULT,
+                        new PBPointerEventsResult()
+                        {
+                            Button = inputEvent.button,
+                            Hit = inputEvent.hit,
+                            State = inputEvent.type,
+                            Timestamp = state.lastTimestamp++
+                        },
+                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+
                 }
                 model.events.Clear();
-
-                writer.PutComponent(scene.sceneData.sceneNumber,
-                    inputResults[i].value.model.lastEntity,
-                    ComponentID.POINTER_EVENTS_RESULT,
-                    result,
-                    ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
             }
         }
     }

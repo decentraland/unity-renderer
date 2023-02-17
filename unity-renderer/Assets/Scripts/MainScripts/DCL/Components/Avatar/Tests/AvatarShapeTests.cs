@@ -7,29 +7,30 @@ using DCL.Components;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AvatarSystem;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 
 namespace Tests
 {
     public class AvatarShapeTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
-        private CatalogController catalogController;
         private CoreComponentsPlugin coreComponentsPlugin;
+        private IWearablesCatalogService wearablesCatalogService;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             coreComponentsPlugin = new CoreComponentsPlugin();
             scene = TestUtils.CreateTestScene();
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         protected override IEnumerator TearDown()
         {
             DataStore.Clear();
             coreComponentsPlugin.Dispose();
-            Object.Destroy(catalogController.gameObject);
+            wearablesCatalogService.Dispose();
             yield return base.TearDown();
         }
 
@@ -70,7 +71,6 @@ namespace Tests
         [Test]
         public void SetLayersProperly()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
             Assert.AreEqual(avatar.gameObject.layer, LayerMask.NameToLayer("ViewportCullingIgnored"));
             Assert.AreEqual(avatar.avatarCollider.gameObject.layer, LayerMask.NameToLayer("AvatarTriggerDetection"));
@@ -81,7 +81,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator DestroyWhileLoading()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
 
             GameObject goEntity = avatar.entity.gameObject;
@@ -99,7 +98,6 @@ namespace Tests
         [Explicit("Test too slow")]
         public IEnumerator InterpolatePosition()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortitus", "TestAvatar.json");
 
             // We must wait for the AvatarShape to finish or the OnTransformChanged event is not used
@@ -124,7 +122,6 @@ namespace Tests
         [Explicit("Test too slow")]
         public IEnumerator MaterialsSetCorrectly()
         {
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Joan Darteis", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
@@ -137,7 +134,6 @@ namespace Tests
         public IEnumerator WhenTwoAvatarsLoadAtTheSameTimeTheyHaveProperMaterials()
         {
             //NOTE(Brian): Avatars must be equal to share their meshes.
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Naicholas Keig", "TestAvatar.json");
             AvatarShape avatar2 = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Naicholas Keig", "TestAvatar2.json");
 

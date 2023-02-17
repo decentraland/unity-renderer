@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -27,6 +25,7 @@ public class FeatureFlagBridge : MonoBehaviour
         if (config == null)
             return;
 
+        config.SetAsInitialized();
         DataStore.i.featureFlags.flags.Set(config);
     }
 }

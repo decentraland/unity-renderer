@@ -114,6 +114,8 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
+import { arrayCleanup } from 'lib/javascript/arrayCleanup'
+import { now } from 'lib/javascript/now'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -234,11 +236,6 @@ const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>
 
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
-
-// Returns the current time in millis
-function now() {
-  return new Date().getTime()
-}
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -1135,10 +1132,6 @@ export class BrowserInterface {
         break
     }
   }
-}
-
-function arrayCleanup<T>(array: T[] | null | undefined): T[] | undefined {
-  return !array || array.length === 0 ? undefined : array
 }
 
 export const browserInterface: BrowserInterface = new BrowserInterface()

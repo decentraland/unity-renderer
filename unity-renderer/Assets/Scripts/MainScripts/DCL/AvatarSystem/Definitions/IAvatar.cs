@@ -29,6 +29,8 @@ namespace AvatarSystem
         Transform[] GetBones();
 
         Renderer GetMainRenderer();
+
+        event Action<Renderer> OnCombinedRendererUpdate;
     }
 
 }

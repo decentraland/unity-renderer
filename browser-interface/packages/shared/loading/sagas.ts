@@ -29,6 +29,7 @@ import { SceneWorkerReadyState } from 'shared/world/SceneWorker'
 import { LoadableScene } from 'shared/types'
 import { updateLoadingScreen } from '../loadingScreen/actions'
 import { ACTIONS_FOR_LOADING } from '../loadingScreen/sagas'
+import { now } from 'lib/javascript/now'
 
 export function* loadingSaga() {
   yield takeEvery(SCENE_LOAD, trackLoadTime)
@@ -68,7 +69,7 @@ function* triggerUnityClientLoaded() {
 }
 
 export function* trackLoadTime(action: SceneLoad): any {
-  const start = new Date().getTime()
+  const start = now()
   const { id } = action.payload
   const entityId = id
   const result = yield race({
@@ -81,7 +82,7 @@ export function* trackLoadTime(action: SceneLoad): any {
   const position = lastPlayerPosition
   trackEvent('SceneLoadTimes', {
     position: { ...position },
-    elapsed: new Date().getTime() - start,
+    elapsed: now() - start,
     success: !!result.start,
     sceneId: entityId,
     userId: userId

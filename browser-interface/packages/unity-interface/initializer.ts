@@ -19,6 +19,7 @@ import { browserInterface } from './BrowserInterface'
 import { webTransport } from 'renderer-protocol/transports/webTransport'
 import { Transport } from '@dcl/rpc'
 import { isRendererInitialized } from 'shared/renderer/selectors'
+import { ALLOW_SWIFT_SHADER } from 'config'
 
 export type InitializeUnityResult = {
   container: HTMLElement
@@ -64,7 +65,7 @@ async function loadInjectedUnityDelegate(
   const debug_ext = ctx.getExtension('WEBGL_debug_renderer_info')
   if (debug_ext) {
     const renderer = ctx.getParameter(debug_ext.UNMASKED_RENDERER_WEBGL)
-    if (renderer.indexOf('SwiftShader') >= 0) {
+    if (renderer.indexOf('SwiftShader') >= 0 && !ALLOW_SWIFT_SHADER) {
       throw new Error(
         'Your browser is using an emulated software renderer (SwiftShader). This prevents Decentraland from working. This is usually fixed by restarting the computer. In any case, we recommend you to use the Desktop Client instead for a better overall experience. You can find it in https://decentraland.org/download'
       )
