@@ -7,7 +7,7 @@ namespace MainScripts.DCL.Controllers.SettingsDesktop
     public class PlayerPrefsDesktopDisplaySettingsRepository : ISettingsRepository<DisplaySettings>
     {
         public const string VSYNC = "vSync";
-        public const string RESOLUTION_SIZE_INDEX = "resolutionSizeIndex";
+        public const string RESOLUTION_SIZE_INDEX = "resolutionSizeIndexV2";
         public const string WINDOW_MODE = "windowMode";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
@@ -57,8 +57,7 @@ namespace MainScripts.DCL.Controllers.SettingsDesktop
             {
                 settings.vSync = settingsByKey.GetBool(VSYNC, defaultSettings.vSync);
 
-                settings.resolutionSizeIndex =
-                    settingsByKey.GetInt(RESOLUTION_SIZE_INDEX, defaultSettings.resolutionSizeIndex);
+                settings.resolutionSizeIndex = settingsByKey.GetInt(RESOLUTION_SIZE_INDEX, -1);
 
                 settings.windowMode = settingsByKey.GetEnum(WINDOW_MODE, defaultSettings.windowMode);
             }

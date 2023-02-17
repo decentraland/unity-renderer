@@ -12,6 +12,7 @@ using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
+using DCLServices.WearablesCatalogService;
 using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
@@ -67,8 +68,10 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController();
             case HUDElementID.AVATAR_EDITOR:
-                return new AvatarEditorHUDController(DataStore.i.featureFlags,
-                    Environment.i.platform.serviceProviders.analytics);
+                return new AvatarEditorHUDController(
+                    DataStore.i.featureFlags,
+                    Environment.i.platform.serviceProviders.analytics,
+                    Environment.i.serviceLocator.Get<IWearablesCatalogService>());
             case HUDElementID.SETTINGS_PANEL:
                 return new SettingsPanelHUDController();
             case HUDElementID.TERMS_OF_SERVICE:

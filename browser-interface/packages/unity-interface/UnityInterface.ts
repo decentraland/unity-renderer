@@ -1,57 +1,59 @@
 import { Vector3 } from '@dcl/ecs-math'
-import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
-import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
+import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
+import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { Avatar, ContentMapping } from '@dcl/schemas'
+import type { UnityGame } from '@dcl/unity-renderer/src'
+import { RENDERER_WS, RESET_TUTORIAL, WORLD_EXPLORER, WSS_ENABLED } from 'config'
+import future, { IFuture } from 'fp-future'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { stringify } from 'lib/javascript/stringify'
+import { uniqBy } from 'lib/javascript/uniqBy'
+import { uuid } from 'lib/javascript/uuid'
+import { createUnityLogger, ILogger } from 'lib/logger'
+import { Observable } from 'mz-observable'
+import { trackEvent } from 'shared/analytics'
+import { Emote, WearableV2 } from 'shared/catalogs/types'
+import { FeatureFlag } from 'shared/meta/types'
+import { incrementCounter } from 'shared/occurences'
+import { getProvider } from 'shared/session/index'
 import {
+  AddChatMessagesPayload,
+  AddFriendRequestsPayload,
+  AddFriendsPayload,
+  AddFriendsWithDirectMessagesPayload,
+  BuilderConfiguration,
+  ChannelErrorPayload,
+  ChannelInfoPayloads,
+  ChannelSearchResultsPayload,
+  ChatMessage,
+  FriendshipUpdateStatusMessage,
+  FriendsInitializationMessage,
+  FriendsInitializeChatPayload,
+  HeaderRequest,
   HUDConfiguration,
+  HUDElementID,
   InstancedSpawnPoint,
   Notification,
-  ChatMessage,
-  HUDElementID,
-  FriendsInitializationMessage,
-  FriendshipUpdateStatusMessage,
-  UpdateUserStatusMessage,
-  RenderProfile,
-  BuilderConfiguration,
+  NotificationType,
   RealmsInfoForRenderer,
+  RenderProfile,
+  SetAudioDevicesPayload,
   TutorialInitializationMessage,
-  WorldPosition,
-  HeaderRequest,
-  AddFriendsPayload,
-  AddFriendRequestsPayload,
-  UpdateTotalUnseenMessagesPayload,
-  UpdateUserUnseenMessagesPayload,
-  AddChatMessagesPayload,
-  UpdateTotalUnseenMessagesByUserPayload,
-  AddFriendsWithDirectMessagesPayload,
-  FriendsInitializeChatPayload,
+  UpdateChannelMembersPayload,
   UpdateTotalFriendRequestsPayload,
   UpdateTotalFriendsPayload,
   UpdateTotalUnseenMessagesByChannelPayload,
-  ChannelInfoPayloads,
-  UpdateChannelMembersPayload,
-  ChannelSearchResultsPayload,
-  ChannelErrorPayload,
-  SetAudioDevicesPayload,
-  NotificationType
+  UpdateTotalUnseenMessagesByUserPayload,
+  UpdateTotalUnseenMessagesPayload,
+  UpdateUserStatusMessage,
+  UpdateUserUnseenMessagesPayload,
+  WorldPosition
 } from 'shared/types'
-import { nativeMsgBridge } from './nativeMessagesBridge'
-import { createUnityLogger, ILogger } from 'lib/logger'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
-import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
-import { Emote, WearableV2 } from 'shared/catalogs/types'
-import { Observable } from 'mz-observable'
-import type { UnityGame } from '@dcl/unity-renderer/src'
-import { FeatureFlag } from 'shared/meta/types'
-import { getProvider } from 'shared/session/index'
-import { uuid } from 'lib/javascript/uuid'
-import future, { IFuture } from 'fp-future'
 import { futures } from './BrowserInterface'
-import { trackEvent } from 'shared/analytics'
-import { Avatar, ContentMapping } from '@dcl/schemas'
-import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
-import { incrementCounter } from 'shared/occurences'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
+import { nativeMsgBridge } from './nativeMessagesBridge'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -268,10 +270,7 @@ export class UnityInterface implements IUnityInterface {
       wearables = uniqBy(wearables, 'id')
 
       //Then, we map to a string array to find the limit of wearables we can add
-      function stringifyWearable(num) {
-        return JSON.stringify(num)
-      }
-      const wearablesStringArray: string[] = wearables.map(stringifyWearable)
+      const wearablesStringArray: string[] = wearables.map(stringify)
 
       //Theoretical limit is at 1306299. Added a smaller value to keep it safe
       const SAFE_THRESHOLD = 1300000
@@ -740,7 +739,3 @@ export class UnityInterface implements IUnityInterface {
 }
 
 setUnityInstance(new UnityInterface())
-
-function uniqBy(arr: any[], key: string) {
-  return Array.from(new Map(arr.map(item => [item[key], item])).values())
-}

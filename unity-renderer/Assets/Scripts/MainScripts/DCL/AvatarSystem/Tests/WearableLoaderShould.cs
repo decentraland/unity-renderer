@@ -6,6 +6,8 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -24,27 +26,21 @@ namespace Test.AvatarSystem
         private IWearableRetriever retriever;
         private GameObject container = null;
         private List<Material> materialsToBeDisposed = new List<Material>();
+        private IWearablesCatalogService wearablesCatalogService;
 
         [SetUp]
         public void SetUp()
         {
             container = new GameObject("Container");
-            PrepareCatalog();
+            wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             retriever = Substitute.For<IWearableRetriever>();
-        }
-
-        private void PrepareCatalog()
-        {
-            //This is really, really ugly. There's no other way to solve it until the catalog is in our service locator
-            container.AddComponent<CatalogController>();
-            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         [UnityTest]
         public IEnumerator LoadWearable() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
 
             var normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
             var hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
@@ -75,7 +71,7 @@ namespace Test.AvatarSystem
         public IEnumerator FallbackIfFailsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            WearableItem wearable = wearablesCatalogService.WearablesCatalog[HOODIE_ID]; //Use a wearable with required category
             loader = new WearableLoader(retriever, wearable);
 
             WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
@@ -125,7 +121,7 @@ namespace Test.AvatarSystem
         public IEnumerator FallbackIfThrowsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            WearableItem wearable = wearablesCatalogService.WearablesCatalog[HOODIE_ID]; //Use a wearable with required category
             loader = new WearableLoader(retriever, wearable);
 
             WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
@@ -175,7 +171,7 @@ namespace Test.AvatarSystem
         {
             //Arrange
             //Use a wearable with no required category
-            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.rendereable.Returns(x => null);
 
@@ -197,7 +193,7 @@ namespace Test.AvatarSystem
         {
             //Arrange
             //Use a wearable with no required category
-            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.Configure()
                 .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -220,7 +216,7 @@ namespace Test.AvatarSystem
         public IEnumerator CancelLoadIfACancelledTokenProvided() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
@@ -232,7 +228,7 @@ namespace Test.AvatarSystem
         public IEnumerator DisposeWhenCancellingOnRetrieving() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            loader = new WearableLoader(retriever, wearablesCatalogService.WearablesCatalog[GLASSES_WEARABLE_ID]);
             CancellationTokenSource cts = new CancellationTokenSource();
 
             retriever.Configure()
@@ -267,12 +263,10 @@ namespace Test.AvatarSystem
         public void TearDown()
         {
             loader?.Dispose();
-            CatalogController.Clear();
             if (container != null)
                 Object.Destroy(container);
 
-            if (CatalogController.i != null)
-                Object.Destroy(CatalogController.i);
+            wearablesCatalogService.Dispose();
 
             for (int i = 0; i < materialsToBeDisposed.Count; i++)
             {

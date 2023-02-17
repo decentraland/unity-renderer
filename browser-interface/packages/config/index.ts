@@ -1,4 +1,6 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
+import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
 export const NETWORK_HZ = 10
@@ -83,6 +85,7 @@ export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LO
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_PREFIX = ensureSingleString(qs.get('DEBUG_PREFIX'))
 export const DEBUG_DISABLE_LOADING = qs.has('DEBUG_DISABLE_LOADING')
+export const ALLOW_SWIFT_SHADER = qs.has('ALLOW_SWIFT_SHADER')
 
 export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
@@ -176,6 +179,15 @@ export const ENABLE_EMPTY_SCENES = !location.search.includes('DISABLE_EMPTY_SCEN
 
 export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const state = store.getState()
+
+  if (getFeatureFlagEnabled(state, 'ab-new-cdn')) {
+    // IMPORTANT: The new ab-cdn supports versioning, so the global config is now
+    //            ignored.
+    // TODO: this will be customizable per scene/world/wearable. for now it only
+    //       has one possible value
+    return ASSET_BUNDLES_DOMAIN || getNewDefaultAssetBundlesBaseUrl(network)
+  }
+
   return (
     ASSET_BUNDLES_DOMAIN || state.meta.config.explorer?.assetBundlesFetchUrl || getDefaultAssetBundlesBaseUrl(network)
   )
@@ -184,6 +196,11 @@ export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
 function getDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
   return `https://content-assets-as-bundle.decentraland.${tld}`
+}
+
+function getNewDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
+  const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
+  return `https://ab-cdn.decentraland.${tld}`
 }
 
 export function getAvatarTextureAPIBaseUrl(network: ETHEREUM_NETWORK): string {
@@ -201,7 +218,7 @@ export function getServerConfigurations(network: ETHEREUM_NETWORK) {
     ensureSingleString(qs.get('QUESTS_SERVER_URL')) ?? `https://quests-api.decentraland.${network ? 'org' : 'io'}`
 
   return {
-    explorerConfiguration: `${metaConfigBaseUrl}?t=${new Date().getTime()}`,
+    explorerConfiguration: `${metaConfigBaseUrl}?t=${now()}`,
     questsUrl
   }
 }
