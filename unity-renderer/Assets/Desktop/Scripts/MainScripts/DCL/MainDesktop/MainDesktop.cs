@@ -91,7 +91,7 @@ namespace DCL
 #endif
 
                 int endPort = startPort + 100;
-                kernelCommunication = new WebSocketCommunication(withSSL, 5000, endPort);
+                kernelCommunication = new WebSocketCommunication(withSSL, startPort, endPort);
             }
         }
 
