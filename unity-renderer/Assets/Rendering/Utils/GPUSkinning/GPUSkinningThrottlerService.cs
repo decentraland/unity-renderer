@@ -5,10 +5,9 @@ using UnityEngine;
 
 public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
 {
-    private readonly Dictionary<IGPUSkinning, int> gpuSkinnings = new Dictionary<IGPUSkinning, int>();
+    private readonly Dictionary<IGPUSkinning, int> gpuSkinnings = new ();
 
     private bool stopAsked;
-
 
     public void Initialize()
     {
@@ -18,7 +17,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
             return;
         }
 
-        ThrottleUpdateAsync();
+        ThrottleUpdateAsync().Forget();
     }
 
     public void Register(IGPUSkinning gpuSkinning, int framesBetweenUpdates = 1)
@@ -34,7 +33,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
         if (gpuSkinnings.ContainsKey(gpuSkinning))
             gpuSkinnings.Remove(gpuSkinning);
     }
-    
+
     public void ModifyThrottling(IGPUSkinning gpuSkinning, int framesBetweenUpdates)
     {
         if (gpuSkinnings.ContainsKey(gpuSkinning))
@@ -54,14 +53,17 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
     public static GPUSkinningThrottlerService Create(bool initializeOnSpawn)
     {
         GPUSkinningThrottlerService service = new GPUSkinningThrottlerService();
+
         if (initializeOnSpawn)
             service.Initialize();
+
         return service;
     }
 
     private async UniTaskVoid ThrottleUpdateAsync()
     {
         await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
+
         while (!stopAsked)
         {
             foreach (KeyValuePair<IGPUSkinning, int> entry in gpuSkinnings)
@@ -69,6 +71,7 @@ public class GPUSkinningThrottlerService : IGPUSkinningThrottlerService
                 if (Time.frameCount % entry.Value == 0)
                     entry.Key.Update();
             }
+
             await UniTask.DelayFrame(1, PlayerLoopTiming.PostLateUpdate);
         }
 
