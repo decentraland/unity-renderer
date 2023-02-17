@@ -109,7 +109,7 @@ public class ViewAllComponentController : IDisposable
             view.SetTotalElements(ownedWearableItems.totalAmount);
             view.SetLoadingActive(false);
         }
-        catch (Exception)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             view.ShowError();
         }

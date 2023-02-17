@@ -29,9 +29,9 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
     private Pool nftElementsEntryPool;
     private PassportSection section;
 
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(()=>
@@ -48,9 +48,8 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         nftElementsEntryPool = GetNftElementsEntryPool();
         section = passportSection;
         sectionName.text = passportSection.ToString();
-        pageSelector.Setup(0);
         sectionAmount.gameObject.SetActive(false);
-        RequestPage(0);
+        pageSelector.SelectPage(0);
     }
 
     public void SetTotalElements(int totalElements)

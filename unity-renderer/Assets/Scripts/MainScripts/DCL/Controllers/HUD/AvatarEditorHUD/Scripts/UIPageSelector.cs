@@ -46,7 +46,7 @@ public class UIPageSelector : MonoBehaviour
         UpdateButtonsStatus();
     }
 
-    private void OnPageClicked(int pageNumber)
+    public void SelectPage(int pageNumber)
     {
         currentPage = pageNumber;
         UpdateButtonsStatus();
@@ -73,7 +73,7 @@ public class UIPageSelector : MonoBehaviour
         gameObject.SetActive(true);
 
         EnsureButtons();
-        UpdateButtonsStatus();
+        UpdateButtonsStatus(false);
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(pageButtonsParent);
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
@@ -108,8 +108,8 @@ public class UIPageSelector : MonoBehaviour
 
             uiPageButton.Initialize(i);
             uiPageButton.gameObject.SetActive(true);
-            uiPageButton.OnPageClicked -= OnPageClicked;
-            uiPageButton.OnPageClicked += OnPageClicked;
+            uiPageButton.OnPageClicked -= SelectPage;
+            uiPageButton.OnPageClicked += SelectPage;
         }
     }
 
@@ -125,10 +125,11 @@ public class UIPageSelector : MonoBehaviour
         }
     }
 
-    private void UpdateButtonsStatus()
+    private void UpdateButtonsStatus(bool notifyEvent = true)
     {
         UpdateToggleStatus();
-        OnValueChanged?.Invoke(currentPage);
+        if (notifyEvent)
+            OnValueChanged?.Invoke(currentPage);
     }
 
     private void UpdateToggleStatus()
