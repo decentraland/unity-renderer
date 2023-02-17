@@ -1,6 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL.Map;
 using DCL.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -48,9 +51,26 @@ namespace DCL.GoToPanel
 
             async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, CancellationToken cancellationToken)
             {
-                await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),2,
-                    cancellationToken);
-                view.SetPanelInfo(coordinates);
+                view.ShowLoading();
+
+                try
+                {
+                    MinimapMetadata.MinimapSceneInfo[] scenes = await minimapApiBridge.GetScenesInformationAroundParcel(new Vector2Int(coordinates.x, coordinates.y),
+                        2,
+                        cancellationToken);
+
+                    MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
+                    view.SetPanelInfo(coordinates, sceneInfo);
+                }
+                catch (Exception)
+                {
+                    view.SetPanelInfo(coordinates, null);
+                    throw;
+                }
+                finally
+                {
+                    view.HideLoading();
+                }
             }
 
             cancellationToken = cancellationToken.SafeRestart();

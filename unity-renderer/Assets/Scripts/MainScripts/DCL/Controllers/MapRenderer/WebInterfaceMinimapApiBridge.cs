@@ -32,6 +32,7 @@ namespace DCL.Map
 
             if (!pendingTasks.ContainsKey(GET_SCENES_INFO_ID)) return;
             var task = (UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID];
+            pendingTasks.Remove(GET_SCENES_INFO_ID);
             task.TrySetResult(scenesInfo);
         }
 
