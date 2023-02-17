@@ -115,6 +115,9 @@ public class UIPageSelector : MonoBehaviour
 
     private bool ShouldShowButton(int buttonIndex)
     {
+        if (buttonIndex >= totalPages)
+            return false;
+
         if (currentPage+1 <= maxVisiblePages / 2)
         {
             return buttonIndex < maxVisiblePages;

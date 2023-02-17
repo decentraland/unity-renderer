@@ -57,6 +57,8 @@ public class ViewAllComponentController : IDisposable
         {
             sectionsCts.SafeCancelAndDispose();
             sectionsCts = null;
+
+            view.SetLoadingActive(false);
         }
     }
 
@@ -64,7 +66,6 @@ public class ViewAllComponentController : IDisposable
     {
         OnBackFromViewAll?.Invoke();
         SetViewAllVisibility(false);
-        view.SetLoadingActive(false);
         view.CloseAllNftItemInfos();
     }
 
