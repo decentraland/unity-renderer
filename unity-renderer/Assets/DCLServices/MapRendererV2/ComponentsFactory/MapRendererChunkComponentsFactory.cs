@@ -11,6 +11,7 @@ using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -50,7 +51,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
                 async UniTask CreateAtlas()
                 {
-                    var atlasChunkPrefab = await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);
+                    var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
 
                     var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, ATLAS_DRAW_ORDER, ATLAS_CHUNK_SIZE,
                         coordsUtils, cullingController, ChunkController.CreateChunk);
@@ -63,7 +64,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
                 async UniTask CreateColdUserMarkers()
                 {
-                    var prefab = await AddressableProvider.GetAddressable<ColdUserMarkerObject>(COLD_USER_MARKER_ADDRESS, cancellationToken);
+                    var prefab = await GetColdUserMarkerPrefab(cancellationToken);
 
                     var controller = new UsersMarkersColdAreaController(configuration.ColdUserMarkersRoot, prefab, ColdUserMarker.Create,
                         hotScenesFetcher.Ref, DataStore.i.realm.realmName, CommonScriptableObjects.playerCoords, KernelConfig.i, coordsUtils, cullingController, COLD_USER_MARKERS_DRAW_ORDER, COLD_USER_MARKERS_LIMIT);
@@ -74,7 +75,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
                 async UniTask CreateHotUserMarkers()
                 {
-                    var prefab = await AddressableProvider.GetAddressable<HotUserMarkerObject>(HOT_USER_MARKER_ADDRESS, cancellationToken);
+                    var prefab = await GetHotUserMarkerPrefab(cancellationToken);
 
                     void SetSortingOrder(HotUserMarkerObject obj)
                     {
@@ -99,5 +100,14 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             return new MapRendererComponents(enumerator, cullingController);
         }
+
+        internal async Task<ColdUserMarkerObject> GetColdUserMarkerPrefab(CancellationToken cancellationToken) =>
+            await AddressableProvider.GetAddressable<ColdUserMarkerObject>(COLD_USER_MARKER_ADDRESS, cancellationToken);
+
+        internal async Task<HotUserMarkerObject> GetHotUserMarkerPrefab(CancellationToken cancellationToken) =>
+            await AddressableProvider.GetAddressable<HotUserMarkerObject>(HOT_USER_MARKER_ADDRESS, cancellationToken);
+
+        internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>
+            await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);
     }
 }
