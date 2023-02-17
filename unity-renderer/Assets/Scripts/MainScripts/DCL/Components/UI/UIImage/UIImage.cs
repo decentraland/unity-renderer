@@ -59,16 +59,21 @@ namespace DCL.Components
                         fetchRoutine = null;
                     }
 
-                    IEnumerator fetchIEnum = DCLTexture.FetchTextureComponent(scene, model.source, (downloadedTexture) =>
-                    {
-                        referencesContainer.image.texture = downloadedTexture.texture;
-                        fetchRoutine = null;
-                        dclTexture?.DetachFrom(this);
-                        dclTexture = downloadedTexture;
-                        dclTexture.AttachTo(this);
+                    IEnumerator fetchIEnum = DCLTexture.FetchTextureComponent(scene, model.source,
+                        textureComponent =>
+                        {
+                            dclTexture?.DetachFrom(this);
+                            dclTexture = textureComponent;
+                            dclTexture.AttachTo(this);
+                        },
+                        texture2d =>
+                        {
+                            referencesContainer.image.texture = texture2d;
+                            fetchRoutine = null;
 
-                        ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
-                    });
+                            ConfigureUVRect(parentRecTransform, dclTexture?.resizingFactor ?? 1);
+                        }
+                    );
 
                     fetchRoutine = CoroutineStarter.Start(fetchIEnum);
                 }

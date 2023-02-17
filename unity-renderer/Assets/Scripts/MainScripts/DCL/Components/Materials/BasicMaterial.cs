@@ -79,16 +79,15 @@ namespace DCL.Components
                 if (dclTexture == null || dclTexture.id != model.texture)
                 {
                     yield return DCLTexture.FetchTextureComponent(scene, model.texture,
-                        (downloadedTexture) =>
+                        textureComponent =>
                         {
-                            if ( dclTexture != null )
-                            {
-                                dclTexture.DetachFrom(this);
-                            }
-
-                            material.SetTexture(_BaseMap, downloadedTexture.texture);
-                            dclTexture = downloadedTexture;
+                            dclTexture?.DetachFrom(this);
+                            dclTexture = textureComponent;
                             dclTexture.AttachTo(this);
+                        },
+                            texture2D =>
+                        {
+                            material.SetTexture(_BaseMap, texture2D);
                         }
                     );
                 }

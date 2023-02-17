@@ -46,14 +46,8 @@ namespace DCL
 
         public DCLTexture() { model = new Model(); }
 
-        public static IEnumerator FetchFromComponent(IParcelScene scene, string componentId,
-            System.Action<Texture2D> OnFinish)
-        {
-            yield return FetchTextureComponent(scene, componentId, (dclTexture) => { OnFinish?.Invoke(dclTexture.texture); });
-        }
-
         public static IEnumerator FetchTextureComponent(IParcelScene scene, string componentId,
-            System.Action<DCLTexture> OnFinish)
+            Action<DCLTexture> onTextureComponentFetched, Action<Texture2D> onTextureLoaded)
         {
             if (!scene.componentsManagerLegacy.HasSceneSharedComponent(componentId))
             {
@@ -69,9 +63,18 @@ namespace DCL
                 yield break;
             }
 
+            onTextureComponentFetched.Invoke(textureComponent);
+
+            // If texture was previously disposed we load it again
+            if (textureComponent.isDisposed)
+            {
+                textureComponent.isDisposed = false;
+                yield return textureComponent.ApplyChanges(textureComponent.model);
+            }
+
             yield return new WaitUntil(() => textureComponent.texture != null);
 
-            OnFinish.Invoke(textureComponent);
+            onTextureLoaded.Invoke(textureComponent.texture);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -164,7 +167,11 @@ namespace DCL
 
         public virtual void DetachFrom(ISharedComponent component)
         {
-            RemoveReference(component);
+            if (RemoveReference(component))
+            {
+                if (attachedEntitiesByComponent.Count == 0)
+                    Dispose();
+            }
         }
 
         public void AddReference(ISharedComponent component)
@@ -181,17 +188,17 @@ namespace DCL
             }
         }
 
-        public void RemoveReference(ISharedComponent component)
+        public bool RemoveReference(ISharedComponent component)
         {
             if (!attachedEntitiesByComponent.ContainsKey(component))
-                return;
+                return false;
 
             foreach (var entityId in attachedEntitiesByComponent[component])
             {
                 DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.sceneNumber, entityId, texture);
             }
 
-            attachedEntitiesByComponent.Remove(component);
+            return attachedEntitiesByComponent.Remove(component);
         }
 
         public override void Dispose()
