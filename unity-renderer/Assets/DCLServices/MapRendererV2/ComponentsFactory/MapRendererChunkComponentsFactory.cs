@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
+using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
 {
