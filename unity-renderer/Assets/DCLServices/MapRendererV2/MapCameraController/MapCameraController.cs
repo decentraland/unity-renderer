@@ -72,6 +72,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void Release()
         {
+            renderTexture?.Release();
             OnReleasing?.Invoke(this);
         }
 
