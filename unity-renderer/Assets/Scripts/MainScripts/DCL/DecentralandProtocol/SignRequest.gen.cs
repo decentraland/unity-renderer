@@ -28,23 +28,36 @@ namespace Decentraland.Renderer.KernelServices {
             "cmVxdWVzdC5wcm90bxIlZGVjZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9z",
             "ZXJ2aWNlcyJXChBTaWduQm9keVJlc3BvbnNlEhUKDWF1dGhfaGVhZGVyXzEY",
             "ASABKAkSFQoNYXV0aF9oZWFkZXJfMhgCIAEoCRIVCg1hdXRoX2hlYWRlcl8z",
-            "GAMgASgJImYKD1NpZ25Cb2R5UmVxdWVzdBIOCgZtZXRob2QYASABKAkSEAoI",
-            "YmFzZV91cmwYAiABKAkSDAoEcGF0aBgDIAEoCRIRCgl0aW1lc3RhbXAYBCAB",
-            "KAUSEAoIbWV0YWRhdGEYBSABKAkypQEKGFNpZ25SZXF1ZXN0S2VybmVsU2Vy",
-            "dmljZRKIAQoTR2V0UmVxdWVzdFNpZ25hdHVyZRI2LmRlY2VudHJhbGFuZC5y",
-            "ZW5kZXJlci5rZXJuZWxfc2VydmljZXMuU2lnbkJvZHlSZXF1ZXN0GjcuZGVj",
-            "ZW50cmFsYW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5TaWduQm9keVJl",
-            "c3BvbnNlIgBiBnByb3RvMw=="));
+            "GAMgASgJInYKD1NpZ25Cb2R5UmVxdWVzdBJECgZtZXRob2QYASABKA4yNC5k",
+            "ZWNlbnRyYWxhbmQucmVuZGVyZXIua2VybmVsX3NlcnZpY2VzLlJlcXVlc3RN",
+            "ZXRob2QSCwoDdXJsGAIgASgJEhAKCG1ldGFkYXRhGAMgASgJKkIKDVJlcXVl",
+            "c3RNZXRob2QSBwoDR0VUEAASCAoEUE9TVBABEgcKA1BVVBACEgkKBVBBVENI",
+            "EAMSCgoGREVMRVRFEAQypQEKGFNpZ25SZXF1ZXN0S2VybmVsU2VydmljZRKI",
+            "AQoTR2V0UmVxdWVzdFNpZ25hdHVyZRI2LmRlY2VudHJhbGFuZC5yZW5kZXJl",
+            "ci5rZXJuZWxfc2VydmljZXMuU2lnbkJvZHlSZXF1ZXN0GjcuZGVjZW50cmFs",
+            "YW5kLnJlbmRlcmVyLmtlcm5lbF9zZXJ2aWNlcy5TaWduQm9keVJlc3BvbnNl",
+            "IgBiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Decentraland.Renderer.KernelServices.RequestMethod), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SignBodyResponse), global::Decentraland.Renderer.KernelServices.SignBodyResponse.Parser, new[]{ "AuthHeader1", "AuthHeader2", "AuthHeader3" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SignBodyRequest), global::Decentraland.Renderer.KernelServices.SignBodyRequest.Parser, new[]{ "Method", "BaseUrl", "Path", "Timestamp", "Metadata" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.KernelServices.SignBodyRequest), global::Decentraland.Renderer.KernelServices.SignBodyRequest.Parser, new[]{ "Method", "Url", "Metadata" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum RequestMethod {
+    [pbr::OriginalName("GET")] Get = 0,
+    [pbr::OriginalName("POST")] Post = 1,
+    [pbr::OriginalName("PUT")] Put = 2,
+    [pbr::OriginalName("PATCH")] Patch = 3,
+    [pbr::OriginalName("DELETE")] Delete = 4,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class SignBodyResponse : pb::IMessage<SignBodyResponse>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -344,9 +357,7 @@ namespace Decentraland.Renderer.KernelServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SignBodyRequest(SignBodyRequest other) : this() {
       method_ = other.method_;
-      baseUrl_ = other.baseUrl_;
-      path_ = other.path_;
-      timestamp_ = other.timestamp_;
+      url_ = other.url_;
       metadata_ = other.metadata_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -359,54 +370,30 @@ namespace Decentraland.Renderer.KernelServices {
 
     /// <summary>Field number for the "method" field.</summary>
     public const int MethodFieldNumber = 1;
-    private string method_ = "";
+    private global::Decentraland.Renderer.KernelServices.RequestMethod method_ = global::Decentraland.Renderer.KernelServices.RequestMethod.Get;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Method {
+    public global::Decentraland.Renderer.KernelServices.RequestMethod Method {
       get { return method_; }
       set {
-        method_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        method_ = value;
       }
     }
 
-    /// <summary>Field number for the "base_url" field.</summary>
-    public const int BaseUrlFieldNumber = 2;
-    private string baseUrl_ = "";
+    /// <summary>Field number for the "url" field.</summary>
+    public const int UrlFieldNumber = 2;
+    private string url_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string BaseUrl {
-      get { return baseUrl_; }
+    public string Url {
+      get { return url_; }
       set {
-        baseUrl_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "path" field.</summary>
-    public const int PathFieldNumber = 3;
-    private string path_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Path {
-      get { return path_; }
-      set {
-        path_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 4;
-    private int timestamp_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
+        url_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     /// <summary>Field number for the "metadata" field.</summary>
-    public const int MetadataFieldNumber = 5;
+    public const int MetadataFieldNumber = 3;
     private string metadata_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -433,9 +420,7 @@ namespace Decentraland.Renderer.KernelServices {
         return true;
       }
       if (Method != other.Method) return false;
-      if (BaseUrl != other.BaseUrl) return false;
-      if (Path != other.Path) return false;
-      if (Timestamp != other.Timestamp) return false;
+      if (Url != other.Url) return false;
       if (Metadata != other.Metadata) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -444,10 +429,8 @@ namespace Decentraland.Renderer.KernelServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Method.Length != 0) hash ^= Method.GetHashCode();
-      if (BaseUrl.Length != 0) hash ^= BaseUrl.GetHashCode();
-      if (Path.Length != 0) hash ^= Path.GetHashCode();
-      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
+      if (Method != global::Decentraland.Renderer.KernelServices.RequestMethod.Get) hash ^= Method.GetHashCode();
+      if (Url.Length != 0) hash ^= Url.GetHashCode();
       if (Metadata.Length != 0) hash ^= Metadata.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -467,24 +450,16 @@ namespace Decentraland.Renderer.KernelServices {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Method.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Method);
+      if (Method != global::Decentraland.Renderer.KernelServices.RequestMethod.Get) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Method);
       }
-      if (BaseUrl.Length != 0) {
+      if (Url.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteString(BaseUrl);
-      }
-      if (Path.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Path);
-      }
-      if (Timestamp != 0) {
-        output.WriteRawTag(32);
-        output.WriteInt32(Timestamp);
+        output.WriteString(Url);
       }
       if (Metadata.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(26);
         output.WriteString(Metadata);
       }
       if (_unknownFields != null) {
@@ -497,24 +472,16 @@ namespace Decentraland.Renderer.KernelServices {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Method.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Method);
+      if (Method != global::Decentraland.Renderer.KernelServices.RequestMethod.Get) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Method);
       }
-      if (BaseUrl.Length != 0) {
+      if (Url.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteString(BaseUrl);
-      }
-      if (Path.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Path);
-      }
-      if (Timestamp != 0) {
-        output.WriteRawTag(32);
-        output.WriteInt32(Timestamp);
+        output.WriteString(Url);
       }
       if (Metadata.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(26);
         output.WriteString(Metadata);
       }
       if (_unknownFields != null) {
@@ -527,17 +494,11 @@ namespace Decentraland.Renderer.KernelServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Method.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Method);
+      if (Method != global::Decentraland.Renderer.KernelServices.RequestMethod.Get) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Method);
       }
-      if (BaseUrl.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(BaseUrl);
-      }
-      if (Path.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Path);
-      }
-      if (Timestamp != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Timestamp);
+      if (Url.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Url);
       }
       if (Metadata.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Metadata);
@@ -554,17 +515,11 @@ namespace Decentraland.Renderer.KernelServices {
       if (other == null) {
         return;
       }
-      if (other.Method.Length != 0) {
+      if (other.Method != global::Decentraland.Renderer.KernelServices.RequestMethod.Get) {
         Method = other.Method;
       }
-      if (other.BaseUrl.Length != 0) {
-        BaseUrl = other.BaseUrl;
-      }
-      if (other.Path.Length != 0) {
-        Path = other.Path;
-      }
-      if (other.Timestamp != 0) {
-        Timestamp = other.Timestamp;
+      if (other.Url.Length != 0) {
+        Url = other.Url;
       }
       if (other.Metadata.Length != 0) {
         Metadata = other.Metadata;
@@ -584,23 +539,15 @@ namespace Decentraland.Renderer.KernelServices {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Method = input.ReadString();
+          case 8: {
+            Method = (global::Decentraland.Renderer.KernelServices.RequestMethod) input.ReadEnum();
             break;
           }
           case 18: {
-            BaseUrl = input.ReadString();
+            Url = input.ReadString();
             break;
           }
           case 26: {
-            Path = input.ReadString();
-            break;
-          }
-          case 32: {
-            Timestamp = input.ReadInt32();
-            break;
-          }
-          case 42: {
             Metadata = input.ReadString();
             break;
           }
@@ -619,23 +566,15 @@ namespace Decentraland.Renderer.KernelServices {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
-            Method = input.ReadString();
+          case 8: {
+            Method = (global::Decentraland.Renderer.KernelServices.RequestMethod) input.ReadEnum();
             break;
           }
           case 18: {
-            BaseUrl = input.ReadString();
+            Url = input.ReadString();
             break;
           }
           case 26: {
-            Path = input.ReadString();
-            break;
-          }
-          case 32: {
-            Timestamp = input.ReadInt32();
-            break;
-          }
-          case 42: {
             Metadata = input.ReadString();
             break;
           }

@@ -26,15 +26,13 @@ public class RPCSignRequest : IRPCSignRequest
         this.rpc = rpc;
     }
 
-    public async UniTask<Dictionary<string, string>> RequestSignedRequest(string method, string baseUrl, string path, string metadata, CancellationToken cancellationToken)
+    public async UniTask<Dictionary<string, string>> RequestSignedRequest(RequestMethod method, string url, string metadata, CancellationToken cancellationToken)
     {
         SignBodyResponse response = await rpc.SignRequestKernelService()
                                              .GetRequestSignature(new SignBodyRequest()
                                               {
                                                   Method = method,
-                                                  BaseUrl = baseUrl,
-                                                  Path = path,
-                                                  Timestamp = 10,//((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds(),
+                                                  Url = url,
                                                   Metadata = metadata
                                               })
                                              .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
