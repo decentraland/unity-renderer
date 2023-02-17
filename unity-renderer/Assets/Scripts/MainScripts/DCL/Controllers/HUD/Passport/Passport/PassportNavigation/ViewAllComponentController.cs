@@ -85,7 +85,7 @@ public class ViewAllComponentController : IDisposable
     private void RequestCollectibleElements(PassportSection section, int pageNumber, int pageSize)
     {
         view.CloseAllNftItemInfos();
-        
+
         sectionsCts = sectionsCts.SafeRestart();
 
         switch (section)
@@ -123,18 +123,23 @@ public class ViewAllComponentController : IDisposable
 
     private async UniTask RequestOwnedNamesAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
-        view.SetLoadingActive(true);
-
-        using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
-        var response = await pagePointer.GetPageAsync(pageNumber, ct);
-
-        if (response.success)
+        try
         {
-            ProcessReceivedNames(response.response.Names.ToArray());
-            view.SetTotalElements(response.response.TotalAmount);
-            view.SetLoadingActive(false);
+            view.SetLoadingActive(true);
+
+            using var pagePointer = namesService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
+            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+
+            if (response.success)
+            {
+                ProcessReceivedNames(response.response.Names.ToArray());
+                view.SetTotalElements(response.response.TotalAmount);
+                view.SetLoadingActive(false);
+            }
+            else
+                ShowErrorAndGoBack();
         }
-        else
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             ShowErrorAndGoBack();
         }
@@ -142,36 +147,26 @@ public class ViewAllComponentController : IDisposable
 
     private async UniTask RequestOwnedLandsAsync(string userId, int pageNumber, int pageSize, CancellationToken ct)
     {
-        view.SetLoadingActive(true);
-
-        using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
-        var response = await pagePointer.GetPageAsync(pageNumber, ct);
-
-        if (response.success)
+        try
         {
-            ProcessReceivedLands(response.response.Lands.ToArray());
-            view.SetTotalElements(response.response.TotalAmount);
-            view.SetLoadingActive(false);
+            view.SetLoadingActive(true);
+
+            using var pagePointer = landsService.GetPaginationPointer(userId, pageSize, CancellationToken.None);
+            var response = await pagePointer.GetPageAsync(pageNumber, ct);
+
+            if (response.success)
+            {
+                ProcessReceivedLands(response.response.Lands.ToArray());
+                view.SetTotalElements(response.response.TotalAmount);
+                view.SetLoadingActive(false);
+            }
+            else
+                ShowErrorAndGoBack();
         }
-        else
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             ShowErrorAndGoBack();
         }
-
-        view.SetLoadingActive(false);
-    }
-
-    private void ShowErrorAndGoBack()
-    {
-        NotificationsController.i.ShowNotification(new Model
-        {
-            message = REQUEST_ERROR_MESSAGE,
-            type = Type.ERROR,
-            timer = 10f,
-            destroyOnFinish = true,
-        });
-
-        BackFromViewAll();
     }
 
     private void ProcessReceivedWearables(WearableItem[] wearables)
@@ -237,20 +232,33 @@ public class ViewAllComponentController : IDisposable
     private void ProcessReceivedLands(LandsResponse.LandEntry[] lands)
     {
         List<(NFTIconComponentModel Model, WearableItem w)> landModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
-        for (int i = 0; i < lands.Length; i++)
+        foreach (var land in lands)
         {
             landModels.Add((new()
             {
                 showMarketplaceButton = true,
                 showType = true,
-                type = lands[i].Category,
+                type = land.Category,
                 marketplaceURI = "",
-                name = !string.IsNullOrEmpty(lands[i].Name) ? lands[i].Name : lands[i].Category,
+                name = !string.IsNullOrEmpty(land.Name) ? land.Name : land.Category,
                 rarity = LAND_TYPE,
-                imageURI = lands[i].Image,
-                nftId = (lands[i].ContractAddress, lands[i].Category)
+                imageURI = land.Image,
+                nftId = (land.ContractAddress, land.Category)
             }, null));
         }
         ShowNftIcons(landModels);
+    }
+
+    private void ShowErrorAndGoBack()
+    {
+        NotificationsController.i.ShowNotification(new Model
+        {
+            message = REQUEST_ERROR_MESSAGE,
+            type = Type.ERROR,
+            timer = 10f,
+            destroyOnFinish = true,
+        });
+
+        BackFromViewAll();
     }
 }
