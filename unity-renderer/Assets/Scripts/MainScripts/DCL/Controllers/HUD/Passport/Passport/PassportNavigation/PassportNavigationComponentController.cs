@@ -164,7 +164,6 @@ namespace DCL.Social.Passports
                     view.SetViewAllButtonActive(PassportSection.Wearables, wearables.totalAmount > MAX_NFT_COUNT);
                     IGrouping<string, WearableItem>[] wearableItems = wearables.wearables.GroupBy(i => i.id).ToArray();
                     string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
-                    userProfile.SetInventory(wearableIds);
                     loadedWearables.AddRange(wearableIds);
 
                     var containedWearables = wearableItems
