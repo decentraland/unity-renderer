@@ -13,8 +13,12 @@ namespace DCL
 
             public void Add(Action action)
             {
-                if ( eventHashset.Contains(action))
-                    return;
+                int count = eventList.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    if (eventList[i] == action)
+                        return;
+                }
 
                 eventList.Add(action);
                 eventHashset.Add(action);
@@ -22,17 +26,31 @@ namespace DCL
 
             public void Remove(Action action)
             {
-                if ( !eventHashset.Contains(action))
-                    return;
-
-                eventList.Remove(action);
-                eventHashset.Remove(action);
+                int count = eventList.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    if (eventList[i] == action)
+                    {
+                        eventList.RemoveAt(i);
+                        eventHashset.Remove(action);
+                        break;
+                    }
+                }
             }
 
             public bool Contains(Action action)
             {
-                return eventHashset.Contains(action);
+                int count = eventList.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    if (eventList[i] == action)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
+
         }
 
         public Dictionary<IUpdateEventHandler.EventType, UpdateEventCollection> eventCollections = new Dictionary<IUpdateEventHandler.EventType, UpdateEventCollection>();
