@@ -6,7 +6,6 @@ import { POSITION_SETTLED, POSITION_UNSETTLED, SET_SCENE_LOADER } from '../scene
 import { AUTHENTICATE, CHANGE_LOGIN_STAGE, SIGNUP_SET_IS_SIGNUP } from '../session/actions'
 import { RENDERING_ACTIVATED, RENDERING_BACKGROUND, RENDERING_DEACTIVATED, RENDERING_FOREGROUND } from './types'
 
-
 // The following actions may change the status of the loginVisible
 // Reaction on them will be ported to Renderer
 export const ACTIONS_FOR_LOADING = [
@@ -32,5 +31,4 @@ export const ACTIONS_FOR_LOADING = [
 ]
 
 /** @deprecated #3642 */
-export function* loadingScreenSaga() {
-}
+export function* loadingScreenSaga() {}

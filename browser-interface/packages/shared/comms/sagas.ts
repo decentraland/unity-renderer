@@ -14,7 +14,6 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { setCatalystCandidates } from 'shared/dao/actions'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
 import { getCatalystCandidates } from 'shared/dao/selectors'
-import { getFatalError } from 'shared/loading/selectors'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
@@ -51,7 +50,7 @@ import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { getConnectedPeerCount, processAvatarVisibility } from './peers'
-import { getCommsRoom } from './selectors'
+import { getCommsRoom, reconnectionState } from './selectors'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -394,13 +393,12 @@ function* handleCommsReconnectionInterval() {
       USER_AUTHENTICATED: take(USER_AUTHENTICATED),
       timeout: delay(1000)
     })
+    // TODO: Why are we not doing `if (reason === undefined) continue`?
+    // The timeout makes no sense, except to avoid a logical error
+    // in the saga flow that leads to some race condition.
+    const { commsConnection, realmAdapter, hasFatalError, identity } = yield select(reconnectionState)
 
-    const coomConnection: RoomConnection | undefined = yield select(getCommsRoom)
-    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-    const hasFatalError: string | undefined = yield select(getFatalError)
-    const identity: ExplorerIdentity | undefined = yield select(getCurrentIdentity)
-
-    const shouldReconnect = !coomConnection && !hasFatalError && identity?.address && !realmAdapter
+    const shouldReconnect = !commsConnection && !hasFatalError && identity?.address && !realmAdapter
 
     if (shouldReconnect) {
       // reconnect
