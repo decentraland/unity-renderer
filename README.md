@@ -48,14 +48,6 @@ To test against a build made on this repository, you can use a link with this fo
 
     https://play.decentraland.zone/?explorer-branch=<branch-name>
 
-Note that using this approach, the Unity builds will run against kernel `master` HEAD.
-
-If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
-
-    https://play.decentraland.zone/?explorer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
-
-If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
-
 # Links for Contributors
 
 1. [Contribution Guidelines](.github/CONTRIBUTING.md)
