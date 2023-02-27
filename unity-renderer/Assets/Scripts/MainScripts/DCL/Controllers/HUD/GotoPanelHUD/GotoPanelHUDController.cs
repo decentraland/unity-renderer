@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Map;
 using DCL.Tasks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -80,12 +79,14 @@ namespace DCL.GoToPanel
         private void Teleport(ParcelCoordinates parcelCoordinates)
         {
             teleportController.Teleport(parcelCoordinates.x, parcelCoordinates.y);
+            dataStore.HUDs.goToPanelConfirmed.Set(true, true);
         }
 
         private void ClosePanel()
         {
             dataStore.HUDs.gotoPanelVisible.Set(false);
             view.SetVisible(false);
+            dataStore.HUDs.goToPanelConfirmed.Set(false, true);
         }
     }
 }

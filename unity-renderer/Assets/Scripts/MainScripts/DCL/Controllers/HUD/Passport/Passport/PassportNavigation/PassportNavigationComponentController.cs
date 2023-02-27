@@ -25,18 +25,20 @@ namespace DCL.Social.Passports
         private readonly ILandsService landsService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
-        private string currentUserId;
+        private readonly StringVariable currentPlayerId;
+        private readonly List<string> loadedWearables = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
-        private readonly List<string> loadedWearables = new List<string>();
+        private string currentUserId;
+        private CancellationTokenSource cts = new ();
+        private Promise<WearableItem[]> wearablesPromise;
+        private Promise<WearableItem[]> emotesPromise;
+
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
-        private CancellationTokenSource cts = new CancellationTokenSource();
-        private Promise<WearableItem[]> wearablesPromise;
-        private Promise<WearableItem[]> emotesPromise;
 
         public PassportNavigationComponentController(
             IPassportNavigationComponentView view,
@@ -47,7 +49,8 @@ namespace DCL.Social.Passports
             INamesService namesService,
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
-            DataStore dataStore)
+            DataStore dataStore,
+            StringVariable currentPlayerId)
         {
             this.view = view;
             this.profanityFilter = profanityFilter;
@@ -58,6 +61,7 @@ namespace DCL.Social.Passports
             this.landsService = landsService;
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
+            this.currentPlayerId = currentPlayerId;
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is "name" or "parcel" or "estate" ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
             view.OnClickDescriptionCoordinates += OpenGoToPanel;
@@ -92,7 +96,8 @@ namespace DCL.Social.Passports
             UpdateWithUserProfileAsync().Forget();
         }
 
-        public void CloseAllNFTItemInfos() => view.CloseAllNFTItemInfos();
+        public void CloseAllNFTItemInfos() =>
+            view.CloseAllNFTItemInfos();
 
         public void SetViewInitialPage() =>
             view.SetInitialPage();
@@ -104,6 +109,7 @@ namespace DCL.Social.Passports
             cts = null;
 
             wearablesPromise?.Dispose();
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
         }
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
@@ -117,7 +123,7 @@ namespace DCL.Social.Passports
                     LoadAndShowOwnedWearables(userProfile);
                     LoadAndShowOwnedEmotes(userProfile).Forget();
 
-                    WearableItem[] wearableItems =  await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
+                    WearableItem[] wearableItems = await wearableItemResolver.Resolve(userProfile.avatar.wearables, ct);
                     view.SetEquippedWearables(wearableItems, userProfile.avatar.bodyShape);
                     return;
                 }
@@ -150,10 +156,7 @@ namespace DCL.Social.Passports
                     view.SetCollectibleWearables(containedWearables.ToArray());
                     view.SetCollectibleWearablesLoadingActive(false);
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError(e.Message);
-                }
+                catch (Exception e) { Debug.LogError(e.Message); }
             }
 
             view.SetCollectibleWearablesLoadingActive(true);
@@ -189,6 +192,7 @@ namespace DCL.Social.Passports
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile, CancellationToken ct)
         {
             view.SetCollectibleLandsLoadingActive(true);
+
             // TODO (Santi): Use userProfile.userId here!!
             using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
@@ -215,6 +219,15 @@ namespace DCL.Social.Passports
         {
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
             dataStore.HUDs.gotoPanelCoordinates.Set(coordinates, true);
+
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
+            dataStore.HUDs.goToPanelConfirmed.OnChange += ClosePassportFromGoToPanel;
+        }
+
+        private void ClosePassportFromGoToPanel(bool confirmed, bool _)
+        {
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
+            currentPlayerId.Set(null);
         }
     }
 }

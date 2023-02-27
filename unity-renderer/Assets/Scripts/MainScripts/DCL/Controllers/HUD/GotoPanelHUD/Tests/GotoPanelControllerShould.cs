@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace DCL.GoToPanel
 {
@@ -149,17 +150,25 @@ namespace DCL.GoToPanel
         [Test]
         public void CloseWhenViewRequestsIt()
         {
+            var called = false;
+            dataStore.HUDs.goToPanelConfirmed.OnChange += (confirmed, _) => called = confirmed == false;
+
             view.OnClosePressed += Raise.Event<Action>();
 
             view.Received(1).SetVisible(false);
+            Assert.IsTrue(called);
         }
 
         [Test]
         public void TeleportWhenViewRequestsIt()
         {
+            var called = false;
+            dataStore.HUDs.goToPanelConfirmed.OnChange += (confirmed, _) => called = confirmed;
+
             view.OnTeleportPressed += Raise.Event<Action<ParcelCoordinates>>(new ParcelCoordinates(6, 87));
 
             teleportController.Received(1).Teleport(6, 87);
+            Assert.IsTrue(called);
         }
     }
 }
