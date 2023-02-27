@@ -94,6 +94,12 @@ export function setupPeer(address: string): PeerInformation {
     // if we have user data, then send it to the avatar-scene
     sendPeerUserData(address)
 
+    avatarMessageObservable.notifyObservers({
+      type: AvatarMessageType.USER_VISIBLE,
+      userId: ethereumAddress,
+      visible: true
+    })
+
     return peer
   } else {
     return peerInformationMap.get(ethereumAddress)!

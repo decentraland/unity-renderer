@@ -57,9 +57,11 @@ namespace DCL.SettingsPanelHUD.Controls
 
             betaIndicator.SetActive(model.isBeta);
 
-            tooltip.SetModel(new TooltipComponentModel("This setting is being controlled \n by the creator"));
+            string tooltipMessage = !string.IsNullOrEmpty(model.infoTooltipMessage) ? model.infoTooltipMessage : "This setting is being controlled \n by the creator";
+            tooltip.SetModel(new TooltipComponentModel(tooltipMessage));
+
             infoButton.onClick.AddListener(OnInfoButtonClicked);
-            infoButton.gameObject.SetActive(false);
+            infoButton.gameObject.SetActive(model.infoButtonEnabled);
 
             title.text = model.title;
             originalTitleColor = title.color;
@@ -69,7 +71,9 @@ namespace DCL.SettingsPanelHUD.Controls
 
             SwitchInteractibility(isInteractable: model.flagsThatDisableMe.All(flag => flag.Get() == false));
             SwitchVisibility(isVisible: model.flagsThatDeactivateMe.All(flag => flag.Get() == false));
-            SetOverriden(@override: model.flagsThatOverrideMe.Any(flag => flag.Get()));
+
+            if(!model.infoButtonEnabled)
+                SetOverriden(@override: model.flagsThatOverrideMe.Any(flag => flag.Get()));
 
             RefreshControl();
 
