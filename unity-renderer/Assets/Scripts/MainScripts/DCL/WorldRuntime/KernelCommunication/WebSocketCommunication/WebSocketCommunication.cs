@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using DCL;
 using UnityEngine;
 using WebSocketSharp;
@@ -59,7 +62,6 @@ public class WebSocketCommunication : IKernelCommunication
             if (withSSL)
             {
                 wssServerUrl = $"wss://localhost:{port}/";
-                string cert = "";
                 ws = new WebSocketServer(wssServerUrl)
                 {
                     SslConfiguration =
@@ -113,13 +115,14 @@ public class WebSocketCommunication : IKernelCommunication
     
     private X509Certificate2 buildSelfSignedServerCertificate()
     {
+        string certificateName = "org.decentraland";
         SubjectAlternativeNameBuilder sanBuilder = new SubjectAlternativeNameBuilder();
         sanBuilder.AddIpAddress(IPAddress.Loopback);
         sanBuilder.AddIpAddress(IPAddress.IPv6Loopback);
         sanBuilder.AddDnsName("localhost");
-        sanBuilder.AddDnsName(Environment.MachineName);
+        sanBuilder.AddDnsName(System.Environment.MachineName);
 
-        X500DistinguishedName distinguishedName = new X500DistinguishedName($"CN={CertificateName}");
+        X500DistinguishedName distinguishedName = new X500DistinguishedName($"CN={certificateName}");
 
         using (RSA rsa = RSA.Create(2048))
         {
@@ -136,7 +139,7 @@ public class WebSocketCommunication : IKernelCommunication
             request.CertificateExtensions.Add(sanBuilder.Build());
 
             var certificate= request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
-            certificate.FriendlyName = CertificateName;
+            certificate.FriendlyName = certificateName;
 
             return new X509Certificate2(certificate.Export(X509ContentType.Pfx, "WeNeedASaf3rPassword"), "WeNeedASaf3rPassword", X509KeyStorageFlags.MachineKeySet);
         }
