@@ -1,13 +1,15 @@
 import { KernelConfigForRenderer } from 'shared/types'
-import { 
+import {
   getAvatarTextureAPIBaseUrl,
   commConfigurations,
-  WSS_ENABLED, WITH_FIXED_ITEMS,
+  WSS_ENABLED,
+  WITH_FIXED_ITEMS,
   WITH_FIXED_COLLECTIONS,
   PREVIEW,
   DEBUG,
   getTLD,
-  ETHEREUM_NETWORK } from 'config'
+  ETHEREUM_NETWORK
+} from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
 import { getWorld } from '@dcl/schemas'
 import { injectVersions } from 'shared/rolloutVersions'
@@ -27,9 +29,8 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
 
   const COLLECTIONS_OR_ITEMS_ALLOWED =
     PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
-  
-  const urlParamsForWearablesDebug =
-    !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
+
+  const urlParamsForWearablesDebug = !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
 
   console.log('[KERNEL CONFIG LOG] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug) // temporal log (for debugging purposes)
 
