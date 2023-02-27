@@ -2,9 +2,9 @@
 
 This is the [decentraland explorer](https://play.decentraland.org) official repository.
 
-This repository covers mainly the Kernel component of the explorer product. 
+This repository covers mainly the Browser Interface component of the explorer product. 
 
-Kernel component responsibility includes running the SDK scenes, handling back-end business logic and more. This said, you can clone this repo and run the browser version of Explorer. If you want to contribute to our renderer, please check out the unity-renderer repo: https://github.com/decentraland/unity-renderer/pulls. Unity-renderer repo outputs a npm package that's used on this one for publishing the Explorer.
+The Browser Interface component responsibility includes running the SDK scenes, handling back-end business logic and more. This said, you can clone this repo and run the browser version of Explorer. If you want to contribute to our renderer, please check out the unity-renderer repo: https://github.com/decentraland/unity-renderer/pulls. Unity-renderer repo outputs a npm package that's used on this one for publishing the Explorer.
 
 ## Before you start
 
@@ -35,7 +35,7 @@ First off, we need the npm package dependencies. In most of the cases this shoul
 
     npm install
     
-By now, you can run and watch a server with the kernel build by typing:
+By now, you can run and watch a server with the Browser Interface build by typing:
 
     make watch
 
@@ -49,7 +49,7 @@ The unity build used when accessing through localhost can be changed with severa
 
 Keep in mind that a `make watch` should be run and keep the server up before updating the local build, otherwise it will be replaced by the `make watch` command.
 
-### Run kernel tests
+### Run browser interface tests
 
 To see test logs/errors directly in the browser, run:
 
