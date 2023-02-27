@@ -3,10 +3,8 @@ using DCL.Providers;
 using System;
 using System.Linq;
 using UnityEngine;
-using DCL.ServerTime;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DCL.Skybox
 {
@@ -79,6 +77,9 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+
             DoAsyncInitializations();
         }
 
@@ -150,6 +151,14 @@ namespace DCL.Skybox
         {
             skyboxCam.AssignTargetCamera(currentTransform);
             skyboxElements.AssignCameraInstance(currentTransform);
+        }
+
+        private void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
+        {
+            if (visibleState == prevVisibleState)
+                return;
+
+            skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
@@ -529,6 +538,9 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
+
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
 
             timeReporter.Dispose();
             DisposeCT();
