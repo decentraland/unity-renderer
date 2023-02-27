@@ -31,7 +31,6 @@ namespace DCL.Social.Passports
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
         private HashSet<string> cachedAvatarEquippedWearables = new ();
-        private readonly List<string> loadedWearables = new List<string>();
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
@@ -89,7 +88,6 @@ namespace DCL.Social.Passports
             {
                 var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                wearablesCatalogService.RemoveWearablesInUse(loadedWearables);
                 string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
@@ -163,8 +161,6 @@ namespace DCL.Social.Passports
 
                     view.SetViewAllButtonActive(PassportSection.Wearables, wearables.totalAmount > MAX_NFT_COUNT);
                     IGrouping<string, WearableItem>[] wearableItems = wearables.wearables.GroupBy(i => i.id).ToArray();
-                    string[] wearableIds = wearableItems.Select(g => g.First().id).Take(MAX_NFT_COUNT).ToArray();
-                    loadedWearables.AddRange(wearableIds);
 
                     var containedWearables = wearableItems
                                             .Select(g => g.First())
