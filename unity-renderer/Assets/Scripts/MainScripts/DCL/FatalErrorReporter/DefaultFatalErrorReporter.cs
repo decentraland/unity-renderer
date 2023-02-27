@@ -8,7 +8,7 @@ namespace DCL.FatalErrorReporter
 
         public void Report(Exception exception)
         {
-            loadingScreenRef.Ref.loadingHUD.fatalError.Set(exception);
+            //TODO: Should we still report fatal error on loading screen?
         }
     }
 }

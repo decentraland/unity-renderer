@@ -56,20 +56,10 @@ namespace DCL
         {
             DCLVideoTexture.videoPluginWrapperBuilder = VideoProviderFactory.CreateVideoProvider;
 
-            if (current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-            {
-                loadingFlowController = new LoadingFlowController(
-                    loadingScreenRef.Ref.decoupledLoadingHUD.visible,
-                    CommonScriptableObjects.rendererState,
-                    DataStore.i.wsCommunication.communicationEstablished);
-            }
-            else
-            {
-                loadingFlowController = new LoadingFlowController(
-                    loadingScreenRef.Ref.loadingHUD.visible,
-                    CommonScriptableObjects.rendererState,
-                    DataStore.i.wsCommunication.communicationEstablished);
-            }
+            loadingFlowController = new LoadingFlowController(
+                loadingScreenRef.Ref.decoupledLoadingHUD.visible,
+                CommonScriptableObjects.rendererState,
+                DataStore.i.wsCommunication.communicationEstablished);
 
             DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsReady;
         }
