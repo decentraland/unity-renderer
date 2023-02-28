@@ -35,6 +35,7 @@ import { IRealmAdapter } from 'shared/realm/types'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitFor } from 'lib/redux'
+import { Vector2 } from 'lib/math/Vector2'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 

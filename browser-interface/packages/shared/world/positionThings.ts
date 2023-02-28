@@ -6,7 +6,7 @@ import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPo
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { DEBUG, playerHeight } from 'config'
 import { Scene } from '@dcl/schemas'
-import type { isInsideWorldLimits } from '@dcl/schemas'
+import { isInsideWorldLimits } from '@dcl/schemas'
 import type { Vector2 } from 'lib/math/Vector2'
 
 export type PositionReport = {

@@ -20,7 +20,7 @@ export const WORLD_EXPLORER = !PREVIEW
 export const RENDERER_WS = location.search.includes('ws')
 
 // Development
-export const ENV_OVERRIDE = location.search.includes('ENV')
+const ENV_OVERRIDE = location.search.includes('ENV')
 export const GIF_WORKERS = location.search.includes('GIF_WORKERS')
 
 const qs = new URLSearchParams(location.search)
@@ -66,8 +66,10 @@ export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || 
 export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
 export const WSS_ENABLED = !!ensureSingleString(qs.get('ws'))
 export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
+export const ALLOW_SWIFT_SHADER = location.search.includes('ALLOW_SWIFT_SHADER')
+export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 
-export const ASSET_BUNDLES_DOMAIN = ensureSingleString(qs.get('ASSET_BUNDLES_DOMAIN'))
+const ASSET_BUNDLES_DOMAIN = ensureSingleString(qs.get('ASSET_BUNDLES_DOMAIN'))
 export const SOCIAL_SERVER_URL = ensureSingleString(qs.get('SOCIAL_SERVER_URL'))
 
 export const QS_MAX_VISIBLE_PEERS =
@@ -114,7 +116,7 @@ export enum ETHEREUM_NETWORK {
   GOERLI = 'goerli'
 }
 
-export const knownTLDs = ['zone', 'org', 'today']
+const knownTLDs = ['zone', 'org', 'today']
 
 // return one of org zone today
 export function getTLD() {
