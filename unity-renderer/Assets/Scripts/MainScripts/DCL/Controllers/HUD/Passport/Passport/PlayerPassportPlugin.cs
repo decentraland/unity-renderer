@@ -53,8 +53,8 @@ public class PlayerPassportPlugin : IPlugin
                                 Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                                 Environment.i.serviceLocator.Get<ILandsService>(),
-                                Environment.i.serviceLocator.Get<INamesService>()
-                                )),
+                                Environment.i.serviceLocator.Get<INamesService>(),
+                                NotificationsController.i)),
                         Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),

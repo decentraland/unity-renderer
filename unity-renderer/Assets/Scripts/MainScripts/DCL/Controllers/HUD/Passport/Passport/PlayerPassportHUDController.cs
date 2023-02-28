@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Interface;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
 using System.Linq;

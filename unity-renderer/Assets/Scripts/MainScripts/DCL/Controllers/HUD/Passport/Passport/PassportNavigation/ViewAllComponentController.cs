@@ -25,6 +25,7 @@ public class ViewAllComponentController : IDisposable
     private readonly StringVariable currentPlayerId;
     private readonly ILandsService landsService;
     private readonly INamesService namesService;
+    private readonly NotificationsController notificationsController;
     private CancellationTokenSource sectionsCts = new ();
     private bool cleanCachedWearablesPages;
 
@@ -33,13 +34,15 @@ public class ViewAllComponentController : IDisposable
         StringVariable currentPlayerId,
         IWearablesCatalogService wearablesCatalogService,
         ILandsService landsService,
-        INamesService namesService)
+        INamesService namesService,
+        NotificationsController notificationsController)
     {
         this.view = view;
         this.currentPlayerId = currentPlayerId;
         this.wearablesCatalogService = wearablesCatalogService;
         this.landsService = landsService;
         this.namesService = namesService;
+        this.notificationsController = notificationsController;
         view.OnBackFromViewAll += BackFromViewAll;
         view.OnRequestCollectibleElements += RequestCollectibleElements;
         view.OnClickBuyNft += (s1, s2) => OnClickBuyNft?.Invoke(s1, s2);
@@ -257,7 +260,7 @@ public class ViewAllComponentController : IDisposable
 
     private void ShowErrorAndGoBack()
     {
-        NotificationsController.i.ShowNotification(new Model
+        notificationsController.ShowNotification(new Model
         {
             message = REQUEST_ERROR_MESSAGE,
             type = Type.ERROR,

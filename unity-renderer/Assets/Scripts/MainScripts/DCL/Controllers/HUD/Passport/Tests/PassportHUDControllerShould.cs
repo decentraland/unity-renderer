@@ -75,7 +75,8 @@ namespace DCL.Social.Passports
                                     currentPlayerInfoCardId,
                                     Substitute.For<IWearablesCatalogService>(),
                                     Substitute.For<ILandsService>(),
-                                    Substitute.For<INamesService>()
+                                    Substitute.For<INamesService>(),
+                                    NotificationsController.i
                                     ));
 
             controller = new PlayerPassportHUDController(
