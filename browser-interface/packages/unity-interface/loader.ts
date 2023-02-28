@@ -72,6 +72,7 @@ export type DecentralandRendererInstance = {
  */
 export type CommonRendererOptions = {
   onMessage: (type: string, payload: string) => void
+  onProgress?: (value: number) => void
 }
 
 function extractSemver(url: string): string | null {
@@ -160,6 +161,9 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
       trackEvent('unity_downloading_start', { renderer_version: explorerVersion })
 
       function onProgress(progress: number) {
+        if (options.onProgress) {
+          options.onProgress(progress)
+        }
         // 0.9 is harcoded in unityLoader, it marks the download-complete event
         if (0.9 === progress && !didLoadUnity) {
           trackEvent('unity_downloading_end', {

@@ -45,12 +45,16 @@ const defaultOptions: CommonRendererOptions = traceDecoratorRendererOptions({
 })
 
 async function loadInjectedUnityDelegate(
-  container: HTMLElement
+  container: HTMLElement,
+  progressCallback?: (value: number) => void
 ): Promise<{ renderer: UnityGame; transport: Transport }> {
   // inject unity loader
   const rootArtifactsUrl = rendererOptions.baseUrl || ''
 
-  const { createWebRenderer } = await loadUnity(rootArtifactsUrl, defaultOptions)
+  const { createWebRenderer } = await loadUnity(rootArtifactsUrl, {
+    ...defaultOptions,
+    onProgress: progressCallback
+  })
 
   preventUnityKeyboardLock()
 
@@ -133,7 +137,7 @@ export async function initializeUnity(options: KernelOptions['rendererOptions'])
     browserInterface.onUserInteraction.resolve()
   } else {
     // load injected renderer
-    store.dispatch(initializeRenderer(loadInjectedUnityDelegate, container))
+    store.dispatch(initializeRenderer(loadInjectedUnityDelegate, container, options.progress))
   }
 
   // wait until the renderer is fully loaded before returning, this

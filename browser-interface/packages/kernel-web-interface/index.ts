@@ -117,7 +117,8 @@ export type KernelOptions = {
   }
   rendererOptions: {
     container: any
-    baseUrl?: string
+    baseUrl?: string,
+    progress?: (value: number) => void
   }
 }
 
