@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace DCL.Chat.HUD
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-            // TODO: Remove hack in a newer Unity/TMPro version 
+            // TODO: Remove hack in a newer Unity/TMPro version
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
@@ -111,18 +112,13 @@ namespace DCL.Chat.HUD
 
         private string GetCoordinatesLink(string body)
         {
-            if (!CoordinateUtils.HasValidTextCoordinates(body))
-                return body;
-            var textCoordinates = CoordinateUtils.GetTextCoordinates(body);
+            if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
 
-            for (var i = 0; i < textCoordinates.Count; i++)
-            {
-                // TODO: the preload should not be here
-                PreloadSceneMetadata(CoordinateUtils.ParseCoordinatesString(textCoordinates[i]));
+            List<string> textCoordinates = CoordinateUtils.GetTextCoordinates(body);
 
-                body = body.Replace(textCoordinates[i],
-                    $"</noparse><link={textCoordinates[i]}><color=#4886E3><u>{textCoordinates[i]}</u></color></link><noparse>");
-            }
+            foreach (string coordinates in textCoordinates)
+                body = body.Replace(coordinates,
+                    $"</noparse><link={coordinates}><color=#4886E3><u>{coordinates}</u></color></link><noparse>");
 
             return body;
         }
@@ -171,31 +167,24 @@ namespace DCL.Chat.HUD
                    .TotalSeconds < 30;
         }
 
-        private void PreloadSceneMetadata(ParcelCoordinates parcelCoordinates)
-        {
-            if (MinimapMetadata.GetMetadata().GetSceneInfo(parcelCoordinates.x, parcelCoordinates.y) == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(parcelCoordinates.x, parcelCoordinates.y), 2);
-        }
-
         public void OnPointerClick(PointerEventData pointerEventData)
         {
-            if (pointerEventData.button == PointerEventData.InputButton.Left)
+            if (pointerEventData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex =
+                TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
+
+            if (CoordinateUtils.HasValidTextCoordinates(link))
             {
-                var linkIndex =
-                    TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
-                if (linkIndex == -1) return;
-
-                var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
-
-                if (CoordinateUtils.HasValidTextCoordinates(link))
-                {
-                    DataStore.i.HUDs.gotoPanelVisible.Set(true);
-                    var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
-                    DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
-                }
-                else if (link.StartsWith("username://"))
-                    OnUserNameClicked?.Invoke(this);
+                DataStore.i.HUDs.gotoPanelVisible.Set(true);
+                var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
             }
+            else if (link.StartsWith("username://"))
+                OnUserNameClicked?.Invoke(this);
         }
 
         public void OnPointerEnter(PointerEventData pointerEventData)
@@ -274,7 +263,7 @@ namespace DCL.Chat.HUD
 
             var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
             if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
-        
+
             isOverCoordinates = true;
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
             hoverGotoPanelTimer = timeToHoverGotoPanel;

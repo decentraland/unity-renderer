@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
+using UIComponents.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
@@ -80,6 +82,7 @@ namespace DCL.Social.Passports
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
         public event Action OnClickCollectibles;
+        public event Action<ParcelCoordinates> OnClickDescriptionCoordinates;
 
         private const string NFT_ICON_POOL_NAME_PREFIX = "NFTIconsEntriesPool_";
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
@@ -105,6 +108,7 @@ namespace DCL.Social.Passports
             nftNamesScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             nftLandsScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
             collectiblesMainScrollRect.onValueChanged.AddListener((pos) => CloseAllNFTItemInfos());
+            descriptionText.SubscribeToClickEvents(OnDescriptionClicked);
         }
 
         private void EnableAboutSection(bool isActive)
@@ -190,10 +194,37 @@ namespace DCL.Social.Passports
             {
                 emptyDescriptionGO.SetActive(false);
                 descriptionText.gameObject.SetActive(true);
+                description = AddCoordinateLinks(description);
                 descriptionText.text = description;
             }
 
             SetLinks(links);
+        }
+
+        private string AddCoordinateLinks(string description)
+        {
+            List<string> foundCoordinates = CoordinateUtils.GetTextCoordinates(description);
+            if (foundCoordinates.Count <= 0) return description;
+
+            foreach (string coordinate in foundCoordinates)
+                description = description.Replace(coordinate, $"<link=coord://{coordinate}><color=#4886E3><u>{coordinate}</u></color></link>");
+
+            return description;
+        }
+
+        private void OnDescriptionClicked(PointerEventData clickData)
+        {
+            if (clickData.button != PointerEventData.InputButton.Left) return;
+
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(descriptionText, clickData.position, descriptionText.canvas.worldCamera);
+            if (linkIndex == -1) return;
+
+            string link = descriptionText.textInfo.linkInfo[linkIndex].GetLinkID();
+            if (!link.StartsWith("coord://")) return;
+
+            string coordText = link[8..];
+            ParcelCoordinates coordinates = CoordinateUtils.ParseCoordinatesString(coordText);
+            OnClickDescriptionCoordinates?.Invoke(coordinates);
         }
 
         private void SetLinks(List<string> links)
