@@ -23,7 +23,6 @@ import {
  */
 const peerInformationMap = new Map<string, PeerInformation>()
 export const avatarMessageObservable = new Observable<AvatarMessage>()
-export const avatarVersionUpdateObservable = new Observable<{ userId: string; version: number }>()
 
 export function getAllPeers() {
   return new Map(peerInformationMap)
@@ -115,7 +114,7 @@ export function receivePeerUserData(avatar: Avatar, baseUrl: string) {
   }
 }
 
-function sendPeerUserData(address: string) {
+export function sendPeerUserData(address: string) {
   const peer = getPeer(address)
   if (peer && peer.baseUrl) {
     const profile = avatarUiProfileForUserId(peer.ethereumAddress, peer.baseUrl)
