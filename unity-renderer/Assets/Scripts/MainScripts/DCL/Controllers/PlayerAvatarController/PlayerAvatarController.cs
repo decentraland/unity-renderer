@@ -82,26 +82,24 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         currentPlayerInfoCardId.Set(currentAvatar.id);
     }
 
-    private IAvatar GetStandardAvatar() =>
-        Environment.i.serviceLocator.Get<IAvatarFactory>()
-                   .CreateAvatar(avatarContainer, GetComponentInChildren<AvatarAnimatorLegacy>(), NoLODs.i, new Visibility());
+    private IAvatar GetStandardAvatar()
+    {
+        return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatar(
+            avatarContainer,
+            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            NoLODs.i,
+            new Visibility());
+    }
 
     private IAvatar GetAvatarWithHologram()
     {
-        AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-        NoLODs noLod = new NoLODs();
-        BaseAvatar baseAvatar = new BaseAvatar(loadingAvatarContainer, armatureContainer, noLod);
-
-        return new AvatarWithHologram(
-            baseAvatar,
-            new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-            animator,
-            new Visibility(),
-            noLod,
-            new SimpleGPUSkinning(),
-            new GPUSkinningThrottler(),
-            new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+        return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
+            avatarContainer,
+            loadingAvatarContainer,
+            armatureContainer,
+            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            NoLODs.i,
+            new Visibility());
     }
 
     private void OnBaseWereablesFail()

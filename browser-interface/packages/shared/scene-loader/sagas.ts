@@ -52,7 +52,6 @@ import { trackEvent } from 'shared/analytics'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'
 import { isLoginCompleted } from 'shared/session/selectors'
-import { updateLoadingScreen } from '../loadingScreen/actions'
 import { waitFor } from 'lib/redux'
 
 export function* sceneLoaderSaga() {
@@ -233,7 +232,6 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
 
     yield put(signalParcelLoadingStarted())
 
-    yield put(updateLoadingScreen())
   }
 }
 

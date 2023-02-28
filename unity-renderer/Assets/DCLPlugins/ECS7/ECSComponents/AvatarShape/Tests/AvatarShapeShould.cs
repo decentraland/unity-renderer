@@ -22,7 +22,7 @@ namespace DCL.ECSComponents.Tests
         private GameObject gameObject;
 
         [SetUp]
-        protected void SetUp()
+        public void SetUp()
         {
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
@@ -30,6 +30,8 @@ namespace DCL.ECSComponents.Tests
             avatar = Substitute.For<IAvatar>();
             avatarReporterController = Substitute.For<IAvatarReporterController>();
             movementController = Substitute.For<IAvatarMovementController>();
+
+            Environment.Setup(InitializeServiceLocator());
 
             AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>("NewAvatarShape");
             avatarShape = GameObject.Instantiate(avatarShapePrefab);
@@ -43,8 +45,6 @@ namespace DCL.ECSComponents.Tests
             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
             sceneData.sceneNumber = 1;
             scene.sceneData.Configure().Returns(sceneData);
-
-            Environment.Setup(InitializeServiceLocator());
         }
 
         protected virtual ServiceLocator InitializeServiceLocator()
@@ -139,7 +139,6 @@ namespace DCL.ECSComponents.Tests
             avatar.Received(1).AddVisibilityConstraint(AvatarShape.IN_HIDE_AREA);
             Assert.IsFalse(avatarShape.playerNameContainer.activeInHierarchy);
         }
-
 
         [Test]
         public void RemoveHideModiferAreaCorrectly()

@@ -12,6 +12,8 @@ npx @dcl/cdn-uploader@next \
   --bucket "$S3_BUCKET" \
   --local-folder "/tmp/workspace/unity-renderer/browser-interface/static" \
   --bucket-folder "branch/${CIRCLE_BRANCH}" \
-  --concurrency 10
+  --concurrency 10 \
+  --config scripts/cdn-uploader-config.yml
+
 
 set +u # unbound variables
