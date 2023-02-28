@@ -19,6 +19,7 @@ namespace DCL.Controllers
         Dictionary<long, IDCLEntity> entities { get; }
         IECSComponentsManagerLegacy componentsManagerLegacy { get; }
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
+        HashSet<Vector2Int> parcels { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
         bool isPortableExperience { get; }
@@ -38,5 +39,6 @@ namespace DCL.Controllers
         void SetEntityParent(long entityId, long parentId);
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
         bool IsInitMessageDone();
+        Bounds GetOuterBounds();
     }
 }

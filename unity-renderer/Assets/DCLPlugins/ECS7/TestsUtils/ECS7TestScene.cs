@@ -13,6 +13,7 @@ using UnityEngine;
 public class ECS7TestScene : IParcelScene
 {
     public LoadParcelScenesMessage.UnityParcelScene sceneData { get; internal set; }
+    public HashSet<Vector2Int> parcels { get; protected set; }
     public ICRDTExecutor crdtExecutor { get; set; }
     public Dictionary<long, IDCLEntity> entities { get; internal set; }
     public ECS7TestEntity CreateEntity(long id) => _entityCreator(id);
@@ -84,6 +85,11 @@ public class ECS7TestScene : IParcelScene
         throw new NotImplementedException();
     }
     void IParcelScene.SetEntityParent(long entityId, long parentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Bounds GetOuterBounds()
     {
         throw new NotImplementedException();
     }
