@@ -2,5 +2,5 @@
 
 namespace DCLServices.MapRendererV2.MapLayers.Atlas
 {
-    public interface IChunkController : IMapLayerView, IDisposable { }
+    public interface IChunkController : IDisposable { }
 }

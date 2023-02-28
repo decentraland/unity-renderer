@@ -42,7 +42,7 @@ namespace DCLServices.MapRendererV2.Tests.Factory
         [Test]
         public async Task ProvideColdUserMarkerPrefab()
         {
-            var coldUser = await factory.GetColdUserMarkerPrefab(CancellationToken.None);
+            var coldUser = await factory.coldUsersMarkersInstaller.GetPrefab(CancellationToken.None);
             Assert.IsTrue(coldUser);
             AssertCanInstantiate(coldUser);
         }

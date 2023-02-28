@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using DCL;
+using JetBrains.Annotations;
 using UnityEngine;
 using System;
 
@@ -16,15 +17,17 @@ public class MinimapMetadataController : MonoBehaviour
         minimapMetadata.Clear();
     }
 
+    [UsedImplicitly]
     public void UpdateHomeScene(string sceneCoordinates)
     {
         if (sceneCoordinates == null)
             return;
-        
+
         homePoint.Set(new Vector2Int(Int32.Parse(sceneCoordinates.Split(',')[0]), Int32.Parse(sceneCoordinates.Split(',')[1])));
         OnHomeChanged?.Invoke(homePoint.Get());
     }
 
+    [UsedImplicitly]
     public void UpdateMinimapSceneInformation(string scenesInfoJson)
     {
         var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);

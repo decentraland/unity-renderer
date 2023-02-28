@@ -38,8 +38,8 @@ public class MinimapMetadata : ScriptableObject
 
     public event Action<MinimapSceneInfo> OnSceneInfoUpdated;
 
-    HashSet<MinimapSceneInfo> scenesInfo = new HashSet<MinimapSceneInfo>();
-    Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new Dictionary<Vector2Int, MinimapSceneInfo>();
+    private HashSet<MinimapSceneInfo> scenesInfo = new ();
+    private Dictionary<Vector2Int, MinimapSceneInfo> sceneInfoMap = new ();
 
     public MinimapSceneInfo GetSceneInfo(int x, int y)
     {
@@ -82,12 +82,10 @@ public class MinimapMetadata : ScriptableObject
     }
 
     private static MinimapMetadata minimapMetadata;
+
     public static MinimapMetadata GetMetadata()
     {
-        if (minimapMetadata == null)
-        {
-            minimapMetadata = Resources.Load<MinimapMetadata>("ScriptableObjects/MinimapMetadata");
-        }
+        if (minimapMetadata == null) { minimapMetadata = Resources.Load<MinimapMetadata>("ScriptableObjects/MinimapMetadata"); }
 
         return minimapMetadata;
     }
