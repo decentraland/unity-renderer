@@ -10,6 +10,7 @@ using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
 namespace Tests
@@ -38,6 +39,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
+
             var componentsFactory = new ECSComponentsFactory();
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory);

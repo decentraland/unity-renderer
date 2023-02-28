@@ -12,7 +12,6 @@ using DCL.Controllers;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Models;
-using System.Threading.Tasks;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -22,7 +21,6 @@ namespace DCL
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
-        private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
         private const string VISIBILITY_CONSTRAINT_HIDE_AREA = "IN_HIDE_AREA";
         private const string VISIBILITY_CONSTRAINT_OUTSIDE_SCENE_BOUNDS = "OUTSIDE_SCENE_BOUNDS";
 
