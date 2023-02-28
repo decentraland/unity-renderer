@@ -49,7 +49,7 @@ export async function fetchCatalystRealms(nodesEndpoint: string | undefined): Pr
   return nodes
 }
 
-export async function fetchCatalystStatus(
+async function fetchCatalystStatus(
   domain: string,
   denylistedCatalysts: string[],
   askFunction: typeof ask
