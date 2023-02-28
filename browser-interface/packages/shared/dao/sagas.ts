@@ -53,7 +53,7 @@ export function* daoSaga(): any {
 function* pickCatalystRealm() {
   const candidates: Candidate[] = yield select(getAllCatalystCandidates)
   if (candidates.length === 0) return undefined
-  const currentUserParcel: ReadOnlyVector2 = yield select(getParcelPosition)
+  const currentUserParcel: Vector2 = yield select(getParcelPosition)
 
   let config: AlgorithmChainConfig | undefined = yield select(getPickRealmsAlgorithmConfig)
 

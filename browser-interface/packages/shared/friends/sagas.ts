@@ -172,6 +172,7 @@ import {
   FriendshipStatus,
   GetFriendshipStatusRequest
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import { Vector2 } from 'lib/math/Vector2'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -1109,7 +1110,7 @@ export function* initializeStatusUpdateInterval() {
 
     const client: SocialAPI | null = yield select(getSocialClient)
     const realmConnectionString: string = yield select(getRealmConnectionString)
-    const position: ReadOnlyVector2 = yield select(getParcelPosition)
+    const position: Vector2 = yield select(getParcelPosition)
 
     if (!client || realmConnectionString === OFFLINE_REALM) {
       continue

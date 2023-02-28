@@ -1,3 +1,4 @@
+import { Vector2 } from 'lib/math/Vector2'
 import { InstancedSpawnPoint } from 'shared/types'
 import { action } from 'typesafe-actions'
 import { ISceneLoader } from './types'
@@ -14,7 +15,7 @@ export type SetWorldLoadingRadius = ReturnType<typeof setWorldLoadingRadius>
  * Used to set the parcel position and to react to changes in the x,y
  */
 export const SET_PARCEL_POSITION = 'SET_PARCEL_POSITION'
-export const setParcelPosition = (position: ReadOnlyVector2) => action(SET_PARCEL_POSITION, { position })
+export const setParcelPosition = (position: Vector2) => action(SET_PARCEL_POSITION, { position })
 export type SetParcelPosition = ReturnType<typeof setParcelPosition>
 
 export const TELEPORT_TO = 'TELEPORT_TO'

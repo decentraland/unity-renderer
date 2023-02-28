@@ -109,7 +109,7 @@ const waitForSceneLoader = waitFor(getSceneLoader, SET_SCENE_LOADER)
 // to unsettle the position.
 function* unsettlePositionOnSceneLoader() {
   const fromWorld = yield select(isPreviousAdapterWorld)
-  const unsettledPosition: ReadOnlyVector2 = fromWorld ? new Vector2(0, 0) : yield select(getParcelPosition)
+  const unsettledPosition: Vector2 = fromWorld ? new Vector2(0, 0) : yield select(getParcelPosition)
 
   yield put(teleportToAction({ position: gridToWorld(unsettledPosition.x, unsettledPosition.y) }))
 }
@@ -279,7 +279,7 @@ function* onWorldPositionChange() {
     const sceneLoader: ISceneLoader | undefined = yield select(getSceneLoader)
 
     if (sceneLoader) {
-      const position: ReadOnlyVector2 = yield select(getParcelPosition)
+      const position: Vector2 = yield select(getParcelPosition)
       const loadingRadius: number = LOS ? +(LOS || '0') : yield select(getLoadingRadius)
       const report: SceneLoaderPositionReport = {
         loadingRadius,

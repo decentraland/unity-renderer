@@ -95,7 +95,7 @@ globalThis.DecentralandKernel = {
         store.dispatch(sendHomeScene(homePoint))
       }
 
-      const urlPosition = getInitialPositionFromUrl()
+      const urlPosition = getInitialPositionFromUrl(location.search)
 
       // teleport to initial location
       if (urlPosition) {
