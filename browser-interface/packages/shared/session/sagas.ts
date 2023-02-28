@@ -25,7 +25,6 @@ import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { saveProfileDelta } from '../profiles/actions'
 import {
   AUTHENTICATE,
@@ -137,10 +136,6 @@ function* authenticate(action: AuthenticateAction) {
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
 
-  if (isSignUp) {
-    // HACK to fix onboarding flow, remove in RFC-1 impl
-    getUnityInstance().FadeInLoadingHUD({} as any)
-  }
 }
 
 function* authorize(requestManager: RequestManager) {

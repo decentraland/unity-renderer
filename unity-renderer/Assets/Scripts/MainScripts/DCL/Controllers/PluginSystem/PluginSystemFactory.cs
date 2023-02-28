@@ -57,8 +57,8 @@ namespace DCL
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.Register<FallbackFontsLoaderPlugin>(() => new FallbackFontsLoaderPlugin());
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
+            pluginSystem.Register<LoadingScreenPlugin>(() => new LoadingScreenPlugin());
 
-            pluginSystem.RegisterWithFlag<LoadingScreenPlugin>(() => new LoadingScreenPlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 
