@@ -44,3 +44,13 @@
 
 - Always prefer `await Promise.all([a, b])` rather than `await a; await b;`.
   * The less turnaround, the better and faster the experience. This really compounds!
+
+# testability
+
+- "Inversion of control": Always prefer arguments rather than accesses to global objects.
+  * If necessary, try to move the dependency to `config`.
+  * For example, prefer `getInitialPositionFromUrl(url: string)` and call it as `getInitialPositionFromUrl(location.href)` instead of assuming that `location` is a global object.
+
+# Development guidelines
+
+* If you find code that is not used anywhere, delete it.

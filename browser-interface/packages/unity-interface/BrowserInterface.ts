@@ -2,16 +2,13 @@ import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math
 
 import { Authenticator } from '@dcl/crypto'
 import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
-import {
-  DEBUG,
-  ethereumConfigurations,
-  playerConfigurations,
-  timeBetweenLoadingUpdatesInMillis,
-  WORLD_EXPLORER
-} from 'config'
+import { DEBUG, ethereumConfigurations, playerHeight, timeBetweenLoadingUpdatesInMillis, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
+import { arrayCleanup } from 'lib/javascript/arrayCleanup'
+import { now } from 'lib/javascript/now'
+import { defaultLogger } from 'lib/logger'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
@@ -50,7 +47,6 @@ import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFata
 import { getLastUpdateTime } from 'shared/loading/selectors'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
-import { defaultLogger } from 'lib/logger'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
@@ -114,8 +110,6 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
-import { arrayCleanup } from 'lib/javascript/arrayCleanup'
-import { now } from 'lib/javascript/now'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -285,7 +279,7 @@ export class BrowserInterface {
       data.position,
       data.rotation,
       data.cameraRotation || data.rotation,
-      data.playerHeight || playerConfigurations.height
+      data.playerHeight || playerHeight
     )
   }
 

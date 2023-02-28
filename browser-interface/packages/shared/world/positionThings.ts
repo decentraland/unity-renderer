@@ -4,7 +4,7 @@ import type { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerConfigurations } from 'config'
+import { DEBUG, playerHeight } from 'config'
 import { Scene } from '@dcl/schemas'
 import type { isInsideWorldLimits } from '@dcl/schemas'
 import type { Vector2 } from 'lib/math/Vector2'
@@ -40,7 +40,7 @@ const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
-  playerHeight: playerConfigurations.height,
+  playerHeight: playerHeight,
   mousePosition: Vector3.Zero(),
   immediate: false, // By default the renderer lerps avatars position
   cameraQuaternion: Quaternion.Identity,
