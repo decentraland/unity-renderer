@@ -1,4 +1,4 @@
-103 modules with unused exports
+98 modules with unused exports
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/config/index.ts: isRunningTest
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/renderer-protocol/transports/webTransport.ts: WebTransportOptions
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/renderer-protocol/transports/webSocketTransportAdapter.ts: defer
@@ -7,19 +7,14 @@
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/world/selectors.ts: getCurrentScene
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/world/SceneWorker.ts: SceneLifeCycleStatusType, SceneLifeCycleStatusReport
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/occurences.ts: Counters
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/renderer/selectors.ts: getParcelLoadingStarted, ensureRendererModules
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/renderer/actions.ts: SignalRendererInitialized, SignalParcelLoadingStarted
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/portableExperiences/actions.ts: DenyPortableExperiencesAction, KillAllPortableExperiencesAction, ActivateAllPortableExperiencesAction, AddKernelPortableExperience, AddScenePortableExperienceAction, RemoveScenePortableExperienceAction
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/portableExperiences/selectors.ts: getPortableExperienceDenyList, getPortableExperiencesCreatedByScenes, getKernelPortableExperiences
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/index.ts: fetchCatalystStatus, resolveRealmAboutFromBaseUrl
+/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/index.ts: resolveRealmAboutFromBaseUrl
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/pick-realm-algorithm/utils.ts: memoizedScores, latencyDeductions, scoreUsingLatencyDeductions, penalizeFull
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/pick-realm-algorithm/types.ts: LargeLatencyConfig, ClosePeersScoreConfig, LatencyDeductionsConfig, LoadBalancingConfig, AllPeersScoreConfig
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/types.ts: CatalystStatus, LayerUserInfo
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/dao/actions.ts: WEB3_INITIALIZED, UPDATE_CATALYST_REALM, CATALYST_REALMS_SCAN_REQUESTED, CatalystRealmsScanRequested
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/peers.ts: avatarVersionUpdateObservable, receiveUserVisible
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/logic/subscription-adapter.ts: listenPeerMessage, subscribeToSystemMessage, subscribeToPeerMessage
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/logic/peer-id-handler.ts: CachedPeer, peerIdHandler
-/home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/types.ts: CommsConnectionState, CommsStatus, RTCIceServer
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/sceneSubscriptions.ts: getParcelSceneSubscriptions
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/adapters/LivekitAdapter.ts: LivekitConfig
 /home/usr/projects/decentraland/unity-renderer/browser-interface/packages/shared/comms/actions.ts: SetCommsIsland
