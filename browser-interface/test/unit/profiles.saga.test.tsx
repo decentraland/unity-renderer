@@ -1,20 +1,19 @@
 import { expect } from 'chai'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
-import { getCommsRoom } from 'shared/comms/selectors'
 import {
   addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
 } from 'shared/profiles/actions'
-import { fetchProfile } from 'shared/profiles/sagas/fetchProfile'
+import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
-import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import { ProfileUserInfo } from 'shared/profiles/types'
+import type { ProfileUserInfo } from 'shared/profiles/types'
 import * as realmSelectors from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
+import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { isCurrentUserId, isGuestLogin } from 'shared/session/selectors'
+import { isCurrentUserId } from 'shared/session/selectors'
 import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -61,12 +60,18 @@ describe('fetchProfile behavior', () => {
 
   it('detects and fixes corrupted scaled snapshots', () => {
     const userId = 'user|1'
+    const action = profileRequest(userId)
 
-    return expectSaga(fetchProfile, profileRequest(userId))
+    return expectSaga(fetchProfile, action)
       .provide([
-        [select(isGuestLogin), false],
-        [select(isCurrentUserId, userId), false],
-        [select(getCommsRoom), undefined],
+        [select(getInformationToFetchProfileFromStore, action), {
+          roomConnection: undefined,
+          loadingCurrentUser: false,
+          hasRoomConnection: false,
+          existingProfile: undefined,
+          isGuestLogin: false,
+          existingProfileWithCorrectVersion: false
+        }]
       ])
       .run()
       .then((result) => {

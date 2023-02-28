@@ -20,7 +20,6 @@ import { sceneEventsSaga } from 'shared/sceneEvents/sagas'
 import { sceneLoaderSaga } from 'shared/scene-loader/sagas'
 import { worldSagas } from 'shared/world/sagas'
 import { bffSaga } from 'shared/realm/sagas'
-import { loadingScreenSaga } from 'shared/loadingScreen/sagas'
 
 export function createRootSaga() {
   return function* rootSaga() {
@@ -45,9 +44,5 @@ export function createRootSaga() {
     yield fork(wearablesPortableExperienceSaga)
     yield fork(sceneLoaderSaga)
     yield fork(worldSagas)
-
-    // Deprecated `loadingScreenSaga` needs to be added until `DECOUPLED_LOADING_SCREEN`
-    // feature flag is removed and set as the default loading screen flow
-    yield fork(loadingScreenSaga)
   }
 }
