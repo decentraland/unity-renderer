@@ -6,6 +6,7 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
+using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,8 +16,8 @@ namespace DCL.Emotes
     {
         internal readonly DataStore_Emotes dataStore;
         internal readonly EmoteAnimationLoaderFactory emoteAnimationLoaderFactory;
-        internal readonly IWearableItemResolver wearableItemResolver;
         private readonly IEmotesCatalogService emotesCatalogService;
+        private readonly IWearablesCatalogService wearablesCatalogService;
 
         internal Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader> loaders = new Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader>();
 
@@ -24,31 +25,31 @@ namespace DCL.Emotes
 
         internal GameObject animationsModelsContainer;
 
-        // Alex: While we are supporting the old Emotes flow, we need the wearableItemResolver
-        public EmoteAnimationsTracker(DataStore_Emotes dataStore, EmoteAnimationLoaderFactory emoteAnimationLoaderFactory, IWearableItemResolver wearableItemResolver, IEmotesCatalogService emotesCatalogService)
+        public EmoteAnimationsTracker(
+            DataStore_Emotes dataStore,
+            EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
+            IEmotesCatalogService emotesCatalogService,
+            IWearablesCatalogService wearablesCatalogService)
         {
             animationsModelsContainer = new GameObject("_EmoteAnimationsHolder");
             animationsModelsContainer.transform.position = EnvironmentSettings.MORDOR;
             this.dataStore = dataStore;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
-            this.wearableItemResolver = wearableItemResolver;
             this.emotesCatalogService = emotesCatalogService;
+            this.wearablesCatalogService = wearablesCatalogService;
             this.dataStore.animations.Clear();
 
-            InitializeEmbeddedEmotes();
-            InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
-
-            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
+            AsyncInitialization();
         }
 
-        private void InitializeEmbeddedEmotes()
+        private async UniTaskVoid AsyncInitialization()
         {
             //To avoid circular references in assemblies we hardcode this here instead of using WearableLiterals
             //Embedded Emotes are only temporary until they can be retrieved from the content server
             const string FEMALE = "urn:decentraland:off-chain:base-avatars:BaseFemale";
             const string MALE = "urn:decentraland:off-chain:base-avatars:BaseMale";
 
-            EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
+            EmbeddedEmotesSO embeddedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
 
             foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
             {
@@ -74,7 +75,10 @@ namespace DCL.Emotes
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
                 }
             }
-            CatalogController.i.EmbedWearables(embeddedEmotes.emotes);
+
+            wearablesCatalogService.EmbedWearables(embeddedEmotes.emotes);
+            InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
+            this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
         }
 
         private void OnRefCountUpdated((string bodyshapeId, string emoteId) value, int refCount)

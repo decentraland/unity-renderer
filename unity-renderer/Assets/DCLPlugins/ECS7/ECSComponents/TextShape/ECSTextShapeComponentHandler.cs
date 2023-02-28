@@ -18,12 +18,11 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
 
     internal TextMeshPro textComponent;
+    internal AssetPromise_Font fontPromise;
+
     private GameObject textGameObject;
     private RectTransform rectTransform;
     private Renderer textRenderer;
-
-    internal AssetPromise_Font fontPromise;
-
     private PBTextShape currentModel;
 
     public ECSTextShapeComponentHandler(AssetPromiseKeeper_Font fontPromiseKeeper, IInternalECSComponent<InternalRenderers> renderersInternalComponent)
@@ -36,9 +35,9 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     {
         textGameObject = new GameObject("TextShape");
 
-        textRenderer = textGameObject.AddComponent<MeshRenderer>();
         rectTransform = textGameObject.AddComponent<RectTransform>();
         textComponent = textGameObject.AddComponent<TextMeshPro>();
+        textRenderer = textComponent.renderer;
         rectTransform.SetParent(entity.gameObject.transform, false);
         rectTransform.localRotation = Quaternion.Euler(0, 180, 0);
 
@@ -51,6 +50,7 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
         renderersInternalComponent.RemoveRenderer(scene, entity, textRenderer);
+
         fontPromiseKeeper.Forget(fontPromise);
 
         Object.Destroy(textGameObject);
@@ -80,12 +80,14 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
         var prevPromise = fontPromise;
         fontPromise = new AssetPromise_Font(model.GetFont().ToFontName());
+
         fontPromise.OnSuccessEvent += assetFont =>
         {
             textComponent.font = assetFont.font;
             SetShadow(textComponent.fontSharedMaterial, model.GetShadowOffsetX(), model.GetShadowOffsetY(), model.GetShadowBlur(), model.GetShadowColor());
             SetOutline(textComponent, model.GetOutlineWidth(), model.GetOutlineColor());
         };
+
         fontPromiseKeeper.Keep(fontPromise);
         fontPromiseKeeper.Forget(prevPromise);
     }

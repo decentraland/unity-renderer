@@ -7,6 +7,13 @@ namespace DCL.SettingsCommon
     [Serializable]
     public struct QualitySettings
     {
+        public enum ShaderQuality
+        {
+            LOW,
+            MID,
+            HIGH
+        }
+
         public enum BaseResolution
         {
             BaseRes_Normal,
@@ -78,5 +85,7 @@ namespace DCL.SettingsCommon
         public int maxHQAvatars;
 
         public ReflectionResolution reflectionResolution;
+
+        public ShaderQuality shaderQuality;
     }
 }

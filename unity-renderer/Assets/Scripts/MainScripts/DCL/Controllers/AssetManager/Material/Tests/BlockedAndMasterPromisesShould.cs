@@ -33,7 +33,7 @@ namespace AssetPromiseKeeper_Material_Tests
         private AssetPromise_Material_Model CreateMaterialModel(string srcTexture)
         {
             return AssetPromise_Material_Model.CreateBasicMaterial(new AssetPromise_Material_Model.Texture(
-                srcTexture, TextureWrapMode.Clamp, FilterMode.Bilinear), 1f);
+                srcTexture, TextureWrapMode.Clamp, FilterMode.Bilinear), 1f, Color.white);
         }
 
         [UnityTest]

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
-using System;
 
 namespace DCL.ProfanityFiltering
 {
@@ -51,7 +51,7 @@ namespace DCL.ProfanityFiltering
             }
         }
 
-        public async UniTask<string> Filter(string message)
+        public async UniTask<string> Filter(string message, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(message))
                 return message;
@@ -61,18 +61,18 @@ namespace DCL.ProfanityFiltering
 
             foreach (Regex regexStep in regexSteps)
             {
-                await CheckTimerAndSkipFrame(stopwatch);
+                await CheckTimerAndSkipFrame(stopwatch, cancellationToken);
                 message = regexStep.Replace(message, match => new StringBuilder().Append('*', match.Value.Length).ToString());
             }
 
             return message;
         }
 
-        private async Task CheckTimerAndSkipFrame(Stopwatch stopwatch)
+        private async Task CheckTimerAndSkipFrame(Stopwatch stopwatch, CancellationToken cancellationToken)
         {
             if (stopwatch.ElapsedMilliseconds > 1)
             {
-                await UniTask.WaitForEndOfFrame();
+                await UniTask.WaitForEndOfFrame(cancellationToken: cancellationToken);
                 stopwatch.Restart();
             }
         }

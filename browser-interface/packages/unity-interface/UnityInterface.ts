@@ -1,58 +1,59 @@
 import { Vector3 } from '@dcl/ecs-math'
-import lodash from 'lodash'
-import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, RENDERER_WS } from 'config'
-import { HotSceneInfo, IUnityInterface, setUnityInstance, MinimapSceneInfo } from './IUnityInterface'
+import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
+import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { Avatar, ContentMapping } from '@dcl/schemas'
+import type { UnityGame } from '@dcl/unity-renderer/src'
+import { RENDERER_WS, RESET_TUTORIAL, WORLD_EXPLORER, WSS_ENABLED } from 'config'
+import future, { IFuture } from 'fp-future'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { stringify } from 'lib/javascript/stringify'
+import { uniqBy } from 'lib/javascript/uniqBy'
+import { uuid } from 'lib/javascript/uuid'
+import { createUnityLogger, ILogger } from 'lib/logger'
+import { Observable } from 'mz-observable'
+import { trackEvent } from 'shared/analytics'
+import { Emote, WearableV2 } from 'shared/catalogs/types'
+import { FeatureFlag } from 'shared/meta/types'
+import { incrementCounter } from 'shared/occurences'
+import { getProvider } from 'shared/session/index'
 import {
+  AddChatMessagesPayload,
+  AddFriendRequestsPayload,
+  AddFriendsPayload,
+  AddFriendsWithDirectMessagesPayload,
+  BuilderConfiguration,
+  ChannelErrorPayload,
+  ChannelInfoPayloads,
+  ChannelSearchResultsPayload,
+  ChatMessage,
+  FriendshipUpdateStatusMessage,
+  FriendsInitializationMessage,
+  FriendsInitializeChatPayload,
+  HeaderRequest,
   HUDConfiguration,
+  HUDElementID,
   InstancedSpawnPoint,
   Notification,
-  ChatMessage,
-  HUDElementID,
-  FriendsInitializationMessage,
-  FriendshipUpdateStatusMessage,
-  UpdateUserStatusMessage,
-  RenderProfile,
-  BuilderConfiguration,
+  NotificationType,
   RealmsInfoForRenderer,
+  RenderProfile,
+  SetAudioDevicesPayload,
   TutorialInitializationMessage,
-  WorldPosition,
-  HeaderRequest,
-  AddFriendsPayload,
-  AddFriendRequestsPayload,
-  UpdateTotalUnseenMessagesPayload,
-  UpdateUserUnseenMessagesPayload,
-  AddChatMessagesPayload,
-  UpdateTotalUnseenMessagesByUserPayload,
-  AddFriendsWithDirectMessagesPayload,
-  FriendsInitializeChatPayload,
+  UpdateChannelMembersPayload,
   UpdateTotalFriendRequestsPayload,
   UpdateTotalFriendsPayload,
   UpdateTotalUnseenMessagesByChannelPayload,
-  ChannelInfoPayloads,
-  UpdateChannelMembersPayload,
-  ChannelSearchResultsPayload,
-  ChannelErrorPayload,
-  SetAudioDevicesPayload,
-  NotificationType
+  UpdateTotalUnseenMessagesByUserPayload,
+  UpdateTotalUnseenMessagesPayload,
+  UpdateUserStatusMessage,
+  UpdateUserUnseenMessagesPayload,
+  WorldPosition
 } from 'shared/types'
-import { nativeMsgBridge } from './nativeMessagesBridge'
-import { createUnityLogger, ILogger } from 'shared/logger'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
-import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
-import { Emote, WearableV2 } from 'shared/catalogs/types'
-import { Observable } from 'mz-observable'
-import type { UnityGame } from '@dcl/unity-renderer/src'
-import { FeatureFlag } from 'shared/meta/types'
-import { getProvider } from 'shared/session/index'
-import { uuid } from 'lib/javascript/uuid'
-import future, { IFuture } from 'fp-future'
 import { futures } from './BrowserInterface'
-import { trackEvent } from 'shared/analytics'
-import { Avatar, ContentMapping } from '@dcl/schemas'
-import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
-import { incrementCounter } from 'shared/occurences'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
+import { nativeMsgBridge } from './nativeMessagesBridge'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -266,13 +267,10 @@ export class UnityInterface implements IUnityInterface {
       this.SendMessageToUnity('Main', 'AddWearablesToCatalog', JSON.stringify({ wearables, context }))
     } else {
       //First, we remove the duplicate wearables entries.
-      wearables = lodash.uniqBy(wearables, 'id')
+      wearables = uniqBy(wearables, 'id')
 
       //Then, we map to a string array to find the limit of wearables we can add
-      function stringifyWearable(num) {
-        return JSON.stringify(num)
-      }
-      const wearablesStringArray: string[] = wearables.map(stringifyWearable)
+      const wearablesStringArray: string[] = wearables.map(stringify)
 
       //Theoretical limit is at 1306299. Added a smaller value to keep it safe
       const SAFE_THRESHOLD = 1300000
@@ -375,11 +373,11 @@ export class UnityInterface implements IUnityInterface {
       trackEvent('long_chat_message_ignored', { message: message.body, sender: message.sender })
       return
     }
-    this.SendMessageToUnity('Main', 'AddMessageToChatWindow', JSON.stringify(message))
+    this.SendMessageToUnity('Bridges', 'AddMessageToChatWindow', JSON.stringify(message))
   }
 
   public AddChatMessages(addChatMessagesPayload: AddChatMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'AddChatMessages', JSON.stringify(addChatMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'AddChatMessages', JSON.stringify(addChatMessagesPayload))
   }
 
   public InitializeFriends(initializationMessage: FriendsInitializationMessage) {
@@ -387,7 +385,7 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public InitializeChat(initializationMessage: FriendsInitializeChatPayload): void {
-    this.SendMessageToUnity('Main', 'InitializeChat', JSON.stringify(initializationMessage))
+    this.SendMessageToUnity('Bridges', 'InitializeChat', JSON.stringify(initializationMessage))
   }
 
   public AddUserProfilesToCatalog(payload: AddUserProfilesToCatalogPayload): void {
@@ -407,7 +405,7 @@ export class UnityInterface implements IUnityInterface {
     updateTotalUnseenMessagesByUserPayload: UpdateTotalUnseenMessagesByUserPayload
   ): void {
     this.SendMessageToUnity(
-      'Main',
+      'Bridges',
       'UpdateTotalUnseenMessagesByUser',
       JSON.stringify(updateTotalUnseenMessagesByUserPayload)
     )
@@ -426,11 +424,11 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public UpdateTotalUnseenMessages(updateTotalUnseenMessagesPayload: UpdateTotalUnseenMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'UpdateTotalUnseenMessages', JSON.stringify(updateTotalUnseenMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateTotalUnseenMessages', JSON.stringify(updateTotalUnseenMessagesPayload))
   }
 
   public UpdateUserUnseenMessages(updateUserUnseenMessagesPayload: UpdateUserUnseenMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'UpdateUserUnseenMessages', JSON.stringify(updateUserUnseenMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateUserUnseenMessages', JSON.stringify(updateUserUnseenMessagesPayload))
   }
 
   public UpdateFriendshipStatus(updateMessage: FriendshipUpdateStatusMessage) {
@@ -446,41 +444,41 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public JoinChannelConfirmation(channelInfoPayload: ChannelInfoPayloads) {
-    this.SendMessageToUnity('Main', 'JoinChannelConfirmation', JSON.stringify(channelInfoPayload))
+    this.SendMessageToUnity('Bridges', 'JoinChannelConfirmation', JSON.stringify(channelInfoPayload))
   }
 
   public JoinChannelError(joinChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'JoinChannelError', JSON.stringify(joinChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'JoinChannelError', JSON.stringify(joinChannelErrorPayload))
   }
 
   public UpdateTotalUnseenMessagesByChannel(
     updateTotalUnseenMessagesByChannelPayload: UpdateTotalUnseenMessagesByChannelPayload
   ) {
     this.SendMessageToUnity(
-      'Main',
+      'Bridges',
       'UpdateTotalUnseenMessagesByChannel',
       JSON.stringify(updateTotalUnseenMessagesByChannelPayload)
     )
   }
 
   public UpdateChannelInfo(channelInfoPayload: ChannelInfoPayloads) {
-    this.SendMessageToUnity('Main', 'UpdateChannelInfo', JSON.stringify(channelInfoPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelInfo', JSON.stringify(channelInfoPayload))
   }
 
   public UpdateChannelSearchResults(channelSearchResultsPayload: ChannelSearchResultsPayload) {
-    this.SendMessageToUnity('Main', 'UpdateChannelSearchResults', JSON.stringify(channelSearchResultsPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelSearchResults', JSON.stringify(channelSearchResultsPayload))
   }
 
   public LeaveChannelError(leaveChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'LeaveChannelError', JSON.stringify(leaveChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'LeaveChannelError', JSON.stringify(leaveChannelErrorPayload))
   }
 
   public MuteChannelError(muteChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'MuteChannelError', JSON.stringify(muteChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'MuteChannelError', JSON.stringify(muteChannelErrorPayload))
   }
 
   public UpdateChannelMembers(updateChannelMembersPayload: UpdateChannelMembersPayload) {
-    this.SendMessageToUnity('Main', 'UpdateChannelMembers', JSON.stringify(updateChannelMembersPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelMembers', JSON.stringify(updateChannelMembersPayload))
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types

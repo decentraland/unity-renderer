@@ -4,6 +4,8 @@ using System.Linq;
 using AvatarSystem;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -11,12 +13,11 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
-    private CatalogController catalogController;
-    private BaseDictionary<string, WearableItem> catalog;
     private AvatarMeshCombinerHelper combiner;
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
+    private IWearablesCatalogService wearablesCatalogService;
 
     protected override IEnumerator SetUp()
     {
@@ -26,9 +27,7 @@ public class WearablesVisualTests : VisualTestsBase
         combiner.uploadMeshToGpu = false;
         combiner.prepareMeshForGpuSkinning = false;
 
-        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
-        catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-
+        wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#1C1C1C", out hairColor));
@@ -176,7 +175,7 @@ public class WearablesVisualTests : VisualTestsBase
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject container, AvatarMeshCombinerHelper combiner)
     {
-        catalog.TryGetValue(wearableId, out WearableItem wearableItem);
+        wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
         WearableLoader wearableLoader = new WearableLoader(new WearableRetriever(), wearableItem);
@@ -208,8 +207,7 @@ public class WearablesVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
-        Object.Destroy(catalogController.gameObject);
-
+        wearablesCatalogService.Dispose();
         combiner.Dispose();
 
         yield return base.TearDown();
