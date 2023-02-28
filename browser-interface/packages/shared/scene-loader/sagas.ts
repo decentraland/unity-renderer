@@ -231,7 +231,6 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
     }
 
     yield put(signalParcelLoadingStarted())
-
   }
 }
 

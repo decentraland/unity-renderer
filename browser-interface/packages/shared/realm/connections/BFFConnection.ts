@@ -15,49 +15,6 @@ import mitt from 'mitt'
 import { legacyServices } from '../local-services/legacy'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 
-export type TopicData = {
-  peerId: string
-  data: Uint8Array
-}
-
-export type TopicListener = {
-  subscriptionId: number
-}
-
-async function authenticatePort(port: RpcClientPort, identity: ExplorerIdentity): Promise<string> {
-  const address = identity.address
-
-  const auth = loadService(port, BffAuthenticationServiceDefinition)
-
-  const getChallengeResponse = await auth.getChallenge({ address })
-  if (getChallengeResponse.alreadyConnected) {
-    trackEvent('bff_auth_already_connected', {
-      address
-    })
-  }
-
-  const authChainJson = JSON.stringify(Authenticator.signPayload(identity, getChallengeResponse.challengeToSign))
-  const authResponse: WelcomePeerInformation = await auth.authenticate({ authChainJson })
-  return authResponse.peerId
-}
-
-function resolveBffUrl(baseUrl: string, bffPublicUrl?: string): string {
-  let url: string
-  if (bffPublicUrl && bffPublicUrl.startsWith('http')) {
-    url = bffPublicUrl
-    if (!url.endsWith('/')) {
-      url += '/'
-    }
-    url += 'rpc'
-  } else {
-    const relativeUrl = ((bffPublicUrl || '/bff') + '/rpc').replace(/(\/+)/g, '/')
-
-    url = new URL(relativeUrl, baseUrl).toString()
-  }
-
-  return url.replace(/^http/, 'ws')
-}
-
 export async function createBffRpcConnection(
   baseUrl: string,
   about: AboutResponse,
@@ -77,7 +34,7 @@ export async function createBffRpcConnection(
   return new BffRpcConnection(baseUrl, about, port, peerId)
 }
 
-export class BffRpcConnection implements IRealmAdapter<any> {
+class BffRpcConnection implements IRealmAdapter<any> {
   public events = mitt<RealmConnectionEvents>()
   public services: BffServices
 
@@ -114,4 +71,38 @@ export class BffRpcConnection implements IRealmAdapter<any> {
 
     this.events.emit('DISCONNECTION', { error })
   }
+}
+
+async function authenticatePort(port: RpcClientPort, identity: ExplorerIdentity): Promise<string> {
+  const address = identity.address
+
+  const auth = loadService(port, BffAuthenticationServiceDefinition)
+
+  const getChallengeResponse = await auth.getChallenge({ address })
+  if (getChallengeResponse.alreadyConnected) {
+    trackEvent('bff_auth_already_connected', {
+      address
+    })
+  }
+
+  const authChainJson = JSON.stringify(Authenticator.signPayload(identity, getChallengeResponse.challengeToSign))
+  const authResponse: WelcomePeerInformation = await auth.authenticate({ authChainJson })
+  return authResponse.peerId
+}
+
+function resolveBffUrl(baseUrl: string, bffPublicUrl?: string): string {
+  let url: string
+  if (bffPublicUrl && bffPublicUrl.startsWith('http')) {
+    url = bffPublicUrl
+    if (!url.endsWith('/')) {
+      url += '/'
+    }
+    url += 'rpc'
+  } else {
+    const relativeUrl = ((bffPublicUrl || '/bff') + '/rpc').replace(/(\/+)/g, '/')
+
+    url = new URL(relativeUrl, baseUrl).toString()
+  }
+
+  return url.replace(/^http/, 'ws')
 }

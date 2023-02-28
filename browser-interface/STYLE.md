@@ -1,6 +1,17 @@
 # Style guidelines
 
-## Redux
+# Code order
+
+```
+imports
+
+local constants
+
+main exports
+
+non-exported functions
+```
+# Redux
 
 * `actions.ts` must contain, for each action the system or the user triggers:
   - A constant definition of the action affecting the system. The name of the module is optional, between square brackets:

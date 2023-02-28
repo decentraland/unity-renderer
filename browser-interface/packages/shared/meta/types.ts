@@ -53,12 +53,12 @@ export type FeatureFlagsName =
 
 export type BannedUsers = Record<string, Ban[]>
 
-export type Ban = {
+type Ban = {
   type: 'VOICE_CHAT_AND_CHAT' // For now we only handle one ban type
   expiration: number // Timestamp
 }
 
-export interface POI {
+ interface POI {
   x: number
   y: number
 }
