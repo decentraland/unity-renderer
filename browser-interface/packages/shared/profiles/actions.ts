@@ -35,11 +35,15 @@ export type ProfileFailureAction = ReturnType<typeof profileFailure>
 // Profile update
 
 export const saveProfileDelta = (profile: Partial<Avatar>) => action(SAVE_DELTA_PROFILE_REQUEST, { profile })
-export const sendProfileToRenderer = (userId: string) => action(SEND_PROFILE_TO_RENDERER_REQUEST, { userId })
+export const sendProfileToRenderer = (userId: string, forceSend: boolean = false) =>
+  action(SEND_PROFILE_TO_RENDERER_REQUEST, { userId, forceSend })
 export const saveProfileFailure = (userId: string, error: any) => action(SAVE_PROFILE_FAILURE, { userId, error })
 
 export type SaveProfileDelta = ReturnType<typeof saveProfileDelta>
-export type SendProfileToRenderer = ReturnType<typeof sendProfileToRenderer>
+export type SendProfileToRenderer = {
+  type: typeof SEND_PROFILE_TO_RENDERER_REQUEST
+  payload: { userId: string; forceSend?: boolean }
+}
 export type SaveProfileFailure = ReturnType<typeof saveProfileFailure>
 
 export const deployProfile = (profile: Avatar) => action(DEPLOY_PROFILE_REQUEST, { profile })
