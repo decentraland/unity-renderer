@@ -270,7 +270,7 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
   }
 
   const bff: IRealmAdapter = yield call(waitForRealm)
-  const fetchContentServerWithPrefix = yield call(getFetchContentUrlPrefixFromRealmAdapter, bff)
+  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
   if (yield select(isCurrentUserId, userId)) {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)

@@ -41,7 +41,7 @@ export type UserRemovedMessage = {
   userId: string
 }
 
-export type UserMessage = {
+type UserMessage = {
   type: AvatarMessageType.USER_TALKING
   userId: string
 }
@@ -73,12 +73,10 @@ export type UserInformation = {
   visible?: boolean
 }
 
-export type AvatarExpression = {
+type AvatarExpression = {
   expressionType: string
   expressionTimestamp: number
 }
-
-export type PackageType = keyof rfc4.Packet
 
 export type Package<T> = {
   address: string

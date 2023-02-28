@@ -85,7 +85,7 @@ export function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
   const failureAction = isRequestingEmotes ? emotesFailure : wearablesFailure
   if (valid) {
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const contentBaseUrl: string = yield call(getFetchContentUrlPrefixFromRealmAdapter, realmAdapter)
+    const contentBaseUrl: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     try {
       const response: PartialItem[] = yield call(fetchItemsFromCatalyst, action, filters)
