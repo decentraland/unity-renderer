@@ -1,4 +1,4 @@
-import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
+import type { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 
 export const enum AvatarMessageType {
@@ -7,14 +7,7 @@ export const enum AvatarMessageType {
   USER_VISIBLE = 'USER_VISIBLE',
   USER_EXPRESSION = 'USER_EXPRESSION',
   USER_REMOVED = 'USER_REMOVED',
-  USER_TALKING = 'USER_TALKING',
-
-  // TODO(mendez): what emits this messages?
-  // Actions related messages
-  USER_MUTED = 'USER_MUTED',
-  USER_UNMUTED = 'USER_UNMUTED',
-  USER_BLOCKED = 'USER_BLOCKED',
-  USER_UNBLOCKED = 'USER_UNBLOCKED'
+  USER_TALKING = 'USER_TALKING'
 }
 
 export type ReceiveUserExpressionMessage = {
@@ -49,12 +42,7 @@ export type UserRemovedMessage = {
 }
 
 export type UserMessage = {
-  type:
-    | AvatarMessageType.USER_BLOCKED
-    | AvatarMessageType.USER_UNBLOCKED
-    | AvatarMessageType.USER_MUTED
-    | AvatarMessageType.USER_UNMUTED
-    | AvatarMessageType.USER_TALKING
+  type: AvatarMessageType.USER_TALKING
   userId: string
 }
 

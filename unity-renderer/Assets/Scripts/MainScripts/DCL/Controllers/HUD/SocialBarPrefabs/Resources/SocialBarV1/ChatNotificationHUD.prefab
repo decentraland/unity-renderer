@@ -726,7 +726,7 @@ GameObject:
   - component: {fileID: 8953925092199699313}
   - component: {fileID: 6589976223910691540}
   - component: {fileID: 2677027707097503066}
-  - component: {fileID: 1558828151979768161}
+  - component: {fileID: 7570362899069056541}
   m_Layer: 5
   m_Name: Message Container
   m_TagString: Untagged
@@ -788,7 +788,7 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &1558828151979768161
+--- !u!114 &7570362899069056541
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -797,21 +797,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 3615743626657898493}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 0
-    m_Right: 0
-    m_Top: 20
-    m_Bottom: -14
+    m_Right: 25
+    m_Top: 0
+    m_Bottom: 0
   m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 420, y: 56}
-  m_Spacing: {x: 0, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Spacing: 3
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &3917948253638067103
 GameObject:
   m_ObjectHideFlags: 0

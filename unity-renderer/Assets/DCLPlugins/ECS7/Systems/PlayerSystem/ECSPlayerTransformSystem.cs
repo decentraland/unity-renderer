@@ -17,7 +17,7 @@ namespace ECSSystems.PlayerSystem
 
         private Vector3 lastAvatarPosition = Vector3.zero;
         private Quaternion lastAvatarRotation = Quaternion.identity;
-        private long timeStamp = 0;
+        private int lamportTimestamp = 0;
         private bool newSceneAdded = false;
 
         public ECSPlayerTransformSystem(IECSComponentWriter componentsWriter,
@@ -66,13 +66,13 @@ namespace ECSSystems.PlayerSystem
                 var transform = TransformHelper.SetTransform(scene, ref avatarPosition, ref avatarRotation, ref currentWorldOffset);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM,
-                    transform, timeStamp, ECSComponentWriteType.SEND_TO_SCENE);
+                    transform, lamportTimestamp, ECSComponentWriteType.SEND_TO_SCENE);
 
                 componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION, ComponentID.TRANSFORM,
                     transform, ECSComponentWriteType.EXECUTE_LOCALLY);
             }
 
-            timeStamp++;
+            lamportTimestamp++;
         }
 
         private void OnSceneLoaded(IParcelScene obj)

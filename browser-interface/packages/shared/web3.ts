@@ -1,5 +1,5 @@
 import { ETHEREUM_NETWORK, ethereumConfigurations } from 'config'
-import { defaultLogger } from './logger'
+import { defaultLogger } from 'lib/logger'
 import { CatalystNode, GraphResponse } from './types'
 import { retry } from 'lib/javascript/retry'
 import { requestManager } from './ethereum/provider'
@@ -282,7 +282,6 @@ const catalystABI = [
 
 export async function fetchCatalystNodesFromDAO(): Promise<CatalystNode[]> {
   if (!requestManager.provider) {
-    debugger
     throw new Error('requestManager.provider not set')
   }
 

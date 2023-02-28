@@ -11,7 +11,8 @@
         "ChatController",
         "BaseVariable",
         "SocialAnalytics",
-        "IService"
+        "IService",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

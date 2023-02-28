@@ -1,7 +1,11 @@
 using System;
 
-[Serializable]
-public class JoinChannelComponentModel : BaseComponentModel
+namespace DCL.Social.Chat.Channels
 {
-    public string channelId;
+    [Serializable]
+    public class JoinChannelComponentModel : BaseComponentModel
+    {
+        public string channelId;
+        public bool isLoading;
+    }
 }

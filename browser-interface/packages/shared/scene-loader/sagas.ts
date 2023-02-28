@@ -45,7 +45,7 @@ import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosit
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { ENABLE_EMPTY_SCENES, LOS, PREVIEW, rootURLPreviewMode } from 'config'
+import { ENABLE_EMPTY_SCENES, LOS } from 'config'
 import { getResourcesURL } from 'shared/location'
 import { Vector2 } from '@dcl/ecs-math'
 import { trackEvent } from 'shared/analytics'
@@ -53,6 +53,7 @@ import { getAllowedContentServer } from 'shared/meta/selectors'
 import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'
 import { isLoginCompleted } from 'shared/session/selectors'
 import { updateLoadingScreen } from '../loadingScreen/actions'
+import { waitFor } from 'lib/redux'
 
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
@@ -103,13 +104,7 @@ function initSceneStateListener() {
   })
 }
 
-function* waitForSceneLoader() {
-  while (true) {
-    const loader: ISceneLoader | undefined = yield select(getSceneLoader)
-    if (loader) return loader
-    yield take(SET_SCENE_LOADER)
-  }
-}
+const waitForSceneLoader = waitFor(getSceneLoader, SET_SCENE_LOADER)
 
 // We teleport the user to its current position on every change of scene loader
 // to unsettle the position.
@@ -120,18 +115,17 @@ function* unsettlePositionOnSceneLoader() {
   yield put(teleportToAction({ position: gridToWorld(unsettledPosition.x, unsettledPosition.y) }))
 }
 
-/*
-Position settling algorithm:
-- If the user teleports to a scene that is not present or not loaded
-  AND the target scene exists, then UnsettlePosition(targetScene)
-- If the user teleports to a scene that is loaded
-  THEN SettlePosition(spawnPoint(scene))
-- If the position is unsettled, and the scene that unsettled the position loads or fails loading
-  THEN SettlePosition(spawnPoint(scene))
-
-A scene can fail loading due to an error or timeout.
-*/
-
+/**
+ * Position settling algorithm:
+ * - If the user teleports to a scene that is not present or not loaded
+ *   AND the target scene exists, then UnsettlePosition(targetScene)
+ * - If the user teleports to a scene that is loaded
+ *   THEN SettlePosition(spawnPoint(scene))
+ * - If the position is unsettled, and the scene that unsettled the position loads or fails loading
+ *   THEN SettlePosition(spawnPoint(scene))
+ *
+ * A scene can fail loading due to an error or timeout.
+ */
 function* teleportHandler(action: TeleportToAction) {
   yield put(setParcelPosition(worldToGrid(action.payload.position)))
 
@@ -251,7 +245,12 @@ function* positionSettler() {
 
     const sceneId: string = reason.payload?.id
 
-    if (!sceneId) throw new Error('Error in logic of positionSettler saga')
+    if (!sceneId) {
+      throw new Error(
+        'Error in the logic of positionSettler saga:\n' +
+          'Someone sent a SCENE_START, SCENE_FAIL, or SCENE_UNLOAD message without an `id` field!'
+      )
+    }
 
     const settled: boolean = yield select(isPositionSettled)
     const spawnPointAndScene: ReturnType<typeof getPositionSpawnPointAndScene> = yield select(
@@ -267,11 +266,7 @@ function* positionSettler() {
   }
 }
 
-function* waitForUserAuthenticated() {
-  while (!(yield select(isLoginCompleted))) {
-    yield take(CHANGE_LOGIN_STAGE)
-  }
-}
+const waitForUserAuthenticated = waitFor(isLoginCompleted, CHANGE_LOGIN_STAGE)
 
 // This saga reacts to every parcel position change and signals the scene loader
 // about it

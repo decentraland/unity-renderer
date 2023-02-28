@@ -1,4 +1,4 @@
-import type { PersistentAsyncStorage } from '@dcl/kernel-interface'
+import type { PersistentAsyncStorage } from 'kernel-web-interface'
 
 declare let window: any
 

@@ -36,10 +36,10 @@ import {
   NotificationType
 } from 'shared/types'
 import { nativeMsgBridge } from './nativeMessagesBridge'
-import { createUnityLogger, ILogger } from 'shared/logger'
+import { createUnityLogger, ILogger } from 'lib/logger'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
 import { Observable } from 'mz-observable'
 import type { UnityGame } from '@dcl/unity-renderer/src'
@@ -50,7 +50,7 @@ import future, { IFuture } from 'fp-future'
 import { futures } from './BrowserInterface'
 import { trackEvent } from 'shared/analytics'
 import { Avatar, ContentMapping } from '@dcl/schemas'
-import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
+import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import { incrementCounter } from 'shared/occurences'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 
@@ -375,11 +375,11 @@ export class UnityInterface implements IUnityInterface {
       trackEvent('long_chat_message_ignored', { message: message.body, sender: message.sender })
       return
     }
-    this.SendMessageToUnity('Main', 'AddMessageToChatWindow', JSON.stringify(message))
+    this.SendMessageToUnity('Bridges', 'AddMessageToChatWindow', JSON.stringify(message))
   }
 
   public AddChatMessages(addChatMessagesPayload: AddChatMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'AddChatMessages', JSON.stringify(addChatMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'AddChatMessages', JSON.stringify(addChatMessagesPayload))
   }
 
   public InitializeFriends(initializationMessage: FriendsInitializationMessage) {
@@ -387,7 +387,7 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public InitializeChat(initializationMessage: FriendsInitializeChatPayload): void {
-    this.SendMessageToUnity('Main', 'InitializeChat', JSON.stringify(initializationMessage))
+    this.SendMessageToUnity('Bridges', 'InitializeChat', JSON.stringify(initializationMessage))
   }
 
   public AddUserProfilesToCatalog(payload: AddUserProfilesToCatalogPayload): void {
@@ -407,7 +407,7 @@ export class UnityInterface implements IUnityInterface {
     updateTotalUnseenMessagesByUserPayload: UpdateTotalUnseenMessagesByUserPayload
   ): void {
     this.SendMessageToUnity(
-      'Main',
+      'Bridges',
       'UpdateTotalUnseenMessagesByUser',
       JSON.stringify(updateTotalUnseenMessagesByUserPayload)
     )
@@ -426,11 +426,11 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public UpdateTotalUnseenMessages(updateTotalUnseenMessagesPayload: UpdateTotalUnseenMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'UpdateTotalUnseenMessages', JSON.stringify(updateTotalUnseenMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateTotalUnseenMessages', JSON.stringify(updateTotalUnseenMessagesPayload))
   }
 
   public UpdateUserUnseenMessages(updateUserUnseenMessagesPayload: UpdateUserUnseenMessagesPayload): void {
-    this.SendMessageToUnity('Main', 'UpdateUserUnseenMessages', JSON.stringify(updateUserUnseenMessagesPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateUserUnseenMessages', JSON.stringify(updateUserUnseenMessagesPayload))
   }
 
   public UpdateFriendshipStatus(updateMessage: FriendshipUpdateStatusMessage) {
@@ -446,41 +446,41 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public JoinChannelConfirmation(channelInfoPayload: ChannelInfoPayloads) {
-    this.SendMessageToUnity('Main', 'JoinChannelConfirmation', JSON.stringify(channelInfoPayload))
+    this.SendMessageToUnity('Bridges', 'JoinChannelConfirmation', JSON.stringify(channelInfoPayload))
   }
 
   public JoinChannelError(joinChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'JoinChannelError', JSON.stringify(joinChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'JoinChannelError', JSON.stringify(joinChannelErrorPayload))
   }
 
   public UpdateTotalUnseenMessagesByChannel(
     updateTotalUnseenMessagesByChannelPayload: UpdateTotalUnseenMessagesByChannelPayload
   ) {
     this.SendMessageToUnity(
-      'Main',
+      'Bridges',
       'UpdateTotalUnseenMessagesByChannel',
       JSON.stringify(updateTotalUnseenMessagesByChannelPayload)
     )
   }
 
   public UpdateChannelInfo(channelInfoPayload: ChannelInfoPayloads) {
-    this.SendMessageToUnity('Main', 'UpdateChannelInfo', JSON.stringify(channelInfoPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelInfo', JSON.stringify(channelInfoPayload))
   }
 
   public UpdateChannelSearchResults(channelSearchResultsPayload: ChannelSearchResultsPayload) {
-    this.SendMessageToUnity('Main', 'UpdateChannelSearchResults', JSON.stringify(channelSearchResultsPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelSearchResults', JSON.stringify(channelSearchResultsPayload))
   }
 
   public LeaveChannelError(leaveChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'LeaveChannelError', JSON.stringify(leaveChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'LeaveChannelError', JSON.stringify(leaveChannelErrorPayload))
   }
 
   public MuteChannelError(muteChannelErrorPayload: ChannelErrorPayload) {
-    this.SendMessageToUnity('Main', 'MuteChannelError', JSON.stringify(muteChannelErrorPayload))
+    this.SendMessageToUnity('Bridges', 'MuteChannelError', JSON.stringify(muteChannelErrorPayload))
   }
 
   public UpdateChannelMembers(updateChannelMembersPayload: UpdateChannelMembersPayload) {
-    this.SendMessageToUnity('Main', 'UpdateChannelMembers', JSON.stringify(updateChannelMembersPayload))
+    this.SendMessageToUnity('Bridges', 'UpdateChannelMembers', JSON.stringify(updateChannelMembersPayload))
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types

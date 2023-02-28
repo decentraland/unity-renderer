@@ -207,82 +207,73 @@ namespace DCL.Helpers
             return mesh;
         }
         
+        // Creates a two-sided quad (clockwise)
         public static Mesh BuildPlaneV2(float _size)
         {
             Mesh mesh = new Mesh();
             mesh.name = "DCL Plane";
+
+            Vector3 half = new Vector3(_size / 2, _size / 2, 0);
+
             Vector3[] vertices = new Vector3[8];
-            Vector3[] normals = new Vector3[8];
+            vertices[0] = new Vector3(-half.x, -half.y, 0);
+            vertices[1] = new Vector3(-half.x, half.y, 0);
+            vertices[2] = new Vector3(half.x, half.y, 0);
+            vertices[3] = new Vector3(half.x, -half.y, 0);
+
+            vertices[4] = new Vector3(half.x, -half.y, 0);
+            vertices[5] = new Vector3(half.x, half.y, 0);
+            vertices[6] = new Vector3(-half.x, half.y, 0);
+            vertices[7] = new Vector3(-half.x, -half.y, 0);
+
             Vector2[] uvs = new Vector2[8];
-            Color[] colors = new Color[8];
+            uvs[0] = new Vector2(0f, 0f);
+            uvs[1] = new Vector2(0f, 1f);
+            uvs[2] = new Vector2(1f, 1f);
+            uvs[3] = new Vector2(1f, 0f);
+
+            uvs[4] = new Vector2(1f, 0f);
+            uvs[5] = new Vector2(1f, 1f);
+            uvs[6] = new Vector2(0f, 1f);
+            uvs[7] = new Vector2(0f, 0f);
 
             int[] tris = new int[4 * 3];
+            tris[0] = 0;
+            tris[1] = 1;
+            tris[2] = 2;
+            tris[3] = 2;
+            tris[4] = 3;
+            tris[5] = 0;
 
-            int vIndex = 0;
-            Vector3 start = new Vector3(-_size / 2, _size / 2, 0);
-            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
-            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
-            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
-            vertices[vIndex++] = new Vector3(-start.x,-start.y, 0);
+            tris[6] = 4;
+            tris[7] = 5;
+            tris[8] = 6;
+            tris[9] = 6;
+            tris[10] = 7;
+            tris[11] = 4;
 
-            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
-            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
-            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
-            vertices[vIndex++] = new Vector3(-start.x, -start.y, 0);
+            Vector3[] normals = new Vector3[8];
+            normals[0] = Vector3.back;
+            normals[1] = Vector3.back;
+            normals[2] = Vector3.back;
+            normals[3] = Vector3.back;
 
-            vIndex = 0;
-            uvs[vIndex++] = new Vector2(0f, 1f);
-            uvs[vIndex++] = new Vector2(1f, 1f);
-            uvs[vIndex++] = new Vector2(1f, 0f);
-            uvs[vIndex++] = new Vector2(0f, 0f);
+            normals[4] = Vector3.forward;
+            normals[5] = Vector3.forward;
+            normals[6] = Vector3.forward;
+            normals[7] = Vector3.forward;
 
-            uvs[vIndex++] = new Vector2(0f, 1f);
-            uvs[vIndex++] = new Vector2(1f, 1f);
-            uvs[vIndex++] = new Vector2(1f, 0f);
-            uvs[vIndex++] = new Vector2(0f, 0f);
+            Color[] colors = new Color[8];
 
-            vIndex = 0;
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
-
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
-
-            vIndex = 0;
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-            colors[vIndex++] = Color.white;
-
-            int cnt = 0;
-            tris[cnt++] = 2;
-            tris[cnt++] = 1;
-            tris[cnt++] = 0;
-            tris[cnt++] = 3;
-            tris[cnt++] = 2;
-            tris[cnt++] = 0;
-
-            tris[cnt++] = 4 + 1;
-            tris[cnt++] = 4 + 2;
-            tris[cnt++] = 4 + 0;
-            tris[cnt++] = 4 + 2;
-            tris[cnt++] = 4 + 3;
-            tris[cnt++] = 4 + 0;
+            for (int i = 0; i < colors.Length; i++)
+            {
+                colors[i] = Color.white;
+            }
 
             mesh.vertices = vertices;
             mesh.normals = normals;
             mesh.uv = uvs;
             mesh.colors = colors;
-
             mesh.triangles = tris;
             return mesh;
         }

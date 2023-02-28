@@ -6,8 +6,6 @@ namespace DCL.ECS7.InternalComponents
 {
     public static class InternalInputEventResultsExtensions
     {
-        internal const int MAX_AMOUNT_OF_POINTER_EVENTS_SENT = 30;
-
         public static void AddEvent(this IInternalECSComponent<InternalInputEventResults> component, IParcelScene scene,
             InternalInputEventResults.EventData data)
         {
@@ -15,14 +13,8 @@ namespace DCL.ECS7.InternalComponents
                         new InternalInputEventResults()
                         {
                             lastTimestamp = 0,
-                            events = new Queue<InternalInputEventResults.EventData>(MAX_AMOUNT_OF_POINTER_EVENTS_SENT)
+                            events = new Queue<InternalInputEventResults.EventData>()
                         };
-
-            if (model.events.Count >= MAX_AMOUNT_OF_POINTER_EVENTS_SENT)
-            {
-                //drop oldest event
-                model.events.Dequeue();
-            }
 
             data.timestamp = model.lastTimestamp++;
             model.events.Enqueue(data);

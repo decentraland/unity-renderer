@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using DCL;
 using NSubstitute;
@@ -21,7 +21,6 @@ namespace Tests
             Debug.Log($"Setting up {DateTime.Now}");
             CommonScriptableObjects.rendererState.Set(true);
             DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
-            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
             AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
             PoolManager.enablePrewarm = false;
 

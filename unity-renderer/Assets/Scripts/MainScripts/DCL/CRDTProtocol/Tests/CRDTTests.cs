@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCL.CRDT;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Tests
 {
@@ -32,31 +33,93 @@ namespace Tests
                 else if (instruction.instructionType == ParsedCRDTTestFile.InstructionType.FINAL_STATE)
                 {
                     var finalState = ParsedCRDTTestFile.InstructionToFinalState(instruction);
+                    bool sameState = AreStatesEqual(crdt.GetState(), finalState, out string reason);
 
-                    Assert.IsTrue(AreStatesEqual(crdt, finalState), $"Final state mismatch {instruction.testSpect} " +
-                                                                    $"in line:{instruction.lineNumber} for file {instruction.fileName}");
+                    Assert.IsTrue(sameState, $"Final state mismatch {instruction.testSpect} " +
+                                             $"in line:{instruction.lineNumber} for file {instruction.fileName}. Reason: {reason}");
                     crdt = new CRDTProtocol();
                 }
             }
         }
 
-        static bool AreStatesEqual(CRDTProtocol crdt, IList<CRDTMessage> inputDictionary)
+        static bool AreStatesEqual(CRDTProtocol.CrdtState stateA, CRDTProtocol.CrdtState stateB, out string reason)
         {
-            if (inputDictionary.Count != crdt.state.Count)
+            // different amount
+            int componentDataAmountA = stateA.components.Aggregate(0, (accum, current) => accum + current.Value.Count);
+            int componentDataAmountB = stateB.components.Aggregate(0, (accum, current) => accum + current.Value.Count);
+
+            if (componentDataAmountA != componentDataAmountB)
             {
+                reason = "There is a different amount of entity-component data";
                 return false;
             }
 
-            foreach (var crdtMessage in inputDictionary)
+            foreach (var componentA in stateA.components)
             {
-                if (!crdt.TryGetState(crdtMessage.key1, crdtMessage.key2, out CRDTMessage storedMessage))
-                    return false;
+                // The component A is not in the state B
+                if (!stateB.components.TryGetValue(componentA.Key, out var componentB))
+                {
 
-                if (!(storedMessage.timestamp == crdtMessage.timestamp
-                      && CRDTProtocol.IsSameData(storedMessage.data, crdtMessage.data)))
+                    if (stateB.components.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    reason = $"The component {componentA.Key} from stateA is not in stateB";
                     return false;
+                }
+
+                foreach (var entityComponent in componentA.Value)
+                {
+                    long entityId = entityComponent.Key;
+                    var entityComponentDataA = entityComponent.Value;
+
+                    // The entity is in the stateA, but not in stateB
+                    if (!componentB.TryGetValue(entityId, out var entityComponentDataB))
+                    {
+                        reason = $"The entity {entityId} in the component {componentA.Key} from stateA is not in stateB.";
+                        return false;
+                    }
+
+                    // All good! We know check the data and timestamp.
+                    if (entityComponentDataA.timestamp != entityComponentDataB.timestamp)
+                    {
+                        reason = $"The entity {entityId} in the component {componentA.Key} from stateA has a different TIMESTAMP in the stateB.";
+                        return false;
+                    }
+
+
+                    int diff = CRDTProtocol.CompareData(entityComponentDataA.data, entityComponentDataB.data);
+                    if (diff != 0)
+                    {
+                        reason = $"The entity {entityId} in the component {componentA.Key} from stateA has a different DATA in the stateB (cmp(a,b) = {diff}).";
+                        return false;
+                    }
+                }
             }
 
+            if (stateA.deletedEntitiesSet.Count != stateB.deletedEntitiesSet.Count)
+            {
+                reason = "There is a different amount of deleted entities.";
+                return false;
+            }
+
+            foreach (var entity in stateA.deletedEntitiesSet)
+            {
+                if (!stateB.deletedEntitiesSet.TryGetValue(entity.Key, out int entityVersion))
+                {
+                    reason = $"The entity-number {entity.Key} is deleted in stateA but not in stateB.";
+                    return false;
+                }
+
+                if (entityVersion != entity.Value)
+                {
+                    reason = $"The entity-number {entity.Key} has a different deleted version in stateA({entity.Value}) but not in stateB({entityVersion}).";
+                    return false;
+                }
+            }
+
+            reason = "";
             return true;
         }
     }
