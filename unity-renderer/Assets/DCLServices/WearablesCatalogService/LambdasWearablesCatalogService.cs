@@ -215,6 +215,8 @@ namespace DCLServices.WearablesCatalogService
             WearablesCatalog.Clear();
             wearablesInUseCounters.Clear();
             pendingWearablesToRequest.Clear();
+            ownerWearablesPagePointers.Clear();
+            thirdPartyCollectionPagePointers.Clear();
         }
 
         public bool IsValidWearable(string wearableId)

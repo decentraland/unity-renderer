@@ -155,7 +155,7 @@ namespace DCL.Social.Passports
                     var wearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
                         userProfile.userId,
                         1,
-                        int.MaxValue,
+                        MAX_NFT_COUNT + 1,
                         true,
                         ct);
 
@@ -193,7 +193,7 @@ namespace DCL.Social.Passports
         {
             view.SetCollectibleNamesLoadingActive(true);
             view.SetViewAllButtonActive(PassportSection.Names, false);
-            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
+            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT + 1, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var namesResult = Array.Empty<NamesResponse.NameEntry>();
             view.SetViewAllButtonActive(PassportSection.Names, response.response.TotalAmount > MAX_NFT_COUNT);
@@ -211,7 +211,7 @@ namespace DCL.Social.Passports
         {
             view.SetCollectibleLandsLoadingActive(true);
             view.SetViewAllButtonActive(PassportSection.Lands, false);
-            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
+            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT + 1, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var landsResult = Array.Empty<LandsResponse.LandEntry>();
             view.SetViewAllButtonActive(PassportSection.Lands, response.response.TotalAmount > MAX_NFT_COUNT);

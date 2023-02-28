@@ -26,6 +26,7 @@ public class ViewAllComponentController : IDisposable
     private readonly ILandsService landsService;
     private readonly INamesService namesService;
     private CancellationTokenSource sectionsCts = new ();
+    private bool cleanCachedWearablesPages;
 
     public ViewAllComponentController(
         IViewAllComponentView view,
@@ -53,7 +54,12 @@ public class ViewAllComponentController : IDisposable
     {
         view.SetVisible(isVisible);
 
-        if (!isVisible)
+        if (isVisible)
+        {
+            sectionsCts = sectionsCts.SafeRestart();
+            cleanCachedWearablesPages = true;
+        }
+        else
         {
             sectionsCts.SafeCancelAndDispose();
             sectionsCts = null;
@@ -87,8 +93,6 @@ public class ViewAllComponentController : IDisposable
     {
         view.CloseAllNftItemInfos();
 
-        sectionsCts = sectionsCts.SafeRestart();
-
         switch (section)
         {
             case PassportSection.Wearables:
@@ -110,8 +114,9 @@ public class ViewAllComponentController : IDisposable
             view.SetLoadingActive(true);
 
             (IReadOnlyList<WearableItem> wearables, int totalAmount) ownedWearableItems =
-                await wearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, true, ct);
+                await wearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, cleanCachedWearablesPages, ct);
 
+            cleanCachedWearablesPages = false;
             ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
             view.SetTotalElements(ownedWearableItems.totalAmount);
             view.SetLoadingActive(false);
