@@ -88,6 +88,7 @@ namespace DCL.ECSComponents
         internal PBAvatarShape model;
         internal IDCLEntity entity;
 
+        private Service<IAvatarFactory> avatarFactory;
         private Service<IEmotesCatalogService> emotesCatalog;
         public IAvatar internalAvatar => avatar;
 
@@ -105,20 +106,9 @@ namespace DCL.ECSComponents
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
-            BaseAvatar baseAvatar = new BaseAvatar(avatarRevealContainer, armatureContainer, avatarLOD);
-            avatar = new AvatarWithHologram(
-                baseAvatar,
-                new AvatarCurator(new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>()), Environment.i.serviceLocator.Get<IEmotesCatalogService>()),
-                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
-                animator,
-                visibility,
-                avatarLOD,
-                new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes));
+            avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, avatarRevealContainer, armatureContainer, animator, avatarLOD, visibility);
 
-            if (avatarReporterController == null)
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
             onPointerDown.OnPointerDownReport += PlayerClicked;
             onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
