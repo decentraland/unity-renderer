@@ -21,7 +21,7 @@ import { Transport } from '@dcl/rpc'
 import { isRendererInitialized } from 'shared/renderer/selectors'
 import { ALLOW_SWIFT_SHADER } from 'config'
 
-export type InitializeUnityResult = {
+type InitializeUnityResult = {
   container: HTMLElement
 }
 

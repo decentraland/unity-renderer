@@ -60,7 +60,7 @@ export type ClosePeersScoreParameters = Required<ClosePeersScoreConfig['config']
   latencyDeductionsParameters: LatencyDeductionsParameters
 }
 
-export type LoadBalancingConfig = {
+type LoadBalancingConfig = {
   type: AlgorithmLinkTypes.LOAD_BALANCING
 }
 

@@ -63,7 +63,7 @@ export function areChannelsEnabled(): boolean {
   return getFeatureFlagEnabled(store.getState(), 'matrix_channels_enabled')
 }
 
-export const DEFAULT_MAX_CHANNELS_VALUE = 10
+const DEFAULT_MAX_CHANNELS_VALUE = 10
 
 /*
  * Returns the maximum allowed number of channels a user can join.
@@ -170,9 +170,9 @@ export function isBlocked(userId: string) {
   return profile?.blocked?.includes(userId) ?? false
 }
 
-export const DEFAULT_MAX_NUMBER_OF_REQUESTS = 5
+const DEFAULT_MAX_NUMBER_OF_REQUESTS = 5
 
-export const COOLDOWN_TIME_MS = 10000 // 10 seconds
+export const COOLDOWN_TIME_MS = 10_000
 
 /**
  * Returns the anti-spam config, that is, the max number allowed of sent requests to a given user and

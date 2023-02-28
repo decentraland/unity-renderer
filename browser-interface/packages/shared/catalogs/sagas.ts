@@ -77,7 +77,7 @@ export function* catalogsSaga(): any {
   yield takeEvery([WEARABLES_FAILURE, EMOTES_FAILURE], handleItemsRequestFailure)
 }
 
-export function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
+function* handleItemRequest(action: EmotesRequest | WearablesRequest) {
   const { filters, context } = action.payload
 
   const valid = areFiltersValid(filters)
@@ -428,7 +428,7 @@ function mapCatalystItemIntoV2(v2Item: PartialItem): PartialItem {
   }
 }
 
-export function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSuccess) {
+function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSuccess) {
   const { context } = action.payload
 
   yield call(waitForRendererInstance)
@@ -439,7 +439,7 @@ export function* handleItemsRequestSuccess(action: WearablesSuccess | EmotesSucc
   }
 }
 
-export function* handleItemsRequestFailure(action: WearablesFailure | EmotesFailure) {
+function* handleItemsRequestFailure(action: WearablesFailure | EmotesFailure) {
   const { context, error } = action.payload
 
   defaultLogger.error(
@@ -480,14 +480,14 @@ function areFiltersValid(filters: WearablesRequestFilters | EmotesRequestFilters
   return filtersSet === 1 && ok
 }
 
-export function informRequestFailure(error: string, context: string | undefined) {
+function informRequestFailure(error: string, context: string | undefined) {
   getUnityInstance().WearablesRequestFailed(error, context)
 }
 
-export function sendWearablesCatalog(wearables: WearableV2[], context: string | undefined) {
+function sendWearablesCatalog(wearables: WearableV2[], context: string | undefined) {
   getUnityInstance().AddWearablesToCatalog(wearables, context)
 }
 
-export function sendEmotesCatalog(emotes: Emote[], context: string | undefined) {
+function sendEmotesCatalog(emotes: Emote[], context: string | undefined) {
   getUnityInstance().AddEmotesToCatalog(emotes, context)
 }

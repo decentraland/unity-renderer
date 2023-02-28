@@ -30,7 +30,7 @@ import {
 // protobuf message instances
 const updateEntityComponent: PBUpdateEntityComponent = { classId: 0, data: '', entityId: '', name: '' }
 
-export class ProtobufMessagesBridge {
+class ProtobufMessagesBridge {
   encodeSceneMessage(
     parcelSceneId: string,
     sceneNumber: number,

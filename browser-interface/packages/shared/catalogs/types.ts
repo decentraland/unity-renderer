@@ -1,24 +1,5 @@
 import type { EmoteDataADR74 } from '@dcl/schemas'
 
-export type Catalog = PartialWearableV2[]
-
-type RarityEnum = 'common' | 'uncommon' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'unique'
-
-export type Wearable = {
-  id: WearableId
-  type: 'wearable'
-  category: string
-  baseUrl: string
-  baseUrlBundles: string
-  description: string
-  tags: string[]
-  hides?: string[]
-  replaces?: string[]
-  rarity: RarityEnum
-  representations: BodyShapeRepresentation[]
-  i18n: { code: string; text: string }[]
-  thumbnail: string
-}
 
 export enum UnpublishedWearableType {
   WEARABLE = 'wearable',
@@ -87,30 +68,16 @@ type KeyAndHash = {
 }
 
 export type PartialWearableV2 = PartialBy<Omit<WearableV2, 'baseUrlBundles'>, 'baseUrl'>
-export type PartialEmote = PartialBy<Omit<Emote, 'baseUrlBundles'>, 'baseUrl'>
+type PartialEmote = PartialBy<Omit<Emote, 'baseUrlBundles'>, 'baseUrl'>
 export type PartialItem = PartialWearableV2 | PartialEmote
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export const isPartialWearable = (partialItem: PartialItem): partialItem is PartialWearableV2 =>
   !!(partialItem as PartialWearableV2).data
 
-export type BodyShapeRepresentation = {
-  bodyShapes: string[]
-  mainFile: string
-  overrideHides?: string[]
-  overrideReplaces?: string[]
-  contents: FileAndHash[]
-}
 
-type FileAndHash = {
-  file: string
-  hash: string
-}
-
-export type WearableId = string
-export type EmoteId = string
-
-export type ColorString = string
+type WearableId = string
+type EmoteId = string
 
 export type CatalogState = {
   catalogs: {
