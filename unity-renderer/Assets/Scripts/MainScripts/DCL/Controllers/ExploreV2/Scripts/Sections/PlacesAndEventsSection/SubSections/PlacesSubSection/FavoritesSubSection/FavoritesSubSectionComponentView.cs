@@ -44,6 +44,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
+    public event Action<string, bool> OnFavoriteClicked;
     public event Action<IHotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnFavoriteSubSectionEnable;
@@ -124,7 +125,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(favoritesCardsPool, place, OnInfoClicked, OnJumpInClicked);
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(favoritesCardsPool, place, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
             this.favorites.AddItem(placeCard);
@@ -152,7 +153,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
     }
 
     public void HidePlaceModal()

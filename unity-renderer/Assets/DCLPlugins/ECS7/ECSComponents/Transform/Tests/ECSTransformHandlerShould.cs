@@ -1,9 +1,10 @@
-using System.Text.RegularExpressions;
 using DCL;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -27,7 +28,9 @@ namespace Tests
 
             worldState = Substitute.For<IWorldState>();
             playerTeleportPosition = Substitute.For<IBaseVariable<Vector3>>();
-            handler = new ECSTransformHandler(worldState, playerTeleportPosition);
+
+            var sbcInternalComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
+            handler = new ECSTransformHandler(worldState, playerTeleportPosition, sbcInternalComponent);
         }
 
         [TearDown]
@@ -95,17 +98,20 @@ namespace Tests
             Vector3 localPositionChild = new Vector3(1, 0, 0);
 
             ECS7TestEntity parent = scene.CreateEntity(44);
+
             handler.OnComponentModelUpdated(scene, parent, new ECSTransform()
             {
                 position = localPositionParent
             });
+
             handler.OnComponentModelUpdated(scene, entity, new ECSTransform()
             {
                 parentId = parent.entityId,
                 position = localPositionChild
             });
 
-            ECSTransformParentingSystem.Update();
+            var parentingSystemUpdate = ECSTransformParentingSystem.CreateSystem(Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
+            parentingSystemUpdate();
 
             Assert.AreEqual(1, parent.childrenId.Count);
             Assert.AreEqual(parent.entityId, entity.parentId);
@@ -138,8 +144,10 @@ namespace Tests
 
             Vector3 position = new Vector3(8, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = position });
-            playerTeleportPosition.Received(1).Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)), 
-                true);
+
+            playerTeleportPosition.Received(1)
+                                  .Set(Arg.Do<Vector3>(x => Assert.AreEqual(position, x)),
+                                       true);
         }
 
         [Test]
@@ -175,6 +183,7 @@ namespace Tests
             e1.parentId = e0.entityId;
             e2.parentId = e1.entityId;
             e3.parentId = e2.entityId;
+
             //e3->e2->e1->e0
 
             Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e0, e0.parentId));
@@ -183,11 +192,13 @@ namespace Tests
             Assert.IsFalse(ECSTransformUtils.IsCircularParenting(scene, e3, e3.parentId));
 
             e3.parentId = e3.entityId;
+
             //e3->!3e
             Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e3, e3.parentId));
 
             e3.parentId = e2.entityId;
             e0.parentId = e3.entityId;
+
             //e3->e2->e1->e0->!e3
 
             Assert.IsTrue(ECSTransformUtils.IsCircularParenting(scene, e0, e0.parentId));

@@ -1,13 +1,13 @@
 using DCL.Helpers;
+using System;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class AirdroppingHUDView : MonoBehaviour
+public class AirdroppingHUDView : MonoBehaviour, IDisposable
 {
-    private const string VIEW_PATH = "AirdroppingHUD";
-
     [SerializeField] internal GenericFactory collectiblesFactory;
     [SerializeField] internal GenericFactory erc20Factory;
 
@@ -28,13 +28,13 @@ public class AirdroppingHUDView : MonoBehaviour
     [Header("Summary Screen")]
     [SerializeField] internal GameObject summaryScreen;
     [SerializeField] internal GameObject summaryItemsContainer;
+
     [SerializeField] internal Button summaryDoneButton;
 
     [Header("Summary No Items Screen")]
     [SerializeField] internal GameObject summaryNoItemsScreen;
-    [SerializeField] internal Button summaryNoItemsDoneButton;
 
-    internal static AirdroppingHUDView Create() { return Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AirdroppingHUDView>(); }
+    [SerializeField] internal Button summaryNoItemsDoneButton;
 
     public void Initialize(UnityAction nextStateCallback)
     {
@@ -51,6 +51,12 @@ public class AirdroppingHUDView : MonoBehaviour
         summaryNoItemsDoneButton.onClick.AddListener(nextStateCallback);
 
         CleanState();
+    }
+
+    public void Dispose()
+    {
+        if(gameObject != null)
+            Destroy(gameObject);
     }
 
     public void ShowInitialScreen(string title, string subtitle)

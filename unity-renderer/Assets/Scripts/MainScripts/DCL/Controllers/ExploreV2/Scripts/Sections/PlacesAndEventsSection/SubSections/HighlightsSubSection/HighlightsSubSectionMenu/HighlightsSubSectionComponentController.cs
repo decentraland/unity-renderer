@@ -40,6 +40,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         this.view.OnPlaceInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnPlaceJumpInClicked += JumpInToPlace;
+        this.view.OnFavoriteClicked += FavoritePlace;
 
         this.view.OnEventInfoClicked += ShowEventDetailedInfo;
         this.view.OnEventJumpInClicked += JumpInToEvent;
@@ -62,6 +63,11 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.exploreV2Analytics = exploreV2Analytics;
 
         view.ConfigurePools();
+    }
+
+    private void FavoritePlace(string placeUUID, bool isFavorite)
+    {
+        //TODO: wire add/remove favorite request when places API is ready
     }
 
     public void Dispose()

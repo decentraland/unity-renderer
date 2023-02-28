@@ -12,7 +12,3 @@ export function getSpatialParamsFor(position: rfc4.Position): VoiceSpatialParams
     orientation: [orientation.x, orientation.y, orientation.z]
   }
 }
-
-export function isChrome() {
-  return window.navigator.userAgent.includes('Chrome')
-}

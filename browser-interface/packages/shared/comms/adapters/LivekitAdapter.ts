@@ -1,14 +1,16 @@
 import * as proto from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { Room, RoomEvent, RemoteParticipant, Participant, DataPacket_Kind, DisconnectReason } from 'livekit-client'
-import mitt from 'mitt'
-import defaultLogger, { ILogger } from 'shared/logger'
-import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
-import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
-import { commsLogger } from '../context'
-import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
-import { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
+import { MAXIMUM_NETWORK_MSG_LENGTH } from 'config'
 import future from 'fp-future'
+import { DataPacket_Kind, DisconnectReason, Participant, RemoteParticipant, Room, RoomEvent } from 'livekit-client'
+import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics'
+import type { ILogger } from 'lib/logger'
+import defaultLogger from 'lib/logger'
+import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
+import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { commsLogger } from '../logger'
+import type { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
+import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
 
 export type LivekitConfig = {
   url: string
@@ -67,7 +69,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     try {
       await this.connectedFuture
       if (!this.disconnected) {
-        if (data.length > 65000) {
+        if (data.length > MAXIMUM_NETWORK_MSG_LENGTH) {
           const message = proto.Packet.decode(data)
           defaultLogger.error('Skipping big message over comms', message)
           trackEvent('invalid_comms_message_too_big', { message: JSON.stringify(message) })

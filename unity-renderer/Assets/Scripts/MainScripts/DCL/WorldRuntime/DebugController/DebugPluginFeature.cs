@@ -1,5 +1,6 @@
 using DCL.Bots;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
@@ -20,7 +21,7 @@ namespace DCL
 
         private void SetupSystems()
         {
-            var botsController = new BotsController();
+            var botsController = new BotsController(Environment.i.serviceLocator.Get<IWearablesCatalogService>());
             debugController = new DebugController(botsController);
             debugBridge = GameObject.Find("Main").AddComponent<DebugBridge>(); // todo: unuglyfy this
             debugBridge.Setup(debugController);

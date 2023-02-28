@@ -1,4 +1,6 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
+import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
 export const NETWORK_HZ = 10
@@ -54,10 +56,9 @@ function ensureSingleString(value: string | string[] | null): string | null {
 }
 
 // Comms
-const USE_LOCAL_COMMS = location.search.includes('LOCAL_COMMS') || PREVIEW
-export const COMMS =
-  !qs.has('COMMS') && USE_LOCAL_COMMS ? 'v1' : qs.get('COMMS') ? ensureSingleString(qs.get('COMMS'))! : 'v2' // by default
-export const COMMS_PROFILE_TIMEOUT = 15000
+export const COMMS_PROFILE_TIMEOUT = 1500
+export const FETCH_REMOTE_PROFILE_RETRIES = 3
+export const MAXIMUM_NETWORK_MSG_LENGTH = 65000
 
 export const DECENTRALAND_SPACE = qs.get('SPACE')
 
@@ -67,27 +68,28 @@ export const UPDATE_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('UPDATE_CONTEN
 export const FETCH_CONTENT_SERVICE = ensureQueryStringUrl(qs.get('FETCH_CONTENT_SERVICE'))
 export const HOTSCENES_SERVICE = ensureSingleString(qs.get('HOTSCENES_SERVICE'))
 export const POI_SERVICE = ensureSingleString(qs.get('POI_SERVICE'))
-export const PREFERED_ISLAND = ensureSingleString(qs.get('island'))
 
 export const TRACE_RENDERER = ensureSingleString(qs.get('TRACE_RENDERER'))
 
 export const LOS = ensureSingleString(qs.get('LOS'))
 
 export const DEBUG = location.search.includes('DEBUG_MODE') || !!(globalThis as any).mocha || PREVIEW
-export const DEBUG_COMMS = qs.has('DEBUG_COMMS')
 export const COMMS_GRAPH = qs.has('COMMS_GRAPH')
 export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
+export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
 export const DEBUG_LOGIN = location.search.includes('DEBUG_LOGIN')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
 export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_PREFIX = ensureSingleString(qs.get('DEBUG_PREFIX'))
 export const DEBUG_DISABLE_LOADING = qs.has('DEBUG_DISABLE_LOADING')
+export const ALLOW_SWIFT_SHADER = qs.has('ALLOW_SWIFT_SHADER')
 
 export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
+export const CATALYSTS_FROM_DAO_CONTRACT = location.search.includes('CATALYSTS_FROM_DAO_CONTRACT')
 export const ENGINE_DEBUG_PANEL = location.search.includes('ENGINE_DEBUG_PANEL')
 export const SCENE_DEBUG_PANEL = location.search.includes('SCENE_DEBUG_PANEL') && !ENGINE_DEBUG_PANEL
 export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || location.search.includes('DEBUG_MODE')
@@ -177,6 +179,15 @@ export const ENABLE_EMPTY_SCENES = !location.search.includes('DISABLE_EMPTY_SCEN
 
 export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const state = store.getState()
+
+  if (getFeatureFlagEnabled(state, 'ab-new-cdn')) {
+    // IMPORTANT: The new ab-cdn supports versioning, so the global config is now
+    //            ignored.
+    // TODO: this will be customizable per scene/world/wearable. for now it only
+    //       has one possible value
+    return ASSET_BUNDLES_DOMAIN || getNewDefaultAssetBundlesBaseUrl(network)
+  }
+
   return (
     ASSET_BUNDLES_DOMAIN || state.meta.config.explorer?.assetBundlesFetchUrl || getDefaultAssetBundlesBaseUrl(network)
   )
@@ -185,6 +196,11 @@ export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
 function getDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
   return `https://content-assets-as-bundle.decentraland.${tld}`
+}
+
+function getNewDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
+  const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
+  return `https://ab-cdn.decentraland.${tld}`
 }
 
 export function getAvatarTextureAPIBaseUrl(network: ETHEREUM_NETWORK): string {
@@ -202,7 +218,7 @@ export function getServerConfigurations(network: ETHEREUM_NETWORK) {
     ensureSingleString(qs.get('QUESTS_SERVER_URL')) ?? `https://quests-api.decentraland.${network ? 'org' : 'io'}`
 
   return {
-    explorerConfiguration: `${metaConfigBaseUrl}?t=${new Date().getTime()}`,
+    explorerConfiguration: `${metaConfigBaseUrl}?t=${now()}`,
     questsUrl
   }
 }
@@ -240,11 +256,6 @@ export namespace ethereumConfigurations {
 }
 
 export const isRunningTest: boolean = (globalThis as any)['isRunningTests'] === true
-
-export const genericAvatarSnapshots = {
-  body: 'QmSav1o6QK37Jj1yhbmhYk9MJc6c2H5DWbWzPVsg9JLYfF',
-  face256: 'QmSqZ2npVD4RLdqe17FzGCFcN29RfvmqmEd2FcQUctxaKk'
-} as const
 
 function addHttpsIfNoProtocolIsSet(domain: string): string
 function addHttpsIfNoProtocolIsSet(domain: undefined): undefined

@@ -1,6 +1,6 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { getCurrentUserId } from 'shared/session/selectors'
-import { getProfile } from 'shared/profiles/selectors'
+import { getProfile as profileSelector } from 'shared/profiles/selectors'
 import { saveProfileDelta } from 'shared/profiles/actions'
 import {
   BlockPlayers,
@@ -78,7 +78,7 @@ function* removePlayerFromProfileSet(playersId: string[], setKey: ProfileSetKey)
 function* getCurrentProfile() {
   const address: string | undefined = yield select(getCurrentUserId)
   if (!address) return null
-  const profile: Avatar | null = yield select(getProfile, address)
+  const profile: Avatar | null = yield select(profileSelector, address)
   if (!profile || !validateAvatar(profile)) return null
   return profile
 }

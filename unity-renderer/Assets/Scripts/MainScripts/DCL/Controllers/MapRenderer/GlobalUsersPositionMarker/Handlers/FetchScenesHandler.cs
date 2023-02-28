@@ -93,6 +93,8 @@ namespace DCL
                     yield return null;
                 }
 
+                if(HotScenesController.i == null) yield break;
+
                 if (HotScenesController.i.timeSinceLastUpdate > updateInterval)
                 {
                     HotScenesController.i.OnHotSceneListFinishUpdating += OnHotSceneListFinishUpdating;
