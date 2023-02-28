@@ -208,7 +208,7 @@ public class WorldChatWindowControllerShould
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
             new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow")});
 
-        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.user.userId == FRIEND_ID));
+        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.userId == FRIEND_ID));
         view.DidNotReceiveWithAnyArgs().ShowMoreChatsToLoadHint(default);
     }
 
