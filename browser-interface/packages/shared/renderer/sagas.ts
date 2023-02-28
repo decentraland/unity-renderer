@@ -5,7 +5,7 @@ import type { UnityGame } from '@dcl/unity-renderer/src/index'
 import { InitializeRenderer, registerRendererModules, registerRendererPort, REGISTER_RPC_PORT } from './actions'
 import { getClientPort } from './selectors'
 import { RendererModules, RENDERER_INITIALIZE } from './types'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import {
   SendProfileToRenderer,
   SEND_PROFILE_TO_RENDERER_REQUEST,

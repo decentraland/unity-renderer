@@ -3,7 +3,7 @@ import { fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga
 
 import { PARCEL_LOADING_STARTED, RENDERER_INITIALIZED_CORRECTLY } from 'shared/renderer/types'
 import { AUTHENTICATE, ChangeLoginStateAction, CHANGE_LOGIN_STAGE, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
-import { trackEvent } from '../analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { lastPlayerPosition } from '../world/positionThings'
 
 import { getAssetBundlesBaseUrl } from 'config'

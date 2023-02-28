@@ -1,9 +1,15 @@
+import type { Vector3 } from 'lib/math/Vector3'
 import { Avatar } from '@dcl/schemas'
 import { getPerformanceInfo } from '../session/getPerformanceInfo'
 import { ChatMessagePlayerType, ChatMessageType } from '../types'
 
 export type PositionTrackEvents = {
-  ['Scene Spawn']: { parcel: string; spawnpoint: ReadOnlyVector3 }
+  ['Scene Spawn']: { parcel: string; spawnpoint: Vector3 }
+}
+
+export type SegmentEvent = {
+  name: string
+  data: string
 }
 
 export type TrackEvents = PositionTrackEvents & {
@@ -24,7 +30,7 @@ export type TrackEvents = PositionTrackEvents & {
   ['fetchWearablesFromCatalyst_failed']: { wearableId: string }
   ['avatar_edit_success']: { userId: string; version: number; wearables: string[] }
   ['referral_save']: { code: string; address?: string; referral_of?: unknown }
-  ['Move to Parcel']: { newParcel: string; oldParcel: string | null; exactPosition: ReadOnlyVector3 }
+  ['Move to Parcel']: { newParcel: string; oldParcel: string | null; exactPosition: Vector3 }
   ['motd_failed']: Record<string, unknown> // {}
   ['TermsOfServiceResponse']: { sceneId: string; accepted: boolean; dontShowAgain: boolean }
   ['error']: { context: string; message: string; stack: string; saga_stack?: string }
@@ -40,7 +46,7 @@ export type TrackEvents = PositionTrackEvents & {
     rootUrl: string
   }
   ['SceneLoadTimes']: {
-    position: ReadOnlyVector3
+    position: Vector3
     elapsed: number
     success: boolean
     sceneId: string

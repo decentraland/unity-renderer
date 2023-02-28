@@ -39,7 +39,7 @@ import {
 } from './selectors'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { VoiceChatState } from './types'
 
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'

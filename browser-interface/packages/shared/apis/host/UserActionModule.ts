@@ -11,6 +11,7 @@ import * as codegen from '@dcl/rpc/dist/codegen'
 import type { Scene } from '@dcl/schemas'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 
 export function registerUserActionModuleServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, UserActionModuleServiceDefinition, async () => ({
@@ -49,8 +50,7 @@ export function registerUserActionModuleServiceServerImplementation(port: RpcSer
       }
 
       try {
-        const response = await fetch(`https://events.decentraland.org/api/events/?position=${destination}`)
-        const json = await response.json()
+        const json = await jsonFetch(`https://events.decentraland.org/api/events/?position=${destination}`)
         if (json.data.length > 0) {
           sceneEvent = {
             name: json.data[0].name,

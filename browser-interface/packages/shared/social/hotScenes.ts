@@ -1,4 +1,6 @@
+import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 import { reportScenesFromTiles } from 'shared/atlas/actions'
 import { getPoiTiles, postProcessSceneName } from 'shared/atlas/selectors'
 import { getHotScenesService } from 'shared/dao/selectors'
@@ -17,47 +19,45 @@ import { getUnityInstance, HotSceneInfo, RealmInfo } from 'unity-interface/IUnit
 export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
   await ensureRealmAdapter()
   const url = getHotScenesService(store.getState())
-  const response = await fetch(url)
-  if (response.ok) {
-    const info = await response.json()
-    return info.map((scene: any) => {
-      return {
-        ...scene,
-        baseCoords: { x: scene.baseCoords[0], y: scene.baseCoords[1] },
-        parcels: scene.parcels.map((parcel: [number, number]) => {
-          return { x: parcel[0], y: parcel[1] }
-        }),
-        realms: scene.realms.map((realm: any) => {
-          return {
-            ...realm,
-            userParcels: realm.userParcels.map((parcel: [number, number]) => {
-              return { x: parcel[0], y: parcel[1] }
-            })
-          } as RealmInfo
-        })
-      } as HotSceneInfo
-    })
-  } else {
-    throw new Error(`Error fetching hot scenes. Response not OK. Status: ${response.status}`)
-  }
+  const info = await jsonFetch(url)
+  return info.map((scene: any) => {
+    return {
+      ...scene,
+      baseCoords: { x: scene.baseCoords[0], y: scene.baseCoords[1] },
+      parcels: scene.parcels.map((parcel: [number, number]) => {
+        return { x: parcel[0], y: parcel[1] }
+      }),
+      realms: scene.realms.map((realm: any) => {
+        return {
+          ...realm,
+          userParcels: realm.userParcels.map((parcel: [number, number]) => {
+            return { x: parcel[0], y: parcel[1] }
+          })
+        } as RealmInfo
+      })
+    } as HotSceneInfo
+  })
 }
 
 export async function reportHotScenes() {
-  const hotScenes = await fetchHotScenes()
+  const [hotScenes, pois] = await Promise.all([
+    fetchHotScenes(),
+    // NOTE: we report POI as hotscenes for now, approach should change in next iteration
+    fetchPOIsAsHotSceneInfo()
+  ])
+  const hotScenesIds = hotScenes.map((_) => _.id)
 
-  // NOTE: we report POI as hotscenes for now, approach should change in next iteration
-  const pois = await fetchPOIsAsHotSceneInfo()
-  const report = hotScenes.concat(pois.filter((poi) => hotScenes.filter((scene) => scene.id === poi.id).length === 0))
+  const report = hotScenes.concat(pois.filter((_) => hotScenesIds.includes(_.id)))
 
-  store.dispatch(reportScenesFromTiles(report.map((scene) => `${scene.baseCoords.x},${scene.baseCoords.y}`)))
+  store.dispatch(reportScenesFromTiles(report.map((_) => encodeParcelPosition(_.baseCoords))))
 
   getUnityInstance().UpdateHotScenesList(report)
 }
 
 async function fetchPOIsAsHotSceneInfo(): Promise<HotSceneInfo[]> {
   const tiles = getPoiTiles(store.getState())
-  const scenesLand = (await fetchScenesByLocation(tiles)).filter((land) => land.entity.metadata)
-  const bff = await ensureRealmAdapter()
+  const [scenesLandByLocation, bff] = await Promise.all([fetchScenesByLocation(tiles), ensureRealmAdapter()])
+  const scenesLand = scenesLandByLocation.filter((_) => !!_.entity.metadata)
   const baseContentUrl = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
   return scenesLand.map((land) => {

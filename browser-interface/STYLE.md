@@ -18,3 +18,29 @@
 * `actions.ts` CAN NOT contain other exports other than a set of these three elements.
 * On naming conventions for actions:
   - Please follow `Request`, `Success` and `Failure` for common HTTP or other RPC-style processes.
+
+# module imports
+
+- Always use an absolute path when requiring a module in another subfolder of the `packages` folder.
+  * For example, from `shared/comms/index.ts`, the correct way to import `packages/lib/logger/perf.ts` is `import { tick } from 'lib/logger/perf'`.
+- Avoid importing from "index".
+  * Wrong: `import { sendPublicChatMessage } from 'shared/comms/index'`
+  * Right: `import { sendPublicChatMessage } from 'shared/comms'`
+- Always use an absolute path to require a module in another subfolder of `packages/shared`
+  * For example, to import `sendPublicChatMessage`, placed in the file `shared/comms/index.ts`, from the file `shared/store/index.ts`, use `import { sendPublicChatMessage } from 'shared/comms'`
+- Always prefer to use `import type` when possible
+- Avoid adding code to `index.ts` files, except for strictly external interfaces
+  * This prevents `import { something } from '.'` and circular dependencies.
+
+# code reuse and libraries
+
+- Prefer local code in `lib/` rather than included libraries (even if imported from `@dcl/*`)
+  * For example, prefer `lib/math/Vector3` rather than `@dcl/ecs-math/ReadOnlyVector3`
+  * Even for small functionality, such as `${x},${y}` to encode a parcel position, prefer using `lib/decentraland/parcels/positionToString`
+- Prefer using `jsonFetch` instead of `fetch(...).json()`
+  * This allows better readability unless you will explicitely handle error cases without `try { ... } catch { ... }` (for example, to handle HTTP return codes)
+
+# async/await
+
+- Always prefer `await Promise.all([a, b])` rather than `await a; await b;`.
+  * The less turnaround, the better and faster the experience. This really compounds!
