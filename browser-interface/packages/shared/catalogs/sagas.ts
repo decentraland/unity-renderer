@@ -58,8 +58,8 @@ import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading
 import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/LambdasAPI'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 
-export const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
-export const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
+const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
+const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
 
 const BASE_BUILDER_DOWNLOAD_URL = `${BUILDER_SERVER_URL}/storage/contents`
 
