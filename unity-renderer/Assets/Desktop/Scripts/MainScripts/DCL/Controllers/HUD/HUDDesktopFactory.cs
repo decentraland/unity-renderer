@@ -31,11 +31,6 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
                 break;
 
-            case HUDElementID.LOADING:
-                var loadingHUDView = await CreateHUDView<LoadingHUDView>(LOADING_HUD_ADDRESS, cancellationToken);
-                loadingHUDView.Initialize();
-                return new LoadingHUDController(loadingHUDView);
-
             default:
                 hudElement = await base.CreateHUD(hudElementId, cancellationToken);
                 break;

@@ -80,8 +80,6 @@ public class HUDController : IHUDController
 
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
 
-    public LoadingHUDController loadingHud => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
-
     public WorldChatWindowController worldChatWindowHud =>
         GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowController;
 
@@ -125,7 +123,6 @@ public class HUDController : IHUDController
         GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
 
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-    public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -403,14 +400,6 @@ public class HUDController : IHUDController
                     signupHUD.Initialize(avatarEditorHud);
                 }
 
-                break;
-            case HUDElementID.LOADING:
-                if (loadingHud == null && !featureFlags.flags.Get().IsFeatureEnabled(featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-                {
-                    await CreateHudElement(configuration, hudElementId, cancellationToken);
-                    if (loadingHud != null && configuration.active)
-                        loadingController.Initialize();
-                }
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
