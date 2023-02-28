@@ -17,6 +17,9 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private readonly IInternalECSComponent<InternalAudioSource> audioSourceComponent;
         private readonly IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback;
 
+        // Instead of entity.isInsideSceneBoundaries we use a hashset
+        private static readonly HashSet<IDCLEntity> entitiesOutsideSceneBounds = new HashSet<IDCLEntity>();
+
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
             IInternalECSComponent<InternalVisibility> visibilityComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
@@ -91,6 +94,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 if (sceneBoundsCheckComponent.IsFullyDefaulted(scene, entity))
                 {
+                    entitiesOutsideSceneBounds.Remove(entity);
+
                     // Since no other component is using the internal SBC component, we remove it.
                     sceneBoundsCheckComponent.RemoveFor(scene, entity);
                     continue;
@@ -116,7 +121,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         {
             // 1. Cheap outer-bounds check
             bool isInsideSceneOuterBoundaries = scene.IsInsideSceneOuterBoundaries(sbcComponentModel.entityPosition);
-            entity.UpdateOuterBoundariesStatus(isInsideSceneOuterBoundaries);
 
             // 2. Confirm with inner-bounds check only if entity is inside outer bounds
             Vector3 entityWorldPosition = sbcComponentModel.entityPosition + CommonScriptableObjects.worldOffset.Get();
@@ -124,7 +128,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             bool isInsideSceneBoundaries = isInsideSceneOuterBoundaries
                                            && scene.IsInsideSceneBoundaries(entityWorldPosition, entityWorldPosition.y);
 
-            entity.UpdateInsideBoundariesStatus(isInsideSceneBoundaries);
+            UpdateInsideSceneBoundsStatus(entity, isInsideSceneBoundaries);
         }
 
         private static void EvaluateMeshBounds(IParcelScene scene, IDCLEntity entity, InternalSceneBoundsCheck sbcComponentModel,
@@ -139,8 +143,6 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             bool isInsideSceneOuterBoundaries = scene.IsInsideSceneOuterBoundaries(globalBoundsMaxPoint)
                                                 && scene.IsInsideSceneOuterBoundaries(globalBoundsMinPoint);
 
-            entity.UpdateOuterBoundariesStatus(isInsideSceneOuterBoundaries);
-
             if (isInsideSceneOuterBoundaries)
             {
                 // 2. If entity is inside outer bounds then check full merged bounds AABB
@@ -151,15 +153,15 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                 if (!isInsideSceneBoundaries)
                     isInsideSceneBoundaries = AreSubMeshesAndCollidersInsideBounds(scene, entity, sbcComponentModel);
 
-                entity.UpdateInsideBoundariesStatus(isInsideSceneBoundaries);
+                UpdateInsideSceneBoundsStatus(entity, isInsideSceneBoundaries);
             }
             else
             {
-                entity.UpdateInsideBoundariesStatus(false);
+                UpdateInsideSceneBoundsStatus(entity, false);
             }
 
             SetInsideBoundsStateForMeshComponents(outOfBoundsVisualFeedback, entity, sbcComponentModel,
-                isVisible, entity.isInsideSceneBoundaries);
+                isVisible, !entitiesOutsideSceneBounds.Contains(entity));
         }
 
         private static bool AreSubMeshesAndCollidersInsideBounds(IParcelScene scene, IDCLEntity entity,
@@ -173,7 +175,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             // For entities with 1 mesh/collider the already-checked merged bounds already represent its bounds
             // So we avoid all these unneeded submesh checks for those
-            if (renderersCount + collidersCount <= 1) return entity.isInsideSceneBoundaries;
+            if (renderersCount + collidersCount <= 1) return !entitiesOutsideSceneBounds.Contains(entity);
 
             if (renderers != null)
             {
@@ -230,7 +232,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, InternalSceneBoundsCheck componentModel)
         {
             if (componentModel.audioSource != null)
-                componentModel.audioSource.enabled = entity.isInsideSceneBoundaries;
+                componentModel.audioSource.enabled = !entitiesOutsideSceneBounds.Contains(entity);
         }
 
         private static void ProcessRendererComponentChanges(IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent,
@@ -360,6 +362,14 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
 
             return collider.bounds;
+        }
+
+        private static void UpdateInsideSceneBoundsStatus(IDCLEntity entity, bool isInside)
+        {
+            if (isInside)
+                entitiesOutsideSceneBounds.Remove(entity);
+            else
+                entitiesOutsideSceneBounds.Add(entity);
         }
     }
 }
