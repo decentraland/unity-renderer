@@ -114,7 +114,7 @@ export function receivePeerUserData(avatar: Avatar, baseUrl: string) {
   }
 }
 
-export function sendPeerUserData(address: string) {
+function sendPeerUserData(address: string) {
   const peer = getPeer(address)
   if (peer && peer.baseUrl) {
     const profile = avatarUiProfileForUserId(peer.ethereumAddress, peer.baseUrl)

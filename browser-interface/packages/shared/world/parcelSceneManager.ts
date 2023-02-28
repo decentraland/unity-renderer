@@ -115,7 +115,7 @@ function setNewParcelScene(worker: SceneWorker) {
 }
 
 // @internal
-export const parcelSceneLoadingState: ParcelSceneLoadingState = {
+const parcelSceneLoadingState: ParcelSceneLoadingState = {
   isWorldLoadingEnabled: true,
   desiredParcelScenes: new Map()
 }
