@@ -307,7 +307,7 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
   }
 }
 
-function getInformationToSubmitProfileFromStore(state: RootState, userId: string) {
+export function getInformationToSubmitProfileFromStore(state: RootState, userId: string) {
   const identity = getCurrentIdentity(state)
   const isCurrentUser = identity?.address.toLowerCase() === userId.toLowerCase()
   return {
