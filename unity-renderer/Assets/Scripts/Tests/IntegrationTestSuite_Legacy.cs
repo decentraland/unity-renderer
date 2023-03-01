@@ -2,10 +2,14 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.CameraTool;
+using DCL.Configuration;
+using DCL.Emotes;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
+using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,11 +30,12 @@ public class IntegrationTestSuite_Legacy
     private GameObject runtimeGameObjectsRoot;
 
     private List<GameObject> legacySystems = new List<GameObject>();
+    private AddressableResourceProvider addressableResourceProvider;
 
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
-        DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+        EnvironmentSettings.RUNNING_TESTS = true;
         AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
@@ -57,7 +62,6 @@ public class IntegrationTestSuite_Legacy
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
-        result.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
         result.Register<IProfanityFilter>(() =>
         {
             IProfanityFilter profanityFilter = Substitute.For<IProfanityFilter>();
@@ -76,7 +80,22 @@ public class IntegrationTestSuite_Legacy
                 return mockedProviders;
             });
 
+        IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+        emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
+        result.Register<IEmotesCatalogService>(() => emotesCatalogService);
+
+        IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+        wearablesCatalogService.WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>());
+        result.Register<IWearablesCatalogService>(() => wearablesCatalogService);
+
         return result;
+    }
+
+    private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
+    {
+        EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        return embeddedEmotes;
     }
 
     protected virtual List<GameObject> SetUp_LegacySystems()
@@ -92,7 +111,7 @@ public class IntegrationTestSuite_Legacy
 
         foreach ( var go in legacySystems )
         {
-            UnityEngine.Object.Destroy(go);
+            Object.Destroy(go);
         }
 
         yield return null;
@@ -117,8 +136,6 @@ public class IntegrationTestSuite_Legacy
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
-
-        CatalogController.Clear();
 
         Environment.Dispose();
 
@@ -199,7 +216,7 @@ public class IntegrationTestSuite_Legacy
         RenderSettings.customReflection = AssetDatabase.LoadAssetAtPath<Cubemap>(VISUAL_TEST_CUBEMAP_PATH);
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
-        RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");
+        RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/Scripts/Tests/VisualTests/VisualTest Skybox.mat");
         RenderSettings.ambientEquatorColor = new Color(0.98039216f, 0.8352941f, 0.74509805f);
         RenderSettings.ambientSkyColor = new Color(0.60784316f, 0.92941177f, 1);
         RenderSettings.ambientGroundColor = Color.white;

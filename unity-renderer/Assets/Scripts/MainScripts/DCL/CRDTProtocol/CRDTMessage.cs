@@ -5,7 +5,8 @@ namespace DCL.CRDT
         NONE = 0,
         PUT_COMPONENT = 1,
         DELETE_COMPONENT = 2,
-        DELETE_ENTITY = 3
+        DELETE_ENTITY = 3,
+        APPEND_COMPONENT = 4
     }
 
     public static class CrdtConstants
@@ -15,10 +16,12 @@ namespace DCL.CRDT
         public const int CRDT_PUT_COMPONENT_HEADER_LENGTH = 16;
         public const int CRDT_DELETE_COMPONENT_HEADER_LENGTH = 12;
         public const int CRDT_DELETE_ENTITY_HEADER_LENGTH = 4;
+        public const int CRDT_APPEND_COMPONENT_HEADER_LENGTH = 16;
 
         public const int CRDT_PUT_COMPONENT_BASE_LENGTH = MESSAGE_HEADER_LENGTH + CRDT_PUT_COMPONENT_HEADER_LENGTH;
         public const int CRDT_DELETE_COMPONENT_BASE_LENGTH = MESSAGE_HEADER_LENGTH + CRDT_DELETE_COMPONENT_HEADER_LENGTH;
         public const int CRDT_DELETE_ENTITY_BASE_LENGTH = MESSAGE_HEADER_LENGTH + CRDT_DELETE_ENTITY_HEADER_LENGTH;
+        public const int CRDT_APPEND_COMPONENT_BASE_LENGTH = MESSAGE_HEADER_LENGTH + CRDT_APPEND_COMPONENT_HEADER_LENGTH;
     }
     public class CRDTMessage
     {
@@ -34,6 +37,7 @@ namespace DCL.CRDT
             if (message.type == CrdtMessageType.PUT_COMPONENT) { return CrdtConstants.CRDT_PUT_COMPONENT_BASE_LENGTH + (((byte[])message.data)?.Length ?? 0); }
             if (message.type == CrdtMessageType.DELETE_COMPONENT) { return CrdtConstants.CRDT_DELETE_COMPONENT_BASE_LENGTH; }
             if (message.type == CrdtMessageType.DELETE_ENTITY) { return CrdtConstants.CRDT_DELETE_ENTITY_BASE_LENGTH; }
+            if (message.type == CrdtMessageType.APPEND_COMPONENT) { return CrdtConstants.CRDT_APPEND_COMPONENT_BASE_LENGTH + (((byte[])message.data)?.Length ?? 0); }
 
             return 0;
         }

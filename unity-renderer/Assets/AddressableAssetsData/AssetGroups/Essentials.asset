@@ -34,16 +34,20 @@ MonoBehaviour:
     m_Address: SkyboxMaterialData.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: e42e43d2fa0a25344a145edf0e562209
-    m_Address: Generic_Skybox 1.asset
+  - m_GUID: 1d1d09408e4e00c4b99f60953e0f4569
+    m_Address: EmbeddedEmotes.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d46b1af13bd8fd94eabb1ee09e49475e
+    m_Address: dab.anim
     m_ReadOnly: 0
     m_SerializedLabels:
-    - SkyboxConfiguration
-  - m_GUID: 347583cec6e664542b4808c87b6c1279
-    m_Address: Weird_Skybox.asset
+    - TestResources
+  - m_GUID: 155565c20994e334ea44df2fc77b9097
+    m_Address: tik.anim
     m_ReadOnly: 0
     m_SerializedLabels:
-    - SkyboxConfiguration
+    - TestResources
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

@@ -11,10 +11,11 @@ import {
   LocalAudioTrack
 } from 'livekit-client'
 import Html from 'shared/Html'
-import { createLogger } from 'shared/logger'
+import { createLogger } from 'lib/logger'
 import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
 import { getPeer } from 'shared/comms/peers'
-import { getSpatialParamsFor, isChrome } from '../../../voiceChat/utils'
+import { getSpatialParamsFor } from '../../../voiceChat/utils'
+import { isChrome } from 'lib/browser/isChrome'
 import { startLoopback } from './loopback'
 
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
@@ -385,12 +386,14 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
       return validInput
     },
     async destroy() {
-      room.localParticipant.unpublishTracks(
-        Array.from(room.localParticipant.audioTracks.values())
-          .map(($) => $.audioTrack!)
-          .filter(Boolean)
-      )
-      await handleDisconnect()
+      await Promise.allSettled([
+        room.localParticipant.unpublishTracks(
+          Array.from(room.localParticipant.audioTracks.values())
+            .map(($) => $.audioTrack!)
+            .filter(Boolean)
+        ),
+        handleDisconnect()
+      ])
     }
   }
 }

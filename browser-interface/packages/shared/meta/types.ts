@@ -15,7 +15,6 @@ export type MetaConfiguration = {
   synapseUrl: string
   socialServerUrl: string
   world: WorldConfig
-  comms: CommsConfig
   minCatalystVersion?: string
   featureFlagsV2?: FeatureFlag
   bannedUsers?: BannedUsers
@@ -49,6 +48,8 @@ export type FeatureFlagsName =
   | 'use-social-server-friendships' // get friendships from social service v1 API
   | 'new_tutorial_variant'
   | 'enable_legacy_comms_v2'
+  | 'ab-new-cdn' // enables the new CDN for asset bundles along with the new loader
+  | 'decoupled_loading_screen'
 
 export type BannedUsers = Record<string, Ban[]>
 
@@ -75,14 +76,6 @@ export type MetaState = {
 
 export type RootMetaState = {
   meta: MetaState
-}
-
-export type CommsConfig = {
-  targetConnections?: number
-  maxConnections?: number
-  relaySuspensionDisabled?: boolean
-  relaySuspensionInterval?: number
-  relaySuspensionDuration?: number
 }
 
 export type FeatureFlag = {

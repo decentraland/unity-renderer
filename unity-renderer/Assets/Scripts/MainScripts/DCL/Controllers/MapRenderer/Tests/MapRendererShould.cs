@@ -2,6 +2,7 @@ using DCL;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
@@ -20,7 +21,7 @@ namespace Tests
             if (MapRenderer.i == null)
                 Object.Instantiate(Resources.Load("Map Renderer"));
 
-            MapRenderer.i.atlas.mapChunkPrefab = (GameObject) Resources.Load("Map Chunk Mock");
+            MapRenderer.i.atlas.mapChunkPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/MapRenderer/Tests/Map Chunk Mock.prefab");
             viewport = new GameObject("Viewport");
             var rt = viewport.AddComponent<RectTransform>();
             rt.sizeDelta = Vector2.one * 100;

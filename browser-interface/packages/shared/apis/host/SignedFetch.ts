@@ -1,17 +1,17 @@
 import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
 import { ETHEREUM_NETWORK } from 'config'
-import { getSelectedNetwork } from '../../dao/selectors'
-import { store } from '../../store/isolatedStore'
-import { getIsGuestLogin } from '../../session/selectors'
-import { onLoginCompleted } from '../../session/onLoginCompleted'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import { store } from 'shared/store/isolatedStore'
+import { isGuestLogin } from 'shared/session/selectors'
+import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 
-import { RpcServerPort } from '@dcl/rpc'
-import { PortContext } from './context'
+import type { RpcServerPort } from '@dcl/rpc'
+import type { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 
 import { SignedFetchServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/signed_fetch.gen'
 import { getRealmAdapter } from 'shared/realm/selectors'
-import { Realm } from 'shared/dao/types'
+import type { Realm } from 'shared/dao/types'
 
 export function registerSignedFetchServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, SignedFetchServiceDefinition, async () => ({
@@ -32,7 +32,7 @@ export function registerSignedFetchServiceServerImplementation(port: RpcServerPo
             protocol: 'offline',
             serverName: 'offline'
           }
-      const isGuest = !!getIsGuestLogin(state)
+      const isGuest = !!isGuestLogin(state)
       const network = getSelectedNetwork(state)
 
       const compatibilityRealm:

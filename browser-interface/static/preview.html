@@ -641,8 +641,21 @@
         return new URL('@/explorer', location.toString()).toString()
       }
 
+      async function getRendererBaseUrl() {
+        const qs = new URLSearchParams(document.location.search)
+
+        if (qs.has('renderer-branch')) {
+          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('renderer-branch')}`
+        }
+
+        if (qs.has('renderer-version')) {
+          return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('renderer-version')}`
+        }
+      }
+
       async function initKernel() {
         const baseUrl = await getExplorerBaseUrl()
+        const rendererBaseUrl = await getRendererBaseUrl() || baseUrl
         const kernelScript = (new URL('index.js', `${baseUrl}/`)).toString()
 
         await injectScript(kernelScript)
@@ -662,7 +675,7 @@
           },
           rendererOptions: {
             container,
-            baseUrl
+            baseUrl: rendererBaseUrl
           }
         })
 

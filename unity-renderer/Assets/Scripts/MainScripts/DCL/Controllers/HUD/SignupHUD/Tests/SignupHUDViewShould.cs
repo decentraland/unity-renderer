@@ -1,5 +1,7 @@
+using DCL.Providers;
 using NUnit.Framework;
 using SignupHUD;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Tests.SignupHUD
@@ -7,22 +9,42 @@ namespace Tests.SignupHUD
     public class SignupHUDViewShould
     {
         private SignupHUDView hudView;
+        private HUDFactory factory;
 
         [SetUp]
-        public void SetUp() { hudView = Object.Instantiate(Resources.Load<GameObject>("SignupHUD")).GetComponent<SignupHUDView>(); }
+        public async Task SetUp()
+        {
+            factory = new HUDFactory(new AddressableResourceProvider());
+            hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            factory.Dispose();
+
+            if (hudView != null)
+                Object.Destroy(hudView.gameObject);
+        }
 
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetVisibilityProperly(bool visibility)
+        public async Task SetVisibilityProperly(bool visibility)
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.SetVisibility(visibility);
             Assert.AreEqual(visibility, hudView.gameObject.activeSelf);
         }
 
         [Test]
-        public void ShowNameScreenProperly()
+        public async Task ShowNameScreenProperly()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailPanel.gameObject.SetActive(false);
             hudView.termsOfServicePanel.gameObject.SetActive(true);
 
@@ -33,8 +55,11 @@ namespace Tests.SignupHUD
         }
 
         [Test]
-        public void ShowTermsOfServiceScreenProperly()
+        public async Task ShowTermsOfServiceScreenProperly()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailPanel.gameObject.SetActive(true);
             hudView.termsOfServicePanel.gameObject.SetActive(false);
 
@@ -45,8 +70,11 @@ namespace Tests.SignupHUD
         }
 
         [Test]
-        public void DisableNextButtonWithShortName()
+        public async Task DisableNextButtonWithShortName()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "";
             hudView.emailInputField.text = "";
@@ -57,8 +85,11 @@ namespace Tests.SignupHUD
         }
 
         [Test]
-        public void EnableNextButtonWithValidName()
+        public async Task EnableNextButtonWithValidName()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailNextButton.interactable = false;
             hudView.nameInputField.text = "ValidName";
             hudView.emailInputField.text = "";
@@ -69,8 +100,11 @@ namespace Tests.SignupHUD
         }
 
         [Test]
-        public void DisableNextButtonWithInvalidEmail()
+        public async Task DisableNextButtonWithInvalidEmail()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "ValidName";
             hudView.emailInputField.text = "this_is_not_an_email";
@@ -81,8 +115,11 @@ namespace Tests.SignupHUD
         }
 
         [Test]
-        public void EnableNextButtonWithValidEmail()
+        public async Task EnableNextButtonWithValidEmail()
         {
+            if(hudView == null)
+                hudView = (SignupHUDView)await factory.CreateSignupHUDView();
+
             hudView.nameAndEmailNextButton.interactable = true;
             hudView.nameInputField.text = "ValidName";
             hudView.emailInputField.text = "myvalid@email.com";
@@ -91,8 +128,5 @@ namespace Tests.SignupHUD
 
             Assert.IsTrue(hudView.nameAndEmailNextButton.interactable);
         }
-
-        [TearDown]
-        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }

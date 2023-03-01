@@ -6,9 +6,10 @@ echo "Building for $BUILD_TARGET at $PROJECT_PATH in $BUILD_PATH"
 
 mkdir -p "$BUILD_PATH"
 
-if [[ "$CIRCLE_BRANCH" == "main" ]]; then
-    echo "Sentry disabled on prod!"
-    disable_sentry
+# Only import AVPro for Desktop Builds
+if [[ "$BUILD_TARGET" != "WebGL" ]]; then
+  ./ci-import-avpro.sh
+  ./ci-setup-license.sh # we need to re-import the license after we import something
 fi
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \

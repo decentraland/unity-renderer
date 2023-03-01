@@ -1,9 +1,7 @@
 import { FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE } from 'config'
-import { storeCondition } from 'lib/redux'
-import { select, take } from 'redux-saga/effects'
-import { SET_REALM_ADAPTER } from './actions'
 import { realmToConnectionString, urlWithProtocol } from './resolver'
-import { IRealmAdapter, OFFLINE_REALM, RootRealmState } from './types'
+import type { IRealmAdapter, RootRealmState } from './types'
+import { OFFLINE_REALM } from './types'
 
 export const isWorldLoaderActive = (realmAdapter: IRealmAdapter) =>
   !!realmAdapter?.about.configurations?.scenesUrn?.length ||
@@ -16,18 +14,6 @@ export function isPreviousAdapterWorld(state: RootRealmState) {
 export const getRealmAdapter = (state: RootRealmState): IRealmAdapter | undefined => state.realm.realmAdapter
 export const getRealmConnectionString = (state: RootRealmState): string =>
   state.realm.realmAdapter ? realmToConnectionString(state.realm.realmAdapter) : OFFLINE_REALM
-
-export function* waitForRealmAdapter() {
-  while (true) {
-    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-    if (realmAdapter) return realmAdapter
-    yield take(SET_REALM_ADAPTER)
-  }
-}
-
-export async function ensureRealmAdapterPromise(): Promise<IRealmAdapter> {
-  return (await storeCondition(getRealmAdapter))!
-}
 
 export const getProfilesContentServerFromRealmAdapter = (adapter: IRealmAdapter) => {
   if (UPDATE_CONTENT_SERVICE) {

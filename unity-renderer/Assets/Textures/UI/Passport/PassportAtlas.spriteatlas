@@ -27,18 +27,43 @@ SpriteAtlas:
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 1
-      enableTightPacking: 1
+      enableTightPacking: 0
       enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: e067ff3c556704d6798e8abe55c9ecb2, type: 3}
+    - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites: []
-  m_PackedSpriteNamesToIndex: []
+  m_PackedSprites:
+  - {fileID: 21300000, guid: b86aa5b2e1b3a4e2bb9e3afe59315b46, type: 3}
+  - {fileID: 21300000, guid: f5c69b65210ee4d918cee88989f0b22e, type: 3}
+  - {fileID: 21300000, guid: 3635c175b99b640e6a001fa497597e4e, type: 3}
+  - {fileID: 21300000, guid: 7f02a0d56dde24665b43d5483b653d47, type: 3}
+  - {fileID: 21300000, guid: b3148da633cc64974a01bd0083bd1e59, type: 3}
+  - {fileID: 21300000, guid: 419076073bb23470898b3a2689515b64, type: 3}
+  - {fileID: 21300000, guid: f8ce386703bdd44f2b6d80232b03f124, type: 3}
+  - {fileID: 21300000, guid: 8152dcc881fb74a57b73473687603bcc, type: 3}
+  - {fileID: 21300000, guid: d680666c4c5134b9f8615ffaaf5da043, type: 3}
+  - {fileID: 21300000, guid: 9fb5589c5caac46e5882f2be6709b03d, type: 3}
+  - {fileID: 21300000, guid: ae432d6ee3307da4aac59db911ad410f, type: 3}
+  - {fileID: 21300000, guid: eafeb5ee04f824648b1a9f8b4412d485, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - IntroIcon
+  - PassportBackground
+  - DecorativeShape001
+  - BlockedImg
+  - CornerFlap
+  - FlapShadow
+  - LinkIcon
+  - BackgroundGuest
+  - WearablesIcon
+  - RhombusShapedGradient
+  - 360Icon
+  - EmotesIcon
   m_RenderDataMap: {}
   m_Tag: PassportAtlas
   m_IsVariant: 0
