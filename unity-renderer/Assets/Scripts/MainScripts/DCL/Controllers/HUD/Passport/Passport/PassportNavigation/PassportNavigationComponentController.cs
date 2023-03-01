@@ -109,7 +109,7 @@ namespace DCL.Social.Passports
             cts = null;
 
             wearablesPromise?.Dispose();
-            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
         }
 
         private async UniTask LoadAndDisplayEquippedWearablesAsync(UserProfile userProfile, CancellationToken ct)
@@ -220,13 +220,15 @@ namespace DCL.Social.Passports
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
             dataStore.HUDs.gotoPanelCoordinates.Set(coordinates, true);
 
-            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
-            dataStore.HUDs.goToPanelConfirmed.OnChange += ClosePassportFromGoToPanel;
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
+            dataStore.HUDs.goToPanelConfirmed.OnChange += CloseUIFromGoToPanel;
         }
 
-        private void ClosePassportFromGoToPanel(bool confirmed, bool _)
+        private void CloseUIFromGoToPanel(bool confirmed, bool _)
         {
-            dataStore.HUDs.goToPanelConfirmed.OnChange -= ClosePassportFromGoToPanel;
+            if (!confirmed) return;
+            dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
+            dataStore.exploreV2.isOpen.Set(false, true);
             currentPlayerId.Set(null);
         }
     }
