@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Interface;
 using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
@@ -145,6 +146,8 @@ public class UserProfileController : MonoBehaviour
         var task = new UniTaskCompletionSource<UserProfile>();
         cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
         pendingUserProfileTasks[userId] = task;
+
+        WebInterface.SendRequestUserProfile(userId);
 
         return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
     }
