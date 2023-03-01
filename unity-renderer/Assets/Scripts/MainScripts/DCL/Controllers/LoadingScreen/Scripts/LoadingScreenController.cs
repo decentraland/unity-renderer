@@ -151,11 +151,8 @@ namespace DCL.LoadingScreen
 
         //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
         //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
-        private bool IsNewScene(Vector2Int currentDestinationCandidate)
-        {
-            bool isNewScene =              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
-            return isNewScene;
-        }
+        private bool IsNewScene(Vector2Int currentDestinationCandidate) =>
+             worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
 
         private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
         {
