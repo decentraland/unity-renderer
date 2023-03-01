@@ -79,6 +79,10 @@ function dclWorldUrl(dclName: string) {
 export function realmToConnectionString(realm: IRealmAdapter) {
   const realmName = realm.about.configurations?.realmName
 
+  if ((realm.about.comms?.protocol === 'v2' || realm.about.comms?.protocol === 'v3') && realmName?.match(/^[a-z]+$/i)) {
+    return realmName
+  }
+
   if (isDclEns(realmName) && realm.baseUrl === dclWorldUrl(realmName)) {
     return realmName
   }
