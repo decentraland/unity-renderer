@@ -9,13 +9,13 @@ using UnityEngine;
 
 public static partial class UtilsScene
 {
-    public static Bounds CalculateOuterBounds(Vector2Int[] parcels, Vector3 baseParcelWorldPos)
+    public static Bounds CalculateOuterBounds(IReadOnlyList<Vector2Int> parcels, Vector3 baseParcelWorldPos)
     {
         Bounds outerBounds = new Bounds();
         outerBounds.SetMinMax(new Vector3(baseParcelWorldPos.x, 0f, baseParcelWorldPos.z),
             new Vector3(baseParcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0f, baseParcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
 
-        for (int i = 0; i < parcels.Length; i++)
+        for (int i = 0; i < parcels.Count; i++)
         {
             // Update outer bounds with parcel's size
             var parcel = parcels[i];
@@ -32,7 +32,7 @@ public static partial class UtilsScene
         return outerBounds;
     }
 
-    public static bool IsInsideSceneInnerBounds(ISet<Vector2Int> sceneParcels, float sceneHeightLimit, Vector3 targetWorldPosition, float height = 0f)
+    public static bool IsInsideSceneInnerBounds(HashSet<Vector2Int> sceneParcels, float sceneHeightLimit, Vector3 targetWorldPosition, float height = 0f)
     {
         if (sceneParcels.Count == 0)
             return false;
@@ -91,7 +91,7 @@ public static partial class UtilsScene
         return sceneOuterBounds.Contains(targetUnityPosition);
     }
 
-    public static bool IsInsideSceneInnerBounds(ISet<Vector2Int> sceneParcels, float sceneHeightLimit, Bounds targetBounds)
+    public static bool IsInsideSceneInnerBounds(HashSet<Vector2Int> sceneParcels, float sceneHeightLimit, Bounds targetBounds)
     {
         var worldOffset = CommonScriptableObjects.worldOffset.Get();
 
