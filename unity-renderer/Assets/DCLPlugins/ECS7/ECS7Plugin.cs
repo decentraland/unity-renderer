@@ -3,7 +3,6 @@ using DCL.CRDT;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.ECS7
 {
@@ -19,16 +18,12 @@ namespace DCL.ECS7
 
         internal readonly ECSComponentsManager componentsManager;
         private readonly BaseList<IParcelScene> loadedScenes;
-        private readonly BaseDictionary<int, Bounds> scenesOuterBounds;
-        private readonly BaseDictionary<int, HashSet<Vector2Int>> scenesHashSetParcels;
         private readonly ISceneController sceneController;
 
         public ECS7Plugin()
         {
             DataStore.i.ecs7.isEcs7Enabled = true;
             loadedScenes = DataStore.i.ecs7.scenes;
-            scenesOuterBounds = DataStore.i.ecs7.scenesOuterBounds;
-            scenesHashSetParcels = DataStore.i.ecs7.scenesHashsetParcels;
 
             sceneController = Environment.i.world.sceneController;
             Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(10);
@@ -75,14 +70,6 @@ namespace DCL.ECS7
             if (scene.sceneData.sdk7)
             {
                 loadedScenes.Add(scene);
-                scenesOuterBounds.Add(scene.sceneData.sceneNumber, UtilsScene.CalculateOuterBounds(scene.sceneData.parcels, scene.GetSceneTransform().position));
-
-                HashSet<Vector2Int> hashSetParcels = new HashSet<Vector2Int>();
-                for (int i = 0; i < scene.sceneData.parcels.Length; i++)
-                {
-                    hashSetParcels.Add(scene.sceneData.parcels[i]);
-                }
-                scenesHashSetParcels.Add(scene.sceneData.sceneNumber, hashSetParcels);
             }
         }
 
@@ -91,8 +78,6 @@ namespace DCL.ECS7
             if (scene.sceneData.sdk7)
             {
                 loadedScenes.Remove(scene);
-                scenesOuterBounds.Remove(scene.sceneData.sceneNumber);
-                scenesHashSetParcels.Remove(scene.sceneData.sceneNumber);
             }
         }
     }

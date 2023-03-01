@@ -20,8 +20,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         // Instead of entity.isInsideSceneBoundaries we use a hashset
         private static readonly HashSet<IDCLEntity> entitiesOutsideSceneBounds = new HashSet<IDCLEntity>();
-        private static BaseDictionary<int, Bounds> scenesOuterBounds;
-        private static BaseDictionary<int, HashSet<Vector2Int>> scenesHashSetParcels;
+        private static readonly BaseDictionary<int, Bounds> scenesOuterBounds = new BaseDictionary<int, Bounds>();
+        private static readonly BaseDictionary<int, HashSet<Vector2Int>> scenesHashSetParcels = new BaseDictionary<int, HashSet<Vector2Int>>();
 
         public ECSSceneBoundsCheckerSystem(IInternalECSComponent<InternalSceneBoundsCheck> sbcComponent,
             IInternalECSComponent<InternalVisibility> visibilityComponent,
@@ -38,10 +38,34 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             this.physicsCollidersComponent = physicsColliderComponent;
             this.audioSourceComponent = audioSourceComponent;
 
-            scenesOuterBounds = DataStore.i.ecs7.scenesOuterBounds;
-            scenesHashSetParcels = DataStore.i.ecs7.scenesHashsetParcels;
+            DataStore.i.ecs7.scenes.OnAdded += OnSceneAdded;
+            DataStore.i.ecs7.scenes.OnRemoved += OnSceneRemoved;
 
             outOfBoundsVisualFeedback = previewMode ? new ECSOutOfSceneBoundsFeedback_RedWireframe() : new ECSOutOfSceneBoundsFeedback_EnabledToggle();
+        }
+
+        public void Dispose()
+        {
+            DataStore.i.ecs7.scenes.OnAdded -= OnSceneAdded;
+            DataStore.i.ecs7.scenes.OnRemoved -= OnSceneRemoved;
+        }
+
+        private void OnSceneAdded(IParcelScene scene)
+        {
+            scenesOuterBounds.Add(scene.sceneData.sceneNumber, UtilsScene.CalculateOuterBounds(scene.sceneData.parcels, scene.GetSceneTransform().position));
+
+            HashSet<Vector2Int> hashSetParcels = new HashSet<Vector2Int>();
+            for (int i = 0; i < scene.sceneData.parcels.Length; i++)
+            {
+                hashSetParcels.Add(scene.sceneData.parcels[i]);
+            }
+            scenesHashSetParcels.Add(scene.sceneData.sceneNumber, hashSetParcels);
+        }
+
+        private void OnSceneRemoved(IParcelScene scene)
+        {
+            scenesOuterBounds.Remove(scene.sceneData.sceneNumber);
+            scenesHashSetParcels.Remove(scene.sceneData.sceneNumber);
         }
 
         public void Update()

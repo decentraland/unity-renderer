@@ -45,8 +45,6 @@ namespace DCL
         }
 
         public readonly BaseList<IParcelScene> scenes = new BaseList<IParcelScene>();
-        public readonly BaseDictionary<int, Bounds> scenesOuterBounds = new BaseDictionary<int, Bounds>();
-        public readonly BaseDictionary<int, HashSet<Vector2Int>> scenesHashsetParcels = new BaseDictionary<int, HashSet<Vector2Int>>();
         public readonly BaseDictionary<int, BaseRefCountedCollection<object>> pendingSceneResources = new BaseDictionary<int, BaseRefCountedCollection<object>>();
         public readonly BaseDictionary<long, GameObject> shapesReady = new BaseDictionary<long, GameObject>();
         public bool isEcs7Enabled = false;

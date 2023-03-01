@@ -120,6 +120,7 @@ public class ECSSystemsController : IDisposable
         uiSystem.Dispose();
         cameraEntitySystem.Dispose();
         playerTransformSystem.Dispose();
+        sceneBoundsCheckerSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }
