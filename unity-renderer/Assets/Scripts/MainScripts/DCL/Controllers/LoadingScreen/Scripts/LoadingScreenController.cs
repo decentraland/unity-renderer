@@ -136,13 +136,9 @@ namespace DCL.LoadingScreen
             bool realmChangeRequiresLoadingScreen;
 
             if (commonDataStore.isWorld.Get())
-            {
                 realmChangeRequiresLoadingScreen = string.IsNullOrEmpty(currentRealm) || !currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName);
-            }
             else
-            {
                 realmChangeRequiresLoadingScreen = currentRealmIsWorld;
-            }
 
             currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
             currentRealmIsWorld = commonDataStore.isWorld.Get();
