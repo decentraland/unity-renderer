@@ -55,6 +55,7 @@ import { isLoginCompleted } from 'shared/session/selectors'
 import { updateLoadingScreen } from '../loadingScreen/actions'
 import { waitFor } from 'lib/redux'
 
+
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
   yield takeEvery([POSITION_SETTLED, POSITION_UNSETTLED], onPositionSettled)
@@ -181,7 +182,7 @@ function* rendererPositionSettler() {
 
     if (!isSettled && !!spawnPointAndScene.sceneId) {
       // Then set the parcel position for the scene loader
-      receivePositionReport(spawnPointAndScene.spawnPoint.position)
+      receivePositionReport(spawnPointAndScene.spawnPoint.position,undefined,undefined,undefined,true)
     }
     // then update the position in the engine
     getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)

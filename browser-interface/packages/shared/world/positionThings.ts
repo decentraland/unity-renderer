@@ -49,9 +49,15 @@ export function receivePositionReport(
   position: ReadOnlyVector3,
   rotation?: ReadOnlyVector4,
   cameraRotation?: ReadOnlyVector4,
-  playerHeight?: number
+  playerHeight?: number,
+  addHeight? : boolean
 ) {
-  positionEvent.position.set(position.x, position.y, position.z)
+  if(addHeight){
+    positionEvent.position.set(position.x, position.y + (playerConfigurations.height / 2), position.z)
+  }else{
+    positionEvent.position.set(position.x, position.y, position.z)
+
+  }
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
   positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
@@ -62,6 +68,7 @@ export function receivePositionReport(
     positionEvent.cameraQuaternion.set(cameraQuaternion.x, cameraQuaternion.y, cameraQuaternion.z, cameraQuaternion.w)
   positionEvent.cameraEuler.copyFrom(positionEvent.cameraQuaternion.eulerAngles)
 
+  console.log("ACA LLAMO " + position)
   positionObservable.notifyObservers(positionEvent)
 }
 
