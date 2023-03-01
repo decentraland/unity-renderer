@@ -337,7 +337,9 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<typeof getInformationForCommsProfileRequest>
+    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+      typeof getInformationForCommsProfileRequest
+    >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (profile && context) {

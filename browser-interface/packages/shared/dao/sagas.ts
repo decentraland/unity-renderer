@@ -1,42 +1,40 @@
-import {
-  setCatalystCandidates,
-  SET_CATALYST_CANDIDATES,
-  SetCatalystCandidates,
-  catalystRealmsScanRequested
-} from './actions'
-import { call, put, takeEvery, select, take } from 'redux-saga/effects'
-import { PIN_CATALYST, ETHEREUM_NETWORK, PREVIEW, rootURLPreviewMode } from 'config'
-import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
-import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
-import { fetchCatalystRealms, fetchCatalystStatuses, changeRealm } from '.'
-import { ask, ping } from './utils/ping'
+import { ETHEREUM_NETWORK, PIN_CATALYST, PREVIEW, rootURLPreviewMode } from 'config'
+import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
+import defaultLogger from 'lib/logger'
+import { waitFor } from 'lib/redux'
+import { call, put, select, take, takeEvery } from 'redux-saga/effects'
+import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
   getPickRealmsAlgorithmConfig
 } from 'shared/meta/selectors'
-import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
-import { saveToPersistentStorage, getFromPersistentStorage } from 'lib/browser/persistentStorage'
-import { BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
-import { createAlgorithm } from './pick-realm-algorithm/index'
-import { AlgorithmChainConfig } from './pick-realm-algorithm/types'
-import { defaultChainConfig } from './pick-realm-algorithm/defaults'
-import defaultLogger from 'lib/logger'
-import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { CatalystNode } from 'shared/types'
-import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { USER_AUTHENTICATED } from 'shared/session/actions'
-import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
+import { getFetchContentServerFromRealmAdapter, getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
-import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { waitFor } from 'lib/redux'
-import { Vector2 } from 'lib/math/Vector2'
+import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { getCurrentIdentity } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
+import { CatalystNode } from 'shared/types'
+import { changeRealm, fetchCatalystRealms, fetchCatalystStatuses } from '.'
+import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
+import {
+  catalystRealmsScanRequested,
+  setCatalystCandidates,
+  SetCatalystCandidates,
+  SET_CATALYST_CANDIDATES
+} from './actions'
+import { defaultChainConfig } from './pick-realm-algorithm/defaults'
+import { createAlgorithm } from './pick-realm-algorithm/index'
+import { getAllCatalystCandidates, getCatalystCandidatesReceived } from './selectors'
+import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
+import { ask, ping } from './utils/ping'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -54,20 +52,17 @@ export function* daoSaga(): any {
 
 function* pickCatalystRealm() {
   function getInformationForCatalystPicker(state: RootState) {
+    const config = getPickRealmsAlgorithmConfig(state)
     return {
       candidates: getAllCatalystCandidates(state),
       currentUserParcel: getParcelPosition(state),
-      config: getPickRealmsAlgorithmConfig(state)
+      config: !config || !config.length ? defaultChainConfig : config
     }
   }
-  let { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
+  const { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
     typeof getInformationForCatalystPicker
   >
   if (candidates.length === 0) return undefined
-
-  if (!config || config.length === 0) {
-    config = defaultChainConfig
-  }
 
   const algorithm = createAlgorithm(config)
 

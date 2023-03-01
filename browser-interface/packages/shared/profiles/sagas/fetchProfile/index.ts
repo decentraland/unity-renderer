@@ -24,7 +24,9 @@ export function* fetchProfile(action: ProfileRequestAction): any {
     existingProfile,
     isGuestLogin,
     existingProfileWithCorrectVersion
-  } = (yield select(getInformationToFetchProfileFromStore, action)) as ReturnType<typeof getInformationToFetchProfileFromStore>
+  } = (yield select(getInformationToFetchProfileFromStore, action)) as ReturnType<
+    typeof getInformationToFetchProfileFromStore
+  >
 
   if (existingProfile && existingProfileWithCorrectVersion) {
     yield put(profileSuccess(existingProfile))
