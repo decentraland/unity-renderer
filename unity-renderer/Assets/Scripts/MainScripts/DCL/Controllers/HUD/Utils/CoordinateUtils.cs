@@ -22,11 +22,12 @@ public class CoordinateUtils
         foreach (Match match in matches)
         {
             if (!match.Success) continue;
-            int.TryParse(match.Value.Split(',')[0], out int x);
-            int.TryParse(match.Value.Split(',')[1], out int y);
+            string value = match.Value;
+            int.TryParse(value.Split(',')[0], out int x);
+            int.TryParse(value.Split(',')[1], out int y);
 
             if (IsCoordinateInRange(x, y))
-                matchingWords.Add(match.Value);
+                matchingWords.Add(value);
         }
 
         return matchingWords;

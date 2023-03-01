@@ -88,6 +88,7 @@ namespace DCL.Social.Passports
         private const string NFT_PAGES_POOL_NAME_PREFIX = "NFTPagesEntriesPool_";
         private const int MAX_NFT_ICON_ENTRIES = 20;
         private const int MAX_NFT_PAGES_ENTRIES = 20;
+        private const string COORD_LINK_ID = "coord://";
 
         private List<PoolableObject> nftIconPoolableQueue = new List<PoolableObject>();
         private List<PoolableObject> nftPagesPoolableQueue = new List<PoolableObject>();
@@ -203,10 +204,7 @@ namespace DCL.Social.Passports
 
         private string AddCoordinateLinks(string description)
         {
-            List<string> foundCoordinates = CoordinateUtils.GetTextCoordinates(description);
-            if (foundCoordinates.Count <= 0) return description;
-
-            foreach (string coordinate in foundCoordinates)
+            foreach (string coordinate in CoordinateUtils.GetTextCoordinates(description))
                 description = description.Replace(coordinate, $"<link=coord://{coordinate}><color=#4886E3><u>{coordinate}</u></color></link>");
 
             return description;
@@ -220,9 +218,9 @@ namespace DCL.Social.Passports
             if (linkIndex == -1) return;
 
             string link = descriptionText.textInfo.linkInfo[linkIndex].GetLinkID();
-            if (!link.StartsWith("coord://")) return;
+            if (!link.StartsWith(COORD_LINK_ID)) return;
 
-            string coordText = link[8..];
+            string coordText = link[COORD_LINK_ID.Length..];
             ParcelCoordinates coordinates = CoordinateUtils.ParseCoordinatesString(coordText);
             OnClickDescriptionCoordinates?.Invoke(coordinates);
         }

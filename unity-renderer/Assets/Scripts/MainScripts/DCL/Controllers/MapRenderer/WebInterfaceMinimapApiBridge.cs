@@ -40,8 +40,9 @@ namespace DCL.Map
             int areaSize,
             CancellationToken cancellationToken)
         {
-            if (pendingTasks.ContainsKey(GET_SCENES_INFO_ID))
-                return ((UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTasks[GET_SCENES_INFO_ID]).Task;
+            if (pendingTasks.TryGetValue(GET_SCENES_INFO_ID, out var pendingTask))
+                return ((UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTask)
+                      .Task.AttachExternalCancellation(cancellationToken);
 
             UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]> task = new ();
             pendingTasks[GET_SCENES_INFO_ID] = task;
