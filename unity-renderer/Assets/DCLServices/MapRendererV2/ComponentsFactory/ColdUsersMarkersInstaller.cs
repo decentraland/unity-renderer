@@ -8,7 +8,6 @@ using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using MainScripts.DCL.Controllers.HotScenes;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
 {

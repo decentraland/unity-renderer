@@ -17,7 +17,7 @@ namespace DCLServices.MapRendererV2.Culling
         private readonly Dictionary<IMapPositionProvider, TrackedState> trackedObjs = new ();
 
         private int dirtyCamerasFlag = 0;
-        private CancellationTokenSource disposingCts = new CancellationTokenSource();
+        private CancellationTokenSource disposingCts = new ();
 
         internal MapCullingController(IMapCullingVisibilityChecker cullingVisibilityChecker)
         {
@@ -78,7 +78,7 @@ namespace DCLServices.MapRendererV2.Culling
 
         private void SetTrackedStateDirty(TrackedState state)
         {
-            // shifting to the rigth will add zeroes on the left
+            // shifting to the right will add zeroes on the left
             state.SetCameraFlag((-1 >> (cameras.Count - 1)));
 
             if (IsTrackedStateDirty(state))

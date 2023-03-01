@@ -1,4 +1,5 @@
-﻿using DCLServices.MapRendererV2.Culling;
+﻿using DCLServices.MapRendererV2.CommonBehavior;
+using DCLServices.MapRendererV2.Culling;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -8,40 +9,34 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
     {
         internal const int MAX_TITLE_LENGTH = 29;
 
-        public Vector3 CurrentPosition { get; private set; }
+        public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
-        private readonly IObjectPool<SceneOfInterestMarkerObject> objectsPool;
+        internal string title { get; private set; }
+
+        private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;
+
         private readonly IMapCullingController cullingController;
-
-        private string title;
-
-        private SceneOfInterestMarkerObject instance;
 
         public SceneOfInterestMarker(IObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController)
         {
-            this.objectsPool = objectsPool;
+            poolableBehavior = new MapMarkerPoolableBehavior<SceneOfInterestMarkerObject>(objectsPool);
             this.cullingController = cullingController;
         }
 
         public void SetData(string title, Vector3 position)
         {
-            CurrentPosition = position;
+            poolableBehavior.SetCurrentPosition(position);
             this.title = title.Length > MAX_TITLE_LENGTH ? title.Substring(0, MAX_TITLE_LENGTH) : title;
         }
 
         public void OnBecameVisible()
         {
-            instance = objectsPool.Get();
-            instance.title.text = title;
+            poolableBehavior.OnBecameVisible().title.text = title;
         }
 
         public void OnBecameInvisible()
         {
-            if (instance)
-            {
-                objectsPool.Release(instance);
-                instance = null;
-            }
+            poolableBehavior.OnBecameInvisible();
         }
 
         public void Dispose()

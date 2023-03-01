@@ -32,7 +32,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private Service<IAddressableResourceProvider> addressablesProvider;
         private Service<IHotScenesFetcher> hotScenesFetcher;
 
-        internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
+        internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; } = new ();
+        internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; } = new ();
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
@@ -97,6 +98,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 await UniTask.WhenAll(
                     CreateAtlas(),
                     coldUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
+                    sceneOfInterestsMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
                     CreateHotUserMarkers() /* List of other creators that can be executed in parallel */);
             });
 

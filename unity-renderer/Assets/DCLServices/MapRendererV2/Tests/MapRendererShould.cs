@@ -26,8 +26,8 @@ namespace DCLServices.MapRendererV2.Tests
         {
             MapLayer.Atlas,
             MapLayer.PlayerMarker | MapLayer.ColdUsersMarkers,
-            MapLayer.HomePoint | MapLayer.PointsOfInterest | MapLayer.ColdUsersMarkers,
-            MapLayer.Atlas | MapLayer.HotUsersMarkers | MapLayer.HomePoint | MapLayer.PointsOfInterest
+            MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.ColdUsersMarkers,
+            MapLayer.Atlas | MapLayer.HotUsersMarkers | MapLayer.HomePoint | MapLayer.ScenesOfInterest
         };
 
         [SetUp]

@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Helpers;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using System.Threading;
@@ -13,23 +14,22 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
         private readonly ICoordsUtils coordsUtils;
         private readonly Vector3Variable worldOffset;
 
-        private readonly IObjectPool<HotUserMarkerObject> objectPool;
         private readonly IMapCullingController cullingController;
 
         private CancellationTokenSource cts;
+
         public string CurrentPlayerId { get; private set; }
-        public Vector3 CurrentPosition { get; private set; }
+        public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
-        private HotUserMarkerObject instance;
-
-        private bool isVisible;
+        private MapMarkerPoolableBehavior<HotUserMarkerObject> poolableBehavior;
 
         internal HotUserMarker(IObjectPool<HotUserMarkerObject> pool, IMapCullingController mapCullingController, ICoordsUtils coordsUtils, Vector3Variable worldOffset)
         {
-            this.objectPool = pool;
             this.coordsUtils = coordsUtils;
             this.worldOffset = worldOffset;
             this.cullingController = mapCullingController;
+
+            poolableBehavior = new MapMarkerPoolableBehavior<HotUserMarkerObject>(pool);
         }
 
         public void TrackPlayer(Player player)
@@ -42,22 +42,14 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 
         public void OnBecameInvisible()
         {
-            if (instance)
-            {
-                objectPool.Release(instance);
-                instance = null;
-            }
-
-            isVisible = false;
+            poolableBehavior.OnBecameInvisible();
 
             // Keep tracking position
         }
 
         public void OnBecameVisible()
         {
-            isVisible = true;
-            instance = objectPool.Get();
-            instance.transform.localPosition = CurrentPosition;
+            poolableBehavior.OnBecameVisible();
         }
 
         private async UniTaskVoid TrackPosition(Player player, CancellationToken ct)
@@ -69,10 +61,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
                     return;
 
                 var gridPosition = Utils.WorldToGridPositionUnclamped(position + worldOffset.Get());
-                CurrentPosition = coordsUtils.CoordsToPositionUnclamped(gridPosition);
-
-                if (isVisible)
-                    instance.transform.localPosition = CurrentPosition;
+                poolableBehavior.SetCurrentPosition(coordsUtils.CoordsToPositionUnclamped(gridPosition));
 
                 cullingController.SetTrackedObjectPositionDirty(this);
             }
