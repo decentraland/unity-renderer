@@ -8,7 +8,6 @@ import {
 import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
 import type { ProfileUserInfo } from 'shared/profiles/types'
-import * as realmSelectors from 'shared/realm/selectors'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
@@ -18,6 +17,12 @@ import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
+
+const mockAdapter = {
+  services: {
+    legacy: {}
+  }
+} as any as IRealmAdapter
 
 describe('fetchProfile behavior', () => {
   it('avatar compatibility format', () => {
@@ -108,16 +113,13 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '')
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfilesToCatalog').never()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [call(waitForRealm), mockAdapter],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 1]
         ])
@@ -137,16 +139,13 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '', 0)
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfilesToCatalog').never()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [call(waitForRealm), mockAdapter],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 0]
         ])
@@ -166,16 +165,13 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '', 3)
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfileToCatalog').once()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
+          [call(waitForRealm), mockAdapter],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 1]
         ])
