@@ -36,6 +36,7 @@ import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitFor } from 'lib/redux'
 import { Vector2 } from 'lib/math/Vector2'
+import { RootState } from 'shared/store/rootTypes'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -52,11 +53,17 @@ export function* daoSaga(): any {
 }
 
 function* pickCatalystRealm() {
-  const candidates: Candidate[] = yield select(getAllCatalystCandidates)
+  function getInformationForCatalystPicker(state: RootState) {
+    return {
+      candidates: getAllCatalystCandidates(state),
+      currentUserParcel: getParcelPosition(state),
+      config: getPickRealmsAlgorithmConfig(state)
+    }
+  }
+  let { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
+    typeof getInformationForCatalystPicker
+  >
   if (candidates.length === 0) return undefined
-  const currentUserParcel: Vector2 = yield select(getParcelPosition)
-
-  let config: AlgorithmChainConfig | undefined = yield select(getPickRealmsAlgorithmConfig)
 
   if (!config || config.length === 0) {
     config = defaultChainConfig
@@ -174,12 +181,11 @@ function* initializeCatalystCandidates() {
   yield call(waitForMetaConfigurationInitialization)
   yield put(catalystRealmsScanRequested())
 
-  const catalystsNodesEndpointURL: string | undefined = yield select(getCatalystNodesEndpoint)
+  const { catalystsNodesEndpointURL, added, denylistedCatalysts } = (yield select(
+    getInformationForInitializeCatalystCandidates
+  )) as ReturnType<typeof getInformationForInitializeCatalystCandidates>
 
   const nodes: CatalystNode[] = yield call(fetchCatalystRealms, catalystsNodesEndpointURL)
-  const added: string[] = yield select(getAddedServers)
-
-  const denylistedCatalysts: string[] = (yield select(getDisabledCatalystConfig)) ?? []
 
   const candidates: Candidate[] = yield call(
     fetchCatalystStatuses,
@@ -189,6 +195,14 @@ function* initializeCatalystCandidates() {
   )
 
   yield put(setCatalystCandidates(candidates))
+}
+
+function getInformationForInitializeCatalystCandidates(state: RootState) {
+  return {
+    catalystsNodesEndpointURL: getCatalystNodesEndpoint(state),
+    added: getAddedServers(state),
+    denylistedCatalysts: getDisabledCatalystConfig(state) || []
+  }
 }
 
 export async function checkValidRealm(baseUrl: string): Promise<PingResult | null> {

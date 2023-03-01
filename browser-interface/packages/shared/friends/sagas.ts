@@ -1,64 +1,63 @@
-import { takeEvery, put, select, call, take, delay, apply, fork, race } from 'redux-saga/effects'
+import { apply, call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
 
 import { Authenticator } from '@dcl/crypto'
 import {
-  SocialClient,
-  FriendshipRequest,
-  Conversation,
-  PresenceType,
-  CurrentUserStatus,
-  UnknownUsersError,
-  SocialAPI,
-  UpdateUserStatus,
-  ConversationType,
-  ChannelsError,
-  ChannelErrorKind,
-  GetOrCreateConversationResponse
+  ChannelErrorKind, ChannelsError, Conversation, ConversationType, CurrentUserStatus, FriendshipRequest, GetOrCreateConversationResponse, PresenceType, SocialAPI, SocialClient, UnknownUsersError, UpdateUserStatus
 } from 'dcl-social-client'
 
-import { DEBUG_KERNEL_LOG, ethereumConfigurations, CHANNEL_TO_JOIN_CONFIG_URL } from 'config'
+import { CHANNEL_TO_JOIN_CONFIG_URL, DEBUG_KERNEL_LOG, ethereumConfigurations } from 'config'
 import { deepEqual } from 'lib/javascript/deepEqual'
 
-import defaultLogger, { createLogger, createDummyLogger } from 'lib/logger'
+import type { AuthChain } from '@dcl/crypto'
 import {
-  ChatMessage,
-  NotificationType,
-  ChatMessageType,
-  FriendshipAction,
-  PresenceStatus,
-  FriendsInitializationMessage,
-  GetFriendsPayload,
-  AddFriendsPayload,
-  GetFriendRequestsPayload,
-  AddFriendRequestsPayload,
-  UpdateUserUnseenMessagesPayload,
-  UpdateTotalUnseenMessagesPayload,
-  AddChatMessagesPayload,
-  GetFriendsWithDirectMessagesPayload,
-  AddFriendsWithDirectMessagesPayload,
-  UpdateTotalUnseenMessagesByUserPayload,
-  UpdateTotalFriendRequestsPayload,
-  FriendsInitializeChatPayload,
-  MarkMessagesAsSeenPayload,
-  GetPrivateMessagesPayload,
-  CreateChannelPayload,
-  UpdateTotalUnseenMessagesByChannelPayload,
-  GetJoinedChannelsPayload,
-  ChannelInfoPayload,
-  MarkChannelMessagesAsSeenPayload,
-  GetChannelMessagesPayload,
-  ChannelErrorPayload,
-  ChannelErrorCode,
-  MuteChannelPayload,
-  GetChannelInfoPayload,
-  GetChannelMembersPayload,
-  UpdateChannelMembersPayload,
-  GetChannelsPayload,
-  ChannelSearchResultsPayload,
-  JoinOrCreateChannelPayload,
-  ChannelMember
-} from 'shared/types'
-import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+  FriendRequestInfo, FriendshipErrorCode
+} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+import {
+  FriendshipStatus,
+  GetFriendshipStatusRequest
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import {
+  AcceptFriendRequestPayload,
+  AcceptFriendRequestReplyOk, CancelFriendRequestPayload,
+  CancelFriendRequestReplyOk, GetFriendRequestsReplyOk, RejectFriendRequestPayload,
+  RejectFriendRequestReplyOk, SendFriendRequestPayload, SendFriendRequestReplyOk
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { Avatar, EthAddress } from '@dcl/schemas'
+import { isAddress } from 'eth-connect/eth-connect'
+import future from 'fp-future'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
+import {
+  defaultProfile,
+  profileToRendererFormat
+} from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { uuid } from 'lib/javascript/uuid'
+import defaultLogger, { createDummyLogger, createLogger } from 'lib/logger'
+import { Vector2 } from 'lib/math/Vector2'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { SendPrivateMessage, SEND_PRIVATE_MESSAGE } from 'shared/chat/actions'
+import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
+import { getPeer } from 'shared/comms/peers'
+import { waitForRoomConnection } from 'shared/dao/sagas'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import {
+  JoinOrCreateChannel, JOIN_OR_CREATE_CHANNEL, LeaveChannel,
+  LEAVE_CHANNEL, SendChannelMessage, SEND_CHANNEL_MESSAGE, setMatrixClient, SetMatrixClient, SET_MATRIX_CLIENT, updateFriendship, UpdateFriendship,
+  updatePrivateMessagingState,
+  updateUserData, UPDATE_FRIENDSHIP
+} from 'shared/friends/actions'
+import {
+  findPrivateMessagingFriendsByUserId, getAllFriendsConversationsWithMessages, getChannels, getCoolDownOfFriendRequests, getLastStatusOfFriends, getMessageBody, getNumberOfFriendRequests, getOwnId, getPrivateMessaging,
+  getPrivateMessagingFriends, getSocialClient, getTotalFriendRequests,
+  getTotalFriends,
+  isFriend, isFromPendingRequest,
+  isPendingRequest, isToPendingRequest
+} from 'shared/friends/selectors'
+import { FriendRequest, FriendsState, SocialData } from 'shared/friends/types'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
+import { getFeatureFlagEnabled, getSynapseUrl } from 'shared/meta/selectors'
+import { addedProfilesToCatalog } from 'shared/profiles/actions'
 import {
   findProfileByName,
   getCurrentUserProfile,
@@ -66,113 +65,31 @@ import {
   getProfilesFromStore,
   isAddedToCatalog
 } from 'shared/profiles/selectors'
-import { ExplorerIdentity } from 'shared/session/types'
-import { SocialData, FriendsState, FriendRequest } from 'shared/friends/types'
-import {
-  getSocialClient,
-  findPrivateMessagingFriendsByUserId,
-  getPrivateMessaging,
-  getPrivateMessagingFriends,
-  getTotalFriendRequests,
-  getTotalFriends,
-  isFriend,
-  getLastStatusOfFriends,
-  getChannels,
-  getAllFriendsConversationsWithMessages,
-  getOwnId,
-  getMessageBody,
-  isToPendingRequest,
-  getNumberOfFriendRequests,
-  getCoolDownOfFriendRequests,
-  isFromPendingRequest,
-  isPendingRequest
-} from 'shared/friends/selectors'
-import { USER_AUTHENTICATED } from 'shared/session/actions'
-import { SEND_PRIVATE_MESSAGE, SendPrivateMessage } from 'shared/chat/actions'
-import {
-  updateFriendship,
-  UPDATE_FRIENDSHIP,
-  UpdateFriendship,
-  updatePrivateMessagingState,
-  updateUserData,
-  setMatrixClient,
-  SET_MATRIX_CLIENT,
-  SetMatrixClient,
-  JOIN_OR_CREATE_CHANNEL,
-  JoinOrCreateChannel,
-  LeaveChannel,
-  LEAVE_CHANNEL,
-  SEND_CHANNEL_MESSAGE,
-  SendChannelMessage
-} from 'shared/friends/actions'
-import { waitForRoomConnection } from 'shared/dao/sagas'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { ensureFriendProfile } from './ensureFriendProfile'
-import { getFeatureFlagEnabled, getSynapseUrl } from 'shared/meta/selectors'
-import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter, getRealmConnectionString } from 'shared/realm/selectors'
-import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
-import { Avatar, EthAddress } from '@dcl/schemas'
-import { trackEvent } from 'shared/analytics/trackEvent'
-import { getCurrentIdentity, getCurrentUserId, isGuestLogin } from 'shared/session/selectors'
-import { store } from 'shared/store/isolatedStore'
-import { getPeer } from 'shared/comms/peers'
-import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { ProfileUserInfo } from 'shared/profiles/types'
-import {
-  defaultProfile,
-  profileToRendererFormat
-} from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
-import { addedProfilesToCatalog } from 'shared/profiles/actions'
-import {
-  getUserIdFromMatrix,
-  getMatrixIdFromUser,
-  areChannelsEnabled,
-  getMaxChannels,
-  getNormalizedRoomName,
-  getUsersAllowedToCreate,
-  encodeFriendRequestId,
-  isNewFriendRequestEnabled,
-  decodeFriendRequestId,
-  validateFriendRequestId,
-  COOLDOWN_TIME_MS,
-  isBlocked,
-  getAntiSpamLimits
-} from './utils'
-import type { AuthChain } from '@dcl/crypto'
-import { mutePlayers, unmutePlayers } from 'shared/social/actions'
-import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmConnectionString } from 'shared/realm/selectors'
 import { OFFLINE_REALM } from 'shared/realm/types'
-import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
-import { uuid } from 'lib/javascript/uuid'
-import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
-import { isAddress } from 'eth-connect/eth-connect'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { fetchENSOwner } from 'shared/web3'
-import {
-  SendFriendRequestPayload,
-  GetFriendRequestsReplyOk,
-  SendFriendRequestReplyOk,
-  CancelFriendRequestPayload,
-  CancelFriendRequestReplyOk,
-  RejectFriendRequestPayload,
-  RejectFriendRequestReplyOk,
-  AcceptFriendRequestPayload,
-  AcceptFriendRequestReplyOk
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
-import future from 'fp-future'
-import {
-  FriendshipErrorCode,
-  FriendRequestInfo
-} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
-import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { getRendererModules } from 'shared/renderer/selectors'
 import { RendererModules } from 'shared/renderer/types'
+import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
+import { getCurrentIdentity, getCurrentUserId, isGuestLogin } from 'shared/session/selectors'
+import { ExplorerIdentity } from 'shared/session/types'
+import { mutePlayers, unmutePlayers } from 'shared/social/actions'
+import { store } from 'shared/store/isolatedStore'
+import { RootState } from 'shared/store/rootTypes'
 import {
-  FriendshipStatus,
-  GetFriendshipStatusRequest
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
-import { Vector2 } from 'lib/math/Vector2'
+  AddChatMessagesPayload, AddFriendRequestsPayload, AddFriendsPayload, AddFriendsWithDirectMessagesPayload, ChannelErrorCode, ChannelErrorPayload, ChannelInfoPayload, ChannelMember, ChannelSearchResultsPayload, ChatMessage, ChatMessageType, CreateChannelPayload, FriendshipAction, FriendsInitializationMessage, FriendsInitializeChatPayload, GetChannelInfoPayload,
+  GetChannelMembersPayload, GetChannelMessagesPayload, GetChannelsPayload, GetFriendRequestsPayload, GetFriendsPayload, GetFriendsWithDirectMessagesPayload, GetJoinedChannelsPayload, GetPrivateMessagesPayload, JoinOrCreateChannelPayload, MarkChannelMessagesAsSeenPayload, MarkMessagesAsSeenPayload, MuteChannelPayload, NotificationType, PresenceStatus, UpdateChannelMembersPayload, UpdateTotalFriendRequestsPayload, UpdateTotalUnseenMessagesByChannelPayload, UpdateTotalUnseenMessagesByUserPayload, UpdateTotalUnseenMessagesPayload, UpdateUserUnseenMessagesPayload
+} from 'shared/types'
+import { fetchENSOwner } from 'shared/web3'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { ensureFriendProfile } from './ensureFriendProfile'
+import {
+  areChannelsEnabled, COOLDOWN_TIME_MS, decodeFriendRequestId, encodeFriendRequestId, getAntiSpamLimits, getMatrixIdFromUser, getMaxChannels,
+  getNormalizedRoomName, getUserIdFromMatrix, getUsersAllowedToCreate, isBlocked, isNewFriendRequestEnabled, validateFriendRequestId
+} from './utils'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -218,9 +135,16 @@ function* initializeFriendsSaga() {
     yield call(waitForRoomConnection)
     yield call(waitForRendererInstance)
 
-    const currentIdentity: ExplorerIdentity | undefined = yield select(getCurrentIdentity)
-
-    const isGuest = yield select(isGuestLogin)
+    function getInformationForFriendsSaga(state: RootState) {
+      return {
+        currentIdentity: getCurrentIdentity(state),
+        isGuest: isGuestLogin(state),
+        client: getSocialClient(state)
+      }
+    }
+    const {
+      currentIdentity, isGuest, client
+    } = (yield select(getInformationForFriendsSaga)) as ReturnType<typeof getInformationForFriendsSaga>
 
     // guests must not use the friends & private messaging features.
     if (isGuest) {
@@ -230,8 +154,6 @@ function* initializeFriendsSaga() {
       })
       return
     }
-
-    const client: SocialAPI | null = yield select(getSocialClient)
 
     try {
       const isLoggedIn: boolean = (currentIdentity && client && (yield apply(client, client.isLoggedIn, []))) || false
@@ -565,7 +487,7 @@ function* refreshFriends() {
     const ownId = client.getUserId()
 
     // init friends
-    const friendIds: string[] = yield getFriendIds(client)
+    const friendIds: string[] = yield call(getFriendIds, client)
     const friendsSocial: SocialData[] = []
 
     // init friend requests

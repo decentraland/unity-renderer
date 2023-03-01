@@ -44,6 +44,7 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { parcelSize } from 'lib/decentraland/parcels/limits'
 import { Vector2 } from 'lib/math/Vector2'
+import { waitFor } from 'lib/redux'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -76,11 +77,10 @@ function* checkAndReportAround() {
   }
 }
 
-function* waitForPoiTilesInitialization() {
-  while (!(yield select((state: RootAtlasState) => state.atlas.hasPois))) {
-    yield take(INITIALIZE_POI_TILES)
-  }
+function atlasHasPois(state: RootAtlasState) {
+  return !!state.atlas.hasPois
 }
+const waitForPoiTilesInitialization = waitFor(atlasHasPois, INITIALIZE_POI_TILES)
 
 function* reportPois() {
   yield call(waitForPoiTilesInitialization)
