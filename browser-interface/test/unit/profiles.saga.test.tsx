@@ -6,13 +6,11 @@ import {
   addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
 } from 'shared/profiles/actions'
 import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
-import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
 import type { ProfileUserInfo } from 'shared/profiles/types'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
+import { getInformationToSubmitProfileFromStore, handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { isCurrentUserId } from 'shared/session/selectors'
 import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -118,10 +116,13 @@ describe('Handle submit profile to renderer', () => {
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
           [call(waitForRealm), mockAdapter],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 1]
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .run()
         .then((response) => {
@@ -144,10 +145,13 @@ describe('Handle submit profile to renderer', () => {
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
           [call(waitForRealm), mockAdapter],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 0]
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .run()
         .then((response) => {
@@ -170,10 +174,13 @@ describe('Handle submit profile to renderer', () => {
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
           [call(waitForRealm), mockAdapter],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 1]
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .dispatch(addProfileToLastSentProfileVersionAndCatalog(userId, 3))
         .run()
