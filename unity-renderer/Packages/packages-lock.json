@@ -184,7 +184,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.performance.profile-analyzer": {
-      "version": "1.1.1",
+      "version": "1.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -329,11 +329,11 @@
       "hash": "b42ca43f54f29c64bfb633e7655bfcb314bc1b8c"
     },
     "net.tnrd.nsubstitute": {
-      "version": "https://github.com/decentraland/Unity3D-NSubstitute.git#chore/upgrade-to-4.4",
+      "version": "https://github.com/nowsprinting/Unity3D-NSubstitute.git#fix_assembly",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "0d1ac0eb50274d9c88bcd75e48cc3ff6fb57d8f2"
+      "hash": "e367447c99fae66d7de017bb805d293aae839cea"
     },
     "ru.threedisevenzeror.unitygifdecoder": {
       "version": "https://github.com/3DI70R/Unity-GifDecoder.git",
