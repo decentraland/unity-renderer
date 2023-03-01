@@ -7,6 +7,7 @@ using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using UnityEngine;
+using QualitySettings = UnityEngine.QualitySettings;
 #if UNITY_EDITOR
 using DG.Tweening;
 #endif
@@ -87,6 +88,10 @@ namespace DCL
 
             // We trigger the Decentraland logic once everything is initialized.
             WebInterface.StartDecentraland();
+
+            //Crazy test read on https://forum.unity.com/threads/webgl-run-in-background-unacceptable-delay-with-networking.435609/
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 30;
         }
 
         protected virtual void Update()
