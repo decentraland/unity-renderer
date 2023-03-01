@@ -66,7 +66,7 @@ public class WebSocketCommunication : IKernelCommunication
                 {
                     SslConfiguration =
                     {
-                        ServerCertificate = buildSelfSignedServerCertificate(),
+                        ServerCertificate = loadSelfSignedServerCertificate(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
@@ -112,7 +112,10 @@ public class WebSocketCommunication : IKernelCommunication
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
-    
+
+    private X509Certificate2 loadSelfSignedServerCertificate() =>
+        new X509Certificate2("self-signed.pfx", "");
+
     private X509Certificate2 buildSelfSignedServerCertificate()
     {
         string certificateName = "org.decentraland";
