@@ -283,6 +283,7 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view, false);
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(40);
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         controller.SetVisibility(true);
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
@@ -301,6 +302,7 @@ public class WorldChatWindowControllerShould
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(26);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
@@ -330,6 +332,7 @@ public class WorldChatWindowControllerShould
         friendsController.TotalFriendsWithDirectMessagesCount.Returns(42);
         view.ClearReceivedCalls();
         friendsController.ClearReceivedCalls();
+        GivenFriend("bleh", PresenceStatus.ONLINE);
 
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
