@@ -1,6 +1,7 @@
 import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { jsonFetch } from 'lib/javascript/jsonFetch'
+import { pickProperty } from 'lib/javascript/pickProperty'
 import { reportScenesFromTiles } from 'shared/atlas/actions'
 import { getPoiTiles, postProcessSceneName } from 'shared/atlas/selectors'
 import { getHotScenesService } from 'shared/dao/selectors'
@@ -45,11 +46,12 @@ export async function reportHotScenes() {
     // NOTE: we report POI as hotscenes for now, approach should change in next iteration
     fetchPOIsAsHotSceneInfo()
   ])
-  const hotScenesIds = hotScenes.map((_) => _.id)
+  const hotScenesIds = pickProperty(hotScenes, 'id')
+  const isHotScene = (_: HotSceneInfo) => hotScenesIds.includes(_.id)
+  const encodeBaseCoords = (_: HotSceneInfo) => encodeParcelPosition(_.baseCoords)
 
-  const report = hotScenes.concat(pois.filter((_) => hotScenesIds.includes(_.id)))
-
-  store.dispatch(reportScenesFromTiles(report.map((_) => encodeParcelPosition(_.baseCoords))))
+  const report = hotScenes.concat(pois.filter(isHotScene))
+  store.dispatch(reportScenesFromTiles(report.map(encodeBaseCoords)))
 
   getUnityInstance().UpdateHotScenesList(report)
 }
