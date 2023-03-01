@@ -27,6 +27,7 @@ namespace DCL.LoadingScreen
         private bool currentRealmIsWorld;
         private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
+        private bool onSignUpFlow;
 
         public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore)
@@ -91,6 +92,7 @@ namespace DCL.LoadingScreen
 
         private void OnSignupFlow(bool current, bool previous)
         {
+            onSignUpFlow = current;
             if (current)
                 FadeOutView();
             else
@@ -99,6 +101,8 @@ namespace DCL.LoadingScreen
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
+            if (onSignUpFlow) return;
+
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
             Debug.Log($"TELEPORT REQUeSTED {currentDestinationCandidate}");
 
