@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 public class CoordinateUtils
 {
-    private const string COORDINATE_MATCH_REGEX = @"[-]?\d{1,3},[-]?\d{1,3}";
+    private const string COORDINATE_MATCH_REGEX = @"(?<!\S)[-]?\d{1,3},[-]?\d{1,3}(?!\S)";
     private const int MAX_X_COORDINATE = 163;
     private const int MIN_X_COORDINATE = -150;
     private const int MAX_Y_COORDINATE = 158;
