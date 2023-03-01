@@ -100,9 +100,11 @@ namespace DCL.LoadingScreen
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
+            Debug.Log($"TELEPORT REQUeSTED {currentDestinationCandidate}");
 
-            if (IsNewRealm() || IsSceneLoaded(currentDestinationCandidate))
+            if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
+                Debug.Log($"FADING VIEW IN {currentDestination}");
                 currentDestination = currentDestinationCandidate;
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
@@ -125,25 +127,41 @@ namespace DCL.LoadingScreen
         private bool IsNewRealm()
         {
             //Realm has not been set yet, so we are not in a new realm
-            if (realmDataStore.playerRealmAboutConfiguration.Get() == null) return false;
+            if (realmDataStore.playerRealmAboutConfiguration.Get() == null)
+            {
+                Debug.Log("PLAYER REALM ABOUT CONFIGURATION IS NULL");
+                return false;
+            }
 
             bool realmChangeRequiresLoadingScreen;
 
+            Debug.Log($"Current Realm {currentRealm}");
+
             if (commonDataStore.isWorld.Get())
+            {
                 realmChangeRequiresLoadingScreen = string.IsNullOrEmpty(currentRealm) || !currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName);
+                Debug.Log($"IS NULL {string.IsNullOrEmpty(currentRealm)} IS NEW REALM {!currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName)}");
+            }
             else
+            {
                 realmChangeRequiresLoadingScreen = currentRealmIsWorld;
+                Debug.Log($"CURRENT REALM IS WORLD {currentRealmIsWorld}");
+            }
 
             currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
-
             currentRealmIsWorld = commonDataStore.isWorld.Get();
+            Debug.Log($"Realm Change Requires Loading Screen {realmChangeRequiresLoadingScreen} {currentRealm} {currentRealmIsWorld}");
             return realmChangeRequiresLoadingScreen;
         }
 
         //If the destination scene is not loaded, we show the teleport screen. THis is called in the POSITION_UNSETTLED
         //On the other hand, the POSITION_SETTLED event is called; but since the scene will already be loaded, the loading screen wont be shown
-        private bool IsSceneLoaded(Vector2Int currentDestinationCandidate) =>
-             worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
+        private bool IsNewScene(Vector2Int currentDestinationCandidate)
+        {
+            bool isNewScene =              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
+            Debug.Log($"IS NEW SCENE {isNewScene}");
+            return isNewScene;
+        }
 
         private void CheckSceneTimeout(Vector2Int currentDestinationCandidate)
         {
