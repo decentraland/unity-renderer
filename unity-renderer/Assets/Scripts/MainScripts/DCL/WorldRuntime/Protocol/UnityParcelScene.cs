@@ -37,7 +37,7 @@ namespace DCL.Models
         {
             public static bool VERBOSE = false;
 
-            // We can't remove this string id since it's used for mapping portable experience ids to their wearables...
+            // We can't remove this string id since it's used for mapping portable experience ids to their wearables and fetching scene asset bundles manifest
             public string id;
 
             public int sceneNumber;

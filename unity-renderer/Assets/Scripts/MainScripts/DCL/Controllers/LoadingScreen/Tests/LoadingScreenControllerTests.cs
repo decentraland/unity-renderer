@@ -28,7 +28,7 @@ namespace DCL.LoadingScreen.Test
 
 
         [SetUp]
-        public async void SetUp()
+        public void SetUp()
         {
             loadingScreenView = Substitute.For<ILoadingScreenView>();
             sceneController = Substitute.For<ISceneController>();
@@ -40,7 +40,7 @@ namespace DCL.LoadingScreen.Test
             realmDataStore.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration());
 
 
-            LoadingScreenView auxiliaryViews = await LoadingScreenPlugin.CreateLoadingScreenView(new AddressableResourceProvider(), CancellationToken.None);;
+            LoadingScreenView auxiliaryViews = LoadingScreenPlugin.CreateLoadingScreenView();
             loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
 

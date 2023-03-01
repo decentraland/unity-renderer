@@ -39,6 +39,7 @@ namespace DCL
 
         [Obsolete("Deprecated HUD Element")]
         SIGNUP = 29,
+        [Obsolete("Deprecated HUD Element")]
         LOADING = 30,
 
         [Obsolete("Deprecated HUD Element")]

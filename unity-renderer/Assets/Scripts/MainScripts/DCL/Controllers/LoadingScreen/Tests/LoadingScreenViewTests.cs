@@ -11,9 +11,9 @@ namespace DCL.LoadingScreen.Test
         private LoadingScreenView loadingScreenView;
 
         [SetUp]
-        public async void SetUp()
+        public void SetUp()
         {
-            loadingScreenView = await LoadingScreenPlugin.CreateLoadingScreenView(new AddressableResourceProvider(), CancellationToken.None);
+            loadingScreenView = LoadingScreenPlugin.CreateLoadingScreenView();
         }
 
         [TearDown]

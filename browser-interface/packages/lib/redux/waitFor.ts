@@ -1,6 +1,6 @@
 import { select, take } from 'redux-saga/effects'
 
-export function waitFor(selector: (state: any) => any, actionType?: string) {
+export function waitFor(selector: (state: any) => any, actionType?: string | string[]) {
   return function* waitingFor() {
     let result = yield select(selector)
     while (!result) {

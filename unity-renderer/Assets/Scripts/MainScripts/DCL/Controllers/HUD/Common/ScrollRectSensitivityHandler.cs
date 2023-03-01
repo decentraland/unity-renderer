@@ -1,75 +1,78 @@
-using UnityEngine;
-using UnityEngine.UI;
 using MainScripts.DCL.WebPlugin;
 using System;
+using UnityEngine;
+using UnityEngine.UI;
 
-/// <summary>
-/// Attaching this component to a scroll rect to apply the scroll sensitivity based on the os based stored sensitivities
-/// </summary>
-[RequireComponent(typeof(ScrollRect))]
-public class ScrollRectSensitivityHandler : MonoBehaviour
+namespace DCL.HUD.Common
 {
-
-    private const float WINDOWS_SENSITIVITY_MULTIPLIER = 15f;
-    private const float MAC_SENSITIVITY_MULTIPLIER = 4f;
-    private const float LINUX_SENSITIVITY_MULTIPLIER = 3f;
-    private const float DEFAULT_SENSITIVITY_MULTIPLIER = 3.5f;
-
-    private ScrollRect myScrollRect;
-    private float defaultSens;
-
-    void Awake()
+    /// <summary>
+    /// Attaching this component to a scroll rect to apply the scroll sensitivity based on the os based stored sensitivities
+    /// </summary>
+    [RequireComponent(typeof(ScrollRect))]
+    public class ScrollRectSensitivityHandler : MonoBehaviour
     {
-        myScrollRect = GetComponent<ScrollRect>();
-        defaultSens = myScrollRect.scrollSensitivity;
-        SetScrollRectSensitivity();
-    }
+        private const float WINDOWS_SENSITIVITY_MULTIPLIER = 4.5f;
+        private const float MAC_SENSITIVITY_MULTIPLIER = 1.5f;
+        private const float LINUX_SENSITIVITY_MULTIPLIER = 1.125f;
+        private const float DEFAULT_SENSITIVITY_MULTIPLIER = 1.32f;
 
-    private void SetScrollRectSensitivity() 
-    {
-        myScrollRect.scrollSensitivity = defaultSens * GetScrollMultiplier();
-    }
+        private ScrollRect myScrollRect;
+        private float defaultSens;
 
-    private float GetScrollMultiplier() {
-        switch (GetCurrentOperatingSystem())
+        private void Awake()
         {
-            case OperatingSystemFamily.Windows:
-                return WINDOWS_SENSITIVITY_MULTIPLIER;
-            case OperatingSystemFamily.Linux:
-                return LINUX_SENSITIVITY_MULTIPLIER;
-            case OperatingSystemFamily.MacOSX:
-                return MAC_SENSITIVITY_MULTIPLIER;
-            default:
-                return DEFAULT_SENSITIVITY_MULTIPLIER;
+            myScrollRect = GetComponent<ScrollRect>();
+            defaultSens = myScrollRect.scrollSensitivity;
+            SetScrollRectSensitivity();
         }
-    }
 
-    private OperatingSystemFamily GetCurrentOperatingSystem() {
+        private void SetScrollRectSensitivity()
+        {
+            float scrollSensitivity = defaultSens * GetScrollMultiplier();
+            myScrollRect.scrollSensitivity = scrollSensitivity;
+        }
+
+        private float GetScrollMultiplier()
+        {
+            OperatingSystemFamily currentOperatingSystem = GetCurrentOperatingSystem();
+
+            switch (currentOperatingSystem)
+            {
+                case OperatingSystemFamily.Windows:
+                    return WINDOWS_SENSITIVITY_MULTIPLIER;
+                case OperatingSystemFamily.Linux:
+                    return LINUX_SENSITIVITY_MULTIPLIER;
+                case OperatingSystemFamily.MacOSX:
+                    return MAC_SENSITIVITY_MULTIPLIER;
+                default:
+                    return DEFAULT_SENSITIVITY_MULTIPLIER;
+            }
+        }
+
+        private OperatingSystemFamily GetCurrentOperatingSystem() {
 #if UNITY_WEBGL
-        return ObtainOsFromWebGLAgent();
+            return ObtainOsFromWebGLAgent();
 #else
-        return SystemInfo.operatingSystemFamily;
+            return SystemInfo.operatingSystemFamily;
 #endif
-    }
+        }
 
-    private OperatingSystemFamily ObtainOsFromWebGLAgent() {
-        String agentInfo = WebGLPlugin.GetUserAgent();
-        if (agentInfo.ToLower().Contains("windows"))
-        {
-            return OperatingSystemFamily.Windows;
-        }
-        else if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
-        {
-            return OperatingSystemFamily.MacOSX;
-        }
-        else if (agentInfo.ToLower().Contains("linux"))
-        {
-            return OperatingSystemFamily.Linux;
-        }
-        else
-        {
+        private OperatingSystemFamily ObtainOsFromWebGLAgent() {
+            string agentInfo = WebGLPlugin.GetUserAgent();
+
+            if (agentInfo.Contains("windows", StringComparison.OrdinalIgnoreCase))
+                return OperatingSystemFamily.Windows;
+
+            if (agentInfo.Contains("mac", StringComparison.OrdinalIgnoreCase)
+                || agentInfo.Contains("osx", StringComparison.OrdinalIgnoreCase)
+                || agentInfo.Contains("os x", StringComparison.OrdinalIgnoreCase))
+                return OperatingSystemFamily.MacOSX;
+
+            if (agentInfo.Contains("linux", StringComparison.OrdinalIgnoreCase))
+                return OperatingSystemFamily.Linux;
+
             return OperatingSystemFamily.Other;
         }
-    }
 
+    }
 }

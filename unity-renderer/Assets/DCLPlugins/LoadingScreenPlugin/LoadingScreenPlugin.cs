@@ -3,6 +3,7 @@ using DCL;
 using DCL.LoadingScreen;
 using DCL.Providers;
 using System.Threading;
+using UnityEngine;
 
 namespace DCLPlugins.LoadingScreenPlugin
 {
@@ -14,15 +15,12 @@ namespace DCLPlugins.LoadingScreenPlugin
         private const string LOADING_SCREEN_ASSET = "_LoadingScreen";
 
         private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
-        private readonly IAddressableResourceProvider assetsProvider;
         private readonly CancellationTokenSource cancellationTokenSource;
 
         private LoadingScreenController loadingScreenController;
 
-        public LoadingScreenPlugin(IAddressableResourceProvider assetsProvider)
+        public LoadingScreenPlugin()
         {
-            this.assetsProvider = assetsProvider;
-
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Set(true);
 
             cancellationTokenSource = new CancellationTokenSource();
@@ -32,7 +30,7 @@ namespace DCLPlugins.LoadingScreenPlugin
         private async UniTaskVoid CreateLoadingScreen(CancellationToken cancellationToken = default)
         {
             loadingScreenController = new LoadingScreenController(
-                await CreateLoadingScreenView(assetsProvider, cancellationToken),
+                CreateLoadingScreenView(),
                 Environment.i.world.sceneController, Environment.i.world.state, NotificationsController.i,
                 DataStore.i.player, DataStore.i.common, dataStoreLoadingScreen.Ref, DataStore.i.realm);
         }
@@ -45,7 +43,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             loadingScreenController.Dispose();
         }
 
-        public static async UniTask<LoadingScreenView> CreateLoadingScreenView(IAddressableResourceProvider assetsProvider, CancellationToken cancellationToken) =>
-            await assetsProvider.Instantiate<LoadingScreenView>(LOADING_SCREEN_ASSET, cancellationToken: cancellationToken);
+        public static LoadingScreenView CreateLoadingScreenView() =>
+            GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
     }
 }

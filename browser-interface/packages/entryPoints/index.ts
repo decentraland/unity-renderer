@@ -4,7 +4,7 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from 'kernel-web-interface'
-import { resolveUrlFromUrn } from '@dcl/urn-resolver'
+import { resolveBaseUrl } from 'lib/decentraland/url/resolveBaseUrl'
 import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
 import { getFromPersistentStorage, setPersistentStorage } from 'lib/browser/persistentStorage'
@@ -18,7 +18,7 @@ import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
 import { teleportToAction } from 'shared/scene-loader/actions'
-import { getStoredSession } from 'shared/session'
+import { retrieveLastSessionByAddress } from 'shared/session'
 import { authenticate, initSession } from 'shared/session/actions'
 import { store } from 'shared/store/isolatedStore'
 import type { RootState } from 'shared/store/rootTypes'
@@ -27,17 +27,6 @@ import { initializeUnity } from 'unity-interface/initializer'
 import 'unity-interface/trace'
 import { loadWebsiteSystems } from './loadWebsiteSystems'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
-
-async function resolveBaseUrl(urn: string): Promise<string> {
-  if (urn.startsWith('urn:')) {
-    const t = await resolveUrlFromUrn(urn)
-    if (t) {
-      return (t + '/').replace(/(\/)+$/, '/')
-    }
-    throw new Error('Cannot resolve content for URN ' + urn)
-  }
-  return (urn + '/').replace(/(\/)+$/, '/')
-}
 
 function orFail(withError: string): never {
   throw new Error(withError)
@@ -126,8 +115,7 @@ globalThis.DecentralandKernel = {
       // Initializes the Session Saga
       store.dispatch(initSession())
 
-      await initializeUnity(options.rendererOptions)
-      await loadWebsiteSystems(options.kernelOptions)
+      await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
     }
 
     setTimeout(
@@ -156,7 +144,10 @@ globalThis.DecentralandKernel = {
       version: 'mockedversion',
       // this method is used for auto-login
       async hasStoredSession(address: string, networkId: number) {
-        if (!(await getStoredSession(address))) return { result: false }
+        const existingSession = await retrieveLastSessionByAddress(address)
+        if (!existingSession) {
+          return { result: false }
+        }
 
         const profile = await localProfilesRepo.get(
           address,
