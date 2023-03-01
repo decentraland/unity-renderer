@@ -23,6 +23,7 @@ export function* sceneEventsSaga() {
 function* islandChanged() {
   const { adapter, island } = (yield select(getRealmAdapterAndIsland)) as ReturnType<typeof getRealmAdapterAndIsland>
 
+  console.log(`hi: ${adapter}`)
   if (adapter) {
     const payload = toEnvironmentRealmType(adapter, island)
     yield call(allScenesEvent, { eventType: 'onRealmChanged', payload })
@@ -30,7 +31,7 @@ function* islandChanged() {
 
   yield call(updateLocation, adapter ? realmToConnectionString(adapter) : undefined, island)
 }
-function getRealmAdapterAndIsland(state: RootCommsState & RootRealmState) {
+export function getRealmAdapterAndIsland(state: RootCommsState & RootRealmState) {
   return {
     adapter: getRealmAdapter(state),
     island: getCommsIsland(state)
@@ -40,8 +41,11 @@ function getRealmAdapterAndIsland(state: RootCommsState & RootRealmState) {
 // @internal
 export function updateLocation(realm: string | undefined, island: string | undefined) {
   const q = new URLSearchParams(window.location.search)
-  if (realm) q.set('realm', realm)
-  else q.delete('realm')
+  if (realm) {
+    q.set('realm', realm)
+  } else {
+    q.delete('realm')
+  }
   if (island) {
     q.set('island', island)
   } else {

@@ -1159,7 +1159,7 @@ export function* initializeStatusUpdateInterval() {
     }
   }
 }
-function getStatusUpdateIntervalInfo(state: RootState) {
+export function getStatusUpdateIntervalInfo(state: RootState) {
   return {
     client: getSocialClient(state),
     realmConnectionString: getRealmConnectionString(state),
