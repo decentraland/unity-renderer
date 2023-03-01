@@ -30,6 +30,31 @@ non-exported functions
 * On naming conventions for actions:
   - Please follow `Request`, `Success` and `Failure` for common HTTP or other RPC-style processes.
 
+# redux-sagas
+
+If there are three or more consecutive selects that can be merged into one, do it. Don't:
+```
+function* mySaga() {
+  const a = yield select(aSelector)
+  const b = yield select(bSelector)
+  const c = yield select(cSelector)
+  ...
+}
+```
+Do:
+```
+function* mySaga() {
+  const { a, b, c } = yield select(allInfo)
+}
+function allInfo(state) {
+  return {
+    a: aSelector(state),
+    b: bSelector(state),
+    c: cSelector(state),
+  }
+}
+```
+
 # module imports
 
 - Always use an absolute path when requiring a module in another subfolder of the `packages` folder.

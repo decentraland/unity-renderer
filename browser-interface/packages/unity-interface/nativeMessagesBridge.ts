@@ -40,7 +40,7 @@ function queryTypeToId(type: QueryType): number {
   }
 }
 
-export class NativeMessagesBridge {
+class NativeMessagesBridge {
   private callCreateEntity!: () => void
   private callRemoveEntity!: () => void
   private callSceneReady!: () => void

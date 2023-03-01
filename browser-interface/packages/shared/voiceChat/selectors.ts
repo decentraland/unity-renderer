@@ -20,9 +20,7 @@ export const getVoiceChatState = (store: RootVoiceChatState) => store.voiceChat
 
 export const isRequestedVoiceChatRecording = (store: RootVoiceChatState) => store.voiceChat.requestRecording
 
-export const isVoiceChatRecording = (store: RootVoiceChatState) => store.voiceChat.recording
-
-export const getVoicePolicy = (store: RootVoiceChatState) => store.voiceChat.policy
+const getVoicePolicy = (store: RootVoiceChatState) => store.voiceChat.policy
 
 export const getVoiceHandler = (store: RootVoiceChatState) => store.voiceChat.voiceHandler
 
@@ -69,7 +67,7 @@ export function shouldPlayVoice(
   )
 }
 
-export function isVoiceAllowedByPolicy(
+function isVoiceAllowedByPolicy(
   state: RootVoiceChatState & RootFriendsState & RootProfileState,
   voiceUserId: string
 ): boolean {

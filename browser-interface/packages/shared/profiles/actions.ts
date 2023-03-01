@@ -54,7 +54,6 @@ export type DeployProfile = ReturnType<typeof deployProfile>
 export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
 export const addedProfileToCatalog = (userId: string, profile: Avatar) =>
   action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
-export type AddedProfileToCatalog = ReturnType<typeof addedProfileToCatalog>
 
 export const ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG = 'Add profile to last sent profile version and catalog'
 export const addProfileToLastSentProfileVersionAndCatalog = (userId: string, version: number) =>
@@ -66,8 +65,3 @@ export type AddProfileToLastSentProfileVersionAndCatalog = ReturnType<
 export const ADDED_PROFILES_TO_CATALOG = '[Success] Added profiles to catalog'
 export const addedProfilesToCatalog = (profiles: Avatar[]) => action(ADDED_PROFILES_TO_CATALOG, { profiles })
 export type AddedProfilesToCatalog = ReturnType<typeof addedProfilesToCatalog>
-
-// Profiles over comms
-export const PROFILE_RECEIVED_OVER_COMMS = 'PROFILE_RECEIVED_OVER_COMMS'
-export const profileReceivedOverComms = (profile: Avatar) => action(PROFILE_RECEIVED_OVER_COMMS, { profile })
-export type ProfileReceivedOverComms = ReturnType<typeof profileReceivedOverComms>

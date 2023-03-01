@@ -1,9 +1,9 @@
 import type { RemoteProfile } from 'shared/profiles/types'
 import { requestProfile } from './requestProfile'
 
-export const cachedRequests = new Map<string, Promise<RemoteProfile | null>>()
+const cachedRequests = new Map<string, Promise<RemoteProfile | null>>()
 
-export function requestCacheKey(userId: string, version?: number) {
+function requestCacheKey(userId: string, version?: number) {
   if (userId.startsWith('default')) return userId
   if (version) return `${userId}:${version}`
   return null

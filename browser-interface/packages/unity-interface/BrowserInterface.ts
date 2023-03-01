@@ -126,7 +126,7 @@ type SystemInfoPayload = {
 }
 
 /** Message from renderer sent to save the profile in the catalyst */
-export type RendererSaveProfile = {
+type RendererSaveProfile = {
   avatar: {
     name: string
     bodyShape: string
@@ -179,7 +179,7 @@ const emoteSchema: JSONSchema<{ slot: number; urn: string }> = {
   }
 }
 
-export const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
+const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
   type: 'object',
   required: ['avatar', 'body', 'face256'],
   properties: {
@@ -202,7 +202,7 @@ export const rendererSaveProfileSchemaV0: JSONSchema<RendererSaveProfile> = {
   }
 } as any
 
-export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
+const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
   type: 'object',
   required: ['avatar', 'body', 'face256'],
   properties: {
@@ -232,7 +232,7 @@ const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
 
 // the BrowserInterface is a visitor for messages received from Unity
-export class BrowserInterface {
+class BrowserInterface {
   private lastBalanceOfMana: number = -1
 
   startedFuture = future<void>()

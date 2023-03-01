@@ -16,7 +16,7 @@ export const getAddedServers = (store: RootMetaState): string[] => {
   return config.servers.added
 }
 
-export const getContentWhitelist = (store: RootMetaState): string[] => {
+const getContentWhitelist = (store: RootMetaState): string[] => {
   const { config } = store.meta
 
   if (!config || !config.servers || !config.servers.contentWhitelist) {
@@ -24,12 +24,6 @@ export const getContentWhitelist = (store: RootMetaState): string[] => {
   }
 
   return config.servers.contentWhitelist
-}
-
-export const getMinCatalystVersion = (store: RootMetaState): string | undefined => {
-  const { config } = store.meta
-
-  return config.minCatalystVersion
 }
 
 export const isMetaConfigurationInitialized = (store: RootMetaState): boolean => store.meta.initialized

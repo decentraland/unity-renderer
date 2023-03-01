@@ -31,7 +31,6 @@ export type QueryPayload = { queryId: string; payload: RayQuery }
 export type CreateEntityPayload = { id: string }
 
 export type RemoveEntityPayload = { id: string }
-export type SceneStartedPayload = {}
 
 export type SetEntityParentPayload = {
   entityId: string
@@ -99,22 +98,6 @@ export type LoadableScene = {
 
 export type InstancedSpawnPoint = { position: Vector3; cameraTarget?: Vector3 }
 
-export type SoundComponent = {
-  /** Distance fading model, default: 'linear' */
-  distanceModel?: 'linear' | 'inverse' | 'exponential'
-  /** Does the sound loop? default: false */
-  loop?: boolean
-  /** The src of the sound to be played */
-  src: string
-  /** Volume of the sound, values 0 to 1, default: 1 */
-  volume?: number
-  /** Used in inverse and exponential distance models, default: 1 */
-  rolloffFactor?: number
-  /** Is the sound playing?, default: true */
-  playing?: boolean
-}
-
-
 type Ray = {
   origin: Vector3
   direction: Vector3
@@ -123,7 +106,7 @@ type Ray = {
 
 export type QueryType = 'HitFirst' | 'HitAll' | 'HitFirstAvatar' | 'HitAllAvatars'
 
-export type RayQuery = {
+type RayQuery = {
   queryId: string
   queryType: QueryType
   ray: Ray

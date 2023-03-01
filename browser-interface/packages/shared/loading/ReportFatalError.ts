@@ -50,16 +50,6 @@ export type ErrorContextTypes =
   | typeof ErrorContext.RENDERER_ERRORHANDLER
   | typeof ErrorContext.RENDERER_NEWERRORHANDLER
 
-export function ReportFatalErrorWithCatalystPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful catalyst payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
-
-export function ReportFatalErrorWithCommsPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful comms payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
-
 Object.assign(globalThis, {
   BringDownClientAndShowError,
   ReportFatalErrorWithUnityPayloadAsync,

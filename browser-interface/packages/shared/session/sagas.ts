@@ -6,7 +6,6 @@ import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { initializeReferral } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -68,7 +67,6 @@ export function* sessionSaga(): any {
   })
 
   yield call(initialize)
-  yield call(initializeReferral)
 }
 
 function* initialize() {
