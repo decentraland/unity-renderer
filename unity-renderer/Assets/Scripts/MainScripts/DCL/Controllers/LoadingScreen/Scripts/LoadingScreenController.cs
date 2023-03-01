@@ -124,6 +124,9 @@ namespace DCL.LoadingScreen
         //we wont see the loading screen. Same happens when leaving a world. Thats why we need to keep track of the latest realmName as well as if it is a world.
         private bool IsNewRealm()
         {
+            //Realm has not been set yet, so we are not in a new realm
+            if (realmDataStore.playerRealmAboutConfiguration.Get() == null) return false;
+
             bool realmChangeRequiresLoadingScreen;
 
             if (commonDataStore.isWorld.Get())
@@ -131,9 +134,8 @@ namespace DCL.LoadingScreen
             else
                 realmChangeRequiresLoadingScreen = currentRealmIsWorld;
 
-            AboutResponse.Types.AboutConfiguration currentConfiguration = realmDataStore.playerRealmAboutConfiguration.Get();
-            currentRealm =  currentConfiguration != null ? currentConfiguration.RealmName :  "";
-            
+            currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
+
             currentRealmIsWorld = commonDataStore.isWorld.Get();
             return realmChangeRequiresLoadingScreen;
         }
