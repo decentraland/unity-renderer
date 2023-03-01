@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
+using Decentraland.Bff;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
@@ -130,7 +131,9 @@ namespace DCL.LoadingScreen
             else
                 realmChangeRequiresLoadingScreen = currentRealmIsWorld;
 
-            currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
+            AboutResponse.Types.AboutConfiguration currentConfiguration = realmDataStore.playerRealmAboutConfiguration.Get();
+            currentRealm =  currentConfiguration != null ? currentConfiguration.RealmName :  "";
+            
             currentRealmIsWorld = commonDataStore.isWorld.Get();
             return realmChangeRequiresLoadingScreen;
         }
