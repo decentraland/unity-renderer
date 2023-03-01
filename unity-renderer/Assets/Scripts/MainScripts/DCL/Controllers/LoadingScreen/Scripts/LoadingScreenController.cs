@@ -2,7 +2,6 @@ using DCL.Helpers;
 using System;
 using UnityEngine;
 using DCL.NotificationModel;
-using Decentraland.Bff;
 using Type = DCL.NotificationModel.Type;
 
 namespace DCL.LoadingScreen
