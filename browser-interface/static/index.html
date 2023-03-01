@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Decentraland Kernel Debugger</title>
@@ -50,17 +51,20 @@
 
         background-color: #de3959;
       }
+
       .error-overlay-title {
         text-align: center;
 
         font-size: 1rem;
         margin-bottom: 4px;
       }
+
       .error-overlay-description {
         text-align: center;
 
         font-size: 0.85rem;
       }
+
       .error-overlay-button {
         position: absolute;
         right: 20px;
@@ -77,6 +81,7 @@
         border: 0;
         background-color: transparent;
       }
+
       .error-overlay-button:active,
       .error-overlay-button:focus,
       .error-overlay-button:focus:active {
@@ -124,15 +129,23 @@
 
         if (!DecentralandKernel) throw new Error('DecentralandKernel could not be loaded')
 
-        const baseUrl = new URL('./', location.toString()).toString()
+        const explorerBaseUrl = new URL('./', location.toString()).toString()
+        let baseUrl = explorerBaseUrl
+
+        const qs = new URLSearchParams(document.location.search)
+        if (qs.has('explorer-branch')) {
+          baseUrl = `https://renderer-artifacts.decentraland.org/branch/${qs.get('explorer-branch')}`
+        } else if (qs.has('explorer-version')) {
+          baseUrl = `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
+        }
 
         const kernel = await DecentralandKernel.initKernel({
           kernelOptions: {
-            baseUrl: baseUrl
+            baseUrl: explorerBaseUrl
           },
           rendererOptions: {
             container,
-            baseUrl: baseUrl
+            baseUrl
           }
         })
 

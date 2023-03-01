@@ -209,7 +209,7 @@ namespace DCL.Chat.Notifications
             chatNotificationComponentView.SetMessage(model.Body);
             chatNotificationComponentView.SetNotificationHeader($"DM - {model.PeerUsername}");
             chatNotificationComponentView.SetNotificationSender($"{senderName}:");
-            chatNotificationComponentView.SetNotificationTargetId(model.SenderId);
+            chatNotificationComponentView.SetNotificationTargetId(model.TargetId);
             chatNotificationComponentView.SetImageVisibility(false);
         }
 

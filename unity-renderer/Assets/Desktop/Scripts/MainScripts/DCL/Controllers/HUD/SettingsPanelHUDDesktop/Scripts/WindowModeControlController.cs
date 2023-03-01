@@ -38,7 +38,6 @@ namespace MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts
 
         private void SetupBorderless()
         {
-            currentDisplaySettings.resolutionSizeIndex = 0;
             ApplySettings();
             UpdateResolution();
         }

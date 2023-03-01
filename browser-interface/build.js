@@ -4,7 +4,6 @@ const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('fs')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
-const { generatedFiles } = require('./package.json')
 const { mkdir } = require('fs/promises')
 
 const builtIns = {
@@ -168,12 +167,7 @@ function createWorker(entry, outfile) {
 }
 
 async function compileJs() {
-  ensureFileExists(DIST_PATH, 'unity.loader.js')
-  const injectUnityPath = path.resolve(DIST_PATH, 'unity.loader.js')
-
-  for (let file of Object.values(generatedFiles)) {
-    ensureFileExists(DIST_PATH, file)
-  }
+  const injectUnityPath = path.resolve(__dirname, 'static', 'unity.loader.js')
 
   if (!process.env.BUNDLES_ONLY) {
     createWorker('packages/gif-processor/worker.ts', 'static/gif-processor/worker.js.txt')

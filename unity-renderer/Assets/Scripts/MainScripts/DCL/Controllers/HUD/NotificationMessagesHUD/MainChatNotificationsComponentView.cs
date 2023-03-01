@@ -92,6 +92,9 @@ namespace DCL.Chat.Notifications
             scrollbarAnimator?.Hide();
         }
 
+        public int GetNotificationsCount() =>
+            notificationQueue.Count;
+
         public void ShowNotifications()
         {
             foreach (BaseComponentView notification in notificationQueue)
@@ -288,7 +291,7 @@ namespace DCL.Chat.Notifications
             view.SetMessage(model.Body);
             view.SetNotificationHeader($"DM - {model.PeerUsername}");
             view.SetNotificationSender($"{senderName}:");
-            view.SetNotificationTargetId(model.SenderId);
+            view.SetNotificationTargetId(model.TargetId);
             view.SetImageVisibility(!model.ImTheSender);
 
             if (!string.IsNullOrEmpty(model.ProfilePicture))

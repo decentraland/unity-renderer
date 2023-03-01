@@ -36,6 +36,7 @@ public class EmotesCatalogService : IEmotesCatalogService
             addressableCTS = new CancellationTokenSource();
             embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
         }
+        catch (OperationCanceledException) { return; }
         catch (Exception e)
         {
             retryCount--;
@@ -50,10 +51,8 @@ public class EmotesCatalogService : IEmotesCatalogService
             DisposeCT();
             InitializeAsyncEmbeddedEmotes();
         }
-        finally
-        {
-            EmbedEmotes();
-        }
+
+        EmbedEmotes();
     }
 
     public void Initialize()

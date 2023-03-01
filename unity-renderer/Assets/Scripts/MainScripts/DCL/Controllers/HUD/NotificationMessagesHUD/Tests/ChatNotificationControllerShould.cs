@@ -465,6 +465,26 @@ namespace DCL.Chat.Notifications
             Assert.AreEqual("fr", dataStore.HUDs.openReceivedFriendRequestDetail.Get());
         }
 
+        [Test]
+        public void DoNotShowNotificationPanelWhenTheNotificationQueueIsEmpty()
+        {
+            mainNotificationsView.GetNotificationsCount().Returns(0);
+
+            mainNotificationsView.OnPanelFocus += Raise.Event<Action<bool>>(true);
+
+            mainNotificationsView.DidNotReceive().ShowPanel();
+        }
+
+        [Test]
+        public void ShowNotificationPanelWhenAnyNotificationIsAdded()
+        {
+            mainNotificationsView.GetNotificationsCount().Returns(1);
+
+            mainNotificationsView.OnPanelFocus += Raise.Event<Action<bool>>(true);
+
+            mainNotificationsView.Received().ShowPanel();
+        }
+
         private void GivenProfile(string userId, string userName)
         {
             var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();

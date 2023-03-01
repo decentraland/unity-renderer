@@ -161,7 +161,7 @@ namespace DCL.Chat.Notifications
                 string senderName = senderProfile?.userName ?? message.sender;
 
                 var privateModel = new PrivateChatMessageNotificationModel(message.messageId,
-                    message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
+                    isMyMessage ? peerId : message.sender, body, message.timestamp, senderName, peerName, isMyMessage,
                     peerProfilePicture);
 
                 mainChatNotificationView.AddNewChatNotification(privateModel);
@@ -259,6 +259,9 @@ namespace DCL.Chat.Notifications
 
         private void TogglePanelBackground(bool isInFocus)
         {
+            if (mainChatNotificationView.GetNotificationsCount() == 0)
+                return;
+
             if (isInFocus)
                 mainChatNotificationView.ShowPanel();
             else

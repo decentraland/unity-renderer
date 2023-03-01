@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using DCL.Components;
 using System.Linq;
 using DCL.Controllers;
-using DCL.Interface;
 using DCL.Models;
 using DCL.Helpers;
-using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
+using DCLServices.WearablesCatalogService;
 using Random = UnityEngine.Random;
 
 namespace DCL.Bots
@@ -34,6 +33,12 @@ namespace DCL.Bots
         private List<string> bodyshapeWearableIds = new List<string>();
 
         private Coroutine movementRoutine = null;
+        private IWearablesCatalogService wearablesCatalogService;
+
+        public BotsController(IWearablesCatalogService wearablesCatalogService)
+        {
+            this.wearablesCatalogService = wearablesCatalogService;
+        }
 
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
@@ -45,12 +50,12 @@ namespace DCL.Bots
 
             globalScene = Environment.i.world.state.GetGlobalScenes().First();
 
-            CatalogController.wearableCatalog.Clear();
+            wearablesCatalogService.WearablesCatalog.Clear();
 
             // We stopped using random collections by default because the wearables API changes frequently and is very inconsistent...
             if(randomCollections)
                 yield return WearablesFetchingHelper.GetRandomCollections(50, selectedCollections);
-            
+
             // We add the base wearables collection to make sure we have at least 1 of each avatar body-part
             yield return WearablesFetchingHelper.GetBaseCollections(selectedCollections);
 
@@ -63,15 +68,15 @@ namespace DCL.Bots
         string BuildCollectionsURL()
         {
             if (selectedCollections.Count == 0)
-                return null; 
-            
+                return null;
+
             string finalUrl = WearablesFetchingHelper.GetWearablesFetchURL();
             finalUrl += "collectionId=" + selectedCollections[0];
             for (int i = 1; i < selectedCollections.Count; i++)
             {
                 finalUrl += "&collectionId=" + selectedCollections[i];
             }
-            
+
             return finalUrl;
         }
 
@@ -115,7 +120,7 @@ namespace DCL.Bots
                 }
             }
 
-            CatalogController.i.AddWearablesToCatalog(newWearables);
+            wearablesCatalogService.AddWearablesToCatalog(newWearables);
         }
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
@@ -230,7 +235,7 @@ namespace DCL.Bots
 
             var entity = globalScene.CreateEntity(entityId);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
-            
+
             globalScene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
 
             instantiatedBots.Add(entityId);
@@ -299,7 +304,7 @@ namespace DCL.Bots
         }
 
         /// <summary>
-        /// Starts a coroutine that traverses a % of the instantiated population at that moment and updates their waypoint with a frequency of 'waypointsUpdateTime' in seconds 
+        /// Starts a coroutine that traverses a % of the instantiated population at that moment and updates their waypoint with a frequency of 'waypointsUpdateTime' in seconds
         /// </summary>
         /// <param name="populationNormalizedPercentage">The population % that will start moving, expressed normalized e.g: 50% would be 0.5f</param>
         /// <param name="waypointsUpdateTime">The time wait in seconds for each waypoints update</param>
@@ -427,7 +432,7 @@ namespace DCL.Bots
         }
 
         /// <summary>
-        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value. 
+        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value.
         /// </summary>
         private void Log(string message)
         {

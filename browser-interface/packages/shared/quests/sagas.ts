@@ -1,6 +1,6 @@
 import { ClientResponse, QuestState } from 'dcl-quests-client'
 import { call, delay, put, select, takeEvery } from 'redux-saga/effects'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { questsInitialized, questsUpdated, QUESTS_INITIALIZED, QUESTS_UPDATED } from './actions'
 import { questsRequest } from './client'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
@@ -14,7 +14,7 @@ import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 const QUESTS_REFRESH_INTERVAL = 30000
 
 export function* questsSaga(): any {
-  yield takeEvery(USER_AUTHENTIFIED, initializeQuests)
+  yield takeEvery(USER_AUTHENTICATED, initializeQuests)
   yield takeEvery(QUESTS_INITIALIZED, initUpdateQuestsInterval)
 }
 

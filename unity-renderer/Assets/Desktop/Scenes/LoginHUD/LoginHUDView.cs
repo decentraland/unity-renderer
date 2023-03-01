@@ -32,12 +32,7 @@ namespace Login
             playAsGuestButton.onClick.AddListener(() => OnPlayAsGuest?.Invoke());
         }
 
-        public static LoginHUDView CreateView()
-        {
-            LoginHUDView view = Instantiate(Resources.Load<GameObject>("LoginHUD")).GetComponent<LoginHUDView>();
-            view.gameObject.name = "_Login";
-            return view;
-        }
+
 
         public void SetVisibility(bool visible)
         {

@@ -1,4 +1,7 @@
+using DCL.Providers;
+using DCLPlugins.LoadingScreenPlugin;
 using NUnit.Framework;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.LoadingScreen.Test
@@ -10,7 +13,13 @@ namespace DCL.LoadingScreen.Test
         [SetUp]
         public void SetUp()
         {
-            loadingScreenView = LoadingScreenView.Create();
+            loadingScreenView = LoadingScreenPlugin.CreateLoadingScreenView();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            loadingScreenView.Dispose();
         }
 
         [Test]

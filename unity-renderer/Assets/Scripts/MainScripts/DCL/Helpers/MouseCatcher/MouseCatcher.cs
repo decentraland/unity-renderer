@@ -49,7 +49,7 @@ namespace DCL
 
         public void LockCursor()
         {
-            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || dataStoreLoadingScreen.Ref.loadingHUD.visible.Get() || dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
+            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
                 return;
 
             Utils.LockCursor();

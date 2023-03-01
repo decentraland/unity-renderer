@@ -93,16 +93,14 @@ describe('pickWorldSpawnPoint unit tests', function () {
         parcels: ['10,10']
       }
     }
-    const basePosition = gridToWorld(10, 10)
-
     const pick = pickWorldSpawnpoint(land)
 
-    expect(JSON.stringify(pick)).to.deep.equal(
-      JSON.stringify({
-        position: basePosition,
-        cameraTarget: undefined
-      })
-    )
+    expect(pick.position.x).to.be.at.least(160) 
+    expect(pick.position.x).to.be.below(176) 
+    expect(pick.position.y).to.equal(0)
+    expect(pick.position.z).to.be.at.least(160) 
+    expect(pick.position.z).to.be.below(176) 
+    expect(pick.cameraTarget).to.equal(undefined)
   })
 })
 

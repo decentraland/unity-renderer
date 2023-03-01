@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using NSubstitute;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
@@ -45,7 +46,7 @@ namespace Tests
                     Assert.Fail("Failed to connect to decentraland service!");
                 }
 
-                string payloadTest = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+                string payloadTest = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text;
 
                 DCLWebSocketService.Message message = new DCLWebSocketService.Message()
                 {

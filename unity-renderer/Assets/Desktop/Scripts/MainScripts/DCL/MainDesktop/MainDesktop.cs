@@ -1,6 +1,7 @@
 using System;
 using DCL.SettingsCommon;
 using DCL.Components;
+using DCL.Providers;
 using MainScripts.DCL.Controllers.HUD.Preloading;
 using MainScripts.DCL.Controllers.LoadingFlow;
 using MainScripts.DCL.Controllers.SettingsDesktop;
@@ -17,7 +18,7 @@ namespace DCL
     {
         [SerializeField] private bool logWs = false;
         private LoadingFlowController loadingFlowController;
-        private PreloadingController preloadingController;
+        //private PreloadingController preloadingController;
         private bool isConnectionLost;
         private readonly DataStoreRef<DataStore_LoadingScreen> loadingScreenRef;
 
@@ -30,15 +31,21 @@ namespace DCL
 
             DCLVideoTexture.videoPluginWrapperBuilder = VideoProviderFactory.CreateVideoProvider;
 
-            featureFlags.OnChange += FeatureFlagsReady;
-
             InitializeSettings();
 
             base.Awake();
+
             DataStore.i.wsCommunication.communicationEstablished.OnChange += OnCommunicationEstablished;
             DataStore.i.performance.multithreading.Set(true);
             DataStore.i.performance.maxDownloads.Set(50);
             Texture.allowThreadedTextureCreation = true;
+
+            //TODO: Integrate preloading controller to LoadingScreenPlugin. Currently not visible
+            //preloadingController = new PreloadingController(Environment.i.serviceLocator.Get<IAddressableResourceProvider>());
+            loadingFlowController = new LoadingFlowController(
+                loadingScreenRef.Ref.decoupledLoadingHUD.visible,
+                CommonScriptableObjects.rendererState,
+                DataStore.i.wsCommunication.communicationEstablished);
         }
 
         protected override void InitializeDataStore()
@@ -46,28 +53,6 @@ namespace DCL
             DataStore.i.textureConfig.gltfMaxSize.Set(TextureCompressionSettingsDesktop.GLTF_TEX_MAX_SIZE_DESKTOP);
             DataStore.i.textureConfig.generalMaxSize.Set(TextureCompressionSettingsDesktop.GENERAL_TEX_MAX_SIZE_DESKTOP);
             DataStore.i.avatarConfig.useHologramAvatar.Set(true);
-        }
-
-        private void FeatureFlagsReady(FeatureFlag current, FeatureFlag previous)
-        {
-            DCLVideoTexture.videoPluginWrapperBuilder = VideoProviderFactory.CreateVideoProvider;
-
-            if (current.IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-            {
-                loadingFlowController = new LoadingFlowController(
-                    loadingScreenRef.Ref.decoupledLoadingHUD.visible,
-                    CommonScriptableObjects.rendererState,
-                    DataStore.i.wsCommunication.communicationEstablished);
-            }
-            else
-            {
-                loadingFlowController = new LoadingFlowController(
-                    loadingScreenRef.Ref.loadingHUD.visible,
-                    CommonScriptableObjects.rendererState,
-                    DataStore.i.wsCommunication.communicationEstablished);
-            }
-
-            DataStore.i.featureFlags.flags.OnChange -= FeatureFlagsReady;
         }
 
         protected override void InitializeCommunication()
@@ -118,7 +103,7 @@ namespace DCL
         private void DesktopDestroy()
         {
             loadingFlowController.Dispose();
-            preloadingController.Dispose();
+            //preloadingController.Dispose();
 #if !AV_PRO_PRESENT
             DCLVideoPlayer.StopAllThreads();
 #endif
@@ -144,12 +129,6 @@ namespace DCL
                 SettingsDesktop.i.displaySettings.Apply(newDisplaySettings);
                 SettingsDesktop.i.displaySettings.Save();
             }
-        }
-
-        protected override void InitializeSceneDependencies()
-        {
-            base.InitializeSceneDependencies();
-            preloadingController = new PreloadingController();
         }
 
         protected override void SetupServices()
