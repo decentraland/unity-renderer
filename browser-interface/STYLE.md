@@ -32,7 +32,9 @@ non-exported functions
 
 # redux-sagas
 
-If there are three or more consecutive selects that can be merged into one, do it. Don't:
+* If there are three or more consecutive selects that can be merged into one, do it.
+* Remember to type the result of `yield select(fun)` by doing `as ReturnType<typeof fun>` (and enclose `(yield select(...))` with parenthesis due to `yield` not having enough precedence).
+Don't:
 ```
 function* mySaga() {
   const a = yield select(aSelector)
@@ -44,7 +46,7 @@ function* mySaga() {
 Do:
 ```
 function* mySaga() {
-  const { a, b, c } = yield select(allInfo)
+  const { a, b, c } = (yield select(allInfo)) as ReturnType<typeof allInfo>
 }
 function allInfo(state) {
   return {

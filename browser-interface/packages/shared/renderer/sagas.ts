@@ -263,10 +263,10 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
 
   yield call(waitForRendererInstance)
   const bff: IRealmAdapter = yield call(waitForRealm)
-  const { profile, identity, isCurrentUser, lastSentProfileVersion } = yield select(
+  const { profile, identity, isCurrentUser, lastSentProfileVersion } = (yield select(
     getInformationToSubmitProfileFromStore,
     userId
-  )
+  )) as ReturnType<typeof getInformationToSubmitProfileFromStore>
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
   if (!profile || !profile.data) {
@@ -275,10 +275,10 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
 
   if (isCurrentUser) {
     const forRenderer = profileToRendererFormat(profile.data, {
-      address: identity.address,
+      address: identity?.address,
       baseUrl: fetchContentServerWithPrefix
     })
-    forRenderer.hasConnectedWeb3 = identity.hasConnectedWeb3
+    forRenderer.hasConnectedWeb3 = identity?.hasConnectedWeb3 || false
 
     // TODO: this condition shouldn't be necessary. Unity fails with setThrew
     //       if LoadProfile is called rapidly because it cancels ongoing
