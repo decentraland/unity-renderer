@@ -26,7 +26,7 @@ public class RPCSignRequest : IRPCSignRequest
         this.rpc = rpc;
     }
 
-    public async UniTask<Dictionary<string, string>> RequestSignedRequest(RequestMethod method, string url, string metadata, CancellationToken cancellationToken)
+    public async UniTask<SignBodyResponse> RequestSignedRequest(RequestMethod method, string url, string metadata, CancellationToken cancellationToken)
     {
         SignBodyResponse response = await rpc.SignRequestKernelService()
                                              .GetRequestSignature(new SignBodyRequest()
@@ -36,13 +36,7 @@ public class RPCSignRequest : IRPCSignRequest
                                                   Metadata = metadata
                                               })
                                              .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
-
-        return new Dictionary<string, string>()
-        {
-            {"header1",response.AuthHeader1},
-            {"header2",response.AuthHeader2},
-            {"header3",response.AuthHeader3}
-        };
+        return response;
     }
 
 }

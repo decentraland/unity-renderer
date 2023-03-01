@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,20 +10,26 @@ namespace DCL
 {
     public class WebRequestController : IWebRequestController
     {
+        private const string AUTH_HEADER_1 = "x-identity-auth-chain-0";
+        private const string AUTH_HEADER_2 = "x-identity-auth-chain-1";
+        private const string AUTH_HEADER_3 = "x-identity-auth-chain-2";
+
         private IWebRequestFactory getWebRequestFactory;
         private IWebRequestAssetBundleFactory assetBundleFactory;
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
+        private IRPCSignRequest rpcSignRequest;
 
         private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
 
-        private WebRequestController(
+        public WebRequestController(
             IWebRequestFactory getWebRequestFactory,
             IWebRequestAssetBundleFactory assetBundleFactory,
             IWebRequestTextureFactory textureFactory,
             IWebRequestAudioFactory audioClipWebRequestFactory,
-            IPostWebRequestFactory postWebRequestFactory
+            IPostWebRequestFactory postWebRequestFactory,
+            IRPCSignRequest rpcSignRequest = null
         )
         {
             this.getWebRequestFactory = getWebRequestFactory;
@@ -30,6 +37,7 @@ namespace DCL
             this.textureFactory = textureFactory;
             this.audioClipWebRequestFactory = audioClipWebRequestFactory;
             this.postWebRequestFactory = postWebRequestFactory;
+            this.rpcSignRequest = rpcSignRequest;
         }
 
         public void Initialize() { }
@@ -67,10 +75,11 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default,
-            Dictionary<string, string> headers = null)
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
         {
             return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
-                timeout, cancellationToken, headers);
+                timeout, cancellationToken, headers, isSigned);
         }
 
         public async UniTask<UnityWebRequest> PostAsync(
@@ -82,11 +91,12 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             CancellationToken cancellationToken = default,
-            Dictionary<string, string> headers = null)
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
         {
             postWebRequestFactory.SetBody(postData);
             return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
-                timeout, cancellationToken, headers);
+                timeout, cancellationToken, headers, isSigned);
         }
 
         public async UniTask<UnityWebRequest> GetAssetBundleAsync(
@@ -143,7 +153,7 @@ namespace DCL
             return await SendWebRequest(audioClipWebRequestFactory, url, null, onSuccess, onfail, requestAttemps,
                 timeout, cancellationToken);
         }
-        
+
 
         private async UniTask<UnityWebRequest> SendWebRequest<T>(
             T requestFactory,
@@ -154,13 +164,25 @@ namespace DCL
             int requestAttemps,
             int timeout,
             CancellationToken cancellationToken,
-            Dictionary<string, string> headers = null) where T : IWebRequestFactory
+            Dictionary<string, string> headers = null,
+            bool isSigned = false) where T : IWebRequestFactory
         {
             requestAttemps = Mathf.Max(1, requestAttemps);
+
             for (int i = requestAttemps - 1; i >= 0; i--)
             {
                 UnityWebRequest request = requestFactory.CreateWebRequest(url);
                 request.timeout = timeout;
+                Enum.TryParse(request.method, out RequestMethod method);
+
+                if (isSigned && rpcSignRequest != null)
+                {
+                    headers ??= new Dictionary<string, string>();
+                    SignBodyResponse signedFetchResponse = await rpcSignRequest.RequestSignedRequest(method, url, null, cancellationToken);
+                    headers.Add(AUTH_HEADER_1, signedFetchResponse.AuthHeader1);
+                    headers.Add(AUTH_HEADER_2, signedFetchResponse.AuthHeader2);
+                    headers.Add(AUTH_HEADER_3, signedFetchResponse.AuthHeader3);
+                }
 
                 if (headers != null)
                 {

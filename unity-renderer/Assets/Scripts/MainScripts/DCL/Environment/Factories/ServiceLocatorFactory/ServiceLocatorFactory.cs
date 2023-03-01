@@ -37,13 +37,20 @@ namespace DCL
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
-            result.Register<IWebRequestController>(WebRequestController.Create);
+            result.Register<IRPC>(() => new RPC());
+            result.Register<IWebRequestController>(() => new WebRequestController(
+                new GetWebRequestFactory(),
+                new WebRequestAssetBundleFactory(),
+                new WebRequestTextureFactory(),
+                new WebRequestAudioFactory(),
+                new PostWebRequestFactory(),
+                RPCSignRequest.CreateSharedInstance(result.Get<IRPC>())
+            ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
-            result.Register<IRPC>(() => new RPC());
             result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
