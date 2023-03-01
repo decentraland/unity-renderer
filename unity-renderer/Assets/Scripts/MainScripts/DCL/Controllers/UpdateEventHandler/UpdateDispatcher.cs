@@ -63,10 +63,21 @@ namespace DCL
             EnsureEventType(IUpdateEventHandler.EventType.OnDestroy);
         }
 
-        void EnsureEventType( IUpdateEventHandler.EventType eventType )
+        void EnsureEventType(IUpdateEventHandler.EventType eventType)
         {
-            if ( !eventCollections.ContainsKey(eventType) )
+            bool eventTypeExists = false;
+            foreach (var key in eventCollections.Keys)
+            {
+                if (key == eventType)
+                {
+                    eventTypeExists = true;
+                    break;
+                }
+            }
+            if (!eventTypeExists)
+            {
                 eventCollections.Add(eventType, new UpdateEventCollection());
+            }
         }
 
         void Dispatch( IUpdateEventHandler.EventType eventType )
