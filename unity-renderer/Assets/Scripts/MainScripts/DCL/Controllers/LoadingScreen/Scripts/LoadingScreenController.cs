@@ -104,11 +104,9 @@ namespace DCL.LoadingScreen
             if (onSignUpFlow) return;
 
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
-            Debug.Log($"TELEPORT REQUeSTED {currentDestinationCandidate}");
 
             if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
-                Debug.Log($"FADING VIEW IN {currentDestination}");
                 currentDestination = currentDestinationCandidate;
 
                 //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
@@ -133,28 +131,22 @@ namespace DCL.LoadingScreen
             //Realm has not been set yet, so we are not in a new realm
             if (realmDataStore.playerRealmAboutConfiguration.Get() == null)
             {
-                Debug.Log("PLAYER REALM ABOUT CONFIGURATION IS NULL");
                 return false;
             }
 
             bool realmChangeRequiresLoadingScreen;
 
-            Debug.Log($"Current Realm {currentRealm}");
-
             if (commonDataStore.isWorld.Get())
             {
                 realmChangeRequiresLoadingScreen = string.IsNullOrEmpty(currentRealm) || !currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName);
-                Debug.Log($"IS NULL {string.IsNullOrEmpty(currentRealm)} IS NEW REALM {!currentRealm.Equals(realmDataStore.playerRealmAboutConfiguration.Get().RealmName)}");
             }
             else
             {
                 realmChangeRequiresLoadingScreen = currentRealmIsWorld;
-                Debug.Log($"CURRENT REALM IS WORLD {currentRealmIsWorld}");
             }
 
             currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
             currentRealmIsWorld = commonDataStore.isWorld.Get();
-            Debug.Log($"Realm Change Requires Loading Screen {realmChangeRequiresLoadingScreen} {currentRealm} {currentRealmIsWorld}");
             return realmChangeRequiresLoadingScreen;
         }
 
@@ -163,7 +155,6 @@ namespace DCL.LoadingScreen
         private bool IsNewScene(Vector2Int currentDestinationCandidate)
         {
             bool isNewScene =              worldState.GetSceneNumberByCoords(currentDestinationCandidate).Equals(-1);
-            Debug.Log($"IS NEW SCENE {isNewScene}");
             return isNewScene;
         }
 
