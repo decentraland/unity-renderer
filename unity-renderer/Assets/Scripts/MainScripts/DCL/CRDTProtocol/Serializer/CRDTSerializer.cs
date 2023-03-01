@@ -12,7 +12,8 @@ namespace DCL.CRDT
             binaryWriter.WriteInt32((int)message.type);
             binaryWriter.WriteInt32((int)message.entityId);
 
-            if (message.type == CrdtMessageType.PUT_COMPONENT)
+            if (message.type == CrdtMessageType.PUT_COMPONENT ||
+                message.type == CrdtMessageType.APPEND_COMPONENT)
             {
                 binaryWriter.WriteInt32(message.componentId);
                 binaryWriter.WriteInt32(message.timestamp);

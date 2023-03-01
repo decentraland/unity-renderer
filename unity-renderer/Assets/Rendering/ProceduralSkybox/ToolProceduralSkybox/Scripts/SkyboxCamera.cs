@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 namespace DCL.Skybox
 {
-
     public class SkyboxCamera
     {
         private GameObject skyboxCameraGO;
@@ -56,6 +53,11 @@ namespace DCL.Skybox
             }
 
             camBehavior.AssignCamera(mainCamComponent, skyboxCamera);
+        }
+
+        public void SetCameraEnabledState(bool enabled)
+        {
+            skyboxCamera.enabled = enabled;
         }
     }
 }

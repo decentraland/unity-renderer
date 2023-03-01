@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace DCL.Models
 {
+    public static class ScenePermissionNames
+    {
+        public const string ALLOW_MEDIA_HOSTNAMES = "ALLOW_MEDIA_HOSTNAMES";
+    }
+
     [Serializable]
     public struct CreateGlobalSceneMessage
     {
@@ -15,6 +20,8 @@ namespace DCL.Models
         public string icon;
         public bool isPortableExperience;
         public bool sdk7;
+        public string[] requiredPermissions;
+        public string[] allowedMediaHostnames;
     }
 
     [Serializable]
@@ -30,7 +37,7 @@ namespace DCL.Models
         {
             public static bool VERBOSE = false;
 
-            // We can't remove this string id since it's used for mapping portable experience ids to their wearables...
+            // We can't remove this string id since it's used for mapping portable experience ids to their wearables and fetching scene asset bundles manifest
             public string id;
 
             public int sceneNumber;
@@ -44,6 +51,8 @@ namespace DCL.Models
 
             // Indicates if it's a sdk7 scene
             public bool sdk7 = false;
+            public string[] requiredPermissions;
+            public string[] allowedMediaHostnames;
         }
     }
 }

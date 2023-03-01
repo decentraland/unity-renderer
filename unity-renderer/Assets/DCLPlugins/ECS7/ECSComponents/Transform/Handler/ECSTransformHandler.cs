@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
@@ -11,9 +12,13 @@ namespace DCL.ECSComponents
         private readonly IWorldState worldState;
         private readonly IBaseVariable<Vector3> playerTeleportVariable;
 
-        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable)
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
+
+        public ECSTransformHandler(IWorldState worldState, IBaseVariable<Vector3> playerTeleportVariable, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             ECSTransformUtils.orphanEntities = new KeyValueSet<IDCLEntity, ECSTransformUtils.OrphanEntity>(100);
+            this.sbcInternalComponent = sbcInternalComponent;
+
             this.worldState = worldState;
             this.playerTeleportVariable = playerTeleportVariable;
         }
@@ -42,6 +47,7 @@ namespace DCL.ECSComponents
 
             // if entity has any children
             int childrenCount = entity.childrenId.Count;
+
             if (childrenCount > 0)
             {
                 for (int i = childrenCount - 1; i >= 0; i--)
@@ -57,8 +63,12 @@ namespace DCL.ECSComponents
                     // add child as orphan
                     ECSTransformUtils.orphanEntities[child] = new ECSTransformUtils.OrphanEntity(scene, child, child.parentId);
                 }
+
                 entity.childrenId.Clear();
             }
+
+            // Reset value in SBC internal component
+            sbcInternalComponent.SetPosition(scene, entity, Vector3.zero, false);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
@@ -80,6 +90,8 @@ namespace DCL.ECSComponents
             {
                 ProcessNewParent(scene, entity, model.parentId);
             }
+
+            sbcInternalComponent.SetPosition(scene, entity, transform.position);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
@@ -89,6 +101,7 @@ namespace DCL.ECSComponents
             {
                 Debug.LogError($"cyclic parenting found for entity {entity.entityId} " +
                                $"parenting to {parentId} at scene {scene.sceneData.sceneNumber} ({scene.sceneData.basePosition})");
+
                 return;
             }
 
@@ -99,6 +112,7 @@ namespace DCL.ECSComponents
                 {
                     parent.childrenId.Remove(entity.entityId);
                 }
+
                 ECSTransformUtils.TrySetParent(scene, entity, SpecialEntityId.SCENE_ROOT_ENTITY);
             }
 
@@ -128,6 +142,7 @@ namespace DCL.ECSComponents
 
             playerTeleportVariable.Set(Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y)
                                        + localPosition, true);
+
             return true;
         }
     }

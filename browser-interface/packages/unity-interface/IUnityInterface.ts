@@ -136,12 +136,6 @@ export interface IUnityInterface {
   /** @deprecated #3642 Kernel will no longer control Loading Screen */
   ActivateRendering(): void
 
-  /** @deprecated #3642 Kernel will no longer control Loading Screen */
-  SetLoadingScreen(data: { isVisible: boolean; message: string; showTips: boolean }): void
-
-  /** @deprecated #3642 Kernel will no longer control Loading Screen */
-  FadeInLoadingHUD(data: { xCoord: number; yCoord: number; message?: string }): void
-
   /** @deprecated #3642 Not used */
   DeactivateRendering(): void
   ReportFocusOn(): void

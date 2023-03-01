@@ -214,7 +214,6 @@ commands:
           command: |
             ./ci-publish-preview-artifacts.sh
 
-
 jobs:
   checkout:
     <<: *working_directory_root
@@ -390,7 +389,6 @@ jobs:
           working_directory: *node_workspace
           name: run build
           command: make build
-
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
           root: *working_directory
@@ -400,14 +398,14 @@ jobs:
   publish-webgl-artifacts-release:
     <<: *working_directory_root
     docker: *image_kernel
-
+    # use a large machine for faster brotli uploads
+    resource_class: large
     steps:
       - publish-webgl-artifacts
 
   publish-webgl-artifacts:
     <<: *working_directory_root
     docker: *image_kernel
-
     steps:
       - publish-webgl-artifacts
 
@@ -429,7 +427,7 @@ workflows:
             - checkout
 
       - build-unity-for-mac:
-          <<: *only_dev_and_main
+          <<: *all_branches
           requires:
             - checkout
 

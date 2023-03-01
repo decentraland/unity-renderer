@@ -39,15 +39,19 @@ namespace DCL.CRDT
                 switch (messageType)
                 {
                     case CrdtMessageType.PUT_COMPONENT:
-                        yield return DeserializePutComponent(memory, messageType, ref position);
+                        yield return DeserializePutComponent(memory, ref position);
                         break;
 
                     case CrdtMessageType.DELETE_COMPONENT:
-                        yield return DeserializeDeleteComponent(memory, messageType, ref position);
+                        yield return DeserializeDeleteComponent(memory, ref position);
                         break;
 
                     case CrdtMessageType.DELETE_ENTITY:
-                        yield return DeserializeDeleteEntity(memory, messageType, ref position);
+                        yield return DeserializeDeleteEntity(memory, ref position);
+                        break;
+
+                    case CrdtMessageType.APPEND_COMPONENT:
+                        yield return DeserializeAppendComponent(memory, ref position);
                         break;
 
                     default:
@@ -57,7 +61,7 @@ namespace DCL.CRDT
             }
         }
 
-        public static CRDTMessage DeserializePutComponent(ReadOnlyMemory<byte> memory, CrdtMessageType messageType, ref int memoryPosition)
+        public static CRDTMessage DeserializePutComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -85,7 +89,7 @@ namespace DCL.CRDT
             {
                 data = memorySpan.Slice(memoryPosition, dataLength).ToArray();
             }
-            else if (messageType == CrdtMessageType.PUT_COMPONENT)
+            else
             {
                 data = new byte[0];
             }
@@ -101,7 +105,52 @@ namespace DCL.CRDT
             };
         }
 
-        public static CRDTMessage DeserializeDeleteComponent(ReadOnlyMemory<byte> memory, CrdtMessageType messageType, ref int memoryPosition)
+
+        public static CRDTMessage DeserializeAppendComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
+        {
+            ReadOnlySpan<byte> memorySpan = memory.Span;
+
+            if (memoryPosition + CrdtConstants.CRDT_APPEND_COMPONENT_HEADER_LENGTH > memorySpan.Length)
+            {
+                return null;
+            }
+
+            tempMessage.entityId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            memoryPosition += 4;
+            tempMessage.componentId = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            memoryPosition += 4;
+            tempMessage.timestamp = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            memoryPosition += 4;
+            int dataLength = ByteUtils.ReadInt32(memorySpan, memoryPosition);
+            memoryPosition += 4;
+
+            if (memoryPosition + dataLength > memorySpan.Length)
+            {
+                return null;
+            }
+
+            byte[] data = null;
+            if (dataLength > 0)
+            {
+                data = memorySpan.Slice(memoryPosition, dataLength).ToArray();
+            }
+            else
+            {
+                data = new byte[0];
+            }
+            memoryPosition += dataLength;
+
+            return new CRDTMessage()
+            {
+                type = CrdtMessageType.APPEND_COMPONENT,
+                entityId = tempMessage.entityId,
+                componentId= tempMessage.componentId,
+                timestamp = tempMessage.timestamp,
+                data = data
+            };
+        }
+
+        public static CRDTMessage DeserializeDeleteComponent(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 
@@ -127,7 +176,7 @@ namespace DCL.CRDT
         }
 
 
-        public static CRDTMessage DeserializeDeleteEntity(ReadOnlyMemory<byte> memory, CrdtMessageType messageType, ref int memoryPosition)
+        public static CRDTMessage DeserializeDeleteEntity(ReadOnlyMemory<byte> memory, ref int memoryPosition)
         {
             ReadOnlySpan<byte> memorySpan = memory.Span;
 

@@ -31,7 +31,7 @@ namespace Tests
 
             CrdtMessageType crdtMessageType = CrdtMessageType.PUT_COMPONENT;
             int memoryPosition = 8; // skip the CrdtMessageHeader
-            CRDTMessage result = CRDTDeserializer.DeserializePutComponent(bytes, crdtMessageType, ref memoryPosition);
+            CRDTMessage result = CRDTDeserializer.DeserializePutComponent(bytes, ref memoryPosition);
             object expextedData = message.data ?? new byte[0]; // NULL data for a PUT operation will be converted to byte[0]
 
             Assert.AreEqual(message.entityId, result.entityId);

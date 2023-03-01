@@ -48,6 +48,8 @@ export type FeatureFlagsName =
   | 'use-social-server-friendships' // get friendships from social service v1 API
   | 'new_tutorial_variant'
   | 'enable_legacy_comms_v2'
+  | 'ab-new-cdn' // enables the new CDN for asset bundles along with the new loader
+  | 'decoupled_loading_screen'
 
 export type BannedUsers = Record<string, Ban[]>
 

@@ -1,7 +1,9 @@
-﻿{
+{
     "name": "RenderUtils",
     "rootNamespace": "",
     "references": [
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
