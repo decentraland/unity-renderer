@@ -1,4 +1,5 @@
 using DCL.Configuration;
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,29 @@ using UnityEngine;
 
 public static partial class UtilsScene
 {
+    public static Bounds CalculateOuterBounds(Vector2Int[] parcels, Vector3 baseParcelWorldPos)
+    {
+        Bounds outerBounds = new Bounds();
+        outerBounds.SetMinMax(new Vector3(baseParcelWorldPos.x, 0f, baseParcelWorldPos.z),
+            new Vector3(baseParcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0f, baseParcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
+
+        for (int i = 0; i < parcels.Length; i++)
+        {
+            // Update outer bounds with parcel's size
+            var parcel = parcels[i];
+
+            Vector3 parcelWorldPos = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(parcel.x, parcel.y));
+            outerBounds.Encapsulate(new Vector3(parcelWorldPos.x, 0, parcelWorldPos.z));
+            outerBounds.Encapsulate(new Vector3(parcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0, parcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
+        }
+
+        // Apply outer bounds extra threshold
+        outerBounds.SetMinMax(new Vector3(outerBounds.min.x - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD, 0f, outerBounds.min.z - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD),
+            new Vector3(outerBounds.max.x + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD, 0f, outerBounds.max.z + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD));
+
+        return outerBounds;
+    }
+
     public static bool IsInsideSceneInnerBounds(ISet<Vector2Int> sceneParcels, float sceneHeightLimit, Vector3 targetWorldPosition, float height = 0f)
     {
         if (sceneParcels.Count == 0)

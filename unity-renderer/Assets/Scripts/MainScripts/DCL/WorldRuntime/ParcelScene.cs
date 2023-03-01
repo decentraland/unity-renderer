@@ -643,11 +643,6 @@ namespace DCL.Controllers
             return $"scene:{prettyName} - no state?";
         }
 
-        public Bounds GetOuterBounds()
-        {
-            return outerBounds;
-        }
-
         public void RefreshLoadingState()
         {
 #if UNITY_STANDALONE || UNITY_EDITOR

@@ -39,6 +39,5 @@ namespace DCL.Controllers
         void SetEntityParent(long entityId, long parentId);
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
         bool IsInitMessageDone();
-        Bounds GetOuterBounds();
     }
 }
