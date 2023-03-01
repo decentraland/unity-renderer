@@ -95,14 +95,6 @@ export class TeleportController {
       await changeToMostPopulatedRealm()
 
       store.dispatch(trackTeleportTriggered(tpMessage))
-      /// This doesn't work when the logic of activate/deactivate rendering is so tightly coupled with the loading
-      /// screen. The code needs rework
-      // const data = {
-      //   xCoord: x,
-      //   yCoord: y,
-      //   message: teleportMessage
-      // }
-      // getUnityInstance().FadeInLoadingHUD(data)
       store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
 
       return { message: tpMessage, success: true }

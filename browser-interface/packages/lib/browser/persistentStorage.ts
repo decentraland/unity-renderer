@@ -43,7 +43,7 @@ export async function saveToPersistentStorage(key: string, data: any) {
   return persistentStorage.setItem(key, JSON.stringify(data))
 }
 
-export async function getFromPersistentStorage(key: string) {
+export async function getFromPersistentStorage(key: string): Promise<any | null> {
   if (!persistentStorage) {
     throw new Error('Storage not supported')
   }

@@ -18,7 +18,7 @@ import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
 import { teleportToAction } from 'shared/scene-loader/actions'
-import { getStoredSession } from 'shared/session'
+import { retrieveLastSessionByAddress } from 'shared/session'
 import { authenticate, initSession } from 'shared/session/actions'
 import { store } from 'shared/store/isolatedStore'
 import type { RootState } from 'shared/store/rootTypes'
@@ -115,10 +115,7 @@ globalThis.DecentralandKernel = {
       // Initializes the Session Saga
       store.dispatch(initSession())
 
-      await Promise.all([
-        initializeUnity(options.rendererOptions),
-        loadWebsiteSystems(options.kernelOptions)
-      ])
+      await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
     }
 
     setTimeout(
@@ -147,7 +144,10 @@ globalThis.DecentralandKernel = {
       version: 'mockedversion',
       // this method is used for auto-login
       async hasStoredSession(address: string, networkId: number) {
-        if (!(await getStoredSession(address))) return { result: false }
+        const existingSession = await retrieveLastSessionByAddress(address)
+        if (!existingSession) {
+          return { result: false }
+        }
 
         const profile = await localProfilesRepo.get(
           address,

@@ -43,5 +43,8 @@ namespace DCL.SettingsPanelHUD.Controls
         public List<BooleanVariable> flagsThatOverrideMe;
 
         public bool isBeta;
+
+        public bool infoButtonEnabled;
+        public string infoTooltipMessage;
     }
 }

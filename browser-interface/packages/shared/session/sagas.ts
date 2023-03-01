@@ -25,7 +25,6 @@ import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { saveProfileDelta } from '../profiles/actions'
 import {
   AUTHENTICATE,
@@ -46,7 +45,7 @@ import {
   UserAuthenticated,
   USER_AUTHENTICATED
 } from './actions'
-import { getLastGuestSession, getStoredSession, removeStoredSession, setStoredSession } from './index'
+import { retrieveLastGuestSession, retrieveLastSessionByAddress, deleteSession, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
 
@@ -137,10 +136,6 @@ function* authenticate(action: AuthenticateAction) {
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
 
-  if (isSignUp) {
-    // HACK to fix onboarding flow, remove in RFC-1 impl
-    getUnityInstance().FadeInLoadingHUD({} as any)
-  }
 }
 
 function* authorize(requestManager: RequestManager) {
@@ -149,12 +144,12 @@ function* authorize(requestManager: RequestManager) {
   const isGuest: boolean = yield select(isGuestLogin)
 
   if (isGuest) {
-    userData = yield call(getLastGuestSession)
+    userData = yield call(retrieveLastGuestSession)
   } else {
     try {
       const address: string = yield call(getUserAccount, requestManager, false)
       if (address) {
-        userData = yield call(getStoredSession, address)
+        userData = yield call(retrieveLastSessionByAddress, address)
 
         if (userData) {
           // We save the raw ethereum address of the current user to avoid having to convert-back later after lowercasing it for the userId
@@ -206,7 +201,7 @@ function* cancelSignUp() {
 }
 
 async function saveSession(identity: ExplorerIdentity, isGuest: boolean) {
-  await setStoredSession({
+  await storeSession({
     identity,
     isGuest
   })
@@ -275,7 +270,7 @@ function* logout() {
   yield put(setRoomConnection(undefined))
 
   if (identity?.address) {
-    yield call(removeStoredSession, identity.address)
+    yield call(deleteSession, identity.address)
   }
   window.location.reload()
 }
