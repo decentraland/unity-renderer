@@ -58,7 +58,7 @@ type Ban = {
   expiration: number // Timestamp
 }
 
- interface POI {
+interface POI {
   x: number
   y: number
 }

@@ -1,7 +1,5 @@
 import { CommsServiceDefinition } from '@dcl/protocol/out-ts/decentraland/bff/comms_service.gen'
-import {
-  SystemTopicSubscriptionResultElem
-} from '@dcl/protocol/out-ts/decentraland/bff/topics_service.gen'
+import { SystemTopicSubscriptionResultElem } from '@dcl/protocol/out-ts/decentraland/bff/topics_service.gen'
 import { RpcClientModule } from '@dcl/rpc/dist/codegen'
 
 // This file exists to adapt the subscription system to its final form once the
@@ -29,10 +27,7 @@ export function listenSystemMessage(
   }
 }
 
-async function* subscribeToSystemMessage(
-  commsService: RpcClientModule<CommsServiceDefinition, any>,
-  topic: string
-) {
+async function* subscribeToSystemMessage(commsService: RpcClientModule<CommsServiceDefinition, any>, topic: string) {
   const subscription = await commsService.subscribeToSystemMessages({ topic })
   try {
     for await (const msg of commsService.getSystemMessages(subscription)) {

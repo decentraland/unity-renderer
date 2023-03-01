@@ -43,8 +43,7 @@ export function incrementCommsMessageReceivedByName(event: string) {
   // NOTE:          ^^^^^^^^^^^ do NOT fix that typo
 }
 
-export function incrementAvatarSceneMessages(value: number) {
-}
+export function incrementAvatarSceneMessages(_: number) {}
 
 export function incrementCommsMessageSent(_bytes: number) {
   sentCommsMessagesCounter++

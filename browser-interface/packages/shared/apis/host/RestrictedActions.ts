@@ -28,7 +28,6 @@ import { getRendererModules } from 'shared/renderer/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { assertHasPermission } from './Permissions'
 
-
 export function registerRestrictedActionsServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, RestrictedActionsServiceDefinition, async () => ({
     async triggerEmote(req: TriggerEmoteRequest, ctx: PortContext) {

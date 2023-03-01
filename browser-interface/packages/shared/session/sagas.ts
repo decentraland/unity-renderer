@@ -133,7 +133,6 @@ function* authenticate(action: AuthenticateAction) {
   // 4. finish sign in
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
-
 }
 
 function* authorize(requestManager: RequestManager) {

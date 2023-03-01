@@ -2,7 +2,7 @@ import { Transport, TransportEvents } from '@dcl/rpc'
 import mitt from 'mitt'
 import { CommonRendererOptions } from 'unity-interface/loader'
 
- const defer = Promise.prototype.then.bind(Promise.resolve())
+const defer = Promise.prototype.then.bind(Promise.resolve())
 
 /** @deprecated
  transport to make compatibility binary and string messages swap

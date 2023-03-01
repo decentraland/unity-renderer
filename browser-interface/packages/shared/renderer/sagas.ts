@@ -15,7 +15,10 @@ import { getExploreRealmsService } from 'shared/dao/selectors'
 import { waitingForRenderer } from 'shared/loading/types'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import {
-  addProfileToLastSentProfileVersionAndCatalog, SendProfileToRenderer, sendProfileToRenderer, SEND_PROFILE_TO_RENDERER_REQUEST
+  addProfileToLastSentProfileVersionAndCatalog,
+  SendProfileToRenderer,
+  sendProfileToRenderer,
+  SEND_PROFILE_TO_RENDERER_REQUEST
 } from 'shared/profiles/actions'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -260,12 +263,10 @@ export function* handleSubmitProfileToRenderer(action: SendProfileToRenderer): a
 
   yield call(waitForRendererInstance)
   const bff: IRealmAdapter = yield call(waitForRealm)
-  const {
-    profile,
-    identity,
-    isCurrentUser,
-    lastSentProfileVersion
-  } = yield select(getInformationToSubmitProfileFromStore, userId)
+  const { profile, identity, isCurrentUser, lastSentProfileVersion } = yield select(
+    getInformationToSubmitProfileFromStore,
+    userId
+  )
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(bff)
 
   if (!profile || !profile.data) {

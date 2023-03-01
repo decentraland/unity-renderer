@@ -1,6 +1,5 @@
 import type { EmoteDataADR74 } from '@dcl/schemas'
 
-
 export enum UnpublishedWearableType {
   WEARABLE = 'wearable',
   EMOTE = 'emote'
@@ -74,7 +73,6 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export const isPartialWearable = (partialItem: PartialItem): partialItem is PartialWearableV2 =>
   !!(partialItem as PartialWearableV2).data
-
 
 type WearableId = string
 type EmoteId = string
