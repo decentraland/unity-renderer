@@ -1,5 +1,5 @@
 using DCL.Configuration;
-using DCL.Controllers;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*
@@ -8,17 +8,12 @@ using UnityEngine;
 
 public static partial class UtilsScene
 {
-    public static bool IsInsideSceneBounds(IParcelScene scene, Vector3 targetWorldPosition, float height = 0f)
+    public static bool IsInsideSceneInnerBounds(ISet<Vector2Int> sceneParcels, float sceneHeightLimit, Vector3 targetWorldPosition, float height = 0f)
     {
-        if (scene.isPersistent)
-                return true;
-
-        if (scene.parcels.Count == 0)
+        if (sceneParcels.Count == 0)
             return false;
 
-        float heightLimit = scene.metricsCounter.maxCount.sceneHeight;
-
-        if (height > heightLimit)
+        if (height > sceneHeightLimit)
             return false;
 
         int noThresholdZCoordinate = Mathf.FloorToInt(targetWorldPosition.z / ParcelSettings.PARCEL_SIZE);
@@ -27,7 +22,7 @@ public static partial class UtilsScene
         // We check the target world position
         Vector2Int targetCoordinate = new Vector2Int(noThresholdXCoordinate, noThresholdZCoordinate);
 
-        if (scene.parcels.Contains(targetCoordinate))
+        if (sceneParcels.Contains(targetCoordinate))
             return true;
 
         // We need to check using a threshold from the target point, in order to cover correctly the parcel "border/edge" positions
@@ -42,50 +37,44 @@ public static partial class UtilsScene
         // We check the east/north-threshold position
         targetCoordinate.Set(coordinateMax.x, coordinateMax.y);
 
-        if (scene.parcels.Contains(targetCoordinate))
+        if (sceneParcels.Contains(targetCoordinate))
             return true;
 
         // We check the east/south-threshold position
         targetCoordinate.Set(coordinateMax.x, coordinateMin.y);
 
-        if (scene.parcels.Contains(targetCoordinate))
+        if (sceneParcels.Contains(targetCoordinate))
             return true;
 
         // We check the west/north-threshold position
         targetCoordinate.Set(coordinateMin.x, coordinateMax.y);
 
-        if (scene.parcels.Contains(targetCoordinate))
+        if (sceneParcels.Contains(targetCoordinate))
             return true;
 
         // We check the west/south-threshold position
         targetCoordinate.Set(coordinateMin.x, coordinateMin.y);
 
-        if (scene.parcels.Contains(targetCoordinate))
+        if (sceneParcels.Contains(targetCoordinate))
             return true;
 
         return false;
     }
 
-    public static bool IsInsideSceneOuterBounds(IParcelScene scene, Vector3 targetUnityPosition)
+    public static bool IsInsideSceneOuterBounds(Bounds sceneOuterBounds, Vector3 targetUnityPosition)
     {
-        if (scene.isPersistent)
-            return true;
-
         targetUnityPosition.y = 0f;
-        return scene.GetOuterBounds().Contains(targetUnityPosition);
+        return sceneOuterBounds.Contains(targetUnityPosition);
     }
 
-    public static bool IsInsideSceneBounds(IParcelScene scene, Bounds targetBounds)
+    public static bool IsInsideSceneInnerBounds(ISet<Vector2Int> sceneParcels, float sceneHeightLimit, Bounds targetBounds)
     {
-        if (scene.isPersistent)
-            return true;
-
         var worldOffset = CommonScriptableObjects.worldOffset.Get();
 
-        if (!IsInsideSceneBounds(scene, targetBounds.min + worldOffset, targetBounds.max.y))
+        if (!IsInsideSceneInnerBounds(sceneParcels, sceneHeightLimit, targetBounds.min + worldOffset, targetBounds.max.y))
             return false;
 
-        if (!IsInsideSceneBounds(scene, targetBounds.max + worldOffset, targetBounds.max.y))
+        if (!IsInsideSceneInnerBounds(sceneParcels, sceneHeightLimit, targetBounds.max + worldOffset, targetBounds.max.y))
             return false;
 
         return true;
