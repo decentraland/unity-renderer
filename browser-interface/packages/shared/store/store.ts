@@ -10,10 +10,9 @@ import defaultLogger from 'lib/logger'
 import { setStore } from './isolatedStore'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { logTrace } from 'unity-interface/trace'
-import { default as monitor } from '@redux-saga/simple-saga-monitor'
 
 export const sagaMiddleware = createSagaMiddleware({
-  sagaMonitor: DEBUG_REDUX_SAGAS ? monitor : undefined,
+  sagaMonitor: undefined,
   onError: (error: Error, { sagaStack }: { sagaStack: string }) => {
     defaultLogger.log('SAGA-ERROR: ', error)
     BringDownClientAndReportFatalError(error, ErrorContext.KERNEL_SAGA, { sagaStack })
