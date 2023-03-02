@@ -11,7 +11,8 @@ namespace DCLServices.MapRendererV2.MapLayers
         PointsOfInterest = 1 << 2,
         PlayerMarker = 1 << 3,
         HotUsersMarkers = 1 << 4,
-        ColdUsersMarkers = 1 << 5
+        ColdUsersMarkers = 1 << 5,
+        ParcelHoverHighlight = 1 << 6
         // Add yours
     }
 }

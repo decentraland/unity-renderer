@@ -12,6 +12,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
     {
         event Action<IMapCameraControllerInternal> OnReleasing;
 
+        Camera Camera { get; }
+
         void Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers);
 
         void SetActive(bool active);

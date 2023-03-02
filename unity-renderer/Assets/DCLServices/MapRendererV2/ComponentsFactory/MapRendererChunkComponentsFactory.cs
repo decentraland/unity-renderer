@@ -7,11 +7,11 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
+using DCLServices.MapRendererV2.MapLayers.ParcelHighlight;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -27,10 +27,12 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private const string HOT_USER_MARKER_ADDRESS = "HotUserMarker";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
+        private const string PARCEL_HIGHLIGHT_OBJECT_ADDRESS = "MapParcelHighlightMarker";
 
         private const int ATLAS_DRAW_ORDER = 1;
         private const int COLD_USER_MARKERS_DRAW_ORDER = 10;
         private const int HOT_USER_MARKERS_DRAW_ORDER = 11;
+        private const int PARCEL_HIGHLIGHT_DRAW_ORDER = 30;
         private const int ATLAS_CHUNK_SIZE = 250;
 
         private const int COLD_USER_MARKERS_LIMIT = 100;
@@ -51,12 +53,37 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             // TODO implement Culling Controller
             IMapCullingController cullingController = null;
 
+            var highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
+
+            var highlightMarkersPool = new ObjectPool<IParcelHighlightMarker>(
+                () =>
+                {
+                    var obj = Object.Instantiate(highlightMarkerPrefab, configuration.ParcelHighlightRoot);
+                    obj.spriteRenderer.sortingOrder = PARCEL_HIGHLIGHT_DRAW_ORDER;
+                    return new ParcelHighlightMarker(obj);
+                },
+                marker => marker.Deactivate(),
+                marker => marker.Dispose()
+            );
+
+            highlightMarkersPool.Prewarm(1);
+
             var mapCameraObjectPrefab = await AddressableProvider.GetAddressable<MapCameraObject>(MAP_CAMERA_OBJECT_ADDRESS, cancellationToken);
 
-            IMapCameraControllerInternal CameraControllerBuilder() =>
-                MapCameraController.MapCameraController.Create(mapCameraObjectPrefab, configuration.MapCamerasRoot, coordsUtils);
+            IMapCameraControllerInternal CameraControllerBuilder()
+            {
+                var instance = Object.Instantiate(mapCameraObjectPrefab, configuration.MapCamerasRoot);
 
-            IObjectPool<IMapCameraControllerInternal> pool = new ObjectPool<IMapCameraControllerInternal>(
+                var interactivityController = new MapCameraInteractivityController(
+                    configuration.MapCamerasRoot,
+                    instance.mapCamera,
+                    highlightMarkersPool,
+                    coordsUtils);
+
+                return new MapCameraController.MapCameraController(interactivityController, instance, coordsUtils);
+            }
+
+            IObjectPool<IMapCameraControllerInternal> cameraControllersPool = new ObjectPool<IMapCameraControllerInternal>(
                 CameraControllerBuilder,
                 x => x.SetActive(true),
                 x => x.SetActive(false),
@@ -115,7 +142,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 await UniTask.WhenAll(CreateAtlas(), CreateColdUserMarkers(), CreateHotUserMarkers() /* List of other creators that can be executed in parallel */);
             });
 
-            return new MapRendererComponents(enumerator, cullingController, pool);
+            return new MapRendererComponents(enumerator, cullingController, cameraControllersPool);
         }
 
         internal async Task<ColdUserMarkerObject> GetColdUserMarkerPrefab(CancellationToken cancellationToken) =>
@@ -126,5 +153,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>
             await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);
+
+        internal async UniTask<ParcelHighlightMarkerObject> GetParcelHighlightMarkerPrefab(CancellationToken cancellationToken) =>
+            await AddressableProvider.GetAddressable<ParcelHighlightMarkerObject>(PARCEL_HIGHLIGHT_OBJECT_ADDRESS, cancellationToken);
     }
 }
