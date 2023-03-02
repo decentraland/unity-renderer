@@ -51,6 +51,7 @@ import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { getConnectedPeerCount, processAvatarVisibility } from './peers'
 import { getCommsRoom, reconnectionState } from './selectors'
+import {sessionFirstLoadCompleted} from "../session/sagas";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -441,7 +442,12 @@ function* handleAnnounceProfile() {
     const roomConnection: RoomConnection | undefined = yield select(getCommsRoom)
 
     if (roomConnection) {
-      roomConnection.sendProfileMessage({ profileVersion: profile.version }).catch(commsLogger.error)
+      if(!sessionFirstLoadCompleted()){
+        console.log("Sending Position: I WAS ABOUT TO SEND THE PROFILE BUT WAS STOPPED")
+      }else{
+        console.log("Sending Position: IM SENDING THE PROFILE")
+        roomConnection.sendProfileMessage({ profileVersion: profile.version }).catch(commsLogger.error)
+      }
     }
   }
 }
