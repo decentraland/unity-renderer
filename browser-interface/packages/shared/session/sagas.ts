@@ -6,7 +6,6 @@ import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { initializeReferral } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -68,7 +67,6 @@ export function* sessionSaga(): any {
   })
 
   yield call(initialize)
-  yield call(initializeReferral)
 }
 
 function* initialize() {
@@ -135,7 +133,6 @@ function* authenticate(action: AuthenticateAction) {
   // 4. finish sign in
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
-
 }
 
 function* authorize(requestManager: RequestManager) {
@@ -280,7 +277,7 @@ function* redirectToSignUp() {
   window.location.reload()
 }
 
-export function observeAccountStateChange(
+function observeAccountStateChange(
   store: Store<RootSessionState>,
   accountStateChange: (previous: SessionState, current: SessionState) => any
 ) {
