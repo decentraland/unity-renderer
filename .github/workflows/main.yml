@@ -17,7 +17,7 @@ jobs:
 
             ### Web
             This branch can be previewed at:
-            - https://play.decentraland.org/?explorer-branch=${{ github.head_ref }})
+            - https://play.decentraland.org/?explorer-branch=${{ github.head_ref }}
             - https://play.decentraland.zone/?explorer-branch=${{ github.head_ref }}
 
             ### Desktop:
