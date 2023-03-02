@@ -22,10 +22,10 @@ export type ContentFile = {
   content: Uint8Array
 }
 
-// NEVER CHANGE THIS ENUM, IT IS USED IN THE WIRE PROTOCOL
 export enum ProfileType {
   LOCAL = 0,
-  DEPLOYED = 1
+  DEPLOYED = 1,
+  COMMS = 2
 }
 
 export interface RemoteProfile {

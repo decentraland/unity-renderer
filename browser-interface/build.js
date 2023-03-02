@@ -4,7 +4,6 @@ const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('fs')
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
-const { generatedFiles } = require('./package.json')
 const { mkdir } = require('fs/promises')
 
 const builtIns = {
@@ -17,7 +16,7 @@ const PROD = !!process.env.CI
 
 console.log(`production: ${PROD}`)
 process.env.BUILD_PATH = path.resolve(
-  process.env.BUILD_PATH || path.resolve(__dirname, '../unity-renderer/Builds/unity')
+  process.env.BUILD_PATH || path.resolve(__dirname, '../Builds/unity')
 )
 const DIST_PATH = path.resolve(__dirname, './static')
 
@@ -149,9 +148,9 @@ const nodeBuiltIns = () => {
 const commonOptions = {
   bundle: true,
   minify: !cliopts.watch,
-  sourcemap: cliopts.watch ? 'both' : undefined,
+  sourcemap: 'external',
   sourceRoot: path.resolve('./packages'),
-  sourcesContent: !!cliopts.watch,
+  sourcesContent: true,
   treeShaking: true,
   plugins: [nodeBuiltIns(), workerLoader()]
 }
@@ -162,17 +161,13 @@ function createWorker(entry, outfile) {
     entry,
     outfile,
     tsconfig: path.join(path.dirname(entry), 'tsconfig.json'),
-    inject: ['packages/entryPoints/inject.js']
+    inject: ['packages/entryPoints/inject.js'],
+    sourcemap: true
   })
 }
 
 async function compileJs() {
-  ensureFileExists(DIST_PATH, 'unity.loader.js')
-  const injectUnityPath = path.resolve(DIST_PATH, 'unity.loader.js')
-
-  for (let file of Object.values(generatedFiles)) {
-    ensureFileExists(DIST_PATH, file)
-  }
+  const injectUnityPath = path.resolve(__dirname, 'static', 'unity.loader.js')
 
   if (!process.env.BUNDLES_ONLY) {
     createWorker('packages/gif-processor/worker.ts', 'static/gif-processor/worker.js.txt')
@@ -191,7 +186,8 @@ async function compileJs() {
       outfile: 'static/index.js',
       tsconfig: 'packages/entryPoints/tsconfig.json',
       inject: ['packages/entryPoints/inject.js'],
-      banner: {js: readFileSync(injectUnityPath).toString() }
+      banner: {js: readFileSync(injectUnityPath).toString() },
+      sourcemap: true
     })
 
     build({

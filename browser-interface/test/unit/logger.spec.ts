@@ -1,6 +1,6 @@
 import Sinon, * as sinon from 'sinon'
-import * as wrapConsole from 'shared/logger/wrap'
-import { defaultLogger } from 'shared/logger'
+import * as wrapConsole from 'lib/logger/wrap'
+import { defaultLogger } from 'lib/logger'
 
 describe('Wrapped Logger', () => {
   wrapConsole.METHODS.forEach((method) => {

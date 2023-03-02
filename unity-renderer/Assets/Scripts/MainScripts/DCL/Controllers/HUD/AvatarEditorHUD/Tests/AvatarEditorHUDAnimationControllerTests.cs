@@ -1,17 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using AvatarEditorHUD_Tests;
-using DCL;
-using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
+using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
-using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
 
 public class AvatarEditorHUDAnimationControllerTests
 {
@@ -19,19 +11,16 @@ public class AvatarEditorHUDAnimationControllerTests
     private IAvatarEditorHUDView editorHUDView;
     private AvatarEditorHUDAnimationController avatarEditorHUDAnimationController;
     private ICharacterPreviewController characterPreviewController;
-    private CatalogController catalogController;
-    private BaseDictionary<string, WearableItem> catalog;
-
+    private IWearablesCatalogService wearablesCatalogService;
 
     [SetUp]
     public void SetUp()
     {
+        wearablesCatalogService = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         editorHUDView = Substitute.For<IAvatarEditorHUDView>();
         characterPreviewController = Substitute.For<ICharacterPreviewController>();
         editorHUDView.CharacterPreview.Returns(characterPreviewController);
-        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
-        catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-        avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView);
+        avatarEditorHUDAnimationController = new AvatarEditorHUDAnimationController(editorHUDView, wearablesCatalogService);
     }
 
     [Test]
@@ -74,8 +63,7 @@ public class AvatarEditorHUDAnimationControllerTests
     [TearDown]
     public void TearDown()
     {
+        wearablesCatalogService.Dispose();
         editorHUDView.Dispose();
     }
-
-
 }

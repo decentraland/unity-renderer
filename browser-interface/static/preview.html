@@ -635,11 +635,27 @@
           return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('explorer-version')}`
         }
 
+        // the CLI tool binds @/explorer to a static server serving the contents of
+        // the @dcl/explorer package, it has the same behavior as the CDNs listed
+        // above
         return new URL('@/explorer', location.toString()).toString()
+      }
+
+      async function getRendererBaseUrl() {
+        const qs = new URLSearchParams(document.location.search)
+
+        if (qs.has('renderer-branch')) {
+          return `https://renderer-artifacts.decentraland.org/branch/${qs.get('renderer-branch')}`
+        }
+
+        if (qs.has('renderer-version')) {
+          return `https://cdn.decentraland.org/@dcl/explorer/${qs.get('renderer-version')}`
+        }
       }
 
       async function initKernel() {
         const baseUrl = await getExplorerBaseUrl()
+        const rendererBaseUrl = await getRendererBaseUrl() || baseUrl
         const kernelScript = (new URL('index.js', `${baseUrl}/`)).toString()
 
         await injectScript(kernelScript)
@@ -659,7 +675,7 @@
           },
           rendererOptions: {
             container,
-            baseUrl
+            baseUrl: rendererBaseUrl
           }
         })
 

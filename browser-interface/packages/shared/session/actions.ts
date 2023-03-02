@@ -3,7 +3,7 @@ import { action } from 'typesafe-actions'
 import { ETHEREUM_NETWORK } from 'config'
 
 import { ExplorerIdentity } from './types'
-import { IEthereumProvider, LoginState } from '@dcl/kernel-interface'
+import { IEthereumProvider, LoginState } from 'kernel-web-interface'
 
 export const INIT_SESSION = '[SESSION] Initializing'
 export const initSession = () => action(INIT_SESSION)
@@ -18,10 +18,10 @@ export const SIGNUP = '[SESSION] SignUp'
 export const signUp = (email: string, name: string) => action(SIGNUP, { email, name })
 export type SignUpAction = ReturnType<typeof signUp>
 
-export const USER_AUTHENTIFIED = '[SESSION] User authentified'
-export const userAuthentified = (identity: ExplorerIdentity, network: ETHEREUM_NETWORK, isGuest: boolean) =>
-  action(USER_AUTHENTIFIED, { identity, network, isGuest })
-export type UserAuthentified = ReturnType<typeof userAuthentified>
+export const USER_AUTHENTICATED = '[SESSION] User authenticated'
+export const userAuthenticated = (identity: ExplorerIdentity, network: ETHEREUM_NETWORK, isGuest: boolean) =>
+  action(USER_AUTHENTICATED, { identity, network, isGuest })
+export type UserAuthenticated = ReturnType<typeof userAuthenticated>
 
 export const LOGOUT = '[SESSION] Logout'
 export const logout = () => action(LOGOUT)

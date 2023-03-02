@@ -1,42 +1,23 @@
-import { Avatar } from '@dcl/schemas'
-import { sleep } from 'lib/javascript/sleep'
 import { expect } from 'chai'
-import future from 'fp-future'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import { expectSaga } from 'redux-saga-test-plan'
-import { dynamic } from 'redux-saga-test-plan/providers'
 import { call, select } from 'redux-saga/effects'
-import { getCommsRoom } from 'shared/comms/selectors'
 import {
-  addProfileToLastSentProfileVersionAndCatalog,
-  profileRequest,
-  profileSuccess,
-  ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG
+  addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
 } from 'shared/profiles/actions'
-import { handleFetchProfile, profileServerRequest } from 'shared/profiles/sagas'
+import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
 import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
-import { ensureAvatarCompatibilityFormat } from 'shared/profiles/transformations/profileToServerFormat'
-import { ProfileUserInfo } from 'shared/profiles/types'
+import type { ProfileUserInfo } from 'shared/profiles/types'
 import * as realmSelectors from 'shared/realm/selectors'
+import type { IRealmAdapter } from 'shared/realm/types'
+import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { getCurrentUserId, getIsGuestLogin, isCurrentUserId } from 'shared/session/selectors'
-import sinon from 'sinon'
-import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
-import { profileSaga } from '../../packages/shared/profiles/sagas'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { isCurrentUserId } from 'shared/session/selectors'
 import { buildStore } from 'shared/store/store'
-import { IRealmAdapter } from 'shared/realm/types'
-
-const profile: Avatar = { data: 'profile' } as any
-
-function delayed<T>(result: T) {
-  return dynamic<T>(async () => {
-    await sleep(1)
-    return result
-  })
-}
-
-const delayedProfile = delayed({ avatars: [profile] })
+import sinon from 'sinon'
+import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
 
 describe('fetchProfile behavior', () => {
   it('avatar compatibility format', () => {
@@ -77,56 +58,20 @@ describe('fetchProfile behavior', () => {
     } as any)
   })
 
-  it.skip('completes once for more than one request of same user', () => {
-    return expectSaga(profileSaga)
-      .put(profileSuccess('passport' as any))
-      .not.put(profileSuccess('passport' as any))
-      .dispatch(profileRequest('user|1', future()))
-      .dispatch(profileRequest('user|1', future()))
-      .dispatch(profileRequest('user|1', future()))
-      .provide([
-        [select(realmSelectors.getRealmAdapter), {}],
-        [call(profileServerRequest, 'user|1'), delayedProfile],
-        [select(getCurrentUserId), 'myid'],
-        [call(ensureAvatarCompatibilityFormat, profile), 'passport']
-      ])
-      .run()
-  })
-
-  it.skip('runs one request for each user', () => {
-    return expectSaga(profileSaga)
-      .put(profileSuccess('passport1' as any))
-      .put(profileSuccess('passport2' as any))
-      .not.put(profileSuccess('passport1' as any))
-      .not.put(profileSuccess('passport2' as any))
-      .dispatch(profileRequest('user|1', future()))
-      .dispatch(profileRequest('user|1', future()))
-      .dispatch(profileRequest('user|2', future()))
-      .dispatch(profileRequest('user|2', future()))
-      .provide([
-        [select(realmSelectors.getRealmAdapter), {}],
-        [call(profileServerRequest, 'user|1'), delayedProfile],
-        [select(getCurrentUserId), 'myid'],
-        [call(ensureAvatarCompatibilityFormat, profile), 'passport1'],
-        [call(profileServerRequest, 'user|2'), delayedProfile],
-        [call(ensureAvatarCompatibilityFormat, profile), 'passport2']
-      ])
-      .run()
-  })
-
   it('detects and fixes corrupted scaled snapshots', () => {
-    const profileWithCorruptedSnapshots = {
-      avatar: { snapshots: { face: 'http://fake.url/contents/facehash', face128: '128', face256: '256' } }
-    }
-    const profile1 = { ...profileWithCorruptedSnapshots, ethAddress: 'eth1' }
     const userId = 'user|1'
+    const action = profileRequest(userId)
 
-    return expectSaga(handleFetchProfile, profileRequest(userId, future()))
+    return expectSaga(fetchProfile, action)
       .provide([
-        [select(getIsGuestLogin), false],
-        [select(isCurrentUserId, userId), false],
-        [select(getCommsRoom), undefined],
-        [call(profileServerRequest, userId, undefined), delayed({ avatars: [profile1] })]
+        [select(getInformationToFetchProfileFromStore, action), {
+          roomConnection: undefined,
+          loadingCurrentUser: false,
+          hasRoomConnection: false,
+          existingProfile: undefined,
+          isGuestLogin: false,
+          existingProfileWithCorrectVersion: false
+        }]
       ])
       .run()
       .then((result) => {
@@ -167,11 +112,11 @@ describe('Handle submit profile to renderer', () => {
 
       unityMock.expects('AddUserProfilesToCatalog').never()
 
-      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(waitForRealm), realmAdapter],
           [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 1]
@@ -196,11 +141,11 @@ describe('Handle submit profile to renderer', () => {
 
       unityMock.expects('AddUserProfilesToCatalog').never()
 
-      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(waitForRealm), realmAdapter],
           [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 0]
@@ -225,11 +170,11 @@ describe('Handle submit profile to renderer', () => {
 
       unityMock.expects('AddUserProfileToCatalog').once()
 
-      await expectSaga(handleSubmitProfileToRenderer, { type: 'SEND_PROFILE_TO_RENDERER', payload: { userId } })
+      await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
           [select(getProfileFromStore, userId), profile],
-          [call(realmSelectors.waitForRealmAdapter), realmAdapter],
+          [call(waitForRealm), realmAdapter],
           [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
           [select(isCurrentUserId, userId), false],
           [select(getLastSentProfileVersion, userId), 1]

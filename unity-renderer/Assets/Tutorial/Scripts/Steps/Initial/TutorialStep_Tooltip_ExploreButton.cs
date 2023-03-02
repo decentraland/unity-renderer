@@ -24,7 +24,7 @@ namespace DCL.Tutorial
             base.OnStepFinished();
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-            PlayerPrefsUtils.SetInt(PLAYER_PREFS_START_MENU_SHOWED, 1);
+            PlayerPrefsBridge.SetInt(PLAYER_PREFS_START_MENU_SHOWED, 1);
 
             DataStore.i.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
         }

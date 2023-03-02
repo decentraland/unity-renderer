@@ -763,7 +763,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7437318031689893040}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1671,6 +1671,7 @@ GameObject:
   - component: {fileID: 1253961915410315844}
   - component: {fileID: 3302409501547188859}
   - component: {fileID: 46097076}
+  - component: {fileID: 1996280664042206587}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -1795,6 +1796,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1996280664042206587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6094055690743740254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85da332798fc458595ca5a677f1bf18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6350976748315781347
 GameObject:
   m_ObjectHideFlags: 0

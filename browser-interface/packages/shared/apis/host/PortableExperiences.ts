@@ -6,8 +6,8 @@ import {
 import { store } from 'shared/store/isolatedStore'
 import { removeScenePortableExperience } from 'shared/portableExperiences/actions'
 
-import { RpcServerPort } from '@dcl/rpc'
-import { PortContext } from './context'
+import type { RpcServerPort } from '@dcl/rpc'
+import type { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 
 import { PortableExperiencesServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/portable_experiences.gen'

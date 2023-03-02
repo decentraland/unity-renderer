@@ -468,7 +468,7 @@ namespace DCL.Social.Passports
                         type = NAME_TYPE,
                         marketplaceURI = "",
                         name = names[i + j].Name,
-                        rarity = LEGENDARY_RARITY,
+                        rarity = NAME_TYPE,
                         imageURI = "",
                         nftId = (names[i + j].ContractAddress, NAME_TYPE)
                     };

@@ -76,7 +76,7 @@ namespace DCL.EquippedEmotes
 
             try
             {
-                storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsUtils.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
+                storedEquippedEmotes = JsonConvert.DeserializeObject<List<string>>(PlayerPrefsBridge.GetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY));
             }
             catch
             {
@@ -108,8 +108,8 @@ namespace DCL.EquippedEmotes
             }
 
             // TODO: We should avoid static calls and create injectable interfaces
-            PlayerPrefsUtils.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
-            PlayerPrefsUtils.Save();
+            PlayerPrefsBridge.SetString(PLAYER_PREFS_EQUIPPED_EMOTES_KEY, JsonConvert.SerializeObject(emotesIdsToStore));
+            PlayerPrefsBridge.Save();
         }
 
         internal void SetEquippedEmotes(List<string> storedEquippedEmotes)

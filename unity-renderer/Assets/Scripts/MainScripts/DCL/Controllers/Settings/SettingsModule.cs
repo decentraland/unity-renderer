@@ -24,12 +24,12 @@ namespace DCL.SettingsCommon
         private void Preload()
         {
             dataValue = defaultPreset;
-            if (!PlayerPrefsUtils.HasKey(playerPrefsKey))
+            if (!PlayerPrefsBridge.HasKey(playerPrefsKey))
                 return;
 
             try
             {
-                dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
+                dataValue = JsonUtility.FromJson<T>(PlayerPrefsBridge.GetString(playerPrefsKey));
             }
             catch (Exception e)
             {
@@ -48,7 +48,7 @@ namespace DCL.SettingsCommon
             OnChanged?.Invoke(dataValue);
         }
 
-        public void Save() { PlayerPrefsUtils.SetString(playerPrefsKey, JsonUtility.ToJson(dataValue)); }
+        public void Save() { PlayerPrefsBridge.SetString(playerPrefsKey, JsonUtility.ToJson(dataValue)); }
 
         public bool HasAnyData() => !Data.Equals(defaultPreset);
     }

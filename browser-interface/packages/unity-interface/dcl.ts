@@ -12,7 +12,7 @@ import { kernelConfigForRenderer } from './kernelConfigForRenderer'
 import { store } from 'shared/store/isolatedStore'
 import type { UnityGame } from '@dcl/unity-renderer/src'
 import { traceDecoratorUnityGame } from './trace'
-import defaultLogger from 'shared/logger'
+import defaultLogger from 'lib/logger'
 import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { reloadScenePortableExperience } from 'shared/portableExperiences/actions'
@@ -48,7 +48,6 @@ export async function initializeEngine(_gameInstance: UnityGame): Promise<void> 
   await browserInterface.startedFuture
 
   getUnityInstance().ActivateRendering()
-  getUnityInstance().SetLoadingScreen({ isVisible: true, message: 'Initializing Decentraland', showTips: true })
 
   queueMicrotask(() => {
     // send an "engineStarted" notification, use a queueMicrotask

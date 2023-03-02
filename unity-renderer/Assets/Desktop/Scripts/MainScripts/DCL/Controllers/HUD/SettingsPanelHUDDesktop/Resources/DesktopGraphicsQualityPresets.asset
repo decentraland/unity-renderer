@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de20c26162ae24092b9bf5d122b2d850, type: 3}
+  m_Name: DesktopGraphicsQualityPresets
+  m_EditorClassIdentifier: 
+  defaultPresetIndex: 3
+  settings:
+  - displayName: Low
+    baseResolution: 0
+    antiAliasing: 1
+    renderScale: 0.7
+    shadows: 0
+    softShadows: 0
+    shadowResolution: 256
+    cameraDrawDistance: 100
+    bloom: 0
+    fpsCap: 1
+    shadowDistance: 45
+    enableDetailObjectCulling: 1
+    detailObjectCullingLimit: 85
+    ssaoQuality: 1
+    maxHQAvatars: 25
+    reflectionResolution: 0
+    shaderQuality: 0
+  - displayName: Medium
+    baseResolution: 1
+    antiAliasing: 1
+    renderScale: 1
+    shadows: 1
+    softShadows: 1
+    shadowResolution: 1024
+    cameraDrawDistance: 150
+    bloom: 1
+    fpsCap: 1
+    shadowDistance: 60
+    enableDetailObjectCulling: 1
+    detailObjectCullingLimit: 50
+    ssaoQuality: 2
+    maxHQAvatars: 40
+    reflectionResolution: 0
+    shaderQuality: 1
+  - displayName: High
+    baseResolution: 1
+    antiAliasing: 4
+    renderScale: 1
+    shadows: 1
+    softShadows: 1
+    shadowResolution: 2048
+    cameraDrawDistance: 250
+    bloom: 1
+    fpsCap: 0
+    shadowDistance: 70
+    enableDetailObjectCulling: 1
+    detailObjectCullingLimit: 50
+    ssaoQuality: 2
+    maxHQAvatars: 60
+    reflectionResolution: 0
+    shaderQuality: 2
+  - displayName: Ultra
+    baseResolution: 2
+    antiAliasing: 8
+    renderScale: 1
+    shadows: 1
+    softShadows: 1
+    shadowResolution: 4096
+    cameraDrawDistance: 500
+    bloom: 1
+    fpsCap: 0
+    shadowDistance: 100
+    enableDetailObjectCulling: 0
+    detailObjectCullingLimit: 0
+    ssaoQuality: 3
+    maxHQAvatars: 100
+    reflectionResolution: 0
+    shaderQuality: 2

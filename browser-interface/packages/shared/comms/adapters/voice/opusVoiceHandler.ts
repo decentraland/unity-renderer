@@ -1,4 +1,4 @@
-import { createLogger } from 'shared/logger'
+import { createLogger } from 'lib/logger'
 import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
 import { VoiceCommunicator } from '../../../voiceChat/VoiceCommunicator'
 import { commConfigurations } from 'config'

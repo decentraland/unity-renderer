@@ -1,19 +1,22 @@
-﻿using UnityEngine;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Providers;
+using System.Threading;
+using UnityEngine;
 
 namespace DCL.Skybox
 {
     public class SkyboxElementsReferences : MonoBehaviour
     {
-        private const string PREFAB = "SkyboxPrefabs/Skybox Elements";
+        private const string PREFAB = "SkyboxElements.prefab";
 
         public GameObject domeElementsGO;
         public GameObject satelliteElementsGO;
         public GameObject planarElementsGO;
 
-        public static SkyboxElementsReferences Create()
+        public static async UniTask<SkyboxElementsReferences> Create(IAddressableResourceProvider addressableResourceProvider, CancellationToken ct)
         {
-            var refernces = Instantiate(Resources.Load<GameObject>(PREFAB)).GetComponent<SkyboxElementsReferences>();
-            refernces.gameObject.name = "_Skybox Elements";
+            GameObject prefabToInstantiate = await addressableResourceProvider.GetAddressable<GameObject>(PREFAB, ct);
+            var refernces = Instantiate(prefabToInstantiate).GetComponent<SkyboxElementsReferences>();
             return refernces;
         }
     }

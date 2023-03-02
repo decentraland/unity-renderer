@@ -2,8 +2,8 @@
 import type { EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 import type { QuestForRenderer } from '@dcl/ecs-quests/@dcl/types'
 import type { UnityGame } from '@dcl/unity-renderer/src'
-import { Observable } from 'mz-observable'
-import {
+import type { Observable } from 'mz-observable'
+import type {
   RenderProfile,
   InstancedSpawnPoint,
   WearableV2,
@@ -35,13 +35,16 @@ import {
   ChannelSearchResultsPayload,
   SetAudioDevicesPayload
 } from 'shared/types'
-import { FeatureFlag } from 'shared/meta/types'
-import { IFuture } from 'fp-future'
-import { Avatar, ContentMapping } from '@dcl/schemas'
-import { ILogger } from 'shared/logger'
-import { AddUserProfilesToCatalogPayload, NewProfileForRenderer } from 'shared/profiles/transformations/types'
-import { Emote } from 'shared/catalogs/types'
-import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import type { FeatureFlag } from 'shared/meta/types'
+import type { IFuture } from 'fp-future'
+import type { Avatar, ContentMapping } from '@dcl/schemas'
+import type { ILogger } from 'lib/logger'
+import type {
+  AddUserProfilesToCatalogPayload,
+  NewProfileForRenderer
+} from 'lib/decentraland/profiles/transformations/types'
+import type { Emote } from 'shared/catalogs/types'
+import type { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 
 export type RealmInfo = {
   serverName: string
@@ -132,12 +135,6 @@ export interface IUnityInterface {
 
   /** @deprecated #3642 Kernel will no longer control Loading Screen */
   ActivateRendering(): void
-
-  /** @deprecated #3642 Kernel will no longer control Loading Screen */
-  SetLoadingScreen(data: { isVisible: boolean; message: string; showTips: boolean }): void
-
-  /** @deprecated #3642 Kernel will no longer control Loading Screen */
-  FadeInLoadingHUD(data: { xCoord: number; yCoord: number; message?: string }): void
 
   /** @deprecated #3642 Not used */
   DeactivateRendering(): void

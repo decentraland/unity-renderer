@@ -90,6 +90,13 @@ export const isFromPendingRequest = (store: RootFriendsState, userId: string) =>
   return store.friends.fromFriendRequests.filter((request) => request.userId === userId).length > 0
 }
 
+/**
+ * Return true if the user is a pending request. Otherwise, false.
+ */
+export const isPendingRequest = (store: RootFriendsState, userId: string) => {
+  return isFromPendingRequest(store, userId) || isToPendingRequest(store, userId)
+}
+
 export const getLastStatusOfFriends = (store: RootFriendsState) => store.friends.lastStatusOfFriends
 
 export const getOwnId = (store: RootFriendsState) => store.friends.client?.getUserId()

@@ -10,14 +10,15 @@ public class InputAction_Trigger : ScriptableObject
     public event Triggered OnTriggered;
 
     [SerializeField] internal DCLAction_Trigger dclAction;
-    public DCLAction_Trigger GetDCLAction() => dclAction;
+    public DCLAction_Trigger DCLAction => dclAction;
 
     [SerializeField] internal BooleanVariable blockTrigger;
     public BooleanVariable isTriggerBlocked { get => blockTrigger; set => blockTrigger = value; }
 
     private int triggeredInFrame = -1;
 
-    public bool WasTriggeredThisFrame() { return triggeredInFrame == Time.frameCount; }
+    public bool WasTriggeredThisFrame() =>
+        triggeredInFrame == Time.frameCount;
 
     public void RaiseOnTriggered()
     {
@@ -25,10 +26,7 @@ public class InputAction_Trigger : ScriptableObject
         OnTriggered?.Invoke(dclAction);
     }
 
-    #region Editor
-
 #if UNITY_EDITOR
-
     [UnityEditor.CustomEditor(typeof(InputAction_Trigger), true)]
     internal class InputAction_TriggerEditor : UnityEditor.Editor
     {
@@ -36,13 +34,8 @@ public class InputAction_Trigger : ScriptableObject
         {
             DrawDefaultInspector();
             if (Application.isPlaying && GUILayout.Button("Raise OnChange"))
-            {
                 ((InputAction_Trigger)target).RaiseOnTriggered();
-            }
         }
     }
 #endif
-
-    #endregion
-
 }
