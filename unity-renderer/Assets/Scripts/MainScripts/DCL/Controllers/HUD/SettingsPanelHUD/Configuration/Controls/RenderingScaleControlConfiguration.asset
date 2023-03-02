@@ -13,13 +13,17 @@ MonoBehaviour:
   m_Name: RenderingScaleControlConfiguration
   m_EditorClassIdentifier: 
   title: RENDERING SCALE
-  controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
+  controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: 0abb8a86a6f04be4b98f64245bc532e5, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe: []
   isBeta: 0
-  sliderMinValue: 0
+  infoButtonEnabled: 1
+  infoTooltipMessage: Try lowering this setting before switching to a lower quality
+    preset.
+  sliderMinValue: 0.5
   sliderMaxValue: 1
   storeValueAsNormalized: 0
   wholeNumbers: 0

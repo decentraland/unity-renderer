@@ -2,6 +2,8 @@ using DCL;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using NSubstitute;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
@@ -14,7 +16,9 @@ namespace Tests
     {
         protected override IEnumerator SetUp()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
+            Environment.Setup(serviceLocator);
             yield break;
         }
 
@@ -42,7 +46,7 @@ namespace Tests
                     Assert.Fail("Failed to connect to decentraland service!");
                 }
 
-                string payloadTest = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+                string payloadTest = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Scripts/Tests/TestJSON/SceneLoadingTest").text;
 
                 DCLWebSocketService.Message message = new DCLWebSocketService.Message()
                 {
@@ -87,13 +91,13 @@ namespace Tests
 
                 Assert.LessOrEqual(Mathf.FloorToInt(time), 8);
 
-                string loadedSceneID = "0,0";
+                int loadedSceneNumber = 1;
 
                 yield return null;
 
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID),
+                Assert.IsTrue(DCL.Environment.i.world.state.ContainsScene(loadedSceneNumber),
                     "Expected loadedScene not found!");
-                Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes[loadedSceneID] != null,
+                Assert.IsTrue(DCL.Environment.i.world.state.GetScene(loadedSceneNumber) != null,
                     "Expected loadedScene found but was null!!!");
             }
 

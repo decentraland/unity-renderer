@@ -87,7 +87,7 @@ namespace UnityGLTF.Loader
             
             token.ThrowIfCancellationRequested();
             
-            await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceded, cancellationToken: token);
+            await UniTask.WaitUntil( () => asyncOp.isDone || asyncOp.isDisposed || asyncOp.isSucceeded, cancellationToken: token);
 
 #if UNITY_STANDALONE || UNITY_EDITOR
             if (DataStore.i.common.isApplicationQuitting.Get())
@@ -99,7 +99,7 @@ namespace UnityGLTF.Loader
             bool error = false;
             string errorMessage = null;
 
-            if (!asyncOp.isSucceded)
+            if (!asyncOp.isSucceeded)
             {
                 Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
                 errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";

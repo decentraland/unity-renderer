@@ -1,67 +1,39 @@
-using System.Collections.Generic;
-using DCLPlugins.UUIDEventComponentsPlugin.UUIDComponent.Interfaces;
 using UnityEngine;
 
 namespace DCL
 {
     public static class DataStore_ECS7_Extensions
     {
-        public static void AddPointerEvent( this DataStore_ECS7 self, long entityId, IPointerInputEvent pointerEvent )
+        public static void AddPendingResource(this DataStore_ECS7 self, int sceneNumber, object model)
         {
-            if (self.entityEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
-            {
-               events.Add(pointerEvent);
-            }
-            else
-            {
-                events = new List<IPointerInputEvent>()
-                {
-                    pointerEvent
-                };
-                self.entityEvents.Add(entityId,events);
-            }
-        }
-        
-        public static void RemovePointerEvent( this DataStore_ECS7 self, long entityId, IPointerInputEvent pointerEvent )
-        {
-            if (self.entityEvents.TryGetValue(entityId, out List<IPointerInputEvent> events))
-            {
-                events.Remove(pointerEvent);
-                if (events.Count == 0)
-                    self.entityEvents.Remove(entityId);
-            }
-        }
-        
-        public static void AddPendingResource( this DataStore_ECS7 self, string sceneId, object model )
-        {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
+            if (self.pendingSceneResources.TryGetValue(sceneNumber, out BaseRefCountedCollection<object> pendingResoruces))
             {
                 pendingResoruces.IncreaseRefCount(model);
             }
             else
             {
-                BaseRefCountedCollection<object>  newCountedCollection = new BaseRefCountedCollection<object>();
+                BaseRefCountedCollection<object> newCountedCollection = new BaseRefCountedCollection<object>();
                 newCountedCollection.IncreaseRefCount(model);
-                self.pendingSceneResources.Add(sceneId,newCountedCollection);
+                self.pendingSceneResources.Add(sceneNumber, newCountedCollection);
             }
         }
 
-        public static void RemovePendingResource( this DataStore_ECS7 self, string sceneId, object model  )
+        public static void RemovePendingResource(this DataStore_ECS7 self, int sceneNumber, object model)
         {
-            if (self.pendingSceneResources.TryGetValue(sceneId, out BaseRefCountedCollection<object> pendingResoruces))
+            if (self.pendingSceneResources.TryGetValue(sceneNumber, out BaseRefCountedCollection<object> pendingResoruces))
             {
                 pendingResoruces.DecreaseRefCount(model);
             }
         }
-        
-        public static void AddShapeReady( this DataStore_ECS7 self, long entityId, GameObject gameObject )
+
+        public static void AddShapeReady(this DataStore_ECS7 self, long entityId, GameObject gameObject)
         {
-            self.shapesReady.AddOrSet(entityId,gameObject);
+            self.shapesReady.AddOrSet(entityId, gameObject);
         }
 
-        public static void RemoveShapeReady( this DataStore_ECS7 self, long entityId)
+        public static void RemoveShapeReady(this DataStore_ECS7 self, long entityId)
         {
-            if(self.shapesReady.ContainsKey(entityId))
+            if (self.shapesReady.ContainsKey(entityId))
                 self.shapesReady.Remove(entityId);
         }
     }

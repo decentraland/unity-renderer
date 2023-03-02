@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using Decentraland.Bff;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -29,32 +30,33 @@ namespace DCL
         {
             if (active)
             {
-                OnRealmChanged(DataStore.i.realm.playerRealm.Get(), null);
-                DataStore.i.realm.playerRealm.OnChange -= OnRealmChanged;
-                DataStore.i.realm.playerRealm.OnChange += OnRealmChanged;
+                OnRealmChanged(DataStore.i.realm.realmName.Get(), null);
+                DataStore.i.realm.realmName.OnChange -= OnRealmChanged;
+                DataStore.i.realm.realmName.OnChange += OnRealmChanged;
             }
             else
             {
-                DataStore.i.realm.playerRealm.OnChange -= OnRealmChanged;
+                DataStore.i.realm.realmName.OnChange -= OnRealmChanged;
             }
 
             markerObject.gameObject.SetActive(active);
         }
 
+
         public void Dispose()
         {
-            DataStore.i.realm.playerRealm.OnChange -= OnRealmChanged;
+            DataStore.i.realm.realmName.OnChange -= OnRealmChanged;
             UnityEngine.Object.Destroy(markerObject.gameObject);
         }
 
-        private void OnRealmChanged(CurrentRealmModel current, CurrentRealmModel prev)
+        private void OnRealmChanged(string current, string prev)
         {
             if (current == null)
                 return;
-
-            SetColor(current.Equals(realmServer, realmLayer) ? markerObject.sameRealmColor : markerObject.otherRealmColor);
+            
+            SetColor(current.Equals(realmServer) ? markerObject.sameRealmColor : markerObject.otherRealmColor);
         }
-
+        
         private void SetColor(Color color) { markerObject.color = color; }
     }
 }

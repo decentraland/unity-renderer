@@ -2,6 +2,7 @@
 using System.Collections;
 using DCL;
 using DCL.Components;
+using DCL.Social.Friends;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -136,14 +137,8 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
             return;
         }
 
-        if (FriendsController.i.friends.TryGetValue(userId, out FriendsController.UserStatus status))
-        {
-            SetupFriendship(status.friendshipStatus);
-        }
-        else
-        {
-            SetupFriendship(FriendshipStatus.NOT_FRIEND);
-        }
+        UserStatus status = FriendsController.i.GetUserStatus(userId);
+        SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);
 
         FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
         FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;

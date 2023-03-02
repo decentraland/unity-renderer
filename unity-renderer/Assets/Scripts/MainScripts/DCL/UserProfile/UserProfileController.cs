@@ -1,4 +1,9 @@
+using Cysharp.Threading.Tasks;
+using DCLServices.WearablesCatalogService;
 using System;
+using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -8,6 +13,8 @@ public class UserProfileController : MonoBehaviour
     public event Action OnBaseWereablesFail;
 
     private static UserProfileDictionary userProfilesCatalogValue;
+
+    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
     private bool baseWearablesAlreadyRequested = false;
 
     public static UserProfileDictionary userProfilesCatalog
@@ -31,23 +38,33 @@ public class UserProfileController : MonoBehaviour
         ownUserProfile = UserProfile.GetOwnUserProfile();
     }
 
+    [PublicAPI]
     public void LoadProfile(string payload)
     {
+        async UniTaskVoid RequestBaseWearablesAsync(CancellationToken ct)
+        {
+            try
+            {
+                await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct);
+            }
+            catch (Exception e)
+            {
+                OnBaseWereablesFail?.Invoke();
+                Debug.LogError(e.Message);
+            }
+        }
+
         if (!baseWearablesAlreadyRequested)
         {
             baseWearablesAlreadyRequested = true;
-            CatalogController.RequestBaseWearables()
-                             .Catch((error) =>
-                             {
-                                 OnBaseWereablesFail?.Invoke();
-                                 Debug.LogError(error);
-                             });
+            RequestBaseWearablesAsync(CancellationToken.None).Forget();
         }
 
         if (payload == null)
             return;
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
+
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
@@ -56,21 +73,31 @@ public class UserProfileController : MonoBehaviour
 
     public void AddUserProfilesToCatalog(string payload)
     {
-        UserProfileModel[] items = JsonUtility.FromJson<UserProfileModel[]>(payload);
-        int count = items.Length;
-        for (int i = 0; i < count; ++i)
-        {
-            AddUserProfileToCatalog(items[i]);
-        }
+        var usersPayload = JsonUtility.FromJson<AddUserProfilesToCatalogPayload>(payload);
+        var users = usersPayload.users;
+        var count = users.Length;
+
+        for (var i = 0; i < count; ++i)
+            AddUserProfileToCatalog(users[i]);
     }
 
     public void AddUserProfileToCatalog(UserProfileModel model)
     {
+        // TODO: the renderer should not alter the userId nor ethAddress, this is just a patch derived from a kernel issue
+        model.userId = model.userId.ToLower();
+        model.ethAddress = model.ethAddress?.ToLower();
+
         if (!userProfilesCatalog.TryGetValue(model.userId, out UserProfile userProfile))
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
         userProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, userProfile);
+
+        if (pendingUserProfileTasks.TryGetValue(userProfile.userId, out var existingTask))
+        {
+            existingTask.TrySetResult(userProfile);
+            pendingUserProfileTasks.Remove(userProfile.userId);
+        }
     }
 
     public static UserProfile GetProfileByName(string targetUserName)
@@ -84,7 +111,7 @@ public class UserProfileController : MonoBehaviour
         return null;
     }
 
-    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalogValue.Get(targetUserId); }
+    public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalog.Get(targetUserId); }
 
     public void RemoveUserProfilesFromCatalog(string payload)
     {
@@ -105,4 +132,18 @@ public class UserProfileController : MonoBehaviour
     }
 
     public void ClearProfilesCatalog() { userProfilesCatalog?.Clear(); }
+
+    public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (pendingUserProfileTasks.TryGetValue(userId, out var existingTask))
+            return existingTask.Task;
+
+        var task = new UniTaskCompletionSource<UserProfile>();
+        cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
+        pendingUserProfileTasks[userId] = task;
+
+        return task.Task;
+    }
 }

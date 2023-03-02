@@ -1,0 +1,21 @@
+{
+    "name": "AvatarModifierAreaFeedback",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:23f4b276eaf50f64ca96f6470f41d5d6",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:691ba36162f94224faace1706408a72c",
+        "GUID:bf7bc5cfaf25db643b5b7e691a83390c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

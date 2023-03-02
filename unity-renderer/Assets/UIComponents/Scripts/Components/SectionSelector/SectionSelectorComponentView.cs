@@ -78,6 +78,18 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         return instantiatedSections[index];
     }
 
+    public void DisableSection(int index)
+    {
+        if (index < instantiatedSections.Count)
+            instantiatedSections[index].GameObject.SetActive(false);
+    }
+
+    public void EnableSection(int index)
+    {
+        if (index < instantiatedSections.Count)
+            instantiatedSections[index].GameObject.SetActive(true);
+    }
+
     public List<ISectionToggle> GetAllSections() { return instantiatedSections; }
 
     internal void CreateSection(SectionToggleModel newSectionModel, string name)

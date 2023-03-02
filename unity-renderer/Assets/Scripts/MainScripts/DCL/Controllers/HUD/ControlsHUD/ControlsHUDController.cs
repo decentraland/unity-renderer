@@ -95,6 +95,5 @@ public class ControlsHUDController : IHUD
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
     {
         view?.voiceChatButton.SetActive(current.comms.voiceChatEnabled);
-        view?.builderInWorldButton.SetActive(current.features.enableBuilderInWorld);
     }
 }

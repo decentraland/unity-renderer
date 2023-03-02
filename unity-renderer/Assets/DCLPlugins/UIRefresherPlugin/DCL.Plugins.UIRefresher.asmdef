@@ -1,0 +1,25 @@
+{
+    "name": "DCL.Plugins.UIRefresher",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:0b167d3fa6c88454ea3eb69cbabe4eb7",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:343deaaf83e0cee4ca978e7df0b80d21",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:9857fe4bae4e30441bc3a577c5de790a",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

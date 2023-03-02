@@ -6,13 +6,14 @@ public class HideAvatarsModifier : IAvatarModifier
     {
         if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-        handler.ApplyHideModifier();
+        handler.ApplyHideAvatarModifier();
     }
 
     public void RemoveModifier(GameObject avatar)
     {
         if (!avatar.TryGetComponent(out IHideAvatarAreaHandler handler))
             return;
-        handler.RemoveHideModifier();
+        handler.RemoveHideAvatarModifier();
     }
+    
 }

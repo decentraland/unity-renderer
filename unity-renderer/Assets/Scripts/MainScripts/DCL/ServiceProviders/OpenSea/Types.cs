@@ -22,7 +22,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         public string description;
         public string external_link;
         public AssetContract asset_contract = null;
-        public AccountInfo owner = null;
+        public OwnershipInfo[] top_ownerships;
         public string permalink;
         public AssetSaleInfo last_sale = null;
         public OrderInfo[] sell_orders = null;

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -5,6 +6,9 @@ using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
 using DCL.CRDT;
 using DCL.Interface;
+using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,10 +16,12 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         [Header("Debug")]
         [SerializeField]
         private bool renderOuterBoundsGizmo = true;
-    
+
         public Dictionary<long, IDCLEntity> entities { get; private set; } = new Dictionary<long, IDCLEntity>();
         public IECSComponentsManagerLegacy componentsManagerLegacy { get; private set; }
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -31,6 +37,8 @@ namespace DCL.Controllers
 
         public bool isTestScene { get; set; } = false;
         public bool isPersistent { get; set; } = false;
+        public bool isPortableExperience { get; set; } = false;
+
         public float loadingProgress { get; private set; }
 
         [System.NonSerialized]
@@ -46,9 +54,11 @@ namespace DCL.Controllers
         public ICRDTExecutor crdtExecutor { get; set; }
 
         public bool isReleased { get; private set; }
-        
+
         private Bounds outerBounds = new Bounds();
-        
+
+        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
+
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
@@ -64,7 +74,10 @@ namespace DCL.Controllers
             crdtExecutor?.Dispose();
         }
 
-        void OnDisable() { metricsCounter?.Disable(); }
+        void OnDisable()
+        {
+            metricsCounter?.Disable();
+        }
 
         private void Update()
         {
@@ -75,48 +88,70 @@ namespace DCL.Controllers
 
         protected virtual string prettyName => sceneData.basePosition.ToString();
 
-        public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
+        public virtual async UniTask SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
-            Assert.IsTrue( !string.IsNullOrEmpty(data.id), "Scene must have an ID!" );
+            Assert.IsTrue(data.sceneNumber > 0, "Scene must have a valid scene number!");
 
             this.sceneData = data;
 
-            contentProvider = new ContentProvider();
-            contentProvider.baseUrl = data.baseUrl;
-            contentProvider.contents = data.contents;
+            contentProvider = new ContentProvider
+            {
+                baseUrl = data.baseUrl,
+                contents = data.contents,
+                sceneCid = data.id,
+            };
+
             contentProvider.BakeHashes();
-            
+
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            {
+                var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
+                if (sceneAb.IsSceneConverted())
+                {
+                    contentProvider.assetBundles = sceneAb.GetConvertedFiles();
+                    contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
+                }
+            }
+
             SetupPositionAndParcels();
 
-            DataStore.i.sceneWorldObjects.AddScene(sceneData.id);
+            DataStore.i.sceneWorldObjects.AddScene(sceneData.sceneNumber);
 
-            metricsCounter.Configure(sceneData.id, sceneData.basePosition, sceneData.parcels.Length);
+            metricsCounter.Configure(sceneData.sceneNumber, sceneData.basePosition, sceneData.parcels.Length);
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
         }
 
+        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
+        {
+            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
+            AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
+            await promiseSceneAb.ToUniTask();
+            return promiseSceneAb.asset;
+        }
+
         void SetupPositionAndParcels()
         {
             gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
-            
+
             parcels.Clear();
-            
+
             // The scene's gameobject position should already be in 'unityposition'
             Vector3 baseParcelWorldPos = gameObject.transform.position;
-            
+
             outerBounds.SetMinMax(new Vector3(baseParcelWorldPos.x, 0f, baseParcelWorldPos.z),
                 new Vector3(baseParcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0f, baseParcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
-            
+
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
                 // 1. Update outer bounds with parcel's size
                 var parcel = sceneData.parcels[i];
-                
+
                 Vector3 parcelWorldPos = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(parcel.x, parcel.y));
                 outerBounds.Encapsulate(new Vector3(parcelWorldPos.x, 0, parcelWorldPos.z));
                 outerBounds.Encapsulate(new Vector3(parcelWorldPos.x + ParcelSettings.PARCEL_SIZE, 0, parcelWorldPos.z + ParcelSettings.PARCEL_SIZE));
-                
+
                 // 2. add parcel to collection
                 parcels.Add(parcel);
             }
@@ -131,7 +166,7 @@ namespace DCL.Controllers
             Vector3 currentSceneWorldPos = Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y);
             Vector3 oldSceneUnityPos = gameObject.transform.position;
             Vector3 newSceneUnityPos = PositionUtils.WorldToUnityPosition(currentSceneWorldPos);
-            
+
             gameObject.transform.position = newSceneUnityPos;
             outerBounds.center += newSceneUnityPos - oldSceneUnityPos;
         }
@@ -146,10 +181,7 @@ namespace DCL.Controllers
 
         public void InitializeDebugPlane()
         {
-            if (EnvironmentSettings.DEBUG && sceneData.parcels != null && sceneDebugPlane == null)
-            {
-                sceneDebugPlane = new SceneDebugPlane(sceneData, gameObject.transform);
-            }
+            if (EnvironmentSettings.DEBUG && sceneData.parcels != null && sceneDebugPlane == null) { sceneDebugPlane = new SceneDebugPlane(sceneData, gameObject.transform); }
         }
 
         public void RemoveDebugPlane()
@@ -174,11 +206,17 @@ namespace DCL.Controllers
 
             componentsManagerLegacy.DisposeAllSceneComponents();
 
+            if (crdtExecutor != null)
+            {
+                crdtExecutor.Dispose();
+                crdtExecutor = null;
+            }
+
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
                 RemoveAllEntitiesImmediate();
                 PoolManager.i.Cleanup(true, true);
-                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+                DataStore.i.sceneWorldObjects.RemoveScene(sceneData.sceneNumber);
             }
             else
             {
@@ -192,24 +230,34 @@ namespace DCL.Controllers
                 else
                 {
                     Destroy(this.gameObject);
-                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.id);
+                    DataStore.i.sceneWorldObjects.RemoveScene(sceneData.sceneNumber);
                 }
             }
 
             isReleased = true;
         }
 
-        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData; }
+        public override string ToString()
+        {
+            return "Parcel Scene: " + base.ToString() + "\n" + sceneData;
+        }
 
         public string GetSceneName()
         {
             return string.IsNullOrEmpty(sceneName) ? "Unnamed" : sceneName;
         }
 
+        public HashSet<Vector2Int> GetParcels() =>
+            parcels;
+
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
+            if (isPersistent)
+                return true;
+
             if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.worldOffset, objectBounds.max.y))
                 return false;
+
             if (!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.worldOffset, objectBounds.max.y))
                 return false;
 
@@ -218,6 +266,9 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f)
         {
+            if (isPersistent)
+                return true;
+
             if (parcels.Count == 0)
                 return false;
 
@@ -231,10 +282,14 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
         {
+            if (isPersistent)
+                return true;
+
             if (parcels.Count == 0)
                 return false;
 
             float heightLimit = metricsCounter.maxCount.sceneHeight;
+
             if (height > heightLimit)
                 return false;
 
@@ -243,6 +298,7 @@ namespace DCL.Controllers
 
             // We check the target world position
             Vector2Int targetCoordinate = new Vector2Int(noThresholdXCoordinate, noThresholdZCoordinate);
+
             if (parcels.Contains(targetCoordinate))
                 return true;
 
@@ -257,59 +313,84 @@ namespace DCL.Controllers
 
             // We check the east/north-threshold position
             targetCoordinate.Set(coordinateMax.x, coordinateMax.y);
+
             if (parcels.Contains(targetCoordinate))
                 return true;
 
             // We check the east/south-threshold position
             targetCoordinate.Set(coordinateMax.x, coordinateMin.y);
+
             if (parcels.Contains(targetCoordinate))
                 return true;
 
             // We check the west/north-threshold position
             targetCoordinate.Set(coordinateMin.x, coordinateMax.y);
+
             if (parcels.Contains(targetCoordinate))
                 return true;
 
             // We check the west/south-threshold position
             targetCoordinate.Set(coordinateMin.x, coordinateMin.y);
+
             if (parcels.Contains(targetCoordinate))
                 return true;
 
             return false;
         }
-        
+
         public bool IsInsideSceneOuterBoundaries(Bounds objectBounds)
         {
+            if (isPersistent)
+                return true;
+
             Vector3 objectBoundsMin = new Vector3(objectBounds.min.x, 0f, objectBounds.min.z);
             Vector3 objectBoundsMax = new Vector3(objectBounds.max.x, 0f, objectBounds.max.z);
             bool isInsideOuterBoundaries = outerBounds.Contains(objectBoundsMin) && outerBounds.Contains(objectBoundsMax);
-            
+
             return isInsideOuterBoundaries;
         }
 
         public bool IsInsideSceneOuterBoundaries(Vector3 objectUnityPosition)
         {
+            if (isPersistent)
+                return true;
+
             objectUnityPosition.y = 0f;
             return outerBounds.Contains(objectUnityPosition);
         }
 
         private void OnDrawGizmosSelected()
         {
-            if(!renderOuterBoundsGizmo) return;
-            
+            if (!renderOuterBoundsGizmo) return;
+
             Gizmos.color = new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, 0.5f);
             Gizmos.DrawCube(outerBounds.center, outerBounds.size + Vector3.up);
+
+            Gizmos.color = new Color(Color.green.r, Color.green.g, Color.green.b, 0.5f);
+            Bounds parcelBounds = new Bounds();
+
+            foreach (Vector2Int parcel in parcels)
+            {
+                Vector3 parcelSceneUnityPos = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(parcel.x, parcel.y));
+                parcelBounds.center = parcelSceneUnityPos + new Vector3(8f, 0f, 8f);
+                parcelBounds.size = new Vector3(16f, 0.1f, 16f);
+                Gizmos.DrawCube(parcelBounds.center, parcelBounds.size);
+            }
         }
 
-        public IDCLEntity GetEntityById(string entityId) { throw new System.NotImplementedException(); }
-        public Transform GetSceneTransform() { return transform; }
+        public IDCLEntity GetEntityById(string entityId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Transform GetSceneTransform()
+        {
+            return transform;
+        }
 
         public IDCLEntity CreateEntity(long id)
         {
-            if (entities.ContainsKey(id))
-            {
-                return entities[id];
-            }
+            if (entities.ContainsKey(id)) { return entities[id]; }
 
             var newEntity = new DecentralandEntity();
             newEntity.entityId = id;
@@ -336,16 +417,18 @@ namespace DCL.Controllers
 
             entities.Add(id, newEntity);
 
-            DataStore.i.sceneWorldObjects.sceneData[sceneData.id].owners.Add(id);
+            DataStore.i.sceneWorldObjects.sceneData[sceneData.sceneNumber].owners.Add(id);
 
             OnEntityAdded?.Invoke(newEntity);
+
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(newEntity, runPreliminaryEvaluation: true);
 
             return newEntity;
         }
 
         void OnEntityShapeUpdated(IDCLEntity entity)
         {
-            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, true);
+            Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(entity, runPreliminaryEvaluation: true);
         }
 
         public void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true)
@@ -364,10 +447,7 @@ namespace DCL.Controllers
 
                 var data = DataStore.i.sceneWorldObjects.sceneData;
 
-                if (data.ContainsKey(sceneData.id))
-                {
-                    data[sceneData.id].owners.Remove(id);
-                }
+                if (data.ContainsKey(sceneData.sceneNumber)) { data[sceneData.sceneNumber].owners.Remove(id); }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -379,13 +459,9 @@ namespace DCL.Controllers
 
         void CleanUpEntityRecursively(IDCLEntity entity, bool removeImmediatelyFromEntitiesList)
         {
-            // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
             {
-                while (iterator.MoveNext())
-                {
-                    CleanUpEntityRecursively(iterator.Current.Value, removeImmediatelyFromEntitiesList);
-                }
+                while (iterator.MoveNext()) { CleanUpEntityRecursively(iterator.Current.Value, removeImmediatelyFromEntitiesList); }
             }
 
             OnEntityRemoved?.Invoke(entity);
@@ -393,7 +469,7 @@ namespace DCL.Controllers
             if (Environment.i.world.sceneBoundsChecker.enabled)
             {
                 entity.OnShapeUpdated -= OnEntityShapeUpdated;
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(entity);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(entity, removeIfPersistent: true, resetState: true);
             }
 
             if (removeImmediatelyFromEntitiesList)
@@ -402,10 +478,7 @@ namespace DCL.Controllers
                 entity.Cleanup();
                 entities.Remove(entity.entityId);
             }
-            else
-            {
-                Environment.i.platform.parcelScenesCleaner.MarkForCleanup(entity);
-            }
+            else { Environment.i.platform.parcelScenesCleaner.MarkForCleanup(entity); }
         }
 
         void RemoveAllEntities(bool instant = false)
@@ -432,6 +505,7 @@ namespace DCL.Controllers
             if (instant)
             {
                 int rootEntitiesCount = rootEntities.Count;
+
                 for (int i = 0; i < rootEntitiesCount; i++)
                 {
                     IDCLEntity entity = rootEntities[i];
@@ -446,14 +520,14 @@ namespace DCL.Controllers
             }
         }
 
-        private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
+        private void RemoveAllEntitiesImmediate()
+        {
+            RemoveAllEntities(instant: true);
+        }
 
         public void SetEntityParent(long entityId, long parentId)
         {
-            if (entityId == parentId)
-            {
-                return;
-            }
+            if (entityId == parentId) { return; }
 
             IDCLEntity me = GetEntityById(entityId);
 
@@ -468,12 +542,12 @@ namespace DCL.Controllers
             Transform firstPersonCameraTransform = worldData.fpsTransform.Get();
 
             // CONST_THIRD_PERSON_CAMERA_ENTITY_REFERENCE is for compatibility purposes
-            if (parentId == (long) SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE ||
-                parentId == (long) SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
+            if (parentId == (long)SpecialEntityId.FIRST_PERSON_CAMERA_ENTITY_REFERENCE ||
+                parentId == (long)SpecialEntityId.THIRD_PERSON_CAMERA_ENTITY_REFERENCE)
             {
                 if (firstPersonCameraTransform == null)
                 {
-                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.id);
+                    Debug.LogError("FPS transform is null when trying to set parent! " + sceneData.sceneNumber);
                     return;
                 }
 
@@ -481,18 +555,18 @@ namespace DCL.Controllers
                 // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(firstPersonCameraTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true, resetState: true);
+                Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(me, isPersistent: true, runPreliminaryEvaluation: true);
                 return;
             }
 
-            if (parentId == (long) SpecialEntityId.AVATAR_ENTITY_REFERENCE ||
-                parentId == (long) SpecialEntityId
-                    .AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
+            if (parentId == (long)SpecialEntityId.AVATAR_ENTITY_REFERENCE ||
+                parentId == (long)SpecialEntityId
+                   .AVATAR_POSITION_REFERENCE) // AvatarPositionEntityReference is for compatibility purposes
             {
                 if (avatarTransform == null)
                 {
-                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.id);
+                    Debug.LogError("Avatar transform is null when trying to set parent! " + sceneData.sceneNumber);
                     return;
                 }
 
@@ -500,20 +574,20 @@ namespace DCL.Controllers
                 // It will simply rotate with the avatar, regardless of where the camera is pointing
                 me.SetParent(null);
                 me.gameObject.transform.SetParent(avatarTransform, false);
-                Environment.i.world.sceneBoundsChecker.RemoveEntityToBeCheckedAndResetState(me);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true, resetState: true);
+                Environment.i.world.sceneBoundsChecker.AddEntityToBeChecked(me, isPersistent: true, runPreliminaryEvaluation: true);
                 return;
             }
 
-            // Remove from persistent checks if it was formerly added as child of avatarTransform or fpsTransform 
+            // Remove from persistent checks if it was formerly added as child of avatarTransform or fpsTransform
             if (me.gameObject.transform.parent == avatarTransform ||
                 me.gameObject.transform.parent == firstPersonCameraTransform)
             {
                 if (Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(me))
-                    Environment.i.world.sceneBoundsChecker.RemovePersistent(me);
+                    Environment.i.world.sceneBoundsChecker.RemoveEntity(me, removeIfPersistent: true);
             }
 
-            if (parentId == (long) SpecialEntityId.SCENE_ROOT_ENTITY)
+            if (parentId == (long)SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 // The entity will be child of the scene directly
                 me.SetParent(null);
@@ -523,14 +597,11 @@ namespace DCL.Controllers
             {
                 IDCLEntity myParent = GetEntityById(parentId);
 
-                if (myParent != null)
-                {
-                    me.SetParent(myParent);
-                }
+                if (myParent != null) { me.SetParent(myParent); }
             }
-            
+
             // After reparenting the Entity may end up outside the scene boundaries
-            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me);
+            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(me, runPreliminaryEvaluation: true);
         }
 
         protected virtual void SendMetricsEvent()
@@ -541,10 +612,7 @@ namespace DCL.Controllers
 
         public IDCLEntity GetEntityById(long entityId)
         {
-            if (!entities.TryGetValue(entityId, out IDCLEntity entity))
-            {
-                return null;
-            }
+            if (!entities.TryGetValue(entityId, out IDCLEntity entity)) { return null; }
 
             //NOTE(Brian): This is for removing stray null references? This should never happen.
             //             Maybe move to a different 'clean-up' method to make this method have a single responsibility?.
@@ -560,6 +628,7 @@ namespace DCL.Controllers
         public string GetStateString()
         {
             string baseState = isPersistent ? "global-scene" : "scene";
+
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.NOT_READY:
@@ -581,7 +650,7 @@ namespace DCL.Controllers
             if (DataStore.i.common.isApplicationQuitting.Get())
                 return;
 #endif
-            
+
             CalculateSceneLoadingState();
 
 #if UNITY_EDITOR
@@ -599,9 +668,21 @@ namespace DCL.Controllers
                     break;
 
                 default:
-                    Debug.Log("This scene is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
+                    Debug.Log($"The scene {sceneData.sceneNumber} is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
+        }
+
+        [ContextMenu("Get Scene Info")]
+        public void GetSceneDebugInfo()
+        {
+            Debug.Log("-----------------");
+            Debug.Log("SCENE DEBUG INFO:");
+            Debug.Log($"Scene Id: {sceneData.id}");
+            Debug.Log($"Scene Number: {sceneData.sceneNumber}");
+            Debug.Log($"Scene Coords: {sceneData.basePosition.ToString()}");
+            Debug.Log($"Scene State: {sceneLifecycleHandler.state.ToString()}");
+            Debug.Log("-----------------");
         }
 
         /// <summary>
@@ -612,12 +693,15 @@ namespace DCL.Controllers
             loadingProgress = 0f;
 
             if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
-                sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
-            {
-                loadingProgress = sceneLifecycleHandler.loadingProgress;
-            }
+                sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY) { loadingProgress = sceneLifecycleHandler.loadingProgress; }
 
             OnLoadingStateUpdated?.Invoke(loadingProgress);
+        }
+
+        public bool IsInitMessageDone()
+        {
+            return sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
+                   || sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS;
         }
     }
 }

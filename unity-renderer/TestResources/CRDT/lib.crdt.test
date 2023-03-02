@@ -1,0 +1,210 @@
+# CRDT protocol should store the message A in all the clients
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"casla","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"casla"}],"deletedEntities":[]}
+#
+# CRDT protocol one message with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"casla","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"casla"}],"deletedEntities":[]}
+#
+# CRDT protocol should decline message A if both messages are sent at the same time and data B > data A
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"a","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"z","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol B > A but with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"a","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"b","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"b"}],"deletedEntities":[]}
+#
+# CRDT protocol should store both keys
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol should store both keys, even if we send the messages in diff order z > a
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol same as before but with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol A, B and C send at the same time for the same key. Bigger raw should win
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"A","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"z","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"C","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol A sends message, B has higher timestamp.
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"A","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"B","timestamp":2}
+{"type":1,"componentId":7,"entityId":11,"data":"C","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":2,"data":"B"}],"deletedEntities":[]}
+#
+# CRDT protocol continuos message after delete the entities.
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":0,"data":"messi","timestamp":1}
+{"type":1,"componentId":8,"entityId":1,"data":"messi","timestamp":1}
+{"type":1,"componentId":9,"entityId":2,"data":"messi","timestamp":1}
+{"type":1,"componentId":10,"entityId":0,"data":"messi","timestamp":1}
+{"type":1,"componentId":11,"entityId":1,"data":"messi","timestamp":1}
+{"type":1,"componentId":12,"entityId":2,"data":"messi","timestamp":1}
+{"type":2,"entityId":0}
+{"type":1,"componentId":13,"entityId":0,"data":"messi","timestamp":1}
+{"type":2,"entityId":1}
+{"type":1,"componentId":14,"entityId":1,"data":"messi","timestamp":1}
+{"type":2,"entityId":2}
+{"type":1,"componentId":15,"entityId":2,"data":"messi","timestamp":1}
+{"type":2,"entityId":0}
+{"type":2,"entityId":1}
+{"type":2,"entityId":2}
+{"type":2,"entityId":0}
+{"type":2,"entityId":1}
+{"type":2,"entityId":2}
+# End of messages
+# Final CRDT State
+{"components":[],"deletedEntities":[{"entityNumber":0,"entityVersion":0},{"entityNumber":1,"entityVersion":0},{"entityNumber":2,"entityVersion":0}]}
+#
+# CRDT protocol [Delay] should store the message A in all the clients
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"casla","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"casla"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] one message with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"casla","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"casla"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] should decline message A if both messages are sent at the same time and data B > data A
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"a","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"z","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] B > A but with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"a","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"b","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"b"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] should store both keys
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] should store both keys, even if we send the messages in diff order z > a
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] same as before but with more clients (N > 2)
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"boedo","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"casla","timestamp":1}
+{"type":1,"componentId":13,"entityId":17,"data":"a","timestamp":2}
+{"type":1,"componentId":13,"entityId":17,"data":"z","timestamp":2}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"boedo"},{"componentId":13,"entityId":17,"timestamp":2,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] A, B and C send at the same time for the same key. Bigger raw should win
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"A","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"z","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"C","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":1,"data":"z"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] A sends message, B has higher timestamp.
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":11,"data":"A","timestamp":1}
+{"type":1,"componentId":7,"entityId":11,"data":"B","timestamp":2}
+{"type":1,"componentId":7,"entityId":11,"data":"C","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[{"componentId":7,"entityId":11,"timestamp":2,"data":"B"}],"deletedEntities":[]}
+#
+# CRDT protocol [Delay] continuos message after delete the entities.
+# Messages sent over the wire
+{"type":1,"componentId":7,"entityId":0,"data":"messi","timestamp":1}
+{"type":1,"componentId":8,"entityId":1,"data":"messi","timestamp":1}
+{"type":1,"componentId":9,"entityId":2,"data":"messi","timestamp":1}
+{"type":1,"componentId":10,"entityId":0,"data":"messi","timestamp":1}
+{"type":1,"componentId":11,"entityId":1,"data":"messi","timestamp":1}
+{"type":1,"componentId":12,"entityId":2,"data":"messi","timestamp":1}
+{"type":2,"entityId":0}
+{"type":1,"componentId":13,"entityId":0,"data":"messi","timestamp":1}
+{"type":2,"entityId":1}
+{"type":1,"componentId":14,"entityId":1,"data":"messi","timestamp":1}
+{"type":2,"entityId":2}
+{"type":1,"componentId":15,"entityId":2,"data":"messi","timestamp":1}
+{"type":2,"entityId":0}
+{"type":1,"componentId":16,"entityId":0,"data":"messi","timestamp":1}
+{"type":2,"entityId":1}
+{"type":1,"componentId":17,"entityId":1,"data":"messi","timestamp":1}
+{"type":2,"entityId":2}
+{"type":1,"componentId":18,"entityId":2,"data":"messi","timestamp":1}
+{"type":2,"entityId":0}
+{"type":1,"componentId":19,"entityId":0,"data":"messi","timestamp":1}
+{"type":2,"entityId":1}
+{"type":1,"componentId":20,"entityId":1,"data":"messi","timestamp":1}
+{"type":2,"entityId":2}
+{"type":1,"componentId":21,"entityId":2,"data":"messi","timestamp":1}
+# End of messages
+# Final CRDT State
+{"components":[],"deletedEntities":[{"entityNumber":0,"entityVersion":0},{"entityNumber":1,"entityVersion":0},{"entityNumber":2,"entityVersion":0}]}
+#

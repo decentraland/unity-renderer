@@ -21,45 +21,28 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue)
         {
             int value = (int)newValue;
-            if (value == Settings.i.qualitySettingsPresets.Length)
-                return;
-            
-            QualitySettings preset = Settings.i.qualitySettingsPresets[value];
-            currentQualitySetting = preset;
+            if (value != Settings.i.qualitySettingsPresets.Length)
+                currentQualitySetting = Settings.i.qualitySettingsPresets[value];
         }
 
-        private void SetupQualityPresetLabels()
+        private void SetupQualityPresetLabels(params string[] customs)
         {
             List<string> presetNames = new List<string>();
-            QualitySettings preset;
-            for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
-            {
-                preset = Settings.i.qualitySettingsPresets[i];
-                presetNames.Add(preset.displayName);
-            }
 
-            RaiseOnOverrideIndicatorLabel(presetNames.ToArray());
-        }
-        
-        private void SetupQualityPresetLabelsWithCustom()
-        {
-            List<string> presetNames = new List<string>();
-            QualitySettings preset;
             for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
-            {
-                preset = Settings.i.qualitySettingsPresets[i];
-                presetNames.Add(preset.displayName);
-            }
-            presetNames.Add(TEXT_QUALITY_CUSTOM);
+                presetNames.Add(Settings.i.qualitySettingsPresets[i].displayName);
+
+            presetNames.AddRange(customs);
+
             RaiseOnOverrideIndicatorLabel(presetNames.ToArray());
         }
 
         private int GetCurrentStoredValue()
         {
-            QualitySettings preset;
             for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
             {
-                preset = Settings.i.qualitySettingsPresets[i];
+                QualitySettings preset = Settings.i.qualitySettingsPresets[i];
+
                 if (preset.Equals(currentQualitySetting))
                 {
                     SetupQualityPresetLabels();
@@ -68,7 +51,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 }
             }
 
-            SetupQualityPresetLabelsWithCustom();
+            SetupQualityPresetLabels(TEXT_QUALITY_CUSTOM);
             RaiseOnCurrentLabelChange(TEXT_QUALITY_CUSTOM);
             return Settings.i.qualitySettingsPresets.Length;
         }

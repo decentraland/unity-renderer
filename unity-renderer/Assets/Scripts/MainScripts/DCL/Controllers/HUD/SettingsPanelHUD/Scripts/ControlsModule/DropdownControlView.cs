@@ -11,24 +11,33 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private TMP_Dropdown dropdown;
         
         private SpinBoxSettingsControlController spinBoxController;
-
-        public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        private PointerClickEventInterceptor pointerClick;
+        
+        private void Awake()
         {
-            //we use spinbox control model and control controller for compatibility
-            SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
+            pointerClick = dropdown.GetComponent<PointerClickEventInterceptor>();
+        }
 
-            spinBoxController = (SpinBoxSettingsControlController)settingsControlController;
+        public override void Initialize(SettingsControlModel model, SettingsControlController controller)
+        {
+            // we use spinbox control model and control controller for compatibility
+            SetLabels(((SpinBoxControlModel)model).spinBoxLabels);
+
+            spinBoxController = (SpinBoxSettingsControlController)controller;
             spinBoxController.OnSetLabels += SetLabels;
             spinBoxController.OnCurrentLabelChange += SetOption;
 
-            base.Initialize(controlConfig, spinBoxController);
+            base.Initialize(model, spinBoxController);
             spinBoxController.UpdateSetting(dropdown.value);
 
             dropdown.onValueChanged.AddListener(spinBoxValue =>
             {
                 ApplySetting(spinBoxValue);
             });
+            
+            pointerClick.PointerClicked += spinBoxController.OnPointerClicked;
         }
+
         private void SetOption(string option)
         {
             dropdown.captionText.text = option;
@@ -44,12 +53,15 @@ namespace DCL.SettingsPanelHUD.Controls
             {
                 dropdown.options.Add(data);
             }
+            
+            dropdown.Hide();
             dropdown.RefreshShownValue();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            pointerClick.PointerClicked -= spinBoxController.OnPointerClicked;
 
             if (spinBoxController != null)
             {

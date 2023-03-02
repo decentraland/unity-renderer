@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Cysharp.Threading.Tasks;
 using GPUSkinning;
 using NSubstitute;
@@ -7,27 +7,24 @@ using UnityEngine.TestTools;
 
 public class GPUSkinningThrottlerShould
 {
-    private GPUSkinningThrottler throttler;
+    private GPUSkinningThrottlerService throttler;
     private IGPUSkinning gpuSkinning;
 
     [SetUp]
     public void SetUp()
     {
-        GPUSkinningThrottler.startingFrame = 0;
         gpuSkinning = Substitute.For<IGPUSkinning>();
-        throttler = new GPUSkinningThrottler();
-        throttler.Bind(gpuSkinning);
+        throttler = GPUSkinningThrottlerService.Create(true);
+        throttler.Register(gpuSkinning);
     }
 
     [UnityTest]
     [TestCase(1, 10, 10, ExpectedResult = null)]
     [TestCase(2, 10, 5, ExpectedResult = null)]
-    [TestCase(4, 10, 2, ExpectedResult = null)]
+    [TestCase(5, 10, 2, ExpectedResult = null)]
     public IEnumerator CallWaitForFramesProperly(int framesBetweenUpdates, int framesToCheck, int expectedCalls) => UniTask.ToCoroutine(async () =>
     {
-        throttler.SetThrottling(framesBetweenUpdates);
-
-        throttler.Start();
+        throttler.ModifyThrottling(gpuSkinning, framesBetweenUpdates);
         for (int i = 0; i < framesToCheck; i++)
             await UniTask.WaitForEndOfFrame();
 
@@ -37,13 +34,12 @@ public class GPUSkinningThrottlerShould
     [UnityTest]
     public IEnumerator StopProperly() => UniTask.ToCoroutine(async () =>
     {
-        throttler.SetThrottling(1);
+        throttler.ModifyThrottling(gpuSkinning, 1);
 
-        throttler.Start();
         for (int i = 0; i < 3; i++)
             await UniTask.WaitForEndOfFrame();
 
-        throttler.Stop();
+        throttler.ForceStop();
         for (int i = 0; i < 3; i++)
             await UniTask.WaitForEndOfFrame();
 
@@ -53,9 +49,8 @@ public class GPUSkinningThrottlerShould
     [UnityTest]
     public IEnumerator StopWhenDisposed() => UniTask.ToCoroutine(async () =>
     {
-        throttler.SetThrottling(1);
+        throttler.ModifyThrottling(gpuSkinning, 1);
 
-        throttler.Start();
         for (int i = 0; i < 3; i++)
             await UniTask.WaitForEndOfFrame();
 

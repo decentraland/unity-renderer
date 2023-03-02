@@ -18,8 +18,8 @@ namespace AvatarSystem
         Vector3 extents { get; }
         int lodLevel { get; }
 
-        UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default);
-        void AddVisibilityConstrain(string key);
+        UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default);
+        void AddVisibilityConstraint(string key);
         void RemoveVisibilityConstrain(string key);
         void PlayEmote(string emoteId, long timestamps);
         void SetLODLevel(int lodIndex);
@@ -27,6 +27,10 @@ namespace AvatarSystem
         void SetImpostorTexture(Texture2D impostorTexture);
         void SetImpostorTint(Color color);
         Transform[] GetBones();
+
+        Renderer GetMainRenderer();
+
+        event Action<Renderer> OnCombinedRendererUpdate;
     }
 
 }

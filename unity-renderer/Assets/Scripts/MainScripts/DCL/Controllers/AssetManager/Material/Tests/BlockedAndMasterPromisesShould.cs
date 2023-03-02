@@ -1,7 +1,7 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System.Collections;
+using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -16,36 +16,24 @@ namespace AssetPromiseKeeper_Material_Tests
         protected override IEnumerator TearDown()
         {
             AssetPromiseKeeper_Texture.i.library.Cleanup();
-            AssetPromiseKeeper_TextureResource.i.library.Cleanup();
+            AssetPromiseKeeper_Texture.i.library.Cleanup();
             return base.TearDown();
         }
-        
+
         protected AssetPromise_Material CreatePromise(string srcTexture)
         {
             AssetPromise_Material prom;
-            var  model = CreateMaterialModel(srcTexture);
-            
+            var model = CreateMaterialModel(srcTexture);
+
             prom = new AssetPromise_Material(model);
 
             return prom;
         }
 
-        private MaterialModel CreateMaterialModel(string srcTexture)
+        private AssetPromise_Material_Model CreateMaterialModel(string srcTexture)
         {
-            var texture = new TextureModel
-            {
-                src =srcTexture,
-                wrap = TextureModel.BabylonWrapMode.WRAP,
-                samplingMode = FilterMode.Bilinear,
-            };
-            
-            var newMaterialModel = new MaterialModel
-            {
-                albedoTexture = texture,
-                metallic = 0,
-                roughness = 1,
-            };
-            return newMaterialModel;
+            return AssetPromise_Material_Model.CreateBasicMaterial(new AssetPromise_Material_Model.Texture(
+                srcTexture, TextureWrapMode.Clamp, FilterMode.Bilinear), 1f, Color.white);
         }
 
         [UnityTest]

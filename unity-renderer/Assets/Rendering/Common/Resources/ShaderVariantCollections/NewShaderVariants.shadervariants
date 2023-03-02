@@ -1,0 +1,341 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NewShaderVariants
+  m_Shaders:
+  - first: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: UNITY_UI_ALPHACLIP
+        passType: 0
+      - keywords: UNITY_UI_CLIP_RECT
+        passType: 0
+  - first: {fileID: 15106, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 15104, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 15105, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9000, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9001, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9002, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9003, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9004, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9007, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9101, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9103, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 65df88701913c224d95fc554db28381a, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: e7857e9d0c934dc4f83f270f8447b006, type: 3}
+    second:
+      variants:
+      - keywords: _BLOOM_LQ _TONEMAP_ACES
+        passType: 0
+  - first: {fileID: 4800000, guid: e6e9a19c3678ded42a3bc431ebef7dbd, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: _ORTHOGRAPHIC _SOURCE_DEPTH_NORMALS
+        passType: 0
+      - keywords: _SOURCE_DEPTH_NORMALS
+        passType: 0
+  - first: {fileID: 4800000, guid: 5f1864addb451f54bae8c86d230f736e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: INSTANCING_ON
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+  - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR INSTANCING_ON _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS
+          _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _METALLICSPECGLOSSMAP _NORMALMAP
+          _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS
+          _ALPHATEST_ON _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS
+          _EMISSION _MAIN_LIGHT_SHADOWS _NORMALMAP _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+          _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: FOG_LINEAR _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: INSTANCING_ON
+        passType: 13
+      - keywords: INSTANCING_ON _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: INSTANCING_ON _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _NORMALMAP
+        passType: 13
+      - keywords: _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _DETAIL_MULX2 _MAIN_LIGHT_SHADOWS _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _DETAIL_MULX2 _NORMALMAP
+        passType: 13
+      - keywords: _DETAIL_MULX2 _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _DETAIL_SCALED _MAIN_LIGHT_SHADOWS _NORMALMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _DETAIL_SCALED _NORMALMAP
+        passType: 13
+      - keywords: _DETAIL_SCALED _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _MAIN_LIGHT_SHADOWS _NORMALMAP
+        passType: 13
+      - keywords: _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _MAIN_LIGHT_SHADOWS _NORMALMAP _PARALLAXMAP _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _NORMALMAP
+        passType: 13
+      - keywords: _NORMALMAP _PARALLAXMAP
+        passType: 13
+  - first: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: UNDERLAY_ON
+        passType: 0
+      - keywords: UNITY_UI_CLIP_RECT
+        passType: 0
+  - first: {fileID: 4800000, guid: 537b3c029e4916749868ad462dca58c5, type: 3}
+    second:
+      variants:
+      - keywords: ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED FOG_LINEAR
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: ENUM_173FCA8E617C4725B6502C6FBE756CEC_ROUNDED
+        passType: 8
+  - first: {fileID: 4800000, guid: 861f58cc229a5f449b2494095122257f, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON _ALPHAPREMULTIPLY_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR INSTANCING_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR _ALPHAPREMULTIPLY_ON _ALPHATEST_ON
+        passType: 0
+      - keywords: FOG_LINEAR _ALPHATEST_ON
+        passType: 0
+      - keywords: INSTANCING_ON
+        passType: 13
+      - keywords: INSTANCING_ON _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 08f57eed8cd29db40bdfc5af4b40f41b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _GPU_SKINNING
+        passType: 8
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS
+          _GPU_SKINNING _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION
+        passType: 13
+      - keywords: FOG_LINEAR _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS
+          _GPU_SKINNING _MAIN_LIGHT_SHADOWS _SCREEN_SPACE_OCCLUSION _SSAO_OFF
+        passType: 13
+      - keywords: _GPU_SKINNING
+        passType: 13
+      - keywords: _GPU_SKINNING _SSAO_OFF
+        passType: 13
+      - keywords: _SSAO_OFF
+        passType: 13
+  - first: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR _SCREEN_SPACE_OCCLUSION _SURFACE_TYPE_TRANSPARENT
+        passType: 0
+  - first: {fileID: 4800000, guid: d540ea39c5edb8e44b3119aa7ed2d662, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 39aceaab833d6664ca7d7e7b5da5e5de, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: acd491c64cf95fb43828192802060ca0, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR
+        passType: 13
+  - first: {fileID: 4800000, guid: fe393ace9b354375a9cb14cdbbc28be4, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: OUTLINE_ON
+        passType: 0
+  - first: {fileID: 4800000, guid: c8f1036d047721a43a74331d59080020, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+  - first: {fileID: 4800000, guid: 2f81a455fb6a38d40a93be19cf7f2d8e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS
+          _SCREEN_SPACE_OCCLUSION
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: bf4000fbd9b31784cab1d27368431336,
+      type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: 48ab4630448d99f40b8df0f1d6076f87, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+      - keywords: 
+        passType: 8

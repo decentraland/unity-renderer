@@ -4,6 +4,9 @@ source ci-setup.sh
 
 echo "Running playmode tests for $PROJECT_PATH"
 
+# Disable Sentry
+disable_sentry
+
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
@@ -13,7 +16,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -testResults "$PROJECT_PATH/playmode-results.xml" \
   -enableCodeCoverage \
   -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-Protocol,-WebSocketSharp,-UnityGLTFAssembly,-ABConverter,-ReorderableEditor,-UnityGLTFEditorAssembly,-MainEditor,-TutorialBuilderInWorld,-DebugController,-BotsControllerInterface,-Logger,-SmartItemCommon,-EditorUtils,-Builder,-bc-csharp;pathFilters:-**/Assets/ABConverter/**,-**Test**,-**Should**,-**SmartItem**"
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-Protocol,-WebSocketSharp,-UnityGLTFAssembly,-ABConverter,-ReorderableEditor,-UnityGLTFEditorAssembly,-MainEditor,-TutorialBuilderInWorld,-DebugController,-BotsControllerInterface,-Logger,-SmartItemCommon,-EditorUtils,-Builder;pathFilters:-**/Assets/ABConverter/**,-**Test**,-**Should**,-**SmartItem**"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?

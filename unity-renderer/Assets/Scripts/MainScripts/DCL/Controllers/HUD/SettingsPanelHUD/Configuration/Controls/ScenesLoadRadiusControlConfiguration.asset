@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: ScenesLoadRadiusControlConfiguration
   m_EditorClassIdentifier: 
   title: SCENES LOAD RADIUS
-  controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
+  controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: a5617d48f1af04692a0965b6ff232360, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe: []
   isBeta: 0
   sliderMinValue: 1
   sliderMaxValue: 4

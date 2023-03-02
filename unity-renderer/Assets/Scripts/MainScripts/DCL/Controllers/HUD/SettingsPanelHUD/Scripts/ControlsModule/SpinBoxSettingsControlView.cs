@@ -14,15 +14,15 @@ namespace DCL.SettingsPanelHUD.Controls
 
         private SpinBoxSettingsControlController spinBoxController;
 
-        public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        public override void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
-            SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
+            SetLabels(((SpinBoxControlModel)model).spinBoxLabels);
 
-            spinBoxController = (SpinBoxSettingsControlController)settingsControlController;
+            spinBoxController = (SpinBoxSettingsControlController)controller;
             spinBoxController.OnSetLabels += SetLabels;
             spinBoxController.OnCurrentLabelChange += spinBox.OverrideCurrentLabel;
 
-            base.Initialize(controlConfig, spinBoxController);
+            base.Initialize(model, spinBoxController);
             spinBoxController.UpdateSetting(spinBox.value);
 
             spinBox.onValueChanged.AddListener(spinBoxValue =>

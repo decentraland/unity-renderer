@@ -1,0 +1,17 @@
+{
+    "name": "ServiceInstance",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

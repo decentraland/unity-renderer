@@ -25,9 +25,16 @@ namespace DCL.ServerTime
 
         void GetTimeFromServer()
         {
-            webRequest = UnityWebRequest.Get(serverURL);
-            UnityWebRequestAsyncOperation temp = webRequest.SendWebRequest();
-            temp.completed += WebRequestCompleted;
+            try
+            {
+                webRequest = UnityWebRequest.Get(serverURL);
+                UnityWebRequestAsyncOperation temp = webRequest.SendWebRequest();
+                temp.completed += WebRequestCompleted;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         private void WebRequestCompleted(AsyncOperation obj)
@@ -40,6 +47,7 @@ namespace DCL.ServerTime
                     string responseHeaderTime = webRequest.GetResponseHeader("date");
                     UpdateTimeWithServerTime(responseHeaderTime);
                     initialized = true;
+
                     break;
                 case UnityWebRequest.Result.ConnectionError:
                     break;
@@ -57,6 +65,7 @@ namespace DCL.ServerTime
         void UpdateTimeWithServerTime(string datetime)
         {
             DateTime serverTime;
+
             if (DateTime.TryParse(datetime, out serverTime))
             {
                 // Update last server time
@@ -72,6 +81,7 @@ namespace DCL.ServerTime
         public DateTime GetCurrentTime()
         {
             TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
+
             return lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset);
         }
     }

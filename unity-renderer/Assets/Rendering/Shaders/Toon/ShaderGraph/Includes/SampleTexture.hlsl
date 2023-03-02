@@ -1,3 +1,7 @@
+#ifndef SAMPLE_TEXTURE_AVATAR
+#define SAMPLE_TEXTURE_AVATAR
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
+
 void SampleTexture_float(float4 defaultColor, float textureIndex, float2 uv, out float4 Color)
 {
     if (textureIndex < 0)
@@ -35,3 +39,4 @@ void SampleTexture_float(float4 defaultColor, float textureIndex, float2 uv, out
     else
         Color = defaultColor;
 }
+#endif

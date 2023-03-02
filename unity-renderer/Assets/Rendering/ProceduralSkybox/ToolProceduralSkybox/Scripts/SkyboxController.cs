@@ -1,13 +1,15 @@
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
 using System;
 using System.Linq;
 using UnityEngine;
-using DCL.ServerTime;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DCL.Skybox
 {
     /// <summary>
-    /// This class will handle runtime execution of skybox cycle. 
+    /// This class will handle runtime execution of skybox cycle.
     /// Load and assign material to the Skybox.
     /// This will mostly increment the time cycle and apply values from configuration to the material.
     /// </summary>
@@ -48,6 +50,11 @@ namespace DCL.Skybox
         // Report to kernel
         private ITimeReporter timeReporter { get; set; } = new TimeReporter();
 
+        private Service<IAddressableResourceProvider> addresableResolver;
+        private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
+        private MaterialReferenceContainer materialReferenceContainer;
+        private CancellationTokenSource addressableCTS;
+
         public SkyboxController()
         {
             i = this;
@@ -70,9 +77,30 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            GetOrCreateEnvironmentProbe();
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
 
-            skyboxElements = new SkyboxElements();
+            DoAsyncInitializations();
+        }
+
+        private async UniTaskVoid DoAsyncInitializations()
+        {
+            try
+            {
+                addressableCTS = new CancellationTokenSource();
+                materialReferenceContainer = await addresableResolver.Ref.GetAddressable<MaterialReferenceContainer>("SkyboxMaterialData.asset", addressableCTS.Token);
+                await GetOrCreateEnvironmentProbe(addressableCTS.Token);
+                await LoadConfigurations(addressableCTS.Token);
+                skyboxElements = new SkyboxElements();
+                await skyboxElements.Initialize(addresableResolver.Ref, materialReferenceContainer, addressableCTS.Token);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Retrying skybox addressables async request...");
+                DisposeCT();
+                DoAsyncInitializations().Forget();
+                return;
+            }
 
             // Create skybox Camera
             skyboxCam = new SkyboxCamera();
@@ -87,22 +115,36 @@ namespace DCL.Skybox
             // Change as Kernel config is initialized or updated
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
-                        {
-                            KernelConfig_OnChange(config, null);
-                        });
+                         {
+                             KernelConfig_OnChange(config, null);
+                         });
 
             KernelConfig.i.OnChange += KernelConfig_OnChange;
 
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
-            // Register UI related events
-            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
-            DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
 
             // Register for camera references
             DataStore.i.camera.transform.OnChange += AssignCameraReferences;
             AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
+
+            // Register UI related events
+            DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
+            DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
+            //Ensure current settings
+            UseDynamicSkybox_OnChange(DataStore.i.skyboxConfig.mode.Get());
+            FixedTime_OnChange(DataStore.i.skyboxConfig.fixedTime.Get());
+        }
+
+        private async UniTask LoadConfigurations(CancellationToken ct)
+        {
+            IList<SkyboxConfiguration> skyboxConfigurations = await addresableResolver.Ref.GetAddressablesList<SkyboxConfiguration>("SkyboxConfiguration", ct);
+            skyboxConfigurationsDictionary = new Dictionary<string, SkyboxConfiguration>();
+            foreach (SkyboxConfiguration skyboxConfiguration in skyboxConfigurations)
+            {
+                skyboxConfigurationsDictionary.Add(skyboxConfiguration.name, skyboxConfiguration);
+            }
         }
 
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
@@ -111,9 +153,17 @@ namespace DCL.Skybox
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
-        private void FixedTime_OnChange(float current, float previous)
+        private void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
         {
-            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            if (visibleState == prevVisibleState)
+                return;
+
+            skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
+        }
+
+        private void FixedTime_OnChange(float current, float _ = 0)
+        {
+            if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
                 PauseTime(true, current);
             }
@@ -124,9 +174,9 @@ namespace DCL.Skybox
             }
         }
 
-        private void UseDynamicSkybox_OnChange(bool current, bool previous)
+        private void UseDynamicSkybox_OnChange(SkyboxMode current, SkyboxMode _ = SkyboxMode.Dynamic)
         {
-            if (current)
+            if (current == SkyboxMode.Dynamic)
             {
                 // Get latest time from server
                 UpdateConfig();
@@ -138,11 +188,11 @@ namespace DCL.Skybox
 
             if (runtimeReflectionObj != null)
             {
-                runtimeReflectionObj.SkyboxModeChanged(current);
+                runtimeReflectionObj.SkyboxModeChanged(current == SkyboxMode.Dynamic);
             }
         }
 
-        private void GetOrCreateEnvironmentProbe()
+        private async UniTask GetOrCreateEnvironmentProbe(CancellationToken cts)
         {
             // Get Reflection Probe Object
             skyboxProbe = GameObject.FindObjectsOfType<ReflectionProbe>().Where(s => s.name == "SkyboxProbe").FirstOrDefault();
@@ -162,7 +212,7 @@ namespace DCL.Skybox
             if (skyboxProbe == null)
             {
                 // Instantiate new probe from the resources
-                GameObject temp = Resources.Load<GameObject>("SkyboxReflectionProbe/SkyboxProbe");
+                GameObject temp = await addresableResolver.Ref.GetAddressable<GameObject>("SkyboxProbe.prefab", cts);
                 GameObject probe = GameObject.Instantiate<GameObject>(temp);
                 probe.name = "SkyboxProbe";
                 skyboxProbe = probe.GetComponent<ReflectionProbe>();
@@ -226,6 +276,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
         }
 
+
         /// <summary>
         /// Called whenever any change in skyboxConfig is observed
         /// </summary>
@@ -241,7 +292,10 @@ namespace DCL.Skybox
             // Reset Object Update value without notifying
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
 
-            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            //Ensure default configuration
+            SelectSkyboxConfiguration();
+
+            if (DataStore.i.skyboxConfig.mode.Get() != SkyboxMode.Dynamic)
             {
                 return;
             }
@@ -300,14 +354,15 @@ namespace DCL.Skybox
         /// <summary>
         /// Apply changed configuration
         /// </summary>
-        bool ApplyConfig()
+        private bool ApplyConfig()
         {
             if (overrideByEditor)
             {
                 return false;
             }
 
-            if (!SelectSkyboxConfiguration())
+            bool gotConfiguration = SelectSkyboxConfiguration();
+            if (!gotConfiguration)
             {
                 return false;
             }
@@ -380,21 +435,21 @@ namespace DCL.Skybox
                 return tempConfigLoaded;
             }
 
-            SkyboxConfiguration newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+            SkyboxConfiguration newConfiguration = skyboxConfigurationsDictionary[configToLoad];
 
             if (newConfiguration == null)
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                Debug.LogError(configToLoad + " configuration not found in Resources. Trying to load Default config: " + DEFAULT_SKYBOX_ID + "(Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+                Debug.LogError(configToLoad + " configuration not found in Addressables. Trying to load Default config: " + DEFAULT_SKYBOX_ID);
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
-                newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+                newConfiguration = skyboxConfigurationsDictionary[configToLoad];
 
                 if (newConfiguration == null)
                 {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    Debug.LogError("Default configuration not found in Resources. Shifting to old skybox. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+                    Debug.LogError("Default configuration not found in Addressables. Shifting to old skybox.");
 #endif
                     tempConfigLoaded = false;
                     return tempConfigLoaded;
@@ -409,8 +464,8 @@ namespace DCL.Skybox
             newConfiguration.OnTimelineEvent += Configuration_OnTimelineEvent;
             configuration = newConfiguration;
 
-            selectedMat = MaterialReferenceContainer.i.skyboxMat;
-            slotCount = MaterialReferenceContainer.i.skyboxMatSlots;
+            selectedMat = materialReferenceContainer.skyboxMat;
+            slotCount = materialReferenceContainer.skyboxMatSlots;
             configuration.ResetMaterial(selectedMat, slotCount);
 
             RenderSettings.skybox = selectedMat;
@@ -431,7 +486,7 @@ namespace DCL.Skybox
                 AssignCameraInstancetoProbe();
             }
 
-            if (configuration == null || isPaused)
+            if (isPaused || configuration == null)
             {
                 return;
             }
@@ -476,15 +531,19 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
             DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;
-            configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            if(configuration != null) configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            DataStore.i.skyboxConfig.mode.OnChange -= UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
 
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+
             timeReporter.Dispose();
+            DisposeCT();
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)
@@ -564,5 +623,15 @@ namespace DCL.Skybox
         }
 
         public SkyboxElements GetSkyboxElements() { return skyboxElements; }
+
+        private void DisposeCT()
+        {
+            if (addressableCTS != null)
+            {
+                addressableCTS.Cancel();
+                addressableCTS.Dispose();
+                addressableCTS = null;
+            }
+        }
     }
 }

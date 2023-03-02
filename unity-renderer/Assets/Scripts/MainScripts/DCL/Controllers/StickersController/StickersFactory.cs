@@ -27,6 +27,11 @@ public class StickersFactory : ScriptableObject
         }
     }
 
+    public List<StickerFactoryEntry> GetStickersList()
+    {
+        return new List<StickerFactoryEntry>(stickersList);
+    }
+
     public bool TryGet(string id, out GameObject stickerPrefab)
     {
         EnsureDict();

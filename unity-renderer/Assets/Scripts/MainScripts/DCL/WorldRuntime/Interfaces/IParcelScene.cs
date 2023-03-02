@@ -21,11 +21,13 @@ namespace DCL.Controllers
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
+        bool isPortableExperience { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         ICRDTExecutor crdtExecutor { get; set; }
+        HashSet<Vector2Int> GetParcels();
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
@@ -35,5 +37,6 @@ namespace DCL.Controllers
         void GetWaitingComponentsDebugInfo();
         void SetEntityParent(long entityId, long parentId);
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
+        bool IsInitMessageDone();
     }
 }

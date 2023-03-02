@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: circle_cover_3
+  m_Shader: {fileID: 4800000, guid: 7bc4930422bfadd4593b1cbf453a2a2d, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_316d75c1a25e442aad8d48608036b295:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EstateIDMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GrassTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 9238880b5abe6ea4e9569abf6697704b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Map:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RoadTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AdvanceFogBalancer: 0
+    - _BlenderDisk: 15.9
+    - _BlenderDiskOpacity: 5
+    - _BlenderDivider: 1.75
+    - _FloorColorBend: 0
+    - _FogBalancer: 0.2
+    - _FogBrightnessFactor: -1
+    - _FogColorBend: 0
+    - _FogFade: 1
+    - _FogIntensity: 1
+    - _FogTemperature: 0.2
+    - _GrassGridFarFade: 25
+    - _GrassGridIntenseFade: 2
+    - _GrassGridThickness: 0.02
+    - _GrassGridThicknessVariation: 1.1
+    - _GrassGridTiling: 16
+    - _GrassGridVariationFrequency: 4
+    - _GrassScale: 1
+    - _GridOffset: 1
+    - _GridThickness: 1
+    - _InnerFogHardness: 1
+    - _InnerRadiusFog: 0.725
+    - _MaskHardness: 1
+    - _MaskOpacity: 1
+    - _Metallic: 0
+    - _OuterHardnessFog: 1
+    - _OuterRadiusFog: 0.83
+    - _PusleOpacity: 0
+    - _RoadFade: 100
+    - _RoadScale: 1
+    - _Smoothness: 0
+    - _ThicknessOffset: 0
+    - _Zoom: 3.75
+    - _isAdvancedFogOn: 0
+    - _isBlenderDiskOn: 0
+    - _isProceduralDiameterActivated: 0
+    m_Colors:
+    - _ColorDistricts: {r: 0.13725486, g: 0.6784314, b: 0.6039216, a: 1}
+    - _ColorEmpty: {r: 0, g: 0.10196077, b: 0.03137255, a: 1}
+    - _ColorFog: {r: 0.97021216, g: 1, b: 0.79716986, a: 0}
+    - _ColorGrassOuter: {r: 1, g: 0, b: 0, a: 0}
+    - _ColorGrid: {r: 0, g: 0, b: 0, a: 0}
+    - _ColorOwnedParcels: {r: 0.5294118, g: 0.46666664, b: 0.16862747, a: 1}
+    - _ColorParcels: {r: 0.26274508, g: 0.42745098, b: 0.29019606, a: 1}
+    - _ColorPlazas: {r: 0.16862747, g: 0.43529406, b: 0.21568623, a: 1}
+    - _ColorStreets: {r: 0.462745, g: 0.49411756, b: 0.48627448, a: 1}
+    - _FloorColor: {r: 0, g: 0, b: 0, a: 0}
+    - _GrassGridColor: {r: 0, g: 1, b: 0.77576256, a: 1}
+    - _GrassGridColorVariation: {r: 0, g: 0, b: 0, a: 0}
+    - _GrassGridFadePosition: {r: 0, g: 0, b: 0, a: 0}
+    - _GroundPos: {r: 0, g: 0, b: 0, a: 0}
+    - _InnerRadiusOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _InternalFogOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _OwnedVariationRange: {r: 0.75, g: 1.75, b: 0, a: 0}
+    - _PlayerPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _SizeOfTexture: {r: 512, g: 512, b: 0, a: 0}
+    - _TexOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _UnownedVariationRange: {r: 0.05, g: 1.75, b: 0, a: 0}
+  m_BuildTextureStacks: []

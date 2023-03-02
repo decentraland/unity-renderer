@@ -17,35 +17,18 @@ namespace AssetPromiseKeeper_Material_Tests
             var prom = new AssetPromise_Material(model);
             return prom;
         }
-        
+
         protected override IEnumerator TearDown()
         {
             AssetPromiseKeeper_Texture.i.library.Cleanup();
-            AssetPromiseKeeper_TextureResource.i.library.Cleanup();
+            AssetPromiseKeeper_Texture.i.library.Cleanup();
             return base.TearDown();
         }
-        
-        private MaterialModel CreateMaterialModel()
+
+        private AssetPromise_Material_Model CreateMaterialModel()
         {
-            var texture = CreateTextureModel();
-            
-            var newMaterialModel = new MaterialModel
-            {
-                albedoTexture = texture,
-                metallic = 0,
-                roughness = 1,
-            };
-            return newMaterialModel;
-        }
-        
-        protected TextureModel CreateTextureModel(TextureModel.BabylonWrapMode wrapmode = TextureModel.BabylonWrapMode.WRAP, FilterMode filterMode = FilterMode.Bilinear)
-        {
-            string url = TestAssetsUtils.GetPath() + "/Images/atlas.png";
-            TextureModel model = new TextureModel();
-            model.src = url;
-            model.wrap = wrapmode;
-            model.samplingMode = filterMode;
-            return model;
+            return AssetPromise_Material_Model.CreateBasicMaterial(new AssetPromise_Material_Model.Texture(
+                TestAssetsUtils.GetPath() + "/Images/atlas.png", TextureWrapMode.Clamp, FilterMode.Bilinear), 1f, Color.white);
         }
     }
 }

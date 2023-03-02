@@ -1,0 +1,19 @@
+matches:
+  # Upload only the compressed variants of unity artifacts files
+  - match: "**/unity.framework.js"
+    variants:
+      - brotli
+      - uncompressed
+  - match: "**/unity.data"
+    variants:
+      - brotli
+      - uncompressed
+  - match: "**/unity.wasm"
+    variants:
+      - brotli
+      - uncompressed
+
+  # Uncompressed by default
+  - match: "**/*"
+    variants:
+      - uncompressed

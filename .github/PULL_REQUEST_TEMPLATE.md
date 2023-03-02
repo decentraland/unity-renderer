@@ -15,7 +15,7 @@ Explain how to test the feature (or fix) for someone who doesn't know anything a
 At very least add the specific URL from which to test the build and add to it any param you think it would be needed.
 -->
 
-1. Go to: https://play.decentraland.zone/?renderer-branch={branch_name}&{desired_url_params}
+1. Go to: https://play.decentraland.zone/?explorer-branch={branch_name}&{desired_url_params}
 2. ...
 
 ## Our Code Review Standards

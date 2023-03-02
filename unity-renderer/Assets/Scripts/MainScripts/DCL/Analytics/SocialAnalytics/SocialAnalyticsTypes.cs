@@ -11,7 +11,16 @@ namespace SocialFeaturesAnalytics
         Passport,
         ProfileContextMenu,
         FriendsHUD,
-        Conversation
+        Conversation,
+        ProfileEditHUD
+    }
+
+    public enum ItemType
+    {
+        Wearable,
+        Emote,
+        Land,
+        Name
     }
 
     public enum PlayerReportIssueType

@@ -13,7 +13,7 @@ public class WithGltfShape_SceneMetricsCounterShould : IntegrationTestSuite_Scen
     public IEnumerator NotCountWhenAttachedToIgnoredEntities()
     {
         IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
-        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
         GLTFShape gltfShape = TestUtils.AttachGLTFShape(entity,
             scene,
             new Vector3(8, 1, 8),

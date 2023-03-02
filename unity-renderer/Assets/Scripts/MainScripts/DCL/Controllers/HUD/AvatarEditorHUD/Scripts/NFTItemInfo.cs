@@ -81,13 +81,25 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal GameObject ethNetwork;
     [SerializeField] internal GameObject l2Network;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal Image gradientImage;
     [SerializeField] internal TextMeshProUGUI rarityName;
     [SerializeField] internal Button sellButton;
     [SerializeField] internal Button closeButton;
+    [SerializeField] internal GameObject categoryInfoContainer;
 
     private Model currentModel;
-    private AssetPromise_Texture thumbnailPromise;
 
+    public Button.ButtonClickedEvent OnCloseButtonClick => closeButton?.onClick;
+
+    public void SetSkin(string rarityName, NFTItemToggleSkin skin)
+    {
+        this.rarityName.text = rarityName;
+        this.rarityName.color = skin.rarityNameColor;
+        backgroundImage.color = skin.backgroundColor;
+        gradientImage.color = skin.gradientColor;
+        
+    }
+    
     public void SetModel(Model newModel)
     {
         if (newModel == null)
@@ -144,14 +156,13 @@ public class NFTItemInfo : MonoBehaviour
         rarityName.text = name;
     }
 
+    public void SetSellButtonActive(bool isActive) => sellButton.gameObject.SetActive(isActive);
+
+    public void SetCategoryInfoActive(bool isActive) => categoryInfoContainer.SetActive(isActive);
+
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
-        if (thumbnail.sprite != null)
-        {
-            Destroy(thumbnail.sprite);
-        }
-
-        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+        thumbnail.sprite = ThumbnailsManager.GetOrCreateSpriteFromTexture(texture.texture, out _);
         thumbnail.preserveAspect = true;
     }
 
@@ -165,20 +176,9 @@ public class NFTItemInfo : MonoBehaviour
             thumbnail.sprite = currentModel.thumbnailSprite;
             return;
         }
-
-        //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
-        var newThumbnailPromise = ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
-        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-        thumbnailPromise = newThumbnailPromise;
-    }
-
-    private void ForgetThumbnail()
-    {
-        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-        thumbnailPromise = null;
+        
+        ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
     }
 
     private void OnEnable() { GetThumbnail(); }
-
-    private void OnDisable() { ForgetThumbnail(); }
 }

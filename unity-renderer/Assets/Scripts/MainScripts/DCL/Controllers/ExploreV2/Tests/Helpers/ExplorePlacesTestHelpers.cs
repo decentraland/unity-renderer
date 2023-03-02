@@ -4,11 +4,12 @@ using static HotScenesController;
 
 public static class ExplorePlacesTestHelpers
 {
-    public static List<PlaceCardComponentModel> CreateTestPlaces(Sprite sprite)
+    public static List<PlaceCardComponentModel> CreateTestPlaces(Sprite sprite, int amount = 2)
     {
         List<PlaceCardComponentModel> testPlaces = new List<PlaceCardComponentModel>();
-        testPlaces.Add(CreateTestPlace("Test Place 1", sprite));
-        testPlaces.Add(CreateTestPlace("Test Place 2", sprite));
+
+        for (int j = 0; j < amount; j++)
+            testPlaces.Add(CreateTestPlace($"Test Place {j + 1}", sprite));
 
         return testPlaces;
     }

@@ -1,5 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
 using UnityEngine.Assertions;
@@ -9,6 +11,7 @@ namespace DCL
     public interface IPooledObjectInstantiator
     {
         bool IsValid(GameObject original);
+
         GameObject Instantiate(GameObject gameObject);
     }
 
@@ -38,21 +41,25 @@ namespace DCL
         private readonly LinkedList<PoolableObject> unusedObjects = new LinkedList<PoolableObject>();
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
-        private int maxPrewarmCount = 0;
+        private readonly int maxPrewarmCount;
+
         private bool isInitialized;
 
         public float lastGetTime { get; private set; }
 
         public int objectsCount => unusedObjectsCount + usedObjectsCount;
 
-        public int unusedObjectsCount { get { return unusedObjects.Count; } }
+        public int unusedObjectsCount => unusedObjects.Count;
 
-        public int usedObjectsCount { get { return usedObjects.Count; } }
+        public int usedObjectsCount => usedObjects.Count;
 
         public Pool(string name, int maxPrewarmCount)
         {
             if (PoolManager.USE_POOL_CONTAINERS)
+            {
                 container = new GameObject("Pool - " + name);
+                container.transform.position = EnvironmentSettings.MORDOR;
+            }
 
             this.maxPrewarmCount = maxPrewarmCount;
         }
@@ -63,38 +70,38 @@ namespace DCL
                 return;
 
             int objectsToInstantiate = Mathf.Max(0, maxPrewarmCount - objectsCount);
-            for (int i = 0; i < objectsToInstantiate; i++)
-            {
-                Instantiate();
-            }
+
+            for (int i = 0; i < objectsToInstantiate; i++) { Instantiate(); }
         }
 
+        /// <summary>
+        /// This will return an instance of the poolable object
+        /// </summary>
+        /// <returns></returns>
         public PoolableObject Get()
         {
-            // These extra instantiations during initialization are to populate pools that will be used a lot later  
+            // These extra instantiations during initialization are to populate pools that will be used a lot later
             if (PoolManager.i.initializing && !isInitialized)
             {
                 isInitialized = true;
-                int count = usedObjectsCount;
 
-                for (int i = unusedObjectsCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
-                {
+                for (int i = unusedObjectsCount; i < Mathf.Min(usedObjectsCount * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
                     Instantiate();
-                }
 
                 Instantiate();
             }
-            else if (unusedObjects.Count == 0)
-            {
-                Instantiate();
-            }
+            else if (unusedObjects.Count == 0) { Instantiate(); }
 
             PoolableObject poolable = Extract();
 
             EnablePoolableObject(poolable);
             poolable.OnPoolGet();
+
             return poolable;
         }
+
+        public T Get<T>() where T: MonoBehaviour =>
+            this.Get().gameObject.GetComponent<T>();
 
         private PoolableObject Extract()
         {
@@ -109,9 +116,24 @@ namespace DCL
             return po;
         }
 
+        public async UniTask PrewarmAsync(int prewarmCount, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (unusedObjects.Count >= prewarmCount)
+                return;
+
+            for (int i = 0; i < prewarmCount; i++)
+            {
+                Instantiate();
+                await UniTask.NextFrame(cancellationToken);
+            }
+        }
+
         public PoolableObject Instantiate()
         {
             var gameObject = InstantiateAsOriginal();
+
             return SetupPoolableObject(gameObject);
         }
 
@@ -174,10 +196,7 @@ namespace DCL
 
         public void ReleaseAll()
         {
-            while (usedObjects.Count > 0)
-            {
-                usedObjects.First.Value.Release();
-            }
+            while (usedObjects.Count > 0) { usedObjects.First.Value.Release(); }
         }
 
         /// <summary>
@@ -189,6 +208,7 @@ namespace DCL
             if (instantiator != null && !instantiator.IsValid(gameObject))
             {
                 Debug.LogError($"ERROR: Trying to add invalid gameObject to pool! -- {gameObject.name}", gameObject);
+
                 return;
             }
 
@@ -197,6 +217,7 @@ namespace DCL
             if (obj != null)
             {
                 Debug.LogError($"ERROR: gameObject is already being tracked by a pool! -- {gameObject.name}", gameObject);
+
                 return;
             }
 
@@ -241,10 +262,9 @@ namespace DCL
             unusedObjects.Clear();
             usedObjects.Clear();
 
-            Object.Destroy(this.original);
+            Utils.SafeDestroy(this.original);
 
-            if (PoolManager.USE_POOL_CONTAINERS)
-                Object.Destroy(this.container);
+            Utils.SafeDestroy(this.container);;
 
             OnCleanup?.Invoke(this);
         }
@@ -280,15 +300,9 @@ namespace DCL
 
             if (PoolManager.USE_POOL_CONTAINERS)
             {
-                if (container != null)
-                {
-                    go.transform.SetParent(container.transform);
-                }
+                if (container != null) { go.transform.SetParent(container.transform); }
             }
-            else
-            {
-                go.transform.SetParent(null);
-            }
+            else { go.transform.SetParent(null); }
         }
 
 #if UNITY_EDITOR
@@ -305,12 +319,16 @@ namespace DCL
             if (PoolManager.i.poolables.TryGetValue(gameObject, out PoolableObject poolable))
             {
                 pool = poolable.pool;
+
                 return true;
             }
 
             return false;
         }
 
-        public bool IsValid() { return original != null; }
+        public bool IsValid()
+        {
+            return original != null;
+        }
     }
 };

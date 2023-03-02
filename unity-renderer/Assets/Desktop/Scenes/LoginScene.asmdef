@@ -1,0 +1,27 @@
+{
+    "name": "LoginScene",
+    "rootNamespace": "",
+    "references": [
+        "GUID:54073faf5da34a4eaa9febfb3aa5a0e1",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:98245c7378464eeea87b6cef4a5a1562",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

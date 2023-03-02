@@ -6,14 +6,14 @@ using NUnit.Framework;
 
 public class PreviewSceneLimitsWarningShould
 {
-    private const string SCENE_ID = "Temptation";
+    private const int SCENE_NUMBER = 666;
 
     private PreviewSceneLimitsWarning previewSceneLimitsWarning;
     private IParcelScene scene;
     private IWorldState worldState;
     private SceneMetricsModel metrics = new SceneMetricsModel();
     private SceneMetricsModel limit = new SceneMetricsModel();
-    private Dictionary<string, IParcelScene> scenes;
+    private Dictionary<int, IParcelScene> scenes;
     private readonly KernelConfigModel kernelConfigModel = new KernelConfigModel();
 
     [SetUp]
@@ -24,16 +24,17 @@ public class PreviewSceneLimitsWarningShould
         previewSceneLimitsWarning = Substitute.ForPartsOf<PreviewSceneLimitsWarning>(worldState);
         scene = Substitute.For<IParcelScene>();
 
-        scenes = new Dictionary<string, IParcelScene>() {{SCENE_ID, scene}};
+        scenes = new Dictionary<int, IParcelScene>() {{SCENE_NUMBER, scene}};
 
         ISceneMetricsCounter sceneMetrics = Substitute.For<ISceneMetricsCounter>();
         sceneMetrics.currentCount.Returns(metrics);
         sceneMetrics.maxCount.Returns(limit);
 
         scene.metricsCounter.Returns(sceneMetrics);
-        worldState.loadedScenes.Returns(scenes);
-
-        kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
+        worldState.GetLoadedScenes().Returns(scenes);
+        worldState.TryGetScene(SCENE_NUMBER, out Arg.Any<IParcelScene>()).Returns(param => param[1] = scene);
+        
+        kernelConfigModel.debugConfig.sceneLimitsWarningSceneNumber = SCENE_NUMBER;
     }
 
     [TearDown]
@@ -119,7 +120,7 @@ public class PreviewSceneLimitsWarningShould
 
         Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
 
-        kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = null;
+        kernelConfigModel.debugConfig.sceneLimitsWarningSceneNumber = -1;
         previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
 
         Assert.IsFalse(previewSceneLimitsWarning.isShowingNotification);

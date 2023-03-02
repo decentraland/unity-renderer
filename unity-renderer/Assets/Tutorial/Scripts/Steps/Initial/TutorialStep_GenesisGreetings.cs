@@ -12,6 +12,7 @@ namespace DCL.Tutorial
     public class TutorialStep_GenesisGreetings : TutorialStep
     {
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+        private const int GENESIS_PLAZA_TUTORIAL_LOCATION = 3;
 
         [SerializeField]
         Button okButton;
@@ -26,6 +27,10 @@ namespace DCL.Tutorial
         {
             base.OnStepStart();
 
+            OnChangePlayerCoords(new Vector2Int(0, 0), CommonScriptableObjects.playerCoords.Get());
+            CommonScriptableObjects.playerCoords.OnChange += OnChangePlayerCoords;
+
+            CommonScriptableObjects.userMovementKeysBlocked.Set(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
             titleText.text = titleText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
@@ -45,7 +50,7 @@ namespace DCL.Tutorial
 
                 if (Environment.i != null && Environment.i.world != null)
                 {
-                    WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "begin");
+                    WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneNumber(), "tutorial", "begin");
                 }
             }
         }
@@ -62,8 +67,25 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
+
+            CommonScriptableObjects.userMovementKeysBlocked.Set(false);
+
+            CommonScriptableObjects.playerCoords.OnChange -= OnChangePlayerCoords;
         }
 
         internal void OnOkButtonClick() { stepIsFinished = true; }
+
+        private void OnChangePlayerCoords(Vector2Int prevCoords, Vector2Int coords)
+        {
+            if (stepIsFinished)
+                return;
+
+            if (Mathf.Abs(coords.x) > GENESIS_PLAZA_TUTORIAL_LOCATION ||
+                Mathf.Abs(coords.y) > GENESIS_PLAZA_TUTORIAL_LOCATION)
+            {
+                stepIsFinished = true;
+                return;
+            }
+        }
     }
 }

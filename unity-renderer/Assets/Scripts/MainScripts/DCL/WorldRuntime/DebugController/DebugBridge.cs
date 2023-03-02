@@ -14,10 +14,17 @@ namespace DCL
         [Serializable]
         class ToggleSceneBoundingBoxesPayload
         {
-            public string sceneId;
+            public int sceneNumber; // TODO: change something kernel-side ???
             public bool enabled;
         }
 
+        [Serializable]
+        class MemoryDescriptionPayload
+        {
+            public long jsHeapSizeLimit;
+            public long totalJSHeapSize;
+            public long usedJSHeapSize;
+        }
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -36,17 +43,25 @@ namespace DCL
 
         public void HideFPSPanel()
         {
-            debugController.HideFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void ShowFPSPanel()
         {
-            debugController.ShowFPSPanel();
+            debugController.ToggleFPSPanel();
         }
 
         public void SetSceneDebugPanel()
         {
             debugController.SetSceneDebugPanel();
+        }
+        
+        public void SetMemoryUsage(string payload)
+        {
+            var data = JsonUtility.FromJson<MemoryDescriptionPayload>(payload);
+            DataStore.i.debugConfig.jsUsedHeapSize.Set(data.usedJSHeapSize);
+            DataStore.i.debugConfig.jsHeapSizeLimit.Set(data.jsHeapSizeLimit);
+            DataStore.i.debugConfig.jsTotalHeapSize.Set(data.totalJSHeapSize);
         }
 
         public void SetEngineDebugPanel()
@@ -59,10 +74,10 @@ namespace DCL
         {
             bool originalLoggingValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
-            foreach (var kvp in DCL.Environment.i.world.state.loadedScenes)
+            foreach (var kvp in DCL.Environment.i.world.state.GetLoadedScenes())
             {
                 IParcelScene scene = kvp.Value;
-                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
+                debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.sceneNumber);
                 scene.GetWaitingComponentsDebugInfo();
             }
 
@@ -123,7 +138,7 @@ namespace DCL
 
             var crashPayload = CrashPayloadUtils.ComputePayload
             (
-                DCL.Environment.i.world.state.loadedScenes,
+                DCL.Environment.i.world.state.GetLoadedScenes(),
                 debugController.GetTrackedMovements(),
                 debugController.GetTrackedTeleportPositions()
             );
@@ -150,7 +165,7 @@ namespace DCL
 
             var payload = CrashPayloadUtils.ComputePayload
             (
-                DCL.Environment.i.world.state.loadedScenes,
+                DCL.Environment.i.world.state.GetLoadedScenes(),
                 debugController.GetTrackedMovements(),
                 debugController.GetTrackedTeleportPositions()
             );
@@ -205,7 +220,7 @@ namespace DCL
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
-            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
+            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneNumber, data.enabled);
         }
 
         public void TogglePreviewMenu(string payload)
@@ -246,6 +261,12 @@ namespace DCL
             RunPerformanceMeterTool(2);
         }
 
+        [ContextMenu("Run Performance Meter Tool for 10 seconds")]
+        public void ShortDebugPerformanceMeter10()
+        {
+            RunPerformanceMeterTool(10);
+        }
+
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
         public void DebugPerformanceMeter()
         {
@@ -257,6 +278,16 @@ namespace DCL
         {
             InstantiateBotsAtCoords("{ " +
                                     "\"amount\":3, " +
+                                    "\"areaWidth\":15, " +
+                                    "\"areaDepth\":15 " +
+                                    "}");
+        }
+        
+        [ContextMenu("Instantiate 50 bots at player coordinates")]
+        public void DebugBotsInstantiation2()
+        {
+            InstantiateBotsAtCoords("{ " +
+                                    "\"amount\":50, " +
                                     "\"areaWidth\":15, " +
                                     "\"areaDepth\":15 " +
                                     "}");

@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7947aeef263cd9a49b78db4d8d573055, type: 3}
+  m_Name: TutorialSettings
+  m_EditorClassIdentifier: 
+  tutorialVersion: 3
+  timeBetweenSteps: 0.5
+  sendStats: 1
+  stepsOnGenesisPlaza:
+  - {fileID: 6639514825351315494, guid: e80a4e30b31058544ada1af4125c4b91, type: 3}
+  - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
+  - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
+  - {fileID: 3513632204808866648, guid: cc71903c441610f40b884c6fe6ddedf5, type: 3}
+  - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
+  - {fileID: 5639665319216893634, guid: 259bf436d3fbfe847b44d46cf81f1201, type: 3}
+  - {fileID: 7824453970545651471, guid: 6f97c523907b1884c9b650179442d434, type: 3}
+  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
+  - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
+  - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
+  - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
+  - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
+  - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
+  - {fileID: 507904477223215582, guid: 68f115f8a3d5a7347ae1bc9b1238eb05, type: 3}
+  - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
+  stepsFromDeepLink:
+  - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
+  - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
+  - {fileID: 3513632204808866648, guid: cc71903c441610f40b884c6fe6ddedf5, type: 3}
+  - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
+  - {fileID: 5639665319216893634, guid: 259bf436d3fbfe847b44d46cf81f1201, type: 3}
+  - {fileID: 7824453970545651471, guid: 6f97c523907b1884c9b650179442d434, type: 3}
+  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
+  - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
+  - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
+  - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
+  - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
+  - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
+  - {fileID: 507904477223215582, guid: 68f115f8a3d5a7347ae1bc9b1238eb05, type: 3}
+  - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
+  stepsFromReset:
+  - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
+  - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
+  - {fileID: 3513632204808866648, guid: cc71903c441610f40b884c6fe6ddedf5, type: 3}
+  - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
+  - {fileID: 5639665319216893634, guid: 259bf436d3fbfe847b44d46cf81f1201, type: 3}
+  - {fileID: 7824453970545651471, guid: 6f97c523907b1884c9b650179442d434, type: 3}
+  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
+  - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
+  - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
+  - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
+  - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
+  - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
+  - {fileID: 507904477223215582, guid: 68f115f8a3d5a7347ae1bc9b1238eb05, type: 3}
+  - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
+  stepsFromBuilderInWorld: []
+  stepsFromUserThatAlreadyDidTheTutorial: []
+  teacherMovementSpeed: 0.8
+  teacherMovementCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.9831092
+      outSlope: 3.9831092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.043580897
+    - serializedVersion: 3
+      time: 0.60207725
+      value: 0.95131886
+      inSlope: 0.19620486
+      outSlope: 0.12233817
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.13080323
+      outWeight: 0.12323118
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.12233817
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  eagleCamInitPosition: {x: 15, y: 115, z: -30}
+  eagleCamInitLookAtPoint: {x: 16, y: 105, z: 6}
+  eagleCamRotationActived: 0
+  eagleCamRotationSpeed: 1
+  debugRunTutorial: 0
+  debugStartingStepIndex: 0
+  debugOpenedFromDeepLink: 0

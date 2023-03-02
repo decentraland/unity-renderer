@@ -30,18 +30,10 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
         rejectButton.onClick.AddListener(RejectTransaction);
     }
     
-    public IParcelScene FindScene(string sceneId)
+    public IParcelScene FindScene(int sceneNumber)
     {
-        if (DCL.Environment.i.world?.state?.scenesSortedByDistance != null)
-        {
-            foreach (IParcelScene scene in DCL.Environment.i.world.state.scenesSortedByDistance)
-            {
-                if (scene.sceneData.id == sceneId)
-                    return scene;
-            }
-        }
-
-        return null;
+        DCL.Environment.i.world.state.TryGetScene(sceneNumber, out var scene);
+        return scene;
     }
 
     private void OnDisable()
@@ -63,7 +55,7 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
     private void ShowSignMessage(Model model)
     {
-        var scene = FindScene(model.sceneId);
+        var scene = FindScene(model.sceneNumber);
 
         if (scene != null)
         {

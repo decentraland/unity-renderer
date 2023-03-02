@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using GPUSkinning;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
+using logger = DCL.MeshCombinerLogger;
 
 namespace DCL
 {
@@ -20,19 +23,16 @@ namespace DCL
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true);
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose = true);
     }
-    
+
     /// <summary>
     /// AvatarMeshCombinerHelper uses the AvatarMeshCombiner utility class to combine many skinned renderers
     /// into a single one.
     ///
     /// This class will recycle the same gameObject and renderer each time it is called,
-    /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer. 
+    /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer.
     /// </summary>
     public class AvatarMeshCombinerHelper : IAvatarMeshCombinerHelper
     {
-        private static bool VERBOSE = false;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
-
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
@@ -43,8 +43,8 @@ namespace DCL
 
         private AvatarMeshCombiner.Output? lastOutput;
 
-        public AvatarMeshCombinerHelper (GameObject container = null) 
-        { 
+        public AvatarMeshCombinerHelper (GameObject container = null)
+        {
             this.container = container;
         }
 
@@ -54,7 +54,7 @@ namespace DCL
         /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
         ///
         /// Uses a predefined Material ready for the Avatar
-        /// 
+        ///
         /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
@@ -65,7 +65,7 @@ namespace DCL
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
         /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
         /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
-        /// 
+        ///
         /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
@@ -74,6 +74,8 @@ namespace DCL
         /// <returns>true if succeeded, false if not</returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose)
         {
+            Profiler.BeginSample($"{nameof(AvatarMeshCombinerHelper)}.{nameof(Combine)}");
+
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
@@ -98,29 +100,34 @@ namespace DCL
                 renderers[i].enabled = false;
             }
 
+            Profiler.EndSample();
+
             return success;
         }
 
-        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, bool keepPose)
+        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderers, Material materialAsset, bool keepPose)
         {
+            var bones = bonesContainer.bones;
+            var bindPoses = bonesContainer.sharedMesh.bindposes;
+
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
-            Assert.IsTrue(bonesContainer.sharedMesh != null, "bonesContainer should never be null!");
-            Assert.IsTrue(bonesContainer.sharedMesh.bindposes != null, "bonesContainer bindPoses should never be null!");
-            Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
+            Assert.IsTrue(bonesContainer.sharedMesh != null, "the shared mesh of this bones container is null, check if the AvatarBase prefab's mesh is not missing, the hologram avatar might have been re-imported");
+            Assert.IsTrue(bindPoses != null, "bonesContainer bindPoses should never be null!");
+            Assert.IsTrue(bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
-            
+
             CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
-                bonesContainer.sharedMesh.bindposes,
-                bonesContainer.bones,
+                bindPoses,
+                bones,
                 renderers,
                 materialAsset,
                 keepPose);
 
             if ( !output.isValid )
             {
-                logger.LogError("AvatarMeshCombiner", "Combine failed!");
+                logger.LogError("AvatarMeshCombiner: Combine failed!");
                 return false;
             }
             Transform rootBone = bonesContainer.rootBone;
@@ -136,7 +143,7 @@ namespace DCL
 
             container.layer = bonesContainer.gameObject.layer;
             renderer.sharedMesh = output.mesh;
-            renderer.bones = bonesContainer.bones;
+            renderer.bones = bones;
             renderer.rootBone = rootBone;
             renderer.sharedMaterials = output.materials;
             renderer.quality = SkinQuality.Bone4;
@@ -150,7 +157,7 @@ namespace DCL
             if (uploadMeshToGpu)
                 output.mesh.UploadMeshData(true);
 
-            logger.Log("AvatarMeshCombiner", "Finish combining avatar. Click here to focus on GameObject.", container);
+            logger.Log("AvatarMeshCombiner: Finish combining avatar. Click here to focus on GameObject.", container);
             return true;
         }
 

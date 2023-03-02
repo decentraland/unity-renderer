@@ -1,80 +1,87 @@
 using DCL;
-using DCL.Helpers;
 using ExploreV2Analytics;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Variables.RealmsInfo;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
+/// Controls different sections: Maps, Backpack, Settings
+/// their initialization and switching between them
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
-    internal const float MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU = 0.1f;
-
-    internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    internal RectTransform topMenuTooltipReference { get => view.currentTopMenuTooltipReference; }
-    internal RectTransform placesAndEventsTooltipReference { get => view.currentPlacesAndEventsTooltipReference; }
-    internal RectTransform backpackTooltipReference { get => view.currentBackpackTooltipReference; }
-    internal RectTransform mapTooltipReference { get => view.currentMapTooltipReference; }
-    internal RectTransform builderTooltipReference { get => view.currentBuilderTooltipReference; }
-    internal RectTransform questTooltipReference { get => view.currentQuestTooltipReference; }
-    internal RectTransform settingsTooltipReference { get => view.currentSettingsTooltipReference; }
-    internal RectTransform profileCardTooltipReference { get => view.currentProfileCardTooltipReference; }
+    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     internal IExploreV2MenuComponentView view;
-    internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal IExploreV2Analytics exploreV2Analytics;
+
+    internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
+
     internal ExploreSection currentOpenSection;
-    internal float controlsHUDCloseTime = 0f;
-    internal float emotesHUDCloseTime = 0f;
-    internal float playerInfoCardHUDCloseTime = 0f;
-    internal float chatInputHUDCloseTime = 0f;
-    internal List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
+    internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisibilityVar;
+    private ExploreV2ComponentRealmsController realmController;
+
+    private MouseCatcher mouseCatcher;
+    private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
+    private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables;
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
-    internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
-    internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
-    internal BaseVariable<bool> isPlacesAndEventsSectionInitialized => DataStore.i.exploreV2.isPlacesAndEventsSectionInitialized;
+    internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
+
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
-    internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
-    internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
 
-    internal BaseVariable<bool> controlsVisible => DataStore.i.HUDs.controlsVisible;
-    internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
-    internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
-    internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
-    internal MouseCatcher mouseCatcher;
+    internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
+    private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
+    private BaseVariable<bool> isPlacesAndEventsSectionInitialized => DataStore.i.exploreV2.isPlacesAndEventsSectionInitialized;
+    private BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
+
+    private RectTransform topMenuTooltipReference => view.currentTopMenuTooltipReference;
+    private RectTransform placesAndEventsTooltipReference => view.currentPlacesAndEventsTooltipReference;
+    private RectTransform backpackTooltipReference => view.currentBackpackTooltipReference;
+    private RectTransform mapTooltipReference => view.currentMapTooltipReference;
+    private RectTransform questTooltipReference => view.currentQuestTooltipReference;
+    private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
+    private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
     public void Initialize()
     {
+        sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
+        {
+            { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },
+            { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
+            { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
+            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
+            { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
+        };
+
+        sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
+        sectionsByVisibilityVar = sectionsVariables.ToDictionary(pair => pair.Value.visibilityVar, pair => pair.Key);
+
         mouseCatcher = SceneReferences.i?.mouseCatcher;
         exploreV2Analytics = CreateAnalyticsController();
+
         view = CreateView();
         SetVisibility(false);
 
-        DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
-        UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
-
-        DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
-        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
+        realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
+        realmController.Initialize();
+        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
-        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
+
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
 
@@ -82,106 +89,57 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference);
         DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
 
         view.OnSectionOpen += OnSectionOpen;
 
-        isOpen.OnChange += IsOpenChanged;
-        IsOpenChanged(isOpen.Get(), false);
+        isOpen.OnChange += SetVisibilityOnOpenChanged;
+        SetVisibilityOnOpenChanged(isOpen.Get());
 
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
-        isPlacesAndEventsSectionInitialized.OnChange += IsPlacesAndEventsSectionInitializedChanged;
-        IsPlacesAndEventsSectionInitializedChanged(isPlacesAndEventsSectionInitialized.Get(), false);
-        placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
-        PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
-
-        isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
-        IsAvatarEditorInitializedChanged(isAvatarEditorInitialized.Get(), false);
-        avatarEditorVisible.OnChange += AvatarEditorVisibleChanged;
-        AvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
-
-        isNavmapInitialized.OnChange += IsNavMapInitializedChanged;
-        IsNavMapInitializedChanged(isNavmapInitialized.Get(), false);
-        navmapVisible.OnChange += NavmapVisibleChanged;
-        NavmapVisibleChanged(navmapVisible.Get(), false);
-
-        isBuilderInitialized.OnChange += IsBuilderInitializedChanged;
-        IsBuilderInitializedChanged(isBuilderInitialized.Get(), false);
-        builderVisible.OnChange += BuilderVisibleChanged;
-        BuilderVisibleChanged(builderVisible.Get(), false);
-
-        isQuestInitialized.OnChange += IsQuestInitializedChanged;
-        IsQuestInitializedChanged(isQuestInitialized.Get(), false);
-        questVisible.OnChange += QuestVisibleChanged;
-        QuestVisibleChanged(questVisible.Get(), false);
-
-        isSettingsPanelInitialized.OnChange += IsSettingsPanelInitializedChanged;
-        IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
-        settingsVisible.OnChange += SettingsVisibleChanged;
-        SettingsVisibleChanged(settingsVisible.Get(), false);
-        
-        ConfigureOhterUIDependencies();
-
-        isInitialized.Set(true);
-    }
-
-    internal void InitializePlacesAndEventsSection()
-    {
-        if (placesAndEventsSectionController != null)
-            return;
-
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics);
-        placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
-    }
-
-    internal void OnSectionOpen(ExploreSection section)
-    {
-        if (section != currentOpenSection)
-            exploreV2Analytics.SendStartMenuSectionVisibility(currentOpenSection, false);
-
-        currentOpenSection = section;
-
-        if (currentOpenSection == ExploreSection.Backpack)
+        foreach ((BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar) sectionsVars in sectionsVariables.Values)
         {
-            view.ConfigureEncapsulatedSection(
-                ExploreSection.Backpack,
-                DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+            sectionsVars.initVar.OnChangeWithSenderInfo += OnSectionInitializedChanged;
+            OnSectionInitializedChanged(sectionsVars.initVar, sectionsVars.initVar.Get());
+
+            sectionsVars.visibilityVar.OnChangeWithSenderInfo += OnSectionVisibilityChanged;
+            OnSectionVisibilityChanged(sectionsVars.visibilityVar, sectionsVars.visibilityVar.Get());
         }
 
-        placesAndEventsVisible.Set(currentOpenSection == ExploreSection.Explore);
-        avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
-        navmapVisible.Set(currentOpenSection == ExploreSection.Map);
-        builderVisible.Set(currentOpenSection == ExploreSection.Builder);
-        questVisible.Set(currentOpenSection == ExploreSection.Quest);
-        settingsVisible.Set(currentOpenSection == ExploreSection.Settings);
-        profileCardIsOpen.Set(false);
+        isInitialized.Set(true);
+
+        currentSectionIndex.Set((int)DEFAULT_SECTION, false);
+
+        view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
     }
 
     public void Dispose()
     {
-        DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
-        DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
+        realmController.Dispose();
+
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
-        isOpen.OnChange -= IsOpenChanged;
+
+        isOpen.OnChange -= SetVisibilityOnOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
-        isPlacesAndEventsSectionInitialized.OnChange -= IsPlacesAndEventsSectionInitializedChanged;
-        placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
-        isAvatarEditorInitialized.OnChange -= IsAvatarEditorInitializedChanged;
-        avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
-        isNavmapInitialized.OnChange -= IsNavMapInitializedChanged;
-        navmapVisible.OnChange -= NavmapVisibleChanged;
-        isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
-        builderVisible.OnChange -= BuilderVisibleChanged;
-        isQuestInitialized.OnChange -= IsQuestInitializedChanged;
-        questVisible.OnChange -= QuestVisibleChanged;
-        isSettingsPanelInitialized.OnChange -= IsSettingsPanelInitializedChanged;
-        settingsVisible.OnChange -= SettingsVisibleChanged;
+
+        foreach ((BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar) sectionsVars in sectionsVariables.Values)
+        {
+            sectionsVars.initVar.OnChangeWithSenderInfo -= OnSectionInitializedChanged;
+            sectionsVars.visibilityVar.OnChangeWithSenderInfo -= OnSectionVisibilityChanged;
+        }
+
+        if (placesAndEventsSectionController != null)
+        {
+            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.Dispose();
+        }
 
         if (view != null)
         {
@@ -192,17 +150,126 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
-
-        if (placesAndEventsSectionController != null)
-        {
-            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
-            placesAndEventsSectionController.Dispose();
-        }
     }
 
-    public void SetVisibility(bool visible) { isOpen.Set(visible); }
+    protected internal virtual IExploreV2MenuComponentView CreateView() =>
+        ExploreV2MenuComponentView.Create();
 
-    internal void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+    internal virtual IExploreV2Analytics CreateAnalyticsController() =>
+        new ExploreV2Analytics.ExploreV2Analytics();
+
+    internal void InitializePlacesAndEventsSection()
+    {
+        if (placesAndEventsSectionController != null)
+            return;
+
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i);
+        placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
+    }
+
+    private void OnSectionInitializedChanged(BaseVariable<bool> initVar, bool initialized, bool _ = false) =>
+        SectionInitializedChanged(sectionsByInitVar[initVar], initialized);
+
+    internal void SectionInitializedChanged(ExploreSection section, bool initialized, bool _ = false)
+    {
+        view.SetSectionActive(section, initialized);
+
+        if (section == ExploreSection.Explore && initialized)
+            InitializePlacesAndEventsSection();
+    }
+
+    public void SetVisibility(bool visible) =>
+        isOpen.Set(visible);
+
+    internal void SetVisibilityOnOpenChanged(bool open, bool _ = false) =>
+        SetVisibility_Internal(open);
+
+    internal void SetMenuTargetVisibility(ExploreSection section, bool toVisible, bool _ = false)
+    {
+        if (toVisible)
+        {
+            if (currentSectionIndex.Get() != (int)section)
+                currentSectionIndex.Set((int)section);
+
+            SetSectionTargetVisibility(section, toVisible: true);
+        }
+        else if (currentOpenSection == section)
+            SetSectionTargetVisibility(section, toVisible: false);
+    }
+
+    private void SetSectionTargetVisibility(ExploreSection section, bool toVisible)
+    {
+        bool wasInTargetVisibility = toVisible ^ isOpen.Get();
+
+        if (wasInTargetVisibility)
+        {
+            SetVisibility(toVisible);
+            exploreV2Analytics.SendStartMenuVisibility(toVisible, ExploreUIVisibilityMethod.FromShortcut);
+        }
+
+        exploreV2Analytics.SendStartMenuSectionVisibility(section, toVisible);
+    }
+
+    private void SetVisibility_Internal(bool visible)
+    {
+        if (view == null || DataStore.i.common.isSignUpFlow.Get())
+            return;
+
+        if (visible)
+        {
+            if (mouseCatcher != null)
+                mouseCatcher.UnlockCursor();
+
+            if (DataStore.i.common.isTutorialRunning.Get())
+                view.GoToSection(DEFAULT_SECTION);
+
+            isPromoteChannelsToastVisible.Set(false);
+        }
+        else
+        {
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+
+            foreach ((BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar) sectionsVars in sectionsVariables.Values)
+                sectionsVars.visibilityVar.Set(false);
+
+            profileCardIsOpen.Set(false);
+        }
+
+        view.SetVisible(visible);
+    }
+
+    private void OnSectionVisibilityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
+    {
+        ExploreSection section = sectionsByVisibilityVar[visibilityVar];
+        BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : sectionsVariables[section].initVar;
+
+        if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
+            return;
+
+        SetMenuTargetVisibility(sectionsByVisibilityVar[visibilityVar], visible);
+    }
+
+    private void ChangeVisibilityVarForSwitchedSections()
+    {
+        foreach (BaseVariable<bool> visibilityVar in sectionsByVisibilityVar.Keys)
+            if (visibilityVar.Get() != (currentOpenSection == sectionsByVisibilityVar[visibilityVar]))
+                visibilityVar.Set(currentOpenSection == sectionsByVisibilityVar[visibilityVar]);
+    }
+
+    internal void OnSectionOpen(ExploreSection section)
+    {
+        if (section != currentOpenSection)
+            exploreV2Analytics.SendStartMenuSectionVisibility(currentOpenSection, false);
+
+        currentOpenSection = section;
+
+        if (currentOpenSection == ExploreSection.Backpack)
+            view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+
+        ChangeVisibilityVarForSwitchedSections();
+
+        profileCardIsOpen.Set(false);
+    }
 
     internal void CurrentSectionIndexChanged(int current, int previous)
     {
@@ -220,310 +287,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.GoToSection(0);
     }
 
-    internal void SetVisibility_Internal(bool visible)
-    {
-        if (view == null || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (visible)
-        {
-            mouseCatcher?.UnlockCursor();
-
-            if (DataStore.i.common.isTutorialRunning.Get())
-                view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
-        }
-        else
-        {
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
-            placesAndEventsVisible.Set(false);
-            avatarEditorVisible.Set(false);
-            profileCardIsOpen.Set(false);
-            navmapVisible.Set(false);
-            builderVisible.Set(false);
-            questVisible.Set(false);
-            settingsVisible.Set(false);
-        }
-
-        view.SetVisible(visible);
-    }
-
-    internal void OnAfterShowAnimation() { CommonScriptableObjects.isFullscreenHUDOpen.Set(true); }
-
-    internal void IsPlacesAndEventsSectionInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Explore, current);
-
-        if (current)
-            InitializePlacesAndEventsSection();
-    }
-
-    internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
-    {
-        if (!isInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            view.GoToSection(ExploreSection.Explore);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, true);
-        }
-        else if (currentOpenSection == ExploreSection.Explore)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, false);
-        }
-    }
-
-    internal void IsAvatarEditorInitializedChanged(bool current, bool previous) { view.SetSectionActive(ExploreSection.Backpack, current); }
-
-    internal void AvatarEditorVisibleChanged(bool current, bool previous)
-    {
-        if (!isAvatarEditorInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            view.GoToSection(ExploreSection.Backpack);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, true);
-        }
-        else if (currentOpenSection == ExploreSection.Backpack)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, false);
-        }
-    }
-
-    internal void IsNavMapInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Map, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
-    }
-
-    internal void NavmapVisibleChanged(bool current, bool previous)
-    {
-        if (!isNavmapInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            view.GoToSection(ExploreSection.Map);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, true);
-        }
-        else if (currentOpenSection == ExploreSection.Map)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, false);
-        }
-    }
-
-    internal void IsBuilderInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Builder, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Builder, DataStore.i.exploreV2.configureBuilderInFullscreenMenu);
-    }
-
-    internal void BuilderVisibleChanged(bool current, bool previous)
-    {
-        if (!isBuilderInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            view.GoToSection(ExploreSection.Builder);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, true);
-        }
-        else if (currentOpenSection == ExploreSection.Builder)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, false);
-        }
-    }
-
-    internal void IsQuestInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Quest, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
-    }
-
-    internal void QuestVisibleChanged(bool current, bool previous)
-    {
-        if (!isQuestInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            view.GoToSection(ExploreSection.Quest);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, true);
-        }
-        else if (currentOpenSection == ExploreSection.Quest)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, false);
-        }
-    }
-
-    internal void IsSettingsPanelInitializedChanged(bool current, bool previous)
-    {
-        view.SetSectionActive(ExploreSection.Settings, current);
-
-        if (current)
-            view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
-    }
-
-    internal void SettingsVisibleChanged(bool current, bool previous)
-    {
-        if (!isSettingsPanelInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
-            return;
-
-        if (current)
-        {
-            if (!isOpen.Get())
-            {
-                SetVisibility(true);
-                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
-            }
-            view.GoToSection(ExploreSection.Settings);
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, true);
-        }
-        else if (currentOpenSection == ExploreSection.Settings)
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
-            }
-            exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, false);
-        }
-    }
-
-    internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
-    {
-        if (currentRealm == null)
-            return;
-
-        // Get the name of the current realm
-        view.currentRealmViewer.SetRealm(currentRealm.serverName);
-        view.currentRealmSelectorModal.SetCurrentRealm(currentRealm.serverName);
-
-        // Calculate number of users in the current realm
-        List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
-        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealm.serverName);
-        int realmUsers = 0;
-        if (currentRealmModel != null)
-            realmUsers = currentRealmModel.usersCount;
-
-        view.currentRealmViewer.SetNumberOfUsers(realmUsers);
-    }
-
-    internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
-    {
-        if (!NeedToRefreshRealms(currentRealmList))
-            return;
-
-        currentAvailableRealms.Clear();
-        CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
-
-        if (currentRealmList != null)
-        {
-            foreach (RealmModel realmModel in currentRealmList)
-            {
-                RealmRowComponentModel realmToAdd = new RealmRowComponentModel
-                {
-                    name = realmModel.serverName,
-                    players = realmModel.usersCount,
-                    isConnected = realmModel.serverName == currentRealm?.serverName
-                };
-
-                currentAvailableRealms.Add(realmToAdd);
-            }
-        }
-
-        view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
-    }
-
-    internal bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)
-    {
-        if (newRealmList == null)
-            return true;
-
-        bool needToRefresh = false;
-        if (newRealmList.Count() == currentAvailableRealms.Count)
-        {
-            foreach (RealmModel realm in newRealmList)
-            {
-                if (!currentAvailableRealms.Exists(x => x.name == realm.serverName && x.players == realm.usersCount))
-                {
-                    needToRefresh = true;
-                    break;
-                }
-            }
-        }
-        else
-            needToRefresh = true;
-
-        return needToRefresh;
-    }
+    private static void OnAfterShowAnimation() =>
+        CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
     internal void UpdateProfileInfo(UserProfile profile)
     {
@@ -535,56 +300,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if(DataStore.i.builderInWorld.areShortcutsBlocked.Get())
-            return;
-        
-        if (!fromShortcut)
-        {
-            SetVisibility(false);
-            exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
-        }
-        else
-        {
-            if (isOpen.Get())
-            {
-                SetVisibility(false);
-                exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
-            }
-        }
+        SetVisibility(false);
+        exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
     }
-
-    internal void ConfigureOhterUIDependencies()
-    {
-        controlsHUDCloseTime = Time.realtimeSinceStartup;
-        controlsVisible.OnChange += (current, old) =>
-        {
-            if (!current)
-                controlsHUDCloseTime = Time.realtimeSinceStartup;
-        };
-
-        emotesHUDCloseTime = Time.realtimeSinceStartup;
-        emotesVisible.OnChange += (current, old) =>
-        {
-            if (!current)
-                emotesHUDCloseTime = Time.realtimeSinceStartup;
-        };
-
-        chatInputHUDCloseTime = Time.realtimeSinceStartup;
-        chatInputVisible.OnChange += (current, old) =>
-        {
-            if (!current)
-                chatInputHUDCloseTime = Time.realtimeSinceStartup;
-        };
-
-        playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
-        playerInfoCardVisible.OnChange += (current, old) =>
-        {
-            if (!current)
-                playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
-        };
-    }
-
-    internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
-
-    protected internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

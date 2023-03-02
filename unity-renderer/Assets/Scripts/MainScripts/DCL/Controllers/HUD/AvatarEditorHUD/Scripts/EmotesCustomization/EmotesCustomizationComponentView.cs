@@ -75,7 +75,7 @@ namespace DCL.EmotesCustomization
         public EmoteCardComponentView AddEmote(EmoteCardComponentModel emote)
         {
             EmoteCardComponentView emoteGO = InstantiateAndConfigureEmoteCard(emote);
-            emotesGrid.AddItem(emoteGO);
+            emotesGrid.AddItemWithResize(emoteGO);
 
             return emoteGO;
         }

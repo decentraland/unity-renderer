@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ShadowResolutionControlConfiguration
   m_EditorClassIdentifier: 
   title: SHADOW RESOLUTION
-  controlPrefab: {fileID: 2909500743065466280, guid: 1c806fc61334f44de8ff0ae2a87beea3,
+  controlPrefab: {fileID: 4446727373572794343, guid: 1352863ed57dc8046abbb05f4db2520b,
     type: 3}
   controlController: {fileID: 11400000, guid: f5207ba17f0679e4ea06b00617cae350, type: 2}
   flagsThatDisableMe:

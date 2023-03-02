@@ -35,14 +35,12 @@ public class TimeReporter : ITimeReporter
 
     public void ReportTime(float time)
     {
-        bool isTimeRunning = DataStore.i.skyboxConfig.useDynamicSkybox.Get();
+        bool isTimeRunning = DataStore.i.skyboxConfig.mode.Get() == SkyboxMode.Dynamic;
 
         // NOTE: if not paused and pause state didn't change there is no need to report
         // current time since it's being calculated on kernel side
         if (isTimeRunning && wasTimeRunning)
-        {
             return;
-        }
 
         wasTimeRunning = isTimeRunning;
         OnReport?.Invoke(time, !isTimeRunning);

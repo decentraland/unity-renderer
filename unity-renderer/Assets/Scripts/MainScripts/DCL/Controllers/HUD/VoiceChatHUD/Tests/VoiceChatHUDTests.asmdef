@@ -17,7 +17,8 @@
         "IntegrationTestSuite",
         "BaseVariable",
         "PlayerModels",
-        "FeatureFlagData"
+        "FeatureFlagData",
+        "MouseCatcher"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

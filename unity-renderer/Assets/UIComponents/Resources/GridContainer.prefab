@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2026062374757361563}
   - component: {fileID: 3034685634738102410}
   - component: {fileID: 7829080691771640198}
-  - component: {fileID: 6453322237000976408}
   - component: {fileID: 4158216989085160810}
   - component: {fileID: 4065694885507964064}
   - component: {fileID: 4071603596337262758}
@@ -33,6 +32,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -74,25 +74,6 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 3
---- !u!95 &6453322237000976408
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8413359027062790288}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!225 &4158216989085160810
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -120,7 +101,7 @@ MonoBehaviour:
   hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
-  visibleParam: visible
+  canvasGroup: {fileID: 0}
 --- !u!114 &4071603596337262758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,6 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
   gridLayoutGroup: {fileID: 7829080691771640198}
   externalParentToAdaptSize: {fileID: 0}
   model:

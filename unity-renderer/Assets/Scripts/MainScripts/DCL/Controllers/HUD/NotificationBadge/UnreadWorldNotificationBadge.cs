@@ -1,4 +1,6 @@
 using DCL;
+using DCL.Chat;
+using DCL.Social.Chat;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +14,7 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
     public int maxNumberToShow = 9;
 
     private int currentUnreadMessagesValue;
-    private ILastReadMessagesService lastReadMessagesService;
+    private IChatController chatController;
 
     public int CurrentUnreadMessages
     {
@@ -25,7 +27,7 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
                 notificationContainer.SetActive(true);
                 notificationText.text = currentUnreadMessagesValue <= maxNumberToShow
                     ? currentUnreadMessagesValue.ToString()
-                    : string.Format("+{0}", maxNumberToShow);
+                    : $"+{maxNumberToShow}";
             }
             else
             {
@@ -36,28 +38,35 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
 
     private void Start()
     {
-        Initialize(Environment.i.serviceLocator.Get<ILastReadMessagesService>());
+        Initialize(Environment.i.serviceLocator.Get<IChatController>());
     }
+
+    private void OnDestroy()
+    {
+        if (chatController != null)
+            chatController.OnTotalUnseenMessagesUpdated -= UpdateTotalUnseenMessages;
+    }
+
+    private void OnEnable() => UpdateTotalUnseenMessages();
 
     /// <summary>
     /// Prepares the notification badge for listening to the world chat
     /// </summary>
     /// <param name="chatController">Chat Controlled to be listened</param>
-    public void Initialize(ILastReadMessagesService lastReadMessagesService)
+    public void Initialize(IChatController chatController)
     {
-        this.lastReadMessagesService = lastReadMessagesService;
-        lastReadMessagesService.OnUpdated += UpdateUnreadMessages;
-        UpdateUnreadMessages();
+        if (chatController == null) return;
+        this.chatController = chatController;
+        chatController.OnTotalUnseenMessagesUpdated += UpdateTotalUnseenMessages;
+        UpdateTotalUnseenMessages();
     }
 
-    private void OnDestroy()
+    private void UpdateTotalUnseenMessages(int totalUnseenMessages) =>
+        CurrentUnreadMessages = totalUnseenMessages;
+
+    private void UpdateTotalUnseenMessages()
     {
-        if (lastReadMessagesService != null)
-            lastReadMessagesService.OnUpdated -= UpdateUnreadMessages;
+        if (chatController == null) return;
+        CurrentUnreadMessages = chatController.TotalUnseenMessages;
     }
-
-    private void UpdateUnreadMessages(string channelId) => UpdateUnreadMessages();
-
-    private void UpdateUnreadMessages() =>
-        CurrentUnreadMessages = lastReadMessagesService.GetAllUnreadCount();
 }

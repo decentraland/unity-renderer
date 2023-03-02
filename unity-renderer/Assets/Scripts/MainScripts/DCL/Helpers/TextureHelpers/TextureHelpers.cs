@@ -3,7 +3,8 @@ using UnityEngine.Rendering;
 
 public static class TextureHelpers
 {
-    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, bool linear = false, bool useGPUCopy = true)
+    public static Texture2D ClampSize(Texture2D source, int maxTextureSize, 
+        bool linear = false, bool useGPUCopy = true)
     {
         if (source.width <= maxTextureSize && source.height <= maxTextureSize)
             return source;
@@ -13,7 +14,8 @@ public static class TextureHelpers
 
         float factor = GetScalingFactor(width, height, maxTextureSize);
 
-        Texture2D dstTex = Resize(source, (int) (width * factor), (int) (height * factor), linear, useGPUCopy);
+        Texture2D dstTex = Resize(source, (int) (width * factor), 
+            (int) (height * factor), linear, useGPUCopy);
 
         if (Application.isPlaying)
             Object.Destroy(source);

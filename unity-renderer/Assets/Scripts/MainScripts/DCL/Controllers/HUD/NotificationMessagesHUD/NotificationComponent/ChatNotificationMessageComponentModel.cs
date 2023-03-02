@@ -1,16 +1,23 @@
 using System;
-using UnityEngine;
 
-[Serializable]
-public class ChatNotificationMessageComponentModel : BaseComponentModel
+namespace DCL.Chat.Notifications
 {
-    public int maxHeaderCharacters;
-    public int maxContentCharacters;
+    [Serializable]
+    public class ChatNotificationMessageComponentModel : BaseComponentModel
+    {
+        public int maxHeaderCharacters;
+        public int maxContentCharacters;
+        public int maxSenderCharacters;
 
-    public string message;
-    public string time;
-    public string messageHeader;
-    public bool isPrivate;
-    public string imageUri;
-    public string notificationTargetId;
+        public string message;
+        public string time;
+        public string messageHeader;
+        public string messageSender;
+        public bool isPrivate;
+        public bool isFriendRequest;
+        public string imageUri;
+        public string notificationTargetId;
+        public bool isImageVisible = true;
+        public bool isDockedLeft = true;
+    }
 }

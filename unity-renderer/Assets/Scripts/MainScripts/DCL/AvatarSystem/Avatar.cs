@@ -19,15 +19,16 @@ namespace AvatarSystem
         private readonly IVisibility visibility;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
-        private readonly IGPUSkinningThrottler gpuSkinningThrottler;
+        private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
+        public event Action<Renderer> OnCombinedRendererUpdate;
 
-        public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -35,17 +36,17 @@ namespace AvatarSystem
             this.visibility = visibility;
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
-            this.gpuSkinningThrottler = gpuSkinningThrottler;
+            this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
             this.emoteAnimationEquipper = emoteAnimationEquipper;
         }
 
         /// <summary>
-        /// Starts the loading process for the Avatar. 
+        /// Starts the loading process for the Avatar.
         /// </summary>
         /// <param name="wearablesIds"></param>
         /// <param name="settings"></param>
         /// <param name="ct"></param>
-        public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
         {
             disposeCts ??= new CancellationTokenSource();
 
@@ -63,7 +64,7 @@ namespace AvatarSystem
                 List<WearableItem> wearables = null;
                 List<WearableItem> emotes = null;
 
-                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, linkedCt);
+                (bodyshape, eyes, eyebrows, mouth, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
                 if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
                 {
                     visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
@@ -75,15 +76,16 @@ namespace AvatarSystem
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
-                gpuSkinningThrottler.Bind(gpuSkinning);
 
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
-                gpuSkinningThrottler.Start();
+                gpuSkinningThrottlerService.Register(gpuSkinning);
 
                 status = IAvatar.Status.Loaded;
+
+                OnCombinedRendererUpdate?.Invoke(loader.combinedRenderer);
             }
             catch (OperationCanceledException)
             {
@@ -93,7 +95,8 @@ namespace AvatarSystem
             catch (Exception e)
             {
                 Dispose();
-                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
+                          $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else
@@ -106,7 +109,7 @@ namespace AvatarSystem
             }
         }
 
-        public void AddVisibilityConstrain(string key) { visibility.AddGlobalConstrain(key); }
+        public void AddVisibilityConstraint(string key) { visibility.AddGlobalConstrain(key); }
 
         public void RemoveVisibilityConstrain(string key) { visibility.RemoveGlobalConstrain(key); }
 
@@ -114,13 +117,19 @@ namespace AvatarSystem
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
 
-        public void SetAnimationThrottling(int framesBetweenUpdate) { gpuSkinningThrottler.SetThrottling(framesBetweenUpdate); }
+        public void SetAnimationThrottling(int framesBetweenUpdate)
+        {
+            gpuSkinningThrottlerService.ModifyThrottling(gpuSkinning, framesBetweenUpdate);
+        }
 
         public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
 
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
 
         public Transform[] GetBones() => loader.GetBones();
+
+        public Renderer GetMainRenderer() =>
+            gpuSkinning.renderer;
 
         public void Dispose()
         {
@@ -132,7 +141,7 @@ namespace AvatarSystem
             loader?.Dispose();
             visibility?.Dispose();
             lod?.Dispose();
-            gpuSkinningThrottler?.Dispose();
+            gpuSkinningThrottlerService?.Unregister(gpuSkinning);
         }
     }
 }

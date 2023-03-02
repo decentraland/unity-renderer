@@ -65,7 +65,7 @@ namespace DCL
             if (player?.avatar == null)
                 return;
 
-            player.avatar.AddVisibilityConstrain(VISIBILITY_CONSTRAIN);
+            player.avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAIN);
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
 

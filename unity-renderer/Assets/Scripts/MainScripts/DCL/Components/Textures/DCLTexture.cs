@@ -177,7 +177,7 @@ namespace DCL
             foreach (var entity in component.GetAttachedEntities())
             {
                 attachedEntitiesByComponent[component].Add(entity.entityId);
-                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.id, entity.entityId, texture);
+                DataStore.i.sceneWorldObjects.AddTexture(scene.sceneData.sceneNumber, entity.entityId, texture);
             }
         }
 
@@ -188,7 +188,7 @@ namespace DCL
 
             foreach (var entityId in attachedEntitiesByComponent[component])
             {
-                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.id, entityId, texture);
+                DataStore.i.sceneWorldObjects.RemoveTexture(scene.sceneData.sceneNumber, entityId, texture);
             }
 
             attachedEntitiesByComponent.Remove(component);

@@ -1,3 +1,5 @@
+using DCLServices.WearablesCatalogService;
+
 namespace DCL.EmotesWheel
 {
     /// <summary>
@@ -7,7 +9,13 @@ namespace DCL.EmotesWheel
     {
         public EmotesWheelController emotesWheelController;
 
-        public EmotesWheelUIPlugin() { emotesWheelController = new EmotesWheelController(UserProfile.GetOwnUserProfile(), CatalogController.wearableCatalog); }
+        public EmotesWheelUIPlugin()
+        {
+            emotesWheelController = new EmotesWheelController(
+                UserProfile.GetOwnUserProfile(),
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>());
+        }
 
         public void Dispose() { }
     }

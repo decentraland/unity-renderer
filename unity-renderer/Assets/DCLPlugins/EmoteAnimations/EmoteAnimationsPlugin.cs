@@ -1,4 +1,4 @@
-using AvatarSystem;
+using DCLServices.WearablesCatalogService;
 
 namespace DCL.Emotes
 {
@@ -7,7 +7,16 @@ namespace DCL.Emotes
     {
         private readonly EmoteAnimationsTracker emotesAnimationTracker;
 
-        public EmoteAnimationsPlugin() { emotesAnimationTracker = new EmoteAnimationsTracker(DataStore.i.emotes, new EmoteAnimationLoaderFactory(), new WearableItemResolver()); }
+        public EmoteAnimationsPlugin()
+        {
+            var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+
+            emotesAnimationTracker = new EmoteAnimationsTracker(
+                DataStore.i.emotes,
+                new EmoteAnimationLoaderFactory(),
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                wearablesCatalogService);
+        }
 
         public void Dispose() { emotesAnimationTracker?.Dispose(); }
     }

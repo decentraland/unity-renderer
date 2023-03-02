@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f177c8d1e94846289694bc7739db4992, type: 3}
+  m_Name: PoolPrivateChatEntryFactory
+  m_EditorClassIdentifier: 
+  factory: {fileID: 11400000, guid: d0497e2593c8e4f3fa89fe66bb8f5ac0, type: 2}
+  separatorEntryPrefab: {fileID: 717124712886577979, guid: 66a008a71d1e6d043a1066b0e45db3ca,
+    type: 3}

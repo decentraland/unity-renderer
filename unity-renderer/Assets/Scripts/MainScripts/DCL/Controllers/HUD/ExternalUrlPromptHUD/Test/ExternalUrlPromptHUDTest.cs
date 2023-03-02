@@ -66,8 +66,8 @@ namespace Tests
             controller.view.trustToggle.isOn = true;
             controller.view.continueButton.onClick.Invoke();
             Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible");
-            Assert.True(controller.trustedDomains.ContainsKey(scene.sceneData.id)
-                        && controller.trustedDomains[scene.sceneData.id].Contains("decentraland.org"),
+            Assert.True(controller.trustedDomains.ContainsKey(scene.sceneData.sceneNumber)
+                        && controller.trustedDomains[scene.sceneData.sceneNumber].Contains("decentraland.org"),
                 "domain not set as trusted");
 
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");

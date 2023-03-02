@@ -10,6 +10,13 @@ namespace AvatarAttach_Tests
     {
         private UserProfile userProfile;
 
+        [SetUp]
+        public void SetUp()
+        {
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.UpdateData(new UserProfileModel() { userId = "ownUserId" });
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -44,7 +51,6 @@ namespace AvatarAttach_Tests
         {
             const string playerId = "Temptation";
 
-            userProfile = UserProfile.GetOwnUserProfile();
             userProfile.UpdateData(new UserProfileModel() { userId = playerId });
 
             BaseVariable<Player> ownPlayer = DataStore.i.player.ownPlayer;

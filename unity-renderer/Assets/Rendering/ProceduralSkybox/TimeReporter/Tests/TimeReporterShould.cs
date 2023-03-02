@@ -26,7 +26,7 @@ namespace Tests
         [Test]
         public void AlwaysReportWhenUserChangesTime()
         {
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
+            DataStore.i.skyboxConfig.mode.Set(SkyboxMode.HoursFixedByUser);
             timeReporter.ReportTime(111);
             reportSubscriber.Received(1).React(111, true);
             timeReporter.ReportTime(928);
@@ -36,7 +36,7 @@ namespace Tests
         [Test]
         public void DoNotReportMoreThanOnceWhenDynamicSkyboxIsEnabled()
         {
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
+            DataStore.i.skyboxConfig.mode.Set(SkyboxMode.Dynamic);
             timeReporter.ReportTime(111);
             reportSubscriber.Received(1).React(111, false);
             reportSubscriber.ClearReceivedCalls();
@@ -47,15 +47,15 @@ namespace Tests
         [Test]
         public void ReportCorrectlyOnTogglingDynamicSkybox()
         {
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
+            DataStore.i.skyboxConfig.mode.Set(SkyboxMode.Dynamic);
             timeReporter.ReportTime(111);
             reportSubscriber.Received(1).React(111, false);
 
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
+            DataStore.i.skyboxConfig.mode.Set(SkyboxMode.HoursFixedByUser);
             timeReporter.ReportTime(928);
             reportSubscriber.Received(1).React(928, true);
 
-            DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
+            DataStore.i.skyboxConfig.mode.Set(SkyboxMode.Dynamic);
             timeReporter.ReportTime(632);
             reportSubscriber.Received(1).React(632, false);
         }

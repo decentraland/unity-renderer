@@ -2,6 +2,7 @@ using DCL.Configuration;
 using System.Collections;
 using System.IO;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Rendering;
@@ -29,7 +30,7 @@ namespace DCL.Helpers
         /// <summary>
         /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
         /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
-        /// 
+        ///
         /// Snapshot name will be generated dinamically using the name set in InitVisualTestsScene() and an static counter.
         /// </summary>
         /// <param name="camera">camera used for taking the snapshot</param>
@@ -360,7 +361,7 @@ namespace DCL.Helpers
             RenderSettings.customReflection = Resources.Load<Cubemap>("VisualTest Reflection");
             RenderSettings.ambientMode = AmbientMode.Trilight;
 
-            RenderSettings.skybox = Resources.Load<Material>("VisualTest Skybox");
+            RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/Scripts/Tests/VisualTests/VisualTest Skybox.mat");
             RenderSettings.ambientEquatorColor = new Color(0.98039216f, 0.8352941f, 0.74509805f);
             RenderSettings.ambientSkyColor = new Color(0.60784316f, 0.92941177f, 1f);
             RenderSettings.ambientGroundColor = Color.white;
@@ -373,9 +374,9 @@ namespace DCL.Helpers
                 RenderSettings.sun.transform.rotation = Quaternion.Euler(Vector3.one * 45);
             }
 
-            Shader.SetGlobalVector(ShaderUtils.LightDir, new Vector3(-0.1f, 0.8f, -0.4f));
-            Shader.SetGlobalColor(ShaderUtils.LightColor, Color.white);
-            Shader.SetGlobalColor(ShaderUtils.TintColor, new Color(0.64f, 0.57f, 0.54f));
+            Shader.SetGlobalVector(Shaders.ShaderUtils.LightDir, new Vector3(-0.1f, 0.8f, -0.4f));
+            Shader.SetGlobalColor(Shaders.ShaderUtils.LightColor, Color.white);
+            Shader.SetGlobalColor(Shaders.ShaderUtils.TintColor, new Color(0.64f, 0.57f, 0.54f));
         }
     }
 }

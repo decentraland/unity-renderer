@@ -37,7 +37,7 @@ namespace DCL
         {
             WebInterface.RaycastHitEntity hitEntity;
 
-            Environment.i.world.state.TryGetScene(query.sceneId, out IParcelScene scene);
+            Environment.i.world.state.TryGetScene(query.sceneNumber, out IParcelScene scene);
 
             RaycastResultInfo raycastInfo = raycastHandler.Raycast(GetUnityRayFromQuery(query), query.ray.distance,
                 ~layerMaskTarget, scene);
@@ -69,7 +69,7 @@ namespace DCL
                 };
             }
 
-            WebInterface.ReportRaycastHitFirstResult(query.sceneId, query.id, query.raycastType, hitEntity);
+            WebInterface.ReportRaycastHitFirstResult(query.sceneNumber, query.id, query.raycastType, hitEntity);
         }
 
         private void HitAll(RaycastQuery query, EntityIdHelper helper)
@@ -77,7 +77,7 @@ namespace DCL
             WebInterface.RaycastHitEntities raycastHitEntities = new WebInterface.RaycastHitEntities();
 
             IParcelScene scene = null;
-            Environment.i.world.state.TryGetScene(query.sceneId, out scene);
+            Environment.i.world.state.TryGetScene(query.sceneNumber, out scene);
 
             RaycastResultInfoList raycastResults = raycastHandler.RaycastAll(GetUnityRayFromQuery(query),
                 query.ray.distance, ~layerMaskTarget, scene);
@@ -114,7 +114,7 @@ namespace DCL
                 raycastHitEntities.entities = hitEntityInfoList.ToArray();
             }
 
-            WebInterface.ReportRaycastHitAllResult(query.sceneId, query.id, query.raycastType, raycastHitEntities);
+            WebInterface.ReportRaycastHitAllResult(query.sceneNumber, query.id, query.raycastType, raycastHitEntities);
         }
 
         private void HitFirstAvatar(RaycastQuery query)

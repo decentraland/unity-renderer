@@ -6,9 +6,9 @@ namespace DCL
 {
     public interface IRuntimeComponentFactory : IService
     {
-        public delegate bool CreateCondition(string sceneId, int classId);
+        public delegate bool CreateCondition(int sceneNumber, int classId);
 
-        public delegate void CreateOverride(string sceneId, long entityId, ref int classId, object data);
+        public delegate void CreateOverride(int sceneNumber, long entityId, ref int classId, object data);
 
         Dictionary<int, CreateCondition> createConditions { get; }
         Dictionary<int, CreateOverride> createOverrides { get; }

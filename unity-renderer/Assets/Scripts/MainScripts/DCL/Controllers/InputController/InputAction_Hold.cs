@@ -13,9 +13,12 @@ public class InputAction_Hold : ScriptableObject
     public event Finished OnFinished;
 
     [SerializeField] internal DCLAction_Hold dclAction;
-    public DCLAction_Hold GetDCLAction() => dclAction;
+    public DCLAction_Hold DCLAction => dclAction;
 
     public bool isOn { get; private set; }
+
+    [SerializeField] internal BooleanVariable holdBlocked;
+    public BooleanVariable isHoldBlocked { get => holdBlocked; set => holdBlocked = value; }
 
     public void RaiseOnStarted()
     {

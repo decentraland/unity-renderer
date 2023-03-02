@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCL.Shaders;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -93,7 +94,7 @@ namespace AvatarSystem
                 else
                     visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
 
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
                 else
                     visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
@@ -144,7 +145,7 @@ namespace AvatarSystem
                 else
                     visibility.AddCombinedRendererConstrain(VISIBILITY_CONSTRAIN_IN_IMPOSTOR);
 
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     visibility.RemoveFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
                 else
                     visibility.AddFacialFeaturesConstrain(VISIBILITY_CONSTRAIN_IN_LOD1);
@@ -204,7 +205,7 @@ namespace AvatarSystem
             Material[] mats = renderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
-                if (lodIndex == 0)
+                if (lodIndex <= 0)
                     mats[j].DisableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);
                 else
                     mats[j].EnableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);
@@ -242,17 +243,5 @@ namespace AvatarSystem
             if (impostorRenderer != null)
                 Object.Destroy(impostorRenderer.gameObject);
         }
-    }
-
-    public class NoLODs : ILOD
-    {
-        public int lodIndex { get; }
-
-        public void Bind(Renderer combinedAvatar) { }
-        public void SetLodIndex(int lodIndex, bool inmediate = false) { }
-        public void SetImpostorTexture(Texture2D texture) { }
-        public void SetImpostorTint(Color color) { }
-
-        public void Dispose() { }
     }
 }

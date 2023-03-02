@@ -10,12 +10,38 @@ namespace DCL.Tutorial
         public override void OnStepStart()
         {
             base.OnStepStart();
-
+            
+            if (tutorialController == null)
+                return;
+            
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
-
-            tutorialController?.hudController?.taskbarHud?.SetVisibility(false);
+            if (tutorialController.currentPath == TutorialController.TutorialPath.FromGenesisPlaza)
+            {
+                tutorialController.ShowTeacher3DModel(true);
+                tutorialController.SetTeacherPosition(teacherPositionRef.position);
+                if (tutorialController.configuration.teacher != null &&
+                    tutorialController.configuration.teacher.IsHiddenByAnimation)
+                    tutorialController.configuration.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+            }
+            else
+            {
+                tutorialController.hudController?.taskbarHud?.SetVisibility(false);
+                tutorialController.ShowTeacher3DModel(false);
+                OnShowAnimationFinished += SetupAlicePosition;
+            }
+        }
+        
+        private void SetupAlicePosition()
+        {
+            if (tutorialController != null)
+            {
+                tutorialController.SetTeacherPosition(teacherPositionRef.position, false);
+                tutorialController.ShowTeacher3DModel(true);
+                tutorialController.configuration?.teacher?.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+            }
+            OnShowAnimationFinished -= SetupAlicePosition;
         }
 
-        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.isLocked); }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.IsLocked); }
     }
 }

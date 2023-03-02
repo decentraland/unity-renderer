@@ -1,61 +1,92 @@
 using DCL;
-using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using UnityEngine;
 
 namespace Tests
 {
     public class ECSTransformParentingSystemShould
     {
-        private IDCLEntity entity;
-        private IParcelScene scene;
-        private GameObject entityGO;
+        private ECS7TestEntity entity;
+        private ECS7TestScene scene;
+        private ECS7TestUtilsScenesAndEntities sceneTestHelper;
         private ECSTransformHandler handler;
+        private Action parentingSystemUpdate;
 
         [SetUp]
         public void SetUp()
         {
-            entityGO = new GameObject();
+            sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
+            scene = sceneTestHelper.CreateScene(666);
+            entity = scene.CreateEntity(42);
 
-            entity = Substitute.For<IDCLEntity>();
-            entity.gameObject.Returns(entityGO);
-            entity.entityId.Returns(42);
-
-            scene = Substitute.For<IParcelScene>();
-            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>());
+            var sbcInternalComponentSubs = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
+            handler = new ECSTransformHandler(Substitute.For<IWorldState>(), Substitute.For<BaseVariable<Vector3>>(), sbcInternalComponentSubs);
+            parentingSystemUpdate = ECSTransformParentingSystem.CreateSystem(sbcInternalComponentSubs);
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.DestroyImmediate(entityGO);
+            sceneTestHelper.Dispose();
         }
 
         [Test]
         public void WaitForParentToExists()
         {
-            scene.GetEntityById(Arg.Any<long>()).Returns(x => null);
-
             var model = new ECSTransform() { parentId = 43 };
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
             // parent does not exist yet, so it should keep waiting
-            ECSTransformParentingSystem.Update();
+            parentingSystemUpdate();
             Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
 
             // create parent for entity
-            var parent = Substitute.For<IDCLEntity>();
-            parent.entityId.Returns(model.parentId);
-            scene.GetEntityById(Arg.Any<long>()).Returns(x => parent);
+            var parent = scene.CreateEntity(model.parentId);
 
             // parent exist so it should apply parenting
-            ECSTransformParentingSystem.Update();
-            entity.Received(1).SetParent(parent);
+            parentingSystemUpdate();
+            Assert.AreEqual(entity.entityId, parent.childrenId[0]);
+            Assert.AreEqual(parent.gameObject.transform, entity.gameObject.transform.parent);
             Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+        }
+
+        [Test]
+        public void SetEntityAsChildOfSceneRootEntity()
+        {
+            var model = new ECSTransform() { parentId = 23423 };
+            handler.OnComponentModelUpdated(scene, entity, model);
+            model = new ECSTransform() { parentId = SpecialEntityId.SCENE_ROOT_ENTITY };
+            handler.OnComponentModelUpdated(scene, entity, model);
+            Assert.IsTrue(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+
+            parentingSystemUpdate();
+            Assert.IsFalse(ECSTransformUtils.orphanEntities.ContainsKey(entity));
+            Assert.AreEqual(scene.GetSceneTransform(), entity.gameObject.transform.parent);
+        }
+
+        [Test]
+        public void RemoveEntityWithChildren()
+        {
+            var childEntity = scene.CreateEntity(43);
+
+            handler.OnComponentCreated(scene, entity);
+            handler.OnComponentCreated(scene, childEntity);
+
+            handler.OnComponentModelUpdated(scene, entity, new ECSTransform());
+            handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = entity.entityId });
+
+            parentingSystemUpdate();
+
+            handler.OnComponentModelUpdated(scene, childEntity, new ECSTransform() { parentId = 0 });
+            handler.OnComponentRemoved(scene, entity);
+            scene.RemoveEntity(entity.entityId, true);
+            parentingSystemUpdate();
         }
     }
 }

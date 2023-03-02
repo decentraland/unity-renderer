@@ -1,5 +1,7 @@
 using DCL.Bots;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
+using Decentraland.Bff;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -19,7 +21,7 @@ namespace DCL
 
         private void SetupSystems()
         {
-            var botsController = new BotsController();
+            var botsController = new BotsController(Environment.i.serviceLocator.Get<IWearablesCatalogService>());
             debugController = new DebugController(botsController);
             debugBridge = GameObject.Find("Main").AddComponent<DebugBridge>(); // todo: unuglyfy this
             debugBridge.Setup(debugController);
@@ -31,7 +33,7 @@ namespace DCL
             kernelConfigPromise.Catch(Debug.Log);
             kernelConfigPromise.Then(OnKernelConfigChanged);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
-            DataStore.i.realm.playerRealm.OnChange += OnPlayerRealmChanged;
+            DataStore.i.realm.realmName.OnChange += OnPlayerRealmChanged;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
@@ -53,9 +55,9 @@ namespace DCL
             }
         }
 
-        private void OnPlayerRealmChanged(CurrentRealmModel current, CurrentRealmModel previous)
+        private void OnPlayerRealmChanged(string current, string previous)
         {
-            debugController.SetRealm(GetRealmName());
+            debugController.SetRealm(current);
         }
 
         private bool IsInfoPanelVisible(string network)
@@ -74,7 +76,7 @@ namespace DCL
         public void Dispose()
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
-            DataStore.i.realm.playerRealm.OnChange -= OnPlayerRealmChanged;
+            DataStore.i.realm.realmName.OnChange -= OnPlayerRealmChanged;
             kernelConfigPromise?.Dispose();
         }
     }

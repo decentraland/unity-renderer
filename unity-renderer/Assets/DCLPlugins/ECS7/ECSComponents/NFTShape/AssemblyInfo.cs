@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.Components.ECSNFTShapeShould")]
+[assembly: InternalsVisibleTo("DCL.ECSComponents.NFTShape.Tests")]

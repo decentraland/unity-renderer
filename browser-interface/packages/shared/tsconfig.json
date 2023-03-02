@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "../../dist",
+    "baseUrl": "..",
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "types": ["@dcl/posix"]
+  },
+  "include": ["*.ts"],
+  "extends": "../../tsconfig.json"
+}

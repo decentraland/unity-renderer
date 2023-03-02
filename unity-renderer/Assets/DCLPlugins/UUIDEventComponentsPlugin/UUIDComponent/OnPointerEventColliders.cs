@@ -12,15 +12,10 @@ namespace DCL.Components
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
         internal MeshCollider[] colliders;
-        Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
+        private readonly Dictionary<Collider, string> colliderNames = new ();
 
-        public string GetMeshName(Collider collider)
-        {
-            if (colliderNames.ContainsKey(collider))
-                return colliderNames[collider];
-
-            return null;
-        }
+        public string GetMeshName(Collider collider) =>
+            colliderNames.ContainsKey(collider) ? colliderNames[collider] : null;
 
         private IDCLEntity ownerEntity;
 
@@ -57,20 +52,43 @@ namespace DCL.Components
             {
                 if (rendererList[i] == null)
                     continue;
+
                 colliders[i] = CreateCollider(rendererList[i]);
             }
         }
 
-        void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
+        public void UpdateCollidersEnabledBasedOnRenderers(IDCLEntity entity)
+        {
+            if (colliders == null || colliders.Length == 0)
+                return;
+
+            Renderer[] rendererList = entity?.meshesInfo?.renderers;
+
+            if (rendererList == null || rendererList.Length == 0)
+            {
+                DestroyColliders();
+                return;
+            }
+
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (rendererList[i] == null)
+                    continue;
+
+                colliders[i].enabled = rendererList[i].enabled;
+            }
+        }
+
+        private void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
         {
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i].sharedMaterial == null)
-                    colliders[i].sharedMesh = rendererList[i].GetComponent<MeshFilter>().sharedMesh;
+                    colliders[i].sharedMesh = TryGetSharedMesh(rendererList[i]);
             }
         }
 
-        MeshCollider CreateCollider(Renderer renderer)
+        private MeshCollider CreateCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 
@@ -78,11 +96,14 @@ namespace DCL.Components
             go.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
 
             var meshCollider = go.AddComponent<MeshCollider>();
-            meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
+            meshCollider.sharedMesh = TryGetSharedMesh(renderer);
             meshCollider.enabled = renderer.enabled;
 
-            if (renderer.transform.parent != null)
+            // Old GLTF Importer support, new one does not create Primitive sub-objects
+            if (renderer.name == "Primitive" && renderer.transform.parent != null)
                 colliderNames.Add(meshCollider, renderer.transform.parent.name);
+            else
+                colliderNames.Add(meshCollider, renderer.transform.name);
 
             CollidersManager.i.AddOrUpdateEntityCollider(ownerEntity, meshCollider);
 
@@ -93,6 +114,19 @@ namespace DCL.Components
             t.ResetLocalTRS();
 
             return meshCollider;
+        }
+
+        private static Mesh TryGetSharedMesh(Renderer renderer)
+        {
+            MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+
+            if (meshFilter != null) return meshFilter.sharedMesh;
+
+            SkinnedMeshRenderer skinnedMeshRenderer = renderer.GetComponent<SkinnedMeshRenderer>();
+
+            if (skinnedMeshRenderer != null) { return skinnedMeshRenderer.sharedMesh; }
+
+            return meshFilter.sharedMesh;
         }
 
         private bool AreCollidersCreated(Renderer[] rendererList)
@@ -106,6 +140,7 @@ namespace DCL.Components
             for (int i = 0; i < rendererList.Length; i++)
             {
                 bool foundChildCollider = false;
+
                 for (int j = 0; j < colliders.Length; j++)
                 {
                     if (colliders[j].transform.parent == rendererList[i].transform)
@@ -127,7 +162,7 @@ namespace DCL.Components
             DestroyColliders();
         }
 
-        void DestroyColliders()
+        private void DestroyColliders()
         {
             if (colliders == null)
                 return;

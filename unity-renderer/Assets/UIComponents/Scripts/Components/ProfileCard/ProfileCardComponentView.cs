@@ -172,8 +172,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         if (profileAddress != null)
             profileAddress.gameObject.SetActive(!isClaimedName);
-
-        SetProfileName(model.profileName);
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible) { profileImage.SetLoadingIndicatorVisible(isVisible); }

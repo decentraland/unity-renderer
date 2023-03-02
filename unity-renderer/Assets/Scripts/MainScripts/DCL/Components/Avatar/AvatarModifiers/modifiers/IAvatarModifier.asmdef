@@ -1,0 +1,17 @@
+{
+    "name": "IAvatarModifier",
+    "rootNamespace": "",
+    "references": [
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:4016c129fc7e2bd4eba9d6ee09f42a69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

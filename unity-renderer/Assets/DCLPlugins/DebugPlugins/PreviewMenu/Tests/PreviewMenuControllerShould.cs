@@ -38,11 +38,11 @@ namespace Tests
         {
             var controller = new PreviewMenuController();
 
-            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet("temptation", true);
+            DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(666, true);
             bool initialBoundingBoxState = true;
             controller.showBoundingBox.buttonReference.onClick.Invoke();
             Assert.AreNotEqual(initialBoundingBoxState,
-                DataStore.i.debugConfig.showSceneBoundingBoxes.Get().FirstOrDefault(pair => pair.Key == "temptation").Value);
+                DataStore.i.debugConfig.showSceneBoundingBoxes.Get().FirstOrDefault(pair => pair.Key == 666).Value);
 
             controller.Dispose();
         }

@@ -15,6 +15,7 @@ public class WearableItem
     {
         public string key;
         public string hash;
+        public string url;
     }
 
     [Serializable]
@@ -35,6 +36,7 @@ public class WearableItem
         public string[] tags;
         public string[] replaces;
         public string[] hides;
+        public bool loop;
     }
 
     public Data data;
@@ -46,14 +48,16 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
-    
+
     private string thirdPartyCollectionId;
     public string ThirdPartyCollectionId
     {
         get
         {
-            if (!string.IsNullOrEmpty(thirdPartyCollectionId)) return thirdPartyCollectionId;
-            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH)) return "";
+            if (!string.IsNullOrEmpty(thirdPartyCollectionId))
+                return thirdPartyCollectionId;
+            if (!id.Contains(THIRD_PARTY_COLLECTIONS_PATH))
+                return "";
             var paths = id.Split(':');
             var thirdPartyIndex = Array.IndexOf(paths, THIRD_PARTY_COLLECTIONS_PATH);
             thirdPartyCollectionId = string.Join(":", paths, 0, thirdPartyIndex + 2);
@@ -62,7 +66,7 @@ public class WearableItem
     }
 
     public bool IsFromThirdPartyCollection => !string.IsNullOrEmpty(ThirdPartyCollectionId);
-    
+
     public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
@@ -186,7 +190,7 @@ public class WearableItem
 
     public void SanitizeHidesLists()
     {
-        //remove bodyshape from hides list 
+        //remove bodyshape from hides list
         if (data.hides != null)
             data.hides = data.hides.Except(new [] { WearableLiterals.Categories.BODY_SHAPE }).ToArray();
         for (int i = 0; i < data.representations.Length; i++)
@@ -200,19 +204,27 @@ public class WearableItem
 
     public bool DoesHide(string category, string bodyShape) => GetHidesList(bodyShape).Any(s => s == category);
 
-    public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
+    public bool IsCollectible()
+    {
+        if (id == null)
+            return false;
+
+        return !id.StartsWith("urn:decentraland:off-chain:base-avatars:");
+    }
 
     public bool IsSkin() => data.category == WearableLiterals.Categories.SKIN;
 
     public bool IsSmart()
     {
-        if (data?.representations == null) return false;
+        if (data?.representations == null)
+            return false;
 
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
             var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
-            if (containsGameJs) return true;
+            if (containsGameJs)
+                return true;
         }
 
         return false;
@@ -269,7 +281,7 @@ public class WearableItem
         return result;
     }
 
-    //Workaround to know the net of a wearable. 
+    //Workaround to know the net of a wearable.
     //Once wearables are allowed to be moved from Ethereum to Polygon this method wont be reliable anymore
     //To retrieve this properly first we need the catalyst to send the net of each wearable, not just the ID
     public bool IsInL2()
@@ -280,7 +292,14 @@ public class WearableItem
     }
 
     public bool IsEmote() { return emoteDataV0 != null; }
+
+    public virtual bool ShowInBackpack() { return true; }
+
+    public override string ToString() { return id; }
 }
+
+[Serializable]
+public class EmoteItem : WearableItem { }
 
 [Serializable]
 public class WearablesRequestResponse

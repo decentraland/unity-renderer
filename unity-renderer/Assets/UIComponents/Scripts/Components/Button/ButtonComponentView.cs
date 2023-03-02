@@ -60,9 +60,11 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView, ICom
         SetIcon(model.icon);
     }
 
-    public bool IsInteractable() { return button.interactable; }
+    public bool IsInteractable() =>
+        button.interactable;
 
-    public void SetInteractable(bool isActive) { button.interactable = isActive;}
+    public void SetInteractable(bool isActive) =>
+        button.interactable = isActive;
 
     public void SetText(string newText)
     {

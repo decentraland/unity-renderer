@@ -1,8 +1,11 @@
-using DCL.SettingsPanelHUD.Common;
-using System.Collections.Generic;
 using DCL.SettingsCommon;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+using DCL.SettingsPanelHUD.Common;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using UIComponents.Scripts.Components;
+using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
 using UnityEngine.UI;
 using QualitySettings = DCL.SettingsCommon.QualitySettings;
@@ -10,40 +13,35 @@ using QualitySettings = DCL.SettingsCommon.QualitySettings;
 namespace DCL.SettingsPanelHUD.Controls
 {
     /// <summary>
-    /// Base interface to implement a view for a CONTROL.
-    /// </summary>
-    public interface ISettingsControlView
-    {
-        /// <summary>
-        /// All the needed base logic to initializes the CONTROL view.
-        /// </summary>
-        /// <param name="controlConfig">Model that will contain the configuration of the CONTROL.</param>
-        /// <param name="settingsControlController">Controller associated to the CONTROL view.</param>
-        void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController);
-
-        /// <summary>
-        /// This logic should update the CONTROL view with the stored value.
-        /// </summary>
-        void RefreshControl();
-    }
-
-    /// <summary>
     /// MonoBehaviour that represents the base of a CONTROL view.
     /// </summary>
     public class SettingsControlView : MonoBehaviour, ISettingsControlView
     {
+        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup controlCanvasGroup;
+
+        [Space]
         [SerializeField] private TextMeshProUGUI title;
         [SerializeField] private Color titleDeactivationColor;
+
+        [Space]
         [SerializeField] private GameObject betaIndicator;
-        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private ButtonComponentView infoButton;
+        [SerializeField] private TooltipComponentView tooltip;
+
+        [Space]
         [SerializeField] private List<TextMeshProUGUI> valueLabels;
         [SerializeField] private Color valueLabelDeactivationColor;
+
+        [Space]
         [SerializeField] private List<Image> handleImages;
         [SerializeField] private Color handlerDeactivationColor;
+
+        [Space]
         [SerializeField] private List<CanvasGroup> controlBackgroundCanvasGroups;
         [SerializeField] private float controlBackgroundDeactivationAlpha = 0.5f;
 
-        protected SettingsControlController settingsControlController;
+        private SettingsControlController settingsControlController;
 
         private SettingsControlModel controlConfig;
         private Color originalTitleColor;
@@ -51,35 +49,46 @@ namespace DCL.SettingsPanelHUD.Controls
         private Color originalHandlerColor;
         private float originalControlBackgroundAlpha;
 
-        public virtual void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
+        public virtual void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
-            this.controlConfig = controlConfig;
-            this.settingsControlController = settingsControlController;
-            this.settingsControlController.Initialize();
-            title.text = controlConfig.title;
-            betaIndicator.SetActive(controlConfig.isBeta);
+            controlConfig = model;
+            settingsControlController = controller;
+            settingsControlController.Initialize();
+
+            betaIndicator.SetActive(model.isBeta);
+
+            string tooltipMessage = !string.IsNullOrEmpty(model.infoTooltipMessage) ? model.infoTooltipMessage : "This setting is being controlled \n by the creator";
+            tooltip.SetModel(new TooltipComponentModel(tooltipMessage));
+
+            infoButton.onClick.AddListener(OnInfoButtonClicked);
+            infoButton.gameObject.SetActive(model.infoButtonEnabled);
+
+            title.text = model.title;
             originalTitleColor = title.color;
             originalLabelColor = valueLabels.Count > 0 ? valueLabels[0].color : Color.white;
             originalHandlerColor = handleImages.Count > 0 ? handleImages[0].color : Color.white;
             originalControlBackgroundAlpha = controlBackgroundCanvasGroups.Count > 0 ? controlBackgroundCanvasGroups[0].alpha : 1f;
 
-            foreach (BooleanVariable flag in controlConfig.flagsThatDisableMe)
-            {
-                flag.OnChange += OnAnyDisableFlagChange;
-                OnAnyDisableFlagChange(flag.Get(), false);
-            }
+            SwitchInteractibility(isInteractable: model.flagsThatDisableMe.All(flag => flag.Get() == false));
+            SwitchVisibility(isVisible: model.flagsThatDeactivateMe.All(flag => flag.Get() == false));
 
-            foreach (BooleanVariable flag in controlConfig.flagsThatDeactivateMe)
-            {
-                flag.OnChange += OnAnyDeactivationFlagChange;
-                OnAnyDeactivationFlagChange(flag.Get(), false);
-            }
+            if(!model.infoButtonEnabled)
+                SetOverriden(@override: model.flagsThatOverrideMe.Any(flag => flag.Get()));
 
             RefreshControl();
 
+            foreach (BooleanVariable flag in model.flagsThatDisableMe)
+                flag.OnChange += OnAnyDisableFlagChange;
+
+            foreach (BooleanVariable flag in model.flagsThatDeactivateMe)
+                flag.OnChange += OnAnyDeactivationFlagChange;
+
+            foreach (BooleanVariable flag in model.flagsThatOverrideMe)
+                flag.OnChange += OnAnyOverrideFlagChange;
+
             Settings.i.generalSettings.OnChanged += OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
-            Settings.i.OnResetAllSettings += OnResetSettingsControl;
+            Settings.i.OnResetAllSettings += RefreshControl;
         }
 
         protected virtual void OnDestroy()
@@ -87,19 +96,20 @@ namespace DCL.SettingsPanelHUD.Controls
             if (controlConfig != null)
             {
                 foreach (BooleanVariable flag in controlConfig.flagsThatDisableMe)
-                {
                     flag.OnChange -= OnAnyDisableFlagChange;
-                }
 
                 foreach (BooleanVariable flag in controlConfig.flagsThatDeactivateMe)
-                {
                     flag.OnChange -= OnAnyDeactivationFlagChange;
-                }
+
+                foreach (BooleanVariable flag in controlConfig.flagsThatOverrideMe)
+                    flag.OnChange -= OnAnyOverrideFlagChange;
             }
+
+            infoButton.onClick.RemoveListener(OnInfoButtonClicked);
 
             Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
-            Settings.i.OnResetAllSettings -= OnResetSettingsControl;
+            Settings.i.OnResetAllSettings -= RefreshControl;
         }
 
         public virtual void RefreshControl() { }
@@ -114,75 +124,64 @@ namespace DCL.SettingsPanelHUD.Controls
             settingsControlController.ApplySettings();
         }
 
-        private void OnAnyDisableFlagChange(bool current, bool previous)
+        private void OnInfoButtonClicked()
         {
-            bool canApplychange = true;
-            if (!current)
-            {
-                // Check if all the disable flags are false before enable the control
-                foreach (var flag in controlConfig.flagsThatDisableMe)
-                {
-                    if (flag.Get() == true)
-                    {
-                        canApplychange = false;
-                        break;
-                    }
-                }
-            }
-
-            if (canApplychange)
-                SetEnabled(!current);
+            if (!tooltip.gameObject.activeSelf)
+                tooltip.Show();
         }
 
-        private void OnAnyDeactivationFlagChange(bool current, bool previous)
+        private void OnGeneralSettingsChanged(GeneralSettings _) =>
+            RefreshControl();
+
+        private void OnQualitySettingsChanged(QualitySettings _) =>
+            RefreshControl();
+
+        private void OnAnyDeactivationFlagChange(bool deactivateFlag, bool _ = false) =>
+            SwitchVisibility(isVisible: AllFlagsAreDisabled(deactivateFlag, controlConfig.flagsThatDeactivateMe));
+
+        private void OnAnyDisableFlagChange(bool disableFlag, bool _ = false) =>
+            SwitchInteractibility(isInteractable: AllFlagsAreDisabled(disableFlag, controlConfig.flagsThatDisableMe));
+
+        private void OnAnyOverrideFlagChange(bool overrideFlag, bool _ = false) =>
+            SetOverriden(@override: AnyFlagIsEnabled(overrideFlag, controlConfig.flagsThatOverrideMe));
+
+        private static bool AllFlagsAreDisabled(bool flagEnabled, List<BooleanVariable> flags) =>
+            !flagEnabled && flags.All(flag => flag.Get() == false);
+
+        private static bool AnyFlagIsEnabled(bool flagEnabled, List<BooleanVariable> flags) =>
+            flagEnabled || flags.Any(flag => flag.Get());
+
+        private void SwitchVisibility(bool isVisible)
         {
-            bool canApplychange = true;
-            if (!current)
-            {
-                // Check if all the deactivation flags are false before enable the control
-                foreach (var flag in controlConfig.flagsThatDeactivateMe)
-                {
-                    if (flag.Get() == true)
-                    {
-                        canApplychange = false;
-                        break;
-                    }
-                }
-            }
-
-            if (canApplychange)
-                SetControlActive(!current);
-        }
-
-        private void OnGeneralSettingsChanged(GeneralSettings obj) { RefreshControl(); }
-
-        private void OnQualitySettingsChanged(QualitySettings obj) { RefreshControl(); }
-
-        private void OnResetSettingsControl() { RefreshControl(); }
-
-        private void SetEnabled(bool enabled)
-        {
-            title.color = enabled ? originalTitleColor : titleDeactivationColor;
-            foreach (var text in valueLabels)
-            {
-                text.color = enabled ? originalLabelColor : valueLabelDeactivationColor;
-            }
-            foreach (var image in handleImages)
-            {
-                image.color = enabled ? originalHandlerColor : handlerDeactivationColor;
-            }
-            foreach (var canvasGroup in controlBackgroundCanvasGroups)
-            {
-                canvasGroup.alpha = enabled ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
-            }
-            canvasGroup.interactable = enabled;
-            canvasGroup.blocksRaycasts = enabled;
-        }
-
-        private void SetControlActive(bool actived)
-        {
-            gameObject.SetActive(actived);
+            gameObject.SetActive(isVisible);
             CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
+        }
+
+        private void SwitchInteractibility(bool isInteractable)
+        {
+            title.color = isInteractable ? originalTitleColor : titleDeactivationColor;
+            SwitchUIControlInteractibility(isInteractable, canvasGroup);
+        }
+
+        private void SetOverriden(bool @override)
+        {
+            infoButton.gameObject.SetActive(@override);
+            SwitchUIControlInteractibility(isInteractable: !@override, controlCanvasGroup);
+        }
+
+        private void SwitchUIControlInteractibility(bool isInteractable, CanvasGroup group)
+        {
+            foreach (TextMeshProUGUI text in valueLabels)
+                text.color = isInteractable ? originalLabelColor : valueLabelDeactivationColor;
+
+            foreach (Image image in handleImages)
+                image.color = isInteractable ? originalHandlerColor : handlerDeactivationColor;
+
+            foreach (CanvasGroup bkgCanvasGroup in controlBackgroundCanvasGroups)
+                bkgCanvasGroup.alpha = isInteractable ? originalControlBackgroundAlpha : controlBackgroundDeactivationAlpha;
+
+            group.interactable = isInteractable;
+            group.blocksRaycasts = isInteractable;
         }
     }
 }

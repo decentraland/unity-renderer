@@ -82,7 +82,7 @@ namespace DCL.ECSRuntime
         public void DeserializeComponent(int componentId, IParcelScene scene, IDCLEntity entity, object message)
         {
             var component = GetOrCreateComponent(componentId, scene, entity);
-            component.Deserialize(scene, entity, message);
+            component?.Deserialize(scene, entity, message);
         }
 
         /// <summary>

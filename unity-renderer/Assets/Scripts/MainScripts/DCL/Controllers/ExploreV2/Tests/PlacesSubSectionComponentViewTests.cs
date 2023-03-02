@@ -1,10 +1,15 @@
+using System.Collections;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TestTools;
+using static UnityEngine.Object;
 
 public class PlacesSubSectionComponentViewTests
 {
+    private static int[] spritesAmounts = { 0, 1, 5, 6 };
+
     private PlacesSubSectionComponentView placesSubSectionComponent;
     private Texture2D testTexture;
     private Sprite testSprite;
@@ -12,7 +17,7 @@ public class PlacesSubSectionComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        placesSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesSubSection/PlacesSubSection")).GetComponent<PlacesSubSectionComponentView>();
+        placesSubSectionComponent = Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesSubSection/PlacesSubSection")).GetComponent<PlacesSubSectionComponentView>();
         placesSubSectionComponent.ConfigurePools();
         placesSubSectionComponent.Start();
         testTexture = new Texture2D(20, 20);
@@ -25,51 +30,66 @@ public class PlacesSubSectionComponentViewTests
         placesSubSectionComponent.places.ExtractItems();
         placesSubSectionComponent.placeCardsPool.ReleaseAll();
         placesSubSectionComponent.Dispose();
-        GameObject.Destroy(placesSubSectionComponent.placeModal.gameObject);
-        GameObject.Destroy(placesSubSectionComponent.gameObject);
-        GameObject.Destroy(testTexture);
-        GameObject.Destroy(testSprite);
+
+        Destroy(testTexture);
+        Destroy(testSprite);
+        Destroy(placesSubSectionComponent.gameObject);
+
+        if (placesSubSectionComponent.placeModal != null)
+            Destroy(placesSubSectionComponent.placeModal.gameObject);
     }
 
-    [Test]
-    public void SetPlacesCorrectly()
+    [UnityTest]
+    public IEnumerator SetPlacesCorrectly([ValueSource(nameof(spritesAmounts))] int spritesAmount)
     {
         // Arrange
-        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
+        placesSubSectionComponent.places.RemoveItems();
+        placesSubSectionComponent.places.gameObject.SetActive(false); // hack needed for fix AABB canvas fails on tests (happens only in the tests)
+
+        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite, spritesAmount);
 
         // Act
         placesSubSectionComponent.SetPlaces(testPlaces);
 
+        for (int i = 0; i < spritesAmount - 1; i++)
+            yield return null;
+
         // Assert
-        Assert.AreEqual(2, placesSubSectionComponent.places.instantiatedItems.Count, "The number of set places does not match.");
-        Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[0]), "The place 1 is not contained in the places grid");
-        Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[1]), "The place 2 is not contained in the places grid");
-        Assert.IsFalse(placesSubSectionComponent.placesNoDataText.gameObject.activeSelf, "The placesNoDataText should be visible.");
+        Assert.AreEqual(spritesAmount, placesSubSectionComponent.places.instantiatedItems.Count, "The number of set places does not match.");
+
+        for (int i = 0; i < spritesAmount; i++)
+            Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), $"The place {i} is not contained in the places grid");
+
+        Assert.AreEqual(spritesAmount == 0, placesSubSectionComponent.placesNoDataText.gameObject.activeSelf, "The placesNoDataText should not be visible when there are places.");
     }
 
-    [Test]
-    public void AddPlacesCorrectly()
+    [UnityTest]
+    public IEnumerator AddPlacesCorrectly([ValueSource(nameof(spritesAmounts))] int spritesAmount)
     {
         // Arrange
         placesSubSectionComponent.places.RemoveItems();
-        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
+        placesSubSectionComponent.places.gameObject.SetActive(false); // hack needed for fix AABB canvas fails on tests (happens only in the tests)
+        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite, spritesAmount);
 
         // Act
         placesSubSectionComponent.AddPlaces(testPlaces);
 
+        for (int i = 0; i < spritesAmount - 1; i++)
+            yield return null;
+
         // Assert
-        Assert.AreEqual(2, placesSubSectionComponent.places.instantiatedItems.Count, "The number of set places does not match.");
-        Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[0]), "The place 1 is not contained in the places grid");
-        Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[1]), "The place 2 is not contained in the places grid");
+        Assert.AreEqual(spritesAmount, placesSubSectionComponent.places.instantiatedItems.Count, "The number of set places does not match.");
+
+        for (int i = 0; i < spritesAmount; i++)
+            Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), "The place 1 is not contained in the places grid");
     }
 
-    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetPlacesAsLoadingCorrectly(bool isVisible)
     {
         // Arrange
-        placesSubSectionComponent.places.gameObject.SetActive(isVisible);
+        placesSubSectionComponent.places.gameObject.GetComponent<Canvas>().enabled = isVisible;
         placesSubSectionComponent.placesLoading.SetActive(!isVisible);
         placesSubSectionComponent.placesNoDataText.gameObject.SetActive(true);
 
@@ -77,14 +97,13 @@ public class PlacesSubSectionComponentViewTests
         placesSubSectionComponent.SetPlacesAsLoading(isVisible);
 
         // Assert
-        Assert.AreEqual(!isVisible, placesSubSectionComponent.places.gameObject.activeSelf);
+        Assert.AreEqual(!isVisible, placesSubSectionComponent.places.GetComponent<Canvas>().enabled);
         Assert.AreEqual(isVisible, placesSubSectionComponent.placesLoading.activeSelf);
 
         if (isVisible)
             Assert.IsFalse(placesSubSectionComponent.placesNoDataText.gameObject.activeSelf);
     }
 
-    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetShowMorePlacesButtonActiveCorrectly(bool isVisible)

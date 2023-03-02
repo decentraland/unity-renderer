@@ -21,7 +21,7 @@ namespace DCL.Components
             if (IsAtHoverDistance(hit.distance)
                 && (model.button == "ANY" || buttonId.ToString() == model.button))
             {
-                DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
+                DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.sceneNumber, model.uuid);
             }
         }
 

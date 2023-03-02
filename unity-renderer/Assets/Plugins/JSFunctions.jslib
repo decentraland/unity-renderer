@@ -14,7 +14,7 @@ mergeInto(LibraryManager.library, {
     window.DCL.queryString = new URLSearchParams(window.location.search);
   },
   MessageFromEngine: function(type, message) {
-    window.DCL.MessageFromEngine(Pointer_stringify(type), Pointer_stringify(message));
+    window.DCL.MessageFromEngine(UTF8ToString(type), UTF8ToString(message));
   },
   BinaryMessageFromEngine: function(dataPtr, dataSize) {
     var bytes = HEAPU8.subarray(dataPtr, dataPtr + dataSize)

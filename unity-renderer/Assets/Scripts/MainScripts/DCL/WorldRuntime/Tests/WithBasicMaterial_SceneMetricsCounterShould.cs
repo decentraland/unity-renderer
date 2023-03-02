@@ -23,7 +23,7 @@ public class WithBasicMaterial_SceneMetricsCounterShould : IntegrationTestSuite_
     public IEnumerator NotCountWhenAttachedToIgnoredEntities()
     {
         IDCLEntity entity = CreateEntityWithTransform();
-        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
 
         DCLTexture texture = CreateTexture(texturePaths[0]);
         BasicMaterial material = CreateBasicMaterial(texture.id);
@@ -42,7 +42,7 @@ public class WithBasicMaterial_SceneMetricsCounterShould : IntegrationTestSuite_
         material.Dispose();
         texture.Dispose();
         planeShape.Dispose();
-        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
     }
 
 

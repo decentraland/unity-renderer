@@ -71,8 +71,8 @@ namespace DCL.Components
             if (isDestroyed)
                 yield break;
 
-            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
-            CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;
+            CommonScriptableObjects.sceneNumber.OnChange -= OnCurrentSceneChanged;
+            CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneChanged;
 
             ApplyCurrentModel();
 
@@ -150,12 +150,12 @@ namespace DCL.Components
                     audioSettingsData.masterVolume);
             }
 
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.id == CommonScriptableObjects.sceneID.Get();
+            bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
 
             audioSource.volume = isCurrentScene ? newVolume : 0f;
         }
 
-        private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
+        private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
         {
             if (audioSource == null)
                 return;
@@ -163,7 +163,7 @@ namespace DCL.Components
             Model model = (Model) this.model;
             float volume = 0;
 
-            if (scene.isPersistent || scene.sceneData.id == currentSceneId)
+            if (scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber)
             {
                 volume = model.volume;
             }
@@ -174,7 +174,7 @@ namespace DCL.Components
         private void OnDestroy()
         {
             isDestroyed = true;
-            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
+            CommonScriptableObjects.sceneNumber.OnChange -= OnCurrentSceneChanged;
 
             //NOTE(Brian): Unsubscribe events.
             InitDCLAudioClip(null);
@@ -184,6 +184,9 @@ namespace DCL.Components
             
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+
+            lastDCLAudioClip = null;
+            audioSource = null;
         }
 
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)

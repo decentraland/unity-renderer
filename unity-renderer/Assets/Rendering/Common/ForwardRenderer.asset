@@ -15,13 +15,81 @@ MonoBehaviour:
   m_Active: 1
   m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
   m_Settings:
-    Downsample: 1
+    Downsample: 0
+    AfterOpaque: 0
     Source: 1
     NormalSamples: 2
     Intensity: 1.2
     DirectLightingStrength: 0.6
     Radius: 0.2
     SampleCount: 4
+--- !u!114 &-5304858544757240251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c87b50ad7af48d4586669953066b5c1, type: 3}
+  m_Name: OutlinerRenderHandler
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  renderers: {fileID: 0}
+--- !u!114 &-1948607328044652727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d6a2481d97f4b66beb3466a41079d6b, type: 3}
+  m_Name: OutlineFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    outlineMaterial: {fileID: 0}
+--- !u!114 &-1906314991003592775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c87b50ad7af48d4586669953066b5c1, type: 3}
+  m_Name: OutlinerHandler
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  renderers: {fileID: 11400000, guid: 58ea38ce62832a247bfe2698cf6129c3, type: 2}
+--- !u!114 &-1568435901723723278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8059df5aa5f477b831dab00963a3499, type: 3}
+  m_Name: OutlineScreenEffectFeature
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  settings:
+    outlineColor: {r: 0, g: 1, b: 1, a: 1}
+    blurColor: {r: 0, g: 1, b: 1, a: 1}
+    innerColor: {r: 0, g: 0.85890675, b: 1, a: 0.050980393}
+    effectFade: 1
+    outlineThickness: {fileID: 11400000, guid: 3b2a0097ac4974c4dbd22fdfcbd5cfeb, type: 2}
+    outlineResolutionScale: {fileID: 11400000, guid: 051dce077ac0fe84ebdd212db125cae5,
+      type: 2}
+    blurSize: {fileID: 11400000, guid: 71984a406e9d00c4eb55991db791d8d2, type: 2}
+    blurSigma: {fileID: 11400000, guid: 15aeca967a14da64882661d82afedba4, type: 2}
+    filterMode: 1
 --- !u!114 &-981180908113067146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,10 +124,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
   m_Name: ForwardRenderer
   m_EditorClassIdentifier: 
+  debugShaders:
+    debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
+      type: 3}
   m_RendererFeatures:
   - {fileID: -7551554940414059620}
-  m_RendererFeatureMap: 9c1bc6a2ca7c3397
-  postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
+  - {fileID: 4650022159256899313}
+  - {fileID: 1990522510072472895}
+  - {fileID: -1568435901723723278}
+  m_RendererFeatureMap: 9c1bc6a2ca7c3397f1ce3358843288403fe5493aadc19f1bf2b9c978dbcb3bea
+  m_UseNativeRenderPass: 0
+  postProcessData: {fileID: 11400000, guid: f3666fa857d118b4f807732fa6b749c6, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -67,11 +142,17 @@ MonoBehaviour:
     screenSpaceShadowPS: {fileID: 4800000, guid: 0f854b35a0cf61a429bd5dcfea30eddd,
       type: 3}
     samplingPS: {fileID: 4800000, guid: 04c410c9937594faa893a11dceb85f7e, type: 3}
-    tileDepthInfoPS: {fileID: 0}
-    tileDeferredPS: {fileID: 0}
     stencilDeferredPS: {fileID: 4800000, guid: e9155b26e1bc55942a41e518703fe304, type: 3}
     fallbackErrorPS: {fileID: 4800000, guid: e6e9a19c3678ded42a3bc431ebef7dbd, type: 3}
     materialErrorPS: {fileID: 4800000, guid: 5fd9a8feb75a4b5894c241777f519d4e, type: 3}
+    coreBlitPS: {fileID: 4800000, guid: 93446b5c5339d4f00b85c159e1159b7c, type: 3}
+    coreBlitColorAndDepthPS: {fileID: 4800000, guid: d104b2fc1ca6445babb8e90b0758136b,
+      type: 3}
+    cameraMotionVector: {fileID: 4800000, guid: c56b7e0d4c7cb484e959caeeedae9bbf,
+      type: 3}
+    objectMotionVector: {fileID: 4800000, guid: 7b3ede40266cd49a395def176e1bc486,
+      type: 3}
+  m_AssetVersion: 2
   m_OpaqueLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -87,4 +168,77 @@ MonoBehaviour:
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 0
+  m_DepthPrimingMode: 0
+  m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
+  m_ClusteredRendering: 0
+  m_TileSize: 32
+  m_IntermediateTextureMode: 1
+--- !u!114 &1990522510072472895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f263be919b9b435ea31672ef6a3019d1, type: 3}
+  m_Name: OutlineMaskFeature
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  renderers: {fileID: 11400000, guid: 746661f82ad547e5bbfd5f0930ad7e02, type: 2}
+--- !u!114 &2857390719645321209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68367c126c244181be89fc46b209dc89, type: 3}
+  m_Name: OutlinerRenderHandler
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  renderers: {fileID: 0}
+--- !u!114 &4650022159256899313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66a80b0d120eb3b46b762126e8a1e6e5, type: 3}
+  m_Name: NewGaussianBlurHandler
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  settings:
+    renderPassEvent: 500
+    blurMaterial: {fileID: 2100000, guid: bd6d8afd42d202a4fb9db5a6ef1b377a, type: 2}
+    blurPasses: 3
+    downsample: 6
+    targetName: _blurTexture
+--- !u!114 &7597349767054881799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa7291a4b6e4c338c40714a7fcfc7ec, type: 3}
+  m_Name: OutlineFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    deltaX: 0.002
+    deltaY: 0.002
+    color:
+      r: 0
+      g: 1
+      b: 1
+      a: 1

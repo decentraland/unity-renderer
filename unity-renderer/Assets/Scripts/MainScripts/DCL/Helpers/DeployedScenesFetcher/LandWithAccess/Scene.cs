@@ -7,7 +7,7 @@ namespace DCL.Builder
 {
     public class Scene
     {
-        public enum Source { BUILDER, BUILDER_IN_WORLD, SDK }
+        public enum Source { BUILDER, SDK }
 
         public string title => metadata.display.title;
         public string description => metadata.display.description;
@@ -40,22 +40,13 @@ namespace DCL.Builder
         {
 
             const string builderSourceName = "builder";
-            const string builderInWorldSourceName = "builder-in-world";
 
             metadata = pointerData.metadata;
             entityId = pointerData.id;
 
             deploymentSource = Source.SDK;
 
-            if (pointerData.content != null && pointerData.content.Any(content => content.file == BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
-            {
-                deploymentSource = Source.BUILDER_IN_WORLD;
-            }
-            else if (metadata.source != null && metadata.source.origin == builderInWorldSourceName)
-            {
-                deploymentSource = Source.BUILDER_IN_WORLD;
-            }
-            else if (metadata.source != null && metadata.source.origin == builderSourceName)
+            if (metadata.source != null && metadata.source.origin == builderSourceName)
             {
                 deploymentSource = Source.BUILDER;
             }

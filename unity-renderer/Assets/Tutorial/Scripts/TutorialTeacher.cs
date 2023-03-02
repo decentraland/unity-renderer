@@ -14,17 +14,13 @@ namespace DCL.Tutorial
             Reset
         }
 
-        [SerializeField] internal Animator teacherAnimator;
+        [SerializeField] private Animator teacherAnimator;
+        [SerializeField] private AudioEvent audioEventHappy, audioEventNormal;
 
-        [SerializeField]
-        AudioEvent audioEventHappy, audioEventNormal;
 
-        [HideInInspector] public bool isHiddenByAnAnimation = false;
+        public bool IsHiddenByAnimation { get; private set; } = false;
 
-        /// <summary>
-        /// Play an animation.
-        /// </summary>
-        /// <param name="animation">Animation to play.</param>
+
         public void PlayAnimation(TeacherAnimation animation)
         {
             if (!isActiveAndEnabled)
@@ -38,11 +34,11 @@ namespace DCL.Tutorial
                     break;
                 case TeacherAnimation.QuickGoodbye:
                     teacherAnimator.SetTrigger("QuickGoodbye");
-                    isHiddenByAnAnimation = true;
+                    IsHiddenByAnimation = true;
                     break;
                 case TeacherAnimation.Reset:
                     teacherAnimator.SetTrigger("Reset");
-                    isHiddenByAnAnimation = false;
+                    IsHiddenByAnimation = false;
                     break;
                 default:
                     break;
@@ -52,5 +48,16 @@ namespace DCL.Tutorial
         public void PlaySpeakSound() { audioEventNormal.PlayScheduled(0.4f); }
 
         public void PlayHappySound(float delay) { audioEventHappy.PlayScheduled(delay); }
+
+        private void OnEnable()
+        {
+            teacherAnimator.enabled = true;
+        }
+
+        private void OnDisable()
+        {
+            teacherAnimator.StopPlayback();
+            teacherAnimator.enabled = false;
+        }
     }
 }

@@ -10,14 +10,15 @@ namespace DCL
             List<GlobalScene> activePortableExperienceScenes = new List<GlobalScene>();
             IWorldState worldState = Environment.i.world.state;
 
-            foreach (var globalSceneId in worldState.globalSceneIds)
+            List<IParcelScene> parcelScenes = worldState.GetGlobalScenes();
+
+            foreach (var parcelScene in parcelScenes)
             {
-                if (worldState.TryGetScene(globalSceneId, out GlobalScene scene))
+                var globalScene = (GlobalScene)parcelScene;
+
+                if (globalScene.isPortableExperience)
                 {
-                    if (scene.isPortableExperience)
-                    {
-                        activePortableExperienceScenes.Add(scene);
-                    }
+                    activePortableExperienceScenes.Add(globalScene);
                 }
             }
 
@@ -29,14 +30,15 @@ namespace DCL
             List<string> currentSceneAndPortableExperiencesIds = new List<string>();
             IWorldState worldState = Environment.i.world.state;
 
-            foreach (var globalSceneId in worldState.globalSceneIds)
+            List<IParcelScene> parcelScenes = worldState.GetGlobalScenes();
+
+            foreach (var parcelScene in parcelScenes)
             {
-                if (worldState.TryGetScene(globalSceneId, out GlobalScene scene))
+                var globalScene = (GlobalScene)parcelScene;
+
+                if (globalScene.isPortableExperience)
                 {
-                    if (scene.isPortableExperience)
-                    {
-                        currentSceneAndPortableExperiencesIds.Add(globalSceneId);
-                    }
+                    currentSceneAndPortableExperiencesIds.Add(globalScene.sceneName);
                 }
             }
 

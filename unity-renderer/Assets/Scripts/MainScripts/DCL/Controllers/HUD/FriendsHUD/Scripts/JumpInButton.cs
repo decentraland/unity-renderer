@@ -1,9 +1,12 @@
 using System;
 using DCL.Interface;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// This button lets the player jump to the current location of a friend.
@@ -16,7 +19,7 @@ public class JumpInButton : MonoBehaviour
 
     private IFriendsController currentFriendsController;
     private string currentUserId;
-    private FriendsController.UserStatus currentUserStatus;
+    private UserStatus currentUserStatus;
 
     internal Vector2 currentCoords;
     internal string currentRealmServerName;
@@ -58,7 +61,7 @@ public class JumpInButton : MonoBehaviour
         currentFriendsController.OnUpdateUserStatus -= FriendsController_OnUpdateUserStatus;
     }
 
-    private void FriendsController_OnUpdateUserStatus(string userId, FriendsController.UserStatus userStatus)
+    private void FriendsController_OnUpdateUserStatus(string userId, UserStatus userStatus)
     {
         if (userId != currentUserId)
             return;
@@ -68,7 +71,7 @@ public class JumpInButton : MonoBehaviour
 
     private void SearchUserStatus(string userId)
     {
-        if (currentFriendsController.GetFriends().TryGetValue(userId, out currentUserStatus))
+        if (currentFriendsController.GetAllocatedFriends().TryGetValue(userId, out currentUserStatus))
         {
             UpdateInfo(
                 currentUserStatus.position,
@@ -107,7 +110,7 @@ public class JumpInButton : MonoBehaviour
     private void JumpIn()
     {
         OnClick?.Invoke();
-        WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
+        Environment.i.world.teleportController.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
         socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
     }
 }

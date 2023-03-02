@@ -7,7 +7,11 @@ PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
     #ifdef _GPU_SKINNING 
-    ApplyGPUSkinning(input, input.tangentOS, input.uv1);
+    float3 gpuSkinnedPositionOS;
+    float3 gpuSkinnedNormalOS;
+    ApplyGPUSkinning(input.positionOS, input.normalOS, gpuSkinnedPositionOS, gpuSkinnedNormalOS, input.tangentOS, input.uv1);
+    input.positionOS = gpuSkinnedPositionOS;
+    input.normalOS = gpuSkinnedNormalOS;
     #endif
     output = BuildVaryings(input);
     PackedVaryings packedOutput = (PackedVaryings)0;
@@ -15,17 +19,15 @@ PackedVaryings vert(Attributes input)
     return packedOutput;
 }
 
-half4 frag(PackedVaryings packedInput) : SV_TARGET 
-{    
+half4 frag(PackedVaryings packedInput) : SV_TARGET
+{
     Varyings unpacked = UnpackVaryings(packedInput);
     UNITY_SETUP_INSTANCE_ID(unpacked);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(unpacked);
+    SurfaceDescription surfaceDescription = BuildSurfaceDescription(unpacked);
 
-    SurfaceDescriptionInputs surfaceDescriptionInputs = BuildSurfaceDescriptionInputs(unpacked);
-    SurfaceDescription surfaceDescription = SurfaceDescriptionFunction(surfaceDescriptionInputs);
-
-    #if _AlphaClip
-        clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
+    #if _ALPHATEST_ON
+    clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
     #endif
 
     return 0;

@@ -15,8 +15,7 @@ namespace AssetPromiseKeeper_PrimitiveMesh_Tests
     {
         protected override AssetPromise_PrimitiveMesh CreatePromise()
         {
-            PrimitiveMeshModel model = new PrimitiveMeshModel(PrimitiveMeshModel.Type.Box);
-            var prom = new AssetPromise_PrimitiveMesh(model);
+            var prom = new AssetPromise_PrimitiveMesh(AssetPromise_PrimitiveMesh_Model.CreateBox(null));
             return prom;
         }
 

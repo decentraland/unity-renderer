@@ -21,8 +21,9 @@ namespace DCL
         private const string CONTENT_TYPE = "Content-Type";
         private const string CONTENT_LENGTH = "Content-Length";
         private const string CONTENT_TYPE_GIF = "image/gif";
+        private const string CONTENT_TYPE_WEBP = "image/webp";
         private const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
-        
+
         protected AssetPromise_Texture imagePromise = null;
         protected AssetPromise_Gif gifPromise = null;
         private CancellationTokenSource tokenSource;
@@ -42,7 +43,7 @@ namespace DCL
 
             return result;
         }
-        
+
         public IEnumerator LoadNFTAsset(string url, Action<INFTAsset> OnSuccess, Action<Exception> OnFail)
         {
             if (string.IsNullOrEmpty(url))
@@ -50,7 +51,7 @@ namespace DCL
                 OnFail?.Invoke(new Exception($"Image url is null!"));
                 yield break;
             }
-            
+
             HashSet<string> headers = new HashSet<string>() {CONTENT_TYPE, CONTENT_LENGTH};
             Dictionary<string, string> responseHeaders = new Dictionary<string, string>();
             string headerRequestError = string.Empty;
@@ -65,8 +66,24 @@ namespace DCL
 
             string contentType = responseHeaders[CONTENT_TYPE];
             long.TryParse(responseHeaders[CONTENT_LENGTH], out long contentLength);
-            bool isGif = contentType == CONTENT_TYPE_GIF;
+            bool isGif = string.Equals(contentType, CONTENT_TYPE_GIF, StringComparison.InvariantCultureIgnoreCase);
+            bool isWebp = string.Equals(contentType, CONTENT_TYPE_WEBP, StringComparison.InvariantCultureIgnoreCase);
 
+            if (isWebp)
+            {
+                // We are going to fallback into gifs until we have proper support
+                yield return FetchGif(url + "&fm=gif",
+                    OnSuccess: (promise) =>
+                    {
+                        UnloadPromises();
+                        this.gifPromise = promise;
+                        OnSuccess?.Invoke(new NFTAsset_Gif(promise.asset));
+                    },
+                    OnFail: (exception) => { OnFail?.Invoke(exception); }
+                );
+
+                yield break;
+            }
             if (isGif)
             {
                 yield return FetchGif(url,
@@ -81,7 +98,7 @@ namespace DCL
 
                 yield break;
             }
-            
+
             if (contentLength > PREVIEW_IMAGE_SIZE_LIMIT)
             {
                 OnFail?.Invoke(new System.Exception($"Image is too big! {contentLength} > {PREVIEW_IMAGE_SIZE_LIMIT}"));

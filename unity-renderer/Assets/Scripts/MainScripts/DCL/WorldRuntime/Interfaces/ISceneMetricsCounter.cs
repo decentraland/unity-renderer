@@ -18,6 +18,6 @@ namespace DCL
 
         bool IsInsideTheLimits();
 
-        void Configure(string sceneId, Vector2Int scenePosition, int sceneParcelCount);
+        void Configure(int sceneNumber, Vector2Int scenePosition, int sceneParcelCount);
     }
 }

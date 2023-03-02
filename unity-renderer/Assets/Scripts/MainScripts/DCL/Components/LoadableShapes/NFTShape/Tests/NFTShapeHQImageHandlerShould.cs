@@ -47,7 +47,8 @@ public class NFTShapeHQImageHandlerShould
         var config = new NFTShapeHQImageConfig()
         {
             asset = asset,
-            controller = nftController,
+            collider = nftController.collider,
+            transform = nftController.transform
         };
         imageHandler = NFTShapeHQImageHandler.Create(config);
     }

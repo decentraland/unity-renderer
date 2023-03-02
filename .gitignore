@@ -11,6 +11,7 @@ TestResults/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
+UserSettings/
 
 .DS_Store
 .DS_Store?
@@ -54,6 +55,10 @@ Logs/Packages-Update.log
 
 browser-interface/dist
 browser-interface/node_modules
+browser-interface/*/StreamingAssets/*
+browser-interface/*/unity.symbols.json
+
+protocol-gen/node_modules
 unity-renderer/UserSettings/EditorUserSettings.asset
 unity-renderer/ProjectSettings/QualitySettings.asset
 unity-renderer/Assets/TextMesh Pro/Resources/Fonts & Materials/SF-UI-Text-Heavy SDF.asset
@@ -64,3 +69,4 @@ unity-renderer/Assets/TextMesh Pro/Resources/Fonts & Materials/Inter-Bold SDF.as
 unity-renderer/Assets/Scripts/MainScripts/DCL/KernelConfiguration/KernelConfigTypes.cs
 unity-renderer/Assets/Scripts/MainScripts/DCL/Components/LoadableShapes/NFTShape/Materials/OriginalNFTFrame.mat
 unity-renderer/MemoryCaptures/**
+unity-renderer/Builds

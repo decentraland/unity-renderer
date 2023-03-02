@@ -13,7 +13,7 @@ public class WithPbrMaterial_SceneMetricsCounterShould : IntegrationTestSuite_Sc
         var shape = CreatePlane();
         var entity = CreateEntityWithTransform();
 
-        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.AddExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
 
         TestUtils.SharedComponentAttach(shape, entity);
         TestUtils.SharedComponentAttach(material, entity);
@@ -23,7 +23,7 @@ public class WithPbrMaterial_SceneMetricsCounterShould : IntegrationTestSuite_Sc
         Assert.That( scene.metricsCounter.currentCount.entities, Is.EqualTo(0) );
         Assert.That( scene.metricsCounter.currentCount.materials, Is.EqualTo(0) );
 
-        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.id, entity.entityId);
+        DataStore.i.sceneWorldObjects.RemoveExcludedOwner(scene.sceneData.sceneNumber, entity.entityId);
     }
 
 

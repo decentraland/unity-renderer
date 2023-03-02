@@ -6,6 +6,7 @@ namespace DCL.Components
 {
     public class LoadWrapper_GLTF : LoadWrapper
     {
+        private const string FEATURE_GLTFAST = "gltfast";
         static readonly bool VERBOSE = false;
 
         RendereableAssetLoadHelper loadHelper;
@@ -28,11 +29,12 @@ namespace DCL.Components
             alreadyLoaded = false;
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 
+            bool CheckIfGltFastIsEnabled() => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles, CheckIfGltFastIsEnabled);
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,CheckIfGltFastIsEnabled);
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
@@ -43,10 +45,7 @@ namespace DCL.Components
             }
             else
             {
-                if (useVisualFeedback)
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
-                else
-                    loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+                loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
             }
 
             this.entity.OnCleanupEvent -= OnEntityCleanup;
@@ -76,7 +75,7 @@ namespace DCL.Components
             loadHelper.OnFailEvent -= failWrapperEvent;
 
             loadHelper.loadedAsset.ownerId = entity.entityId;
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }
 
@@ -86,10 +85,10 @@ namespace DCL.Components
         {
             if (loadHelper == null)
                 return;
-            
+
             if ( loadHelper.loadedAsset != null )
             {
-                DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.id, loadHelper.loadedAsset);
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity.scene.sceneData.sceneNumber, loadHelper.loadedAsset);
             }
 
             loadHelper.Unload();

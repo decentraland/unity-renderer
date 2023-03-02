@@ -1,5 +1,8 @@
 using System;
 using DCL.ECS7;
+using DCL.ECSComponents.UIDropdown;
+using DCL.ECSComponents.UIInput;
+using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
 
@@ -8,52 +11,73 @@ namespace DCL.ECSComponents
     public class ECS7ComponentsComposer : IDisposable
     {
         private readonly TransformRegister transformRegister;
-        private readonly SphereShapeRegister sphereShapeRegister;
-        private readonly BoxShapeRegister boxShapeRegister;
-        private readonly PlaneShapeRegister planeShapeRegister;
-        private readonly CylinderShapeRegister cylinderShapeRegister;
         private readonly AudioStreamRegister audioStreamRegister;
         private readonly AudioSourceRegister audioSourceRegister;
-        private readonly GLTFShapeRegister gltfRegister;
+        private readonly GltfContainerRegister gltfRegister;
         private readonly ECSTextShapeRegister textShapeRegister;
         private readonly NFTShapeRegister nftRegister;
-        private readonly OnPointerDownRegister pointerDownRegister;
-        private readonly OnPointerUpRegister pointerUpRegister;
         private readonly AnimatorRegister animatorRegister;
         private readonly BillboardRegister billboardRegister;
+        private readonly AvatarShapeRegister avatarShapeRegister;
         private readonly CameraModeAreaRegister cameraModeAreaRegister;
         private readonly AvatarModifierAreaRegister avatarModifierAreaRegister;
         private readonly AvatarAttachRegister avatarAttachRegister;
+        private readonly MaterialRegister materialRegister;
+        private readonly RaycastRegister raycastRegister;
+        private readonly RaycastResultRegister raycastResultRegister;
+        private readonly MeshRendererRegister meshRendererRegister;
+        private readonly MeshColliderRegister meshColliderRegister;
+        private readonly VisibilityComponentRegister visibilityComponentRegister;
+        private readonly PointerEventsRegister pointerEvents;
+        private readonly VideoPlayerRegister videoPlayerRegister;
+
+        // UI components
+        private readonly UITransformRegister uiTransformRegister;
+        private readonly UiTextRegister uiTextRegister;
+        private readonly UIBackgroundRegister uiBackgroundRegister;
+        private readonly UIInputRegister uiInputRegister;
+        private readonly UIDropdownRegister uiDropdownRegister;
 
         // Those components are only here to serialize over the wire, we don't need a handler for these
-        private readonly OnPointerDownResultRegister pointerDownResultRegister;
-        private readonly OnPointerUpResultRegister pointerUpResultRegister;
+        private readonly PointerEventResultRegister pointerEventResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
 
-        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter)
+        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
-            transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter);
-            sphereShapeRegister = new SphereShapeRegister(ComponentID.SPHERE_SHAPE, componentsFactory, componentsWriter);
-            boxShapeRegister = new BoxShapeRegister(ComponentID.BOX_SHAPE, componentsFactory, componentsWriter);
-            planeShapeRegister = new PlaneShapeRegister(ComponentID.PLANE_SHAPE, componentsFactory, componentsWriter);
-            cylinderShapeRegister = new CylinderShapeRegister(ComponentID.CYLINDER_SHAPE, componentsFactory, componentsWriter);
+            transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter, internalComponents);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
-            audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter);
-            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter);
-            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter);
-            gltfRegister = new GLTFShapeRegister(ComponentID.GLTF_SHAPE, componentsFactory, componentsWriter);
-            pointerDownRegister = new OnPointerDownRegister(ComponentID.ON_POINTER_DOWN, componentsFactory, componentsWriter);
-            pointerUpRegister = new OnPointerUpRegister(ComponentID.ON_POINTER_UP, componentsFactory, componentsWriter);
+            audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter, internalComponents);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentsWriter, internalComponents);
             animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter);
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
+            avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter, internalComponents);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
+            materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
+            raycastRegister = new RaycastRegister(ComponentID.RAYCAST, componentsFactory, componentsWriter, internalComponents);
+            raycastResultRegister = new RaycastResultRegister(ComponentID.RAYCAST_RESULT, componentsFactory, componentsWriter);
+            meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
+            meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
+            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
+            videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
+
+            // Multi-purposed components
+            pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter,
+                internalComponents.uiContainerComponent, internalComponents.inputEventResultsComponent);
+
+            // UI components
+            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, ComponentID.UI_INPUT_RESULT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
+            uiDropdownRegister = new UIDropdownRegister(ComponentID.UI_DROPDOWN, ComponentID.UI_DROPDOWN_RESULT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
 
             // Components without a handler
-            pointerDownResultRegister = new OnPointerDownResultRegister(ComponentID.ON_POINTER_DOWN_RESULT, componentsFactory, componentsWriter);
-            pointerUpResultRegister = new OnPointerUpResultRegister(ComponentID.ON_POINTER_UP_RESULT, componentsFactory, componentsWriter);
+            pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
         }
@@ -61,11 +85,7 @@ namespace DCL.ECSComponents
         public void Dispose()
         {
             transformRegister.Dispose();
-            sphereShapeRegister.Dispose();
-            boxShapeRegister.Dispose();
             billboardRegister.Dispose();
-            planeShapeRegister.Dispose();
-            cylinderShapeRegister.Dispose();
             audioStreamRegister.Dispose();
             audioSourceRegister.Dispose();
             textShapeRegister.Dispose();
@@ -74,15 +94,28 @@ namespace DCL.ECSComponents
             animatorRegister.Dispose();
             avatarAttachRegister.Dispose();
             avatarModifierAreaRegister.Dispose();
-            pointerDownRegister.Dispose();
-            pointerUpRegister.Dispose();
+            avatarShapeRegister.Dispose();
             cameraModeAreaRegister.Dispose();
+            materialRegister.Dispose();
+            raycastRegister.Dispose();
+            raycastResultRegister.Dispose();
+            meshRendererRegister.Dispose();
+            meshColliderRegister.Dispose();
+            visibilityComponentRegister.Dispose();
+            videoPlayerRegister.Dispose();
+
+            // UI components
+            uiTransformRegister.Dispose();
+            uiTextRegister.Dispose();
+            uiBackgroundRegister.Dispose();
+            uiInputRegister.Dispose();
+            uiDropdownRegister.Dispose();
 
             // Components without a handler
-            pointerDownResultRegister.Dispose();
-            pointerUpResultRegister.Dispose();
+            pointerEventResultRegister.Dispose();
             cameraModeRegister.Dispose();
             pointerLockRegister.Dispose();
+            pointerEvents.Dispose();
         }
     }
 }

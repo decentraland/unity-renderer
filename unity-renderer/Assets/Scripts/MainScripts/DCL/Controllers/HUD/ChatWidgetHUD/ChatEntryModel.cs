@@ -12,11 +12,12 @@ public struct ChatEntryModel
     }
 
     public ChatMessage.Type messageType;
+    public string messageId;
     public string bodyText;
     public string senderId;
     public string senderName;
     public string recipientName;
-    public string otherUserId;
     public ulong timestamp;
     public SubType subType;
+    public bool isChannelMessage;
 }

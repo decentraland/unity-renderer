@@ -2,11 +2,18 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.ProfanityFiltering;
+using DCL.Social.Friends;
+using DCL.Tasks;
+using DCLServices.WearablesCatalogService;
 using SocialFeaturesAnalytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 public class PlayerInfoCardHUDController : IHUD
 {
@@ -22,18 +29,23 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly InputAction_Trigger toggleWorldChatTrigger;
     private readonly IUserProfileBridge userProfileBridge;
-    private readonly IWearableCatalogBridge wearableCatalogBridge;
+    private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
     private readonly BooleanVariable playerInfoCardVisibleState;
-    private readonly List<string> loadedWearables = new List<string>();
+    private readonly List<string> loadedWearables = new ();
     private readonly ISocialAnalytics socialAnalytics;
-    private double passportOpenStartTime = 0;
+
+    private CancellationTokenSource friendOperationsCancellationToken = new ();
+    private CancellationTokenSource setUserProfileCancellationToken = new ();
+    private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
+    private double passportOpenStartTime;
+    private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
-        IWearableCatalogBridge wearableCatalogBridge,
+        IWearablesCatalogService wearablesCatalogService,
         ISocialAnalytics socialAnalytics,
         IProfanityFilter profanityFilter,
         DataStore dataStore,
@@ -41,18 +53,21 @@ public class PlayerInfoCardHUDController : IHUD
     {
         this.friendsController = friendsController;
         view = PlayerInfoCardHUDView.CreateView();
+
         view.Initialize(() => OnCloseButtonPressed(),
             ReportPlayer, BlockPlayer, UnblockPlayer,
             AddPlayerAsFriend, CancelInvitation, AcceptFriendRequest, RejectFriendRequest);
+
         currentPlayerId = currentPlayerIdData;
         this.userProfileBridge = userProfileBridge;
-        this.wearableCatalogBridge = wearableCatalogBridge;
+        this.wearablesCatalogService = wearablesCatalogService;
         this.socialAnalytics = socialAnalytics;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
         this.playerInfoCardVisibleState = playerInfoCardVisibleState;
+        currentPlayerId.OnSame += OnCurrentPlayerIdUpdated;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-        OnCurrentPlayerIdChanged(currentPlayerId, null);
+        OnCurrentPlayerIdUpdated(currentPlayerId);
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -70,8 +85,9 @@ public class PlayerInfoCardHUDController : IHUD
         friendsController.OnUpdateFriendship += OnFriendStatusUpdated;
     }
 
-    public void CloseCard()
+    private void CloseCard()
     {
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         currentPlayerId.Set(null);
     }
 
@@ -82,65 +98,131 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void AddPlayerAsFriend()
     {
-        UserProfile currentUserProfile = userProfileBridge.Get(currentPlayerId);
-
-        // Add fake action to avoid waiting for kernel
-        userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
+        if (isNewFriendRequestsEnabled)
         {
-            userId = currentPlayerId,
-            name = currentUserProfile != null ? currentUserProfile.userName : currentPlayerId
-        });
-
-        friendsController.RequestFriendship(currentPlayerId);
-
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage
+            dataStore.HUDs.sendFriendRequest.Set(currentPlayerId, true);
+            dataStore.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.Passport);
+        }
+        else
         {
-            userId = currentPlayerId, action = FriendshipAction.REQUESTED_TO
-        });
-
-        socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+            friendsController.RequestFriendship(currentPlayerId);
+            socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, currentPlayerId, 0, PlayerActionSource.Passport);
+        }
     }
 
     private void CancelInvitation()
     {
-        // Add fake action to avoid waiting for kernel
-        friendsController.CancelRequest(currentPlayerId);
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+        CancelInvitationAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+    private async UniTaskVoid CancelInvitationAsync(CancellationToken cancellationToken)
+    {
+        if (isNewFriendRequestsEnabled)
         {
-            userId = currentPlayerId, action = FriendshipAction.CANCELLED
-        });
+            try
+            {
+                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(currentPlayerId,
+                    cancellationToken);
 
-        socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+                socialAnalytics.SendFriendRequestCancelled(request.From, request.To, PlayerActionSource.Passport.ToString());
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
+
+                throw;
+            }
+        }
+        else
+        {
+            friendsController.CancelRequestByUserId(currentPlayerId);
+            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport.ToString());
+        }
     }
 
     private void AcceptFriendRequest()
     {
-        // Add fake action to avoid waiting for kernel
-        friendsController.AcceptFriendship(currentPlayerId);
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+        AcceptFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+    private async UniTaskVoid AcceptFriendRequestAsync(CancellationToken cancellationToken)
+    {
+        if (isNewFriendRequestsEnabled)
         {
-            userId = currentPlayerId, action = FriendshipAction.APPROVED
-        });
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
-        socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+                request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId,
+                    cancellationToken);
+
+                socialAnalytics.SendFriendRequestApproved(request.From, request.To, PlayerActionSource.Passport.ToString(),
+                    request.HasBodyMessage);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
+
+                throw;
+            }
+        }
+        else
+        {
+            friendsController.AcceptFriendship(currentPlayerId);
+
+            socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, currentPlayerId,
+                PlayerActionSource.Passport.ToString(),
+                false);
+        }
     }
 
     private void RejectFriendRequest()
     {
-        // Add fake action to avoid waiting for kernel
-        friendsController.RejectFriendship(currentPlayerId);
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+        RejectFriendRequestAsync(friendOperationsCancellationToken.Token).Forget();
+    }
 
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+    private async UniTaskVoid RejectFriendRequestAsync(CancellationToken cancellationToken)
+    {
+        if (isNewFriendRequestsEnabled)
         {
-            userId = currentPlayerId, action = FriendshipAction.REJECTED
-        });
+            try
+            {
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(currentPlayerId);
 
-        socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId, PlayerActionSource.Passport);
+                request = await friendsController.RejectFriendshipAsync(request.FriendRequestId,
+                    cancellationToken);
+
+                socialAnalytics.SendFriendRequestRejected(request.From, request.To,
+                    PlayerActionSource.Passport.ToString(), request.HasBodyMessage);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(currentPlayerId, PlayerActionSource.Passport.ToString(),
+                    friendsController, socialAnalytics);
+
+                throw;
+            }
+        }
+        else
+        {
+            friendsController.RejectFriendship(currentPlayerId);
+
+            socialAnalytics.SendFriendRequestRejected(ownUserProfile.userId, currentPlayerId,
+                PlayerActionSource.Passport.ToString(), false);
+        }
     }
 
     private void OnCurrentPlayerIdChanged(string current, string previous)
+    {
+        OnCurrentPlayerIdUpdated(current);
+    }
+
+    private void OnCurrentPlayerIdUpdated(string current)
     {
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
@@ -154,20 +236,24 @@ public class PlayerInfoCardHUDController : IHUD
             if (playerInfoCardVisibleState.Get())
                 socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
 
+            CommonScriptableObjects.playerInfoCardVisibleState.Set(false);
             view.SetCardActive(false);
-            wearableCatalogBridge.RemoveWearablesInUse(loadedWearables);
+            wearablesCatalogService.RemoveWearablesInUse(loadedWearables);
             loadedWearables.Clear();
         }
         else
         {
             currentUserProfile.OnUpdate += SetUserProfile;
 
+            setUserProfileCancellationToken = setUserProfileCancellationToken.SafeRestart();
+
             TaskUtils.Run(async () =>
-                     {
-                         await AsyncSetUserProfile(currentUserProfile);
-                         view.SetCardActive(true);
-                         socialAnalytics.SendPassportOpen();
-                     })
+                      {
+                          await AsyncSetUserProfile(currentUserProfile, setUserProfileCancellationToken.Token);
+                          CommonScriptableObjects.playerInfoCardVisibleState.Set(true);
+                          view.SetCardActive(true);
+                          socialAnalytics.SendPassportOpen();
+                      })
                      .Forget();
 
             passportOpenStartTime = Time.realtimeSinceStartup;
@@ -178,19 +264,23 @@ public class PlayerInfoCardHUDController : IHUD
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile)).Forget();
+        setUserProfileCancellationToken = setUserProfileCancellationToken.SafeRestart();
+
+        TaskUtils.Run(async () => await AsyncSetUserProfile(userProfile, setUserProfileCancellationToken.Token)).Forget();
     }
-    private async UniTask AsyncSetUserProfile(UserProfile userProfile)
+
+    private async UniTask AsyncSetUserProfile(UserProfile userProfile, CancellationToken cancellationToken = default)
     {
+        // TODO: pass cancellation tokens to profanity filtering
         string filterName = await FilterName(userProfile);
         string filterDescription = await FilterDescription(userProfile);
-        await UniTask.SwitchToMainThread();
+        await UniTask.SwitchToMainThread(cancellationToken);
 
         view.SetName(filterName);
         view.SetDescription(filterDescription);
         view.ClearCollectibles();
         view.SetIsBlocked(IsBlocked(userProfile.userId));
-        LoadAndShowWearables(userProfile);
+        LoadAndShowWearables(userProfile, cancellationToken).Forget();
         UpdateFriendshipInteraction();
 
         if (viewingUserProfile != null)
@@ -217,10 +307,16 @@ public class PlayerInfoCardHUDController : IHUD
     private void BlockPlayer()
     {
         if (ownUserProfile.IsBlocked(currentUserProfile.userId)) return;
-        ownUserProfile.Block(currentUserProfile.userId);
-        view.SetIsBlocked(true);
-        WebInterface.SendBlockPlayer(currentUserProfile.userId);
-        socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+
+        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateBlockUserData(
+            userProfileBridge.Get(currentPlayerId)?.userName,
+            () =>
+            {
+                ownUserProfile.Block(currentUserProfile.userId);
+                view.SetIsBlocked(true);
+                WebInterface.SendBlockPlayer(currentUserProfile.userId);
+                socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+            }), true);
     }
 
     private void UnblockPlayer()
@@ -234,17 +330,23 @@ public class PlayerInfoCardHUDController : IHUD
 
     private void ReportPlayer()
     {
-        WebInterface.SendReportPlayer(currentPlayerId);
+        WebInterface.SendReportPlayer(currentPlayerId, currentUserProfile?.name);
         socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
     }
 
     public void Dispose()
     {
+        friendOperationsCancellationToken.SafeCancelAndDispose();
+        setUserProfileCancellationToken.SafeCancelAndDispose();
+
         if (currentUserProfile != null)
             currentUserProfile.OnUpdate -= SetUserProfile;
 
         if (currentPlayerId != null)
+        {
+            currentPlayerId.OnSame -= OnCurrentPlayerIdUpdated;
             currentPlayerId.OnChange -= OnCurrentPlayerIdChanged;
+        }
 
         if (closeWindowTrigger != null)
             closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
@@ -287,23 +389,35 @@ public class PlayerInfoCardHUDController : IHUD
 
     private bool CanBeFriends()
     {
-        return friendsController != null && friendsController.isInitialized && currentUserProfile.hasConnectedWeb3;
+        return friendsController != null && friendsController.IsInitialized && currentUserProfile.hasConnectedWeb3 && isFriendsEnabled;
     }
 
-    private void LoadAndShowWearables(UserProfile userProfile)
+    private async UniTaskVoid LoadAndShowWearables(UserProfile userProfile, CancellationToken cancellationToken)
     {
-        wearableCatalogBridge.RequestOwnedWearables(userProfile.userId)
-                             .Then(wearables =>
-                             {
-                                 var wearableIds = wearables.Select(x => x.id).ToArray();
-                                 userProfile.SetInventory(wearableIds);
-                                 loadedWearables.AddRange(wearableIds);
-                                 var containedWearables = wearables
-                                     // this makes any sense?
-                                     .Where(wearable => wearableCatalogBridge.IsValidWearable(wearable.id));
-                                 view.SetWearables(containedWearables);
-                             })
-                             .Catch(Debug.LogError);
+        try
+        {
+            var ownedWearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                userProfile.userId,
+                1,
+                int.MaxValue,
+                true,
+                cancellationToken);
+
+            string[] wearableIds = ownedWearables.Select(x => x.id).ToArray();
+            userProfile.SetInventory(wearableIds);
+            loadedWearables.AddRange(wearableIds);
+
+            var containedWearables = ownedWearables
+                // this makes any sense?
+               .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
+
+            view.SetWearables(containedWearables);
+        }
+        catch (Exception)
+        {
+            // Exception was ignored in the previous version
+            // Debug.LogException(e);
+        }
     }
 
     private bool IsBlocked(string userId)
@@ -311,6 +425,7 @@ public class PlayerInfoCardHUDController : IHUD
         return ownUserProfile != null && ownUserProfile.IsBlocked(userId);
     }
 
+    // TODO: support cancellation tokens on profanity filtering
     private async UniTask<string> FilterName(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()
@@ -318,6 +433,7 @@ public class PlayerInfoCardHUDController : IHUD
             : userProfile.userName;
     }
 
+    // TODO: support cancellation tokens on profanity filtering
     private async UniTask<string> FilterDescription(UserProfile userProfile)
     {
         return IsProfanityFilteringEnabled()

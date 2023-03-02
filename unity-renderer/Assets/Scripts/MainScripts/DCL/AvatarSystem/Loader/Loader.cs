@@ -33,7 +33,8 @@ namespace AvatarSystem
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth,
+            List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
             await Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, null, ct);
         }
@@ -188,8 +189,7 @@ namespace AvatarSystem
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
-            await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
-            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, ct).AttachExternalCancellation(ct);
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
             bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
@@ -233,6 +233,7 @@ namespace AvatarSystem
         public void Dispose()
         {
             avatarMeshCombiner.Dispose();
+            combinedRenderer = null;
             status = ILoader.Status.Idle;
             ClearLoaders();
         }

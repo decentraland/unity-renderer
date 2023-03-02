@@ -1,0 +1,32 @@
+{
+    "name": "ECS7Plugin.TestsUtils",
+    "rootNamespace": "",
+    "references": [
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:81752b70f82044a190c11544449730f2",
+        "GUID:a871c50d0a774d2b8594d36cb4766e5e",
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:f8a3a0af3ed28474c885e04c605a7962",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:fb529e4714eec4e4da9a3ff3e4da8eee",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

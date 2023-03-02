@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using DCL.Controllers;
 using DCL.Models;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL
@@ -12,16 +14,16 @@ namespace DCL
         void Update();
         void LateUpdate();
         void SendSceneMessage(string payload);
-        event Action<string> OnReadyScene;
-        void SendSceneReady(string sceneId);
-        void ActivateBuilderInWorldEditScene();
-        void DeactivateBuilderInWorldEditScene();
+        event Action<int> OnReadyScene;
+        void SendSceneReady(int sceneNumber);
         void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene);
-        void UnloadScene(string sceneKey);
+
+        UniTaskVoid LoadUnityParcelScene(LoadParcelScenesMessage.UnityParcelScene sceneToLoad);
+        void UnloadScene(int sceneNumber);
         void LoadParcelScenes(string JSONScenePayload);
         void UpdateParcelScenes(string JSONScenePayload);
         void UnloadAllScenesQueued();
-        void CreateGlobalScene(string json);
+        void CreateGlobalScene(CreateGlobalSceneMessage globalScene);
         void IsolateScene(IParcelScene sceneToActive);
         void ReIntegrateIsolatedScene();
 

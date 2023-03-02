@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -6,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using DCL.Shaders;
 
 namespace DCL.Components
 {
@@ -244,21 +244,12 @@ namespace DCL.Components
             if (meshRenderer.sharedMaterial == material)
                 return;
 
-            MaterialTransitionController
-                matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
-
-            if (matTransition != null && matTransition.canSwitchMaterial)
-            {
-                matTransition.finalMaterials = new Material[] { material };
-                matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
-            }
-
             Material oldMaterial = meshRenderer.sharedMaterial;
             meshRenderer.sharedMaterial = material;
             SRPBatchingHelper.OptimizeMaterial(material);
 
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, oldMaterial);
-            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.id, entity.entityId, material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, oldMaterial);
+            DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.sceneNumber, entity.entityId, material);
         }
 
         private void OnShapeUpdated(IDCLEntity entity)
@@ -278,7 +269,7 @@ namespace DCL.Components
                 if (meshRenderer && meshRenderer.sharedMaterial == material)
                     meshRenderer.sharedMaterial = null;
             }
-            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.id, entity.entityId, material);
+            DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, material);
         }
 
         IEnumerator FetchTexture(int materialPropertyId, string textureComponentId, DCLTexture cachedDCLTexture)
@@ -344,6 +335,11 @@ namespace DCL.Components
                 if ( coroutine != null )
                     CoroutineStarter.Stop(coroutine);
             }
+            
+            albedoDCLTexture = null;
+            alphaDCLTexture = null;
+            emissiveDCLTexture = null;
+            bumpDCLTexture = null;
 
             base.Dispose();
         }

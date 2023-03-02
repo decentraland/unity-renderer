@@ -31,24 +31,20 @@ namespace DCL.Helpers
 
     // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
     [AttributeUsage(AttributeTargets.Method)]
-    public class VisualTestAttribute : Attribute
-    {
-    }
+    public class VisualTestAttribute : Attribute { }
 
     public static class TestUtils
     {
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
 
-        public static string CreateSceneMessage(string sceneId, string tag, string method, string payload) { return $"{sceneId}\t{method}\t{payload}\t{tag}\n"; }
+        // TODO: how was this "test message" supposedly working before with sceneID???
+        public static string CreateSceneMessage(int sceneNumber, string tag, string method, string payload) { return $"{sceneNumber}\t{method}\t{payload}\t{tag}\n"; }
 
         static int entityCounter = 513;
         static int disposableIdCounter = 123;
 
-        public static string GetB64Transform(Vector3 position, Quaternion rotation, Vector3 scale)
-        {
-            return DCLTransformUtils.EncodeTransform(position, rotation, scale);
-        }
+        public static string GetB64Transform(Vector3 position, Quaternion rotation, Vector3 scale) { return DCLTransformUtils.EncodeTransform(position, rotation, scale); }
 
         /// <summary>
         /// This will mock the request to invoke the success param when called,
@@ -65,25 +61,25 @@ namespace DCL.Helpers
             operation.Configure().GetResultData().Returns(Encoding.ASCII.GetBytes(jsonData));
 
             mockedRequestController.Configure()
-                .Get(Arg.Any<string>(),
-                    Arg.Any<DownloadHandler>(),
-                    Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
-                    Arg.Any<Action<IWebRequestAsyncOperation>>(),
-                    Arg.Any<int>(),
-                    Arg.Any<int>(),
-                    Arg.Any<bool>(),
-                    Arg.Any<Dictionary<string, string>>())
-                .Returns(operation);
+                                   .Get(Arg.Any<string>(),
+                                       Arg.Any<DownloadHandler>(),
+                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<bool>(),
+                                       Arg.Any<Dictionary<string, string>>())
+                                   .Returns(operation);
 
             mockedRequestController.When(x => x.Get(Arg.Any<string>(),
-                Arg.Any<DownloadHandler>(),
-                Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
-                Arg.Any<Action<IWebRequestAsyncOperation>>(),
-                Arg.Any<int>(),
-                Arg.Any<int>(),
-                Arg.Any<bool>(),
-                Arg.Any<Dictionary<string, string>>())).Do(x => x.ArgAt<Action<IWebRequestAsyncOperation>>(successParamIndex).Invoke(operation));
-
+                                       Arg.Any<DownloadHandler>(),
+                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<bool>(),
+                                       Arg.Any<Dictionary<string, string>>()))
+                                   .Do(x => x.ArgAt<Action<IWebRequestAsyncOperation>>(successParamIndex).Invoke(operation));
 
             return operation;
         }
@@ -91,6 +87,7 @@ namespace DCL.Helpers
         public static FeatureFlag CreateFeatureFlag(List<string> enabledFlags = null)
         {
             FeatureFlag featureFlag = new FeatureFlag();
+
             if (enabledFlags == null)
                 return featureFlag;
 
@@ -105,6 +102,7 @@ namespace DCL.Helpers
         public static string GetB64TransformFromModelJson(string json)
         {
             DCLTransform.Model transfModel = JsonUtility.FromJson<DCLTransform.Model>(json);
+
             return GetB64Transform(transfModel.position, transfModel.rotation, transfModel.scale);
         }
 
@@ -114,6 +112,7 @@ namespace DCL.Helpers
 
             entityCounter++;
             long id = entityCounter;
+
             return scene.CreateEntity(id);
         }
 
@@ -130,6 +129,7 @@ namespace DCL.Helpers
         {
             IPoolableComponentFactory poolableFactory =
                 Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+
             ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
@@ -165,6 +165,7 @@ namespace DCL.Helpers
 
             IPoolableComponentFactory poolableFactory =
                 Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+
             ;
             int inferredId = (int) poolableFactory.GetIdForType<T>();
 
@@ -256,6 +257,7 @@ namespace DCL.Helpers
         public static void SharedComponentAttach(BaseDisposable component, IDCLEntity entity)
         {
             ParcelScene scene = entity.scene as ParcelScene;
+
             scene.componentsManagerLegacy.SceneSharedComponentAttach(
                 entity.entityId,
                 component.id
@@ -278,6 +280,7 @@ namespace DCL.Helpers
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
         {
             IDCLEntity entity = CreateSceneEntity(scene);
+
             string componentId =
                 GetComponentUniqueId(scene, "textShape", (int) CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
 
@@ -295,12 +298,14 @@ namespace DCL.Helpers
 
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
             SharedComponentAttach(gltfShape, entity);
+
             return gltfShape;
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
         {
             IDCLEntity entity = null;
+
             return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
@@ -313,6 +318,7 @@ namespace DCL.Helpers
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
             IDCLEntity entity = null;
+
             return CreateEntityWithGLTFShape(scene, position, model, out entity);
         }
 
@@ -321,6 +327,7 @@ namespace DCL.Helpers
         {
             entity = CreateSceneEntity(scene);
             GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
+
             return gltfShape;
         }
 
@@ -333,6 +340,7 @@ namespace DCL.Helpers
                 }));
 
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(scene.entities[entity.entityId]);
+
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
         }
 
@@ -393,6 +401,7 @@ namespace DCL.Helpers
             T shape = SharedComponentCreate<T, K>(scene, classId, model);
             SharedComponentAttach(shape, entity);
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
+
             return shape;
         }
 
@@ -415,6 +424,7 @@ namespace DCL.Helpers
         {
             BasicMaterial material = SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
             SharedComponentAttach(material, entity);
+
             return material;
         }
 
@@ -422,6 +432,7 @@ namespace DCL.Helpers
         {
             PBRMaterial material = SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
             SharedComponentAttach(material, entity);
+
             return material;
         }
 
@@ -436,9 +447,12 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, position,
                 out entity);
+
             PBRMaterial material =
                 SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
+
             SharedComponentAttach(material, entity);
+
             return material;
         }
 
@@ -635,10 +649,7 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static void UpdateShape(ParcelScene scene, string componentId, string model)
-        {
-            scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, model);
-        }
+        public static void UpdateShape(ParcelScene scene, string componentId, string model) { scene.componentsManagerLegacy.SceneSharedComponentUpdate(componentId, model); }
 
         static object GetRandomValueForType(System.Type t)
         {
@@ -746,6 +757,7 @@ namespace DCL.Helpers
 
             IPoolableComponentFactory poolableFactory =
                 Resources.Load<PoolableComponentFactory>("PoolableCoreComponentsFactory");
+
             ;
             int id = (int) poolableFactory.GetIdForType<TComponent>();
 
@@ -842,36 +854,39 @@ namespace DCL.Helpers
             // make sure the shape is collidable first
             shapeModel.withCollisions = true;
             SharedComponentUpdate(shapeComponent, shapeModel);
+
             yield return shapeComponent.routine;
 
             // check every collider is enabled
             Assert.IsTrue(entity.meshesInfo.colliders.Count > 0);
 
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsTrue(collider.enabled);
             }
 
             // update collision property with 'false'
             shapeModel.withCollisions = false;
             SharedComponentUpdate(shapeComponent, shapeModel);
+
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsFalse(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsFalse(collider.enabled);
             }
 
             // update collision property with 'true' again
             shapeModel.withCollisions = true;
             SharedComponentUpdate(shapeComponent, shapeModel);
+
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
+            foreach (Collider collider in entity.meshesInfo.colliders)
             {
-                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
+                Assert.IsTrue(collider.enabled);
             }
         }
 
@@ -881,6 +896,7 @@ namespace DCL.Helpers
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check every mesh is shown by default
@@ -895,6 +911,7 @@ namespace DCL.Helpers
 
             // update visibility with 'false'
             shapeModel.visible = false;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check renderers correct behaviour
@@ -905,6 +922,7 @@ namespace DCL.Helpers
 
             // update visibility with 'true'
             shapeModel.visible = true;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check renderers correct behaviour
@@ -919,16 +937,19 @@ namespace DCL.Helpers
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'false'
             shapeModel.visible = false;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'true'
             shapeModel.visible = true;
+
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
             yield return TestShapeOnPointerEventCollider(entity);
         }
@@ -948,9 +969,11 @@ namespace DCL.Helpers
             ParcelScene scene = entity.scene as ParcelScene;
 
             var onClickComponent = TestUtils.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
             yield return onClickComponent.routine;
 
             Collider onPointerEventCollider;
+
             for (int i = 0; i < renderers.Length; i++)
             {
                 Assert.IsTrue(renderers[i].transform.childCount > 0, "OnClick collider should exist as this mesh's child");
@@ -967,6 +990,7 @@ namespace DCL.Helpers
                 entity.entityId,
                 onClickComponent.name
             );
+
             yield return null;
         }
 
@@ -975,6 +999,7 @@ namespace DCL.Helpers
             where TComponentModel : UIShape.Model, new()
         {
             UIScreenSpace parentElement = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
             yield return parentElement.routine;
 
             // make canvas invisible
@@ -989,6 +1014,7 @@ namespace DCL.Helpers
                         width = new UIValue(100f),
                         height = new UIValue(100f)
                     });
+
             yield return targetUIElement.routine;
 
             RectTransform uiCanvasRectTransform = parentElement.childHookRectTransform.GetComponentInParent<RectTransform>();
@@ -999,7 +1025,7 @@ namespace DCL.Helpers
             Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.height);
         }
 
-        public static IEnumerator TestUIClickEventPropagation(string sceneId, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIClickEventPropagation(int sceneNumber, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
         {
             string srcOnClick = model.onClick;
             bool srcIsPointerBlocker = model.isPointerBlocker;
@@ -1007,7 +1033,7 @@ namespace DCL.Helpers
             model.isPointerBlocker = true;
             model.onClick = "UUIDFakeEventId";
 
-            yield return TestUIClickEventPropagation(sceneId, model.onClick, uiObject, callback);
+            yield return TestUIClickEventPropagation(sceneNumber, model.onClick, uiObject, callback);
 
             model.isPointerBlocker = srcIsPointerBlocker;
             model.onClick = srcOnClick;
@@ -1015,7 +1041,7 @@ namespace DCL.Helpers
             yield return null;
         }
 
-        public static IEnumerator TestUIClickEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIClickEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1029,7 +1055,7 @@ namespace DCL.Helpers
             onClickEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onClickEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1051,7 +1077,7 @@ namespace DCL.Helpers
                 callback(eventTriggered);
         }
 
-        public static IEnumerator TestUIOnPointerDownEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIOnPointerDownEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1065,7 +1091,7 @@ namespace DCL.Helpers
             onPointerDownEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1087,7 +1113,7 @@ namespace DCL.Helpers
                 callback(eventTriggered);
         }
 
-        public static IEnumerator TestUIOnPointerUpEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        public static IEnumerator TestUIOnPointerUpEventPropagation(int sceneNumber, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
             // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
@@ -1101,7 +1127,7 @@ namespace DCL.Helpers
             onPointerUpEvent.uuid = eventUuid;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
-            sceneEvent.sceneId = sceneId;
+            sceneEvent.sceneNumber = sceneNumber;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
@@ -1160,6 +1186,7 @@ namespace DCL.Helpers
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
+
                 yield return SceneManager.UnloadSceneAsync(scene);
             }
         }
@@ -1191,6 +1218,7 @@ namespace DCL.Helpers
             yield return new DCL.WaitUntil(() =>
             {
                 OnIterationStart?.Invoke();
+
                 return awaitedConditionMet;
             }, 2f);
 
@@ -1241,6 +1269,7 @@ namespace DCL.Helpers
                 if (OnMessageReceived == null)
                 {
                     messageWasReceived = true;
+
                     return;
                 }
 
@@ -1253,6 +1282,7 @@ namespace DCL.Helpers
             yield return new DCL.WaitUntil(() =>
             {
                 OnIterationStart?.Invoke();
+
                 return messageWasReceived;
             }, 2f);
 
@@ -1263,12 +1293,16 @@ namespace DCL.Helpers
         {
             Assert.AreEqual(Vector2.zero, rt.anchorMin,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value.");
+
             Assert.AreEqual(Vector2.zero, rt.offsetMin,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
+
             Assert.AreEqual(Vector2.one, rt.anchorMax,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
+
             Assert.AreEqual(Vector2.one, rt.offsetMax,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
+
             Assert.AreEqual(Vector2.zero, rt.sizeDelta,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
@@ -1278,6 +1312,7 @@ namespace DCL.Helpers
         public static IEnumerator WaitForGLTFLoad(IDCLEntity entity)
         {
             LoadWrapper_GLTF wrapper = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
+
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
 
@@ -1290,21 +1325,17 @@ namespace DCL.Helpers
 
             if (data.parcels == null)
             {
-                data.parcels = new Vector2Int[] {data.basePosition};
+                data.parcels = new Vector2Int[] { data.basePosition };
             }
 
-            if (string.IsNullOrEmpty(data.id))
+            if (data.sceneNumber <= 0)
             {
-                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+                data.sceneNumber = 1;
             }
 
-            if (Environment.i.world.state.loadedScenes != null)
+            if (Environment.i.world.state.ContainsScene(data.sceneNumber))
             {
-                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
-                {
-                    Debug.LogWarning($"Scene {data.id} is already loaded.");
-                    return Environment.i.world.state.loadedScenes[data.id] as ParcelScene;
-                }
+                Environment.i.world.state.GetScene(data.sceneNumber);
             }
 
             var go = new GameObject();
@@ -1316,16 +1347,13 @@ namespace DCL.Helpers
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
 
-            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
-            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+            Environment.i.world.state.AddScene(newScene);
+            Environment.i.world.state.ForceCurrentScene(data.sceneNumber);
 
             return newScene;
         }
 
-        public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component
-        {
-            return new GameObject(gameObjectName).AddComponent<T>();
-        }
+        public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component { return new GameObject(gameObjectName).AddComponent<T>(); }
 
         // NUnit version of Unity is not up to day and doesnt have ThrowsAsync assertions, this mimics it:
         // https://forum.unity.com/threads/can-i-replace-upgrade-unitys-nunit.488580/#post-6543523
@@ -1352,8 +1380,10 @@ namespace DCL.Helpers
                 {
                     Assert.That(e, Is.TypeOf<T>(), e.ToString());
                 }
+
                 throw; //probably unreachable
             }
+
             Assert.Fail("Expected an exception of type " + typeof(T).FullName + " but no exception was thrown."  );
         }
     }

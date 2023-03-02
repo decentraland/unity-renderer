@@ -1,7 +1,7 @@
-﻿using AssetPromiseKeeper_Tests;
+﻿using System.Collections;
+using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -15,38 +15,28 @@ namespace AssetPromiseKeeper_Material_Tests
     {
         protected AssetPromise_Material CreatePromise()
         {
-            TextureModel model = CreateTextureModel();
+            AssetPromise_Material_Model.Texture model = CreateTextureModel();
             var prom = new AssetPromise_Material(CreateMaterialModel(model));
             return prom;
         }
 
-        protected AssetPromise_Material CreatePromise(TextureModel.BabylonWrapMode wrapmode, FilterMode filterMode)
+        protected AssetPromise_Material CreatePromise(TextureWrapMode wrapmode, FilterMode filterMode)
         {
-            TextureModel model = CreateTextureModel(wrapmode,filterMode);
+            AssetPromise_Material_Model.Texture model = CreateTextureModel(wrapmode,filterMode);
             AssetPromise_Material prom = new AssetPromise_Material(CreateMaterialModel(model));
 
             return prom;
         }
         
-        private MaterialModel CreateMaterialModel(TextureModel texture)
+        private AssetPromise_Material_Model CreateMaterialModel(AssetPromise_Material_Model.Texture texture)
         {
-            var newMaterialModel = new MaterialModel
-            {
-                albedoTexture = texture,
-                metallic = 0,
-                roughness = 1,
-            };
-            return newMaterialModel;
+            return AssetPromise_Material_Model.CreateBasicMaterial(texture, 1f, Color.white);
         }
 
-        protected TextureModel CreateTextureModel(TextureModel.BabylonWrapMode wrapmode = TextureModel.BabylonWrapMode.WRAP, FilterMode filterMode = FilterMode.Bilinear)
+        protected AssetPromise_Material_Model.Texture CreateTextureModel(TextureWrapMode wrapmode = TextureWrapMode.Clamp, 
+            FilterMode filterMode = FilterMode.Bilinear)
         {
-            string url = TestAssetsUtils.GetPath() + "/Images/atlas.png";
-            TextureModel model = new TextureModel();
-            model.src = url;
-            model.wrap = wrapmode;
-            model.samplingMode = filterMode;
-            return model;
+            return new AssetPromise_Material_Model.Texture(TestAssetsUtils.GetPath() + "/Images/atlas.png", wrapmode, filterMode);
         }
 
         [UnityTest]
@@ -54,7 +44,7 @@ namespace AssetPromiseKeeper_Material_Tests
         {
             // Check non-default-settings texture
             Asset_Material loadedAsset = null;
-            var prom = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
+            var prom = CreatePromise(TextureWrapMode.Clamp, FilterMode.Trilinear);
 
             prom.OnSuccessEvent += (x) => loadedAsset = x;
 
@@ -83,7 +73,7 @@ namespace AssetPromiseKeeper_Material_Tests
         {
             // 2 non-default textures
             Asset_Material loadedAsset = null;
-            var prom = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
+            var prom = CreatePromise(TextureWrapMode.Clamp, FilterMode.Trilinear);
 
             prom.OnSuccessEvent += (x) => loadedAsset = x;
 
@@ -91,7 +81,7 @@ namespace AssetPromiseKeeper_Material_Tests
             yield return prom;
 
             Asset_Material loadedAsset2 = null;
-            var prom2 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
+            var prom2 = CreatePromise(TextureWrapMode.Clamp, FilterMode.Trilinear);
 
             prom2.OnSuccessEvent += (x) => loadedAsset2 = x;
 
@@ -107,7 +97,7 @@ namespace AssetPromiseKeeper_Material_Tests
 
             // 2 default textures
             Asset_Material loadedAsset3 = null;
-            var prom3 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
+            var prom3 = CreatePromise(TextureWrapMode.Clamp, FilterMode.Trilinear);
 
             prom3.OnSuccessEvent += (x) => loadedAsset3 = x;
 
@@ -115,7 +105,7 @@ namespace AssetPromiseKeeper_Material_Tests
             yield return prom3;
 
             Asset_Material loadedAsset4 = null;
-            var prom4 = CreatePromise(TextureModel.BabylonWrapMode.WRAP, FilterMode.Trilinear);
+            var prom4 = CreatePromise(TextureWrapMode.Clamp, FilterMode.Trilinear);
 
             prom4.OnSuccessEvent += (x) => loadedAsset4 = x;
 
@@ -129,5 +119,35 @@ namespace AssetPromiseKeeper_Material_Tests
 
             Assert.IsTrue(loadedAsset3.material == loadedAsset4.material);
         }
+        
+        [UnityTest]
+        public IEnumerator KeepRefCountCorrectly()
+        {
+            var model = CreateMaterialModel(CreateTextureModel(TextureWrapMode.Clamp, FilterMode.Trilinear));
+            var prom = new AssetPromise_Material(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            var prom2 = new AssetPromise_Material(model);
+            keeper.Keep(prom2);
+            yield return prom2;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+
+            keeper.Forget(prom);
+            Assert.AreEqual(1, keeper.library.masterAssets[model].referenceCount);
+
+            prom = new AssetPromise_Material(model);
+            keeper.Keep(prom);
+            yield return prom;
+
+            Assert.AreEqual(2, keeper.library.masterAssets[model].referenceCount);
+            keeper.Forget(prom);
+            keeper.Forget(prom2);
+
+            Assert.AreEqual(0, keeper.library.masterAssets.Count);
+        }        
     }
 }

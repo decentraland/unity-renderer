@@ -79,10 +79,9 @@ public class Notification : MonoBehaviour, INotification
             timerCoroutine = CoroutineStarter.Start(TimerCoroutine(this.model.timer));
         }
 
-        if (!string.IsNullOrEmpty(this.model.scene))
+        if (this.model.scene > 0)
         {
-            string sceneID = CommonScriptableObjects.sceneID ?? string.Empty;
-            CurrentSceneUpdated(sceneID, string.Empty);
+            CurrentSceneUpdated(CommonScriptableObjects.sceneNumber, -1);
         }
 
         if (actionButton != null)
@@ -108,9 +107,9 @@ public class Notification : MonoBehaviour, INotification
         Dismiss();
     }
 
-    private void CurrentSceneUpdated(string current, string previous)
+    private void CurrentSceneUpdated(int currentSceneNumber, int previousSceneNumber)
     {
-        if (string.CompareOrdinal(current, model.scene) != 0)
+        if (currentSceneNumber != model.scene)
         {
             Dismiss();
         }

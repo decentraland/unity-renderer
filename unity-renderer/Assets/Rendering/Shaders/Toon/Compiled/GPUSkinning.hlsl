@@ -1,8 +1,6 @@
 #ifndef DCL_GPU_SKINNING_INCLUDED
 #define DCL_GPU_SKINNING_INCLUDED
 
-#include <HLSLSupport.cginc>
-
 float4x4 inverse(float4x4 input)
 {
     #define minor(a,b,c) determinant(float3x3(input.a, input.b, input.c))
@@ -32,7 +30,7 @@ float4x4 inverse(float4x4 input)
     return transpose(cofactors) / determinant(input);
 }
 
-void ApplyGPUSkinning(inout Attributes input, float4 boneWeights01, float4 boneWeights23)
+void ApplyGPUSkinning(float3 positionOS, float3 normalOS, out float3 outPositionOS, out float3 outNormalOS, float4 boneWeights01, float4 boneWeights23)
 {
     const float4x4 boneMatrix0_OS =
         mul(mul(_WorldInverse, _Matrices[boneWeights01.x]), _BindPoses[boneWeights01.x]);
@@ -48,11 +46,32 @@ void ApplyGPUSkinning(inout Attributes input, float4 boneWeights01, float4 boneW
         mul(boneMatrix0_OS, boneWeights01.y) + mul(boneMatrix1_OS, boneWeights01.w)
         + mul(boneMatrix2_OS, boneWeights23.y) + mul(boneMatrix3_OS, boneWeights23.w);
 
-    const float4 finalVertexPositionOS = mul(skinningMatrixOS, float4(input.positionOS.xyz, 1.0));
+    const float4 finalVertexPositionOS = mul(skinningMatrixOS, float4(positionOS.xyz, 1.0));
     const float3x3 transposedFinalPose = transpose(inverse(skinningMatrixOS));
-    const float3 normalOS = normalize(mul(transposedFinalPose, input.normalOS));
+    const float3 normalOSInversed = normalize(mul(transposedFinalPose, normalOS));
 
-    input.positionOS = finalVertexPositionOS.xyz;
-    input.normalOS = mul(normalOS, _WorldInverse);
+    outPositionOS = finalVertexPositionOS.xyz;
+    outNormalOS = mul(normalOSInversed, _WorldInverse);
+}
+
+void ApplyGPUSkinning(float3 positionOS, out float3 outPositionOS, float4 boneWeights01, float4 boneWeights23)
+{
+    const float4x4 boneMatrix0_OS =
+        mul(mul(_WorldInverse, _Matrices[boneWeights01.x]), _BindPoses[boneWeights01.x]);
+    const float4x4 boneMatrix1_OS =
+        mul(mul(_WorldInverse, _Matrices[boneWeights01.z]), _BindPoses[boneWeights01.z]);
+    const float4x4 boneMatrix2_OS =
+        mul(mul(_WorldInverse, _Matrices[boneWeights23.x]), _BindPoses[boneWeights23.x]);
+    const float4x4 boneMatrix3_OS =
+        mul(mul(_WorldInverse, _Matrices[boneWeights23.z]), _BindPoses[boneWeights23.z]);
+
+    // Skin with 4 weights per vertex
+    const float4x4 skinningMatrixOS =
+        mul(boneMatrix0_OS, boneWeights01.y) + mul(boneMatrix1_OS, boneWeights01.w)
+        + mul(boneMatrix2_OS, boneWeights23.y) + mul(boneMatrix3_OS, boneWeights23.w);
+
+    const float4 finalVertexPositionOS = mul(skinningMatrixOS, float4(positionOS.xyz, 1.0));
+
+    outPositionOS = finalVertexPositionOS.xyz;
 }
 #endif

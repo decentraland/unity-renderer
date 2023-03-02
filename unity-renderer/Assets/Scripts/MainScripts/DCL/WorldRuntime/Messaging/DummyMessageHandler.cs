@@ -18,11 +18,11 @@ namespace DCL
         {
         }
 
-        public void UnloadParcelSceneExecute(string sceneId)
+        public void UnloadParcelSceneExecute(int sceneNumber)
         {
         }
 
-        public void UpdateParcelScenesExecute(string sceneId)
+        public void UpdateParcelScenesExecute(string sceneJSON)
         {
         }
     }

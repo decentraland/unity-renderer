@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,6 +8,8 @@ using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
 {
+    event Action<string, bool> OnFavoritePlaceChange;
+
     FriendsHandler friendsHandler { get; set; }
 
     /// <summary>
@@ -86,8 +89,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
     internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
 
-    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
-
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
 
@@ -108,10 +109,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject placeInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
-    [SerializeField] internal Animator cardAnimator;
     [SerializeField] internal GameObject cardSelectionFrame;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
+    [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
+    [SerializeField] internal FavoriteButtonComponentView favoriteButton;
+    [SerializeField] internal GameObject favoriteButtonContainer;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -120,12 +123,15 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public FriendsHandler friendsHandler { get; set; }
     internal MapInfoHandler mapInfoHandler { get; set; }
 
-    internal Dictionary<string, BaseComponentView> currentFriendHeads = new Dictionary<string, BaseComponentView>();
+    internal readonly Dictionary<string, BaseComponentView> currentFriendHeads = new ();
 
-    public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
-    public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
+    public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
 
-    internal bool thumbnailFromMarketPlaceRequested = false;
+    public event Action<string, bool> onFavoriteClick;
+
+    private bool thumbnailFromMarketPlaceRequested;
+    public event Action<string, bool> OnFavoritePlaceChange;
 
     public override void Awake()
     {
@@ -184,8 +190,35 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
+        SetFavoriteButton();
+
+        //Temporary untill the release of the functionality
+        if (!DataStore.i.HUDs.enableFavoritePlaces.Get())
+        {
+            if(favoriteButtonContainer != null)
+                favoriteButtonContainer.SetActive(false);
+        }
 
         RebuildCardLayouts();
+    }
+
+    private void SetFavoriteButton()
+    {
+        if (favoriteButton == null)
+            return;
+
+        favoriteButton.Configure(new FavoriteButtonComponentModel()
+        {
+            isFavorite = true,
+            placeUUID = ""
+        });
+
+        favoriteButton.OnFavoriteChange += FavoriteValueChanged;
+    }
+
+    private void FavoriteValueChanged(string placeUUID, bool isFavorite)
+    {
+        onFavoriteClick?.Invoke(placeUUID, isFavorite);
     }
 
     public override void OnFocus()
@@ -195,8 +228,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(true);
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+        cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
@@ -206,8 +238,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
-        if (cardAnimator != null)
-            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
+        cardAnimator?.Idle();
     }
 
     public override void Show(bool instant = false)
@@ -251,6 +282,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (friendsGrid != null)
             friendsGrid.Dispose();
+
+        if(favoriteButton != null)
+            favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
     }
 
     public void SetPlacePicture(Sprite sprite)
@@ -409,7 +443,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             friendHeadPrefab);
 
         if (friendsGrid != null)
-            friendsGrid.AddItem(newFriend);
+            friendsGrid.AddItemWithResize(newFriend);
 
         currentFriendHeads.Add(profile.userId, newFriend);
     }

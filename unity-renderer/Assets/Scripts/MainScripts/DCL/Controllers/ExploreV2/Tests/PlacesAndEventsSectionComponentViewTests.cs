@@ -26,9 +26,9 @@ public class PlacesAndEventsSectionComponentViewTests
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
+        placesAndEventsSectionComponent.highlightsSubSection.GetComponent<Canvas>().enabled = false;
+        placesAndEventsSectionComponent.placesSubSection.GetComponent<Canvas>().enabled = false;
+        placesAndEventsSectionComponent.eventsSubSection.GetComponent<Canvas>().enabled = false;
 
         // Act
         placesAndEventsSectionComponent.CreateSubSectionSelectorMappings();
@@ -38,13 +38,13 @@ public class PlacesAndEventsSectionComponentViewTests
         switch (subSectionIndex)
         {
             case PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX:
-                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
+                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.GetComponent<Canvas>().enabled);
                 break;
             case PlacesAndEventsSectionComponentView.PLACES_SUB_SECTION_INDEX:
-                Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf);
+                Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.GetComponent<Canvas>().enabled);
                 break;
             case PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX:
-                Assert.IsTrue(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
+                Assert.IsTrue(placesAndEventsSectionComponent.eventsSubSection.GetComponent<Canvas>().enabled);
                 break;
         }
     }
@@ -111,12 +111,12 @@ public class PlacesAndEventsSectionComponentViewTests
     public void SetActiveCorrectly(bool isActive)
     {
         // Arrange
-        placesAndEventsSectionComponent.gameObject.SetActive(!isActive);
+        placesAndEventsSectionComponent.GetComponent<Canvas>().enabled = !isActive;
 
         // Act
         placesAndEventsSectionComponent.SetActive(isActive);
 
         // Assert
-        Assert.AreEqual(isActive, placesAndEventsSectionComponent.gameObject.activeSelf);
+        Assert.AreEqual(isActive, placesAndEventsSectionComponent.GetComponent<Canvas>().enabled);
     }
 }

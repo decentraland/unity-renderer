@@ -1,10 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using DCL.ECSRuntime;
-using Google.Protobuf;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -14,10 +9,12 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, TextShapeSerialization.Deserialize, () => new ECSTextShapeComponentHandler(DataStore.i.ecs7, AssetPromiseKeeper_Font.i));
-            componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, TextShapeSerialization.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTextShape>,
+                () => new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, internalComponents.renderersComponent));
+            componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

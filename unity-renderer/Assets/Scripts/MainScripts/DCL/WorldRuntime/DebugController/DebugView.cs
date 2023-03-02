@@ -10,8 +10,6 @@ namespace DCL
         [Header("Debug Panel")] [SerializeField]
         private GameObject engineDebugPanel;
 
-        [SerializeField] private GameObject sceneDebugPanel;
-
         [SerializeField] private InfoPanel infoPanel;
 
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
@@ -37,12 +35,10 @@ namespace DCL
         public void SetSceneDebugPanel()
         {
             engineDebugPanel.SetActive(false);
-            sceneDebugPanel.SetActive(true);
         }
 
         public void SetEngineDebugPanel()
         {
-            sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
         }
 

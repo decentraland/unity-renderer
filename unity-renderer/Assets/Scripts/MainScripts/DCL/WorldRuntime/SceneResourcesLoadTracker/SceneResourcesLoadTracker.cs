@@ -14,12 +14,12 @@ namespace DCL.WorldRuntime
 
         internal IResourcesLoadTracker tracker;
 
-        public void Track(string sceneId)
+        public void Track(int sceneNumber)
         {
             if (tracker is ResourcesLoadTrackerECS)
                 return;
 
-            tracker = new ResourcesLoadTrackerECS(DataStore.i.ecs7,sceneId);
+            tracker = new ResourcesLoadTrackerECS(DataStore.i.ecs7, sceneNumber);
             tracker.OnResourcesLoaded += TrackerResourcesLoaded;
             tracker.OnStatusUpdate += OnTrackerResourcesStatusUpdate;
         }

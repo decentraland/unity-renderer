@@ -9,15 +9,15 @@ public static class DataStore_SceneBoundariesChecker_Extensions
 {
     public static void Add(this DataStore_SceneBoundariesChecker self,IDCLEntity entity, IOutOfSceneBoundariesHandler handler)
     {
-        if (!self.componentsCheckSceneBoundaries.TryGetValue(entity.entityId, out List<IOutOfSceneBoundariesHandler> handlersList))
-            self.componentsCheckSceneBoundaries.Add(entity.entityId,new List<IOutOfSceneBoundariesHandler>() { handler });
+        if (!self.componentsCheckSceneBoundaries.TryGetValue(entity.entityId, out HashSet<IOutOfSceneBoundariesHandler> handlersList))
+            self.componentsCheckSceneBoundaries.Add(entity.entityId,new HashSet<IOutOfSceneBoundariesHandler>() { handler });
         else
             handlersList.Add(handler);
     }
     
     public static void Remove(this DataStore_SceneBoundariesChecker self,IDCLEntity entity, IOutOfSceneBoundariesHandler handler)
     {
-        if (!self.componentsCheckSceneBoundaries.TryGetValue(entity.entityId, out List<IOutOfSceneBoundariesHandler> handlersList))
+        if (!self.componentsCheckSceneBoundaries.TryGetValue(entity.entityId, out HashSet<IOutOfSceneBoundariesHandler> handlersList))
             return;
 
         if (handlersList.Count <= 1)

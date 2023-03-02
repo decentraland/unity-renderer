@@ -1,27 +1,25 @@
-using NUnit.Framework;
-using System.Collections;
 using DCL.Helpers;
+using DCL.Social.Friends;
+using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-public class FriendEntryShould : IntegrationTestSuite_Legacy
+public class FriendEntryShould
 {
-    static string FRIEND_ENTRY_RESOURCE_NAME = "FriendEntry";
+    private const string FRIEND_ENTRY_RESOURCE_NAME = "SocialBarV1/FriendEntry";
 
     FriendEntry entry;
 
-    [UnitySetUp]
-    protected override IEnumerator SetUp()
+    [SetUp]
+    public void SetUp()
     {
         GameObject go = Object.Instantiate((GameObject)Resources.Load(FRIEND_ENTRY_RESOURCE_NAME));
         entry = go.GetComponent<FriendEntry>();
-        yield break;
     }
 
-    protected override IEnumerator TearDown()
+    [TearDown]
+    public void TearDown()
     {
         Object.Destroy(entry.gameObject);
-        yield break;
     }
 
     [Test]

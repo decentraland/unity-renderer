@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: QualityPresetControlConfiguration
   m_EditorClassIdentifier: 
   title: GRAPHICS QUALITY
-  controlPrefab: {fileID: 2909500743065466280, guid: 1c806fc61334f44de8ff0ae2a87beea3,
+  controlPrefab: {fileID: 4446727373572794343, guid: 1352863ed57dc8046abbb05f4db2520b,
     type: 3}
   controlController: {fileID: 11400000, guid: cfbd281b7fa97ea47b099586dfacc95c, type: 2}
   flagsThatDisableMe: []

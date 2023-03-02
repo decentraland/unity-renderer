@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace DCL.Components
 {
     public class DCLVideoClip : BaseDisposable
     {
+        private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
+
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -28,7 +31,13 @@ namespace DCL.Components
         {
             Model model = (Model) newModel;
             isExternalURL = model.url.StartsWith("http://") || model.url.StartsWith("https://");
-            isStream = !new[] { ".mp4", ".ogg", ".mov", ".webm" }.Any(x => model.url.EndsWith(x));
+
+            string urlPath = model.url;
+            if (Uri.TryCreate(urlPath, UriKind.Absolute, out Uri uri))
+            {
+                urlPath = uri.AbsolutePath;
+            }
+            isStream = !NO_STREAM_EXTENSIONS.Any(x => urlPath.EndsWith(x));
             yield break;
         }
 

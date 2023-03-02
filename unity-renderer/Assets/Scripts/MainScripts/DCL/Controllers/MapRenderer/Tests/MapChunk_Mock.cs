@@ -4,7 +4,7 @@ namespace DCL
 {
     public class MapChunk_Mock : MapChunk
     {
-        public override WebRequestAsyncOperation LoadChunkImage()
+        public override IWebRequestAsyncOperation LoadChunkImage()
         {
             isLoadingOrLoaded = true;
 

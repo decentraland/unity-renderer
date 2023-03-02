@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,6 +41,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendRequestsTab.OnFriendRequestSent -= value;
     }
 
+    public event Action<string> OnFriendRequestOpened
+    {
+        add => friendRequestsTab.OnFriendRequestOpened += value;
+        remove => friendRequestsTab.OnFriendRequestOpened -= value;
+    }
+
     public event Action<FriendEntryModel> OnWhisper
     {
         add => friendsTab.OnWhisper += value;
@@ -52,11 +58,11 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         add => friendsTab.OnDeleteConfirmation += value;
         remove => friendsTab.OnDeleteConfirmation -= value;
     }
-    
+
     public event Action OnRequireMoreFriends
     {
-        add => friendsTab.OnRequireMoreFriends += value;
-        remove => friendsTab.OnRequireMoreFriends -= value;
+        add => friendsTab.OnRequireMoreEntries += value;
+        remove => friendsTab.OnRequireMoreEntries -= value;
     }
 
     public event Action OnRequireMoreFriendRequests
@@ -71,17 +77,19 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         remove => friendsTab.OnSearchRequested -= value;
     }
 
+    public event Action OnFriendListDisplayed;
+    public event Action OnRequestListDisplayed;
+
     public event Action OnClose;
 
     public RectTransform Transform => transform as RectTransform;
 
-    public bool ListByOnlineStatus
-    {
-        set => friendsTab.ListByOnlineStatus = value;
-    }
-
     public int FriendCount => friendsTab.Count;
     public int FriendRequestCount => friendRequestsTab.Count;
+    public int FriendRequestSentCount => friendRequestsTab.SentCount;
+    public int FriendRequestReceivedCount => friendRequestsTab.ReceivedCount;
+    public bool IsFriendListActive => friendsTab.gameObject.activeInHierarchy;
+    public bool IsRequestListActive => friendRequestsTab.gameObject.activeInHierarchy;
 
     public static FriendsHUDComponentView Create()
     {
@@ -89,13 +97,17 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             .GetComponent<FriendsHUDComponentView>();
         return view;
     }
-    
+
     public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
     {
-        friendsTab.Initialize(chatController, lastReadMessagesService, friendsController, socialAnalytics);
+        friendsTab.Initialize(chatController, friendsController, socialAnalytics);
+    }
+
+    public void RefreshFriendsTab()
+    {
+        friendsTab.RefreshControl();
     }
 
     public override void Awake()
@@ -110,7 +122,6 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
             Hide();
         });
 
-        friendsTab.Expand();
         friendRequestsTab.Expand();
     }
 
@@ -126,22 +137,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         model.isLoadingSpinnerActive = true;
     }
 
-    public List<FriendEntryBase> GetAllEntries()
-    {
-        var result = new List<FriendEntryBase>();
-        result.AddRange(friendsTab.Entries.Values);
-        result.AddRange(friendRequestsTab.Entries.Values);
-        return result;
-    }
-
     public FriendEntryBase GetEntry(string userId)
     {
         return (FriendEntryBase) friendsTab.Get(userId) ?? friendRequestsTab.Get(userId);
     }
 
     public void DisplayFriendUserNotFound() => friendRequestsTab.ShowUserNotFoundNotification();
-
-    public bool IsFriendListCreationReady() => friendsTab.DidDeferredCreationCompleted;
 
     public void Show()
     {
@@ -156,19 +157,19 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         gameObject.SetActive(false);
         AudioScriptableObjects.dialogClose.Play(true);
     }
-    
+
     public void Set(string userId, FriendEntryModel model)
     {
         friendRequestsTab.Remove(userId);
         friendsTab.Enqueue(userId, model);
     }
-    
+
     public void Remove(string userId)
     {
         friendRequestsTab.Remove(userId);
         friendsTab.Remove(userId);
     }
-    
+
     public void Set(string userId, FriendRequestEntryModel model)
     {
         friendRequestsTab.Enqueue(userId, model);
@@ -192,12 +193,12 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         friendRequestsTab.ShowRequestSuccessfullySentNotification();
     }
 
-    public void ShowMoreFriendsToLoadHint(int pendingFriendsCount) => friendsTab.ShowMoreFriendsToLoadHint(pendingFriendsCount);
+    public void ShowMoreFriendsToLoadHint(int hiddenCount) => friendsTab.ShowMoreFriendsToLoadHint(hiddenCount);
 
     public void HideMoreFriendsToLoadHint() => friendsTab.HideMoreFriendsToLoadHint();
 
-    public void ShowMoreRequestsToLoadHint(int pendingRequestsCount) =>
-        friendRequestsTab.ShowMoreFriendsToLoadHint(pendingRequestsCount);
+    public void ShowMoreRequestsToLoadHint(int hiddenCount) =>
+        friendRequestsTab.ShowMoreEntriesToLoadHint(hiddenCount);
 
     public void HideMoreRequestsToLoadHint() => friendRequestsTab.HideMoreFriendsToLoadHint();
 
@@ -205,14 +206,20 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
 
     public bool ContainsFriendRequest(string userId) => friendRequestsTab.Get(userId) != null;
 
-    public void FilterFriends(Dictionary<string, FriendEntryModel> friends) => friendsTab.Filter(friends);
+    public void EnableSearchMode() => friendsTab.EnableSearchMode();
 
-    public void ClearFriendFilter() => friendsTab.ClearFilter();
-    
+    public void DisableSearchMode() => friendsTab.DisableSearchMode();
+
     public void UpdateBlockStatus(string userId, bool blocked)
     {
         UpdateBlockStatus(blocked, friendsTab.Get(userId));
         UpdateBlockStatus(blocked, friendRequestsTab.Get(userId));
+    }
+
+    public void ClearAll()
+    {
+        friendsTab.Clear();
+        friendRequestsTab.Clear();
     }
 
     public override void RefreshControl()
@@ -238,16 +245,18 @@ public class FriendsHUDComponentView : BaseComponentView, IFriendsHUDComponentVi
         {
             friendsTab.Show();
             friendRequestsTab.Hide();
+            OnFriendListDisplayed?.Invoke();
         }
         else if (index == FRIENDS_REQUEST_TAB_INDEX)
         {
             friendsTab.Hide();
             friendRequestsTab.Show();
+            OnRequestListDisplayed?.Invoke();
         }
         else
             throw new IndexOutOfRangeException();
     }
-    
+
     private void UpdateBlockStatus(bool blocked, FriendEntryBase friendEntry)
     {
         if (friendEntry == null) return;

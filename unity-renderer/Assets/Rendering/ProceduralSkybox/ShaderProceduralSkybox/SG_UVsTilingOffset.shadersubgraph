@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "02b5097a4f42493a95b18a77618d96f3",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "071c78bf9a5a408f89d94fd2de059ed4"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "58af345605bb432fbabacd0bebddb97f"
@@ -618,10 +624,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "58af345605bb432fbabacd0bebddb97f"
@@ -744,6 +751,24 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "071c78bf9a5a408f89d94fd2de059ed4",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "44a15d5a4a4847b4b2eaa4568bd6186c"
+        },
+        {
+            "m_Id": "a42b0a8624fa4238b08c63f9e5a81859"
+        },
+        {
+            "m_Id": "df56e25335254d6189ad2a5d73f8274c"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.RedirectNodeData",
     "m_ObjectId": "076fd9f7e0fa443589027d133aa381eb",
     "m_Group": {
@@ -831,7 +856,8 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 0
+    "m_Space": 0,
+    "m_PositionSource": 0
 }
 
 {
@@ -960,7 +986,9 @@
     },
     "m_SerializedSubGraph": "{\n    \"subGraph\": {\n        \"fileID\": -5475051401550479605,\n        \"guid\": \"d5bc1442db5abe34e9aa5b747ac9c86b\",\n        \"type\": 3\n    }\n}",
     "m_PropertyGuids": [],
-    "m_PropertyIds": []
+    "m_PropertyIds": [],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -1365,9 +1393,13 @@
         "m_GuidSerialized": "26168aab-66d5-4716-9af4-3fcfb6fddb5f"
     },
     "m_Name": "IsRadial",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_44a15d5a4a4847b4b2eaa4568bd6186c",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2457,7 +2489,9 @@
         -352516449,
         815575841,
         508759019
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -2492,9 +2526,13 @@
         "m_GuidSerialized": "73f1e359-bc74-41fd-be84-51f5624c5636"
     },
     "m_Name": "TilingAndOffset",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_a42b0a8624fa4238b08c63f9e5a81859",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3225,9 +3263,13 @@
         "m_GuidSerialized": "443ece5f-ff40-487a-8d97-2310fefa265b"
     },
     "m_Name": "SpeedAndRotation",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_df56e25335254d6189ad2a5d73f8274c",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3423,7 +3465,9 @@
     },
     "m_SerializedSubGraph": "{\n    \"subGraph\": {\n        \"fileID\": -5475051401550479605,\n        \"guid\": \"79d866df048a4d145a89bd8ec62b1939\",\n        \"type\": 3\n    }\n}",
     "m_PropertyGuids": [],
-    "m_PropertyIds": []
+    "m_PropertyIds": [],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {

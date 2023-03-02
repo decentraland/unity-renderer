@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProfanityToggleConfiguration
   m_EditorClassIdentifier: 
   title: PROFANITY FILTER
-  controlPrefab: {fileID: 202718616210799590, guid: aa5ca631e7cc4b543bf10102794f0eea,
+  controlPrefab: {fileID: 6580391891136655319, guid: 61fc2c179901ae844b48e21ae215a102,
     type: 3}
   controlController: {fileID: 11400000, guid: 18b5f86371deae6439c50f98b77baa24, type: 2}
   flagsThatDisableMe: []

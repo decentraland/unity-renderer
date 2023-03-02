@@ -10,6 +10,7 @@ namespace AvatarSystem
 {
     public class WearableRetriever : IWearableRetriever
     {
+        private const string FEATURE_GLTFAST = "gltfast";
         public Rendereable rendereable { get; private set; }
 
         private RendereableAssetLoadHelper loaderAssetHelper;
@@ -22,7 +23,7 @@ namespace AvatarSystem
             {
                 loaderAssetHelper?.Unload();
 
-                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);
+                loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl, CheckGLTFastFeature);
 
                 loaderAssetHelper.settings.forceNewInstance = false;
                 // TODO Review this hardcoded offset and try to solve it by offseting the Avatar container
@@ -55,7 +56,7 @@ namespace AvatarSystem
                 loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY);
 
                 // AttachExternalCancellation is needed because a cancelled WaitUntil UniTask requires a frame
-                await UniTask.WaitUntil(() => done, cancellationToken: ct).AttachExternalCancellation(ct);
+                await UniTaskUtils.WaitForBoolean(ref done, cancellationToken: ct).AttachExternalCancellation(ct);
 
                 if (exception != null)
                     throw exception;
@@ -71,6 +72,8 @@ namespace AvatarSystem
                 throw;
             }
         }
+        private bool CheckGLTFastFeature() =>
+            DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FEATURE_GLTFAST);
 
         public void Dispose() { loaderAssetHelper?.Unload(); }
     }

@@ -107,7 +107,7 @@ namespace DCL.Components
             }
             
             bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
-
+            
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
         }
@@ -139,7 +139,7 @@ namespace DCL.Components
 
             canvas.sortingOrder = -1;
 
-            if (scene.isPersistent && scene.sceneData.id != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
+            if (scene.isPersistent && scene.sceneData.sceneNumber != EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER)
             {
                 canvas.sortingOrder -= 1;
             }

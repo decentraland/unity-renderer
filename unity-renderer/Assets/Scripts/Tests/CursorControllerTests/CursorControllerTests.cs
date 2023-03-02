@@ -54,8 +54,7 @@ namespace Tests
             cursorController.hoverCursor.name = "Hover";
             cursorController.cursorImage = cursorController.gameObject.AddComponent<Image>();
             cursorController.cursorImage.enabled = false;
-            cursorController.canvasGroup = cursorController.gameObject.AddComponent<CanvasGroup>();
-            cursorController.SetNormalCursor();
+            cursorController.SetCursor(cursorController.normalCursor);
 
             yield return base.SetUp();
 
@@ -70,10 +69,6 @@ namespace Tests
             mainCamera.tag = "MainCamera";
             mainCamera.transform.position = Vector3.zero;
             mainCamera.transform.forward = Vector3.forward;
-
-            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
-
-
         }
 
         protected override IEnumerator TearDown()
@@ -304,7 +299,7 @@ namespace Tests
             UIContainerRect uiContainerRectShape =
                 TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.white });
-            
+
             yield return uiContainerRectShape.routine;
 
             yield return null;

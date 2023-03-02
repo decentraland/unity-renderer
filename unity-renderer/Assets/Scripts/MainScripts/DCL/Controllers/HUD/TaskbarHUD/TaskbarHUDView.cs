@@ -7,13 +7,14 @@ public class TaskbarHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "Taskbar";
 
+    [SerializeField] internal RectTransform fullScreenWindowContainer;
+
     [Header("Taskbar Animation")] [SerializeField]
     internal ShowHideAnimator taskbarAnimator;
 
     [Header("Left Side Config")]
     [SerializeField] internal RectTransform leftWindowContainer;
     [SerializeField] internal RectTransform altSectionContainer;
-
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
     [SerializeField] internal TaskbarButton chatButton;
@@ -131,20 +132,20 @@ public class TaskbarHUDView : MonoBehaviour
     public void ToggleOn(TaskbarButtonType buttonType) => ToggleOn(buttonsByType[buttonType], false);
 
     public void ToggleOff(TaskbarButtonType buttonType) => ToggleOff(buttonsByType[buttonType], false);
-    
+
     private void ToggleOn(TaskbarButton obj) => ToggleOn(obj, true);
 
     private void ToggleOn(TaskbarButton obj, bool useCallback)
     {
         var wasToggled = lastToggledOnButton == obj;
         lastToggledOnButton = obj;
-        
+
         foreach (var btn in buttonsByType.Values)
             btn.SetToggleState(btn == obj, useCallback);
 
         if (!useCallback) return;
         if (wasToggled) return;
-        
+
         if (obj == friendsButton)
             OnFriendsToggle?.Invoke(true);
         if (obj == emotesButton)
@@ -162,15 +163,15 @@ public class TaskbarHUDView : MonoBehaviour
     private void ToggleOff(TaskbarButton obj, bool useCallback)
     {
         var wasToggled = lastToggledOnButton == obj;
-        
+
         if (wasToggled)
             lastToggledOnButton = null;
-        
+
         obj.SetToggleState(false, useCallback);
 
         if (!useCallback) return;
         if (!wasToggled) return;
-        
+
         if (obj == friendsButton)
             OnFriendsToggle?.Invoke(false);
         if (obj == emotesButton)
@@ -193,6 +194,11 @@ public class TaskbarHUDView : MonoBehaviour
     internal void ShowFriendsButton()
     {
         friendsButton.transform.parent.gameObject.SetActive(true);
+    }
+
+    internal void HideFriendsButton()
+    {
+        friendsButton.transform.parent.gameObject.SetActive(false);
     }
 
     internal void ShowEmotesButton()

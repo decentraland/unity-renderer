@@ -23,9 +23,9 @@ public class JumpInAction : MonoBehaviour
     internal void JumpIn()
     {
         if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
+            DCL.Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+            DCL.Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 
     private void OnDestroy()

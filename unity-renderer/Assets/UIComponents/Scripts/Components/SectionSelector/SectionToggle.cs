@@ -7,6 +7,7 @@ using static UnityEngine.UI.Toggle;
 
 public interface ISectionToggle
 {
+    GameObject GameObject { get; }
     /// <summary>
     /// Pivot of the section object.
     /// </summary>
@@ -76,12 +77,18 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
+    private void Awake() =>
+        ConfigureDefaultOnSelectAction();
+
+    private void OnEnable() =>
+        StartCoroutine(ForceToRefreshToggleState());
+
+    public void OnPointerDown(PointerEventData eventData) =>
+        SelectToggle();
+
+    public GameObject GameObject => gameObject;
     public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
-
-    private void Awake() { ConfigureDefaultOnSelectAction(); }
-
-    private void OnEnable() { StartCoroutine(ForceToRefreshToggleState()); }
 
     public SectionToggleModel GetInfo()
     {
@@ -140,11 +147,6 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
         ConfigureDefaultOnSelectAction();
     }
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        SelectToggle();
-    }
-
     public void SelectToggle(bool reselectIfAlreadyOn = false)
     {
         if (toggle == null)
@@ -153,7 +155,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
         if (reselectIfAlreadyOn)
             toggle.isOn = false;
 
-        toggle.isOn = true;
+        if(!toggle.isOn)
+            toggle.isOn = true;
     }
 
     public void SetSelectedVisuals()

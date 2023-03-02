@@ -13,7 +13,9 @@ namespace DCL.NotificationModel
         UI_HIDDEN,
         GRAPHIC_CARD_WARNING,
         WARNING,
-        CAMERA_MODE_LOCKED_BY_SCENE
+        CAMERA_MODE_LOCKED_BY_SCENE,
+        WARNING_NO_ICON,
+        ERROR
     }
 
     public class Model
@@ -22,7 +24,7 @@ namespace DCL.NotificationModel
         public string message;
         public string buttonMessage;
         public float timer;
-        public string scene;
+        public int scene;
         public Action callback;
         public string externalCallbackID;
 

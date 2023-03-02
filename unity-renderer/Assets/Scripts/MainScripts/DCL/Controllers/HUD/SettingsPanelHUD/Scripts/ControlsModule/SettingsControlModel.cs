@@ -38,6 +38,13 @@ namespace DCL.SettingsPanelHUD.Controls
 
         [Tooltip("List of boolean flags that being true will deactivate the game object of the control.")]
         public List<BooleanVariable> flagsThatDeactivateMe;
+
+        [Tooltip("List of boolean flags that are used to indicate that this Control was overriden.")]
+        public List<BooleanVariable> flagsThatOverrideMe;
+
         public bool isBeta;
+
+        public bool infoButtonEnabled;
+        public string infoTooltipMessage;
     }
 }

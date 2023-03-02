@@ -121,6 +121,12 @@ namespace DCL.EmotesCustomization
 
         internal List<EmoteSlotCardComponentView> GetAllSlots()
         {
+            if (emotesSlots == null)
+            {
+                Debug.LogError("EmotesSlotSelectorComponentView: emotesSlots are accessed before serialized reference was initialized");
+                return new List<EmoteSlotCardComponentView>();
+            }
+            
             return emotesSlots
                 .GetItems()
                 .Select(x => x as EmoteSlotCardComponentView)

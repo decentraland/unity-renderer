@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_SG_InfToSkyBlenderv2
+  m_Shader: {fileID: -6465566751694194690, guid: 485a8a25e5b013841b7e23d18a2ba7bb,
+    type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Vector1_0960855863bb456dbc1a78fa3522a1e8: 0.112
+    - Vector1_27d87839ae5d43bbb9fd90d603de34c5: 0
+    - Vector1_41989c0b96844a94bd216bd7218fc859: 0.939
+    - Vector1_f44b89c5fa9e47c78da7f2929d95d6d2: 1
+    - Vector1_f514a954719e43afb0afb1b1ebe60830: 1
+    - _Blender: 0.522
+    - _Fade: 0.218
+    - _MiddlePoint: 30
+    - _colorArea: 0.882
+    - _fade: 0.878
+    - _horizonStartPoint: 0.909
+    - _opacity: 0.312
+    m_Colors:
+    - Color_0a3f2e3c264d4665b71a291945c674ed: {r: 0, g: 1, b: 0.027116776, a: 0}
+    - Color_aab1e24684e3407a99600ea5f9354b7f: {r: 0, g: 0.15447235, b: 1, a: 0}
+    - _ColorFloor: {r: 0.14503813, g: 0.21564698, b: 0.29372063, a: 1}
+    - _ColorInfFloor: {r: 0.069785744, g: 1, b: 0, a: 1}
+    - _ColorSky: {r: 0.97391945, g: 0.80586874, b: 0.75295603, a: 1}
+    - _colorFloor: {r: 0.050556626, g: 0.1981132, b: 0.04392132, a: 1}
+    - _colorSky: {r: 0.30588236, g: 0.24313727, b: 0.26666668, a: 1}
+  m_BuildTextureStacks: []
+--- !u!114 &1246599628291804952
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5

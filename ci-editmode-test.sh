@@ -4,6 +4,9 @@ source ci-setup.sh
 
 echo "Running editmode tests for $PROJECT_PATH"
 
+# Disable Sentry
+disable_sentry
+
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
   -projectPath "$PROJECT_PATH" \

@@ -14,7 +14,7 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
         protected override AssetPromise_AB CreatePromise()
         {
             string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
-            string hash = "QmYACL8SnbXEonXQeRHdWYbfm8vxvaFAWnsLHUaDG4ABp5";
+            string hash = "Qmc6ZNLGPoQaSrkE9qQ5sDm2dc9p8q9qsf5qYskvZCRskV";
             var prom = new AssetPromise_AB(contentUrl, hash);
             return prom;
         }

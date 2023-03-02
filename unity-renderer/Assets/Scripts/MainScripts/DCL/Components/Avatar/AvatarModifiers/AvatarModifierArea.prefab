@@ -43,7 +43,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f11b85b091d3449be8eab72c12021c03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model:
-    area:
-      box: {x: 0, y: 0, z: 0}
-    modifiers: []

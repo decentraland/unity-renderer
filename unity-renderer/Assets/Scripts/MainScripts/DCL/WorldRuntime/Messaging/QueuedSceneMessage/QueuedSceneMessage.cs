@@ -30,7 +30,7 @@
 
         public string tag;
         public Type type;
-        public string sceneId;
+        public int sceneNumber;
         public string message;
         public bool isUnreliable;
     }

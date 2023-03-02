@@ -71,3 +71,5 @@
 *.physicMaterial binary
 *.asset binary
 *.controller binary
+
+*.gen.cs linguist-generated=true

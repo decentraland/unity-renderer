@@ -8,7 +8,8 @@ namespace NFTShape_Internal
     {
         public string name;
         public string imageUrl;
-        public INFTShapeLoaderController controller;
+        public Transform transform;
+        public Collider collider;
         public INFTAsset asset;
     }
 
@@ -27,7 +28,7 @@ namespace NFTShape_Internal
 
         public static NFTShapeHQImageHandler Create(NFTShapeHQImageConfig config)
         {
-            if (config.asset == null || config.controller == null)
+            if (config.asset == null || !config.collider || !config.transform)
             {
                 return null;
             }
@@ -43,7 +44,7 @@ namespace NFTShape_Internal
 
         public void Update()
         {
-            if (hqImageConfig.controller.nftCollider is null)
+            if (!hqImageConfig.collider)
                 return;
 
             if (!isPlayerNear)
@@ -92,7 +93,7 @@ namespace NFTShape_Internal
             this.asset = hqImageConfig.asset;
 
             camera = Camera.main;
-            nftControllerT = hqImageConfig.controller.transform;
+            nftControllerT = hqImageConfig.transform;
 
             CommonScriptableObjects.playerUnityPosition.OnChange += OnPlayerPositionChanged;
             OnPlayerPositionChanged(CommonScriptableObjects.playerUnityPosition, Vector3.zero);
@@ -102,12 +103,12 @@ namespace NFTShape_Internal
         {
             isPlayerNear = false;
 
-            if (hqImageConfig.controller == null || hqImageConfig.controller.nftCollider == null)
+            if (!hqImageConfig.transform || !hqImageConfig.collider)
                 return;
 
             var config = DataStore.i.Get<DataStore_NFTShape>();
 
-            isPlayerNear = ((current - hqImageConfig.controller.nftCollider.ClosestPoint(current)).sqrMagnitude
+            isPlayerNear = ((current - hqImageConfig.collider.ClosestPoint(current)).sqrMagnitude
                             <= (config.hqImgMinDistance *
                                 config.hqImgMinDistance));
 

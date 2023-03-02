@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using DCL.Helpers;
+using DCL.Shaders;
+using MainScripts.DCL.Helpers.Utils;
+using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.Rendering;
+using Debug = UnityEngine.Debug;
+using logger = DCL.MeshCombinerLogger;
+
 
 namespace DCL
 {
@@ -15,14 +18,12 @@ namespace DCL
         // the cases of avatars rendered with one draw call. Temporarily disabled until some wearables are fixed.
         public static bool ENABLE_CULL_OPAQUE_HEURISTIC = false;
 
-        private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
-        private static readonly int[] textureIds = new int[] { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
+        private static readonly int[] textureIds = { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
 
         /// <summary>
         /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.<br/>
-        /// 
+        ///
         /// Each CombineLayer element represents a combining group, and the renderers are grouped using a set of criteria.<br/>
         ///
         /// <ul>
@@ -36,53 +37,59 @@ namespace DCL
         /// </summary>
         /// <param name="renderers">List of renderers to slice.</param>
         /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
-        internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers)
+        internal static bool TrySlice(IReadOnlyList<SkinnedMeshRenderer> renderers, CombineLayersList result)
         {
             logger.Log("Slice Start!");
 
-            var rawLayers = SliceByRenderState(renderers);
-
-            logger.Log($"Preparing slice. Found {rawLayers.Count} groups.");
-
-            //
-            // Now, we sub-slice the rawLayers.
-            // A single rawLayer will be sub-sliced if the textures exceed the sampler limit (12 in this case).
-            // Also, in this step the textureToId map is populated.
-            //
-            List<CombineLayer> result = new List<CombineLayer>();
-
-            for (int i = 0; i < rawLayers.Count; i++)
+            using (var rental = PoolUtils.RentListOfDisposables<CombineLayer>())
             {
-                var rawLayer = rawLayers[i];
-                logger.Log($"Processing group {i}. Renderer count: {rawLayer.renderers.Count}. cullMode: {rawLayer.cullMode} - isOpaque: {rawLayer.isOpaque}");
-                result.AddRange(SubsliceLayerByTextures(rawLayer));
+                var rawLayers = rental.GetList();
+                SliceByRenderState.Execute(renderers, rawLayers, ENABLE_CULL_OPAQUE_HEURISTIC);
+
+                logger.Log($"Preparing slice. Found {rawLayers.Count} groups.");
+
+                // Now, we sub-slice the rawLayers.
+                // A single rawLayer will be sub-sliced if the textures exceed the sampler limit (12 in this case).
+                // Also, in this step the textureToId map is populated.
+
+                for (int i = 0; i < rawLayers.Count; i++)
+                {
+                    var rawLayer = rawLayers[i];
+
+                    logger.Log($"Processing group {i}. Renderer count: {rawLayer.Renderers.Count}. cullMode: {rawLayer.cullMode} - isOpaque: {rawLayer.isOpaque}");
+                    SubsliceLayerByTextures(rawLayer, result);
+                }
             }
 
             // No valid materials were found
-            if ( result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
+            if (result.Count == 1 && result[0].textureToId.Count == 0 && result[0].Renderers.Count == 0)
             {
                 logger.Log("Slice End Fail!");
-                return null;
+                return false;
             }
 
-            result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
+            result.Sanitize();
 
-            if ( VERBOSE )
+            [Conditional(MeshCombinerLogger.COMPILATION_DEFINE)]
+            static void LogLayers(CombineLayersList result)
             {
                 int layInd = 0;
-                foreach ( var layer in result )
-                {
-                    string rendererNames = layer.renderers
-                        .Select( (x) => $"{x.transform.parent.name}" )
-                        .Aggregate( (i, j) => i + "\n" + j);
 
-                    logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
+                foreach (var layer in result.Layers)
+                {
+                    string rendererNames = layer.Renderers
+                                                .Select((x) => $"{x.transform.parent.name}")
+                                                .Aggregate((i, j) => i + "\n" + j);
+
+                    logger.Log($"Layer index: {layInd} ... renderer count: {layer.Renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
                     layInd++;
                 }
             }
 
+            LogLayers(result);
+
             logger.Log("Slice End Success!");
-            return result;
+            return true;
         }
 
         /// <summary>
@@ -99,240 +106,104 @@ namespace DCL
         /// <returns>A list that at least is guaranteed to contain the given layer.
         /// If the given layer exceeds the max texture count, more than a layer can be returned.
         /// </returns>
-        internal static List<CombineLayer> SubsliceLayerByTextures( CombineLayer layer )
+        internal static void SubsliceLayerByTextures(CombineLayer layer, CombineLayersList results)
         {
-            var result = new List<CombineLayer>();
-            int textureId = 0;
+            int textureId;
 
-            bool shouldAddLayerToResult = true;
-            CombineLayer currentResultLayer = null;
+            CombineLayer currentResultLayer;
 
-            for (int rendererIndex = 0; rendererIndex < layer.renderers.Count; rendererIndex++)
+            void AddLayerToResult()
             {
-                var r = layer.renderers[rendererIndex];
+                textureId = 0;
+                currentResultLayer = CombineLayer.Rent(layer.cullMode, layer.isOpaque);
+                results.Add(currentResultLayer);
+            }
 
-                if ( shouldAddLayerToResult )
-                {
-                    shouldAddLayerToResult = false;
-                    textureId = 0;
+            AddLayerToResult();
 
-                    currentResultLayer = new CombineLayer
-                    {
-                        cullMode = layer.cullMode,
-                        isOpaque = layer.isOpaque
-                    };
+            for (int rendererIndex = 0; rendererIndex < layer.Renderers.Count; rendererIndex++)
+            {
+                var r = layer.Renderers[rendererIndex];
 
-                    result.Add(currentResultLayer);
-                }
+                using var materialRent = PoolUtils.RentList<Material>();
+                var mats = materialRent.GetList();
 
-                var mats = r.sharedMaterials;
+                r.GetSharedMaterials(mats);
 
-                var mapIdsToInsert = GetMapIds(
-                    new ReadOnlyDictionary<Texture2D, int>(currentResultLayer.textureToId),
+                using var mapIdsToInsertRental = PoolUtils.RentDictionary<Texture2D, int>();
+                var mapIdsToInsert = mapIdsToInsertRental.GetDictionary();
+
+                AddMapIds(
+                    currentResultLayer.textureToId,
+                    mapIdsToInsert,
                     mats,
-                    textureId );
+                    textureId);
 
                 // The renderer is too big to fit in a single layer? (This should never happen).
                 if (mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
                 {
-                    logger.Log(LogType.Warning, "The renderer is too big to fit in a single layer? (This should never happen).");
-                    shouldAddLayerToResult = true;
+                    logger.LogWarning("The renderer is too big to fit in a single layer? (This should never happen).");
+                    AddLayerToResult();
                     continue;
                 }
 
                 // The renderer can fit in a single layer.
                 // But can't fit in this one, as previous renderers filled this layer out.
-                if ( textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT )
+                if (textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
                 {
                     rendererIndex--;
-                    shouldAddLayerToResult = true;
+                    AddLayerToResult();
                     continue;
                 }
 
                 // put GetMapIds result into currentLayer id map.
-                foreach ( var kvp in mapIdsToInsert )
-                {
-                    currentResultLayer.textureToId[ kvp.Key ] = kvp.Value;
-                }
+                foreach (var kvp in mapIdsToInsert)
+                    currentResultLayer.textureToId[kvp.Key] = kvp.Value;
 
-                currentResultLayer.renderers.Add(r);
+                results.AddRenderer(currentResultLayer, r);
 
                 textureId += mapIdsToInsert.Count;
 
-                if ( textureId >= MAX_TEXTURE_ID_COUNT )
-                {
-                    shouldAddLayerToResult = true;
-                }
+                if (textureId >= MAX_TEXTURE_ID_COUNT)
+                    AddLayerToResult();
             }
 
-            if ( VERBOSE )
+            [Conditional(MeshCombinerLogger.COMPILATION_DEFINE)]
+            static void LogResults(CombineLayersList results)
             {
-                for (int i = 0; i < result.Count; i++)
+                for (int i = 0; i < results.Count; i++)
                 {
-                    var c = result[i];
+                    var c = results[i];
                     Debug.Log($"layer {i} - {c}");
                 }
             }
 
-            return result;
+            LogResults(results);
         }
 
-        /// <summary>
-        /// <p>
-        /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.
-        /// Each CombineLayer element represents a combining group, and the renderers are grouped using a set of criteria.
-        /// </p>
-        /// <p>
-        /// For SliceByRenderState, the returned CombineLayer list will be grouped according to shared cull mode and
-        /// blend state.
-        /// </p>
-        /// </summary>
-        /// <param name="renderers">List of renderers to slice.</param>
-        /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
-        internal static List<CombineLayer> SliceByRenderState(SkinnedMeshRenderer[] renderers)
+        internal static void AddMapIds(IReadOnlyDictionary<Texture2D, int> refDict, IDictionary<Texture2D, int> candidates, IReadOnlyList<Material> mats, int startingId)
         {
-            List<CombineLayer> result = new List<CombineLayer>();
-
-            // Group renderers on opaque and transparent materials
-            var rendererByOpaqueMode = renderers.GroupBy( IsOpaque );
-
-            // Then, make subgroups to divide them between culling modes
-            foreach ( var byOpaqueMode in rendererByOpaqueMode )
-            {
-                // For opaque renderers, we replace the CullOff value by CullBack to reduce group count,
-                // This workarounds many opaque wearables that use Culling Off by mistake. 
-                Func<SkinnedMeshRenderer, CullMode> getCullModeFunc = null;
-
-                if ( ENABLE_CULL_OPAQUE_HEURISTIC )
-                {
-                    getCullModeFunc = byOpaqueMode.Key ? new Func<SkinnedMeshRenderer, CullMode>(GetCullModeWithoutCullOff) : GetCullMode;
-                }
-                else
-                {
-                    getCullModeFunc = GetCullMode;
-                }
-
-                var rendererByCullingMode = byOpaqueMode.GroupBy( getCullModeFunc );
-
-                foreach ( var byCulling in rendererByCullingMode )
-                {
-                    var byCullingRenderers = byCulling.ToList();
-
-                    CombineLayer layer = new CombineLayer();
-                    result.Add(layer);
-                    layer.cullMode = byCulling.Key;
-                    layer.isOpaque = byOpaqueMode.Key;
-                    layer.renderers = byCullingRenderers;
-                }
-            }
-
-            /*
-            * The grouping outcome ends up like this:
-            *
-            *                 Opaque           Transparent
-            *             /     |     \        /    |    \
-            *          Back - Front - Off - Back - Front - Off -> rendererGroups
-            */
-
-            return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="refDict"></param>
-        /// <param name="mats"></param>
-        /// <param name="startingId"></param>
-        /// <returns></returns>
-        internal static Dictionary<Texture2D, int> GetMapIds(ReadOnlyDictionary<Texture2D, int> refDict, in Material[] mats, int startingId)
-        {
-            var result = new Dictionary<Texture2D, int>();
-
-            for ( int i = 0; i < mats.Length; i++ )
+            for (int i = 0; i < mats.Count; i++)
             {
                 var mat = mats[i];
 
                 if (mat == null)
                     continue;
 
-                for ( int texIdIndex = 0; texIdIndex < textureIds.Length; texIdIndex++ )
+                for (int texIdIndex = 0; texIdIndex < textureIds.Length; texIdIndex++)
                 {
                     var texture = (Texture2D)mat.GetTexture(textureIds[texIdIndex]);
 
-                    if ( texture == null )
+                    if (texture == null)
                         continue;
 
-                    if ( refDict.ContainsKey(texture) || result.ContainsKey(texture) )
+                    if (refDict.ContainsKey(texture) || candidates.ContainsKey(texture))
                         continue;
 
-                    result.Add(texture, startingId);
+                    candidates.Add(texture, startingId);
                     startingId++;
                 }
             }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
-        /// </summary>
-        /// <param name="material">Material to be checked</param>
-        /// <returns>True if its opaque</returns>
-        internal static bool IsOpaque(Material material)
-        {
-            if (material == null)
-                return true;
-
-            bool isTransparent = material.HasProperty(ShaderUtils.ZWrite) &&
-                                 (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
-
-            return !isTransparent;
-        }
-
-        /// <summary>
-        /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
-        /// </summary>
-        /// <param name="renderer">Renderer to be checked.</param>
-        /// <returns>True if its opaque</returns>
-        internal static bool IsOpaque(Renderer renderer)
-        {
-            return IsOpaque(renderer.sharedMaterials[0]);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="material"></param>
-        /// <returns></returns>
-        internal static CullMode GetCullMode(Material material)
-        {
-            CullMode result = (CullMode)material.GetInt( ShaderUtils.Cull );
-            return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="renderer"></param>
-        /// <returns></returns>
-        internal static CullMode GetCullMode(Renderer renderer)
-        {
-            return GetCullMode(renderer.sharedMaterials[0]);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="renderer"></param>
-        /// <returns></returns>
-        internal static CullMode GetCullModeWithoutCullOff(Renderer renderer)
-        {
-            CullMode result = GetCullMode(renderer.sharedMaterials[0]);
-
-            if (result == CullMode.Off)
-                result = CullMode.Back;
-
-            return result;
         }
     }
 }

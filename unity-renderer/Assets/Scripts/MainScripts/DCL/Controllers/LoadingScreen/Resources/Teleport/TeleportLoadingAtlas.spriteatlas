@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TeleportLoadingAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 68d82b8cf8077f7449f27a2f03121b1a, type: 3}
+    - {fileID: 2800000, guid: e1bc6e0ec2855b34bae8e171c4637416, type: 3}
+    - {fileID: 2800000, guid: bf57a37376cda25459d7d5a6e632e50e, type: 3}
+    - {fileID: 2800000, guid: d029dffc293fc7145b4b7cb0a7cd5387, type: 3}
+    - {fileID: 2800000, guid: 5da9e0fb6605d2b49a750f49b0f654fc, type: 3}
+    - {fileID: 2800000, guid: e1a280e254e7409429de218f8922c52a, type: 3}
+    - {fileID: 2800000, guid: 1d3b42f3b5fa46446abb348ca49e0ab6, type: 3}
+    - {fileID: 2800000, guid: 674eb2ea60e168a469c9a4a80983c0c9, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: e1a280e254e7409429de218f8922c52a, type: 3}
+  - {fileID: 21300000, guid: bf57a37376cda25459d7d5a6e632e50e, type: 3}
+  - {fileID: 21300000, guid: 1d3b42f3b5fa46446abb348ca49e0ab6, type: 3}
+  - {fileID: 21300000, guid: 674eb2ea60e168a469c9a4a80983c0c9, type: 3}
+  - {fileID: 21300000, guid: 5da9e0fb6605d2b49a750f49b0f654fc, type: 3}
+  - {fileID: 21300000, guid: 68d82b8cf8077f7449f27a2f03121b1a, type: 3}
+  - {fileID: 21300000, guid: d029dffc293fc7145b4b7cb0a7cd5387, type: 3}
+  - {fileID: 21300000, guid: e1bc6e0ec2855b34bae8e171c4637416, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - PortalLine02
+  - Cross
+  - PortalMask
+  - Ring
+  - PortalGradient
+  - BodyFilled
+  - Portal
+  - BodyStroke
+  m_RenderDataMap: {}
+  m_Tag: TeleportLoadingAtlas
+  m_IsVariant: 0

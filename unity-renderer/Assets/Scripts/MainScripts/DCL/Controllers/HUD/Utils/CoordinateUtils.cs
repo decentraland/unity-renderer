@@ -14,7 +14,10 @@ public class CoordinateUtils
     public const int MAX_Y_COORDINATE = 158;
     public const int MIN_Y_COORDINATE = -150;
 
-    public static bool IsCoordinateInRange(int x, int y) { return (x <= MAX_X_COORDINATE && x >= MIN_X_COORDINATE && y <= MAX_Y_COORDINATE && y >= MIN_Y_COORDINATE); }
+    public static bool IsCoordinateInRange(int x, int y)
+    {
+        return x <= MAX_X_COORDINATE && x >= MIN_X_COORDINATE && y <= MAX_Y_COORDINATE && y >= MIN_Y_COORDINATE;
+    }
 
     public static List<string> GetTextCoordinates(string text)
     {
@@ -22,22 +25,23 @@ public class CoordinateUtils
         List<string> matchingWords = new List<string>();
         foreach (var item in text.Split(' '))
         {
-            var match = filter.Match(item.ToString());
+            var match = filter.Match(item);
             int x;
             int y;
             if (match.Success)
             {
-                Int32.TryParse(item.ToString().Split(',')[0], out x);
-                Int32.TryParse(item.ToString().Split(',')[1], out y);
+                Int32.TryParse(item.Split(',')[0], out x);
+                Int32.TryParse(item.Split(',')[1], out y);
 
                 if (IsCoordinateInRange(x, y))
                     matchingWords.Add(match.Value);
             }
         }
+
         return matchingWords;
     }
 
-    public static bool HasValidTextCoordinates(string text) 
+    public static bool HasValidTextCoordinates(string text)
     {
         return GetTextCoordinates(text).Count > 0;
     }

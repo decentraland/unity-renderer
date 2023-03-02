@@ -33,7 +33,6 @@ namespace DCL.ExperiencesViewer
         internal IExperiencesViewerComponentView view;
         internal ISceneController sceneController;
         internal UserProfile userProfile;
-        internal CatalogController catalog;
         internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
         internal List<string> pausedPEXScenesIds = new List<string>();
         internal List<string> lastDisablePEXSentToKernel;
@@ -80,7 +79,7 @@ namespace DCL.ExperiencesViewer
 
             DataStore.i.world.portableExperienceIds.OnAdded -= OnPEXSceneAdded;
             DataStore.i.world.portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
-            
+
             if (userProfile != null)
                 userProfile.OnUpdate -= OnUserProfileUpdated;
         }
@@ -136,7 +135,7 @@ namespace DCL.ExperiencesViewer
                     PortableExperienceUtils.GetActivePortableExperienceScenes();
                 foreach (GlobalScene pexScene in activePortableExperiences)
                 {
-                    OnPEXSceneAdded(pexScene.sceneData.id);
+                    OnPEXSceneAdded(pexScene);
                 }
             }
 
@@ -145,7 +144,11 @@ namespace DCL.ExperiencesViewer
 
         public void OnPEXSceneAdded(string id)
         {
-            IParcelScene scene = Environment.i.world.state.GetScene(id);
+            OnPEXSceneAdded(Environment.i.world.state.GetPortableExperienceScene(id));
+        }
+
+        public void OnPEXSceneAdded(IParcelScene scene)
+        {
             ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
 
             if (activePEXScenes.ContainsKey(scene.sceneData.id))
@@ -161,11 +164,11 @@ namespace DCL.ExperiencesViewer
 
             GlobalScene newPortableExperienceScene = scene as GlobalScene;
             DataStore.i.experiencesViewer.activeExperience.Get().Add(scene.sceneData.id);
-            
+
             if (pausedPEXScenesIds.Contains(scene.sceneData.id))
             {
                 pausedPEXScenesIds.Remove(scene.sceneData.id);
-                
+
                 if (experienceToUpdate != null)
                     experienceToUpdate.SetAsPlaying(true);
             }

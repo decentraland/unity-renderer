@@ -85,4 +85,16 @@ public static class TheGraphQueries
         }
     }
 ";
+
+    public static readonly string getNftCollectionByUserAndUrnQuery = @"
+    query WearablesCollectionsByUrn($address: ID, $urn: ID){
+        nfts(where: { owner: $address, urn: $urn}) {
+            urn,
+            collection {
+                id
+            }
+            tokenId
+        }
+    }
+";
 }

@@ -13,10 +13,11 @@ var WebVideoPlayer = {
             PAUSED: 7,
         };
 
-        const videoUrl = Pointer_stringify(url);
+        const videoUrl = UTF8ToString(url);
         const vid = document.createElement("video");
-        vid.autoplay = false;
 
+        vid.autoplay = false;
+        
         var textureObject = GLctx.createTexture();
         const texId = GL.getNewId(textureObject);
         textureObject.name = texId
@@ -26,10 +27,24 @@ var WebVideoPlayer = {
             video: vid,
             state: videoState.NONE,
             error: "",
-            textureId: texId
+            textureId: texId,
+            newFrame: false,
+            useUpdateOptimization: true
         };
-
-        videos[Pointer_stringify(videoId)] = videoData;
+        
+        videos[UTF8ToString(videoId)] = videoData;
+        
+        // this function is not supported by Firefox
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {     
+            const onNewFrame = function (now, metadata) {
+                videoData.newFrame = true;
+                vid.requestVideoFrameCallback(onNewFrame);
+            };
+                    
+            vid.requestVideoFrameCallback(onNewFrame);
+        } else {
+            videoData.useUpdateOptimization = false; // we ignore optimization if not supported
+        }
 
         if (useHls) {
             var hlsConfig = {
@@ -103,7 +118,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerRemove: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         if (!videos.hasOwnProperty(id)) {
             console.warn("video: trying to remove undefined video of id " + id);
             return;
@@ -126,35 +141,37 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerTextureGet: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         return videos[id].textureId;
     },
 
     WebVideoPlayerTextureUpdate: function (videoId) {
-        const id = Pointer_stringify(videoId);
-
-        if (videos[id].state !== 4) return; //PLAYING
-
-        const textureId = videos[id].textureId;
-
-        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
-
+        const videoData = videos[UTF8ToString(videoId)];
+        
+        if (videoData.state !== 4) return; //PLAYING
+        
+        if (videoData.useUpdateOptimization && !videoData.newFrame) 
+            return; // No new frame to update
+        else
+            videoData.newFrame = false;
+        
+        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[videoData.textureId]);
         GLctx.texImage2D(
             GLctx.TEXTURE_2D,
             0,
             GLctx.SRGB8_ALPHA8,
-            videos[id].video.videoWidth,
-            videos[id].video.videoHeight,
+            videoData.video.videoWidth,
+            videoData.video.videoHeight,
             0,
             GLctx.RGBA,
             GLctx.UNSIGNED_BYTE,
-            videos[id].video
+            videoData.video
         );
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
         try {
-            const videoData = videos[Pointer_stringify(videoId)];
+            const videoData = videos[UTF8ToString(videoId)];
             if (videoData.hlsInstance !== undefined) {
                 videoData.hlsInstance.attachMedia(videoData.video);
             }
@@ -178,7 +195,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerPause: function (videoId) {
-        const videoData = videos[Pointer_stringify(videoId)];
+        const videoData = videos[UTF8ToString(videoId)];
         if (videoData.hlsInstance !== undefined) {
             videoData.hlsInstance.detachMedia(videoData.video);
         }
@@ -187,27 +204,27 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerVolume: function (videoId, volume) {
-        videos[Pointer_stringify(videoId)].video.volume = volume;
+        videos[UTF8ToString(videoId)].video.volume = volume;
     },
 
     WebVideoPlayerGetHeight: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.videoHeight;
+        return videos[UTF8ToString(videoId)].video.videoHeight;
     },
 
     WebVideoPlayerGetWidth: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.videoWidth;
+        return videos[UTF8ToString(videoId)].video.videoWidth;
     },
 
     WebVideoPlayerGetTime: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.currentTime;
+        return videos[UTF8ToString(videoId)].video.currentTime;
     },
 
     WebVideoPlayerGetDuration: function (videoId) {
-        return videos[Pointer_stringify(videoId)].video.duration;
+        return videos[UTF8ToString(videoId)].video.duration;
     },
 
     WebVideoPlayerGetState: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         if (!videos.hasOwnProperty(id)) {
             return 1; //videoState.ERROR;
         }
@@ -215,7 +232,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerGetError: function (videoId) {
-        const id = Pointer_stringify(videoId);
+        const id = UTF8ToString(videoId);
         var errorStr = "";
         if (!videos.hasOwnProperty(id)) {
             errorStr = "Video id " + id + " does not exist";
@@ -230,7 +247,7 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerSetTime: function (videoId, second) {
-        const videoData = videos[Pointer_stringify(videoId)];
+        const videoData = videos[UTF8ToString(videoId)];
         const vid = videoData.video;
 
         if (second === 0) {
@@ -241,11 +258,11 @@ var WebVideoPlayer = {
     },
 
     WebVideoPlayerSetLoop: function (videoId, value) {
-        videos[Pointer_stringify(videoId)].video.loop = value;
+        videos[UTF8ToString(videoId)].video.loop = value;
     },
 
     WebVideoPlayerSetPlaybackRate: function (videoId, value) {
-        videos[Pointer_stringify(videoId)].video.playbackRate = value;
+        videos[UTF8ToString(videoId)].video.playbackRate = value;
     },
 };
 autoAddDeps(WebVideoPlayer, "$videos");

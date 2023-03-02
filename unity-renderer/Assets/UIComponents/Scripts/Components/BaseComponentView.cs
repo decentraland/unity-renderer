@@ -4,6 +4,25 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+namespace UIComponents.Scripts.Components
+{
+    public abstract class BaseComponentView<TModel> : BaseComponentView, IBaseComponentView<TModel>
+        where TModel : IEquatable<TModel>, new()
+    {
+        [field: SerializeField]
+        protected TModel model { get; private set; } = new ();
+
+        public void SetModel(TModel newModel)
+        {
+            if (!Equals(model, newModel))
+            {
+                model = newModel;
+                RefreshControl();
+            }
+        }
+    }
+}
+
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
@@ -20,31 +39,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// It will inform if the UI Component is focused or not.
     /// </summary>
     bool isFocused { get; }
-
-    /// <summary>
-    /// It is called at the beginning of the UI component lifecycle.
-    /// </summary>
-    void Awake();
-
-    /// <summary>
-    /// It is called each time the component is enabled.
-    /// </summary>
-    void OnEnable();
-
-    /// <summary>
-    /// It is called each time the component is disabled.
-    /// </summary>
-    void OnDisable();
-
-    /// <summary>
-    /// It is called just after the UI component has been initialized.
-    /// </summary>
-    void Start();
-
-    /// <summary>
-    /// It is called once per frame.
-    /// </summary>
-    void Update();
 
     /// <summary>
     /// Updates the UI component with the current model configuration.
@@ -72,14 +66,9 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// It is called when the focus is lost from the component.
     /// </summary>
     void OnLoseFocus();
-
-    /// <summary>
-    /// It is called just after the screen size has changed.
-    /// </summary>
-    void OnScreenSizeChanged();
 }
 
-public interface IComponentModelConfig<T> where T: BaseComponentModel
+public interface IComponentModelConfig<T> where T : BaseComponentModel
 {
     /// <summary>
     /// Fill the model and updates the component with this data.
@@ -91,10 +80,10 @@ public interface IComponentModelConfig<T> where T: BaseComponentModel
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     internal BaseComponentModel baseModel;
-    internal ShowHideAnimator showHideAnimator;
+    public ShowHideAnimator showHideAnimator;
 
     public virtual bool isVisible { get; private set; }
-    private bool isDestroyed = false;
+    protected bool isDestroyed = false;
 
     public event Action<bool> onFocused;
     public bool isFocused { get; private set; }
@@ -150,6 +139,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose()
     {
         DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
+
         if (!isDestroyed)
             Destroy(gameObject);
     }

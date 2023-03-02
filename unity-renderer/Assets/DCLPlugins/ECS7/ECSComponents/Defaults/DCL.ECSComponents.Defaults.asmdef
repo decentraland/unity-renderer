@@ -1,0 +1,22 @@
+{
+    "name": "DCL.ECSComponents.Defaults",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:1f1729acc7314d7d964363f0328a304b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

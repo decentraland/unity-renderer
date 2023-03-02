@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using DCL.Shaders;
 using UnityEngine;
-using DCL.Helpers;
 
 namespace DCL.Skybox
 {
@@ -201,7 +199,7 @@ namespace DCL.Skybox
             Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
-        void ApplyAllSlots(Material selectedMat, List<TextureLayer> layers, float dayTime, float normalizedDayTime, int slotCount, float cycleTime = 24)
+        private void ApplyAllSlots(Material selectedMat, List<TextureLayer> layers, float dayTime, float normalizedDayTime, int slotCount, float cycleTime = 24)
         {
             for (int i = 0; i < slotCount; i++)
             {
@@ -425,23 +423,23 @@ namespace DCL.Skybox
 
         public void ResetSlot(Material selectedMat, int slotCount)
         {
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_layerType_" + slotCount), 0);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" + slotCount), null);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" + slotCount), null);
-            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" + slotCount), null);
-            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" + slotCount), new Color(1, 1, 1, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + slotCount), new Vector4(1, 1, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" + slotCount), new Vector4(0, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" + slotCount), new Vector4(0, 0));
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_fadeTime_" + slotCount), 1);
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" + slotCount), 0);
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" + slotCount), 0);
-            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" + slotCount), 3.4f);
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" + slotCount), new Vector2(0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" + slotCount), new Vector4(0, 0, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" + slotCount), new Vector4(1, 1));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" + slotCount), new Vector4(0, 0, 0, 0));
-            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" + slotCount), new Vector4(0, 0, 0, 0));
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_layerType_" , slotCount), 0);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_tex_" , slotCount), null);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_cubemap_" , slotCount), null);
+            selectedMat.SetTexture(SkyboxShaderUtils.GetLayerProperty("_normals_" , slotCount), null);
+            selectedMat.SetColor(SkyboxShaderUtils.GetLayerProperty("_color_" , slotCount), new Color(1, 1, 1, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" , slotCount), new Vector4(1, 1, 0, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_speedAndRotation_" , slotCount), new Vector4(0, 0, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_timeFrame_" , slotCount), new Vector4(0, 0));
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_fadeTime_" , slotCount), 1);
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_normalIntensity_" , slotCount), 0);
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_lightIntensity_" , slotCount), 0);
+            selectedMat.SetFloat(SkyboxShaderUtils.GetLayerProperty("_RenderDistance_" , slotCount), 3.4f);
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortIntAndSize_" , slotCount), new Vector2(0, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_distortSpeedAndSharp_" , slotCount), new Vector4(0, 0, 0, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_rowAndCollumns_" , slotCount), new Vector4(1, 1));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesMainParameters_" , slotCount), new Vector4(0, 0, 0, 0));
+            selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_particlesSecondaryParameters_" , slotCount), new Vector4(0, 0, 0, 0));
         }
 
     }

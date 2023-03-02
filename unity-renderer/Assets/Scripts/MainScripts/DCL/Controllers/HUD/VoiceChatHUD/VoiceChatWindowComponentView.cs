@@ -56,13 +56,6 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
         ConfigureAllowUsersFilter();
     }
 
-    public override void Start()
-    {
-        base.Start();
-        
-        AllowUsersOptionChanged(true, VoiceChatAllow.ALL_USERS.ToString(), ALLOW_USERS_TITLE_ALL);
-    }
-
     public void Configure(VoiceChatWindowComponentModel newModel)
     {
         model = newModel;
@@ -265,6 +258,8 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
                 changeTextColorOnSelect = true
             }
         });
+
+        allowUsersDropdown.SetTitle(ALLOW_USERS_TITLE_ALL);
     }
 
     internal void AllowUsersOptionChanged(bool isOn, string optionId, string optionName)

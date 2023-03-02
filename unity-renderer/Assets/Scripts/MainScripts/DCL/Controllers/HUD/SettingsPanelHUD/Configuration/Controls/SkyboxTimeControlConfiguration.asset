@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: SkyboxTimeControlConfiguration
   m_EditorClassIdentifier: 
   title: SKYBOX TIME
-  controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
+  controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: ad425b3f167208449a66c7e74c05adab, type: 2}
   flagsThatDisableMe:
   - {fileID: 11400000, guid: c84c4299b3ff3884a8d875603332941b, type: 2}
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe:
+  - {fileID: 11400000, guid: 6ff90422ad8bb824eb3afdbf79c1d2a0, type: 2}
   isBeta: 0
   sliderMinValue: 0
   sliderMaxValue: 24

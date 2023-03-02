@@ -16,12 +16,12 @@ namespace DCL
             public AssetPromise_AudioClip promise;
             public UnityWebRequest request;
         }
-        
+
         private readonly string url;
         private readonly string id;
         private readonly AudioType audioType;
         private readonly IWebRequestController webRequestController;
-        private WebRequestAsyncOperation webRequestAsyncOperation;
+        private IWebRequestAsyncOperation webRequestAsyncOperation;
         private Action OnSuccess;
         private Coroutine coroutineQueueLoader;
         private static Queue<QueueItem> requestQueue = new Queue<QueueItem>();
@@ -71,25 +71,25 @@ namespace DCL
         /// </summary>
         private IEnumerator CoroutineQueueLoader()
         {
-            while (!requestQueue.Peek().Equals(queueItem))   
+            while (!requestQueue.Peek().Equals(queueItem))
             {
                 yield return new WaitForEndOfFrame();
             }
-            
+
             var request = requestQueue.Dequeue();
             GetAudioClipFromRequest(request.promise, request.request);
         }
-        
+
         static void GetAudioClipFromRequest(AssetPromise_AudioClip promise, UnityWebRequest www)
         {
             ulong wwwDownloadedBytes = www.downloadedBytes;
 
             // files bigger than 1MB will be treated as streaming
-            if (wwwDownloadedBytes > 1000000) 
+            if (wwwDownloadedBytes > 1000000)
             {
                 ((DownloadHandlerAudioClip)www.downloadHandler).streamAudio = true;
             }
-            
+
             promise.asset.audioClip = DownloadHandlerAudioClip.GetContent(www);
             promise.OnSuccess?.Invoke();
             promise.webRequestAsyncOperation?.Dispose();

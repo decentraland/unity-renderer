@@ -1,7 +1,8 @@
-using DCL;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using NSubstitute;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -26,13 +27,13 @@ namespace Tests
             yield return base.SetUp();
             yield return null;
 
-            controller = new MinimapHUDController();
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
             navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
-                navmapView.SetVisible(true);
+                navmapView.navmapVisibilityBehaviour.SetVisible(true);
         }
 
         protected override IEnumerator TearDown()
@@ -58,7 +59,7 @@ namespace Tests
 
             navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
-            navmapToastView.OnCloseClick();
+            navmapToastView.Close();
             Assert.IsFalse(navmapToastView.gameObject.activeSelf);
         }
 

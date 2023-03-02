@@ -26,9 +26,9 @@ public class UIComponentsPlugin : IPlugin
         factory.createConditions.Add((int) CLASS_ID.UI_FULLSCREEN_SHAPE, CanCreateScreenShape);
     }
 
-    bool CanCreateScreenShape(string sceneId, int classId)
+    bool CanCreateScreenShape(int sceneNumber, int classId)
     {
-        IParcelScene scene = Environment.i.world.state.loadedScenes[sceneId];
+        IParcelScene scene = Environment.i.world.state.GetScene(sceneNumber);
 
         if (scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>() != null)
             return false;

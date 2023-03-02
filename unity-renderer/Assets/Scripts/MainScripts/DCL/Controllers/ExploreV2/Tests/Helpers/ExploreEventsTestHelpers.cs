@@ -3,11 +3,12 @@ using UnityEngine;
 
 public static class ExploreEventsTestHelpers
 {
-    public static List<EventCardComponentModel> CreateTestEvents(Sprite sprite)
+    public static List<EventCardComponentModel> CreateTestEvents(Sprite sprite, int amount = 2)
     {
         List<EventCardComponentModel> testEvents = new List<EventCardComponentModel>();
-        testEvents.Add(CreateTestEvent("1", sprite));
-        testEvents.Add(CreateTestEvent("2", sprite));
+        
+        for (int j = 0; j < amount; j++)
+            testEvents.Add(CreateTestEvent($"Test Event {j + 1}", sprite));
 
         return testEvents;
     }

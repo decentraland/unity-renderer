@@ -40,22 +40,8 @@ namespace DCL.Components
             if (!string.IsNullOrEmpty(ownerModel.onClick) &&
                 eventData.pointerPressRaycast.gameObject == childHookRectTransform.gameObject)
             {
-                WebInterface.ReportOnClickEvent(owner.scene.sceneData.id, ownerModel.onClick);
+                WebInterface.ReportOnClickEvent(owner.scene.sceneData.sceneNumber, ownerModel.onClick);
             }
         }
-
-#if UNITY_EDITOR
-        [Header("Debug")]
-        public bool forceRefresh;
-
-        public void LateUpdate()
-        {
-            if (forceRefresh)
-            {
-                owner.RefreshAll();
-                forceRefresh = false;
-            }
-        }
-#endif
     }
 }

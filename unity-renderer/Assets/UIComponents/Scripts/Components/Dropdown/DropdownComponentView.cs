@@ -385,7 +385,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         ToggleComponentView newGO = Instantiate(togglePrefab);
         newGO.gameObject.SetActive(true);
         newGO.Configure(newOptionModel);
-        availableOptions.AddItem(newGO);
+        availableOptions.AddItemWithResize(newGO);
         newGO.name = name;
 
         if (newOptionModel.id == SELECT_ALL_OPTION_ID)

@@ -183,6 +183,9 @@ namespace DCL.Camera
                 var horizontalAxisLookAt = payload.y - cameraTarget.y;
                 verticalAxisLookAt = new Vector3(cameraTarget.x - payload.x, 0, cameraTarget.z - payload.z);
 
+                if (verticalAxisLookAt is { x: 0, y: 0, z: 0 })
+                    verticalAxisLookAt = Vector3.forward;
+
                 eulerDir.y = Vector3.SignedAngle(Vector3.forward, verticalAxisLookAt, Vector3.up);
                 eulerDir.x = Mathf.Atan2(horizontalAxisLookAt, verticalAxisLookAt.magnitude) * Mathf.Rad2Deg;
             }
@@ -192,8 +195,8 @@ namespace DCL.Camera
             //value range 0 to 1, being 0 the bottom orbit and 1 the top orbit
             var yValue = Mathf.InverseLerp(-90, 90, eulerDir.x);
             defaultVirtualCameraAsFreeLook.m_YAxis.Value = yValue;
-            
-            characterForward.Set(verticalAxisLookAt); 
+
+            characterForward.Set(verticalAxisLookAt);
         }
 
         public override void OnBlock(bool blocked)

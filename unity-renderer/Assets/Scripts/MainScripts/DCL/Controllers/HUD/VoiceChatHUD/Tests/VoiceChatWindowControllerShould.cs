@@ -5,6 +5,8 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System.Collections.Generic;
+using DCl.Social.Friends;
+using DCL.Social.Friends;
 using UnityEngine;
 using static DCL.SettingsCommon.GeneralSettings;
 
@@ -16,6 +18,7 @@ public class VoiceChatWindowControllerShould
     private IUserProfileBridge userProfileBridge;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
+    private IMouseCatcher mouseCatcher;
     private DataStore dataStore;
 
     [SetUp]
@@ -27,10 +30,11 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.Configure().CreateVoiceChatWindowView().Returns(info => voiceChatWindowComponentView);
         voiceChatWindowController.Configure().CreateVoiceChatBatView().Returns(info => voiceChatBarComponentView);
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        mouseCatcher = Substitute.For<IMouseCatcher>();
         userProfileBridge.Configure().GetOwn().Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         userProfileBridge.Configure().Get(Arg.Any<string>()).Returns(info => ScriptableObject.CreateInstance<UserProfile>());
         friendsController = Substitute.For<IFriendsController>();
-        friendsController.Configure().GetFriends().Returns(info => new Dictionary<string, FriendsController.UserStatus>());
+        friendsController.Configure().GetAllocatedFriends().Returns(info => new Dictionary<string, UserStatus>());
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         dataStore = new DataStore();
 
@@ -39,7 +43,7 @@ public class VoiceChatWindowControllerShould
         dataStore.featureFlags.flags.Set(testFeatureFlag);
 
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
-        voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i);
+        voiceChatWindowController.Initialize(userProfileBridge, friendsController, socialAnalytics, dataStore, Settings.i, mouseCatcher);
     }
 
     [TearDown]
@@ -68,7 +72,7 @@ public class VoiceChatWindowControllerShould
         if (isVisible)
             voiceChatWindowComponentView.Received(1).Show();
         else
-            voiceChatWindowComponentView.Received(1).Hide();
+            voiceChatWindowComponentView.ReceivedWithAnyArgs(1).Hide();
     }
 
     [Test]
@@ -139,44 +143,56 @@ public class VoiceChatWindowControllerShould
         voiceChatWindowController.CloseView();
 
         // Assert
-        voiceChatWindowComponentView.Received(1).Hide();
+        voiceChatWindowComponentView.ReceivedWithAnyArgs(1).Hide();
     }
 
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void JoinVoiceChatCorrectly(bool isJoined)
+    public void RequestJoinVoiceChatCorrectly(bool isJoined)
     {
         // Arrange
         dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
-        voiceChatWindowController.isOwnPLayerTalking = true;
-        voiceChatWindowController.isJoined = !isJoined;
-        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
 
         // Act
-        voiceChatWindowController.JoinVoiceChat(isJoined);
+        voiceChatWindowController.RequestJoinVoiceChat(isJoined);
 
         // Assert
-        voiceChatWindowComponentView.Received(1).SetAsJoined(isJoined);
-
-        if (isJoined)
-        {
-            voiceChatBarComponentView.Received(1).Show();
-        }
-        else
+        if (!isJoined)
         {
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
             Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
-            Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
-            voiceChatBarComponentView.Received(1).Hide();
         }
+    }
 
-        Assert.AreEqual(isJoined, voiceChatWindowController.isJoined);
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaiseOnVoiceChatStatusUpdatedCorrectly(bool isJoined)
+    {
+        // Arrange
+        voiceChatWindowController.VoiceChatWindowView.Configure().numberOfPlayers.Returns(info => 1);
+        dataStore.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true), false);
+        voiceChatWindowController.isOwnPLayerTalking = true;
 
-        if (!isJoined)
-            socialAnalytics.Received(1).SendVoiceChannelDisconnection();
-        else
+        // Act
+        voiceChatWindowController.OnVoiceChatStatusUpdated(isJoined, false);
+
+        // Assert
+        voiceChatWindowComponentView.Received().SetAsJoined(isJoined);
+        voiceChatBarComponentView.Received().SetAsJoined(isJoined);
+
+        if (isJoined)
+        {
             socialAnalytics.Received(1).SendVoiceChannelConnection(1);
+        }
+        else
+        {
+            socialAnalytics.Received().SendVoiceChannelDisconnection();
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Key);
+            Assert.IsFalse(dataStore.voiceChat.isRecording.Get().Value);
+            Assert.IsFalse(voiceChatWindowController.isOwnPLayerTalking);
+        }
     }
 
     [Test]
@@ -185,8 +201,8 @@ public class VoiceChatWindowControllerShould
         // Arrange
         string testPlayerId = "playerId4";
         string testPlayerName = "Test Player";
-        Player testPlayer = new Player 
-        { 
+        Player testPlayer = new Player
+        {
             id = testPlayerId,
             name = testPlayerName
         };
@@ -342,13 +358,13 @@ public class VoiceChatWindowControllerShould
         switch (voiceChatAllow)
         {
             case VoiceChatAllow.ALL_USERS:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(0);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(0);
                 break;
             case VoiceChatAllow.VERIFIED_ONLY:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(1);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(1);
                 break;
             case VoiceChatAllow.FRIENDS_ONLY:
-                voiceChatWindowComponentView.Received(1).SelectAllowUsersOption(2);
+                voiceChatWindowComponentView.Received().SelectAllowUsersOption(2);
                 break;
         }
 

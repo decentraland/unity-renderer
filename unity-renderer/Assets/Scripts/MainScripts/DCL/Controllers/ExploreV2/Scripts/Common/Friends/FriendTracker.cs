@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Social.Friends;
 using UnityEngine;
 
 class FriendTracker
@@ -7,7 +8,7 @@ class FriendTracker
     HashSet<TrackedSceneInfo> friendListeners = new HashSet<TrackedSceneInfo>();
 
     public UserProfile profile { private set; get; }
-    public FriendsController.UserStatus status { private set; get; }
+    public UserStatus status { private set; get; }
     Color backgroundColor;
 
     public FriendTracker(string userId, Color backgroundColor)
@@ -16,7 +17,7 @@ class FriendTracker
         this.backgroundColor = backgroundColor;
     }
 
-    public void SetStatus(FriendsController.UserStatus newStatus) { status = newStatus; }
+    public void SetStatus(UserStatus newStatus) { status = newStatus; }
 
     public void AddListener(TrackedSceneInfo listener)
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,11 +13,13 @@ namespace AvatarSystem
     public class AvatarCurator : IAvatarCurator
     {
         private readonly IWearableItemResolver wearableItemResolver;
+        private readonly IEmotesCatalogService emotesCatalog;
 
-        public AvatarCurator(IWearableItemResolver wearableItemResolver)
+        public AvatarCurator(IWearableItemResolver wearableItemResolver, IEmotesCatalogService emotesCatalog)
         {
             Assert.IsNotNull(wearableItemResolver);
             this.wearableItemResolver = wearableItemResolver;
+            this.emotesCatalog = emotesCatalog;
         }
 
         /// <summary>
@@ -35,14 +38,47 @@ namespace AvatarSystem
             WearableItem mouth,
             List<WearableItem> wearables,
             List<WearableItem> emotes
-            )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, CancellationToken ct = default)
+            )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, IEnumerable<string> emoteIds, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
             try
             {
+                //Old flow contains emotes among the wearablesIds
                 (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
+                
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
+
+                //New emotes flow use the emotes catalog
+                if (emoteIds != null)
+                {
+                    DateTime startLoadTime = DateTime.Now;
+                    
+                    var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
+
+                    var loadTimeDelta = DateTime.Now - startLoadTime;
+                    if (loadTimeDelta.TotalSeconds > 5)
+                    {
+                        //This error is good to have to detect too long load times early
+                        Debug.LogError("Curate: emotes load time is too high: " + (DateTime.Now - startLoadTime));
+                    }
+                    
+                    if (moreEmotes != null)
+                    {
+                        //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
+                        var loadedEmotesFilter = new HashSet<string>();
+                        emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
+                        
+                        foreach(var otherEmote in moreEmotes)
+                            if (otherEmote != null)
+                            {
+                                if (loadedEmotesFilter.Contains(otherEmote.id))
+                                    continue;
+                                
+                                emotes.Add(otherEmote);
+                            }
+                    }
+                }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
                 for (int i = 0; i < wearableItems.Count; i++)

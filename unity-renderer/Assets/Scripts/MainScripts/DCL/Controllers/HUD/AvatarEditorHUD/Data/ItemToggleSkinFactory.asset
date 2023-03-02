@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23300c19748554de6be6160a98d939df, type: 3}
+  m_Name: ItemToggleSkinFactory
+  m_EditorClassIdentifier: 
+  nftList:
+  - rarity: rare
+    skin: {fileID: 11400000, guid: 896ac82262adcdb45b6866c0682a2231, type: 2}
+  - rarity: epic
+    skin: {fileID: 11400000, guid: d0ab405135384274abe61243bc33ae89, type: 2}
+  - rarity: legendary
+    skin: {fileID: 11400000, guid: fbc822044e92c4d4d899980c03ee0bc0, type: 2}
+  - rarity: mythic
+    skin: {fileID: 11400000, guid: 178fb1dae98a3404faa72fb94d08ef0e, type: 2}
+  - rarity: unique
+    skin: {fileID: 11400000, guid: e9b5c4552104e3e4da91e9ab0a3827b9, type: 2}
+  - rarity: common
+    skin: {fileID: 11400000, guid: 3a856b271ac612747bdfa50efa26fc7d, type: 2}
+  - rarity: uncommon
+    skin: {fileID: 11400000, guid: 2ed4fac2cecbeb8468529aeb6448dcf3, type: 2}
+  - rarity: base
+    skin: {fileID: 11400000, guid: 3986c9106c9d88b4898dc92ef16dc48c, type: 2}

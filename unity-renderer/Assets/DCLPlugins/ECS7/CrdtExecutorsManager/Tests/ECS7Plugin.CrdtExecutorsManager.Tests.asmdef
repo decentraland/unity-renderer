@@ -1,0 +1,35 @@
+{
+    "name": "ECS7Plugin.CrdtExecutorsManager.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:a871c50d0a774d2b8594d36cb4766e5e",
+        "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:fd239a454d9a4039b164f90867ea3216",
+        "GUID:3509dee42d344efa97defa29ec7c351b",
+        "GUID:f8a3a0af3ed28474c885e04c605a7962",
+        "GUID:81752b70f82044a190c11544449730f2",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:3047fd2f05bcaae498a99a3f9321f9a8",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:f3eba44237ea4969b29674e332426425",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

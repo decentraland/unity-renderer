@@ -11,10 +11,10 @@ namespace DCL
     {
         const float MAX_TIME_BUDGET = 0.01f;
 
-        private struct MarkedEntityInfo
+        private readonly struct MarkedEntityInfo
         {
-            public ParcelScene scene;
-            public IDCLEntity entity;
+            public readonly ParcelScene scene;
+            public readonly IDCLEntity entity;
 
             public MarkedEntityInfo(ParcelScene scene, IDCLEntity entity)
             {
@@ -23,10 +23,10 @@ namespace DCL
             }
         }
 
-        private struct MarkedSharedComponentInfo
+        private readonly struct MarkedSharedComponentInfo
         {
-            public ParcelScene scene;
-            public string componentId;
+            public readonly ParcelScene scene;
+            public readonly string componentId;
 
             public MarkedSharedComponentInfo(ParcelScene scene, string componentId)
             {
@@ -135,7 +135,7 @@ namespace DCL
 
             foreach (var scene in scenesToRemove)
             {
-                if (scene != null && !Environment.i.world.state.loadedScenes.ContainsKey(scene.sceneData.id))
+                if (scene != null && scene.gameObject)
                     Object.Destroy(scene.gameObject);
 
                 if (!immediate && DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)

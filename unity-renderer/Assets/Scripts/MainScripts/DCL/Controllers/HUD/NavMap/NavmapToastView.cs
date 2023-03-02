@@ -1,8 +1,6 @@
 using DCL.Interface;
-using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL
@@ -21,29 +19,49 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
+
         Vector2Int location;
         RectTransform rectTransform;
         MinimapMetadata minimapMetadata;
 
-        AssetPromise_Texture texturePromise = null;
+        AssetPromise_Texture texturePromise;
+        string currentImageUrl;
 
-        public System.Action OnGotoClicked;
+        private void Open(int cursorTileX, int cursorTileY)
+        {
+            if (gameObject.activeInHierarchy)
+                Close();
+            
+            var sceneInfo = minimapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
+            if (sceneInfo == null)
+                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
-        public bool isOpen { get { return gameObject.activeInHierarchy; } }
+            Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
+        }
 
         private void Awake()
         {
             minimapMetadata = MinimapMetadata.GetMetadata();
             rectTransform = transform as RectTransform;
+        }
 
+        private void Start()
+        {
+            gameObject.SetActive(false);
+            
             goToButton.onClick.AddListener(OnGotoClick);
-
+            
             minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
+            MapRenderer.OnParcelClicked += Open;
+            MapRenderer.OnCursorFarFromParcel += Close;
         }
 
         private void OnDestroy()
         {
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
+            MapRenderer.OnParcelClicked -= Open;
+            MapRenderer.OnCursorFarFromParcel -= Close;
+
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
@@ -110,7 +128,7 @@ namespace DCL
 
         public void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            if (!isOpen)
+            if (!gameObject.activeInHierarchy)
                 return;
 
             bool updatedCurrentLocationInfo = false;
@@ -149,7 +167,7 @@ namespace DCL
 
         }
 
-        public void OnCloseClick()
+        public void Close()
         {
             if (gameObject.activeSelf)
                 AudioScriptableObjects.dialogClose.Play(true);
@@ -159,15 +177,12 @@ namespace DCL
 
         private void OnGotoClick()
         {
-            OnGotoClicked?.Invoke();
+            DataStore.i.HUDs.navmapVisible.Set(false);
+            Environment.i.world.teleportController.Teleport(location.x, location.y);
 
-            WebInterface.GoTo(location.x, location.y);
-
-            OnCloseClick();
+            Close();
         }
-
-        string currentImageUrl;
-
+        
         private void DisplayThumbnail(Texture2D texture)
         {
             scenePreviewImage.texture = texture;

@@ -1,41 +1,42 @@
 {
-  "name": "CullingControllerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
-    "GUID:15fc0a57446b3144c949da3e2b9737a9",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:760a1d365aad58044916992b072cf2a6",
-    "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
-    "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-    "GUID:97d8897529779cb49bebd400c7f402a6",
-    "GUID:e5e0eb4db75e1fb428f720319518e32c",
-    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-    "GUID:f51a759358124dc4180700f1f4f717d8",
-    "GUID:0e39b687cf35c7e40a87f984cdaed9f5",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-    "GUID:a881b57670b1d2747a6d7f9e32b63230",
-    "GUID:44a9db8f655ab05409802e5476cf9dd3",
-    "GUID:e8e8b57e56da94749a3e4bbb6c38524c",
-    "GUID:9a16a75a9de4ba2458b50ed374f1b28f"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "NSubstitute.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "CullingControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "GUID:e5e0eb4db75e1fb428f720319518e32c",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:f51a759358124dc4180700f1f4f717d8",
+        "GUID:0e39b687cf35c7e40a87f984cdaed9f5",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:e8e8b57e56da94749a3e4bbb6c38524c",
+        "GUID:9a16a75a9de4ba2458b50ed374f1b28f",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

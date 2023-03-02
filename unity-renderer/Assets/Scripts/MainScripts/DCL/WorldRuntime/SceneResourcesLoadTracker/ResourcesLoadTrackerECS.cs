@@ -7,36 +7,37 @@ using UnityEngine;
 public class ResourcesLoadTrackerECS : IResourcesLoadTracker
 {
     public int pendingResourcesCount => resourcesNotReady.Count;
-    
-    public float loadingProgress 
+
+    public float loadingProgress
     {
         get
         {
-            int resourcesReadyCount = resourcesReady;
-            return resourcesReadyCount > 0 ? (resourcesReadyCount - pendingResourcesCount) * 100f / resourcesReadyCount : 100f;
+            if (resourcesReady < pendingResourcesCount)
+                return 0;
+            return resourcesReady > 0 ? (resourcesReady - pendingResourcesCount) * 100f / resourcesReady : 100f;
         }
     }
-    
+
     public event Action OnResourcesLoaded;
     public event Action OnStatusUpdate;
-    
+
     private int resourcesReady;
-    
+
     private readonly List<object> resourcesNotReady = new List<object>();
-    private readonly string sceneId;
+    private readonly int sceneNumber;
     private readonly DataStore_ECS7 dataStore;
-    
-    public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7,string sceneId)
+
+    public ResourcesLoadTrackerECS(DataStore_ECS7 dataStoreEcs7, int sceneNumber)
     {
         this.dataStore = dataStoreEcs7;
-        this.sceneId = sceneId;
-        dataStore.pendingSceneResources.AddOrSet(sceneId, new BaseRefCountedCollection<object>());
-        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated += ResourcesUpdate;
+        this.sceneNumber = sceneNumber;
+        dataStore.pendingSceneResources.AddOrSet(sceneNumber, new BaseRefCountedCollection<object>());
+        dataStore.pendingSceneResources[sceneNumber].OnRefCountUpdated += ResourcesUpdate;
     }
 
     public void Dispose()
     {
-        dataStore.pendingSceneResources[sceneId].OnRefCountUpdated -= ResourcesUpdate;
+        dataStore.pendingSceneResources[sceneNumber].OnRefCountUpdated -= ResourcesUpdate;
     }
 
     public void PrintWaitingResourcesDebugInfo()
@@ -81,7 +82,7 @@ public class ResourcesLoadTrackerECS : IResourcesLoadTracker
             resourcesNotReady.Remove(model);
 
         resourcesReady++;
-        
+
         if (resourcesNotReady.Count == 0)
             OnResourcesLoaded?.Invoke();
         else

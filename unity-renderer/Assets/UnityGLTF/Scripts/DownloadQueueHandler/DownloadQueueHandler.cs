@@ -74,7 +74,9 @@ namespace UnityGLTF
             {
                 while (iterator.MoveNext())
                 {
-                    if (iterator.Current == null)
+                    // It is mandatory to call `Equals` instead of `==`
+                    // as behind an interface a Unity Object may be, and `IsNativeObjectAlive` should be checked
+                    if (Equals(iterator.Current, null))
                         continue;
 
                     if (nextToDownload == null)

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: BaseResolutionControlConfiguration
   m_EditorClassIdentifier: 
   title: BASE RESOLUTION
-  controlPrefab: {fileID: 2909500743065466280, guid: 1c806fc61334f44de8ff0ae2a87beea3,
+  controlPrefab: {fileID: 4446727373572794343, guid: 1352863ed57dc8046abbb05f4db2520b,
     type: 3}
   controlController: {fileID: 11400000, guid: b5ed3d323bb00cf41855795cbedec5c0, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe: []
   isBeta: 0
   spinBoxLabels:
-  - Match 720p
-  - Match 1080p
-  - Unlimited
+  - Normal
+  - Match display

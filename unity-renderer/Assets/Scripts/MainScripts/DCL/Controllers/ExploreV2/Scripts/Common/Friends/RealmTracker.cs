@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Social.Friends;
 using UnityEngine;
 
 public class RealmTracker
@@ -7,7 +8,7 @@ public class RealmTracker
     HashSet<TrackedRealmInfo> realmListeners = new HashSet<TrackedRealmInfo>();
 
     public UserProfile profile { private set; get; }
-    public FriendsController.UserStatus status { private set; get; }
+    public UserStatus status { private set; get; }
     Color backgroundColor;
 
     public RealmTracker(string userId, Color backgroundColor)
@@ -16,7 +17,7 @@ public class RealmTracker
         this.backgroundColor = backgroundColor;
     }
 
-    public void SetStatus(FriendsController.UserStatus newStatus) { status = newStatus; }
+    public void SetStatus(UserStatus newStatus) { status = newStatus; }
 
     public void AddListener(TrackedRealmInfo listener)
     {

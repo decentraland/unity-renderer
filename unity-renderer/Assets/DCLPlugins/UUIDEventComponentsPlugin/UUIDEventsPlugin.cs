@@ -17,7 +17,7 @@ public class UUIDEventsPlugin : IPlugin
         inputControllerLegacy = new InputController_Legacy();
         hoverCanvas = LoadAndInstantiate<InteractionHoverCanvasController>("InteractionHoverCanvas");
 
-        pointerEventsController = new PointerEventsController(inputControllerLegacy, hoverCanvas);
+        pointerEventsController = new PointerEventsController(inputControllerLegacy, hoverCanvas, SceneReferences.i?.mouseCatcher, DataStore.i.Get<DataStore_World>().currentRaycaster);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 
@@ -35,7 +35,7 @@ public class UUIDEventsPlugin : IPlugin
         factory.createOverrides.Add((int) CLASS_ID_COMPONENT.UUID_CALLBACK, OnUUIDCallbackIsAdded);
     }
 
-    private void OnUUIDCallbackIsAdded(string sceneid, long entityid, ref int classId, object data)
+    private void OnUUIDCallbackIsAdded(int sceneNumber, long entityid, ref int classId, object data)
     {
         OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
         classId = (int) model.GetClassIdFromType();

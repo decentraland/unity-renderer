@@ -22,7 +22,7 @@ namespace DCL.Tests
             // Configure Scene
             parcelScene = Substitute.For<IParcelScene>();
             var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.id = "IdTest";
+            sceneData.sceneNumber = 666;
             parcelScene.Configure().sceneData.Returns(sceneData);
             
             // Configure entity
@@ -47,7 +47,7 @@ namespace DCL.Tests
             resourcesLoadTracker.Track(new ECSComponentsManagerLegacy(parcelScene), Environment.i.world.state);
             
             // Act
-            resourcesLoadTracker.Track(parcelScene.sceneData.id);
+            resourcesLoadTracker.Track(parcelScene.sceneData.sceneNumber);
             
             // Assert
             Assert.IsTrue(resourcesLoadTracker.tracker is ResourcesLoadTrackerECS);

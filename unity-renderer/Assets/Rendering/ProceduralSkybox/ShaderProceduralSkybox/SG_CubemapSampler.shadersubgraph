@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "9e0534ebc8b54df598078ec141c427ee",
     "m_Properties": [
@@ -20,6 +20,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "7a068a623d9044f6863cbba947d4e945"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "fa1011d61bb0411b87924ba0319659e3"
@@ -739,10 +745,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "fa1011d61bb0411b87924ba0319659e3"
@@ -894,9 +901,13 @@
         "m_GuidSerialized": "a9430958-4155-4fa7-a298-d49b77571704"
     },
     "m_Name": "DirectionSpace",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_0af09c234dd54283b7f283204df340c2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1510,9 +1521,13 @@
         "m_GuidSerialized": "cad1f917-7358-490b-a580-4d08e9a8c05a"
     },
     "m_Name": "Color",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_35230f9966fc40b997aecbf885c62be0",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1798,9 +1813,13 @@
         "m_GuidSerialized": "f9dab284-274b-434e-b5b7-b04511ae6776"
     },
     "m_Name": "TilingAndOffset",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector4_4b8950ab6e6a4c1f922e956cea0d84bc",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2661,6 +2680,30 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "7a068a623d9044f6863cbba947d4e945",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "f7f7ec8e4e5c41d7b5176660889d61b5"
+        },
+        {
+            "m_Id": "4b8950ab6e6a4c1f922e956cea0d84bc"
+        },
+        {
+            "m_Id": "35230f9966fc40b997aecbf885c62be0"
+        },
+        {
+            "m_Id": "c9cdf0fd80ee4445b2741b1b64d42728"
+        },
+        {
+            "m_Id": "0af09c234dd54283b7f283204df340c2"
+        }
+    ]
 }
 
 {
@@ -4052,9 +4095,13 @@
         "m_GuidSerialized": "375f6c07-b636-4afe-bcfc-04b4cc27f238"
     },
     "m_Name": "RotationSpeed",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector3_c9cdf0fd80ee4445b2741b1b64d42728",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -4779,9 +4826,13 @@
         "m_GuidSerialized": "7c73db96-ca0f-4e17-8fb5-56637225166a"
     },
     "m_Name": "Cubemap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Cubemap_f7f7ec8e4e5c41d7b5176660889d61b5",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,

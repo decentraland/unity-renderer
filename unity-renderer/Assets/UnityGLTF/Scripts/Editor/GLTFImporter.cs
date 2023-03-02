@@ -20,7 +20,9 @@ using Object = UnityEngine.Object;
 
 namespace UnityGLTF
 {
-    [ScriptedImporter(1, new[] { "glb", "gltf" })]
+
+    // Disabled because we are using gltfast now
+    //[ScriptedImporter(1, new[] { "glb", "gltf" })]
     public class GLTFImporter : ScriptedImporter
     {
         [SerializeField] private bool _removeEmptyRootObjects = true;
@@ -124,7 +126,6 @@ namespace UnityGLTF
             loader.addImagesToPersistentCaching = false;
             loader.addMaterialsToPersistentCaching = false;
             loader.initialVisibility = true;
-            loader.useMaterialTransition = false;
             loader.maxTextureSize = 512;
             loader.maximumLod = _maximumLod;
             loader.forceGPUOnlyMesh = false;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -9,6 +8,7 @@ using DCL.Models;
 using ECSSystems.PlayerSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -24,18 +24,19 @@ namespace Tests
         {
             scenes = DataStore.i.ecs7.scenes;
             scenes.Add(Substitute.For<IParcelScene>());
+
             scenes[0]
-                .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
+               .sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene()
                 {
-                    id = "temptation", basePosition = new Vector2Int(1, 0)
+                    sceneNumber = 666, basePosition = new Vector2Int(1, 0)
                 });
 
             componentsWriter = Substitute.For<IECSComponentWriter>();
             avatarTransform = (new GameObject("GO")).transform;
-            avatarTransform.position = new UnityEngine.Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
+            avatarTransform.position = new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
 
             CommonScriptableObjects.rendererState.Set(true);
-            CommonScriptableObjects.worldOffset.Set(UnityEngine.Vector3.zero);
+            CommonScriptableObjects.worldOffset.Set(Vector3.zero);
             DataStore.i.world.avatarTransform.Set(avatarTransform);
         }
 
@@ -43,89 +44,100 @@ namespace Tests
         public void TearDown()
         {
             DataStore.Clear();
+            CommonScriptableObjects.UnloadAll();
             Object.Destroy(avatarTransform.gameObject);
         }
 
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            var update = ECSPlayerTransformSystem.CreateSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
-            update.Invoke();
-            componentsWriter.Received(1)
-                            .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.PLAYER_ENTITY,
-                                ComponentID.TRANSFORM,
-                                Arg.Any<ECSTransform>(),
-                                Arg.Any<long>(),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+            system.Update();
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
-                                ComponentID.TRANSFORM,
-                                Arg.Any<ECSTransform>(),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.PLAYER_ENTITY,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Any<ECSTransform>(),
+                                 Arg.Any<int>(),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Any<ECSTransform>(),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
 
             componentsWriter.ClearReceivedCalls();
 
-            update.Invoke();
+            system.Update();
+
             componentsWriter.DidNotReceive()
                             .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.PLAYER_ENTITY,
-                                ComponentID.TRANSFORM,
-                                Arg.Any<ECSTransform>());
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.PLAYER_ENTITY,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Any<ECSTransform>());
+
+            system.Dispose();
         }
 
         [Test]
         public void SendTransformIfChanged()
         {
-            var update = ECSPlayerTransformSystem.CreateSystem(componentsWriter);
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, DataStore.i.ecs7.scenes,
+                DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
-            update.Invoke();
-            componentsWriter.Received(1)
-                            .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.PLAYER_ENTITY,
-                                ComponentID.TRANSFORM,
-                                Arg.Is<ECSTransform>(x => x.position == UnityEngine.Vector3.zero),
-                                Arg.Any<long>(),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+            system.Update();
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
-                                ComponentID.TRANSFORM,
-                                Arg.Is<ECSTransform>(x => x.position == UnityEngine.Vector3.zero),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.PLAYER_ENTITY,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Is<ECSTransform>(x => x.position == Vector3.zero),
+                                 Arg.Any<int>(),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Is<ECSTransform>(x => x.position == Vector3.zero),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
 
             componentsWriter.ClearReceivedCalls();
 
-            avatarTransform.position = new UnityEngine.Vector3(0, 0, 0);
+            avatarTransform.position = new Vector3(0, 0, 0);
 
-            update.Invoke();
-            componentsWriter.Received(1)
-                            .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.PLAYER_ENTITY,
-                                ComponentID.TRANSFORM,
-                                Arg.Is<ECSTransform>(x =>
-                                    x.position == new UnityEngine.Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
-                                Arg.Any<long>(),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+            system.Update();
 
             componentsWriter.Received(1)
                             .PutComponent(
-                                scenes[0].sceneData.id,
-                                SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
-                                ComponentID.TRANSFORM,
-                                Arg.Is<ECSTransform>(x =>
-                                    x.position == new UnityEngine.Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
-                                Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.PLAYER_ENTITY,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Is<ECSTransform>(x =>
+                                     x.position == new Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
+                                 Arg.Any<int>(),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.SEND_TO_SCENE));
+
+            componentsWriter.Received(1)
+                            .PutComponent(
+                                 scenes[0].sceneData.sceneNumber,
+                                 SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION,
+                                 ComponentID.TRANSFORM,
+                                 Arg.Is<ECSTransform>(x =>
+                                     x.position == new Vector3(-ParcelSettings.PARCEL_SIZE, 0, 0)),
+                                 Arg.Is<ECSComponentWriteType>(x => x == ECSComponentWriteType.EXECUTE_LOCALLY));
+
+            system.Dispose();
         }
     }
 }

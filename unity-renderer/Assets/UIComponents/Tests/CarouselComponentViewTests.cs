@@ -152,7 +152,7 @@ public class CarouselComponentViewTests
         BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
 
         // Act
-        carouselComponent.AddItem(testItem);
+        carouselComponent.AddItemWithDotsSelector(testItem);
 
         // Assert
         Assert.IsTrue(carouselComponent.instantiatedItems.Contains(testItem), "The item does not exist in the instantiatedItems list.");
@@ -163,7 +163,7 @@ public class CarouselComponentViewTests
     {
         // Arrange
         BaseComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        carouselComponent.AddItem(testItem);
+        carouselComponent.AddItemWithDotsSelector(testItem);
 
         // Act
         carouselComponent.RemoveItem(testItem);

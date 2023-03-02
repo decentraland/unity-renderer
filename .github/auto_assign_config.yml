@@ -5,18 +5,22 @@ addReviewers: true
 numberOfReviewers: 1
 useReviewGroups: true
 reviewGroups:
-  devs:
+  techleads:
     - AjimenezDCL
-    - pravusjif
-    - sandrade-dcl
     - Kinerius
+    - mikhail-dcl
+  devs:    
+    - sandrade-dcl    
     - lorux0
     - davidejensen
+    - dalkia
+    - popuz    
   qa:
     - kwssbocian
-    - kwspgoliasz
+    - kwsskulinski
 
 filterLabels:
   exclude:
     - no_reviewers
     - "Not QA Needed"
+    - "No QA Needed"

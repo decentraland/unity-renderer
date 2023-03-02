@@ -99,7 +99,7 @@ namespace DCL.ECSComponents
         private bool IsPlayerInsideArea()
         {
             if (entity == null || scene == null ||
-                scene.sceneData.id != CommonScriptableObjects.sceneID.Get())
+                scene.sceneData.sceneNumber != CommonScriptableObjects.sceneNumber.Get())
                 return false;
             
             UnityEngine.Vector3 center = entity.gameObject.transform.position;

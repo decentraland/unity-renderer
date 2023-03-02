@@ -153,8 +153,9 @@ namespace Tests
 
             //Screen resize event
             DataStore.i.screen.size.Set(desiredScreenSize);
-            // Size changes occurs on the next late update
-            yield return null;
+            
+            // We wait until the layout is not dirty
+            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
 
             var currentSize = uiContainerStack.childHookRectTransform.rect.size;
             Assert.AreEqual(desiredScreenSize.x * widthPercent / 100f, currentSize.x, 0.01f, "UIContainer width after screen resize");

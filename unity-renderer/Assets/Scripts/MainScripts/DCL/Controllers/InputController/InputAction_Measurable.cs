@@ -11,10 +11,13 @@ public class InputAction_Measurable : ScriptableObject
     public event ValueChanged OnValueChanged;
 
     [SerializeField] internal DCLAction_Measurable dclAction;
-    public DCLAction_Measurable GetDCLAction() => dclAction;
+    public DCLAction_Measurable DCLAction => dclAction;
 
     [SerializeField] private float currentValue = 0;
     public float GetValue() => currentValue;
+
+    [SerializeField] internal BooleanVariable blockMeasurable;
+    public BooleanVariable isMeasurableBlocked { get => blockMeasurable; set => blockMeasurable = value; }
 
     internal void RaiseOnValueChanged(float value)
     {

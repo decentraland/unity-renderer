@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.CRDT
 {
@@ -10,8 +10,7 @@ namespace DCL.CRDT
         private readonly IParcelScene ownerScene;
         private readonly ECSComponentsManager ecsManager;
 
-        private bool sceneAdded = false;
-        private readonly IList<IParcelScene> loadedScenes;
+        private bool disposed = false;
 
         public CRDTProtocol crdtProtocol { get; }
 
@@ -20,43 +19,64 @@ namespace DCL.CRDT
             ownerScene = scene;
             crdtProtocol = new CRDTProtocol();
             ecsManager = componentsManager;
-            loadedScenes = DataStore.i.ecs7.scenes;
         }
 
         public void Dispose()
         {
-            loadedScenes.Remove(ownerScene);
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::Dispose Called while disposed");
+#endif
+
+            if (disposed)
+                return;
+
+            disposed = true;
+
+            using (var entities = ownerScene.entities.Values.GetEnumerator())
+            {
+                while (entities.MoveNext())
+                {
+                    var entity = entities.Current;
+                    entity.OnRemoved -= OnEntityRemoved;
+                    ecsManager.RemoveAllComponents(ownerScene, entity);
+                }
+            }
         }
 
         public void Execute(CRDTMessage crdtMessage)
         {
-            if (!sceneAdded)
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::Execute Called while disposed");
+#endif
+
+            CRDTProtocol.EntityComponentData storedMessage = crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
+            CRDTProtocol.ProcessMessageResultType resultType = crdtProtocol.ProcessMessage(crdtMessage);
+
+            // If the message change the state
+            if (resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedData ||
+                resultType == CRDTProtocol.ProcessMessageResultType.StateUpdatedTimestamp ||
+                resultType == CRDTProtocol.ProcessMessageResultType.EntityWasDeleted)
             {
-                sceneAdded = true;
-                loadedScenes.Add(ownerScene);
+                ExecuteWithoutStoringState(crdtMessage.entityId, crdtMessage.componentId, crdtMessage.data);
             }
-
-            CRDTMessage storedMessage = crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
-            CRDTMessage resultMessage = crdtProtocol.ProcessMessage(crdtMessage);
-
-            // messages are the same so state didn't change
-            if (storedMessage == resultMessage)
-            {
-                return;
-            }
-
-            ExecuteWithoutStoringState(resultMessage);
         }
 
-        public void ExecuteWithoutStoringState(CRDTMessage crdtMessage)
+        public void ExecuteWithoutStoringState(long entityId, int componentId, object data)
         {
-            long entityId = crdtMessage.key1;
-            int componentId = crdtMessage.key2;
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning("CRDTExecutor::ExecuteWithoutStoringState Called while disposed");
+#endif
+
+            if (disposed)
+                return;
 
             // null data means to remove component, not null data means to update or create
-            if (crdtMessage.data != null)
+            if (data != null)
             {
-                PutComponent(ownerScene, entityId, componentId, crdtMessage.data);
+                PutComponent(ownerScene, entityId, componentId, data);
             }
             else
             {
@@ -72,9 +92,7 @@ namespace DCL.CRDT
 
         private void RemoveComponent(IParcelScene scene, long entityId, int componentId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -91,12 +109,12 @@ namespace DCL.CRDT
 
         private IDCLEntity GetOrCreateEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity != null)
+            if (scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return entity;
             }
 
+            // CreateEntity internally adds entity to `scene.entities`
             entity = scene.CreateEntity(entityId);
             entity.OnRemoved += OnEntityRemoved;
             return entity;
@@ -104,8 +122,7 @@ namespace DCL.CRDT
 
         private void RemoveEntity(IParcelScene scene, long entityId)
         {
-            IDCLEntity entity = scene.GetEntityById(entityId);
-            if (entity == null)
+            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -118,6 +135,7 @@ namespace DCL.CRDT
 
         private void OnEntityRemoved(IDCLEntity entity)
         {
+            entity.OnRemoved -= OnEntityRemoved;
             ecsManager.RemoveAllComponents(ownerScene, entity);
         }
     }

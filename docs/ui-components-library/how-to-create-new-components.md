@@ -21,26 +21,29 @@ Once we have created the visual part of our new UI Component, we need to impleme
 
 ### The model
 
-The model will be a `Serializable` class that will contain all the needed data that we want to configure for the UI Component. This class must inherits from `BaseComponentModel`:
+The model will be a `Serializable` class that will contain all the needed data that we want to configure for the UI Component. 
+This class must implement 'IEquatable<TModel>' interface. It is possible to achieve that by reclaring `record` instead of `class` or just implementing it manually.
+Keep in mind that passing a `Model` is controlled by an upper level (such as `Controller`) and thus should contain types that belong to a cross domain of `Controller-View` only, e.g. it can't contain any references to Serialized Components in a view itself.
 
 ```csharp
 using System;
 using UnityEngine;
 
 [Serializable]
-public class ButtonComponentModel : BaseComponentModel
+public record ButtonComponentModel
 {
     public string text;
     public Sprite icon;
 }
 ```
-
+In some specific cases `View` may not need `Model` at all. In this case it is not needed to introduce a class for that.
+	
 ### The logic
 
 This class will contain all the needed logic that will make the UI Component behaves as we expect. It must inherits from `BaseComponentView` and implements its own interface that will contain all the methods/properties we want to expose. The logic class can contain any reference from the prefab we need to manage in the code and also should expose the model in its inspector:
 
 ```csharp
-public interface IButtonComponentView
+public interface IButtonComponentView : IBaseComponentView<ButtonComponentModel>
 {
     /// <summary>
     /// Event that will be triggered when the button is clicked.
@@ -60,15 +63,12 @@ public interface IButtonComponentView
     void SetIcon(Sprite newIcon);
 }
 
-public class ButtonComponentView : BaseComponentView, IButtonComponentView
+public class ButtonComponentView : BaseComponentView<ButtonComponentModel>, IButtonComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] internal Button button;
-    [SerializeField] internal TMP_Text text;
-    [SerializeField] internal Image icon;
-
-    [Header("Configuration")]
-    [SerializeField] internal ButtonComponentModel model;
+    [field: SerializeField] internal Button button { get; private set; }
+    [field: SerializeField] internal TMP_Text text { get; private set; }
+    [field: SerializeField] internal Image icon { get; private set; }
 
     public Button.ButtonClickedEvent onClick => button?.onClick;
 
@@ -94,13 +94,14 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
     }
 }
 ```
-
-In order to make the UI Component easier to configure from Unity editor (for example for designers that want to configure the UI Component without the needed of implement any code), the `BaseComponentView` contains a **[REFRESH]** button in its inspector that will ease us to update the state of the UI with the data currently set in the model.
+UI Component can be fully configured:
+- from Unity editor (for example for designers that want to configure the UI Component without the needed of implement any code), the `BaseComponentView` contains a **[REFRESH]** button in its inspector that will ease us to update the state of the UI with the data currently set in the model.
+- by calling `SetModel` from `Controller`
 
 To make it possible, you will notice the `BaseComponentView` base class force us to implement the `RefreshControl()` method. This method should be the responsible of refreshing the whole UI correctly:
 
 ```csharp
-public class ButtonComponentView : BaseComponentView, IButtonComponentView
+public class ButtonComponentView : BaseComponentView<ButtonComponentModel>, IButtonComponentView
 {
 		// ...
 
@@ -118,23 +119,6 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 ```
 
 ![Untitled](how-to-create-new-components/Untitled%202.png)
-
-Finally, if we want our UI Component exposes a method that fully configure the whole component directly with a model (it is useful for cases when we want to set all the configuration of an UI Component from code in one go), we need to implement the interface `IComponentModelConfig` which will force us to implement the method `Configure()`. This method only should update the `model` variable with the incoming data and call the `RefreshControl()` method:
-
-```csharp
-public class ButtonComponentView : BaseComponentView, IButtonComponentView, **IComponentModelConfig**
-{
-    // ...
-
-    public void **Configure**(BaseComponentModel newModel)
-    {
-        model = (ButtonComponentModel)newModel;
-        RefreshControl();
-    }
-
-    // ...
-}
-```
 
 ## 3. Implement the tests coverage for the UI Component
 

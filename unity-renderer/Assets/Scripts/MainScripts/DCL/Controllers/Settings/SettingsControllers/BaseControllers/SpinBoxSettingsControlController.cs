@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.EventSystems;
 
 namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 {
@@ -12,5 +13,7 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 
         public event Action<string> OnCurrentLabelChange;
         protected void RaiseOnCurrentLabelChange(string newCurrentLabel) { OnCurrentLabelChange?.Invoke(newCurrentLabel); }
+        
+        public virtual void OnPointerClicked(PointerEventData eventData) { }
     }
 }

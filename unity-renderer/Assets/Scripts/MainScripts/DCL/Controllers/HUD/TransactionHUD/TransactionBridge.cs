@@ -10,7 +10,8 @@ public class TransactionBridge : MonoBehaviour
         [System.Serializable]
         public class RequestWeb3ApiUsePayload
         {
-            public string sceneId;
+            // public string sceneId;
+            public int sceneNumber;
             public string message;
             public string toAddress;
             public float amount;
@@ -46,7 +47,8 @@ public class TransactionBridge : MonoBehaviour
         {
             id = model.id,
             requestType = requestType,
-            sceneId = model.payload.sceneId,
+            // sceneId = model.payload.sceneId,
+            sceneNumber = model.payload.sceneNumber,
             message = model.payload.message,
             toAddress = model.payload.toAddress,
             amount = model.payload.amount,

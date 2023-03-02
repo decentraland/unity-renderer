@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "../../static",
+    "baseUrl": "..",
+    "strict": true,
+    "strictNullChecks": true,
+    "rootDir": "../"
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "*.ts"
+  ]
+}

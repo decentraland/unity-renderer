@@ -1,27 +1,47 @@
+using Cysharp.Threading.Tasks;
+using DCL.Providers;
 using System.Collections;
 using NUnit.Framework;
+using System;
 using UnityEngine.TestTools;
 
 public class AirdroppingHUDView_Should : IntegrationTestSuite_Legacy
 {
     private AirdroppingHUDController controller;
     private AirdroppingHUDView view;
+    private HUDFactory factory;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        controller = new AirdroppingHUDController();
         ThumbnailsManager.bypassRequests = true;
-        view = controller.view;
+
+        factory = new HUDFactory(new AddressableResourceProvider());
+
+        yield return factory.CreateAirdroppingHUDView().ToCoroutine(resultHandler: CreateController);
+
+        void CreateController(AirdroppingHUDView viewAsset)
+        {
+            controller = new AirdroppingHUDController(viewAsset);
+            view = viewAsset;
+        }
+    }
+
+    [UnityTearDown]
+    protected override IEnumerator TearDown()
+    {
+        ThumbnailsManager.bypassRequests = false;
+        controller.Dispose();
+        factory.Dispose();
+        return base.TearDown();
     }
 
     [Test]
     public void CleanStateProperly()
     {
         view.CleanState();
-
         Assert.IsFalse(view.initialScreen.activeSelf);
         Assert.IsFalse(view.singleItemScreen.activeSelf);
         Assert.IsFalse(view.summaryScreen.activeSelf);
@@ -92,13 +112,5 @@ public class AirdroppingHUDView_Should : IntegrationTestSuite_Legacy
         Assert.AreEqual("subtitle", itemPanel[0].subtitle.text);
         Assert.AreEqual("item2", itemPanel[1].name.text);
         Assert.AreEqual("subtitle2", itemPanel[1].subtitle.text);
-    }
-
-    [UnityTearDown]
-    protected override IEnumerator TearDown()
-    {
-        ThumbnailsManager.bypassRequests = false;
-        controller.Dispose();
-        return base.TearDown();
     }
 }

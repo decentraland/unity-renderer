@@ -1,11 +1,11 @@
-using DCL.Helpers;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TMPro;
+using DCL.Helpers;
 using KernelConfigurationTypes;
-using Object = UnityEngine.Object;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL
 {
@@ -21,9 +21,9 @@ namespace DCL
         private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
         private const int MAX_SCENE_CHARACTER_TITLE = 29;
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
-        private int NAVMAP_CHUNK_LAYER;
 
-        public static MapRenderer i { get; private set; }
+        public static System.Action<int, int> OnParcelClicked;
+        public static System.Action OnCursorFarFromParcel;
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private Button ParcelHighlightButton;
@@ -33,22 +33,14 @@ namespace DCL
         [SerializeField] private Image parcelHighlighWithContentImagePrefab;
         [SerializeField] private Image selectParcelHighlighImagePrefab;
 
-        private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
-        private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
-        private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
-
         [HideInInspector] public Vector2Int cursorMapCoords;
         [HideInInspector] public bool showCursorCoords = true;
-        public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
         public MapAtlas atlas;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
         public Transform overlayContainerPlayers;
         public Transform globalUserMarkerContainer;
         public RectTransform playerPositionIcon;
-
-        public static System.Action<int, int> OnParcelClicked;
-        public static System.Action OnCursorFarFromParcel;
 
         public float scaleFactor = 1f;
 
@@ -57,24 +49,43 @@ namespace DCL
 
         public MapSceneIcon scenesOfInterestIconPrefab;
         public GameObject userIconPrefab;
+        public GameObject homePointIconPrefab;
         public UserMarkerObject globalUserMarkerPrefab;
+        private Dictionary<Vector2Int, Image> highlightedLands = new Dictionary<Vector2Int, Image>();
+        private BaseVariable<Vector2Int> homePointCoordinates = DataStore.i.HUDs.homePoint;
+        private RectTransform homePointIcon;
 
-        public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
+        private bool isInitialized = false;
+
+        private Vector2Int lastClickedCursorMapCoords;
+        private Vector3 lastPlayerPosition = new Vector3(float.NegativeInfinity, 0, float.NegativeInfinity);
+        private Vector2Int lastSelectedLand;
+        private int NAVMAP_CHUNK_LAYER;
+        private bool otherPlayersIconsEnabled = true;
+        private List<Vector2Int> ownedEmptyLands = new List<Vector2Int>();
+        private List<Vector2Int> ownedLandsWithContent = new List<Vector2Int>();
+
+        private bool parcelHighlightEnabledValue = false;
+        private BaseVariable<Vector3> playerWorldPosition = DataStore.i.player.playerWorldPosition;
 
         private HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
+        private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
+        private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
-
-        private Vector2Int lastClickedCursorMapCoords;
         private Pool usersInfoPool;
-
-        private bool parcelHighlightEnabledValue = false;
-        private bool otherPlayersIconsEnabled = true;
 
         List<WorldRange> validWorldRanges = new List<WorldRange>
         {
             new WorldRange(-150, -150, 150, 150) // default range
         };
+
+        public static MapRenderer i { get; private set; }
+
+        private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
+        public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
+
+        public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
 
         public bool parcelHighlightEnabled
         {
@@ -82,22 +93,16 @@ namespace DCL
             {
                 parcelHighlightEnabledValue = value;
                 parcelHighlightImage.gameObject.SetActive(parcelHighlightEnabledValue);
+                MapVisibilityChanged?.Invoke(value);
             }
-            get { return parcelHighlightEnabledValue; }
+
+            get
+            {
+                return parcelHighlightEnabledValue;
+            }
         }
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private Dictionary<Vector2Int, Image> highlightedLands = new Dictionary<Vector2Int, Image>();
-        private List<Vector2Int> ownedLandsWithContent = new List<Vector2Int>();
-        private List<Vector2Int> ownedEmptyLands = new List<Vector2Int>();
-        private Vector2Int lastSelectedLand;
-        private Vector3 lastPlayerPosition = new Vector3(float.NegativeInfinity, 0, float.NegativeInfinity);
-        private BaseVariable<Vector3> playerWorldPosition = DataStore.i.player.playerWorldPosition;
-
-        private bool isInitialized = false;
-
-        [HideInInspector]
-        public event System.Action<float, float> OnMovedParcelCursor;
 
         private void Awake()
         {
@@ -105,12 +110,41 @@ namespace DCL
             Initialize();
         }
 
+        void Update()
+        {
+            if ((playerWorldPosition.Get() - lastPlayerPosition).sqrMagnitude >= 0.1f * 0.1f)
+            {
+                lastPlayerPosition = playerWorldPosition.Get();
+                UpdateRendering(Utils.WorldToGridPositionUnclamped(lastPlayerPosition));
+            }
+
+            if (!parcelHighlightEnabled)
+                return;
+
+            UpdateCursorMapCoords();
+
+            UpdateParcelHighlight();
+
+            UpdateParcelHold();
+        }
+
+        public void OnDestroy()
+        {
+            Cleanup();
+        }
+
+        [HideInInspector]
+        public event System.Action<float, float> OnMovedParcelCursor;
+        public event Action<bool> MapVisibilityChanged;
+
         public void Initialize()
         {
             if (isInitialized)
                 return;
 
             isInitialized = true;
+
+            InitializeHomePointIcon();
             EnsurePools();
             atlas.InitializeChunks();
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
@@ -118,6 +152,8 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             otherPlayers.OnRemoved += OnOtherPlayerRemoved;
+            homePointCoordinates.OnChange += MoveHomePointIcon;
+            MoveHomePointIcon(homePointCoordinates.Get(), new Vector2Int());
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -132,6 +168,21 @@ namespace DCL
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+        }
+
+        private void MoveHomePointIcon(Vector2Int current, Vector2Int previous)
+        {
+            homePointIcon.anchoredPosition = MapUtils.CoordsToPosition(new Vector3(current.x, current.y, 0));
+        }
+
+        private void InitializeHomePointIcon()
+        {
+            homePointIcon = GameObject.Instantiate(homePointIconPrefab).GetComponent<RectTransform>();
+            homePointIcon.gameObject.transform.SetParent(overlayContainer.transform, false);
+            homePointIcon.anchoredPosition = new Vector2(0, 0);
+            homePointIcon.transform.localPosition = new Vector3(homePointIcon.transform.localPosition.x, homePointIcon.transform.localPosition.y, 0);
+            homePointIcon.localScale = new Vector3(2, 2, 2);
+            homePointIcon.transform.SetAsFirstSibling();
         }
 
         private void EnsurePools()
@@ -150,28 +201,32 @@ namespace DCL
                     usersInfoPool.ForcePrewarm();
             }
         }
-        
-        public void SetParcelHighlightActive(bool isAtive) => parcelHighlightImage.enabled = isAtive;
-        
-        public Vector3 GetParcelHighlightTransform() => parcelHighlightImage.transform.position;
+
+        public void SetParcelHighlightActive(bool isAtive) =>
+            parcelHighlightImage.enabled = isAtive;
+
+        public Vector3 GetParcelHighlightTransform() =>
+            parcelHighlightImage.transform.position;
 
         public void SetOtherPlayersIconActive(bool isActive)
         {
             otherPlayersIconsEnabled = isActive;
-            
-            foreach (PoolableObject poolableObject in usersInfoMarkers.Values)
-            {
-                poolableObject.gameObject.SetActive(isActive);
-            }
+
+            foreach (PoolableObject poolableObject in usersInfoMarkers.Values) { poolableObject.gameObject.SetActive(isActive); }
         }
-        
-        public void SetPlayerIconActive(bool isActive) => playerPositionIcon.gameObject.SetActive(isActive);
 
-        public void SetHighlighSize(Vector2Int size) { highlight.ChangeHighlighSize(size); }
+        public void SetPlayerIconActive(bool isActive) =>
+            playerPositionIcon.gameObject.SetActive(isActive);
 
-        public void SetHighlightStyle(MapParcelHighlight.HighlighStyle style) { highlight.SetStyle(style); }
+        public void SetHighlighSize(Vector2Int size)
+        {
+            highlight.ChangeHighlighSize(size);
+        }
 
-        public void OnDestroy() { Cleanup(); }
+        public void SetHighlightStyle(MapParcelHighlight.HighlighStyle style)
+        {
+            highlight.SetStyle(style);
+        }
 
         public void Cleanup()
         {
@@ -193,6 +248,7 @@ namespace DCL
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
             otherPlayers.OnAdded -= OnOtherPlayersAdded;
             otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
+            homePointCoordinates.OnChange -= MoveHomePointIcon;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
@@ -205,21 +261,18 @@ namespace DCL
 
         public void CleanLandsHighlights()
         {
-            foreach (KeyValuePair<Vector2Int, Image> kvp in highlightedLands)
-            {
-                Destroy(kvp.Value.gameObject);
-            }
-            
-            highlightedLands.Clear (); //To Clear out the dictionary
+            foreach (KeyValuePair<Vector2Int, Image> kvp in highlightedLands) { Destroy(kvp.Value.gameObject); }
+
+            highlightedLands.Clear(); //To Clear out the dictionary
         }
 
         public void ClearLandHighlightsInfo()
         {
-            ownedLandsWithContent.Clear (); //To Clear out the content lands
-            ownedEmptyLands.Clear (); //To Clear out the empty content 
+            ownedLandsWithContent.Clear(); //To Clear out the content lands
+            ownedEmptyLands.Clear(); //To Clear out the empty content
         }
 
-        public void SelectLand(Vector2Int coordsToSelect, Vector2Int size )
+        public void SelectLand(Vector2Int coordsToSelect, Vector2Int size)
         {
             if (highlightedLands.ContainsKey(lastSelectedLand))
             {
@@ -250,7 +303,7 @@ namespace DCL
 
                 CreateHighlightParcel(parcelHighlighImagePrefab, coords, Vector2Int.one);
             }
-            
+
             foreach (Vector2Int coords in landsToHighlightWithContent)
             {
                 if (highlightedLands.ContainsKey(coords))
@@ -258,6 +311,7 @@ namespace DCL
 
                 if (!ownedLandsWithContent.Contains(coords))
                     ownedLandsWithContent.Add(coords);
+
                 CreateHighlightParcel(parcelHighlighWithContentImagePrefab, coords, Vector2Int.one);
             }
 
@@ -272,24 +326,6 @@ namespace DCL
             highlightItem.rectTransform.SetAsLastSibling();
             highlightItem.rectTransform.anchoredPosition = MapUtils.CoordsToPosition(coords);
             highlightedLands.Add(coords, highlightItem);
-        }
-
-        void Update()
-        {
-            if ((playerWorldPosition.Get() - lastPlayerPosition).sqrMagnitude >= 0.1f * 0.1f)
-            {
-                lastPlayerPosition = playerWorldPosition.Get();
-                UpdateRendering(Utils.WorldToGridPositionUnclamped(lastPlayerPosition));
-            }
-
-            if (!parcelHighlightEnabled)
-                return;
-
-            UpdateCursorMapCoords();
-
-            UpdateParcelHighlight();
-
-            UpdateParcelHold();
         }
 
         void UpdateCursorMapCoords()
@@ -330,10 +366,7 @@ namespace DCL
             parcelHighlightImage.rectTransform.anchoredPosition = MapUtils.CoordsToPosition(cursorMapCoords);
             highlightedParcelText.text = showCursorCoords ? $"{cursorMapCoords.x}, {cursorMapCoords.y}" : string.Empty;
 
-            if (highlightedParcelText.text != previousText && !Input.GetMouseButton(0))
-            {
-                OnMovedParcelCursor?.Invoke(cursorMapCoords.x, cursorMapCoords.y);
-            }
+            if (highlightedParcelText.text != previousText && !Input.GetMouseButton(0)) { OnMovedParcelCursor?.Invoke(cursorMapCoords.x, cursorMapCoords.y); }
 
             // ----------------------------------------------------
             // TODO: Use sceneInfo to highlight whole scene parcels and populate scenes hover info on navmap once we can access all the scenes info
@@ -342,23 +375,21 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if (Vector2.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f))
-            {
-                OnCursorFarFromParcel?.Invoke();
-            }
+            if (Vector2.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE / (scaleFactor * 2.5f)) { OnCursorFarFromParcel?.Invoke(); }
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { validWorldRanges = current.validWorldRanges; }
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            validWorldRanges = current.validWorldRanges;
+        }
 
         bool CoordinatesAreInsideTheWorld(int xCoord, int yCoord)
         {
             foreach (WorldRange worldRange in validWorldRanges)
             {
-                if (worldRange.Contains(xCoord, yCoord))
-                {
-                    return true;
-                }
+                if (worldRange.Contains(xCoord, yCoord)) { return true; }
             }
+
             return false;
         }
 
@@ -375,18 +406,16 @@ namespace DCL
 
             scenesOfInterest.Add(sceneInfo);
 
-            GameObject go = Object.Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
+            GameObject go = Instantiate(scenesOfInterestIconPrefab.gameObject, overlayContainer.transform);
 
             Vector2 centerTile = Vector2.zero;
 
-            foreach (var parcel in sceneInfo.parcels)
-            {
-                centerTile += parcel;
-            }
+            foreach (var parcel in sceneInfo.parcels) { centerTile += parcel; }
 
             centerTile /= (float)sceneInfo.parcels.Count;
             float distance = float.PositiveInfinity;
             Vector2 centerParcel = Vector2.zero;
+
             foreach (var parcel in sceneInfo.parcels)
             {
                 if (Vector2.Distance(centerTile, parcel) < distance)
@@ -394,7 +423,6 @@ namespace DCL
                     distance = Vector2.Distance(centerParcel, parcel);
                     centerParcel = parcel;
                 }
-                
             }
 
             (go.transform as RectTransform).anchoredPosition = MapUtils.CoordsToPosition(centerParcel);
@@ -409,10 +437,7 @@ namespace DCL
 
         public void SetPointOfInterestActive(bool areActive)
         {
-            foreach (GameObject pointOfInterestGameObject in scenesOfInterestMarkers.Values)
-            {
-                pointOfInterestGameObject.SetActive(areActive);
-            }
+            foreach (GameObject pointOfInterestGameObject in scenesOfInterestMarkers.Values) { pointOfInterestGameObject.SetActive(areActive); }
         }
 
         private bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo)
@@ -434,10 +459,7 @@ namespace DCL
 
         private void OnOtherPlayerRemoved(string userId, Player player)
         {
-            if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
-            {
-                return;
-            }
+            if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go)) { return; }
 
             usersInfoPool.Release(go);
             usersInfoMarkers.Remove(userId);
@@ -449,7 +471,10 @@ namespace DCL
             iconGO.transform.localPosition = MapUtils.CoordsToPosition(Vector2Int.RoundToInt(gridPosition));
         }
 
-        private void OnCharacterRotate(Vector3 current, Vector3 previous) { UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get())); }
+        private void OnCharacterRotate(Vector3 current, Vector3 previous)
+        {
+            UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get()));
+        }
 
         public void OnCharacterSetPosition(Vector2Int newCoords, Vector2Int oldCoords)
         {
@@ -466,7 +491,10 @@ namespace DCL
             UpdateOverlayLayer();
         }
 
-        void UpdateBackgroundLayer(Vector2 newCoords) { atlas.CenterToTile(newCoords); }
+        void UpdateBackgroundLayer(Vector2 newCoords)
+        {
+            atlas.CenterToTile(newCoords);
+        }
 
         void UpdateSelectionLayer()
         {
@@ -480,7 +508,7 @@ namespace DCL
             Quaternion playerAngle = Quaternion.Euler(0, 0, Mathf.Atan2(-f.x, f.z) * Mathf.Rad2Deg);
 
             var gridPosition = playerGridPosition;
-            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPosition(gridPosition);
+            playerPositionIcon.anchoredPosition = MapUtils.CoordsToPositionWithOffset(gridPosition);
             playerPositionIcon.rotation = playerAngle;
         }
 

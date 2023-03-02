@@ -1,7 +1,6 @@
 using DCL.Controllers;
-using DCL.Helpers;
 using System.Collections.Generic;
-using DCL.Components;
+using DCL.Configuration;
 using DCL.Models;
 using UnityEngine;
 
@@ -9,44 +8,68 @@ namespace DCL
 {
     public class WorldState : IWorldState
     {
-        public HashSet<string> readyScenes { get; set; } = new HashSet<string>();
-        public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
-        public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
-        public List<string> globalSceneIds { get; set; } = new List<string>();
-        public string currentSceneId { get; set; } = null;
+        private Dictionary<int, IParcelScene> loadedScenes { get; } = new Dictionary<int, IParcelScene>();
+        private Dictionary<string, IParcelScene> loadedPortableExperienceScenes { get; } = new Dictionary<string, IParcelScene>();
+        private Dictionary<Vector2Int, int> loadedScenesByCoordinate { get; } = new Dictionary<Vector2Int, int>();
+        private List<IParcelScene> scenesSortedByDistance { get; } = new List<IParcelScene>();
+        private List<int> globalSceneNumbers { get; } = new List<int>();
+        private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
+        private readonly List<IParcelScene> globalScenes = new List<IParcelScene>();
+        private int currentSceneNumber;
+        
+        public int GetCurrentSceneNumber() => currentSceneNumber;
+        
+        public IEnumerable<KeyValuePair<int, IParcelScene>> GetLoadedScenes() => loadedScenes;
 
-        public IParcelScene GetScene(string id)
+        public List<IParcelScene> GetGlobalScenes() => globalScenes;
+        
+        public List<IParcelScene> GetScenesSortedByDistance() => scenesSortedByDistance;
+
+        public IParcelScene GetScene(int sceneNumber)
         {
-            if (!Contains(id))
+            if (!ContainsScene(sceneNumber))
                 return null;
 
-            return loadedScenes[id];
+            return loadedScenes[sceneNumber];
+        }
+        
+        public IParcelScene GetScene(Vector2Int coords)
+        {
+            return GetScene(GetSceneNumberByCoords(coords));
+        }
+        
+        public IParcelScene GetPortableExperienceScene(string sceneId)
+        {
+            if (string.IsNullOrEmpty(sceneId) || !loadedPortableExperienceScenes.ContainsKey(sceneId))
+                return null;
+
+            return loadedPortableExperienceScenes[sceneId];
         }
 
-        public bool Contains(string id)
+        public bool ContainsScene(int sceneNumber)
         {
-            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
             return true;
         }
 
-        public bool TryGetScene(string id, out IParcelScene scene)
+        public bool TryGetScene(int sceneNumber, out IParcelScene scene)
         {
             scene = null;
 
-            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
+            if (sceneNumber <= 0 || !loadedScenes.ContainsKey(sceneNumber))
                 return false;
 
-            scene = loadedScenes[id];
+            scene = loadedScenes[sceneNumber];
             return true;
         }
 
-        public bool TryGetScene<T>(string id, out T scene)
+        public bool TryGetScene<T>(int sceneNumber, out T scene)
             where T : class, IParcelScene
         {
             scene = default(T);
-            bool result = TryGetScene(id, out IParcelScene baseScene);
+            bool result = TryGetScene(sceneNumber, out IParcelScene baseScene);
 
             if (result)
                 scene = baseScene as T;
@@ -80,6 +103,11 @@ namespace DCL
 
         public LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
+            if (entity == null)
+            {
+                Debug.LogWarning("NULL entity at GetLoaderForEntity()");
+                return null;
+            }    
             if (entity.meshRootGameObject == null)
             {
                 Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
@@ -109,9 +137,119 @@ namespace DCL
             
             attachedLoaders.Remove(entity.meshRootGameObject);
         }
+        
+        public int GetSceneNumberByCoords(Vector2Int coords)
+        {
+            if (loadedScenesByCoordinate.ContainsKey(coords))
+                return loadedScenesByCoordinate[coords];
+            
+            return -1;
+        }
+        
+        public void SortScenesByDistance(Vector2Int position)
+        {
+            currentSceneNumber = -1;
+            scenesSortedByDistance.Sort((sceneA, sceneB) =>
+            {
+                sortAuxiliaryVector = sceneA.sceneData.basePosition - position;
+                int dist1 = sortAuxiliaryVector.sqrMagnitude;
+
+                sortAuxiliaryVector = sceneB.sceneData.basePosition - position;
+                int dist2 = sortAuxiliaryVector.sqrMagnitude;
+
+                return dist1 - dist2;
+            });
+
+            using var iterator = scenesSortedByDistance.GetEnumerator();
+
+            while (iterator.MoveNext())
+            {
+                IParcelScene scene = iterator.Current;
+
+                if (scene == null)
+                    continue;
+
+                bool characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
+                bool isGlobalScene = globalSceneNumbers.Contains(scene.sceneData.sceneNumber);
+
+                if (isGlobalScene || !characterIsInsideScene)
+                    continue;
+
+                currentSceneNumber = scene.sceneData.sceneNumber;
+
+                break;
+            }
+
+        }
+        
+        public void ForceCurrentScene(int sceneNumber)
+        {
+            currentSceneNumber = sceneNumber;
+        }
+        
+        public void AddScene(IParcelScene newScene)
+        {
+            int sceneNumber = newScene.sceneData.sceneNumber;
+            if (loadedScenes.ContainsKey(sceneNumber))
+            {
+                Debug.LogWarning($"The scene {newScene.sceneData.id} already exists! scene number: {sceneNumber}");
+                return;
+            }
+            
+            if (newScene.isPersistent)
+            {
+                globalSceneNumbers.Add(sceneNumber);
+                globalScenes.Add(newScene);
+
+                if (newScene.isPortableExperience)
+                    loadedPortableExperienceScenes.Add(newScene.sceneData.id, newScene);
+            }
+            
+            loadedScenes.Add(sceneNumber, newScene);
+            
+            foreach (Vector2Int parcelPosition in newScene.GetParcels())
+            {
+                loadedScenesByCoordinate[parcelPosition] = sceneNumber;
+            }
+                
+            scenesSortedByDistance.Add(newScene);
+
+            if (currentSceneNumber <= 0)
+                currentSceneNumber = sceneNumber;
+        }
+        
+        public void RemoveScene(int sceneNumber)
+        {
+            IParcelScene loadedScene = loadedScenes[sceneNumber];
+
+            foreach (Vector2Int sceneParcel in loadedScene.GetParcels())
+            {
+                loadedScenesByCoordinate.Remove(sceneParcel);
+            }
+            
+            scenesSortedByDistance.Remove(loadedScene);
+            
+            loadedScenes.Remove(sceneNumber);
+            globalSceneNumbers.Remove(sceneNumber);
+
+            if (globalScenes.Contains(loadedScene))
+            {
+                globalScenes.Remove(loadedScene);
+
+                if (!string.IsNullOrEmpty(loadedScene.sceneData.id) && loadedPortableExperienceScenes.ContainsKey(loadedScene.sceneData.id))
+                    loadedPortableExperienceScenes.Remove(loadedScene.sceneData.id);
+            }
+        }
 
         public void Dispose()
         {
+            loadedScenes.Clear();
+            loadedScenesByCoordinate.Clear();
+            scenesSortedByDistance.Clear();
+            globalScenes.Clear();
+            globalSceneNumbers.Clear();
+            loadedPortableExperienceScenes.Clear();
+            currentSceneNumber = -1;
         }
 
         public void Initialize()

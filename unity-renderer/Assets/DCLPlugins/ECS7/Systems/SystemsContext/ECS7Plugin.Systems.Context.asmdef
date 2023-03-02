@@ -1,0 +1,23 @@
+{
+    "name": "ECS7Plugin.Systems.Context",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7eb48a6a47db4795bdee44a726fa8338",
+        "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
+        "GUID:9239602a072d4e52b5f1cae20ab2b459",
+        "GUID:37d2c04574c1d480d8c817e2a7c578e7",
+        "GUID:9b110c16a6b8f4d54ae0f56af2163334",
+        "GUID:4bd423f6dceb67540b5c246ca8cf789b",
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

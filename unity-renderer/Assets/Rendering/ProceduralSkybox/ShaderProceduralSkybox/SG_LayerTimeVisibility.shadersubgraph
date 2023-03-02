@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "8844b982404f4ca796f99545fd423a56",
     "m_Properties": [
@@ -14,6 +14,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "d320661c4c1b436e8c65b6abcc6b4e13"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "a09d00ecf0554639bc7e09516e10d3fc"
@@ -865,10 +871,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Sub Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": "a09d00ecf0554639bc7e09516e10d3fc"
@@ -1622,9 +1629,13 @@
         "m_GuidSerialized": "7edfc9e3-c538-4f20-8c8c-1e111e417a70"
     },
     "m_Name": "FadeTime",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_30a7f4f8887a465ca347b62116b01601",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2684,9 +2695,13 @@
         "m_GuidSerialized": "2cf35e57-7c37-4ecf-b7ba-61e4320ab2a2"
     },
     "m_Name": "Timeframe",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_6ebe87340b774742b1cc4fefab3dec5b",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3478,7 +3493,9 @@
         667341253,
         -17169931,
         -393048524
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -3937,6 +3954,24 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "d320661c4c1b436e8c65b6abcc6b4e13",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "6ebe87340b774742b1cc4fefab3dec5b"
+        },
+        {
+            "m_Id": "e89444025b56429e94d97de6301d46c2"
+        },
+        {
+            "m_Id": "30a7f4f8887a465ca347b62116b01601"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "d33cb8162cf84b71ad07f41d0ac47fd7",
     "m_Id": 2,
@@ -4278,7 +4313,9 @@
         667341253,
         -17169931,
         -393048524
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -4416,9 +4453,13 @@
         "m_GuidSerialized": "f7936931-fe91-4881-8720-34d3bdac3421"
     },
     "m_Name": "CurrentTime",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_e89444025b56429e94d97de6301d46c2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,

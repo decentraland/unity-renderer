@@ -16,10 +16,14 @@ public class EventsSubSectionComponentControllerTests
     [SetUp]
     public void SetUp()
     {
+        // This is need to sue the TeleportController
+        ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+        DCL.Environment.Setup(serviceLocator);
+
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i);
     }
 
     [TearDown]
@@ -37,68 +41,58 @@ public class EventsSubSectionComponentControllerTests
     public void DoFirstLoadingCorrectly()
     {
         // Arrange
-        eventsSubSectionComponentController.reloadEvents = true;
+        eventsSubSectionComponentController.cardsReloader.firstLoading = true;
 
         // Act
-        eventsSubSectionComponentController.FirstLoading();
+        eventsSubSectionComponentController.RequestAllEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(false);
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(true);
-        Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
+        eventsSubSectionComponentView.Received().SetAllAsLoading();
+        Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);
+        eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
     }
 
-    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void RaiseOnExploreV2OpenCorrectly(bool isOpen)
     {
         // Arrange
-        eventsSubSectionComponentController.reloadEvents = false;
+        eventsSubSectionComponentController.cardsReloader.reloadSubSection = false;
 
         // Act
-        eventsSubSectionComponentController.OnExploreV2Open(isOpen, false);
+        eventsSubSectionComponentController.cardsReloader.OnExploreV2Open(isOpen, false);
 
         // Assert
-        if (isOpen)
-            Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
-        else
-            Assert.IsTrue(eventsSubSectionComponentController.reloadEvents);
+        Assert.That(eventsSubSectionComponentController.cardsReloader.reloadSubSection, Is.EqualTo(!isOpen));
     }
 
     [Test]
     public void RequestAllEventsCorrectly()
     {
         // Arrange
-        eventsSubSectionComponentController.currentUpcomingEventsShowed = -1;
-        eventsSubSectionComponentController.reloadEvents = true;
-        eventsSubSectionComponentController.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
+        eventsSubSectionComponentController.availableUISlots = -1;
+        eventsSubSectionComponentController.cardsReloader.reloadSubSection = true;
+        eventsSubSectionComponentController.cardsReloader.lastTimeAPIChecked = Time.realtimeSinceStartup - PlacesAndEventsSectionComponentController.MIN_TIME_TO_CHECK_API;
         DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act
         eventsSubSectionComponentController.RequestAllEvents();
 
         // Assert
-        Assert.AreEqual(eventsSubSectionComponentView.currentUpcomingEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.currentUpcomingEventsShowed);
+        Assert.AreEqual(eventsSubSectionComponentView.currentUpcomingEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.availableUISlots);
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(true);
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(false);
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(true);
+        eventsSubSectionComponentView.Received().SetAllAsLoading();
+        eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
-        Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
+        Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
     [Test]
     public void RequestAllEventsFromAPICorrectly()
     {
         // Act
-        eventsSubSectionComponentController.RequestAllEventsFromAPI();
+        eventsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
@@ -112,18 +106,14 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.OnRequestedEventsUpdated();
+        eventsSubSectionComponentController.OnRequestedEventsUpdated(eventsSubSectionComponentController.eventsFromAPI);
 
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.availableUISlots < numberOfEvents);
     }
 
     [Test]
@@ -134,12 +124,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.LoadFeaturedEvents();
+        eventsSubSectionComponentView.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterFeaturedEvents()));
 
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
-        eventsSubSectionComponentView.Received().SetFeaturedEventsActive(Arg.Any<bool>());
     }
 
     [Test]
@@ -150,11 +138,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.LoadTrendingEvents();
+        eventsSubSectionComponentView.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterTrendingEvents()));
 
         // Assert
         eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetTrendingEventsAsLoading(false);
     }
 
     [Test]
@@ -165,12 +152,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.LoadUpcomingEvents();
+        eventsSubSectionComponentView.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterUpcomingEvents()));
 
         // Assert
         eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.currentUpcomingEventsShowed < numberOfEvents);
-        eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(false);
     }
 
     [Test]
@@ -193,11 +178,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentController.LoadGoingEvents();
+        eventsSubSectionComponentView.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterGoingEvents()));
 
         // Assert
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
     }
 
     [Test]
@@ -218,12 +202,12 @@ public class EventsSubSectionComponentControllerTests
     public void JumpInToEventCorrectly()
     {
         // Arrange
-        bool exploreClosed = false;
+        var exploreClosed = false;
         eventsSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
         EventFromAPIModel testEventFromAPI = ExploreEventsTestHelpers.CreateTestEvent("1");
 
         // Act
-        eventsSubSectionComponentController.JumpInToEvent(testEventFromAPI);
+        eventsSubSectionComponentController.OnJumpInToEvent(testEventFromAPI);
 
         // Assert
         eventsSubSectionComponentView.Received().HideEventModal();

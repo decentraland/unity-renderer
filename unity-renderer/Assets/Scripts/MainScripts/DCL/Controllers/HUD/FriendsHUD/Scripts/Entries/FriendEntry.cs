@@ -1,12 +1,12 @@
-using System;
+using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FriendEntry : FriendEntryBase
 {
     public event Action<FriendEntry> OnWhisperClick;
-    public event Action<FriendEntry> OnJumpInClick;
 
     [SerializeField] internal JumpInButton jumpInButton;
     [SerializeField] internal Button whisperButton;
@@ -14,7 +14,6 @@ public class FriendEntry : FriendEntryBase
     [SerializeField] private Button rowButton;
 
     private IChatController chatController;
-    private ILastReadMessagesService lastReadMessagesService;
     private IFriendsController friendsController;
     private ISocialAnalytics socialAnalytics;
 
@@ -29,20 +28,19 @@ public class FriendEntry : FriendEntryBase
     }
 
     public void Initialize(IChatController chatController,
-        ILastReadMessagesService lastReadMessagesService,
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics)
     {
         this.chatController = chatController;
-        this.lastReadMessagesService = lastReadMessagesService;
         this.friendsController = friendsController;
         this.socialAnalytics = socialAnalytics;
     }
 
-    private void Start()
+    public override void Populate(FriendEntryModel model)
     {
-        unreadNotificationBadge?.Initialize(chatController, Model.userId, lastReadMessagesService);
-        jumpInButton.Initialize(friendsController, Model.userId, socialAnalytics);
-        jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
+        base.Populate(model);
+
+        unreadNotificationBadge?.Initialize(chatController, model.userId);
+        jumpInButton.Initialize(friendsController, model.userId, socialAnalytics);
     }
 }

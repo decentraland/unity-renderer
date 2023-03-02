@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Globalization;
+using DCL.Chat.HUD;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Special type of entry to be used as date separator in chat conversations.
@@ -12,23 +11,17 @@ public class DateSeparatorEntry : ChatEntry
 {
     [SerializeField] internal TextMeshProUGUI title;
     
-    [Header("Preview Mode")]
-    [SerializeField] private Image previewBackgroundImage;
-    [SerializeField] private Color previewBackgroundColor;
-    [SerializeField] private Color previewFontColor;
-    
     private DateTime timestamp;
     private ChatEntryModel chatEntryModel;
-    private Color originalBackgroundColor;
-    private Color originalFontColor;
 
+    public override string DateString =>
+        GetDateFormat(GetDateTimeFromUnixTimestampMilliseconds(Model.timestamp));
+    public override event Action<ChatEntry> OnUserNameClicked;
+    public override event Action<ChatEntry> OnTriggerHover;
+    public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
+    public override event Action OnCancelHover;
+    public override event Action OnCancelGotoHover;
     public override ChatEntryModel Model => chatEntryModel;
-    
-    private void Awake()
-    {
-        originalBackgroundColor = previewBackgroundImage.color;
-        originalFontColor = title.color;
-    }
 
     public override void Populate(ChatEntryModel model)
     {
@@ -38,82 +31,16 @@ public class DateSeparatorEntry : ChatEntry
 
     public override void SetFadeout(bool enabled)
     {
-        if (!enabled)
-        {
-            group.alpha = 1;
-            fadeEnabled = false;
-            return;
-        }
-
-        fadeEnabled = true;
-    }
-
-    public override void DeactivatePreview()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            previewBackgroundImage.color = originalBackgroundColor;
-            title.color = originalFontColor;
-            return;
-        }
-        
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
-
+        if (enabled) return;
         group.alpha = 1;
-        previewInterpolationRoutine =
-            StartCoroutine(InterpolatePreviewColor(originalBackgroundColor, originalFontColor, 0.5f));
-    }
-    
-    public override void FadeOut()
-    {
-        if (!gameObject.activeInHierarchy)
-        {
-            group.alpha = 0;
-            return;
-        }
-        
-        if (previewInterpolationAlphaRoutine != null)
-            StopCoroutine(previewInterpolationAlphaRoutine);
-
-        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(0, 0.5f));
     }
 
-    public override void ActivatePreview()
+    public override void DockContextMenu(RectTransform panel)
     {
-        if (!gameObject.activeInHierarchy)
-        {
-            ActivatePreviewInstantly();
-            return;
-        }
-        
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-        
-        previewInterpolationRoutine = StartCoroutine(InterpolatePreviewColor(previewBackgroundColor, previewFontColor, 0.5f));
-        
-        previewInterpolationAlphaRoutine = StartCoroutine(InterpolateAlpha(1, 0.5f));
     }
-    
-    public override void ActivatePreviewInstantly()
+
+    public override void DockHoverPanel(RectTransform panel)
     {
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-        
-        previewBackgroundImage.color = previewBackgroundColor;
-        title.color = previewFontColor;
-    }
-    
-    public override void DeactivatePreviewInstantly()
-    {
-        if (previewInterpolationRoutine != null)
-            StopCoroutine(previewInterpolationRoutine);
-        
-        previewBackgroundImage.color = originalBackgroundColor;
-        title.color = originalFontColor;
     }
 
     private string GetDateFormat(DateTime date)
@@ -139,23 +66,4 @@ public class DateSeparatorEntry : ChatEntry
         DateTime result = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         return result.AddMilliseconds(milliseconds);
     }
-    
-    private IEnumerator InterpolatePreviewColor(Color backgroundColor, Color fontColor, float duration)
-    {
-        var t = 0f;
-        
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-
-            previewBackgroundImage.color = Color.Lerp(previewBackgroundImage.color, backgroundColor, t / duration);
-            title.color = Color.Lerp(title.color, fontColor, t / duration);
-            
-            yield return null;
-        }
-
-        previewBackgroundImage.color = backgroundColor;
-        title.color = fontColor;
-    }
-    
 }

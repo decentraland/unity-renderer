@@ -56,7 +56,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
 
         sendSceneMessage = new PB_SendSceneMessage();
         sendSceneMessage.Query = query;
-        sendSceneMessage.SceneId = this.scene.sceneData.id;
+        sendSceneMessage.SceneNumber = this.scene.sceneData.sceneNumber;
     }
 
     [UnityTest]
@@ -243,7 +243,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
     {
         string targetEventType = "SceneEvent";
 
-        sceneEvent.sceneId = scene.sceneData.id;
+        sceneEvent.sceneNumber = scene.sceneData.sceneNumber;
         sceneEvent.payload = response;
         sceneEvent.eventType = "raycastResponse";
 
@@ -265,10 +265,10 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         where T2 : WebInterface.RaycastHitInfo where T : WebInterface.RaycastResponse<T2>
     {
         Assert.IsTrue(s1.eventType == s2.eventType);
-        Assert.IsTrue(s1.sceneId == s2.sceneId);
+        Assert.IsTrue(s1.sceneNumber == s2.sceneNumber);
 
         if (s1.eventType != s2.eventType ||
-            s1.sceneId != s2.sceneId)
+            s1.sceneNumber != s2.sceneNumber)
             return false;
 
         return AreRaycastResponsesEqual(s1.payload, s2.payload);

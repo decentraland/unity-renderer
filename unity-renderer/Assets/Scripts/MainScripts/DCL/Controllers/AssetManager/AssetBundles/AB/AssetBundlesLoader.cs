@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Shaders;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL
@@ -30,7 +32,6 @@ namespace DCL
             }
         }
 
-        private Coroutine assetBundlesLoadingCoroutine;
         private Queue<AssetBundleInfo> highPriorityLoadQueue = new Queue<AssetBundleInfo>();
         private Queue<AssetBundleInfo> lowPriorityLoadQueue = new Queue<AssetBundleInfo>();
 
@@ -53,23 +54,27 @@ namespace DCL
         private AssetBundleInfo assetBundleInfoToLoad;
         private float lastQueuesReprioritizationTime = 0;
 
+        private CancellationTokenSource cancellationTokenSource;
+
         private bool limitTimeBudget => CommonScriptableObjects.rendererState.Get();
 
         public void Start()
         {
-            if (assetBundlesLoadingCoroutine != null)
+            if (cancellationTokenSource != null)
                 return;
 
-            assetBundlesLoadingCoroutine = CoroutineStarter.Start(LoadAssetBundlesCoroutine());
+            cancellationTokenSource = new CancellationTokenSource();
+            LoadAssetBundlesAsync(cancellationTokenSource.Token).SuppressCancellationThrow().Forget();
         }
 
         public void Stop()
         {
-            if (assetBundlesLoadingCoroutine == null)
+            if (cancellationTokenSource == null)
                 return;
 
-            CoroutineStarter.Stop(assetBundlesLoadingCoroutine);
-            assetBundlesLoadingCoroutine = null;
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = null;
 
             highPriorityLoadQueue.Clear();
             lowPriorityLoadQueue.Clear();
@@ -82,27 +87,27 @@ namespace DCL
             AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, containerTransform, onSuccess, onFail);
 
             float distanceFromPlayer = GetDistanceFromPlayer(containerTransform);
+
             if (distanceFromPlayer <= MAX_SQR_DISTANCE_FOR_QUICK_LOADING)
                 highPriorityLoadQueue.Enqueue(assetBundleToLoad);
             else
                 lowPriorityLoadQueue.Enqueue(assetBundleToLoad);
         }
 
-        private IEnumerator LoadAssetBundlesCoroutine()
+        private async UniTask LoadAssetBundlesAsync(CancellationToken cancellationToken)
         {
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 while (highPriorityLoadQueue.Count > 0)
                 {
                     float time = Time.realtimeSinceStartup;
 
                     assetBundleInfoToLoad = highPriorityLoadQueue.Dequeue();
-                    yield return LoadAssetBundle(assetBundleInfoToLoad);
+                    await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
 
                     if (IsLoadBudgetTimeReached(time))
                     {
-                        yield return WaitForSkippedFrames(SKIPPED_FRAMES_AFTER_BUDGET_TIME_IS_REACHED_FOR_NEARBY_ASSETS);
-                        time = Time.realtimeSinceStartup;
+                        await WaitForSkippedFrames(SKIPPED_FRAMES_AFTER_BUDGET_TIME_IS_REACHED_FOR_NEARBY_ASSETS);
                     }
                 }
 
@@ -111,33 +116,28 @@ namespace DCL
                     float time = Time.realtimeSinceStartup;
 
                     assetBundleInfoToLoad = lowPriorityLoadQueue.Dequeue();
-                    yield return LoadAssetBundle(assetBundleInfoToLoad);
+                    await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
 
                     if (IsLoadBudgetTimeReached(time))
                     {
-                        yield return WaitForSkippedFrames(SKIPPED_FRAMES_AFTER_BUDGET_TIME_IS_REACHED_FOR_DISTANT_ASSETS);
-                        time = Time.realtimeSinceStartup;
+                        await WaitForSkippedFrames(SKIPPED_FRAMES_AFTER_BUDGET_TIME_IS_REACHED_FOR_DISTANT_ASSETS);
                     }
                 }
 
-                yield return null;
+                await UniTask.Yield();
             }
         }
 
-        private IEnumerator LoadAssetBundle(AssetBundleInfo assetBundleInfo)
+        private async UniTask LoadAssetBundleAsync(AssetBundleInfo assetBundleInfo, CancellationToken ct)
         {
             if (!assetBundleInfo.asset.IsValid())
             {
                 assetBundleInfo.onFail?.Invoke(new Exception("Asset bundle is null"));
-                yield break;
+                return;
             }
 
             AssetBundleRequest abRequest = assetBundleInfo.asset.LoadAllAssetsAsync();
-
-            while (!abRequest.isDone)
-            {
-                yield return null;
-            }
+            await abRequest.WithCancellation(ct);
 
             loadedAssetsByName = abRequest.allAssets.ToList();
 
@@ -145,23 +145,15 @@ namespace DCL
             {
                 string ext = "any";
 
-                if (loadedAsset is Texture)
+                if (loadedAsset is Texture) { ext = "png"; }
+                else if (loadedAsset is Material material)
                 {
-                    ext = "png";
-                }
-                else if (loadedAsset is Material)
-                {
+                    ShaderUtils.UpgradeMaterial_2020_To_2021(material);
                     ext = "mat";
                 }
-                else if (loadedAsset is Animation || loadedAsset is AnimationClip)
-                {
-                    ext = "nim";
-                }
-                else if (loadedAsset is GameObject)
-                {
-                    ext = "glb";
-                }
-                
+                else if (loadedAsset is Animation || loadedAsset is AnimationClip) { ext = "nim"; }
+                else if (loadedAsset is GameObject) { ext = "glb"; }
+
                 assetBundleInfo.asset.AddAssetByExtension(ext, loadedAsset);
             }
 
@@ -174,6 +166,7 @@ namespace DCL
             if (limitTimeBudget)
             {
                 currentLoadBudgetTime += Time.realtimeSinceStartup - startTime;
+
                 if (currentLoadBudgetTime > MAX_LOAD_BUDGET_TIME)
                 {
                     currentLoadBudgetTime = 0f;
@@ -184,13 +177,8 @@ namespace DCL
             return false;
         }
 
-        private IEnumerator WaitForSkippedFrames(int skippedFramesBetweenLoadings)
-        {
-            for (int i = 0; i < skippedFramesBetweenLoadings; i++)
-            {
-                yield return null;
-            }
-        }
+        private UniTask WaitForSkippedFrames(int skippedFramesBetweenLoadings) =>
+            UniTask.DelayFrame(skippedFramesBetweenLoadings);
 
         private void CheckForReprioritizeAwaitingAssets()
         {
@@ -205,6 +193,9 @@ namespace DCL
             }
         }
 
-        private float GetDistanceFromPlayer(Transform containerTransform) { return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f; }
+        private float GetDistanceFromPlayer(Transform containerTransform)
+        {
+            return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f;
+        }
     }
 }

@@ -6,11 +6,11 @@ using DCLPlugins.DebugPlugins.Commons;
 
 public class DebugShapesBoundingBoxDisplayer : IPlugin
 {
-    private readonly IBaseDictionary<string, bool> isBoundingBoxEnabledForScene;
+    private readonly IBaseDictionary<int, bool> isBoundingBoxEnabledForScene;
     private readonly IWorldState worldState;
     private readonly ISceneController sceneController;
-    internal readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
-    internal readonly List<string> pendingScenesId = new List<string>();
+    internal readonly Dictionary<int, WatchSceneHandler> scenesWatcher = new Dictionary<int, WatchSceneHandler>();
+    internal readonly List<int> pendingSceneNumbers = new List<int>();
     private readonly IUpdateEventHandler updateEventHandler;
 
     public DebugShapesBoundingBoxDisplayer() : this(
@@ -20,7 +20,7 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
         Environment.i.platform.updateEventHandler) { }
 
     internal DebugShapesBoundingBoxDisplayer(
-        IBaseDictionary<string, bool> isBoundingBoxEnabledVariable,
+        IBaseDictionary<int, bool> isBoundingBoxEnabledVariable,
         IWorldState state,
         ISceneController sceneController,
         IUpdateEventHandler updateEventHandler)
@@ -57,24 +57,22 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
         }
     }
 
-    private void KillWatchScene(string sceneId)
+    private void KillWatchScene(int sceneNumber)
     {
-        if (!scenesWatcher.TryGetValue(sceneId, out WatchSceneHandler watchHandler))
+        if (!scenesWatcher.TryGetValue(sceneNumber, out WatchSceneHandler watchHandler))
             return;
 
         watchHandler?.Dispose();
-        scenesWatcher.Remove(sceneId);
+        scenesWatcher.Remove(sceneNumber);
     }
 
-    private void WatchScene(string sceneId)
+    private void WatchScene(int sceneNumber)
     {
         // NOTE: in case scene is not loaded yet, we add it to the "pending" list
-        if (!worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
+        if (!worldState.TryGetScene(sceneNumber, out IParcelScene scene))
         {
-            if (!pendingScenesId.Contains(sceneId))
-            {
-                pendingScenesId.Add(sceneId);
-            }
+            if (!pendingSceneNumbers.Contains(sceneNumber))
+                pendingSceneNumbers.Add(sceneNumber);
 
             return;
         }
@@ -84,36 +82,28 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
 
     private void WatchScene(IParcelScene scene)
     {
-        if (scenesWatcher.TryGetValue(scene.sceneData.id, out WatchSceneHandler watchHandler))
-        {
+        if (scenesWatcher.TryGetValue(scene.sceneData.sceneNumber, out WatchSceneHandler watchHandler))
             watchHandler?.Dispose();
-        }
 
-        scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker(updateEventHandler));
+        scenesWatcher[scene.sceneData.sceneNumber] = new WatchSceneHandler(scene, new SceneEntitiesTracker(updateEventHandler));
     }
 
-    private void IsBoundingBoxEnabledVariableOnOnRemoved(string sceneId, bool enabled)
+    private void IsBoundingBoxEnabledVariableOnOnRemoved(int sceneNumber, bool enabled)
     {
-        KillWatchScene(sceneId);
+        KillWatchScene(sceneNumber);
     }
 
-    private void IsBoundingBoxEnabledVariableOnOnAdded(string sceneId, bool enabled)
+    private void IsBoundingBoxEnabledVariableOnOnAdded(int sceneNumber, bool enabled)
     {
         if (enabled)
-        {
-            WatchScene(sceneId);
-        }
+            WatchScene(sceneNumber);
         else
-        {
-            KillWatchScene(sceneId);
-        }
+            KillWatchScene(sceneNumber);
     }
 
     private void SceneControllerOnOnNewSceneAdded(IParcelScene scene)
     {
-        if (pendingScenesId.Remove(scene.sceneData.id))
-        {
+        if (pendingSceneNumbers.Remove(scene.sceneData.sceneNumber))
             WatchScene(scene);
-        }
     }
 }

@@ -1,0 +1,4 @@
+<linker>
+    <assembly fullname="Google.Protobuf" preserve="all"/>
+    <assembly fullname="Google.Api.CommonProtos" preserve="all"/>
+</linker>

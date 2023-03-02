@@ -134,7 +134,7 @@ namespace DCL.ExperiencesViewer
             newRealmRow.onStartPEX -= OnSomeExperienceExecutionChanged;
             newRealmRow.onStartPEX += OnSomeExperienceExecutionChanged;
 
-            availableExperiences.AddItem(newRealmRow);
+            availableExperiences.AddItemWithResize(newRealmRow);
         }
 
         public void RemoveAvailableExperience(string id)

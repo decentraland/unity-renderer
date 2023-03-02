@@ -99,6 +99,35 @@ and replace for
             float4x4 _BindPoses[100];
 ```
 > NOTE: If this is not done, GPU Skinning will stop working
+---
+## You have updated unity or URP Package?
+
+> You can skip this part if you didn't
+
+> If you did and this is not done, there may be some shaders that dont compile or may have visual glitches
+
+Replace the contents of `PBRForwardPass.hlsl`
+
+With the contents of `Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl`
+
+Check **_VERY CAREFULY_** the changes from your DIFF tool, you should keep the custom changes that were made based on the git history.
+
+> This step is very important, if not done, GPU Skinning will not work
+
+Do the same with the following files:
+
+- `DepthOnlyPass.hlsl`
+
+- `DepthNormalsOnlyPass.hlsl`
+
+- `ShadowCasterPass.hlsl`
+
+
+## Apply Outliner pass
+Add to both subshaders the outliner pass, you can find it in `OutlinerPass.txt`. 
+This allows the render feature to reuse the Avatar material and avoid copying the huge matrices for GPU Skinning.
+If not present, the outliner will fallback to a compatible material at a performance cost 
+
 
 ---
 ## You're done!.

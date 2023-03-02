@@ -1,6 +1,8 @@
+using DCL;
 using DCL.Rendering;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -9,10 +11,28 @@ namespace CullingControllerTests
 {
     public class CullingObjectsTrackerShould
     {
+        private DataStore_WorldObjects data;
+
+        
+        [SetUp]
+        public void SetUp()
+        {
+            data = new DataStore_WorldObjects();
+            DataStore.i.Set(data);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            data = null;
+            DataStore.Clear();
+        }
+
         [UnityTest]
         public IEnumerator FilterIgnoredLayerMasksCorrectly()
         {
             // Arrange
+            DataStore.i.sceneWorldObjects.sceneData.Add(0, new DataStore_WorldObjects.SceneData());
             int layer = 5;
             int layerMask = 1 << layer;
             var tracker = new CullingObjectsTracker();
@@ -20,10 +40,12 @@ namespace CullingControllerTests
 
             var testGameObjectA = new GameObject();
             var originalRendererA = testGameObjectA.AddComponent<MeshRenderer>();
+            DataStore.i.sceneWorldObjects.sceneData[0].renderers.Add(originalRendererA);
             testGameObjectA.layer = layer;
 
             var testGameObjectB = new GameObject();
             var originalRendererB = testGameObjectB.AddComponent<MeshRenderer>();
+            DataStore.i.sceneWorldObjects.sceneData[0].renderers.Add(originalRendererB);
             testGameObjectB.layer = 0;
 
             var testGameObjectC = new GameObject();
@@ -34,17 +56,17 @@ namespace CullingControllerTests
             var originalRendererD = testGameObjectD.AddComponent<SkinnedMeshRenderer>();
             testGameObjectD.layer = 0;
 
-            Renderer[] renderers = null;
+            IReadOnlyList<Renderer> renderers = null;
             Renderer obtainedRendererA = null, obtainedRendererB = null, obtainedRendererC = null, obtainedRendererD = null;
 
             // Act
             yield return tracker.PopulateRenderersList();
 
             renderers = tracker.GetRenderers();
-            obtainedRendererA = renderers.FirstOrDefault( x => x == originalRendererA );
-            obtainedRendererB = renderers.FirstOrDefault( x => x == originalRendererB );
-            obtainedRendererC = tracker.GetSkinnedRenderers().FirstOrDefault( x => x == originalRendererC );
-            obtainedRendererD = tracker.GetSkinnedRenderers().FirstOrDefault( x => x == originalRendererD );
+            obtainedRendererA = renderers.FirstOrDefault(x => x == originalRendererA);
+            obtainedRendererB = renderers.FirstOrDefault(x => x == originalRendererB);
+            obtainedRendererC = tracker.GetSkinnedRenderers().FirstOrDefault(x => x == originalRendererC);
+            obtainedRendererD = tracker.GetSkinnedRenderers().FirstOrDefault(x => x == originalRendererD);
 
             // Assert
             Assert.IsTrue(originalRendererA != null);
@@ -64,35 +86,6 @@ namespace CullingControllerTests
             Object.Destroy(testGameObjectD);
 
             yield return null;
-        }
-
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ForcePopulateRenderersListCorrectly(bool includeInactives)
-        {
-            // Arrange
-            var tracker = new CullingObjectsTracker();
-            var testGameObject = new GameObject();
-            var originalRenderer = testGameObject.AddComponent<MeshRenderer>();
-            testGameObject.SetActive(false);
-
-            // Act
-            tracker.ForcePopulateRenderersList(includeInactives);
-
-            Renderer[] renderers = tracker.GetRenderers();
-            Renderer obtainedRenderer = tracker.GetRenderers().FirstOrDefault(x => x == originalRenderer);
-
-            // Assert
-            Assert.IsTrue(originalRenderer != null);
-
-            if (includeInactives)
-                Assert.IsTrue(obtainedRenderer != null, "Renderer should not be null because it is taking on account the inactives objects");
-            else
-                Assert.IsTrue(obtainedRenderer == null, "Renderer should be null because it is not taking on account the inactives objects");
-
-            // Cleanup
-            Object.Destroy(testGameObject);
         }
     }
 }

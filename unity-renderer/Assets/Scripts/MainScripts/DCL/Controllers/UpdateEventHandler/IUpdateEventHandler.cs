@@ -9,7 +9,7 @@ namespace DCL
             Update,
             LateUpdate,
             FixedUpdate,
-            OnGui
+            OnDestroy
         }
 
         void AddListener( EventType eventType, Action action );

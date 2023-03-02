@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCL.Shaders;
+using MainScripts.DCL.Helpers.Utils;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.Rendering;
 
 namespace DCL
@@ -30,39 +33,50 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
+
         /// <summary>
         /// This method iterates over all the renderers contained in the given CombineLayer list, and
-        /// outputs an array of all the bones per vertexes
-        /// 
+        /// outputs an array of all the bones per vertexes and an array of all the bone weights
+        ///
         /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
         /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
         /// not the same skeleton.
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
-        /// <returns>A list of Bones per vertex that share the same skeleton.</returns>
-        public static NativeArray<byte> CombineBonesPerVertex(List<CombineLayer> layers)
+        /// <returns>
+        /// A list of Bones per vertex that share the same skeleton.
+        /// A list of bone weights that share the same skeleton.
+        /// </returns>
+        public static (NativeArray<byte> bonesPerVertex, NativeArray<BoneWeight1> boneWeights) CombineBones(CombineLayersList layers)
         {
             int layersCount = layers.Count;
             int totalVertexes = 0;
+            int totalBones = 0;
 
-            List<NativeArray<byte>> bonesPerVertexList = new List<NativeArray<byte>>();
+            List<NativeArray<byte>> bonesPerVertexList = ListPool<NativeArray<byte>>.Get();
+            List<NativeArray<BoneWeight1>> boneWeightArrays = ListPool<NativeArray<BoneWeight1>>.Get();
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
                     var bonesPerVertex = layerRenderers[i].sharedMesh.GetBonesPerVertex();
-                    
                     bonesPerVertexList.Add(bonesPerVertex);
+
+                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
+                    boneWeightArrays.Add(boneWeights);
+
                     totalVertexes += bonesPerVertex.Length;
+                    totalBones += boneWeights.Length;
                 }
             }
 
             NativeArray<byte> finalBpV = new NativeArray<byte>(totalVertexes, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
             int indexOffset = 0;
             int bonesPerVertexListCount = bonesPerVertexList.Count;
@@ -76,43 +90,7 @@ namespace DCL
                 narray.Dispose();
             }
 
-            return finalBpV;
-        }
-        
-        /// <summary>
-        /// This method iterates over all the renderers contained in the given CombineLayer list, and
-        /// outputs an array of all the bone weights
-        /// 
-        /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
-        /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
-        /// not the same skeleton.
-        /// </summary>
-        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
-        /// <returns>A list of bone weights that share the same skeleton.</returns>
-        public static NativeArray<BoneWeight1> CombineBonesWeights(List<CombineLayer> layers)
-        {
-            int layersCount = layers.Count;
-            int totalBones = 0;
-
-            List<NativeArray<BoneWeight1>> boneWeightArrays = new List<NativeArray<BoneWeight1>>(10);
-
-            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
-            {
-                CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
-                int layerRenderersCount = layerRenderers.Count;
-
-                for (int i = 0; i < layerRenderersCount; i++)
-                {
-                    var boneWeights = layerRenderers[i].sharedMesh.GetAllBoneWeights();
-                    boneWeightArrays.Add(boneWeights);
-                    totalBones += boneWeights.Length;
-                }
-            }
-
-            NativeArray<BoneWeight1> finalBones = new NativeArray<BoneWeight1>(totalBones, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-
-            int indexOffset = 0;
+            indexOffset = 0;
             var finalBonesCount = boneWeightArrays.Count;
 
             for (int i = 0; i < finalBonesCount; i++)
@@ -124,13 +102,16 @@ namespace DCL
                 narray.Dispose();
             }
 
-            return finalBones;
+            ListPool<NativeArray<byte>>.Release(bonesPerVertexList);
+            ListPool<NativeArray<BoneWeight1>>.Release(boneWeightArrays);
+
+            return (finalBpV, finalBones);
         }
 
 
         /// <summary>
         /// FlattenMaterials take a CombineLayer list and returns a FlattenedMaterialsData object.
-        /// 
+        ///
         /// This object can be used to construct a combined mesh that has uniform data encoded in uv attributes.
         /// This type of encoding can be used to greatly reduce draw calls for seemingly unrelated objects.
         ///
@@ -139,52 +120,38 @@ namespace DCL
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
         /// <param name="materialAsset">Material asset that will be cloned to generate the returned materials.</param>
         /// <returns>A FlattenedMaterialsData object. This object can be used to construct a combined mesh that has uniform data encoded in UV attributes.</returns>
-        public static FlattenedMaterialsData FlattenMaterials(List<CombineLayer> layers, Material materialAsset)
+        public static FlattenedMaterialsData FlattenMaterials(CombineLayersList layers, Material materialAsset)
         {
             int layersCount = layers.Count;
 
-            int finalVertexCount = 0;
+            int finalVertexCount = layers.TotalVerticesCount;
+            var result = new FlattenedMaterialsData(finalVertexCount, layersCount);
+
             int currentVertexCount = 0;
-            
-            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
-            {
-                CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
-                int layerRenderersCount = layerRenderers.Count;
-
-                for (int i = 0; i < layerRenderersCount; i++)
-                {
-                    var renderer = layerRenderers[i];
-                    finalVertexCount += renderer.sharedMesh.vertexCount;
-                }
-            }
-
-            var result = new FlattenedMaterialsData(finalVertexCount);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
 
                 Material newMaterial = new Material(materialAsset);
 
                 CullMode cullMode = layer.cullMode;
                 bool isOpaque = layer.isOpaque;
 
-                if ( isOpaque )
+                if (isOpaque)
                     MaterialUtils.SetOpaque(newMaterial);
                 else
                     MaterialUtils.SetTransparent(newMaterial);
 
                 newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);
 
-                result.materials.Add( newMaterial );
+                result.materials[layerIndex] = newMaterial;
 
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
-
                     var renderer = layerRenderers[i];
 
                     // Bone Weights
@@ -198,15 +165,10 @@ namespace DCL
                     Texture2D emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
                     float cutoff = mat.GetFloat(ShaderUtils.Cutoff);
 
-                    bool baseMapIdIsValid = baseMap != null && layer.textureToId.ContainsKey(baseMap);
-                    bool emissionMapIdIsValid = emissionMap != null && layer.textureToId.ContainsKey(emissionMap);
-
-                    int baseMapId = baseMapIdIsValid ? layer.textureToId[baseMap] : -1;
-                    int emissionMapId = emissionMapIdIsValid ? layer.textureToId[emissionMap] : -1;
-
-                    if ( baseMapId != -1 )
+                    int baseMapId = -1;
+                    if (baseMap != null && layer.textureToId.TryGetValue(baseMap, out baseMapId))
                     {
-                        if ( baseMapId < AVATAR_MAP_ID_PROPERTIES.Length )
+                        if (baseMapId < AVATAR_MAP_ID_PROPERTIES.Length)
                         {
                             int targetMap = AVATAR_MAP_ID_PROPERTIES[baseMapId];
                             newMaterial.SetTexture(targetMap, baseMap);
@@ -218,9 +180,10 @@ namespace DCL
                         }
                     }
 
-                    if ( emissionMapId != -1 )
+                    int emissionMapId = -1;
+                    if (emissionMap != null && layer.textureToId.TryGetValue(emissionMap, out emissionMapId))
                     {
-                        if ( baseMapId < AVATAR_MAP_ID_PROPERTIES.Length )
+                        if (emissionMapId < AVATAR_MAP_ID_PROPERTIES.Length)
                         {
                             int targetMap = AVATAR_MAP_ID_PROPERTIES[emissionMapId];
                             newMaterial.SetTexture(targetMap, emissionMap);
@@ -236,7 +199,7 @@ namespace DCL
                     Vector4 emissionColor = mat.GetVector(ShaderUtils.EmissionColor);
                     Vector3 texturePointerData = new Vector3(baseMapId, emissionMapId, cutoff);
 
-                    for ( int ai = 0; ai < vertexCount; ai++ )
+                    for (int ai = 0; ai < vertexCount; ai++)
                     {
                         result.texturePointers[currentVertexCount] = texturePointerData;
                         result.colors[currentVertexCount] = baseColor;
@@ -246,12 +209,10 @@ namespace DCL
 
                     if (VERBOSE)
                         logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
-
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(newMaterial);
-
-            }   
+            }
 
             return result;
         }
@@ -268,16 +229,17 @@ namespace DCL
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
         /// <returns>A SubMeshDescriptor list that can be used later to set the sub-meshes of the final combined mesh
         /// in a way that each sub-mesh corresponds with its own layer.</returns>
-        public static List<SubMeshDescriptor> ComputeSubMeshes(List<CombineLayer> layers)
+        public static NativeArray<SubMeshDescriptor> ComputeSubMeshes(CombineLayersList layers)
         {
-            List<SubMeshDescriptor> result = new List<SubMeshDescriptor>();
             int layersCount = layers.Count;
             int subMeshIndexOffset = 0;
+
+            var result = new NativeArray<SubMeshDescriptor>(layersCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 int subMeshVertexCount = 0;
@@ -294,9 +256,12 @@ namespace DCL
                     subMeshIndexCount += indexCount;
                 }
 
-                var subMesh = new SubMeshDescriptor(subMeshIndexOffset, subMeshIndexCount);
-                subMesh.vertexCount = subMeshVertexCount;
-                result.Add(subMesh);
+                var subMesh = new SubMeshDescriptor(subMeshIndexOffset, subMeshIndexCount)
+                    {
+                        vertexCount = subMeshVertexCount,
+                    };
+
+                result[layerIndex] = subMesh;
 
                 subMeshIndexOffset += subMeshIndexCount;
             }
@@ -310,15 +275,19 @@ namespace DCL
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice()</param>
         /// <returns>CombineInstance list usable by Mesh.CombineMeshes()</returns>
-        public static List<CombineInstance> ComputeCombineInstancesData(List<CombineLayer> layers)
+        public static CombineInstance[] ComputeCombineInstancesData(CombineLayersList layers)
         {
-            var result = new List<CombineInstance>();
             int layersCount = layers.Count;
+            var combineInstancesCount = layers.TotalRenderersCount;
+
+            var result = new CombineInstance[combineInstancesCount];
+
+            var combineInstanceIndex = 0;
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                var layerRenderers = layer.Renderers;
                 int layerRenderersCount = layerRenderers.Count;
 
                 for (int i = 0; i < layerRenderersCount; i++)
@@ -329,44 +298,45 @@ namespace DCL
                     Transform prevParent = meshTransform.parent;
                     meshTransform.SetParent(null, true);
 
-                    result.Add( new CombineInstance()
+                    result[combineInstanceIndex] = new CombineInstance
                     {
                         subMeshIndex = 0, // this means the source sub-mesh, not destination
                         mesh = renderer.sharedMesh,
                         transform = meshTransform.localToWorldMatrix
-                    });
+                    };
 
-                    meshTransform.SetParent( prevParent );
+                    combineInstanceIndex++;
+                    meshTransform.SetParent(prevParent);
                 }
             }
 
             return result;
         }
 
-        public static Mesh CombineMeshesWithLayers( List<CombineInstance> combineInstancesData, List<CombineLayer> layers )
+        public static Mesh CombineMeshesWithLayers(CombineInstance[] combineInstancesData, in CombineLayersList layers)
         {
             Mesh result = new Mesh();
+
             // Is important to use the layerRenderers to combine (i.e. no the original renderers)
             // Layer renderers are in a specific order that must be abided, or the combining will be broken.
-            List<SkinnedMeshRenderer> layerRenderers = new List<SkinnedMeshRenderer>();
+            using var allRenderersRental = PoolUtils.RentList<SkinnedMeshRenderer>();
+            var layerRenderers = allRenderersRental.GetList();
 
-            for (int i = 0; i < layers.Count; i++)
+            for (var i = 0; i < layers.Layers.Count; i++)
             {
-                layerRenderers.AddRange( layers[i].renderers );
+                CombineLayer t = layers.Layers[i];
+                layerRenderers.AddRange(t.Renderers);
             }
 
-            using (var bakedInstances = new BakedCombineInstances())
-            {
-                bakedInstances.Bake(combineInstancesData, layerRenderers);
-                result.CombineMeshes(combineInstancesData.ToArray(), true, true);
-            }
+            using var bakedInstances = BakedCombineInstances.Bake(combineInstancesData, layerRenderers);
+            result.CombineMeshes(combineInstancesData, true, true);
 
             return result;
         }
 
         /// <summary>
         /// ResetBones will reset the given SkinnedMeshRenderer bones to the original bindposes position.
-        /// 
+        ///
         /// This is done without taking into account the rootBone. We need to do it this way because the meshes must be
         /// combined posing to match the raw bindposes matrix.
         ///
@@ -375,9 +345,9 @@ namespace DCL
         /// For this reason, this method doesn't resemble the original method that unity uses to reset the skeleton found here:
         /// https://github.com/Unity-Technologies/UnityCsReference/blob/61f92bd79ae862c4465d35270f9d1d57befd1761/Editor/Mono/Inspector/Avatar/AvatarSetupTool.cs#L890
         /// </summary>
-        internal static void ResetBones(Matrix4x4[] bindPoses, Transform[] bones)
+        internal static void ResetBones(Matrix4x4[] bindPoses, IReadOnlyList<Transform> bones)
         {
-            for ( int i = 0 ; i < bones.Length; i++ )
+            for (int i = 0; i < bones.Count; i++)
             {
                 Transform bone = bones[i];
                 Matrix4x4 bindPose = bindPoses[i].inverse;
@@ -397,17 +367,14 @@ namespace DCL
 #endif
         }
 
-        internal static void DrawDebugSkeleton(Transform[] bones)
+        internal static void DrawDebugSkeleton(IReadOnlyList<Transform> bones)
         {
-            for ( int i = 0 ; i < bones.Length; i++ )
+            for (int i = 0; i < bones.Count; i++)
             {
                 Transform bone = bones[i];
                 Debug.DrawLine(bone.position, bone.position + bone.forward, Color.cyan, 60);
 
-                foreach ( Transform child in bone )
-                {
-                    Debug.DrawLine(bone.position, child.position, Color.green, 60);
-                }
+                foreach (Transform child in bone) { Debug.DrawLine(bone.position, child.position, Color.green, 60); }
             }
         }
     }

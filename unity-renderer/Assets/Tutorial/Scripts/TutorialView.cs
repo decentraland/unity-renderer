@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,9 @@ namespace DCL.Tutorial
 
         [SerializeField]
         internal Canvas teacherCanvas;
+        
+        [SerializeField]
+        internal TutorialMusicHandler tutorialMusicHandler;
 
         [Header("Eagle Eye Camera references")]
         [SerializeField]
@@ -31,7 +35,10 @@ namespace DCL.Tutorial
         internal TutorialController tutorialController;
         private HUDCanvasCameraModeController teacherCanvasCameraModeController;
 
-        private void Awake() { teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera); }
+        private void Awake()
+        {
+            teacherCanvasCameraModeController = new HUDCanvasCameraModeController(teacherCanvas, DataStore.i.camera.hudsCamera);
+        }
 
         private void OnDestroy() { teacherCanvasCameraModeController?.Dispose(); }
 

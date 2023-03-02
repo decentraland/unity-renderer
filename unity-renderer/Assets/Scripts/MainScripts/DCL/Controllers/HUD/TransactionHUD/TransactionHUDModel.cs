@@ -13,7 +13,7 @@ namespace DCL.TransactionHUDModel
     {
         public string id;
         public Type requestType;
-        public string sceneId;
+        public int sceneNumber;
         public string message;
         public string toAddress;
         public float amount;

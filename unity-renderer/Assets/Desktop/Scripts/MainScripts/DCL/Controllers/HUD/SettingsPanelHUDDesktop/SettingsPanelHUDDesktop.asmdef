@@ -1,0 +1,32 @@
+{
+    "name": "SettingsPanelHUDDesktop",
+    "rootNamespace": "",
+    "references": [
+        "GUID:eee78afb8bb175c46bd6c5112e6c105c",
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:3a20bd2e61151461ab17e9cf5dc7a24b",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:508d91155ec4143d780505700c270d91",
+        "GUID:0808274fbf804428b871b403dc5b457d",
+        "GUID:c2d26ac7e5da1476d8138ffda5a029c2",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

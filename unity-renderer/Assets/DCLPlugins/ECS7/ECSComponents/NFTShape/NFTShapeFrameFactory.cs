@@ -21,7 +21,7 @@ namespace DCL.ECSComponents
     
     public class NFTShapeFrameFactory : ScriptableObject, INFTShapeFrameFactory
     {
-        [SerializeField] private NFTShapeFrame[] loaderControllersPrefabs;
+        [SerializeField] internal NFTShapeFrame[] loaderControllersPrefabs;
         [SerializeField] private NFTShapeFrame defaultFramePrefabs;
         [SerializeField] private GameObject errorFeedback;
         

@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
+using MainScripts.DCL.Controllers.AssetManager;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,9 +19,9 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
             var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
             serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
             Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;

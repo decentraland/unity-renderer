@@ -1,0 +1,23 @@
+{
+    "name": "AssetsEmbedmentEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a074773cd9a997a4f9795e8556e72c8b",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:38545d39108d4483b82d57c661caac23",
+        "GUID:06f7b20fe45243ddae8051ed4946c242"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SceneSFXVolumeControlConfiguration
   m_EditorClassIdentifier: 
   title: WORLD SFX
-  controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
+  controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: c3c02538f9379304d90d5e2e48b3bb5b, type: 2}
   flagsThatDisableMe: []

@@ -14,7 +14,7 @@ namespace DCL
 
         internal const float CHECK_INTERVAL = 0.2f;
 
-        private string sceneId;
+        private int sceneNumber;
         private Coroutine updateRoutine;
         private bool isActive = false;
 
@@ -44,7 +44,7 @@ namespace DCL
         {
             if (active && !isActive)
             {
-                sceneId = KernelConfig.i.Get().debugConfig.sceneLimitsWarningSceneId;
+                sceneNumber = KernelConfig.i.Get().debugConfig.sceneLimitsWarningSceneNumber;
                 KernelConfig.i.OnChange += OnKernelConfigChanged;
                 updateRoutine = CoroutineStarter.Start(UpdateRoutine());
             }
@@ -66,8 +66,8 @@ namespace DCL
 
         internal void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
-            sceneId = current.debugConfig.sceneLimitsWarningSceneId;
-            if (string.IsNullOrEmpty(sceneId))
+            sceneNumber = current.debugConfig.sceneLimitsWarningSceneNumber;
+            if (sceneNumber <= 0)
             {
                 StopChecking();
             }
@@ -88,9 +88,9 @@ namespace DCL
             bool isLimitReached = false;
             bool isLimitReachedAndMessageChanged = false;
 
-            if (!string.IsNullOrEmpty(sceneId))
+            if (sceneNumber > 0)
             {
-                worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
+                worldState.TryGetScene(sceneNumber, out IParcelScene scene);
                 ISceneMetricsCounter metricsController = scene?.metricsCounter;
                 SceneMetricsModel currentMetrics = metricsController?.currentCount;
                 SceneMetricsModel limit = metricsController?.maxCount;

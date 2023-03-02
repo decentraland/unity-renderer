@@ -1,0 +1,22 @@
+{
+    "name": "VideoPlayerInterface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:69fd9bb431ff24c448dfb96a4dd9365f"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

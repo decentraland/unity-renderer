@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 
 public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
@@ -26,23 +27,23 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.UNIQUE);
 
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
-        userProfileController.AddUserProfileToCatalog(new UserProfileModel { userId = "userId" });
+        userProfileController.AddUserProfileToCatalog(new UserProfileModel { userId = "userid" });
 
-        userProfile = UserProfileController.userProfilesCatalog.Get("userId");
+        userProfile = UserProfileController.userProfilesCatalog.Get("userid");
         userProfile.UpdateData(new UserProfileModel
         {
             userId = "userId",
             name = "username",
             description = "description",
-            email = "email",
-            inventory = new[]
-            {
-                WearableLiterals.ItemRarity.EPIC,
-                WearableLiterals.ItemRarity.LEGENDARY,
-                WearableLiterals.ItemRarity.MYTHIC,
-                WearableLiterals.ItemRarity.RARE,
-                WearableLiterals.ItemRarity.UNIQUE,
-            }
+            email = "email"
+        });
+        userProfile.SetInventory(new[]
+        {
+            WearableLiterals.ItemRarity.EPIC,
+            WearableLiterals.ItemRarity.LEGENDARY,
+            WearableLiterals.ItemRarity.MYTHIC,
+            WearableLiterals.ItemRarity.RARE,
+            WearableLiterals.ItemRarity.UNIQUE,
         });
     }
 
@@ -101,6 +102,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     [TestCase(false)]
     public void UpdateCanvasActiveProperly(bool cardActive)
     {
+        CommonScriptableObjects.playerInfoCardVisibleState.Set(cardActive);
         view.SetCardActive(cardActive);
         Assert.AreEqual(cardActive, view.cardCanvas.enabled);
     }
@@ -137,8 +139,9 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
             }
         };
 
-        CatalogController.wearableCatalog.Remove(rarity);
-        CatalogController.wearableCatalog.Add(rarity, wearable);
+        var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+        wearablesCatalogService.WearablesCatalog.Remove(rarity);
+        wearablesCatalogService.WearablesCatalog.Add(rarity, wearable);
 
         return wearable;
     }

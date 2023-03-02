@@ -111,7 +111,7 @@ namespace DCL.Components
             return null;
         }
 
-        void OnChanged(Vector2 scrollingValues) { WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, 0); }
+        void OnChanged(Vector2 scrollingValues) { WebInterface.ReportOnScrollChange(scene.sceneData.sceneNumber, model.OnChanged, scrollingValues, 0); }
 
         public override void Dispose()
         {

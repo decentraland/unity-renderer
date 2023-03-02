@@ -1,7 +1,10 @@
-﻿public enum FriendshipStatus
+﻿namespace DCL.Social.Friends
 {
-    NOT_FRIEND,
-    FRIEND,
-    REQUESTED_FROM,
-    REQUESTED_TO
+    public enum FriendshipStatus
+    {
+        NOT_FRIEND,
+        FRIEND,
+        REQUESTED_FROM,
+        REQUESTED_TO
+    }
 }

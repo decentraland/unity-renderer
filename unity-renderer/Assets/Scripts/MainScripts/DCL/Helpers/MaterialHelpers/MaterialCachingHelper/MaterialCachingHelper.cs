@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityGLTF.Cache;
 
@@ -22,18 +20,18 @@ namespace DCL.Helpers
         public static float timeBudgetMax = 0.003f;
         public static float timeBudget = 0;
 
-        public static Dictionary<string, Shader> shaderByHash = new Dictionary<string, Shader>();
+        public static Dictionary<string, Shader> shaderByHash = new ();
 
         private static Shader mainShader;
 
-        public static string ComputeHash(Material mat) { return mat.ComputeCRC().ToString(); }
+        public static string ComputeHash(Material mat)
+        {
+            return mat.ComputeCRC().ToString();
+        }
 
         static Shader EnsureMainShader()
         {
-            if (mainShader == null)
-            {
-                mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
-            }
+            if (mainShader == null) { mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit"); }
 
             return mainShader;
         }
@@ -46,14 +44,8 @@ namespace DCL.Helpers
 
                 if (!shaderByHash.ContainsKey(shaderHash))
                 {
-                    if (!mat.shader.name.Contains("Error"))
-                    {
-                        shaderByHash.Add(shaderHash, Shader.Find(mat.shader.name));
-                    }
-                    else
-                    {
-                        shaderByHash.Add(shaderHash, EnsureMainShader());
-                    }
+                    if (!mat.shader.name.Contains("Error")) { shaderByHash.Add(shaderHash, Shader.Find(mat.shader.name)); }
+                    else { shaderByHash.Add(shaderHash, EnsureMainShader()); }
                 }
 
                 mat.shader = shaderByHash[shaderHash];
@@ -102,6 +94,9 @@ namespace DCL.Helpers
             {
                 Renderer r = renderers[i];
 
+                if (r.name.ToLower().Contains("_collider"))
+                    continue;
+
                 if (!enableRenderers)
                     r.enabled = false;
 
@@ -113,9 +108,12 @@ namespace DCL.Helpers
                 {
                     Material mat = sharedMats[i1];
 
+                    if (mat == null)
+                        continue;
+
                     float elapsedTime = Time.realtimeSinceStartup;
 
-                    matList.Add( ProcessSingleMaterial(mat, cachingFlags) );
+                    matList.Add(ProcessSingleMaterial(mat, cachingFlags));
 
                     if (timeBudgetEnabled)
                     {

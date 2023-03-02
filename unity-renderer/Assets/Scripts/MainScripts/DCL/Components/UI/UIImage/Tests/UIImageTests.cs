@@ -144,7 +144,7 @@ namespace Tests
             bool eventResult = false;
 
             yield return TestUtils.TestUIClickEventPropagation(
-                scene.sceneData.id,
+                scene.sceneData.sceneNumber,
                 uiImageOnClickEventId,
                 (RectTransform) uiImage.referencesContainer.image.transform,
                 (bool res) =>
@@ -169,7 +169,7 @@ namespace Tests
             eventResult = false;
 
             yield return TestUtils.TestUIClickEventPropagation(
-                scene.sceneData.id,
+                scene.sceneData.sceneNumber,
                 uiImageOnClickEventId,
                 (RectTransform) uiContainer.referencesContainer.image.transform,
                 (bool res) =>

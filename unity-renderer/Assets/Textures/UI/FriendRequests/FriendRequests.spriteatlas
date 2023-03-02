@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FriendRequests
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f2f6767a9ce034bd6ae573727a6399e3, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 972d859021bd84cbbab8af9ac0b50271, type: 3}
+  - {fileID: 21300000, guid: 6ebca6627bf834831a528f22f85eb9de, type: 3}
+  - {fileID: 21300000, guid: b4dd3cb22062748f3b9fd6a24bbf12dc, type: 3}
+  - {fileID: 21300000, guid: 65d17823a3eec41a79c4aa600b48b627, type: 3}
+  - {fileID: 21300000, guid: 83b39d2370146b74cb6d93a7412e5c6e, type: 3}
+  - {fileID: 21300000, guid: acccac64ae14c4f0baca1a5a251788c0, type: 3}
+  - {fileID: 21300000, guid: 7d926974a6ead4423bb075a4398f2760, type: 3}
+  - {fileID: 21300000, guid: 94d93c8424b8c4c829b83da5910301d1, type: 3}
+  - {fileID: 21300000, guid: e162db0583231324294eafa3ef20a7fa, type: 3}
+  - {fileID: 21300000, guid: 1d615c35569ea4c1d887f690fd234748, type: 3}
+  - {fileID: 21300000, guid: 1e1fdbd5f5c9f48ffaf7bbc17b7926b5, type: 3}
+  - {fileID: 21300000, guid: c1efd816f289d442281c6d21fcb60c1f, type: 3}
+  - {fileID: 21300000, guid: 614df7c7ef50e40d19e8ff6fe4330290, type: 3}
+  - {fileID: 21300000, guid: 227f5138436db4be4b2aff6ff2a4be86, type: 3}
+  - {fileID: 21300000, guid: a6a789f86d8b749f6975a615ccb7e07e, type: 3}
+  - {fileID: 21300000, guid: b5fe8639261274e66ae19449ffe52662, type: 3}
+  - {fileID: 21300000, guid: 460a5d79d9d9f4adc82e0bd9f4a9765d, type: 3}
+  - {fileID: 21300000, guid: e4fd7b3a4c6ab4235a26f4d14ebfb83d, type: 3}
+  - {fileID: 21300000, guid: 5465911b00404492aba3f6cd07741ba7, type: 3}
+  - {fileID: 21300000, guid: 72605cfbbf902b04997bd203e76e56e5, type: 3}
+  - {fileID: 21300000, guid: 8fb7e08cdb8220c458f8e6f5bfabf33c, type: 3}
+  - {fileID: 21300000, guid: 0c45511efa4b6498b9fb3142365e67fb, type: 3}
+  - {fileID: 21300000, guid: 31605fcece14a4288b0490a9be121f0f, type: 3}
+  - {fileID: 21300000, guid: dd61d5dfb51bf4bc8bc686cc3ee1e445, type: 3}
+  - {fileID: 21300000, guid: c74f65ef5aef04d1b9ab6e54489f4e5e, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - EllipseOutilineShadow
+  - BrokenHeart
+  - EnvelopeOpened
+  - ShapeEllipseOutline
+  - ConfirmFriendParticles1
+  - ShapeCloud2
+  - EllipseOrange
+  - EllipseOutline1-5
+  - AddFriendNoti
+  - Shadow
+  - ShapeTwistedLine
+  - ShapeTriangleOutline
+  - EnvelopeClosed
+  - ParticlesEnvelope
+  - LineArrow
+  - EllipseGradient
+  - FloorBright
+  - ShapeCloudGradient
+  - BrokenHeart-1
+  - FriendIconNoti
+  - ConfirmFriendParticles2
+  - FollowingIcon
+  - ShapeCloud1
+  - ShapeSpark
+  - EllipseViolet
+  m_RenderDataMap: {}
+  m_Tag: FriendRequests
+  m_IsVariant: 0
