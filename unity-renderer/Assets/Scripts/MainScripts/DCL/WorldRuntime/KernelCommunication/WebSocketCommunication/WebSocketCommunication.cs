@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using DCL;
 using UnityEngine;
 using WebSocketSharp;
@@ -63,7 +66,7 @@ public class WebSocketCommunication : IKernelCommunication
                 {
                     SslConfiguration =
                     {
-                        ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
+                        ServerCertificate = loadSelfSignedServerCertificate(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
@@ -109,6 +112,10 @@ public class WebSocketCommunication : IKernelCommunication
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
+
+    private X509Certificate2 loadSelfSignedServerCertificate() =>
+        new X509Certificate2("self-signed.pfx", "");
+
     private void OnWebSocketLog(LogData logData, string message)
     {
         switch (logData.Level)
@@ -160,7 +167,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateFriendshipStatus"] = "Main";
         messageTypeToBridgeName["UpdateUserPresence"] = "Main";
         messageTypeToBridgeName["FriendNotFound"] = "Main";
-        messageTypeToBridgeName["AddMessageToChatWindow"] = "Main";
         messageTypeToBridgeName["UpdateMinimapSceneInformation"] = "Main";
         messageTypeToBridgeName["UpdateHotScenesList"] = "Main";
         messageTypeToBridgeName["SetRenderProfile"] = "Main";
@@ -185,22 +191,9 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["AddFriendsWithDirectMessages"] = "Main";
         messageTypeToBridgeName["AddFriends"] = "Main";
         messageTypeToBridgeName["AddFriendRequests"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessagesByUser"] = "Main";
         messageTypeToBridgeName["UpdateTotalFriendRequests"] = "Main";
         messageTypeToBridgeName["UpdateTotalFriends"] = "Main";
-        messageTypeToBridgeName["InitializeChat"] = "Main";
-        messageTypeToBridgeName["AddChatMessages"] = "Main";
-        messageTypeToBridgeName["UpdateUserUnseenMessages"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessages"] = "Main";
-        messageTypeToBridgeName["UpdateChannelInfo"] = "Main";
-        messageTypeToBridgeName["JoinChannelConfirmation"] = "Main";
-        messageTypeToBridgeName["JoinChannelError"] = "Main";
-        messageTypeToBridgeName["LeaveChannelError"] = "Main";
-        messageTypeToBridgeName["MuteChannelError"] = "Main";
-        messageTypeToBridgeName["UpdateTotalUnseenMessagesByChannel"] = "Main";
-        messageTypeToBridgeName["UpdateChannelMembers"] = "Main";
         messageTypeToBridgeName["UpdateHomeScene"] = "Main";
-        messageTypeToBridgeName["UpdateChannelSearchResults"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

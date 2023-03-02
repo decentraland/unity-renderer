@@ -126,7 +126,6 @@ namespace UnityGLTF
             loader.addImagesToPersistentCaching = false;
             loader.addMaterialsToPersistentCaching = false;
             loader.initialVisibility = true;
-            loader.useMaterialTransition = false;
             loader.maxTextureSize = 512;
             loader.maximumLod = _maximumLod;
             loader.forceGPUOnlyMesh = false;

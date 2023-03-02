@@ -1,16 +1,16 @@
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RpcServerPort } from '@dcl/rpc/dist/types'
+import type { RpcServerPort } from '@dcl/rpc/dist/types'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl } from 'config'
-import {
+import type {
   GetParcelRequest,
   GetParcelResponse,
   GetSceneIdRequest,
-  ParcelIdentityServiceDefinition,
   GetIsEmptyResponse,
   GetIsEmptyRequest,
   GetSceneIdResponse
 } from '@dcl/protocol/out-ts/decentraland/kernel/apis/parcel_identity.gen'
-import { PortContext } from './context'
+import { ParcelIdentityServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/parcel_identity.gen'
+import type { PortContext } from './context'
 
 async function getParcel(_req: GetParcelRequest, ctx: PortContext): Promise<GetParcelResponse> {
   const sceneData = ctx.sceneData

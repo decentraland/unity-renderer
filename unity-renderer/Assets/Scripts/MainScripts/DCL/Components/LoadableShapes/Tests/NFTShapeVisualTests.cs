@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -120,7 +121,7 @@ public class NFTShapeVisualTests : VisualTestsBase
 
         // Override texture with a local test one
         var nftShape = Environment.i.world.state.GetLoaderForEntity(entity) as LoadWrapper_NFT;
-        nftShape.loaderController.UpdateTexture(Resources.Load<Texture2D>("TestTexture"));
+        nftShape.loaderController.UpdateTexture(AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Textures/TestTexture.png"));
         nftShape.loaderController.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
     }
 }

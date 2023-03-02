@@ -19,8 +19,7 @@ namespace Tests.SignupHUD
         {
             hudView = Substitute.For<ISignupHUDView>();
             avatarEditorHUD = Substitute.For<IHUD>();
-            hudController = Substitute.ForPartsOf<SignupHUDController>();
-            hudController.Configure().CreateView().Returns(info => hudView);
+            hudController = new SignupHUDController(hudView);
             hudController.Initialize(avatarEditorHUD);
         }
 

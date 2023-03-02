@@ -33,6 +33,8 @@ namespace MainScripts.DCL.Controllers.LoadingFlow
 
             this.loadingHudVisible.OnChange += OnLoadingHudVisibleChanged;
             this.rendererState.OnChange += OnRendererStateChange;
+
+            StartWatching();
         }
 
         private ILoadingFlowView CreateView()
@@ -53,9 +55,12 @@ namespace MainScripts.DCL.Controllers.LoadingFlow
 
         private void StartWatching()
         {
+            //Means we are already watching
+            if (disposeToken != null) return;
+
             timerStart = Time.unscaledTime;
             disposeToken = new CancellationTokenSource();
-            ListenForTimeout();
+            ListenForTimeout().Forget();
         }
 
         private void StopWatching() =>
@@ -66,7 +71,7 @@ namespace MainScripts.DCL.Controllers.LoadingFlow
             var elapsedLoadingTime = Time.unscaledTime - timerStart;
 
             return elapsedLoadingTime > GENERAL_TIMEOUT_IN_SECONDS
-                   || !websocketCommunicationEstablished.Get() && elapsedLoadingTime > WEB_SOCKET_TIMEOUT;
+                   || (!websocketCommunicationEstablished.Get() && elapsedLoadingTime > WEB_SOCKET_TIMEOUT);
         }
 
         private void OnRendererStateChange(bool current, bool previous)
@@ -90,7 +95,10 @@ namespace MainScripts.DCL.Controllers.LoadingFlow
             while (true)
             {
                 if (IsTimeToShowTimeout())
+                {
                     ShowTimeout();
+                    StopWatching();
+                }
 
                 await UniTask.Yield(cancellationToken: disposeToken.Token);
             }

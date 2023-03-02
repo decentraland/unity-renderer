@@ -55,6 +55,9 @@ Logs/Packages-Update.log
 
 browser-interface/dist
 browser-interface/node_modules
+browser-interface/*/StreamingAssets/*
+browser-interface/*/unity.symbols.json
+
 protocol-gen/node_modules
 unity-renderer/UserSettings/EditorUserSettings.asset
 unity-renderer/ProjectSettings/QualitySettings.asset

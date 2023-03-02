@@ -14,7 +14,7 @@ public class RenderingController : MonoBehaviour
     public CompositeLock renderingActivatedAckLock = new ();
 
     private bool activatedRenderingBefore { get; set; }
-    private bool isDecoupledLoadingScreenEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF);
+    private bool isDecoupledLoadingScreenEnabled => true;
     private bool isSignUpFlow => DataStore.i.common.isSignUpFlow.Get();
 
     private DataStoreRef<DataStore_LoadingScreen> dataStore_LoadingScreenRef;
@@ -56,7 +56,6 @@ public class RenderingController : MonoBehaviour
     {
         if (!CommonScriptableObjects.rendererState.Get()) return;
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(false);
 
         if (!isDecoupledLoadingScreenEnabled)
@@ -66,22 +65,9 @@ public class RenderingController : MonoBehaviour
     [ContextMenu("Enable Rendering")]
     public void ActivateRendering()
     {
-        //Have to add this check since flags are not initialized when this is called first time by kernel
-        if (DataStore.i.featureFlags.flags.Get().flags.Count.Equals(0))
-        {
-            DataStore.i.featureFlags.flags.OnChange += FlagsSet;
-            return;
-        }
-
         if (isDecoupledLoadingScreenEnabled) return;
 
         ActivateRendering_Internal(forceActivate: false);
-    }
-
-    private void FlagsSet(FeatureFlag current, FeatureFlag previous)
-    {
-        ActivateRendering();
-        DataStore.i.featureFlags.flags.OnChange -= FlagsSet;
     }
 
     public void ForceActivateRendering()
@@ -121,7 +107,6 @@ public class RenderingController : MonoBehaviour
             activatedRenderingBefore = true;
         }
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = true;
         CommonScriptableObjects.rendererState.Set(true);
 
         if (!isDecoupledLoadingScreenEnabled)
