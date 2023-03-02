@@ -23,7 +23,6 @@ export function* sceneEventsSaga() {
 function* islandChanged() {
   const { adapter, island } = (yield select(getRealmAdapterAndIsland)) as ReturnType<typeof getRealmAdapterAndIsland>
 
-  console.log(`hi: ${adapter}`)
   if (adapter) {
     const payload = toEnvironmentRealmType(adapter, island)
     yield call(allScenesEvent, { eventType: 'onRealmChanged', payload })
