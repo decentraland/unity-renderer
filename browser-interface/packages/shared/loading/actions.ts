@@ -21,8 +21,3 @@ export type SceneStart = ReturnType<typeof signalSceneStart>
 export type SceneFail = ReturnType<typeof signalSceneFail>
 export type SceneUnload = ReturnType<typeof signalSceneUnload>
 export type InformPendingScenes = ReturnType<typeof informPendingScenes>
-
-export const UPDATE_STATUS_MESSAGE = '[RENDERER] Update loading message'
-export const updateStatusMessage = (message: string, loadPercentage: number, lastUpdate: number) =>
-  action(UPDATE_STATUS_MESSAGE, { message, loadPercentage, lastUpdate })
-export type UpdateStatusMessage = ReturnType<typeof updateStatusMessage>

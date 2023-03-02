@@ -30,7 +30,6 @@ import {
   SCENE_LOAD,
   SCENE_START,
   SCENE_UNLOAD,
-  UPDATE_STATUS_MESSAGE
 } from './actions'
 import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded, TELEPORT_TRIGGERED } from './types'
 
@@ -71,7 +70,7 @@ function* triggerUnityClientLoaded() {
   yield put(metricsUnityClientLoaded())
 }
 
-export function* trackLoadTime(action: SceneLoad): any {
+function* trackLoadTime(action: SceneLoad): any {
   const start = now()
   const { id } = action.payload
   const entityId = id
@@ -92,7 +91,7 @@ export function* trackLoadTime(action: SceneLoad): any {
   })
 }
 
-export const ACTIONS_FOR_LOADING = [
+const ACTIONS_FOR_LOADING = [
   AUTHENTICATE,
   CHANGE_LOGIN_STAGE,
   PARCEL_LOADING_STARTED,
@@ -102,7 +101,6 @@ export const ACTIONS_FOR_LOADING = [
   SCENE_LOAD,
   SIGNUP_SET_IS_SIGNUP,
   TELEPORT_TRIGGERED,
-  UPDATE_STATUS_MESSAGE,
   SET_REALM_ADAPTER,
   SET_SCENE_LOADER,
   POSITION_SETTLED,
@@ -114,13 +112,6 @@ function* waitForSceneLoads() {
   function shouldWaitForScenes(state: RootState) {
     if (!state.renderer.parcelLoadingStarted) {
       return true
-    }
-
-    // in the initial load, we should wait until we have *some* scene to load
-    if (state.loading.initialLoad) {
-      if (state.loading.pendingScenes !== 0 || state.loading.totalScenes === 0) {
-        return true
-      }
     }
 
     // otherwise only wait until pendingScenes == 0

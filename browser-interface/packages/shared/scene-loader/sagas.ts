@@ -1,5 +1,5 @@
 import { Vector2 } from '@dcl/ecs-math'
-import { ENABLE_EMPTY_SCENES } from 'config'
+import { ENABLE_EMPTY_SCENES, isRunningTest } from 'config'
 import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
@@ -213,7 +213,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
       })
       yield put(setSceneLoader(loader))
     } else {
-      const enableEmptyParcels = ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
+      const enableEmptyParcels = ENABLE_EMPTY_SCENES && isRunningTest
 
       const emptyParcelsBaseUrl = enableEmptyParcels
         ? getResourcesURL('.') // resolve explorer path to look for empty parcels

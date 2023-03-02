@@ -1,4 +1,4 @@
-import { scenesChanged } from '../loading/actions'
+import { scenesChanged } from 'shared/loading/actions'
 import { LoadableScene } from '../types'
 import { SceneWorker } from './SceneWorker'
 import { store } from 'shared/store/isolatedStore'

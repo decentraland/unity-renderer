@@ -48,9 +48,6 @@ export const getDisabledCatalystConfig = (store: RootMetaState): string[] => {
   })
 }
 
-export const isLiveKitVoiceChatFeatureFlag = (store: RootMetaState): boolean =>
-  getFeatureFlagEnabled(store, 'livekit-voicechat') as boolean
-
 // Enable the gif processor on the web instead of processing it in Unity (just for WebGL build)
 export const isGifWebSupported = (store: RootMetaState): boolean => getFeatureFlagEnabled(store, 'gif-web') as boolean
 

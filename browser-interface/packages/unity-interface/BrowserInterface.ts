@@ -2,12 +2,11 @@ import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math
 
 import { Authenticator } from '@dcl/crypto'
 import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
-import { DEBUG, ethereumConfigurations, playerHeight, timeBetweenLoadingUpdatesInMillis, WORLD_EXPLORER } from 'config'
+import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { arrayCleanup } from 'lib/javascript/arrayCleanup'
-import { now } from 'lib/javascript/now'
 import { defaultLogger } from 'lib/logger'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
@@ -42,9 +41,7 @@ import {
   UpdateFriendshipAsPromise
 } from 'shared/friends/sagas'
 import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
-import { updateStatusMessage } from 'shared/loading/actions'
 import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
-import { getLastUpdateTime } from 'shared/loading/selectors'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
@@ -906,14 +903,8 @@ class BrowserInterface {
     getUnityInstance().SendMemoryUsageToRenderer()
   }
 
-  public ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
-    const { message, loadPercentage } = data
-    const currentTime = now()
-    const last = getLastUpdateTime(store.getState())
-    const elapsed = currentTime - (last || 0)
-    if (elapsed > timeBetweenLoadingUpdatesInMillis) {
-      store.dispatch(updateStatusMessage(message, loadPercentage, currentTime))
-    }
+  public ScenesLoadingFeedback(_: { message: string; loadPercentage: number }) {
+    defaultLogger.log('Deprecated method: ScenesLoadingFeedback')
   }
 
   public FetchHotScenes() {
