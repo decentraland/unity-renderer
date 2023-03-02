@@ -1,24 +1,22 @@
-import { AnyAction } from 'redux'
-import { fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-
-import { PARCEL_LOADING_STARTED, RENDERER_INITIALIZED_CORRECTLY } from 'shared/renderer/types'
-import { AUTHENTICATE, ChangeLoginStateAction, CHANGE_LOGIN_STAGE, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
-import { trackEvent } from 'shared/analytics/trackEvent'
-import { lastPlayerPosition } from '../world/positionThings'
-
 import { getAssetBundlesBaseUrl } from 'config'
 import { LoginState } from 'kernel-web-interface'
 import { now } from 'lib/javascript/now'
+import { AnyAction } from 'redux'
 import { call } from 'redux-saga-test-plan/matchers'
+import { fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { getResourcesURL } from 'shared/location'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
+import { PARCEL_LOADING_STARTED, RENDERER_INITIALIZED_CORRECTLY } from 'shared/renderer/types'
 import { POSITION_SETTLED, POSITION_UNSETTLED, SET_SCENE_LOADER } from 'shared/scene-loader/actions'
+import { AUTHENTICATE, ChangeLoginStateAction, CHANGE_LOGIN_STAGE, SIGNUP_SET_IS_SIGNUP } from 'shared/session/actions'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
 import { loadedSceneWorkers } from 'shared/world/parcelSceneManager'
+import { lastPlayerPosition } from 'shared/world/positionThings'
 import { SceneWorkerReadyState } from 'shared/world/SceneWorker'
 import {
   informPendingScenes,
@@ -30,6 +28,7 @@ import {
   SCENE_LOAD,
   SCENE_START,
   SCENE_UNLOAD,
+  UPDATE_STATUS_MESSAGE
 } from './actions'
 import { experienceStarted, metricsAuthSuccessful, metricsUnityClientLoaded, TELEPORT_TRIGGERED } from './types'
 
@@ -70,7 +69,7 @@ function* triggerUnityClientLoaded() {
   yield put(metricsUnityClientLoaded())
 }
 
-function* trackLoadTime(action: SceneLoad): any {
+export function* trackLoadTime(action: SceneLoad): any {
   const start = now()
   const { id } = action.payload
   const entityId = id
@@ -91,7 +90,7 @@ function* trackLoadTime(action: SceneLoad): any {
   })
 }
 
-const ACTIONS_FOR_LOADING = [
+export const ACTIONS_FOR_LOADING = [
   AUTHENTICATE,
   CHANGE_LOGIN_STAGE,
   PARCEL_LOADING_STARTED,
@@ -101,6 +100,7 @@ const ACTIONS_FOR_LOADING = [
   SCENE_LOAD,
   SIGNUP_SET_IS_SIGNUP,
   TELEPORT_TRIGGERED,
+  UPDATE_STATUS_MESSAGE,
   SET_REALM_ADAPTER,
   SET_SCENE_LOADER,
   POSITION_SETTLED,
@@ -112,6 +112,13 @@ function* waitForSceneLoads() {
   function shouldWaitForScenes(state: RootState) {
     if (!state.renderer.parcelLoadingStarted) {
       return true
+    }
+
+    // in the initial load, we should wait until we have *some* scene to load
+    if (state.loading.initialLoad) {
+      if (state.loading.pendingScenes !== 0 || state.loading.totalScenes === 0) {
+        return true
+      }
     }
 
     // otherwise only wait until pendingScenes == 0
