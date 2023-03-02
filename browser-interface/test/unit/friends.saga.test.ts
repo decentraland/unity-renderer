@@ -50,6 +50,7 @@ import {
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
 import { SendFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 import { store } from 'shared/store/isolatedStore'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {
@@ -93,6 +94,7 @@ const textMessages: TextMessage[] = [
 ]
 
 const friendIds = ['0xa1', '0xb1', '0xc1', '0xd1']
+const mutualFriendsIds = ['0x99', '0x98', '0x97']
 
 const fromFriendRequest: FriendRequest = {
   friendRequestId: encodeFriendRequestId('ownId', '0xa1', true, FriendshipAction.REQUESTED_FROM),
@@ -454,6 +456,31 @@ describe('Friends sagas', () => {
         const response = await friendsSagas.getFriendRequestsProtocol(request)
         assert.match(response, expectedResponse)
         sinon.mock(getUnityInstance()).verify()
+      })
+    })
+  })
+
+  describe('Get mutual friends', () => {
+    beforeEach(() => {
+      const { store } = buildStore(mockStoreCalls())
+      globalThis.globalStore = store
+    })
+
+    afterEach(() => {
+      sinon.restore()
+      sinon.reset()
+    })
+
+    describe("When there're mutual friends between the authenticated user and the user specified in the request", () => {
+      it('Should return an array with the addresses of the friends', async () => {
+        const request: GetMutualFriendsRequest = {
+          userId: '0xaa'
+        }
+
+        const expectedResponse = mutualFriendsIds
+
+        const response = await friendsSagas.getMutualFriends(request)
+        assert.match(response, expectedResponse)
       })
     })
   })
