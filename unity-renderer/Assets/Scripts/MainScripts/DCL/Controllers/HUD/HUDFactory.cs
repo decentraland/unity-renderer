@@ -167,8 +167,6 @@ public class HUDFactory : IHUDFactory
                 return new GraphicCardWarningHUDController();
             case HUDElementID.QUESTS_PANEL:
                 return new QuestsPanelHUDController();
-            case HUDElementID.LOADING:
-                return new LoadingHUDController(await CreateHUDView<LoadingHUDView>(LOADING_HUD, cancellationToken));
             case HUDElementID.QUESTS_TRACKER:
                 return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
             case HUDElementID.AIRDROPPING:

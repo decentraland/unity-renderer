@@ -24,7 +24,6 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
             cancellationTokenSource = new CancellationTokenSource();
             GetView(cancellationTokenSource.Token).Forget();
 
-            loadingScreenRef.Ref.loadingHUD.message.OnChange += OnMessageChange;
             loadingScreenRef.Ref.decoupledLoadingHUD.visible.OnChange += OnDecoupledLoadingScreenVisibilityChange;
             isSignUpFlow.OnChange += SignUpFlowChanged;
 
@@ -55,18 +54,11 @@ namespace MainScripts.DCL.Controllers.HUD.Preloading
             //This wait will be removed when we merge both loading screen into a single decoupled loading screen
             await UniTask.Delay(TimeSpan.FromSeconds(2), ignoreTimeScale: false);
 
-            loadingScreenRef.Ref.loadingHUD.message.OnChange -= OnMessageChange;
             loadingScreenRef.Ref.decoupledLoadingHUD.visible.OnChange -= OnDecoupledLoadingScreenVisibilityChange;
             isSignUpFlow.OnChange -= SignUpFlowChanged;
 
             if(view != null)
                 Object.Destroy(view.gameObject);
-        }
-
-        private void OnMessageChange(string current, string previous)
-        {
-            if (current.Contains("%"))
-                Dispose();
         }
 
         private void SignUpFlowChanged(bool current, bool previous)

@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using DCL;
 using UnityEngine;
 using WebSocketSharp;
@@ -63,7 +66,7 @@ public class WebSocketCommunication : IKernelCommunication
                 {
                     SslConfiguration =
                     {
-                        ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
+                        ServerCertificate = loadSelfSignedServerCertificate(),
                         ClientCertificateRequired = false,
                         CheckCertificateRevocation = false,
                         ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
@@ -109,6 +112,10 @@ public class WebSocketCommunication : IKernelCommunication
         string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
+
+    private X509Certificate2 loadSelfSignedServerCertificate() =>
+        new X509Certificate2("self-signed.pfx", "");
+
     private void OnWebSocketLog(LogData logData, string message)
     {
         switch (logData.Level)
