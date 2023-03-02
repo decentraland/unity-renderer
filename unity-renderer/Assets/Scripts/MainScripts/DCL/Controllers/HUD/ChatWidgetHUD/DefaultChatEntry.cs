@@ -8,6 +8,7 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.Chat.HUD
 {
@@ -20,6 +21,8 @@ namespace DCL.Chat.HUD
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
         [SerializeField] private MentionLinkDetector mentionLinkDetector;
+        [SerializeField] private Color autoMentionBackgroundColor;
+        [SerializeField] private Image backgroundImage;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -235,6 +238,9 @@ namespace DCL.Chat.HUD
         private void OnDestroy()
         {
             populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)
@@ -261,6 +267,8 @@ namespace DCL.Chat.HUD
                 return;
 
             mentionLinkDetector.SetContextMenu(userContextMenu);
+            mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
+            mentionLinkDetector.OnOwnPlayerMentioned += OnOwnPlayerMentioned;
         }
 
         private void Update()
@@ -325,6 +333,11 @@ namespace DCL.Chat.HUD
             //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
             //             with spaces.
             return text.Replace("\t", "    ");
+        }
+
+        private void OnOwnPlayerMentioned()
+        {
+            backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }
