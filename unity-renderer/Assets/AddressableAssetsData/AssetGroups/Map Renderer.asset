@@ -37,6 +37,10 @@ MonoBehaviour:
     m_Address: SceneOfInterestMarker
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 954088078919e5847a591711e6b53e20
+    m_Address: HomePoint
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

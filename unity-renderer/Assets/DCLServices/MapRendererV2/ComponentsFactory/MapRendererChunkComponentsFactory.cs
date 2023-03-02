@@ -7,9 +7,7 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
-using DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea;
 using MainScripts.DCL.Controllers.HotScenes;
-using MainScripts.DCL.Helpers.Utils;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,19 +19,19 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
         private const string ATLAS_CHUNK_ADDRESS = "AtlasChunk";
-        private const string HOT_USER_MARKER_ADDRESS = "HotUserMarker";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
 
         private const int ATLAS_CHUNK_SIZE = 250;
-        private const int HOT_USER_MARKERS_PREWARM_COUNT = 30;
         private const int PARCEL_SIZE = 20;
 
         private Service<IAddressableResourceProvider> addressablesProvider;
         private Service<IHotScenesFetcher> hotScenesFetcher;
 
-        internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; } = new ();
-        internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; } = new ();
+        internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
+        internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; }
+        internal HomePointMarkerInstaller homePointMarkerInstaller { get; }
+        internal HotUsersMarkersInstaller hotUsersMarkersInstaller { get; }
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
@@ -73,40 +71,17 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                     await writer.YieldAsync((MapLayer.Atlas, chunkAtlas));
                 }
 
-                async UniTask CreateHotUserMarkers()
-                {
-                    var prefab = await GetHotUserMarkerPrefab(cancellationToken);
-
-                    void SetSortingOrder(HotUserMarkerObject obj)
-                    {
-                        obj.sprite.sortingOrder = MapRendererDrawOrder.HOT_USER_MARKERS;
-                    }
-
-                    var objectsPool = new UnityObjectPool<HotUserMarkerObject>(prefab, configuration.HotUserMarkersRoot, actionOnCreate: SetSortingOrder, defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
-
-                    IHotUserMarker CreateWrap() =>
-                        new HotUserMarker(objectsPool, cullingController, coordsUtils, CommonScriptableObjects.worldOffset);
-
-                    var wrapsPool = new ObjectPool<IHotUserMarker>(CreateWrap, actionOnRelease: m => m.Dispose(), defaultCapacity: HOT_USER_MARKERS_PREWARM_COUNT);
-
-                    var controller = new UsersMarkersHotAreaController(DataStore.i.player.otherPlayers, objectsPool, wrapsPool, HOT_USER_MARKERS_PREWARM_COUNT, configuration.HotUserMarkersRoot, coordsUtils, cullingController, MapRendererDrawOrder.HOT_USER_MARKERS);
-
-                    await controller.Initialize(cancellationToken);
-                    await writer.YieldAsync((MapLayer.HotUsersMarkers, controller));
-                }
-
                 await UniTask.WhenAll(
                     CreateAtlas(),
                     coldUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
                     sceneOfInterestsMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
-                    CreateHotUserMarkers() /* List of other creators that can be executed in parallel */);
+                    homePointMarkerInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
+                    hotUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken)
+                    /* List of other creators that can be executed in parallel */);
             });
 
             return new MapRendererComponents(enumerator, cullingController, pool);
         }
-
-        internal async Task<HotUserMarkerObject> GetHotUserMarkerPrefab(CancellationToken cancellationToken) =>
-            await AddressableProvider.GetAddressable<HotUserMarkerObject>(HOT_USER_MARKER_ADDRESS, cancellationToken);
 
         internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>
             await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);

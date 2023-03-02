@@ -34,7 +34,7 @@ namespace DCLServices.MapRendererV2.Tests.Factory
         [Test]
         public async Task ProvideHotUserMarkerPrefab()
         {
-            var hotUser = await factory.GetHotUserMarkerPrefab(CancellationToken.None);
+            var hotUser = await factory.hotUsersMarkersInstaller.GetPrefab(CancellationToken.None);
             Assert.IsTrue(hotUser);
             AssertCanInstantiate(hotUser);
         }
@@ -51,6 +51,14 @@ namespace DCLServices.MapRendererV2.Tests.Factory
         public async Task ProvideSceneOfInterestPrefab()
         {
             var coldUser = await factory.sceneOfInterestsMarkersInstaller.GetPrefab(CancellationToken.None);
+            Assert.IsTrue(coldUser);
+            AssertCanInstantiate(coldUser);
+        }
+
+        [Test]
+        public async Task ProvideHomePointPrefab()
+        {
+            var coldUser = await factory.homePointMarkerInstaller.GetPrefab(CancellationToken.None);
             Assert.IsTrue(coldUser);
             AssertCanInstantiate(coldUser);
         }
