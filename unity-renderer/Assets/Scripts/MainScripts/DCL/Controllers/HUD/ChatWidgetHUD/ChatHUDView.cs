@@ -15,29 +15,27 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 {
     private const string VIEW_PATH = "SocialBarV1/Chat";
 
-    public TMP_InputField inputField;
-    public RectTransform chatEntriesContainer;
-    public ScrollRect scrollRect;
-    public GameObject messageHoverPanel;
-    public GameObject messageHoverGotoPanel;
-    public TextMeshProUGUI messageHoverText;
-    public TextMeshProUGUI messageHoverGotoText;
-    public UserContextMenu contextMenu;
-    public UserContextConfirmationDialog confirmationDialog;
-    [SerializeField] private DefaultChatEntryFactory defaultChatEntryFactory;
-    [SerializeField] private PoolChatEntryFactory poolChatEntryFactory;
+    [SerializeField] protected TMP_InputField inputField;
+    [SerializeField] protected RectTransform chatEntriesContainer;
+    [SerializeField] protected ScrollRect scrollRect;
+    [SerializeField] protected GameObject messageHoverPanel;
+    [SerializeField] protected GameObject messageHoverGotoPanel;
+    [SerializeField] protected TextMeshProUGUI messageHoverText;
+    [SerializeField] protected TextMeshProUGUI messageHoverGotoText;
+    [SerializeField] protected UserContextMenu contextMenu;
+    [SerializeField] protected UserContextConfirmationDialog confirmationDialog;
+    [SerializeField] protected DefaultChatEntryFactory defaultChatEntryFactory;
+    [SerializeField] protected PoolChatEntryFactory poolChatEntryFactory;
+    [SerializeField] protected InputAction_Trigger nextChatInHistoryInput;
+    [SerializeField] protected InputAction_Trigger previousChatInHistoryInput;
     [SerializeField] private Model model;
-    [SerializeField] private InputAction_Trigger nextChatInHistoryInput;
-    [SerializeField] private InputAction_Trigger previousChatInHistoryInput;
-    
-    private readonly Dictionary<string, ChatEntry> entries = new Dictionary<string, ChatEntry>();
-    private readonly ChatMessage currentMessage = new ChatMessage();
 
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners =
-        new Dictionary<Action, UnityAction<string>>();
+    private readonly Dictionary<string, ChatEntry> entries = new ();
+    private readonly ChatMessage currentMessage = new ();
 
-    private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners =
-        new Dictionary<Action, UnityAction<string>>();
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
+
+    private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
@@ -53,6 +51,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (contextMenu != null)
                 contextMenu.OnShowMenu += value;
         }
+
         remove
         {
             if (contextMenu != null)
@@ -64,14 +63,18 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         add
         {
-            void Action(string s) => value.Invoke();
+            void Action(string s) =>
+                value.Invoke();
+
             inputFieldSelectedListeners[value] = Action;
             inputField.onSelect.AddListener(Action);
         }
+
         remove
         {
             if (!inputFieldSelectedListeners.ContainsKey(value))
                 return;
+
             inputField.onSelect.RemoveListener(inputFieldSelectedListeners[value]);
             inputFieldSelectedListeners.Remove(value);
         }
@@ -81,14 +84,18 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         add
         {
-            void Action(string s) => value.Invoke();
+            void Action(string s) =>
+                value.Invoke();
+
             inputFieldUnselectedListeners[value] = Action;
             inputField.onDeselect.AddListener(Action);
         }
+
         remove
         {
             if (!inputFieldUnselectedListeners.ContainsKey(value))
                 return;
+
             inputField.onDeselect.RemoveListener(inputFieldUnselectedListeners[value]);
             inputFieldUnselectedListeners.Remove(value);
         }
@@ -114,7 +121,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
-        ChatEntryFactory ??= (IChatEntryFactory) poolChatEntryFactory ?? defaultChatEntryFactory;
+        ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
 
@@ -147,6 +154,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         if (isSortingDirty)
             SortEntriesImmediate();
+
         isSortingDirty = false;
     }
 
@@ -154,6 +162,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         inputField.text = string.Empty;
         inputField.caretColor = Color.white;
+
         if (loseFocus)
             UnfocusInputField();
     }
@@ -162,9 +171,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         if (model.isInputFieldFocused)
             FocusInputField();
+
         SetInputFieldText(model.inputFieldText);
         SetFadeoutMode(model.enableFadeoutMode);
         ClearAllEntries();
+
         foreach (var entry in model.entries)
             AddEntry(entry);
     }
@@ -175,7 +186,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.Select();
     }
 
-    public void UnfocusInputField() => EventSystem.current?.SetSelectedGameObject(null);
+    public void UnfocusInputField() =>
+        EventSystem.current?.SetSelectedGameObject(null);
 
     public void SetInputFieldText(string text)
     {
@@ -202,7 +214,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             var chatEntry = entries[model.messageId];
             chatEntry.SetFadeout(this.model.enableFadeoutMode);
             chatEntry.Populate(model);
-            
+
             SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
         else
@@ -218,7 +230,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
             chatEntry.OnCancelHover += OnMessageCancelHover;
             chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
-            
+
             SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
         }
     }
@@ -230,7 +242,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         SortEntries();
         UpdateLayout();
-        
+
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
     }
@@ -248,8 +260,10 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public override void Hide(bool instant = false)
     {
         base.Hide(instant);
+
         if (contextMenu == null)
             return;
+
         contextMenu.Hide();
         confirmationDialog.Hide();
     }
@@ -264,6 +278,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         foreach (var entry in entries.Values)
             ChatEntryFactory.Destroy(entry);
+
         entries.Clear();
         UpdateLayout();
     }
@@ -272,6 +287,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         int visibleCorners =
             (entry.transform as RectTransform).CountCornersVisibleFrom(scrollRect.viewport.transform as RectTransform);
+
         return visibleCorners > 0;
     }
 
@@ -297,13 +313,19 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         OnSendMessage?.Invoke(currentMessage);
     }
 
-    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
+    private void OnInputFieldSelect(string message)
+    {
+        AudioScriptableObjects.inputFieldFocus.Play(true);
+    }
 
-    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
+    private void OnInputFieldDeselect(string message)
+    {
+        AudioScriptableObjects.inputFieldUnfocus.Play(true);
+    }
 
     private void OnOpenContextMenu(ChatEntry chatEntry)
     {
-        chatEntry.DockContextMenu((RectTransform) contextMenu.transform);
+        chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
         contextMenu.transform.parent = transform.parent;
         contextMenu.transform.SetAsLastSibling();
         contextMenu.Show(chatEntry.Model.senderId);
@@ -315,14 +337,14 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             return;
 
         messageHoverText.text = chatEntry.DateString;
-        chatEntry.DockHoverPanel((RectTransform) messageHoverPanel.transform);
+        chatEntry.DockHoverPanel((RectTransform)messageHoverPanel.transform);
         messageHoverPanel.SetActive(true);
     }
 
     private void OnMessageCoordinatesTriggerHover(ChatEntry chatEntry, ParcelCoordinates parcelCoordinates)
     {
         messageHoverGotoText.text = $"{parcelCoordinates} INFO";
-        chatEntry.DockHoverPanel((RectTransform) messageHoverGotoPanel.transform);
+        chatEntry.DockHoverPanel((RectTransform)messageHoverGotoPanel.transform);
         messageHoverGotoPanel.SetActive(true);
     }
 
@@ -332,7 +354,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         messageHoverGotoText.text = string.Empty;
     }
 
-    private void SortEntries() => isSortingDirty = true;
+    private void SortEntries() =>
+        isSortingDirty = true;
 
     private void SortEntriesImmediate()
     {
@@ -347,9 +370,11 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
     }
 
-    private void HandleNextChatInHistoryInput(DCLAction_Trigger action) => OnNextChatInHistory?.Invoke();
+    private void HandleNextChatInHistoryInput(DCLAction_Trigger action) =>
+        OnNextChatInHistory?.Invoke();
 
-    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) => OnPreviousChatInHistory?.Invoke();
+    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) =>
+        OnPreviousChatInHistory?.Invoke();
 
     private void UpdateLayout()
     {
@@ -359,7 +384,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         // TODO: simplify this change to a bool when we update to a working TextMeshPro version
         updateLayoutDelayedFrames = 4;
     }
-    
+
     private ChatEntry GetFirstEntry()
     {
         ChatEntry firstEntry = null;
