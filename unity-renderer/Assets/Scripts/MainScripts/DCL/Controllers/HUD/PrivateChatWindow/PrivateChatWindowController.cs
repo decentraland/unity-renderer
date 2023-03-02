@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
+using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using SocialFeaturesAnalytics;
@@ -24,6 +25,7 @@ public class PrivateChatWindowController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly IMouseCatcher mouseCatcher;
     private readonly InputAction_Trigger toggleChatTrigger;
+    private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private ChatHUDController chatHudController;
     private UserProfile conversationProfile;
     private bool skipChatInputTrigger;
@@ -44,7 +46,8 @@ public class PrivateChatWindowController : IHUD
         IFriendsController friendsController,
         ISocialAnalytics socialAnalytics,
         IMouseCatcher mouseCatcher,
-        InputAction_Trigger toggleChatTrigger)
+        InputAction_Trigger toggleChatTrigger,
+        IChatMentionSuggestionProvider chatMentionSuggestionProvider)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
@@ -53,6 +56,7 @@ public class PrivateChatWindowController : IHUD
         this.socialAnalytics = socialAnalytics;
         this.mouseCatcher = mouseCatcher;
         this.toggleChatTrigger = toggleChatTrigger;
+        this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
     }
 
     public void Initialize(IPrivateChatComponentView view = null)
@@ -72,7 +76,7 @@ public class PrivateChatWindowController : IHUD
 
         view.OnRequireMoreMessages += RequestOldConversations;
 
-        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false);
+        chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider);
         chatHudController.Initialize(view.ChatHUD);
         chatHudController.OnInputFieldSelected += HandleInputFieldSelected;
         chatHudController.OnSendMessage += HandleSendChatMessage;

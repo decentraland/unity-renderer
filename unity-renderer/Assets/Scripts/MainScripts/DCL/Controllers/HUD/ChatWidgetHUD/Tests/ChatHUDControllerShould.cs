@@ -5,6 +5,7 @@ using System.Collections;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -17,6 +18,7 @@ public class ChatHUDControllerShould
     private IChatHUDComponentView view;
     private DataStore dataStore;
     private IProfanityFilter profanityFilter;
+    private IChatMentionSuggestionProvider chatMentionSuggestionProvider;
 
     [SetUp]
     public void SetUp()
@@ -30,7 +32,11 @@ public class ChatHUDControllerShould
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
         userProfileBridge.GetOwn().Returns(ownUserProfile);
-        controller = new ChatHUDController(dataStore, userProfileBridge, true, profanityFilter);
+        chatMentionSuggestionProvider = Substitute.For<IChatMentionSuggestionProvider>();
+
+        controller = new ChatHUDController(dataStore, userProfileBridge, true,
+            chatMentionSuggestionProvider,
+            profanityFilter);
         controller.Initialize(view);
     }
 

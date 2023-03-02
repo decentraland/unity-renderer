@@ -2,6 +2,7 @@ using System;
 using DCL.Chat.Channels;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -47,7 +48,8 @@ namespace DCL.Chat.HUD
                 Substitute.For<IMouseCatcher>(),
                 ScriptableObject.CreateInstance<InputAction_Trigger>(),
                 socialAnalytics,
-                profanityFilter);
+                profanityFilter,
+                Substitute.For<IChatMentionSuggestionProvider>());
 
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();

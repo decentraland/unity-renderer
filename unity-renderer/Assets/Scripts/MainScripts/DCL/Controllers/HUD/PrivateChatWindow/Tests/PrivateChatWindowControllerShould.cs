@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Interface;
+using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using NSubstitute;
@@ -52,7 +53,8 @@ public class PrivateChatWindowControllerShould
             friendsController,
             socialAnalytics,
             mouseCatcher,
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            Substitute.For<IChatMentionSuggestionProvider>());
     }
 
     [TearDown]

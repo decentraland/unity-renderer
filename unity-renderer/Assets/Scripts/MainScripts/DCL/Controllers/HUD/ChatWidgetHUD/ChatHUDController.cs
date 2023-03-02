@@ -5,7 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL.Chat;
+using DCL.Chat.HUD;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
+using DCL.Tasks;
+using System.Linq;
+using System.Threading;
 
 public class ChatHUDController : IDisposable
 {
@@ -14,31 +19,36 @@ public class ChatHUDController : IDisposable
     private const int MAX_CONTINUOUS_MESSAGES = 10;
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int MAX_HISTORY_ITERATION = 10;
+    private const int MAX_MENTION_SUGGESTIONS = 30;
 
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
-    public event Action<string> OnMessageUpdated;
     public event Action<ChatMessage> OnMessageSentBlockedBySpam;
 
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
+    private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private readonly IProfanityFilter profanityFilter;
+    private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
     private readonly List<ChatEntryModel> spamMessages = new ();
     private readonly List<string> lastMessagesSent = new ();
     private int currentHistoryIteration;
     private IChatHUDComponentView view;
+    private CancellationTokenSource mentionSuggestionCancellationToken = new ();
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         bool detectWhisper,
+        IChatMentionSuggestionProvider chatMentionSuggestionProvider,
         IProfanityFilter profanityFilter = null)
     {
         this.dataStore = dataStore;
         this.userProfileBridge = userProfileBridge;
         this.detectWhisper = detectWhisper;
+        this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
         this.profanityFilter = profanityFilter;
     }
 
@@ -106,21 +116,25 @@ public class ChatHUDController : IDisposable
         view.OnPreviousChatInHistory -= FillInputWithPreviousMessage;
         view.OnNextChatInHistory -= FillInputWithNextMessage;
         OnSendMessage = null;
-        OnMessageUpdated = null;
         OnInputFieldSelected = null;
         view.Dispose();
+        mentionSuggestionCancellationToken.SafeCancelAndDispose();
     }
 
-    public void ClearAllEntries() => view.ClearAllEntries();
+    public void ClearAllEntries() =>
+        view.ClearAllEntries();
 
-    public void ResetInputField(bool loseFocus = false) => view.ResetInputField(loseFocus);
+    public void ResetInputField(bool loseFocus = false) =>
+        view.ResetInputField(loseFocus);
 
-    public void FocusInputField() => view.FocusInputField();
+    public void FocusInputField() =>
+        view.FocusInputField();
 
-    public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
+    public void SetInputFieldText(string setInputText) =>
+        view.SetInputFieldText(setInputText);
 
-    public void UnfocusInputField() => view.UnfocusInputField();
-
+    public void UnfocusInputField() =>
+        view.UnfocusInputField();
 
     private ChatEntryModel ChatMessageToChatEntry(ChatMessage message)
     {
@@ -162,15 +176,45 @@ public class ChatHUDController : IDisposable
         return model;
     }
 
-    private void ContextMenu_OnShowMenu() => view.OnMessageCancelHover();
+    private void ContextMenu_OnShowMenu() =>
+        view.OnMessageCancelHover();
 
-    private bool IsProfanityFilteringEnabled()
+    private bool IsProfanityFilteringEnabled() =>
+        dataStore.settings.profanityChatFilteringEnabled.Get()
+        && profanityFilter != null;
+
+    private void HandleMessageUpdated(string message)
     {
-        return dataStore.settings.profanityChatFilteringEnabled.Get()
-               && profanityFilter != null;
-    }
+        if (string.IsNullOrEmpty(message)) return;
 
-    private void HandleMessageUpdated(string obj) => OnMessageUpdated?.Invoke(obj);
+        async UniTaskVoid ShowMentionSuggestionsAsync(string name, CancellationToken cancellationToken)
+        {
+            view.ShowMentionSuggestionsLoading();
+
+            try
+            {
+                List<UserProfile> suggestions = await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS, cancellationToken);
+
+                view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
+                                                       {
+                                                           userId = profile.userId,
+                                                           userName = profile.userName,
+                                                       })
+                                                      .ToList());
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                view.SetMentionSuggestions(new List<ChatMentionSuggestionModel>());
+            }
+        }
+
+        Match match = mentionRegex.Matches(message).LastOrDefault();
+        if (match is not { Success: true }) return;
+
+        mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
+        string name = match.Value[1..];
+        ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
+    }
 
     private void HandleSendMessage(ChatMessage message)
     {
@@ -233,7 +277,8 @@ public class ChatHUDController : IDisposable
         OnInputFieldSelected?.Invoke();
     }
 
-    private void HandleInputFieldDeselected() => currentHistoryIteration = 0;
+    private void HandleInputFieldDeselected() =>
+        currentHistoryIteration = 0;
 
     private bool IsSpamming(string senderName)
     {
@@ -243,7 +288,8 @@ public class ChatHUDController : IDisposable
 
         if (!temporarilyMutedSenders.ContainsKey(senderName)) return false;
 
-        var muteTimestamp = DateTimeOffset.FromUnixTimeMilliseconds((long) temporarilyMutedSenders[senderName]);
+        var muteTimestamp = DateTimeOffset.FromUnixTimeMilliseconds((long)temporarilyMutedSenders[senderName]);
+
         if ((DateTimeOffset.UtcNow - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
             isSpamming = true;
         else
@@ -254,10 +300,7 @@ public class ChatHUDController : IDisposable
 
     private void UpdateSpam(ChatEntryModel model)
     {
-        if (spamMessages.Count == 0)
-        {
-            spamMessages.Add(model);
-        }
+        if (spamMessages.Count == 0) { spamMessages.Add(model); }
         else if (spamMessages[^1].senderName == model.senderName)
         {
             if (MessagesSentTooFast(spamMessages[^1].timestamp, model.timestamp))
@@ -270,21 +313,15 @@ public class ChatHUDController : IDisposable
                     spamMessages.Clear();
                 }
             }
-            else
-            {
-                spamMessages.Clear();
-            }
+            else { spamMessages.Clear(); }
         }
-        else
-        {
-            spamMessages.Clear();
-        }
+        else { spamMessages.Clear(); }
     }
 
     private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
     {
-        var oldDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) oldMessageTimeStamp);
-        var newDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) newMessageTimeStamp);
+        var oldDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long)oldMessageTimeStamp);
+        var newDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long)newMessageTimeStamp);
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
     }
 
@@ -305,6 +342,7 @@ public class ChatHUDController : IDisposable
         }
 
         currentHistoryIteration--;
+
         if (currentHistoryIteration < 0)
             currentHistoryIteration = lastMessagesSent.Count - 1;
 

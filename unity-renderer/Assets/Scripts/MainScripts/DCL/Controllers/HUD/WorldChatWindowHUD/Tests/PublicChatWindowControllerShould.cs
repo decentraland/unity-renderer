@@ -4,6 +4,7 @@ using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -38,7 +39,8 @@ public class PublicChatWindowControllerShould
             new DataStore(),
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             mouseCatcher,
-            ScriptableObject.CreateInstance<InputAction_Trigger>());
+            ScriptableObject.CreateInstance<InputAction_Trigger>(),
+            Substitute.For<IChatMentionSuggestionProvider>());
 
         view = Substitute.For<IPublicChatWindowView>();
         internalChatView = Substitute.For<IChatHUDComponentView>();

@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
+using DCL.Social.Chat;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
@@ -26,6 +27,7 @@ namespace DCL.Chat.HUD
         private readonly InputAction_Trigger toggleChatTrigger;
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfanityFilter profanityFilter;
+        private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource hideLoadingCancellationToken = new CancellationTokenSource();
@@ -48,7 +50,8 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             InputAction_Trigger toggleChatTrigger,
             ISocialAnalytics socialAnalytics,
-            IProfanityFilter profanityFilter)
+            IProfanityFilter profanityFilter,
+            IChatMentionSuggestionProvider chatMentionSuggestionProvider)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
@@ -57,6 +60,7 @@ namespace DCL.Chat.HUD
             this.toggleChatTrigger = toggleChatTrigger;
             this.socialAnalytics = socialAnalytics;
             this.profanityFilter = profanityFilter;
+            this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
         }
 
         public void Initialize(IChatChannelWindowView view = null, bool isVisible = true)
@@ -73,7 +77,7 @@ namespace DCL.Chat.HUD
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
 
-            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, profanityFilter);
+            chatHudController = new ChatHUDController(dataStore, userProfileBridge, false, chatMentionSuggestionProvider, profanityFilter);
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;

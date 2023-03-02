@@ -194,6 +194,15 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.MoveTextEnd(false);
     }
 
+    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
+    {
+        Debug.Log(string.Join(",", suggestions.Select(model => model.userName)));
+    }
+
+    public void ShowMentionSuggestionsLoading()
+    {
+    }
+
     private void SetFadeoutMode(bool enabled)
     {
         model.enableFadeoutMode = enabled;

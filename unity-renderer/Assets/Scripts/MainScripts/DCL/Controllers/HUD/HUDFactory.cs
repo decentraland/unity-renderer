@@ -108,7 +108,8 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -116,7 +117,8 @@ public class HUDFactory : IHUDFactory
                     DataStore.i,
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     SceneReferences.i.mouseCatcher,
-                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"));
+                    Resources.Load<InputAction_Trigger>("ToggleWorldChat"),
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
             case HUDElementID.CHANNELS_CHAT:
                 return new ChatChannelHUDController(
                     DataStore.i,
@@ -127,7 +129,8 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    Environment.i.serviceLocator.Get<IProfanityFilter>());
+                    Environment.i.serviceLocator.Get<IProfanityFilter>(),
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i));
             case HUDElementID.CHANNELS_SEARCH:
                 return new SearchChannelsWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),

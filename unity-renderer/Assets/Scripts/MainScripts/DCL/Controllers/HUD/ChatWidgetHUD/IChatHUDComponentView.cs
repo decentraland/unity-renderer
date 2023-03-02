@@ -1,6 +1,7 @@
 ﻿using System;
 using DCL.Chat.HUD;
 using DCL.Interface;
+using System.Collections.Generic;
 
 public interface IChatHUDComponentView
 {
@@ -11,7 +12,7 @@ public interface IChatHUDComponentView
     event Action OnInputFieldDeselected;
     event Action OnPreviousChatInHistory;
     event Action OnNextChatInHistory;
-    
+
     int EntryCount { get; }
 
     void OnMessageCancelHover();
@@ -23,4 +24,6 @@ public interface IChatHUDComponentView
     void FocusInputField();
     void UnfocusInputField();
     void SetInputFieldText(string text);
+    void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions);
+    void ShowMentionSuggestionsLoading();
 }
