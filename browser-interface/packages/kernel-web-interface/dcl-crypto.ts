@@ -1,17 +1,12 @@
 /**
  * @public
  */
-export type Signature = string
+type Signature = string
 
 /**
  * @public
  */
-export type EthAddress = string
-
-/**
- * @public
- */
-export type IdentityType = {
+type IdentityType = {
   privateKey: string
   publicKey: string
   address: string
@@ -20,12 +15,12 @@ export type IdentityType = {
 /**
  * @public
  */
-export type AuthChain = AuthLink[]
+type AuthChain = AuthLink[]
 
 /**
  * @public
  */
-export type AuthLink = {
+type AuthLink = {
   type: AuthLinkType
   payload: string
   signature: Signature
@@ -34,7 +29,7 @@ export type AuthLink = {
 /**
  * @public
  */
-export enum AuthLinkType {
+enum AuthLinkType {
   SIGNER = 'SIGNER',
   ECDSA_PERSONAL_EPHEMERAL = 'ECDSA_EPHEMERAL',
   ECDSA_PERSONAL_SIGNED_ENTITY = 'ECDSA_SIGNED_ENTITY',

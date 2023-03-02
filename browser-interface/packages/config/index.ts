@@ -4,11 +4,6 @@ import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
 /**
- * Time between consecutive updates to the loading screen, in millis
- */
-export const timeBetweenLoadingUpdatesInMillis = 100
-
-/**
  * Estimated avatar height
  */
 export const playerHeight = 1.6

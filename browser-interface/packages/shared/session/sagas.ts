@@ -277,7 +277,7 @@ function* redirectToSignUp() {
   window.location.reload()
 }
 
-export function observeAccountStateChange(
+function observeAccountStateChange(
   store: Store<RootSessionState>,
   accountStateChange: (previous: SessionState, current: SessionState) => any
 ) {

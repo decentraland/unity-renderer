@@ -224,7 +224,7 @@ const ERC20Abi = [
   }
 ]
 
-export interface IERC20 extends Contract {
+interface IERC20 extends Contract {
   name(options?: Partial<TransactionOptions>): Promise<string>
   totalSupply(options?: Partial<TransactionOptions>): Promise<BigNumber>
   approve(_spender: Address, _value: BigNumber, options?: Partial<TransactionOptions>): Promise<boolean>

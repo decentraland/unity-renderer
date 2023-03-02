@@ -68,7 +68,7 @@ export function getThumbnailUrlFromJsonDataAndContent(
   return thumbnail
 }
 
-export function getThumbnailUrlFromJsonData(jsonData?: Scene): string | undefined {
+function getThumbnailUrlFromJsonData(jsonData?: Scene): string | undefined {
   if (!jsonData) {
     return undefined
   }
@@ -76,7 +76,7 @@ export function getThumbnailUrlFromJsonData(jsonData?: Scene): string | undefine
   return jsonData.display?.navmapThumbnail ?? getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
 }
 
-export function getThumbnailUrlFromBuilderProjectId(projectId: string | undefined): string | undefined {
+function getThumbnailUrlFromBuilderProjectId(projectId: string | undefined): string | undefined {
   if (!projectId) {
     return undefined
   }

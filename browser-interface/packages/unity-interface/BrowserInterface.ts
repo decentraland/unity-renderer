@@ -43,7 +43,6 @@ import {
 import { areChannelsEnabled, getMatrixIdFromUser } from 'shared/friends/utils'
 import { ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
 import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
-import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
@@ -545,24 +544,6 @@ class BrowserInterface {
       case 'SceneReady': {
         const { sceneId, sceneNumber } = payload
         store.dispatch(rendererSignalSceneReady(sceneId, sceneNumber))
-        break
-      }
-      /** @deprecated #3642 Will be moved to Renderer */
-      case 'DeactivateRenderingACK': {
-        /**
-         * This event is called everytime the renderer deactivates its camera
-         */
-        store.dispatch(renderingDectivated())
-        console.log('DeactivateRenderingACK')
-        break
-      }
-      /** @deprecated #3642 Will be moved to Renderer */
-      case 'ActivateRenderingACK': {
-        /**
-         * This event is called everytime the renderer activates the main camera
-         */
-        store.dispatch(renderingActivated())
-        console.log('ActivateRenderingACK')
         break
       }
       default: {

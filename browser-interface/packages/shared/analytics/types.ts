@@ -3,13 +3,8 @@ import { Avatar } from '@dcl/schemas'
 import { getPerformanceInfo } from '../session/getPerformanceInfo'
 import { ChatMessagePlayerType, ChatMessageType } from '../types'
 
-export type PositionTrackEvents = {
+type PositionTrackEvents = {
   ['Scene Spawn']: { parcel: string; spawnpoint: Vector3 }
-}
-
-export type SegmentEvent = {
-  name: string
-  data: string
 }
 
 export type TrackEvents = PositionTrackEvents & {

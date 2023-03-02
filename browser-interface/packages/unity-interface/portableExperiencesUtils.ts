@@ -1,13 +1,13 @@
-import { LoadableScene } from 'shared/types'
-import { forceStopScene, getSceneWorkerBySceneID, loadParcelSceneWorker } from 'shared/world/parcelSceneManager'
+import type { Entity } from '@dcl/schemas'
 import { parseUrn, resolveContentUrl } from '@dcl/urn-resolver'
-import { Entity } from '@dcl/schemas'
-import { store } from 'shared/store/isolatedStore'
-import { addScenePortableExperience, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { defaultPortableExperiencePermissions } from 'shared/apis/host/Permissions'
-import { SceneWorker } from 'shared/world/SceneWorker'
+import { addScenePortableExperience } from 'shared/portableExperiences/actions'
+import { store } from 'shared/store/isolatedStore'
+import type { LoadableScene } from 'shared/types'
+import { forceStopScene, getSceneWorkerBySceneID, loadParcelSceneWorker } from 'shared/world/parcelSceneManager'
+import type { SceneWorker } from 'shared/world/SceneWorker'
 
-export type PortableExperienceHandle = {
+type PortableExperienceHandle = {
   pid: string
   parentCid: string
 }
@@ -26,10 +26,6 @@ export async function spawnScenePortableExperienceSceneFromUrn(
     parentCid,
     pid: data.id
   }
-}
-
-export function killScenePortableExperience(urn: string) {
-  store.dispatch(removeScenePortableExperience(urn))
 }
 
 export function getRunningPortableExperience(sceneId: string): SceneWorker | undefined {
