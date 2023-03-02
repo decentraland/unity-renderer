@@ -24,10 +24,10 @@ public class ChatHUDController : IDisposable
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
     private readonly IProfanityFilter profanityFilter;
-    private readonly Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
-    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
-    private readonly List<ChatEntryModel> spamMessages = new List<ChatEntryModel>();
-    private readonly List<string> lastMessagesSent = new List<string>();
+    private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
+    private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
+    private readonly List<ChatEntryModel> spamMessages = new ();
+    private readonly List<string> lastMessagesSent = new ();
     private int currentHistoryIteration;
     private IChatHUDComponentView view;
 
@@ -69,7 +69,7 @@ public class ChatHUDController : IDisposable
     public async UniTask AddChatMessage(ChatEntryModel chatEntryModel, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
     {
         if (IsSpamming(chatEntryModel.senderName) && spamFiltering) return;
-        
+
         chatEntryModel.bodyText = ChatUtils.AddNoParse(chatEntryModel.bodyText);
 
         if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
@@ -89,7 +89,7 @@ public class ChatHUDController : IDisposable
 
         if (limitMaxEntries && view.EntryCount > MAX_CHAT_ENTRIES)
             view.RemoveOldestEntry();
-        
+
         if (string.IsNullOrEmpty(chatEntryModel.senderId)) return;
 
         if (spamFiltering)
@@ -118,7 +118,7 @@ public class ChatHUDController : IDisposable
     public void FocusInputField() => view.FocusInputField();
 
     public void SetInputFieldText(string setInputText) => view.SetInputFieldText(setInputText);
-    
+
     public void UnfocusInputField() => view.UnfocusInputField();
 
 
@@ -138,14 +138,14 @@ public class ChatHUDController : IDisposable
             var recipientProfile = userProfileBridge.Get(message.recipient);
             model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
         }
-        
+
         if (message.sender != null)
         {
             var senderProfile = userProfileBridge.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
             model.senderId = message.sender;
         }
-        
+
         if (message.messageType == ChatMessage.Type.PRIVATE)
         {
             model.subType = message.sender == ownProfile.userId
@@ -176,16 +176,16 @@ public class ChatHUDController : IDisposable
     {
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
-        
+
         RegisterMessageHistory(message);
         currentHistoryIteration = 0;
 
-        if (IsSpamming(message.sender) || IsSpamming(ownProfile.userName) && !string.IsNullOrEmpty(message.body))
+        if (IsSpamming(message.sender) || (IsSpamming(ownProfile.userName) && !string.IsNullOrEmpty(message.body)))
         {
             OnMessageSentBlockedBySpam?.Invoke(message);
             return;
         }
-        
+
         ApplyWhisperAttributes(message);
 
         if (message.body.ToLower().StartsWith("/join"))
@@ -198,7 +198,7 @@ public class ChatHUDController : IDisposable
                 return;
             }
         }
-        
+
         OnSendMessage?.Invoke(message);
     }
 
@@ -251,16 +251,16 @@ public class ChatHUDController : IDisposable
 
         return isSpamming;
     }
-    
+
     private void UpdateSpam(ChatEntryModel model)
     {
         if (spamMessages.Count == 0)
         {
             spamMessages.Add(model);
         }
-        else if (spamMessages[spamMessages.Count - 1].senderName == model.senderName)
+        else if (spamMessages[^1].senderName == model.senderName)
         {
-            if (MessagesSentTooFast(spamMessages[spamMessages.Count - 1].timestamp, model.timestamp))
+            if (MessagesSentTooFast(spamMessages[^1].timestamp, model.timestamp))
             {
                 spamMessages.Add(model);
 
@@ -287,7 +287,7 @@ public class ChatHUDController : IDisposable
         var newDateTime = DateTimeOffset.FromUnixTimeMilliseconds((long) newMessageTimeStamp);
         return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
     }
-    
+
     private void FillInputWithNextMessage()
     {
         if (lastMessagesSent.Count == 0) return;
@@ -303,11 +303,11 @@ public class ChatHUDController : IDisposable
             view.ResetInputField();
             return;
         }
-        
+
         currentHistoryIteration--;
         if (currentHistoryIteration < 0)
             currentHistoryIteration = lastMessagesSent.Count - 1;
-        
+
         view.FocusInputField();
         view.SetInputFieldText(lastMessagesSent[currentHistoryIteration]);
     }

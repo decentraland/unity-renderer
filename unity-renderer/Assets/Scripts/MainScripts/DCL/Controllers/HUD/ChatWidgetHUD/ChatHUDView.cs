@@ -32,9 +32,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private readonly Dictionary<string, ChatEntry> entries = new ();
     private readonly ChatMessage currentMessage = new ();
-
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
-
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
 
     private int updateLayoutDelayedFrames;
