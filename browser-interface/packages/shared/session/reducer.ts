@@ -33,11 +33,9 @@ export function sessionReducer(state?: SessionState, action?: AnyAction): Sessio
       return { ...state, ...(action as UserAuthenticated).payload }
     }
     case CHANGE_LOGIN_STAGE: {
-      console.log("LOADINGSCREEN:  CHANGE_LOGIN_STATE")
       return { ...state, loginState: (action as ChangeLoginStateAction).payload.stage }
     }
     case AUTHENTICATE: {
-      console.log("LOADINGSCREEN:  AUTHENTICATE")
       return {
         ...state,
         isGuestLogin: (action as AuthenticateAction).payload.isGuest,

@@ -1928,9 +1928,9 @@ namespace DCL.Interface
             });
         }
 
-        public static void ReportLoadingScreenOff()
+        public static void ReportLoadingScreenFadeOut()
         {
-            SendMessage("LoadingScreenDisappear");
+            SendMessage("LoadingScreenFadeOut");
         }
     }
 }

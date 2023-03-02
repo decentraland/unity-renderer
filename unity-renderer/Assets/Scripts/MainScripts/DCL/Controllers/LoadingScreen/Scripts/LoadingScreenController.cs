@@ -163,7 +163,7 @@ namespace DCL.LoadingScreen
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
             if(reportOffToKernel)
-                DCL.Interface.WebInterface.ReportLoadingScreenOff();
+                DCL.Interface.WebInterface.ReportLoadingScreenFadeOut();
         }
     }
 }

@@ -52,10 +52,7 @@ export function receivePositionReport(
   cameraRotation?: ReadOnlyVector4,
   playerHeight?: number
 ) {
-  if(!sessionFirstLoadCompleted()) {
-    console.log("Sending Position: PENDING ON THE FIRST SESSION LOAD COMPLETE")
-    return;
-  }
+  if(!sessionFirstLoadCompleted()) return;
 
   console.log("Sending Position: WE ARE GOING TO SEND A POSITION")
 

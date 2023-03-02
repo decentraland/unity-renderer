@@ -1112,7 +1112,7 @@ export class BrowserInterface {
     setDecentralandTime(data)
   }
 
-  public LoadingScreenDisappear() {
+  public LoadingScreenFadeOut() {
     store.dispatch(setFirstLoadingCompleted(true));
   }
 

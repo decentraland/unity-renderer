@@ -441,13 +441,8 @@ function* handleAnnounceProfile() {
 
     const roomConnection: RoomConnection | undefined = yield select(getCommsRoom)
 
-    if (roomConnection) {
-      if(!sessionFirstLoadCompleted()){
-        console.log("Sending Position: I WAS ABOUT TO SEND THE PROFILE BUT WAS STOPPED")
-      }else{
-        console.log("Sending Position: IM SENDING THE PROFILE")
+    if (roomConnection && sessionFirstLoadCompleted()) {
         roomConnection.sendProfileMessage({ profileVersion: profile.version }).catch(commsLogger.error)
-      }
     }
   }
 }
