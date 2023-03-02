@@ -129,9 +129,7 @@ namespace DCL.LoadingScreen
         {
             //Realm has not been set yet, so we are not in a new realm
             if (realmDataStore.playerRealmAboutConfiguration.Get() == null)
-            {
                 return false;
-            }
 
             bool realmChangeRequiresLoadingScreen;
 
