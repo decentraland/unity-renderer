@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
@@ -20,8 +19,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private readonly BaseDictionary<int, Bounds> scenesOuterBounds = new BaseDictionary<int, Bounds>();
         private readonly BaseDictionary<int, HashSet<Vector2Int>> scenesHashSetParcels = new BaseDictionary<int, HashSet<Vector2Int>>();
         private readonly BaseList<IParcelScene> loadedScenes;
-        // Instead of entity.isInsideSceneBoundaries we use a hashset
-        private static readonly HashSet<IDCLEntity> entitiesOutsideSceneBounds = new HashSet<IDCLEntity>();
+        private readonly HashSet<IDCLEntity> entitiesOutsideSceneBounds = new HashSet<IDCLEntity>();
 
         public ECSSceneBoundsCheckerSystem(
             BaseList<IParcelScene> loadedScenes,
@@ -55,20 +53,24 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
         private void OnSceneAdded(IParcelScene scene)
         {
-            scenesOuterBounds.Add(scene.sceneData.sceneNumber, UtilsScene.CalculateOuterBounds(scene.sceneData.parcels, scene.GetSceneTransform().position));
+            IReadOnlyList<Vector2Int> parcels = scene.sceneData.parcels;
+            var sceneNumber = scene.sceneData.sceneNumber;
+
+            scenesOuterBounds.Add(sceneNumber, UtilsScene.CalculateOuterBounds(parcels, scene.GetSceneTransform().position));
 
             HashSet<Vector2Int> hashSetParcels = new HashSet<Vector2Int>();
-            for (int i = 0; i < scene.sceneData.parcels.Length; i++)
+            for (int i = 0; i < parcels.Count; i++)
             {
-                hashSetParcels.Add(scene.sceneData.parcels[i]);
+                hashSetParcels.Add(parcels[i]);
             }
-            scenesHashSetParcels.Add(scene.sceneData.sceneNumber, hashSetParcels);
+            scenesHashSetParcels.Add(sceneNumber, hashSetParcels);
         }
 
         private void OnSceneRemoved(IParcelScene scene)
         {
-            scenesOuterBounds.Remove(scene.sceneData.sceneNumber);
-            scenesHashSetParcels.Remove(scene.sceneData.sceneNumber);
+            var sceneNumber = scene.sceneData.sceneNumber;
+            scenesOuterBounds.Remove(sceneNumber);
+            scenesHashSetParcels.Remove(sceneNumber);
         }
 
         public void Update()
@@ -139,6 +141,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                     entity,
                     scenesHashSetParcels[scene.sceneData.sceneNumber],
                     scenesOuterBounds[scene.sceneData.sceneNumber],
+                    entitiesOutsideSceneBounds,
                     model,
                     outOfBoundsVisualFeedback,
                     IsEntityVisible(scene, entity, visibilityComponent)
@@ -146,19 +149,19 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             }
         }
 
-        private static void RunEntityEvaluation(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds, InternalSceneBoundsCheck sbcComponentModel,
-            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
+        private static void RunEntityEvaluation(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds, HashSet<IDCLEntity> entitiesOutsideSceneBounds,
+            InternalSceneBoundsCheck sbcComponentModel, IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
         {
             // If it has a mesh we don't evaluate its position due to artists common "pivot point sloppiness", we evaluate its mesh merged bounds
             if (sbcComponentModel.entityLocalMeshBounds.size != Vector3.zero) // has a mesh/collider
-                EvaluateMeshBounds(scene, entity, parcels, sceneOuterBounds, sbcComponentModel, outOfBoundsVisualFeedback, isVisible);
+                EvaluateMeshBounds(scene, entity, parcels, sceneOuterBounds, entitiesOutsideSceneBounds, sbcComponentModel, outOfBoundsVisualFeedback, isVisible);
             else
-                EvaluateEntityPosition(scene, entity, parcels, sceneOuterBounds, sbcComponentModel);
+                EvaluateEntityPosition(scene, entity, parcels, sceneOuterBounds, entitiesOutsideSceneBounds, sbcComponentModel);
 
-            SetInsideBoundsStateForNonMeshComponents(entity, sbcComponentModel);
+            SetInsideBoundsStateForNonMeshComponents(entity, entitiesOutsideSceneBounds, sbcComponentModel);
         }
 
-        private static void EvaluateEntityPosition(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds, InternalSceneBoundsCheck sbcComponentModel)
+        private static void EvaluateEntityPosition(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck sbcComponentModel)
         {
             // 1. Cheap outer-bounds check
             bool isInsideSceneOuterBoundaries = scene.isPersistent || UtilsScene.IsInsideSceneOuterBounds(sceneOuterBounds, sbcComponentModel.entityPosition);
@@ -170,11 +173,11 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
                                            || (isInsideSceneOuterBoundaries
                                            && UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, entityWorldPosition, entityWorldPosition.y));
 
-            UpdateInsideSceneBoundsStatus(entity, isInsideSceneInnerBoundaries);
+            UpdateInsideSceneBoundsStatus(entity, entitiesOutsideSceneBounds, isInsideSceneInnerBoundaries);
         }
 
-        private static void EvaluateMeshBounds(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds, InternalSceneBoundsCheck sbcComponentModel,
-            IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
+        private static void EvaluateMeshBounds(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds,
+            HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck sbcComponentModel, IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
         {
             Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
             Vector3 entityGlobalPosition = sbcComponentModel.entityPosition;
@@ -195,13 +198,13 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
                 // 3. If merged bounds is detected as outside bounds we need a final check on submeshes (for L-Shaped subdivided meshes)
                 if (!isInsideSceneBoundaries)
-                    isInsideSceneBoundaries = AreSubMeshesAndCollidersInsideBounds(scene, entity, parcels, sbcComponentModel);
+                    isInsideSceneBoundaries = AreSubMeshesAndCollidersInsideBounds(scene, entity, parcels, entitiesOutsideSceneBounds, sbcComponentModel);
 
-                UpdateInsideSceneBoundsStatus(entity, isInsideSceneBoundaries);
+                UpdateInsideSceneBoundsStatus(entity, entitiesOutsideSceneBounds, isInsideSceneBoundaries);
             }
             else
             {
-                UpdateInsideSceneBoundsStatus(entity, false);
+                UpdateInsideSceneBoundsStatus(entity, entitiesOutsideSceneBounds, false);
             }
 
             SetInsideBoundsStateForMeshComponents(outOfBoundsVisualFeedback, entity, sbcComponentModel,
@@ -209,7 +212,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         }
 
         private static bool AreSubMeshesAndCollidersInsideBounds(IParcelScene scene, IDCLEntity entity,
-            HashSet<Vector2Int> parcels, InternalSceneBoundsCheck sbcComponentModel)
+            HashSet<Vector2Int> parcels, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck sbcComponentModel)
         {
             if (scene.isPersistent)
                 return true;
@@ -276,7 +279,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             outOfBoundsVisualFeedback.ApplyFeedback(entity, sbcComponentModel, isVisible, isInsideBounds);
         }
 
-        private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, InternalSceneBoundsCheck componentModel)
+        private static void SetInsideBoundsStateForNonMeshComponents(IDCLEntity entity, HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck componentModel)
         {
             if (componentModel.audioSource != null)
                 componentModel.audioSource.enabled = !entitiesOutsideSceneBounds.Contains(entity);
@@ -411,7 +414,7 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
             return collider.bounds;
         }
 
-        private static void UpdateInsideSceneBoundsStatus(IDCLEntity entity, bool isInside)
+        private static void UpdateInsideSceneBoundsStatus(IDCLEntity entity, HashSet<IDCLEntity> entitiesOutsideSceneBounds, bool isInside)
         {
             if (isInside)
                 entitiesOutsideSceneBounds.Remove(entity);
