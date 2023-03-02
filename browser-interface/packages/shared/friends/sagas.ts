@@ -576,7 +576,7 @@ function* refreshFriends() {
     const ownId = client.getUserId()
 
     // init friends
-    const friendIds: string[] = yield call(getFriendIds, client)
+    const friendIds: string[] = yield call(async () => await getFriendIds(client))
     const friendsSocial: SocialData[] = []
 
     // init friend requests
