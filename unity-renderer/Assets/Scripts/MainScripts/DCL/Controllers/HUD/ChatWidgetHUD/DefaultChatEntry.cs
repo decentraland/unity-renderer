@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Chat.HUD.Mentions;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
@@ -18,6 +19,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private MentionLinkDetector mentionLinkDetector;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -53,7 +55,7 @@ namespace DCL.Chat.HUD
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
-            // TODO: Remove hack in a newer Unity/TMPro version 
+            // TODO: Remove hack in a newer Unity/TMPro version
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
             await UniTask.NextFrame(cancellationToken);
@@ -253,6 +255,14 @@ namespace DCL.Chat.HUD
             panel.position = hoverPanelPositionReference.position;
         }
 
+        public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
+        {
+            if (mentionLinkDetector == null)
+                return;
+
+            mentionLinkDetector.SetContextMenu(userContextMenu);
+        }
+
         private void Update()
         {
             // TODO: why it needs to be in an update? what about OnPointerEnter/OnPointerExit?
@@ -274,7 +284,7 @@ namespace DCL.Chat.HUD
 
             var link = body.textInfo.linkInfo[linkIndex].GetLinkID();
             if (!CoordinateUtils.HasValidTextCoordinates(link)) return;
-        
+
             isOverCoordinates = true;
             currentCoordinates = CoordinateUtils.ParseCoordinatesString(link);
             hoverGotoPanelTimer = timeToHoverGotoPanel;

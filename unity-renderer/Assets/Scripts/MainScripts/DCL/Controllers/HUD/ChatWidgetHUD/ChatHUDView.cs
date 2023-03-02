@@ -220,6 +220,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             var chatEntry = ChatEntryFactory.Create(model);
             chatEntry.SetFadeout(this.model.enableFadeoutMode);
             chatEntry.Populate(model);
+            chatEntry.ConfigureMentionLinkDetector(contextMenu);
 
             if (model.subType.Equals(ChatEntryModel.SubType.RECEIVED))
                 chatEntry.OnUserNameClicked += OnOpenContextMenu;
