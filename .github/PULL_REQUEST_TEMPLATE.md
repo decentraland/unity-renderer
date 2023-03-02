@@ -15,7 +15,7 @@ Explain how to test the feature (or fix) for someone who doesn't know anything a
 At very least add the specific URL from which to test the build and add to it any param you think it would be needed.
 -->
 
-1. Open the preview link (wait for the bot to comment on that URL)
+1. Open the preview link (check out the comment created by a GitHub action)
 2. ...
 
 ## Our Code Review Standards
