@@ -11,6 +11,7 @@ using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using DCLServices.WearablesCatalogService;
 using SignupHUD;

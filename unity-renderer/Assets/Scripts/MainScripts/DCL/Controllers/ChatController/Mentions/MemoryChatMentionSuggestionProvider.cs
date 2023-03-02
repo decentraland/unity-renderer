@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace DCL.Social.Chat
+namespace DCL.Social.Chat.Mentions
 {
     public class MemoryChatMentionSuggestionProvider : IChatMentionSuggestionProvider
     {

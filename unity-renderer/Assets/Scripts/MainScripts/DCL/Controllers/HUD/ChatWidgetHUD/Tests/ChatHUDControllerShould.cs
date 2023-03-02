@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat;
+using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;

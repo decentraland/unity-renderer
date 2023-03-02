@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace DCL.Social.Chat
+namespace DCL.Social.Chat.Mentions
 {
     public interface IChatMentionSuggestionProvider
     {
