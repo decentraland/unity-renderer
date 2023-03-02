@@ -23,6 +23,8 @@ const messageMap = new Map<number, IFuture<any>>()
 
 let lastSentId = 100000
 
+const DCL_PADDING = '# DCL Signed message\n'
+
 const whitelist = [
   'eth_sendTransaction',
   'eth_getTransactionReceipt',
@@ -173,7 +175,7 @@ export async function requirePayment(toAddress: string, amount: number, currency
  * @return {object} - Promise of message and signature in an object.
  */
 export async function messageToString(dict: MessageDict) {
-  const header = `# DCL Signed message\n`
+  const header = DCL_PADDING
   const payload = Object.entries(dict)
     .map(([key, value]) => `${key}: ${value}`)
     .join('\n')
@@ -194,7 +196,7 @@ export async function signMessage(messageDict: MessageDict) {
 
   const messageToSign = await messageToString(messageDict)
 
-  if (messageToSign.indexOf('# DCL Signed message') === -1) {
+  if (!messageToSign.includes(DCL_PADDING)) {
     throw new Error(`Message is not in a right format.`)
   }
 
@@ -217,8 +219,8 @@ export async function convertMessageToObject(message: string): Promise<MessageDi
   let parsedMessage = message
 
   // Remove `# DCL Signed message` header
-  if (message.indexOf('# DCL Signed message') === 0) {
-    parsedMessage = message.slice(21)
+  if (message.startsWith(DCL_PADDING)) {
+    parsedMessage = message.slice(DCL_PADDING.length)
   }
   // First, split the string parts into nested array
   const arr = parsedMessage

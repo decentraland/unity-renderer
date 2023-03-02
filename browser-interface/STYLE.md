@@ -7,13 +7,15 @@ imports
 
 local constants
 
-main exports
+main function, class, or exports
+
+other exports
 
 non-exported functions
 ```
 # Redux
 
-* `actions.ts` must contain, for each action the system or the user triggers:
+* `actions.ts` should contain, for each action the system or the user triggers:
   - A constant definition of the action affecting the system. The name of the module is optional, between square brackets:
     ```
     export const CREATE_NEW_USER_REQUEST = '[module] Request: Create new user'
@@ -24,9 +26,10 @@ non-exported functions
     ```
   - The exported type of the action creator:
     ```
-    export type CreateNewUserRequest = ReturnType<createNewUserRequest>
+    export type CreateNewUserRequest = ReturnType<typeof createNewUserRequest>
     ```
-* `actions.ts` CAN NOT contain other exports other than a set of these three elements.
+  - It is OK to avoid one of these three if it's not used, but this is likely a warning sign. When one of these is not used, it's likely that the use of `redux-saga` is not in line with the style followed in `decentraland-dapps`.
+* `actions.ts` should not contain other exports that don't fall in those three categories (action type string name, action creator, or type of the action creator)
 * On naming conventions for actions:
   - Please follow `Request`, `Success` and `Failure` for common HTTP or other RPC-style processes.
 
@@ -88,6 +91,22 @@ function allInfo(state) {
 - "Inversion of control": Always prefer arguments rather than accesses to global objects.
   * If necessary, try to move the dependency to `config`.
   * For example, prefer `getInitialPositionFromUrl(url: string)` and call it as `getInitialPositionFromUrl(location.href)` instead of assuming that `location` is a global object.
+
+# Javascript and array operations
+
+* Prefer to name filter and map functions rather than inlining them
+  - Do:
+  ```
+  const notNull = (_) => !!_
+  return myArray.filter(notNull)
+  ```
+  - Instead of:
+  ```
+  return myArray.filter((_) => !!_)
+  ```
+* Prefer `array.includes(_)` instead of `array.indexOf(_) === -1`
+* Prefer `str.startsWith(_)` instead of `str.indexOf(_) === 0`
+* Prefer `CONSTANT.length` instead of `9 // length of "my string"`
 
 # Development guidelines
 

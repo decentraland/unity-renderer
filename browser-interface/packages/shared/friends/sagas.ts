@@ -1477,17 +1477,14 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
         break
       }
       case FriendshipAction.DELETED: {
-        const index = state.friends.indexOf(userId)
-
-        if (index !== -1) {
+        if (state.friends.includes(userId)) {
+          const index = state.friends.indexOf(userId)
           const friends = [...state.friends]
           friends.splice(index, 1)
-
           newState = { ...state, friends }
         }
 
         totalFriends -= 1
-
         break
       }
     }

@@ -14,7 +14,7 @@ import { FriendshipAction, AntiSpamConfig, UsersAllowed } from 'shared/types'
  * */
 export function getUserIdFromMatrix(userId: string) {
   // this means that the id comes from matrix
-  if (userId.indexOf('@') === 0) {
+  if (userId.startsWith('@')) {
     return userId.split(':')[0].substring(1)
   }
   return userId
@@ -50,7 +50,7 @@ export function getMatrixIdFromUser(userId: string) {
  * */
 export function getNormalizedRoomName(name: string) {
   // it means we got the name with a inadequate format
-  if (name.indexOf('#') === 0) {
+  if (name.startsWith('#')) {
     return name.split(':')[0].substring(1)
   }
   return name
@@ -131,17 +131,16 @@ export function encodeFriendRequestId(ownId: string, otherUserId: string, incomi
  * @return `otherUserId`
  */
 export function decodeFriendRequestId(friendRequestId: string, ownId: string) {
-  // The friendRequestId follows the pattern '0x1111ada11111'
+  // The friendRequestId follows the pattern '0x1111ada11111_0x2222bbbb22222'
   ownId = getUserIdFromMatrix(ownId)
+  const [first, second] = friendRequestId.split('_')
 
-  // Get index of the ownId
-  const index = friendRequestId.indexOf(ownId)
-
-  // Return the id placed in the other index
-  if (index === 0) {
-    return friendRequestId.split('_')[1]
+  if (ownId === first) {
+    return second
+  } else if (ownId === second) {
+    return first
   } else {
-    return friendRequestId.split('_')[0]
+    throw new Error(`Received unexpected friendRequestId: ${friendRequestId} does not contain ownId=${ownId}`)
   }
 }
 
