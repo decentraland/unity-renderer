@@ -59,7 +59,7 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import {logout, redirectToSignUp, setLoadingScreenOff, signUp, signUpCancel} from 'shared/session/actions'
+import {logout, redirectToSignUp, setFirstLoadingCompleted, signUp, signUpCancel} from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -1113,7 +1113,7 @@ export class BrowserInterface {
   }
 
   public LoadingScreenDisappear() {
-    store.dispatch(setLoadingScreenOff(true));
+    store.dispatch(setFirstLoadingCompleted(true));
   }
 
   public ReportLog(data: { type: string; message: string }) {

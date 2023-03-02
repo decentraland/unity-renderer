@@ -307,3 +307,7 @@ export function initializeSessionObserver() {
     })
   })
 }
+
+export function sessionFirstLoadCompleted() {
+  return store.getState().session.firstLoadCompleted
+}

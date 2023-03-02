@@ -48,5 +48,5 @@ export const SIGNUP_SET_IS_SIGNUP = '[SESSION] mark session as new user'
 export const signUpSetIsSignUp = (isSignUp: boolean) => action(SIGNUP_SET_IS_SIGNUP, { isSignUp })
 export type SignUpSetIsSignUp = ReturnType<typeof signUpSetIsSignUp>
 
-export const SET_LOADING_SCREEN_OFF = '[SESSION] First loading screen is off'
-export const setLoadingScreenOff = (isLoadingScreenOff : boolean) => action(SET_LOADING_SCREEN_OFF, { isLoadingScreenOff })
+export const SET_FIRST_LOADING_COMPLETED = '[SESSION] First loading screen completed'
+export const setFirstLoadingCompleted = (isFirstLoadedCompleted : boolean) => action(SET_FIRST_LOADING_COMPLETED, { firstLoadCompleted: isFirstLoadedCompleted })

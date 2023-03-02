@@ -50,8 +50,8 @@ import { getResourcesURL } from 'shared/location'
 import { Vector2 } from '@dcl/ecs-math'
 import { trackEvent } from 'shared/analytics'
 import { getAllowedContentServer } from 'shared/meta/selectors'
-import {CHANGE_LOGIN_STAGE, SET_LOADING_SCREEN_OFF} from 'shared/session/actions'
-import { isLoginCompleted, isLoadingScreenOff } from 'shared/session/selectors'
+import {CHANGE_LOGIN_STAGE } from 'shared/session/actions'
+import { isLoginCompleted } from 'shared/session/selectors'
 import { waitFor } from 'lib/redux'
 
 export function* sceneLoaderSaga() {
@@ -165,12 +165,10 @@ function* teleportHandler(action: TeleportToAction) {
 }
 
 const waitForUserAuthenticated = waitFor(isLoginCompleted, CHANGE_LOGIN_STAGE)
-const waitForLoadingScreenOff = waitFor(isLoadingScreenOff, SET_LOADING_SCREEN_OFF)
 
 function* rendererPositionSettler() {
   // wait for renderer
   yield call(waitForRendererInstance)
-
   // wait for signup to be finished (teleporting interferes with the signup logic on the renderer)
   yield call(waitForUserAuthenticated)
 
@@ -180,19 +178,12 @@ function* rendererPositionSettler() {
       getPositionSpawnPointAndScene
     )
 
-    // then update the position in the engine
-    getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)
-
-    // we have to wait for the loading screen to go off for the first time
-    yield call(waitForLoadingScreenOff)
-
-    console.log("COMPLETING TELEPORT")
-
     if (!isSettled && !!spawnPointAndScene.sceneId) {
       // Then set the parcel position for the scene loader
       receivePositionReport(spawnPointAndScene.spawnPoint.position)
     }
-
+    // then update the position in the engine
+    getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)
     yield take([POSITION_SETTLED, POSITION_UNSETTLED])
   }
 }

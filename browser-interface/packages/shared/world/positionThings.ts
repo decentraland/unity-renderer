@@ -6,6 +6,7 @@ import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPo
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { DEBUG, playerConfigurations } from 'config'
 import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import {sessionFirstLoadCompleted} from "../session/sagas";
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -51,6 +52,13 @@ export function receivePositionReport(
   cameraRotation?: ReadOnlyVector4,
   playerHeight?: number
 ) {
+  if(!sessionFirstLoadCompleted()) {
+    console.log("Sending Position: PENDING ON THE FIRST SESSION LOAD COMPLETE")
+    return;
+  }
+
+  console.log("Sending Position: WE ARE GOING TO SEND A POSITION")
+
   positionEvent.position.set(position.x, position.y, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
