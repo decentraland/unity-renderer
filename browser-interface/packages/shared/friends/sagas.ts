@@ -576,11 +576,11 @@ function* refreshFriends() {
     const ownId = client.getUserId()
 
     // init friends
-    const friendIds: string[] = yield call(getFriendIds, client)
+    const friendIds: string[] = yield call(async () => await getFriendIds(client))
     const friendsSocial: SocialData[] = []
 
     // init friend requests
-    const friendRequests: FriendshipRequest[] = yield client.getPendingRequests()
+    const friendRequests: FriendshipRequest[] = yield call(async () => await client.getPendingRequests())
 
     // filter my requests to others
     const toFriendRequests = friendRequests.filter((request) => request.from === ownId)
@@ -642,7 +642,7 @@ function* refreshFriends() {
       .filter((each, i, elements) => elements.indexOf(each) === i)
 
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
-    yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
+    yield call(async () => await Promise.all(ensureFriendProfilesPromises).catch(logger.error))
 
     getUnityInstance().InitializeFriends(initFriendsMessage)
     getUnityInstance().InitializeChat(initChatMessage)

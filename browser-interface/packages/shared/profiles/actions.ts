@@ -12,7 +12,7 @@ const SAVE_PROFILE_FAILURE = '[Current User] Save Profile Failure'
 
 export const DEPLOY_PROFILE_REQUEST = '[Deploy Current Profile] Request'
 export const DEPLOY_PROFILE_SUCCESS = '[Deploy Current Profile] Success'
- const DEPLOY_PROFILE_FAILURE = '[Deploy Current Profile] Failure'
+const DEPLOY_PROFILE_FAILURE = '[Deploy Current Profile] Failure'
 
 export const SEND_PROFILE_TO_RENDERER_REQUEST = 'Send Profile to Renderer Requested'
 

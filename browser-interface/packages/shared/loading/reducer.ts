@@ -1,4 +1,5 @@
 import { AnyAction } from 'redux'
+import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { InformPendingScenes, PENDING_SCENES } from './actions'
 import { ExecutionLifecycleEvent, EXPERIENCE_STARTED, FATAL_ERROR, NOT_STARTED } from './types'
 
@@ -9,11 +10,6 @@ type LoadingState = {
 
   lastUpdate: number | null
   error: string | null
-  tldError: {
-    tld: string
-    web3Net: string
-    tldNet: string
-  } | null
 }
 
 export type RootLoadingState = {
@@ -27,8 +23,7 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction): Loadin
       totalScenes: 0,
       pendingScenes: 0,
       lastUpdate: 0,
-      error: null,
-      tldError: null
+      error: null
     }
   }
   if (!action) {
@@ -37,8 +32,8 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction): Loadin
   if (action.type === PENDING_SCENES) {
     return {
       ...state,
-      pendingScenes: (action as InformPendingScenes).payload.pendingScenes,
-      totalScenes: (action as InformPendingScenes).payload.totalScenes
+      status: PARCEL_LOADING_STARTED,
+      ...(action as InformPendingScenes).payload
     }
   }
   if (action.type === EXPERIENCE_STARTED) {

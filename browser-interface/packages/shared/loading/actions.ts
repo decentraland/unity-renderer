@@ -13,8 +13,8 @@ export const signalSceneLoad = (scene: LoadableScene) => action(SCENE_LOAD, scen
 export const signalSceneStart = (scene: LoadableScene) => action(SCENE_START, scene)
 export const signalSceneFail = (scene: LoadableScene) => action(SCENE_FAIL, scene)
 export const signalSceneUnload = (scene: LoadableScene) => action(SCENE_UNLOAD, scene)
-export const informPendingScenes = (pendingScenes: number, totalScenes: number) =>
-  action(PENDING_SCENES, { pendingScenes, totalScenes })
+export const informPendingScenes = (pendingScenes: number, totalScenes: number, lastUpdate: number) =>
+  action(PENDING_SCENES, { pendingScenes, totalScenes, lastUpdate })
 
 export type SceneLoad = ReturnType<typeof signalSceneLoad>
 export type SceneStart = ReturnType<typeof signalSceneStart>

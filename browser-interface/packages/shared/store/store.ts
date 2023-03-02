@@ -4,7 +4,7 @@ const createSagaMiddleware = require('@redux-saga/core').default
 import { createLogger } from 'redux-logger'
 import { reducers } from './rootReducer'
 import { createRootSaga } from './rootSaga'
-import { DEBUG_REDUX, DEBUG_REDUX_SAGAS } from 'config'
+import { DEBUG_REDUX } from 'config'
 import { ErrorContext, BringDownClientAndReportFatalError } from '../loading/ReportFatalError'
 import defaultLogger from 'lib/logger'
 import { setStore } from './isolatedStore'
