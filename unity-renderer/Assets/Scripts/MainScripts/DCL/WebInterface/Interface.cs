@@ -1927,5 +1927,10 @@ namespace DCL.Interface
                 deviceId = inputDeviceId
             });
         }
+
+        public static void ReportLoadingScreenOff()
+        {
+            SendMessage("LoadingScreenDisappear");
+        }
     }
 }

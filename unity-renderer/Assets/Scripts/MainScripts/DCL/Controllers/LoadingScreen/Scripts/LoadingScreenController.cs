@@ -91,7 +91,7 @@ namespace DCL.LoadingScreen
         private void OnSignupFlow(bool current, bool previous)
         {
             if (current)
-                FadeOutView();
+                FadeOutView(false);
             else
                 view.FadeIn(false, false);
         }
@@ -158,10 +158,12 @@ namespace DCL.LoadingScreen
             }
         }
 
-        private void FadeOutView()
+        private void FadeOutView(bool reportOffToKernel = true)
         {
             view.FadeOut();
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(false);
+            if(reportOffToKernel)
+                DCL.Interface.WebInterface.ReportLoadingScreenOff();
         }
     }
 }

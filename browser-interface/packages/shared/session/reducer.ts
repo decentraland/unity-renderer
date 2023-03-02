@@ -8,7 +8,8 @@ import {
   UserAuthenticated,
   AUTHENTICATE,
   AuthenticateAction,
-  ChangeLoginStateAction
+  ChangeLoginStateAction,
+  SET_LOADING_SCREEN_OFF
 } from './actions'
 import { LoginState } from 'kernel-web-interface'
 
@@ -16,7 +17,8 @@ const INITIAL_STATE: SessionState = {
   identity: undefined,
   network: undefined,
   loginState: LoginState.LOADING,
-  isSignUp: false
+  isSignUp: false,
+  isLoadingScreenOff: false
 }
 
 export function sessionReducer(state?: SessionState, action?: AnyAction): SessionState {
@@ -31,9 +33,11 @@ export function sessionReducer(state?: SessionState, action?: AnyAction): Sessio
       return { ...state, ...(action as UserAuthenticated).payload }
     }
     case CHANGE_LOGIN_STAGE: {
+      console.log("LOADINGSCREEN:  CHANGE_LOGIN_STATE")
       return { ...state, loginState: (action as ChangeLoginStateAction).payload.stage }
     }
     case AUTHENTICATE: {
+      console.log("LOADINGSCREEN:  AUTHENTICATE")
       return {
         ...state,
         isGuestLogin: (action as AuthenticateAction).payload.isGuest,
@@ -44,6 +48,13 @@ export function sessionReducer(state?: SessionState, action?: AnyAction): Sessio
       return {
         ...state,
         isSignUp: action.payload.isSignUp
+      }
+    }
+    case SET_LOADING_SCREEN_OFF: {
+      console.log("LOADINGSCREEN: Reducer called " + action.payload.isLoadingScreenOff)
+      return {
+        ...state,
+        isLoadingScreenOff: action.payload.isLoadingScreenOff
       }
     }
   }

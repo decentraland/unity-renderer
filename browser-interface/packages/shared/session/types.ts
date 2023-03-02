@@ -20,6 +20,7 @@ export type SessionState = {
   isSignUp?: boolean
   isGuestLogin?: boolean
   provider?: IEthereumProvider
+  isLoadingScreenOff? : boolean
 }
 
 export type StoredSession = {

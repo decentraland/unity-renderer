@@ -17,3 +17,9 @@ export function isLoginCompleted(state: RootSessionState) {
     (state.session.identity && state.session.provider && state.session.loginState === LoginState.COMPLETED) || false
   )
 }
+
+export function isLoadingScreenOff(state: RootSessionState) {
+  return (
+    (state.session.isLoadingScreenOff) || false
+  )
+}

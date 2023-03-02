@@ -59,7 +59,7 @@ import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import { logout, redirectToSignUp, signUp, signUpCancel } from 'shared/session/actions'
+import {logout, redirectToSignUp, setLoadingScreenOff, signUp, signUpCancel} from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -1112,6 +1112,10 @@ export class BrowserInterface {
     setDecentralandTime(data)
   }
 
+  public LoadingScreenDisappear() {
+    store.dispatch(setLoadingScreenOff(true));
+  }
+
   public ReportLog(data: { type: string; message: string }) {
     const logger = getUnityInstance().logger
     switch (data.type) {
@@ -1132,6 +1136,7 @@ export class BrowserInterface {
         break
     }
   }
+
 }
 
 export const browserInterface: BrowserInterface = new BrowserInterface()
