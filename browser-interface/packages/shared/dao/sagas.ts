@@ -51,14 +51,6 @@ export function* daoSaga(): any {
 }
 
 function* pickCatalystRealm() {
-  function getInformationForCatalystPicker(state: RootState) {
-    const config = getPickRealmsAlgorithmConfig(state)
-    return {
-      candidates: getAllCatalystCandidates(state),
-      currentUserParcel: getParcelPosition(state),
-      config: !config || !config.length ? defaultChainConfig : config
-    }
-  }
   const { candidates, currentUserParcel, config } = (yield select(getInformationForCatalystPicker)) as ReturnType<
     typeof getInformationForCatalystPicker
   >
@@ -72,6 +64,15 @@ function* pickCatalystRealm() {
   )
 
   return urlWithProtocol(realm.hostname)
+}
+
+function getInformationForCatalystPicker(state: RootState) {
+  const config = getPickRealmsAlgorithmConfig(state)
+  return {
+    candidates: getAllCatalystCandidates(state),
+    currentUserParcel: getParcelPosition(state),
+    config: !config || !config.length ? defaultChainConfig : config
+  }
 }
 
 function qsRealm() {
