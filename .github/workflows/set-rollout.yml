@@ -62,4 +62,4 @@ jobs:
           # Rollout information
           deploymentDomain: "play.decentraland.org"
           deploymentName: "@dcl/explorer"
-          percentage: 0
+          percentage: 100
