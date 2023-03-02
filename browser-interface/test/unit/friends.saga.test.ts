@@ -184,7 +184,8 @@ const stubClient = {
   getDomain: () => 'decentraland.org',
   setStatus: () => Promise.resolve(),
   getOwnId: () => '0xa2',
-  getMessageBody: () => undefined
+  getMessageBody: () => undefined,
+  getMutualFriends: () => mutualFriendsIds
 } as unknown as SocialAPI
 
 const friendsFromStore: FriendsState = {
