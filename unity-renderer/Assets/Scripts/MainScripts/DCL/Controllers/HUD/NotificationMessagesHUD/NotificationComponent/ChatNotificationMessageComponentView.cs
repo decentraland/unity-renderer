@@ -81,7 +81,7 @@ namespace DCL.Chat.Notifications
 
         public override void Hide(bool instant = false)
         {
-            showHideAnimator.animSpeedFactor = 1.6f;
+            showHideAnimator.animSpeedFactor = 15f;
             base.Hide(instant);
         }
 
