@@ -110,7 +110,7 @@ async function preProcessComponents() {
       const componentId = getComponentId(line)
       if (componentId) {
         newComponentId = Number(componentId)
-      } else if (line.indexOf('common/id.proto') == -1) {
+      } else if (!line.includes('common/id.proto')) {
         outputLines.push(line)
       }
     }
