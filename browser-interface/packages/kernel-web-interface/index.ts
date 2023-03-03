@@ -24,7 +24,7 @@ export interface KernelTrackingEvent {
 export interface KernelError {
   error: Error
   code?: string
-  level?: 'critical' | 'fatal'
+  level?: 'critical' | 'fatal' | 'serious' | 'warning'
   extra?: Record<string, any>
 }
 
