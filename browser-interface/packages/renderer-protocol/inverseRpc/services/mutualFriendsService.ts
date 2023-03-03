@@ -2,10 +2,10 @@ import {
   GetMutualFriendsResponse,
   MutualFriendsKernelServiceDefinition
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
-import { RpcServerPort } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
-import { RendererProtocolContext } from '../context'
+import { RpcServerPort } from '@dcl/rpc/dist/types'
 import { getMutualFriends } from 'shared/friends/sagas'
+import { RendererProtocolContext } from '../context'
 
 export function registerMutualFriendsKernelService(port: RpcServerPort<RendererProtocolContext>) {
   codegen.registerService(port, MutualFriendsKernelServiceDefinition, async () => ({
