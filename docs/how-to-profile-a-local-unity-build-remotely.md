@@ -1,7 +1,8 @@
 # Profiling a WebGL Build
 
 1. Create a folder named `Builds` in the root
-1. Open the build settings and toggle on `Development Build`, `Autoconnect Profiler` and **make sure Deep Profiling is toggled off**
+1. Open the build settings. **Toggle on** `Development Build` and `Autoconnect Profiler`.
+2. Also in build settings, make sure that `Deep Profiling` is **toggled off**. **WebGL Builds do NOT support Deep Profiling**
 3. Build inside the `Builds` folder, and the build name must be named `unity`. The final folder should be `(root)/Builds/unity/`
 4. Go to `cd browser-interface` with the console and then execute `docker-compose up` (requires docker and docker compose) to execute the browser interface locally. You need to check on the logs if it is copying the Unity build files.
 5. Open http://localhost:8080/ and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
