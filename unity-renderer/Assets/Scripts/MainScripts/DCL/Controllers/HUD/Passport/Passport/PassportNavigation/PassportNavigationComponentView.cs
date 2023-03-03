@@ -204,10 +204,8 @@ namespace DCL.Social.Passports
 
         private string AddCoordinateLinks(string description)
         {
-            foreach (string coordinate in CoordinateUtils.GetTextCoordinates(description))
-                description = description.Replace(coordinate, $"<link=coord://{coordinate}><color=#4886E3><u>{coordinate}</u></color></link>");
-
-            return description;
+            return CoordinateUtils.ReplaceTextCoordinates(description, (text, coordinates) =>
+                $"<link=coord://{text}><color=#4886E3><u>{text}</u></color></link>");
         }
 
         private void OnDescriptionClicked(PointerEventData clickData)

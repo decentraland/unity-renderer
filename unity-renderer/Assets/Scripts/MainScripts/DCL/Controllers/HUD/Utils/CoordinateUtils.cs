@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 public class CoordinateUtils
@@ -14,9 +13,22 @@ public class CoordinateUtils
     public static bool IsCoordinateInRange(int x, int y) =>
         x is <= MAX_X_COORDINATE and >= MIN_X_COORDINATE && y is <= MAX_Y_COORDINATE and >= MIN_Y_COORDINATE;
 
-    public static List<string> GetTextCoordinates(string text)
+    public delegate string CoordinatesReplacementDelegate(string matchedText, (int x, int y) coordinates);
+
+    public static string ReplaceTextCoordinates(string text, CoordinatesReplacementDelegate replacementCallback)
     {
-        List<string> matchingWords = new List<string>();
+        return REGEX.Replace(text, match =>
+        {
+            string value = match.Value;
+            int.TryParse(value.Split(',')[0], out int x);
+            int.TryParse(value.Split(',')[1], out int y);
+
+            return IsCoordinateInRange(x, y) ? replacementCallback.Invoke(value, (x, y)) : value;
+        });
+    }
+
+    public static bool HasValidTextCoordinates(string text)
+    {
         MatchCollection matches = REGEX.Matches(text);
 
         foreach (Match match in matches)
@@ -27,14 +39,11 @@ public class CoordinateUtils
             int.TryParse(value.Split(',')[1], out int y);
 
             if (IsCoordinateInRange(x, y))
-                matchingWords.Add(value);
+                return true;
         }
 
-        return matchingWords;
+        return false;
     }
-
-    public static bool HasValidTextCoordinates(string text) =>
-        GetTextCoordinates(text).Count > 0;
 
     public static ParcelCoordinates ParseCoordinatesString(string coordinates) =>
         new (int.Parse(coordinates.Split(',')[0]), int.Parse(coordinates.Split(',')[1]));

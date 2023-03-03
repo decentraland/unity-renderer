@@ -114,11 +114,8 @@ namespace DCL.Chat.HUD
         {
             if (!CoordinateUtils.HasValidTextCoordinates(body)) return body;
 
-            foreach (string coordinates in CoordinateUtils.GetTextCoordinates(body))
-                body = body.Replace(coordinates,
-                    $"</noparse><link={coordinates}><color=#4886E3><u>{coordinates}</u></color></link><noparse>");
-
-            return body;
+            return CoordinateUtils.ReplaceTextCoordinates(body, (text, coordinates) =>
+                $"</noparse><link={text}><color=#4886E3><u>{text}</u></color></link><noparse>");
         }
 
         private void PlaySfx(ChatEntryModel chatEntryModel)
