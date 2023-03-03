@@ -95,6 +95,9 @@ public class UserContextMenu : MonoBehaviour
     /// <param name="userId"> user id</param>
     public void Show(string userId)
     {
+        if (string.IsNullOrEmpty(userId))
+            return;
+
         Show(userId, menuConfigFlags);
     }
 
