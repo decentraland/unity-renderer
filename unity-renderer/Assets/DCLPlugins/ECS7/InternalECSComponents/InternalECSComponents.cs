@@ -1,11 +1,12 @@
-using System;
-using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
+using System;
+using System.Collections.Generic;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
     internal readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
+    internal readonly IList<InternalComponentWriteData> scheduledDirty = new List<InternalComponentWriteData>(50);
 
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
@@ -125,6 +126,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public void Dispose()
     {
         scheduledWrite.Clear();
+        scheduledDirty.Clear();
 
         texturizableComponent.Dispose();
         materialComponent.Dispose();
@@ -141,10 +143,37 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         for (int i = 0; i < scheduledWrite.Count; i++)
         {
             var writeData = scheduledWrite[i];
+
             if (writeData.scene?.crdtExecutor == null)
                 continue;
 
             InternalComponent data = writeData.data;
+
+            if (data != null)
+            {
+                data._dirty = true;
+            }
+
+            writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, data);
+
+            scheduledDirty.Add(new InternalComponentWriteData(writeData.scene, writeData.entityId,
+                writeData.componentId, data, writeData.flaggedForRemoval));
+        }
+
+        scheduledWrite.Clear();
+    }
+
+    public void DirtySystemUpdate()
+    {
+        for (int i = 0; i < scheduledDirty.Count; i++)
+        {
+            var writeData = scheduledDirty[i];
+
+            if (writeData.scene?.crdtExecutor == null)
+                continue;
+
+            InternalComponent data = writeData.data;
+
             if (data != null)
             {
                 data._dirty = false;
@@ -154,6 +183,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
                 writeData.scene.crdtExecutor.ExecuteWithoutStoringState(writeData.entityId, writeData.componentId, null);
             }
         }
-        scheduledWrite.Clear();
+
+        scheduledDirty.Clear();
     }
 }

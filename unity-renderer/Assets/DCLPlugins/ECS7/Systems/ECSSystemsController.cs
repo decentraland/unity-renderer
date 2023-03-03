@@ -26,6 +26,7 @@ public class ECSSystemsController : IDisposable
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentWriteSystem;
+    private readonly ECS7System internalComponentDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
     private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
@@ -42,6 +43,7 @@ public class ECSSystemsController : IDisposable
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
         this.internalComponentWriteSystem = context.internalEcsComponents.WriteSystemUpdate;
+        this.internalComponentDirtySystem = context.internalEcsComponents.DirtySystemUpdate;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -126,13 +128,28 @@ public class ECSSystemsController : IDisposable
 
     private void Update()
     {
-        componentWriteSystem.Invoke();
+        try
+        {
+            componentWriteSystem.Invoke();
+            internalComponentWriteSystem.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
 
         int count = updateSystems.Count;
 
         for (int i = 0; i < count; i++)
         {
-            updateSystems[i].Invoke();
+            try
+            {
+                updateSystems[i].Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 
@@ -142,9 +159,23 @@ public class ECSSystemsController : IDisposable
 
         for (int i = 0; i < count; i++)
         {
-            lateUpdateSystems[i].Invoke();
+            try
+            {
+                lateUpdateSystems[i].Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
-        internalComponentWriteSystem.Invoke();
+        try
+        {
+            internalComponentDirtySystem.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
     }
 }

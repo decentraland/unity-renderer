@@ -1,9 +1,11 @@
-using System;
 using DCL.ECS7.InternalComponents;
 
 public interface IInternalECSComponents
 {
     void WriteSystemUpdate();
+
+    void DirtySystemUpdate();
+
     IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     IInternalECSComponent<InternalMaterial> materialComponent { get; }
     IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent { get; }

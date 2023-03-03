@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 
 public readonly struct InternalComponentWriteData
 {
@@ -11,17 +11,19 @@ public readonly struct InternalComponentWriteData
     public readonly long entityId;
     public readonly int componentId;
     public readonly InternalComponent data;
+    public readonly bool flaggedForRemoval;
 
-    public InternalComponentWriteData(IParcelScene scene, long entityId, int componentId, InternalComponent data)
+    public InternalComponentWriteData(IParcelScene scene, long entityId, int componentId, InternalComponent data, bool flaggedForRemoval)
     {
         this.scene = scene;
         this.entityId = entityId;
         this.componentId = componentId;
         this.data = data;
+        this.flaggedForRemoval = flaggedForRemoval;
     }
 }
 
-public class InternalECSComponent<T> : IInternalECSComponent<T> where T : InternalComponent
+public class InternalECSComponent<T> : IInternalECSComponent<T> where T: InternalComponent
 {
     private readonly ECSComponentsFactory componentsFactory;
     private readonly int componentId;
@@ -49,9 +51,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T : Intern
 
     public void PutFor(IParcelScene scene, long entityId, T model)
     {
-        model._dirty = true;
-        scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, model);
-        scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, model));
+        scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, model, false));
     }
 
     public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel = null)
@@ -63,13 +63,11 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T : Intern
     {
         if (defaultModel != null)
         {
-            defaultModel._dirty = true;
-            scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
-            scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, null));
+            scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, defaultModel, true));
         }
         else
         {
-            scene.crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+            scheduledWrite.Add(new InternalComponentWriteData(scene, entityId, componentId, null, false));
         }
     }
 
