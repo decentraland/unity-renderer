@@ -28,10 +28,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
         private const string PARCEL_HIGHLIGHT_OBJECT_ADDRESS = "MapParcelHighlightMarker";
 
-        private const int ATLAS_DRAW_ORDER = 1;
-        private const int COLD_USER_MARKERS_DRAW_ORDER = 10;
-        private const int HOT_USER_MARKERS_DRAW_ORDER = 11;
-        private const int PARCEL_HIGHLIGHT_DRAW_ORDER = 30;
         private const int ATLAS_CHUNK_SIZE = 250;
         private const int HOT_USER_MARKERS_PREWARM_COUNT = 30;
         private const int PARCEL_SIZE = 20;
@@ -59,7 +55,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 () =>
                 {
                     var obj = Object.Instantiate(highlightMarkerPrefab, configuration.ParcelHighlightRoot);
-                    obj.spriteRenderer.sortingOrder = PARCEL_HIGHLIGHT_DRAW_ORDER;
+                    obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
                     return new ParcelHighlightMarker(obj);
                 },
                 marker => marker.Deactivate(),
