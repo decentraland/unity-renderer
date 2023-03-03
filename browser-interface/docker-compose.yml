@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./:/app
+      - ../:/app
     entrypoint: sh -c "/init.sh"
     environment:
       PUPPETEER_SKIP_DOWNLOAD: "true"

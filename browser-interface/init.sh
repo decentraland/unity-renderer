@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 
-cd app
+cd app/browser-interface
 npm install
 make watch
