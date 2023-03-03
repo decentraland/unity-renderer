@@ -102,8 +102,7 @@ public class MinimapMetadata : ScriptableObject
                    && parcels.SequenceEqual(other.parcels)
                    && isPOI == other.isPOI
                    && owner == other.owner
-                   && description == other.description
-                   && previewImageUrl == other.previewImageUrl;
+                   && description == other.description;
         }
 
         public override bool Equals(object obj)

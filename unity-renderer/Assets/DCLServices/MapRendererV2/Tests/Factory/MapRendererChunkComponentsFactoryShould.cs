@@ -63,6 +63,14 @@ namespace DCLServices.MapRendererV2.Tests.Factory
             AssertCanInstantiate(coldUser);
         }
 
+        [Test]
+        public async Task ProvidePlayerMarkerPrefab()
+        {
+            var coldUser = await factory.playerMarkerInstaller.GetPrefab(CancellationToken.None);
+            Assert.IsTrue(coldUser);
+            AssertCanInstantiate(coldUser);
+        }
+
         private void AssertCanInstantiate<T>(T prefab) where T : Component
         {
             var parent = new GameObject("Parent").transform;

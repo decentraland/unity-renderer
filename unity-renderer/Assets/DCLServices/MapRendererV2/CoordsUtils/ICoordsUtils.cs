@@ -19,8 +19,6 @@ namespace DCLServices.MapRendererV2.CoordsUtils
 
         public Vector3 CoordsToPosition(Vector2Int coords);
 
-        public Vector2 CoordsToPositionWithOffset(Vector3 coords);
-
-        public Vector2 CoordsToPositionWithOffset(Vector3 coords, int parcelSize);
+        public Vector3 CoordsToPositionWithOffset(Vector2 coords);
     }
 }

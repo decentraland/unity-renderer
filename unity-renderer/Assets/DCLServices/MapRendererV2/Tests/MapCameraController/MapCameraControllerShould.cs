@@ -21,7 +21,8 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             mapCameraObject = go.AddComponent<MapCameraObject>();
             mapCameraObject.mapCamera = go.AddComponent<Camera>();
             coordsUtils = Substitute.For<ICoordsUtils>();
-            mapCamera = new MapRendererV2.MapCameraController.MapCameraController(mapCameraObject, coordsUtils);
+            mapCamera = new MapRendererV2.MapCameraController.MapCameraController(
+                Substitute.For<IMapInteractivityControllerInternal>(), mapCameraObject, coordsUtils);
         }
 
         [Test]

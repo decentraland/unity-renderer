@@ -23,6 +23,12 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         public Transform HomePointRoot { get; private set; }
 
         [field: SerializeField]
+        public Transform PlayerMarkerRoot { get; private set; }
+
+        [field: SerializeField]
+        public Transform ParcelHighlightRoot { get; private set; }
+
+        [field: SerializeField]
         public Transform MapCamerasRoot { get; private set; }
     }
 }

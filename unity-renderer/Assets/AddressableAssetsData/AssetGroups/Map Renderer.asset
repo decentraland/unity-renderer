@@ -37,6 +37,10 @@ MonoBehaviour:
     m_Address: SceneOfInterestMarker
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 3efe8a48fc3905f47a0648abd6859394
+    m_Address: MapCameraObject
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: 954088078919e5847a591711e6b53e20
     m_Address: HomePoint
     m_ReadOnly: 0
