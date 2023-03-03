@@ -1,22 +1,19 @@
-### Profiling a build with Unity Editor
+# Profiling a WebGL Build
 
-1. Follow the [local build steps](https://github.com/decentraland/unity-renderer#debug-with-browsers--local-unity-build) but for step 4 apply the following settings before building:
+1. Create a folder named `Builds` in the root
+1. Open the build settings and toggle on `Development Build`, `Autoconnect Profiler` and **make sure Deep Profiling is toggled off**
+3. Build inside the `Builds` folder, and the build name must be named `unity`. The final folder should be `(root)/Builds/unity/`
+4. Go to `cd browser-interface` with the console and then `npm install` and `make watch` to execute the browser interface locally. You need to check on the logs if it is copying the Unity build files.
+5. Open http://localhost:8080/ and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
 
-  - Open the Player Settings and go to the **compression** setting and set it to **Disabled**
+# Profiling a Desktop Build
 
-  - Open the build settings and toggle on "Development Build", "Autoconnect Profiler" and **make sure Deep Profiling is toggled off**
+1. Build the project for your target platform with the following build settings checked: `Development Build`, `Autoconnect Profiler` and `Deep Profiling` (this last, if you want deep profiling)
+2. Open the build adding the `--without-ssl` parameter
+3. After the explorer opens; open on a Chrome Tab to https://play.decentraland.org/?ws=ws://localhost:7666/dcl
+4. After starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
 
-2. In Unity Editor open the profiler at window -> analysis -> profiler
-3. Since Unity2020, the WebGL development build doesn't produce the same 3 `.unityweb` files, instead there is a `.wasm` file and two `.js` files. Move those files into the corresponding kernel folder (right next to the production `.unityweb` files) and then update (in [unity-interface loader.ts](https://github.com/decentraland/explorer/blob/master/kernel/packages/unity-interface/loader.ts) or in [browser-interface/src/index.ts](https://github.com/decentraland/unity-renderer/blob/master/browser-interface/src/index.ts)) the `config` const properties to point to your newly created build files, like so:
-```
-dataUrl: resolveWithBaseUrl('unity.data'),
-frameworkUrl: resolveWithBaseUrl('unity.framework.js'),
-codeUrl: resolveWithBaseUrl('unity.wasm')
-```
-
-4. Open the new build (http://localhost:3000/?ENV=org) and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data
-
-#### Important notes and recommendations
+## Important notes and recommendations
 
 - The same Unity Editor instance that made the build **shouldn't be closed**, as that will make the new build useless for profiling, at least at the time of writting this, building in macOS, **it only sends the data to the same Unity Editor instance that built it**.
 
