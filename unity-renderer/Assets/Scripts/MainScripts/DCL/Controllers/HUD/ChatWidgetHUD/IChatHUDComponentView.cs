@@ -12,6 +12,7 @@ public interface IChatHUDComponentView
     event Action OnInputFieldDeselected;
     event Action OnPreviousChatInHistory;
     event Action OnNextChatInHistory;
+    event Action<string> OnMentionSuggestionSelected;
 
     int EntryCount { get; }
 
@@ -26,4 +27,6 @@ public interface IChatHUDComponentView
     void SetInputFieldText(string text);
     void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions);
     void ShowMentionSuggestionsLoading();
+    void ApplyMention(int startIndex, int length, string userId, string userName);
+    void HideMentionSuggestions();
 }

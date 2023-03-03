@@ -1,16 +1,15 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Interface;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using DCL.Chat;
 using DCL.Chat.HUD;
+using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 public class ChatHUDController : IDisposable
@@ -39,6 +38,9 @@ public class ChatHUDController : IDisposable
     private int currentHistoryIteration;
     private IChatHUDComponentView view;
     private CancellationTokenSource mentionSuggestionCancellationToken = new ();
+    private int mentionLength;
+    private int mentionFromIndex;
+    private Dictionary<string, UserProfile> mentionSuggestedProfiles;
 
     public ChatHUDController(DataStore dataStore,
         IUserProfileBridge userProfileBridge,
@@ -70,6 +72,7 @@ public class ChatHUDController : IDisposable
         this.view.OnSendMessage += HandleSendMessage;
         this.view.OnMessageUpdated -= HandleMessageUpdated;
         this.view.OnMessageUpdated += HandleMessageUpdated;
+        this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
     }
 
     public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
@@ -116,6 +119,7 @@ public class ChatHUDController : IDisposable
         view.OnInputFieldDeselected -= HandleInputFieldDeselected;
         view.OnPreviousChatInHistory -= FillInputWithPreviousMessage;
         view.OnNextChatInHistory -= FillInputWithNextMessage;
+        view.OnMentionSuggestionSelected -= HandleMentionSuggestionSelected;
         OnSendMessage = null;
         OnInputFieldSelected = null;
         view.Dispose();
@@ -195,11 +199,13 @@ public class ChatHUDController : IDisposable
             try
             {
                 List<UserProfile> suggestions = await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS, cancellationToken);
+                mentionSuggestedProfiles = suggestions.ToDictionary(profile => profile.userId, profile => profile);
 
                 view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
                                                        {
                                                            userId = profile.userId,
                                                            userName = profile.userName,
+                                                           imageUrl = profile.face256SnapshotURL,
                                                        })
                                                       .ToList());
             }
@@ -209,16 +215,27 @@ public class ChatHUDController : IDisposable
             }
         }
 
-        Match match = mentionRegex.Matches(message).LastOrDefault();
-        if (match is not { Success: true }) return;
+        Match match = mentionRegex.Match(message, mentionFromIndex);
 
-        mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
-        string name = match.Value[1..];
-        ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
+        if (match.Success)
+        {
+            mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
+            mentionFromIndex = match.Index;
+            mentionLength = match.Length;
+            string name = match.Name[1..];
+            ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
+        }
+        else
+        {
+            mentionFromIndex = message.Length - 1;
+            view.HideMentionSuggestions();
+        }
     }
 
     private void HandleSendMessage(ChatMessage message)
     {
+        view.HideMentionSuggestions();
+
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
 
@@ -301,7 +318,8 @@ public class ChatHUDController : IDisposable
 
     private void UpdateSpam(ChatEntryModel model)
     {
-        if (spamMessages.Count == 0) { spamMessages.Add(model); }
+        if (spamMessages.Count == 0)
+            spamMessages.Add(model);
         else if (spamMessages[^1].senderName == model.senderName)
         {
             if (MessagesSentTooFast(spamMessages[^1].timestamp, model.timestamp))
@@ -314,9 +332,11 @@ public class ChatHUDController : IDisposable
                     spamMessages.Clear();
                 }
             }
-            else { spamMessages.Clear(); }
+            else
+                spamMessages.Clear();
         }
-        else { spamMessages.Clear(); }
+        else
+            spamMessages.Clear();
     }
 
     private bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
@@ -349,5 +369,11 @@ public class ChatHUDController : IDisposable
 
         view.FocusInputField();
         view.SetInputFieldText(lastMessagesSent[currentHistoryIteration]);
+    }
+
+    private void HandleMentionSuggestionSelected(string userId)
+    {
+        view.ApplyMention(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
+        view.HideMentionSuggestions();
     }
 }

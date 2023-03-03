@@ -1,10 +1,11 @@
+using DCL.Chat.HUD;
+using DCL.Helpers;
+using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Chat.HUD;
-using DCL.Helpers;
-using DCL.Interface;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,6 +29,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] protected PoolChatEntryFactory poolChatEntryFactory;
     [SerializeField] protected InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] protected InputAction_Trigger previousChatInHistoryInput;
+    [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
     [SerializeField] private Model model;
 
     private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -101,6 +103,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     public event Action OnPreviousChatInHistory;
     public event Action OnNextChatInHistory;
+    public event Action<string> OnMentionSuggestionSelected;
     public event Action<ChatMessage> OnSendMessage;
 
     public int EntryCount => entries.Count;
@@ -119,6 +122,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
+        chatMentionSuggestions.OnEntryClicked += model => OnMentionSuggestionSelected?.Invoke(model.userId);
         ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
@@ -194,14 +198,28 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.MoveTextEnd(false);
     }
 
-    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
-    {
-        Debug.Log(string.Join(",", suggestions.Select(model => model.userName)));
-    }
+    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions) =>
+        chatMentionSuggestions.Set(suggestions);
 
     public void ShowMentionSuggestionsLoading()
     {
+        chatMentionSuggestions.Clear();
+        chatMentionSuggestions.Show();
     }
+
+    public void ApplyMention(int mentionFromIndex, int length, string userId, string userName)
+    {
+        string message = inputField.text;
+        StringBuilder builder = new (message);
+
+        SetInputFieldText(builder.Remove(mentionFromIndex, length)
+                                 .Insert(mentionFromIndex, @$"<link=mention://{userId}><color=#4886E3><u>@{userName}</u></color></link> ")
+                                 .ToString());
+        FocusInputField();
+    }
+
+    public void HideMentionSuggestions() =>
+        chatMentionSuggestions.Hide();
 
     private void SetFadeoutMode(bool enabled)
     {
