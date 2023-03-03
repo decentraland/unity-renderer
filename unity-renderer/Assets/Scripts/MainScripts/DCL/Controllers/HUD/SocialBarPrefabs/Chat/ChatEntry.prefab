@@ -144,7 +144,7 @@ MonoBehaviour:
   hoverPanelPositionReference: {fileID: 1110658662034786025}
   contextMenuPositionReference: {fileID: 650554326901945825}
   mentionLinkDetector: {fileID: 9011161838670949205}
-  autoMentionBackgroundColor: {r: 0.7725491, g: 0.882353, b: 0.9607844, a: 1}
+  autoMentionBackgroundColor: {r: 1, g: 0.9921569, b: 0.85098046, a: 1}
   backgroundImage: {fileID: 7437960684281325092}
 --- !u!114 &1514739545556520801
 MonoBehaviour:
