@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,6 +23,7 @@ namespace DCL.Chat.HUD.Mentions
         private bool isMentionsFeatureEnabled = true;
         private UserContextMenu contextMenu;
         private string currentText;
+        private readonly CancellationTokenSource cancellationToken = new ();
 
         private void Awake()
         {
@@ -38,6 +42,8 @@ namespace DCL.Chat.HUD.Mentions
                 return;
 
             textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
+
+            cancellationToken.SafeCancelAndDispose();
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -106,14 +112,19 @@ namespace DCL.Chat.HUD.Mentions
             if (textInfo.textComponent.text == currentText)
                 return;
 
+            currentText = textInfo.textComponent.text;
+            CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
+        }
+
+        private async UniTask CheckOwnPlayerMentionAsync(TMP_Text textComp, CancellationToken ct)
+        {
             if (ownUserProfile == null)
                 return;
 
-            // TODO: Put it into a UniTask and wait for WaitForEndOfFrame to throw the event
-            if (textInfo.textComponent.text.ToLower().Contains($"{MENTION_URL_PREFIX}{ownUserProfile.userId.ToLower()}"))
-                OnOwnPlayerMentioned?.Invoke();
+            await UniTask.WaitForEndOfFrame(this, ct);
 
-            currentText = textInfo.textComponent.text;
+            if (textComp.text.ToLower().Contains($"{MENTION_URL_PREFIX}{ownUserProfile.userId.ToLower()}"))
+                OnOwnPlayerMentioned?.Invoke();
         }
     }
 }
