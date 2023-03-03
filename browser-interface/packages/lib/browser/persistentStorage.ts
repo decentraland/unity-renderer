@@ -48,7 +48,11 @@ export async function getFromPersistentStorage(key: string): Promise<any | null>
     throw new Error('Storage not supported')
   }
   const data = await persistentStorage.getItem(key)
-  return (data && JSON.parse(data)) || null
+  try {
+    return (data && JSON.parse(data)) || null
+  } catch (e) {
+    throw new Error(`Impossible to parse JSON: ${key} from localStorage's value is ${data} (not JSON)`)
+  }
 }
 
 export async function removeFromPersistentStorage(key: string) {
