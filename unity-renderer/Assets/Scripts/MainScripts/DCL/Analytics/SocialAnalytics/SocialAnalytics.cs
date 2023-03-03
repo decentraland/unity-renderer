@@ -41,6 +41,9 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
+        private const string ADD_FAVORITE = "player_add_favorite";
+        private const string REMOVE_FAVORITE = "player_remove_favorite";
+        private const string TELEPORT_FAVORITE = "player_teleport_to_favorite";
 
         public static SocialAnalytics i { get; private set; }
 
@@ -198,6 +201,35 @@ namespace SocialFeaturesAnalytics
                 ["description"] = errorDescription,
             };
             analytics.SendAnalytic(FRIEND_REQUEST_ERROR, data);
+        }
+
+        public void AddFavorite(string placeName, string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["placeName"] = placeName,
+                ["source"] = source
+            };
+            analytics.SendAnalytic(ADD_FAVORITE, data);
+        }
+
+        public void RemoveFavorite(string placeName, string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["placeName"] = placeName,
+                ["source"] = source
+            };
+            analytics.SendAnalytic(REMOVE_FAVORITE, data);
+        }
+
+        public void TeleportToPlaceFromFavorite(string placeName)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["placeName"] = placeName
+            };
+            analytics.SendAnalytic(TELEPORT_FAVORITE, data);
         }
 
         public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)

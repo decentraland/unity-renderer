@@ -39,5 +39,8 @@ namespace SocialFeaturesAnalytics
         void SendChannelSearch(string text);
         void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source);
         void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription);
+        void AddFavorite(string placeName, string source);
+        void RemoveFavorite(string placeName, string source);
+        void TeleportToPlaceFromFavorite(string placeName);
     }
 }
