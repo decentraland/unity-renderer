@@ -12,8 +12,10 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private const float CAMERA_HEIGHT = 10;
         public event Action<IMapCameraControllerInternal> OnReleasing;
 
-        public MapLayer EnabledLayers { get; set; }
+        public MapLayer EnabledLayers { get; private set; }
+        public Camera Camera => mapCameraObject.mapCamera;
 
+        private readonly IMapInteractivityControllerInternal interactivityBehavior;
         private readonly ICoordsUtils coordsUtils;
         private readonly MapCameraObject mapCameraObject;
 
@@ -21,10 +23,12 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private Vector2Int zoomValues;
 
         public MapCameraController(
+            IMapInteractivityControllerInternal interactivityBehavior,
             MapCameraObject mapCameraObject,
             ICoordsUtils coordsUtils
         )
         {
+            this.interactivityBehavior = interactivityBehavior;
             this.coordsUtils = coordsUtils;
             this.mapCameraObject = mapCameraObject;
 
@@ -32,17 +36,13 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.mapCamera.orthographic = true;
         }
 
-        public static IMapCameraControllerInternal Create(MapCameraObject prefab, Transform parent, ICoordsUtils coordsUtils)
-        {
-            var instance = Object.Instantiate(prefab, parent);
-            return new MapCameraController(instance, coordsUtils);
-        }
-
         void IMapCameraControllerInternal.Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers)
         {
             renderTexture = new RenderTexture(textureResolution.x, textureResolution.x, 0);
             this.zoomValues = zoomValues;
             EnabledLayers = layers;
+
+            interactivityBehavior.Initialize(layers);
         }
 
         public RenderTexture GetRenderTexture()
@@ -52,6 +52,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
             return renderTexture;
         }
+
+        public IMapInteractivityController GetInteractivityController() => interactivityBehavior;
 
         public void SetZoom(float value)
         {
@@ -73,6 +75,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public void Release()
         {
             renderTexture?.Release();
+            interactivityBehavior.Release();
             OnReleasing?.Invoke(this);
         }
 
@@ -81,7 +84,10 @@ namespace DCLServices.MapRendererV2.MapCameraController
             if (mapCameraObject != null)
                 Utils.SafeDestroy(mapCameraObject.gameObject);
 
+            interactivityBehavior.Dispose();
+
             renderTexture?.Release();
+            renderTexture = null;
         }
     }
 }

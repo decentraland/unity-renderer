@@ -1,5 +1,4 @@
 ﻿using DCLServices.MapRendererV2.MapLayers;
-using System;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapCameraController
@@ -9,6 +8,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
         MapLayer EnabledLayers { get; }
 
         RenderTexture GetRenderTexture();
+
+        IMapInteractivityController GetInteractivityController();
 
         /// <summary>
         /// Zoom level normalized between 0 and 1
