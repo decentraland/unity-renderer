@@ -49,12 +49,23 @@ namespace DCLServices.MapRendererV2
             this.cancellationToken = cancellationToken;
             layers = new Dictionary<MapLayer, MapLayerStatus>();
 
-            var components = await componentsFactory.Create(cancellationToken);
-            cullingController = components.CullingController;
-            mapCameraPool = components.MapCameraControllers;
+            try
+            {
+                var components = await componentsFactory.Create(cancellationToken);
+                cullingController = components.CullingController;
+                mapCameraPool = components.MapCameraControllers;
 
-            await foreach (var (layerType, layer) in components.Layers)
-                layers[layerType] = new MapLayerStatus(layer);
+                await foreach (var (layerType, layer) in components.Layers)
+                    layers[layerType] = new MapLayerStatus(layer);
+            }
+            catch (OperationCanceledException)
+            {
+                // just ignore
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
