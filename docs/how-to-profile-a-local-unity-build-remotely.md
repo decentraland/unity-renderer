@@ -1,14 +1,15 @@
 # Profiling a WebGL Build
 
 1. Create a folder named `Builds` in the root
-1. Open the build settings and toggle on `Development Build`, `Autoconnect Profiler` and **make sure Deep Profiling is toggled off**
+1. Open the build settings. **Toggle on** `Development Build` and `Autoconnect Profiler`.
+2. Also in build settings, make sure that `Deep Profiling` is **toggled off**. **WebGL Builds do NOT support Deep Profiling**
 3. Build inside the `Builds` folder, and the build name must be named `unity`. The final folder should be `(root)/Builds/unity/`
 4. Go to `cd browser-interface` with the console and then execute `docker-compose up` (requires docker and docker compose) to execute the browser interface locally. You need to check on the logs if it is copying the Unity build files.
 5. Open http://localhost:8080/ and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
 
 # Profiling a Desktop Build
 
-1. Build the project for your target platform with the following build settings checked: `Development Build`, `Autoconnect Profiler` and `Deep Profiling` (this last, if you want deep profiling)
+1. Build the project for your target platform with the following build settings checked: `Development Build`, `Autoconnect Profiler`. In contrast with WebGL build restrictions, Desktop builds have no restrictions on Deep Profiling.
 2. Open the build adding the `--no-ssl` parameter
 3. After the explorer opens; open on a Chrome Tab to https://play.decentraland.org/?ws=ws://localhost:7666/dcl
 4. After starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
