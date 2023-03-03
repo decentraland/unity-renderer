@@ -11,10 +11,6 @@ namespace DCL.Chat.HUD.Mentions
 {
     public class MentionLinkDetector : MonoBehaviour, IPointerClickHandler
     {
-        private const string MENTION_URL_PREFIX = "mention://";
-        private const string MENTION_PATTERN = "^@[a-zA-Z\\d]{3,15}(#[a-zA-Z\\d]{4})?$";
-        private static readonly Regex MENTION_REGEX = new (MENTION_PATTERN);
-
         public event Action OnOwnPlayerMentioned;
 
         [SerializeField] internal TMP_Text textComponent;
@@ -54,11 +50,11 @@ namespace DCL.Chat.HUD.Mentions
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
 
-            var clickedLink = GetMentionLinkByPointerPosition(eventData.position);
-            if (clickedLink == null)
+            string userId = GetUserIdByPointerPosition(eventData.position);
+            if (string.IsNullOrEmpty(userId))
                 return;
 
-            ShowContextMenu(clickedLink.Value.userId);
+            ShowContextMenu(userId);
         }
 
         public void SetContextMenu(UserContextMenu userContextMenu)
@@ -66,7 +62,7 @@ namespace DCL.Chat.HUD.Mentions
             this.contextMenu = userContextMenu;
         }
 
-        private (string userId, string mention)? GetMentionLinkByPointerPosition(Vector2 pointerPosition)
+        private string GetUserIdByPointerPosition(Vector2 pointerPosition)
         {
             if (textComponent == null)
                 return null;
@@ -79,19 +75,9 @@ namespace DCL.Chat.HUD.Mentions
 
             string mentionText = linkInfo.GetLinkText();
             string mentionLink = linkInfo.GetLinkID();
-            if (!IsAMention(mentionText, mentionLink))
-                return null;
-
-            return (
-                mentionLink.Replace(MENTION_URL_PREFIX, string.Empty).ToLower(),
-                mentionText
-            );
-        }
-
-        private static bool IsAMention(string text, string url)
-        {
-            var match = MENTION_REGEX.Match(text);
-            return match.Success && url.StartsWith(MENTION_URL_PREFIX);
+            return !MentionsUtils.IsAMention(mentionText, mentionLink)
+                ? null
+                : MentionsUtils.GetUserIdFromMentionLink(mentionLink);
         }
 
         private void ShowContextMenu(string userId)
@@ -123,7 +109,7 @@ namespace DCL.Chat.HUD.Mentions
 
             await UniTask.WaitForEndOfFrame(this, ct);
 
-            if (textComp.text.ToLower().Contains($"{MENTION_URL_PREFIX}{ownUserProfile.userId.ToLower()}"))
+            if (MentionsUtils.IsUserMentionedInText(ownUserProfile.userId, textComp.text))
                 OnOwnPlayerMentioned?.Invoke();
         }
     }
