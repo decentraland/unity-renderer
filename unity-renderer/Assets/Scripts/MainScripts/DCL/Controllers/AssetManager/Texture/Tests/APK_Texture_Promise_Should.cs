@@ -119,6 +119,12 @@ namespace AssetPromiseKeeper_Texture_Tests
             Assert.IsTrue(loadedAsset3.texture == loadedAsset4.texture);
         }
 
+        /// <summary>
+        /// NOTE: Temporarily commented test because of a Unity bug starting from 2021.3.17f1
+        /// For reference, see the ticket opened to the Unity support team at https://support.unity.com/hc/en-us/requests/1483408?page=1
+        /// TODO: re-enable this when the Unity support team fixes the problem.
+        /// </summary>
+        /*
         [UnityTest]
         public IEnumerator FailWithBogusTexture()
         {
@@ -137,6 +143,7 @@ namespace AssetPromiseKeeper_Texture_Tests
             Assert.IsTrue(failed);
             Assert.IsFalse(succeeded);
         }
+        */
 
         [UnityTest]
         public IEnumerator FailWithBase64Image()
