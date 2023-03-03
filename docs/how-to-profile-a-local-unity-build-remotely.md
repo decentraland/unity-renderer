@@ -8,7 +8,7 @@
 
 # Profiling a Desktop Build
 
-1. Build the project for your target platform with the following build settings checked: `Development Build`, `Autoconnect Profiler` and `Deep Profiling` (this last, if you want deep profiling)
+1. Build the project for your target platform with the following build settings checked: `Development Build`, `Autoconnect Profiler`. In contrast with WebGL build restrictions, Desktop builds have no restrictions on Deep Profiling.
 2. Open the build adding the `--no-ssl` parameter
 3. After the explorer opens; open on a Chrome Tab to https://play.decentraland.org/?ws=ws://localhost:7666/dcl
 4. After starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data (you can open on the Unity Editor at `window -> analysis -> profiler`)
