@@ -64,7 +64,6 @@ namespace DCL.GoToPanel
                 catch (Exception)
                 {
                     view.SetPanelInfo(coordinates, null);
-                    throw;
                 }
                 finally
                 {
