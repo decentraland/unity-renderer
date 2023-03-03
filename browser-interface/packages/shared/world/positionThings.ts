@@ -54,8 +54,6 @@ export function receivePositionReport(
 ) {
   if(!sessionFirstLoadCompleted()) return;
 
-  console.log("Sending Position: WE ARE GOING TO SEND A POSITION")
-
   positionEvent.position.set(position.x, position.y, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
