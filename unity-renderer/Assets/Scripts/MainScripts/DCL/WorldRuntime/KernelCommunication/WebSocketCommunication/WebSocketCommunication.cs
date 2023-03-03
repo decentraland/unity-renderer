@@ -113,8 +113,10 @@ public class WebSocketCommunication : IKernelCommunication
         return wssUrl;
     }
 
-    private X509Certificate2 loadSelfSignedServerCertificate() =>
-        new X509Certificate2("self-signed.pfx", "");
+    private X509Certificate2 loadSelfSignedServerCertificate() {
+        byte[] rawData = Convert.FromBase64String(SelfCertificateData.data);
+        return new X509Certificate2(rawData, "");
+    }
 
     private void OnWebSocketLog(LogData logData, string message)
     {
