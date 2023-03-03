@@ -37,8 +37,8 @@ MonoBehaviour:
     m_Address: SceneOfInterestMarker
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 0ae66608be2735a4f96e0f1aa9b3a75b
-    m_Address: PlayerMarker
+  - m_GUID: 3efe8a48fc3905f47a0648abd6859394
+    m_Address: MapCameraObject
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
