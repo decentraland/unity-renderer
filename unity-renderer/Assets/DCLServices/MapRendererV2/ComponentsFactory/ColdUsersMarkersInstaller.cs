@@ -7,6 +7,7 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea;
 using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Threading;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
