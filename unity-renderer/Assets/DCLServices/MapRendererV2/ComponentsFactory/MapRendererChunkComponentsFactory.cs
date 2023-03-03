@@ -34,6 +34,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; } = new ();
         internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; } = new ();
+        internal PlayerMarkerInstaller playerMarkerInstaller { get; }
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
@@ -99,6 +100,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                     CreateAtlas(),
                     coldUsersMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
                     sceneOfInterestsMarkersInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
+                    playerMarkerInstaller.Install(writer, configuration, coordsUtils, cullingController, cancellationToken),
                     CreateHotUserMarkers() /* List of other creators that can be executed in parallel */);
             });
 

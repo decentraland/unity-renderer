@@ -38,17 +38,8 @@ namespace DCLServices.MapRendererV2.CoordsUtils
         public Vector3 CoordsToPositionUnclamped(Vector2 coords) => coords * ParcelSize;
 
         public Vector3 CoordsToPosition(Vector2Int coords) => (Vector2) (coords * ParcelSize);
+        public Vector3 CoordsToPositionWithOffset(Vector2 coords) =>
+            (coords * ParcelSize) - new Vector2(ParcelSize / 2f, ParcelSize / 2f);
 
-        public Vector2 CoordsToPositionWithOffset(Vector3 coords) =>
-            throw new NotImplementedException();
-
-        public Vector2 CoordsToPositionWithOffset(Vector3 coords, int parcelSize) =>
-            throw new NotImplementedException();
-
-        public Vector2 CoordsToPosition(Vector2 coords) =>
-            throw new NotImplementedException();
-
-        public Vector2 CoordsToPosition(Vector2 coords, int parcelSize) =>
-            throw new NotImplementedException();
     }
 }
