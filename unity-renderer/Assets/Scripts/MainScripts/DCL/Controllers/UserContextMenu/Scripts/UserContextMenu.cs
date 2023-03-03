@@ -109,11 +109,7 @@ public class UserContextMenu : MonoBehaviour
         ProcessActiveElements(configFlags);
 
         if (!Setup(userId, configFlags))
-        {
-            DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
-            Debug.LogError($"User {userId} was not found!");
             return;
-        }
 
         if (currentConfirmationDialog == null && confirmationDialog != null) { SetConfirmationDialog(confirmationDialog); }
 
@@ -330,7 +326,11 @@ public class UserContextMenu : MonoBehaviour
         UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId);
 
         if (profile == null)
+        {
+            DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
+            Debug.LogError($"User {userId} was not found in the catalog!");
             return false;
+        }
 
         bool userHasWallet = profile?.hasConnectedWeb3 ?? false;
 
