@@ -27,7 +27,7 @@ namespace DCL
                             i++; // shift
                             startPort = int.Parse(arguments[i]);
                             break;
-                        case "--without-ssl":
+                        case "--no-ssl":
                             withSSL = false;
                             break;
                     }
