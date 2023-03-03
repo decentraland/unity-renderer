@@ -107,7 +107,13 @@ public class UserContextMenu : MonoBehaviour
     {
         this.userId = userId;
         ProcessActiveElements(configFlags);
-        Setup(userId, configFlags);
+
+        if (!Setup(userId, configFlags))
+        {
+            DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
+            Debug.LogError($"User {userId} was not found!");
+            return;
+        }
 
         if (currentConfirmationDialog == null && confirmationDialog != null) { SetConfirmationDialog(confirmationDialog); }
 
@@ -317,11 +323,15 @@ public class UserContextMenu : MonoBehaviour
         messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && (!isBlocked && enableSendMessage));
     }
 
-    private void Setup(string userId, MenuConfigFlags configFlags)
+    private bool Setup(string userId, MenuConfigFlags configFlags)
     {
         this.userId = userId;
 
         UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId);
+
+        if (profile == null)
+            return false;
+
         bool userHasWallet = profile?.hasConnectedWeb3 ?? false;
 
         if (!userHasWallet || !UserProfile.GetOwnUserProfile().hasConnectedWeb3) { configFlags &= ~usesFriendsApiFlags; }
@@ -348,6 +358,8 @@ public class UserContextMenu : MonoBehaviour
             FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
             FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
         }
+
+        return true;
     }
 
     private void SetupFriendship(FriendshipStatus friendshipStatus)
