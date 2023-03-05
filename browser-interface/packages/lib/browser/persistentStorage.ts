@@ -57,6 +57,7 @@ export async function getFromPersistentStorage(key: string): Promise<any | null>
       code: 'local',
       level: 'serious'
     })
+    return null
   }
 }
 
