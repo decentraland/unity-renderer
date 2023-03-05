@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Reporting;
+using UnityEngine.Profiling;
 
 static class BuildCommand
 {
@@ -173,14 +174,22 @@ static class BuildCommand
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
 
+        var buildOptions = GetBuildOptions();
+
         if (IsDevelopmentBuild())
         {
             EditorUserBuildSettings.development = true;
-            EditorUserBuildSettings.allowDebugging = true;
             EditorUserBuildSettings.connectProfiler = true;
+
+            buildOptions |= BuildOptions.Development |
+                            BuildOptions.ConnectWithProfiler |
+                            BuildOptions.CleanBuildCache;
+
+            PlayerSettings.WebGL.emscriptenArgs += " -s INITIAL_MEMORY=1GB ";
+            Console.WriteLine(":: Development Build");
         }
 
-        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
+        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, buildOptions);
         Console.WriteLine(":: Done with build process");
 
         if (buildSummary.summary.result != BuildResult.Succeeded)
