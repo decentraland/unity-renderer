@@ -185,6 +185,7 @@ static class BuildCommand
                             BuildOptions.ConnectWithProfiler |
                             BuildOptions.CleanBuildCache;
 
+            Profiler.maxUsedMemory = 16777000;
             if (buildTarget.ToString().ToLower().Contains("webgl"))
             {
                 PlayerSettings.WebGL.emscriptenArgs += " -s INITIAL_MEMORY=1GB ";
