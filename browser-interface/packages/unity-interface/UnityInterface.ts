@@ -12,7 +12,7 @@ import { uniqBy } from 'lib/javascript/uniqBy'
 import { uuid } from 'lib/javascript/uuid'
 import { createUnityLogger, ILogger } from 'lib/logger'
 import { Observable } from 'mz-observable'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
 import { FeatureFlag } from 'shared/meta/types'
 import { incrementCounter } from 'shared/occurences'
@@ -196,22 +196,6 @@ export class UnityInterface implements IUnityInterface {
 
   public ActivateRendering() {
     this.SendMessageToUnity('Main', 'ActivateRendering')
-  }
-
-  public SetLoadingScreen(data: { isVisible: boolean; message: string; showTips: boolean }) {
-    if (!this.gameInstance) {
-      return
-    }
-
-    this.SendMessageToUnity('Bridges', 'SetLoadingScreen', JSON.stringify(data))
-  }
-
-  public FadeInLoadingHUD(data: { xCoord: number; yCoord: number; message?: string }) {
-    if (!this.gameInstance) {
-      return
-    }
-
-    this.SendMessageToUnity('Bridges', 'FadeInLoadingHUD', JSON.stringify(data))
   }
 
   public SendMemoryUsageToRenderer() {
