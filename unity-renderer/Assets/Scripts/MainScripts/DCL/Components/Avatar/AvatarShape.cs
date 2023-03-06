@@ -59,6 +59,8 @@ namespace DCL
         private Service<IEmotesCatalogService> emotesCatalogService;
         public override string componentName => "avatarShape";
 
+        private bool firstPositionRetrieved;
+
         private void Awake()
         {
             model = new AvatarModel();
@@ -81,6 +83,13 @@ namespace DCL
         {
             base.Initialize(scene, entity);
             DataStore.i.sceneBoundariesChecker?.Add(entity,this);
+            entity.OnTransformChange += FirstPositionRetrieved;
+        }
+
+        private void FirstPositionRetrieved(object newModel)
+        {
+            firstPositionRetrieved = true;
+            entity.OnTransformChange -= FirstPositionRetrieved;
         }
 
         private IAvatar GetStandardAvatar()
@@ -136,8 +145,11 @@ namespace DCL
                 poolableObject.RemoveFromPool();
         }
 
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            if (!firstPositionRetrieved) yield break;
+
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
             var model = (AvatarModel) newModel;

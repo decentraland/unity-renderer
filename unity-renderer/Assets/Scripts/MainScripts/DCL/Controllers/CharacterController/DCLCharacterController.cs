@@ -95,6 +95,7 @@ public class DCLCharacterController : MonoBehaviour
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
     private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
+    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
@@ -560,7 +561,7 @@ public class DCLCharacterController : MonoBehaviour
         //             The race conditions that can arise from not having this flag can result in:
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
-        if (initialPositionAlreadySet)
+        if (initialPositionAlreadySet && CommonScriptableObjects.rendererState.Get())
             DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;

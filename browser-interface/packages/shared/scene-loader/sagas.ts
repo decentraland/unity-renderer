@@ -40,7 +40,7 @@ import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/pa
 import { BEFORE_UNLOAD } from 'shared/actions'
 import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
 import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
-import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
+import { pickWorldSpawnpoint, positionObservable } from 'shared/world/positionThings'
 import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
@@ -173,15 +173,10 @@ function* rendererPositionSettler() {
   yield call(waitForUserAuthenticated)
 
   while (true) {
-    const isSettled: boolean = yield select(isPositionSettled)
     const spawnPointAndScene: ReturnType<typeof getPositionSpawnPointAndScene> = yield select(
       getPositionSpawnPointAndScene
     )
 
-    if (!isSettled && !!spawnPointAndScene.sceneId) {
-      // Then set the parcel position for the scene loader
-      receivePositionReport(spawnPointAndScene.spawnPoint.position)
-    }
     // then update the position in the engine
     getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)
     yield take([POSITION_SETTLED, POSITION_UNSETTLED])
