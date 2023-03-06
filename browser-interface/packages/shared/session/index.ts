@@ -41,7 +41,7 @@ export const retrieveLastSessionByAddress: (address: string) => Promise<StoredSe
  * Retrieve the last session stored that is a guest session
  */
 export const retrieveLastGuestSession: () => Promise<StoredSession | null> = async () => {
-  const sessions = (await retrieveAllCurrentSessions()).filter(isGuest).sort(byExpiration).sort()
+  const sessions = (await retrieveAllCurrentSessions()).filter(isGuest).sort(byExpiration)
 
   return sessions.length > 0 ? sessions[0] : null
 }
