@@ -100,13 +100,13 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            uiInputSenderSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update,
         };
 
         lateUpdateSystems = new ECS7System[]
         {
+            uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             sceneBoundsCheckerSystem.Update // Should always be the last system
