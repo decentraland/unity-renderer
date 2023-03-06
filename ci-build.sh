@@ -13,8 +13,9 @@ if [[ "$BUILD_TARGET" != "WebGL" ]]; then
 fi
 
 EXTRA_ARGS=""
-if [[ "$CIRCLE_BRANCH" == "profile/*" ]]; then
+if [[ "$CIRCLE_BRANCH" == profile/* ]]; then
   EXTRA_ARGS="-customDevelopmentBuild"
+  echo ":: Development Build"
 fi
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
