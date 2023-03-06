@@ -57,6 +57,7 @@ namespace DCL.LoadingScreen
         {
             if (!isVisible) return;
 
+            rawImage.gameObject.SetActive(false);
             Hide();
         }
 

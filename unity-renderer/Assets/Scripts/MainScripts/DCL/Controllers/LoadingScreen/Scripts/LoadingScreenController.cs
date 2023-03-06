@@ -46,6 +46,8 @@ namespace DCL.LoadingScreen
             this.commonDataStore.isSignUpFlow.OnChange += OnSignupFlow;
             this.sceneController.OnReadyScene += ReadyScene;
             view.OnFadeInFinish += FadeInFinished;
+
+            CommonScriptableObjects.rendererState.AddLock(this);
         }
 
         public void Dispose()
@@ -72,20 +74,10 @@ namespace DCL.LoadingScreen
                 if(commonDataStore.isPlayerRendererLoaded.Get())
                     FadeOutView();
                 else
-                {
                     percentageController.SetAvatarLoadingMessage();
-                    commonDataStore.isPlayerRendererLoaded.OnChange += PlayerLoaded;
-                }
+
+                CommonScriptableObjects.rendererState.RemoveLock(this);
             }
-        }
-
-        //We have to add one more check not to show the loadingScreen unless the player is loaded
-        private void PlayerLoaded(bool loaded, bool _)
-        {
-            if(loaded)
-                FadeOutView();
-
-            commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
 
         private void OnSignupFlow(bool current, bool previous)

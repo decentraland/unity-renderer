@@ -77,8 +77,7 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.rendererState.OnChange += OnRenderStateChange;
 
             DoAsyncInitializations();
         }
@@ -153,12 +152,9 @@ namespace DCL.Skybox
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
-        private void OnFullscreenUIVisibilityChange(bool visibleState, bool prevVisibleState)
+        private void OnRenderStateChange(bool renderingEnabled, bool _)
         {
-            if (visibleState == prevVisibleState)
-                return;
-
-            skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
+            skyboxCam.SetCameraEnabledState(renderingEnabled);
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
@@ -539,8 +535,8 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
             DataStore.i.camera.transform.OnChange -= AssignCameraReferences;
 
-            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
-            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.isLoadingHUDOpen.OnChange -= OnRenderStateChange;
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnRenderStateChange;
 
             timeReporter.Dispose();
             DisposeCT();
