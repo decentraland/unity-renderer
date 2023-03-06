@@ -188,7 +188,7 @@ public class ChatHUDController : IDisposable
         dataStore.settings.profanityChatFilteringEnabled.Get()
         && profanityFilter != null;
 
-    private void HandleMessageUpdated(string message)
+    private void HandleMessageUpdated(string message, int cursorPosition)
     {
         if (string.IsNullOrEmpty(message)) return;
 
@@ -215,6 +215,11 @@ public class ChatHUDController : IDisposable
             }
         }
 
+        int lastWrittenCharacterIndex = cursorPosition - 1;
+
+        if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
+            mentionFromIndex = cursorPosition;
+
         Match match = mentionRegex.Match(message, mentionFromIndex);
 
         if (match.Success)
@@ -227,13 +232,15 @@ public class ChatHUDController : IDisposable
         }
         else
         {
-            mentionFromIndex = message.Length - 1;
+            mentionSuggestionCancellationToken.SafeCancelAndDispose();
+            mentionFromIndex = Math.Max(0, lastWrittenCharacterIndex);
             view.HideMentionSuggestions();
         }
     }
 
     private void HandleSendMessage(ChatMessage message)
     {
+        mentionFromIndex = 0;
         view.HideMentionSuggestions();
 
         var ownProfile = userProfileBridge.GetOwn();
@@ -373,7 +380,7 @@ public class ChatHUDController : IDisposable
 
     private void HandleMentionSuggestionSelected(string userId)
     {
-        view.ApplyMention(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
+        view.AddMention(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
         view.HideMentionSuggestions();
     }
 }

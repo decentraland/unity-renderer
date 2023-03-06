@@ -42,7 +42,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     protected bool IsFadeoutModeEnabled => model.enableFadeoutMode;
 
-    public event Action<string> OnMessageUpdated;
+    public event Action<string, int> OnMessageUpdated;
 
     public event Action OnShowMenu
     {
@@ -121,7 +121,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
-        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str));
+        inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str, inputField.stringPosition));
         chatMentionSuggestions.OnEntryClicked += model => OnMentionSuggestionSelected?.Invoke(model.userId);
         ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
@@ -194,8 +194,9 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     public void SetInputFieldText(string text)
     {
         model.inputFieldText = text;
-        inputField.text = text;
+        inputField.SetTextWithoutNotify(text);
         inputField.MoveTextEnd(false);
+        OnMessageUpdated?.Invoke(inputField.text, inputField.stringPosition);
     }
 
     public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions) =>
@@ -207,29 +208,18 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         chatMentionSuggestions.Show();
     }
 
-    public void ApplyMention(int mentionFromIndex, int length, string userId, string userName)
+    public void HideMentionSuggestions() =>
+        chatMentionSuggestions.Hide();
+
+    public void AddMention(int fromIndex, int length, string userId, string userName)
     {
         string message = inputField.text;
         StringBuilder builder = new (message);
 
-        SetInputFieldText(builder.Remove(mentionFromIndex, length)
-                                 .Insert(mentionFromIndex, @$"<link=mention://{userId}><color=#4886E3><u>@{userName}</u></color></link> ")
+        SetInputFieldText(builder.Remove(fromIndex, length)
+                                 .Insert(fromIndex, @$"<link=mention://{userId}><color=#4886E3><u>@{userName}</u></color></link> ")
                                  .ToString());
         FocusInputField();
-    }
-
-    public void HideMentionSuggestions() =>
-        chatMentionSuggestions.Hide();
-
-    private void SetFadeoutMode(bool enabled)
-    {
-        model.enableFadeoutMode = enabled;
-
-        foreach (var entry in entries.Values)
-            entry.SetFadeout(enabled && IsEntryVisible(entry));
-
-        if (enabled)
-            confirmationDialog.Hide();
     }
 
     public virtual void AddEntry(ChatEntryModel model, bool setScrollPositionToBottom = false)
@@ -307,6 +297,17 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
         entries.Clear();
         UpdateLayout();
+    }
+
+    private void SetFadeoutMode(bool enabled)
+    {
+        model.enableFadeoutMode = enabled;
+
+        foreach (var entry in entries.Values)
+            entry.SetFadeout(enabled && IsEntryVisible(entry));
+
+        if (enabled)
+            confirmationDialog.Hide();
     }
 
     private bool IsEntryVisible(ChatEntry entry)

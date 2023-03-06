@@ -4084,15 +4084,16 @@ MonoBehaviour:
     type: 2}
   poolChatEntryFactory: {fileID: 11400000, guid: d0497e2593c8e4f3fa89fe66bb8f5ac0,
     type: 2}
+  nextChatInHistoryInput: {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d,
+    type: 2}
+  previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
+    type: 2}
+  chatMentionSuggestions: {fileID: 1011907313089259839}
   model:
     isInputFieldFocused: 0
     inputFieldText: 
     enableFadeoutMode: 0
     entries: []
-  nextChatInHistoryInput: {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d,
-    type: 2}
-  previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
-    type: 2}
   chatEntryFactory: {fileID: 11400000, guid: bf02cc4e774224d3f9074978807f7141, type: 2}
 --- !u!1 &377096908946920340 stripped
 GameObject:
@@ -4124,6 +4125,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8536985326357018039}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1011907313089259839 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8679125580999122056, guid: bac007ac4ef98284c8cf05867a35ee0f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8536985326357018039}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e687e06fa1a744cb887b2453852fb9a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1379511485321851930 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7303840854963470765, guid: bac007ac4ef98284c8cf05867a35ee0f,
