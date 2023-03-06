@@ -9,6 +9,4 @@ services:
     entrypoint: sh -c "/init.sh"
     environment:
       PUPPETEER_SKIP_DOWNLOAD: "true"
-    ports:
-      - 7666:7666
-      - 8080:8080
+    network_mode: "host"

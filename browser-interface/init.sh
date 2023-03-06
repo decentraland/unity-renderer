@@ -2,5 +2,5 @@
 set -e
 
 cd app/browser-interface
-npm install
+npm ci
 make watch
