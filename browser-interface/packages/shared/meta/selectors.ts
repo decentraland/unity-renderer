@@ -4,7 +4,7 @@ import { BYPASS_CONTENT_ALLOWLIST, SOCIAL_SERVER_URL } from 'config'
 import { urlWithProtocol } from 'shared/realm/resolver'
 import { DEFAULT_MAX_VISIBLE_PEERS } from '.'
 import { QS_MAX_VISIBLE_PEERS } from 'config'
-import { trackEvent } from '../analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
   const { config } = store.meta
