@@ -551,7 +551,7 @@ function* initializePrivateMessaging() {
 
   if (profile) {
     const displayName = calculateDisplayName(profile)
-    yield call(async () => await client.setProfileInfo({ displayName }))
+    yield apply(client, client.setProfileInfo, [{ displayName }])
   }
 
   yield put(setMatrixClient(client))
