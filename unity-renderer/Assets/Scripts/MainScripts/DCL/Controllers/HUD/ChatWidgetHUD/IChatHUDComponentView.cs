@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public interface IChatHUDComponentView
 {
     event Action<ChatMessage> OnSendMessage;
-    event Action<string> OnMessageUpdated;
+    event Action<string, int> OnMessageUpdated;
     event Action OnShowMenu;
     event Action OnInputFieldSelected;
     event Action OnInputFieldDeselected;
@@ -27,6 +27,6 @@ public interface IChatHUDComponentView
     void SetInputFieldText(string text);
     void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions);
     void ShowMentionSuggestionsLoading();
-    void ApplyMention(int startIndex, int length, string userId, string userName);
     void HideMentionSuggestions();
+    void AddMention(int fromIndex, int length, string userId, string userName);
 }
