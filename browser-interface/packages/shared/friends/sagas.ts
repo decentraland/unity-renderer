@@ -1,25 +1,5 @@
-import { apply, call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
-
-import { Authenticator } from '@dcl/crypto'
-import {
-  ChannelErrorKind,
-  ChannelsError,
-  Conversation,
-  ConversationType,
-  CurrentUserStatus,
-  FriendshipRequest,
-  GetOrCreateConversationResponse,
-  PresenceType,
-  SocialAPI,
-  SocialClient,
-  UnknownUsersError,
-  UpdateUserStatus
-} from 'dcl-social-client'
-
-import { CHANNEL_TO_JOIN_CONFIG_URL, DEBUG_KERNEL_LOG, ethereumConfigurations } from 'config'
-import { deepEqual } from 'lib/javascript/deepEqual'
-
 import type { AuthChain } from '@dcl/crypto'
+import { Authenticator } from '@dcl/crypto'
 import {
   FriendRequestInfo,
   FriendshipErrorCode
@@ -39,8 +19,24 @@ import {
   SendFriendRequestPayload,
   SendFriendRequestReplyOk
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
 import { Avatar, EthAddress } from '@dcl/schemas'
+import { CHANNEL_TO_JOIN_CONFIG_URL, DEBUG_KERNEL_LOG, ethereumConfigurations } from 'config'
+import {
+  ChannelErrorKind,
+  ChannelsError,
+  Conversation,
+  ConversationType,
+  CurrentUserStatus,
+  FriendshipRequest,
+  GetOrCreateConversationResponse,
+  PresenceType,
+  SocialAPI,
+  SocialClient,
+  UnknownUsersError,
+  UpdateUserStatus
+} from 'dcl-social-client'
 import { isAddress } from 'eth-connect/eth-connect'
 import future from 'fp-future'
 import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
@@ -49,9 +45,11 @@ import {
   profileToRendererFormat
 } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { deepEqual } from 'lib/javascript/deepEqual'
 import { now } from 'lib/javascript/now'
 import { uuid } from 'lib/javascript/uuid'
 import defaultLogger, { createDummyLogger, createLogger } from 'lib/logger'
+import { apply, call, delay, fork, put, race, select, take, takeEvery } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { SendPrivateMessage, SEND_PRIVATE_MESSAGE } from 'shared/chat/actions'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
@@ -173,40 +171,6 @@ import {
   isNewFriendRequestEnabled,
   validateFriendRequestId
 } from './utils'
-import type { AuthChain } from '@dcl/crypto'
-import { mutePlayers, unmutePlayers } from 'shared/social/actions'
-import { getParcelPosition } from 'shared/scene-loader/selectors'
-import { OFFLINE_REALM } from 'shared/realm/types'
-import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
-import { uuid } from 'lib/javascript/uuid'
-import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
-import { isAddress } from 'eth-connect/eth-connect'
-import { getSelectedNetwork } from 'shared/dao/selectors'
-import { fetchENSOwner } from 'shared/web3'
-import {
-  SendFriendRequestPayload,
-  GetFriendRequestsReplyOk,
-  SendFriendRequestReplyOk,
-  CancelFriendRequestPayload,
-  CancelFriendRequestReplyOk,
-  RejectFriendRequestPayload,
-  RejectFriendRequestReplyOk,
-  AcceptFriendRequestPayload,
-  AcceptFriendRequestReplyOk
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
-import future from 'fp-future'
-import {
-  FriendshipErrorCode,
-  FriendRequestInfo
-} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
-import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
-import { getRendererModules } from 'shared/renderer/selectors'
-import { RendererModules } from 'shared/renderer/types'
-import {
-  FriendshipStatus,
-  GetFriendshipStatusRequest
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
-import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
