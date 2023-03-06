@@ -95,7 +95,6 @@ public class DCLCharacterController : MonoBehaviour
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
     private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
-    private readonly DataStoreRef<DataStore_LoadingScreen> dataStoreLoadingScreen;
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
