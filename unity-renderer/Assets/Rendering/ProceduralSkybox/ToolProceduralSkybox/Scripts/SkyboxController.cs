@@ -128,6 +128,8 @@ namespace DCL.Skybox
             DataStore.i.camera.transform.OnChange += AssignCameraReferences;
             AssignCameraReferences(DataStore.i.camera.transform.Get(), null);
 
+            skyboxCam.SetCameraEnabledState(false);
+
             // Register UI related events
             DataStore.i.skyboxConfig.mode.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;

@@ -48,6 +48,13 @@ namespace DCL.LoadingScreen
             view.OnFadeInFinish += FadeInFinished;
 
             CommonScriptableObjects.rendererState.AddLock(this);
+            CommonScriptableObjects.rendererState.OnChange += RenderingStateChange;
+        }
+
+        private void RenderingStateChange(bool current, bool previous)
+        {
+            if(current)
+                FadeOutView();
         }
 
         public void Dispose()
@@ -71,9 +78,7 @@ namespace DCL.LoadingScreen
             if (worldState.GetSceneNumberByCoords(currentDestination).Equals(obj))
             {
                 //We have to check if the player is loaded
-                if(commonDataStore.isPlayerRendererLoaded.Get())
-                    FadeOutView();
-                else
+                if(!commonDataStore.isPlayerRendererLoaded.Get())
                     percentageController.SetAvatarLoadingMessage();
 
                 CommonScriptableObjects.rendererState.RemoveLock(this);
