@@ -7,8 +7,8 @@
 
 set -u # no unbound variables
 
-if [ "${CIRCLE_BRANCH}" == gh-readonly-queue/* ]; then
-  echo "Skipping deploy for branch ${CIRCLE_BRANCH}"
+if [ "${CIRCLE_BRANCH}" = gh-readonly-queue/* ]; then
+  echo "Skipping preview publish for branch ${CIRCLE_BRANCH}"
   exit 0
 fi
 
