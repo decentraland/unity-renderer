@@ -1,7 +1,7 @@
-using System.IO;
 using DCL.CRDT;
 using KernelCommunication;
 using NUnit.Framework;
+using System.IO;
 using BinaryWriter = KernelCommunication.BinaryWriter;
 
 namespace Tests
@@ -15,22 +15,24 @@ namespace Tests
             {
                 new CRDTMessage()
                 {
-                    key1 = 34465673,
-                    key2 = 5858585,
-                    timestamp = 9598327474,
+                    type = CrdtMessageType.DELETE_COMPONENT,
+                    entityId = 34465673,
+                    componentId = 5858585,
+                    timestamp = 95987474,
                     data = null
                 },
                 new CRDTMessage()
                 {
-                    key1 = 7693,
-                    key2 = 6,
+                    type = CrdtMessageType.PUT_COMPONENT,
+                    entityId = 7693,
+                    componentId = 6,
                     timestamp = 799,
                     data = new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
                 },
-                new CRDTMessage()
-                {
-                    key1 = 0,
-                    key2 = 1,
+                new CRDTMessage(){
+                    type = CrdtMessageType.PUT_COMPONENT,
+                    entityId = 0,
+                    componentId = 1,
                     timestamp = 0,
                     data = new byte[] { 1 }
                 },
@@ -39,11 +41,11 @@ namespace Tests
             BinaryWriter allMsgsBinaryWriter = new BinaryWriter(allMsgsMemoryStream);
             for (int i = 0; i < msgs.Length; i++)
             {
-                KernelBinaryMessageSerializer.Serialize(allMsgsBinaryWriter, msgs[i]);
+                CRDTSerializer.Serialize(allMsgsBinaryWriter, msgs[i]);
 
                 MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-                KernelBinaryMessageSerializer.Serialize(binaryWriter, msgs[i]);
+                CRDTSerializer.Serialize(binaryWriter, msgs[i]);
                 var bytes = memoryStream.ToArray();
 
                 IBinaryReader reader = new ByteArrayReader(bytes);
@@ -65,7 +67,7 @@ namespace Tests
                 while (iterator.MoveNext())
                 {
                     CRDTMessage result = (CRDTMessage)iterator.Current;
-                    Assert.AreEqual(msgs[index].key1, result.key1);
+                    Assert.AreEqual(msgs[index].entityId, result.entityId);
                     Assert.AreEqual(msgs[index].timestamp, result.timestamp);
                     Assert.IsTrue(AreEqual((byte[])msgs[index].data, (byte[])result.data));
                     index++;

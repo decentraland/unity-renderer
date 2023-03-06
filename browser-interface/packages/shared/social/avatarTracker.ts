@@ -1,4 +1,4 @@
-import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
+import { getSceneWorkerBySceneID, getSceneWorkerBySceneNumber } from 'shared/world/parcelSceneManager'
 import { AvatarRendererMessage, AvatarRendererMessageType, AvatarRendererPositionMessage } from 'shared/types'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
@@ -15,7 +15,6 @@ type RendererAvatarData = {
 }
 
 const rendererAvatars: Map<string, RendererAvatarData> = new Map<string, RendererAvatarData>()
-
 // Tracks avatar state on the renderer side.
 // Set if avatar has change the scene it's in or removed on renderer's side.
 export function setRendererAvatarState(evt: AvatarRendererMessage) {
@@ -25,7 +24,7 @@ export function setRendererAvatarState(evt: AvatarRendererMessage) {
     // If changed to a scene not loaded on renderer side (sceneId null or empty)
     // we handle it as removed. We will receive another event when the scene where the
     // avatar is in is loaded.
-    if (!(evt.sceneId && evt.sceneId.length > 0)) {
+    if (!evt.sceneNumber) {
       handleRendererAvatarRemoved(userId)
       return
     }
@@ -48,10 +47,11 @@ function handleRendererAvatarSceneChanged(evt: AvatarRendererPositionMessage) {
     }
   }
 
-  const sceneWorker = getSceneWorkerBySceneID(evt.sceneId || 'any')
+  const sceneWorker = getSceneWorkerBySceneNumber(evt.sceneNumber ?? 0)
+  const sceneId = sceneWorker?.rpcContext.sceneData.id
   sceneWorker?.onEnter(evt.avatarShapeId)
 
-  rendererAvatars.set(evt.avatarShapeId, evt)
+  rendererAvatars.set(evt.avatarShapeId, { ...evt, sceneId })
 }
 
 function handleRendererAvatarRemoved(userId: string) {

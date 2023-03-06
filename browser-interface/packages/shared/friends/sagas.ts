@@ -19,7 +19,7 @@ import {
 import { DEBUG_KERNEL_LOG, ethereumConfigurations, CHANNEL_TO_JOIN_CONFIG_URL } from 'config'
 import { deepEqual } from 'lib/javascript/deepEqual'
 
-import defaultLogger, { createLogger, createDummyLogger } from 'shared/logger'
+import defaultLogger, { createLogger, createDummyLogger } from 'lib/logger'
 import {
   ChatMessage,
   NotificationType,
@@ -84,9 +84,10 @@ import {
   isToPendingRequest,
   getNumberOfFriendRequests,
   getCoolDownOfFriendRequests,
-  isFromPendingRequest
+  isFromPendingRequest,
+  isPendingRequest
 } from 'shared/friends/selectors'
-import { USER_AUTHENTIFIED } from 'shared/session/actions'
+import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { SEND_PRIVATE_MESSAGE, SendPrivateMessage } from 'shared/chat/actions'
 import {
   updateFriendship,
@@ -109,19 +110,19 @@ import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { ensureFriendProfile } from './ensureFriendProfile'
 import { getFeatureFlagEnabled, getSynapseUrl } from 'shared/meta/selectors'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import {
-  ensureRealmAdapterPromise,
-  getFetchContentUrlPrefixFromRealmAdapter,
-  getRealmConnectionString
-} from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmConnectionString } from 'shared/realm/selectors'
+import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { Avatar, EthAddress } from '@dcl/schemas'
 import { trackEvent } from '../analytics'
-import { getCurrentIdentity, getCurrentUserId, getIsGuestLogin } from 'shared/session/selectors'
+import { getCurrentIdentity, getCurrentUserId, isGuestLogin } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { getPeer } from 'shared/comms/peers'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { ProfileUserInfo } from 'shared/profiles/types'
-import { defaultProfile, profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import {
+  defaultProfile,
+  profileToRendererFormat
+} from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { addedProfilesToCatalog } from 'shared/profiles/actions'
 import {
   getUserIdFromMatrix,
@@ -138,13 +139,13 @@ import {
   isBlocked,
   getAntiSpamLimits
 } from './utils'
-import { AuthChain } from '@dcl/kernel-interface/dist/dcl-crypto'
+import type { AuthChain } from '@dcl/crypto'
 import { mutePlayers, unmutePlayers } from 'shared/social/actions'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { OFFLINE_REALM } from 'shared/realm/types'
-import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
 import { uuid } from 'lib/javascript/uuid'
-import { NewProfileForRenderer } from 'shared/profiles/transformations/types'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
 import { isAddress } from 'eth-connect/eth-connect'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { fetchENSOwner } from 'shared/web3'
@@ -171,6 +172,7 @@ import {
   FriendshipStatus,
   GetFriendshipStatusRequest
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -209,7 +211,7 @@ function* initializeFriendsSaga() {
 
   do {
     yield race({
-      auth: take(USER_AUTHENTIFIED),
+      auth: take(USER_AUTHENTICATED),
       delay: delay(secondsToRetry)
     })
 
@@ -218,7 +220,7 @@ function* initializeFriendsSaga() {
 
     const currentIdentity: ExplorerIdentity | undefined = yield select(getCurrentIdentity)
 
-    const isGuest = yield select(getIsGuestLogin)
+    const isGuest = yield select(isGuestLogin)
 
     // guests must not use the friends & private messaging features.
     if (isGuest) {
@@ -377,6 +379,11 @@ function* configureMatrixClient(action: SetMatrixClient) {
 
       if (message.sender === ownId && !isChannelType) {
         // ignore messages sent to private chats by the local user
+        return
+      }
+
+      if (isPendingRequest(store.getState(), getUserIdFromMatrix(message.sender))) {
+        // ignore messages sent in the request event
         return
       }
 
@@ -709,7 +716,7 @@ function getTotalUnseenMessages(client: SocialAPI, ownId: string, friendIds: str
 
 export async function getFriends(request: GetFriendsPayload) {
   // ensure friend profiles are sent to renderer
-  const realmAdapter = await ensureRealmAdapterPromise()
+  const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
   const friendsIds: string[] = getPrivateMessagingFriends(store.getState())
 
@@ -763,7 +770,7 @@ export function getFriendshipStatus(request: GetFriendshipStatusRequest) {
 // @TODO! @deprecated
 export async function getFriendRequests(request: GetFriendRequestsPayload) {
   const friends: FriendsState = getPrivateMessaging(store.getState())
-  const realmAdapter = await ensureRealmAdapterPromise()
+  const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
   const fromFriendRequests = friends.fromFriendRequests.slice(
@@ -809,7 +816,7 @@ export async function getFriendRequestsProtocol(request: GetFriendRequestsPayloa
         defaultLogger.warn(`Failed while processing friend request from blocked user ${blockedUser.userId}`)
       )
 
-    const realmAdapter = await ensureRealmAdapterPromise()
+    const realmAdapter = await ensureRealmAdapter()
     const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     // Paginate incoming requests
@@ -879,6 +886,16 @@ function getFriendRequestInfo(friend: FriendRequest, incoming: boolean) {
       }
 
   return friendRequest
+}
+
+// Get mutual friends
+export async function getMutualFriends(request: GetMutualFriendsRequest) {
+  const client: SocialAPI | null = getSocialClient(store.getState())
+  if (!client) return
+
+  const mutuals = await client.getMutualFriends(request.userId)
+
+  return mutuals
 }
 
 export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPayload) {
@@ -981,7 +998,7 @@ export function getUnseenMessagesByUser() {
 }
 
 export async function getFriendsWithDirectMessages(request: GetFriendsWithDirectMessagesPayload) {
-  const realmAdapter = await ensureRealmAdapterPromise()
+  const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
   const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
 
@@ -1301,6 +1318,19 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
 
           // Send message to renderer via rpc
           yield apply(friendRequestModule, friendRequestModule.approveFriendRequest, [approveFriendRequest])
+
+          // Update notification badges
+          const conversationId = yield select(getConversationId, getUserIdFromMatrix(userId))
+          const unreadMessages = client.getConversationUnreadMessages(conversationId).length
+          getUnityInstance().UpdateUserUnseenMessages({
+            userId: getUserIdFromMatrix(userId),
+            total: unreadMessages
+          })
+
+          // Update notification badges
+          const friends = yield select(getFriendIds)
+          const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
+          getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
         }
       }
       // The approved should not have a break since it should execute all the code as the rejected case
@@ -2517,13 +2547,13 @@ function buildProfilePictureURL(userId: string): string {
  */
 function isAllowedToCreate() {
   const allowedUsers = getUsersAllowedToCreate(store.getState())
-  const ownId = getCurrentUserId(store.getState())
+  const currentUserId = getCurrentUserId(store.getState())
 
-  if (!allowedUsers || !ownId || allowedUsers.mode !== 0) {
+  if (!allowedUsers || !currentUserId || allowedUsers.mode !== 0) {
     return false
   }
 
-  if (allowedUsers.allowList.includes(ownId)) {
+  if (allowedUsers.allowList.includes(currentUserId)) {
     return true
   }
 }

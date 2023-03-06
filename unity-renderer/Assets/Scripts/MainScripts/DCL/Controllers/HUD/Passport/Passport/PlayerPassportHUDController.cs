@@ -96,6 +96,9 @@ namespace DCL.Social.Passports
 
             isOpen = false;
 
+            if (userProfileBridge.GetOwn().isGuest)
+                dataStore.HUDs.connectWalletModalVisible.Set(false);
+
             passportNavigationController.CloseAllNFTItemInfos();
             passportNavigationController.SetViewInitialPage();
             playerInfoController.ClosePassport();

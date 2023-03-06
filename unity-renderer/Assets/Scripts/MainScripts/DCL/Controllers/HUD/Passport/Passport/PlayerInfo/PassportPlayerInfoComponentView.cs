@@ -37,6 +37,8 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject offlineStatus;
         [SerializeField] private GameObject normalUserPanel;
         [SerializeField] private GameObject friendsFlowContainer;
+        [SerializeField] private GameObject blockedLabel;
+        [SerializeField] private GameObject optionsContainer;
         [SerializeField] private UserContextMenu userContextMenu;
 
         [SerializeField] private GameObject alreadyFriendsVariation;
@@ -90,13 +92,15 @@ namespace DCL.Social.Passports
             };
         }
 
-        private void OnReport(string Obj)
+        private void OnReport(string userId)
         {
             OnReportUser?.Invoke();
         }
 
-        private void OnBlock(string Arg1, bool Arg2)
+        private void OnBlock(string userId, bool isBlocked)
         {
+            model.isBlocked = isBlocked;
+            RefreshControl();
             OnBlockUser?.Invoke();
         }
 
@@ -189,7 +193,10 @@ namespace DCL.Social.Passports
         {
             this.isBlocked = isBlocked;
             DisableAllFriendFlowButtons();
+
             blockedFriendButton.gameObject.SetActive(isBlocked);
+            optionsContainer.SetActive(!isBlocked);
+            blockedLabel.SetActive(isBlocked);
 
             if (!isBlocked) { SetFriendStatus(model.friendshipStatus); }
         }

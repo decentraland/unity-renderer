@@ -92,12 +92,12 @@ namespace Tests
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 1,
-                key2 = 2
+                entityId = 1,
+                componentId = 2
             };
 
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage);
-            CRDTMessage crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.key1, crdtMessage.key2);
+            CRDTProtocol.EntityComponentData crtState = crdtExecutors[sceneNumber].crdtProtocol.GetState(crdtMessage.entityId, crdtMessage.componentId);
             AssertCrdtMessageEqual(crdtMessage, crtState);
         }
 
@@ -113,16 +113,16 @@ namespace Tests
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 1,
-                key2 = 2
+                entityId = 1,
+                componentId = 2
             };
 
             CRDTMessage crdtMessage2 = new CRDTMessage()
             {
                 timestamp = 1,
                 data = new byte[0],
-                key1 = 2,
-                key2 = 2
+                entityId = 2,
+                componentId = 2
             };
 
             // Send first message
@@ -135,18 +135,17 @@ namespace Tests
             // Send second message for same scene
             rpcCrdtServiceContext.CrdtMessageReceived.Invoke(sceneNumber, crdtMessage2);
 
-            CRDTMessage crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.key1, crdtMessage1.key2);
-            CRDTMessage crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.key1, crdtMessage2.key2);
+            CRDTProtocol.EntityComponentData crtStateMsg1 = sceneExecutor.crdtProtocol.GetState(crdtMessage1.entityId, crdtMessage1.componentId);
+            CRDTProtocol.EntityComponentData crtStateMsg2 = sceneExecutor.crdtProtocol.GetState(crdtMessage2.entityId, crdtMessage2.componentId);
+
             AssertCrdtMessageEqual(crdtMessage1, crtStateMsg1);
             AssertCrdtMessageEqual(crdtMessage2, crtStateMsg2);
         }
 
-        static void AssertCrdtMessageEqual(CRDTMessage crdt1, CRDTMessage crdt2)
+        static void AssertCrdtMessageEqual(CRDTMessage crdt1, CRDTProtocol.EntityComponentData componentData)
         {
-            Assert.AreEqual(crdt1.timestamp, crdt2.timestamp);
-            Assert.AreEqual(crdt1.key1, crdt2.key1);
-            Assert.AreEqual(crdt1.key2, crdt2.key2);
-            Assert.IsTrue(AreEqual((byte[])crdt1.data, (byte[])crdt2.data));
+            Assert.AreEqual(crdt1.timestamp, componentData.timestamp);
+            Assert.IsTrue(AreEqual((byte[])crdt1.data, (byte[])componentData.data));
         }
 
         static bool AreEqual(byte[] a, byte[] b)

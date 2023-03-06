@@ -471,6 +471,7 @@ GameObject:
   - component: {fileID: 8123318208225220217}
   - component: {fileID: 6289228958609738717}
   - component: {fileID: 3101744882710240847}
+  - component: {fileID: 802444894561843090}
   m_Layer: 5
   m_Name: ContentScrollView
   m_TagString: Untagged
@@ -539,6 +540,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &802444894561843090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4385870702832345095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85da332798fc458595ca5a677f1bf18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5139394605112795121
 GameObject:
   m_ObjectHideFlags: 0

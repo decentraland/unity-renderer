@@ -1,16 +1,17 @@
 {
-  "name": "HUDInterfaces",
-  "rootNamespace": "",
-  "references": [
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "HUDInterfaces",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

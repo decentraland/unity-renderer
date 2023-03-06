@@ -1,4 +1,5 @@
 using DCL;
+using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace AvatarSystem
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
+                serviceLocator.Get<IGPUSkinningThrottlerService>(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes)
             );
 
@@ -41,7 +42,7 @@ namespace AvatarSystem
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler(),
+                serviceLocator.Get<IGPUSkinningThrottlerService>(),
                 new EmoteAnimationEquipper(animator, DataStore.i.emotes)
             );
 
@@ -49,6 +50,6 @@ namespace AvatarSystem
             new (new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper());
 
         private AvatarCurator CreateAvatarCurator() =>
-            new (new WearableItemResolver(), serviceLocator.Get<IEmotesCatalogService>());
+            new (new WearableItemResolver(serviceLocator.Get<IWearablesCatalogService>()), serviceLocator.Get<IEmotesCatalogService>());
     }
 }

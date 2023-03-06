@@ -19,15 +19,16 @@ namespace AvatarSystem
         private readonly IVisibility visibility;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
-        private readonly IGPUSkinningThrottler gpuSkinningThrottler;
+        private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
+        public event Action<Renderer> OnCombinedRendererUpdate;
 
-        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler, IEmoteAnimationEquipper emoteAnimationEquipper)
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IEmoteAnimationEquipper emoteAnimationEquipper)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -35,7 +36,7 @@ namespace AvatarSystem
             this.visibility = visibility;
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
-            this.gpuSkinningThrottler = gpuSkinningThrottler;
+            this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
             this.emoteAnimationEquipper = emoteAnimationEquipper;
         }
 
@@ -75,15 +76,16 @@ namespace AvatarSystem
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
                 emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
                 gpuSkinning.Prepare(loader.combinedRenderer);
-                gpuSkinningThrottler.Bind(gpuSkinning);
 
                 visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.RemoveGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
                 lod.Bind(gpuSkinning.renderer);
-                gpuSkinningThrottler.Start();
+                gpuSkinningThrottlerService.Register(gpuSkinning);
 
                 status = IAvatar.Status.Loaded;
+
+                OnCombinedRendererUpdate?.Invoke(loader.combinedRenderer);
             }
             catch (OperationCanceledException)
             {
@@ -115,7 +117,10 @@ namespace AvatarSystem
 
         public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
 
-        public void SetAnimationThrottling(int framesBetweenUpdate) { gpuSkinningThrottler.SetThrottling(framesBetweenUpdate); }
+        public void SetAnimationThrottling(int framesBetweenUpdate)
+        {
+            gpuSkinningThrottlerService.ModifyThrottling(gpuSkinning, framesBetweenUpdate);
+        }
 
         public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
 
@@ -136,7 +141,7 @@ namespace AvatarSystem
             loader?.Dispose();
             visibility?.Dispose();
             lod?.Dispose();
-            gpuSkinningThrottler?.Dispose();
+            gpuSkinningThrottlerService?.Unregister(gpuSkinning);
         }
     }
 }

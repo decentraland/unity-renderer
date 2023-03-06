@@ -19,8 +19,8 @@ namespace DCL.Models
         void ResetRelease();
         IParcelScene scene { get; set; }
         bool markedForCleanup { get; set; }
-        bool isInsideSceneOuterBoundaries { get; set; }
-        bool isInsideSceneBoundaries { get; set; }
+        bool isInsideSceneOuterBoundaries { get; }
+        bool isInsideSceneBoundaries { get; }
         Dictionary<long, IDCLEntity> children { get; }
         IDCLEntity parent { get; }
         Action<IDCLEntity> OnShapeUpdated { get; set; }
@@ -32,7 +32,13 @@ namespace DCL.Models
 
         Action<object> OnNameChange { get; set; }
         Action<object> OnTransformChange { get; set; }
+        Action<IDCLEntity, bool> OnInsideBoundariesChanged { get; set; }
+        Action<IDCLEntity, bool> OnOuterBoundariesChanged { get; set; }
         long parentId { get; set; }
         IList<long> childrenId { get; }
+
+        void UpdateInsideBoundariesStatus(bool isInsideBoundaries);
+
+        void UpdateOuterBoundariesStatus(bool isInsideOuterBoundaries);
     }
 }

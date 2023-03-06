@@ -28,7 +28,7 @@ import {
   LEAVE_VOICE_CHAT,
   JOIN_VOICE_CHAT
 } from './actions'
-import { voiceChatLogger } from './context'
+import { voiceChatLogger } from './logger'
 import { store } from 'shared/store/isolatedStore'
 import {
   getVoiceHandler,

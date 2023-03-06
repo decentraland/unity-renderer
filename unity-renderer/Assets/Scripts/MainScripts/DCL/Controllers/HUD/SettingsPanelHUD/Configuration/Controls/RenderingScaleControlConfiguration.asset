@@ -18,7 +18,11 @@ MonoBehaviour:
   controlController: {fileID: 11400000, guid: 0abb8a86a6f04be4b98f64245bc532e5, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe: []
   isBeta: 0
+  infoButtonEnabled: 1
+  infoTooltipMessage: Try lowering this setting before switching to a lower quality
+    preset.
   sliderMinValue: 0.5
   sliderMaxValue: 1
   storeValueAsNormalized: 0

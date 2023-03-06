@@ -69,6 +69,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
     public event Action<EventCardComponentModel> OnEventInfoClicked;
     public event Action<HotScenesController.HotSceneInfo> OnPlaceJumpInClicked;
+    public event Action<string, bool> OnFavoriteClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;
     public event Action<string> OnEventUnsubscribeEventClicked;
@@ -177,7 +178,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
     }
 
     public void HidePlaceModal()
@@ -219,7 +220,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(featuredPlaceCardsPool, place, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(featuredPlaceCardsPool, place, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
             this.featuredPlaces.AddItem(placeCard);
@@ -290,7 +291,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             }
             else if (placeId < places.Count)
             {
-                PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(trendingPlaceCardsPool, places[placeId], OnPlaceInfoClicked, OnPlaceJumpInClicked);
+                PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(trendingPlaceCardsPool, places[placeId], OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
                 OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
                 trendingPlacesAndEvents.AddItem(placeCard);

@@ -1,10 +1,12 @@
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
-using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.Emotes
 {
@@ -15,35 +17,47 @@ namespace DCL.Emotes
         private EmoteAnimationLoaderFactory loaderFactory;
         private IWearableItemResolver resolver;
         private IEmotesCatalogService emoteCatalog;
-        private CatalogController catalogController;
+        private IWearablesCatalogService wearablesCatalogService;
+
 
         [SetUp]
         public void SetUp()
         {
-            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+            wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
             dataStore = new DataStore_Emotes();
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
             resolver = Substitute.For<IWearableItemResolver>();
+
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
-            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, resolver, emoteCatalog);
+            emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
+
+            tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, emoteCatalog, wearablesCatalogService);
         }
 
-        [TearDown]
-        public void TearDown() { Object.Destroy(catalogController.gameObject); }
-
-        [Test]
-        public void InitializeEmbeddedEmotesOnConstructor()
+        private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
         {
-            EmbeddedEmotesSO embeddedEmotes = Resources.Load<EmbeddedEmotesSO>("EmbeddedEmotes");
-            foreach (EmbeddedEmote emote in embeddedEmotes.emotes)
+            EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
+            embeddedEmotes.emotes = new EmbeddedEmote [] { };
+            return embeddedEmotes;
+        }
+
+
+        [UnityTest]
+        public IEnumerator InitializeEmbeddedEmotesOnConstructor()
+        {
+            UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = GetEmbeddedEmotesSO().GetAwaiter();
+            yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
+            EmbeddedEmotesSO embeddedEmotesSo = embeddedEmotesTask.GetResult();
+            foreach (EmbeddedEmote emote in embeddedEmotesSo.emotes)
             {
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.FEMALE, emote.id)]?.clip, emote.femaleAnimation);
                 Assert.AreEqual(dataStore.animations[(WearableLiterals.BodyShapes.MALE, emote.id)]?.clip, emote.maleAnimation);
                 Assert.IsTrue(tracker.loaders.ContainsKey((WearableLiterals.BodyShapes.MALE, emote.id)));
-                Assert.AreEqual(CatalogController.wearableCatalog[emote.id], emote);
             }
+            wearablesCatalogService.Received(1).EmbedWearables(Arg.Any<WearableItem[]>());
         }
+
 
         [Test]
         [Category("Explicit")]
