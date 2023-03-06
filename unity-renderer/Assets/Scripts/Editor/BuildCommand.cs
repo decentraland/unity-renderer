@@ -185,7 +185,14 @@ static class BuildCommand
                             BuildOptions.ConnectWithProfiler |
                             BuildOptions.CleanBuildCache;
 
-            PlayerSettings.WebGL.emscriptenArgs += " -s INITIAL_MEMORY=1GB ";
+            if (buildTarget.ToString().ToLower().Contains("webgl"))
+            {
+                PlayerSettings.WebGL.emscriptenArgs += " -s INITIAL_MEMORY=1GB ";
+            }
+            else
+            {
+                buildOptions |= BuildOptions.EnableDeepProfilingSupport;
+            }
             Console.WriteLine(":: Development Build");
         }
 
