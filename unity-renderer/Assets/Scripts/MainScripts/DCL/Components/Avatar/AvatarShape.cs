@@ -148,11 +148,18 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            var model = (AvatarModel) newModel;
+
+            if (model.Equals(null) || model.bodyShape.Equals(null))
+            {
+                Debug.Log("Remote avatar is in signup");
+                yield break;
+            }
+
             if (!firstPositionRetrieved) yield break;
 
             isGlobalSceneAvatar = scene.sceneData.sceneNumber == EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER;
 
-            var model = (AvatarModel) newModel;
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
             currentAvatar.CopyFrom(model);
