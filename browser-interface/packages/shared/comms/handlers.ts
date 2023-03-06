@@ -30,6 +30,7 @@ import {
   setupPeer as setupPeerTrackingInfo
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
+import { globalObservable } from 'shared/observables'
 
 type PingRequest = {
   alias: number
@@ -161,6 +162,14 @@ const answeredPings = new Set<number>()
 function processChatMessage(message: Package<proto.Chat>) {
   const myProfile = getCurrentUserProfile(store.getState())
   const fromAlias: string = message.address
+  if (!fromAlias) {
+    globalObservable.emit('error', {
+      error: new Error(`Unexpected message without address: ${JSON.stringify(message)}`),
+      code: 'comms',
+      level: 'warning'
+    })
+    return
+  }
   const senderPeer = setupPeerTrackingInfo(fromAlias)
 
   senderPeer.lastUpdate = Date.now()

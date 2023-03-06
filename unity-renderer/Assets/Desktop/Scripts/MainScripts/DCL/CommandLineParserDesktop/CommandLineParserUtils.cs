@@ -7,7 +7,8 @@ namespace DCL
 {
     public static class CommandLineParserUtils
     {
-        public static int startPort = 5000;
+        public static int startPort = 7666;
+        public static bool withSSL = true;
 
         public static void ParseArguments()
         {
@@ -25,6 +26,9 @@ namespace DCL
                         case "--port":
                             i++; // shift
                             startPort = int.Parse(arguments[i]);
+                            break;
+                        case "--no-ssl":
+                            withSSL = false;
                             break;
                     }
                 }

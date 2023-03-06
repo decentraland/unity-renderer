@@ -173,6 +173,40 @@ import {
   isNewFriendRequestEnabled,
   validateFriendRequestId
 } from './utils'
+import type { AuthChain } from '@dcl/crypto'
+import { mutePlayers, unmutePlayers } from 'shared/social/actions'
+import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { OFFLINE_REALM } from 'shared/realm/types'
+import { calculateDisplayName } from 'lib/decentraland/profiles/transformations/processServerProfile'
+import { uuid } from 'lib/javascript/uuid'
+import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations/types'
+import { isAddress } from 'eth-connect/eth-connect'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import { fetchENSOwner } from 'shared/web3'
+import {
+  SendFriendRequestPayload,
+  GetFriendRequestsReplyOk,
+  SendFriendRequestReplyOk,
+  CancelFriendRequestPayload,
+  CancelFriendRequestReplyOk,
+  RejectFriendRequestPayload,
+  RejectFriendRequestReplyOk,
+  AcceptFriendRequestPayload,
+  AcceptFriendRequestReplyOk
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import future from 'fp-future'
+import {
+  FriendshipErrorCode,
+  FriendRequestInfo
+} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+import { ReceiveFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/friend_request_renderer.gen'
+import { getRendererModules } from 'shared/renderer/selectors'
+import { RendererModules } from 'shared/renderer/types'
+import {
+  FriendshipStatus,
+  GetFriendshipStatusRequest
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -907,6 +941,16 @@ function getFriendRequestInfo(friend: FriendRequest, incoming: boolean) {
       }
 
   return friendRequest
+}
+
+// Get mutual friends
+export async function getMutualFriends(request: GetMutualFriendsRequest) {
+  const client: SocialAPI | null = getSocialClient(store.getState())
+  if (!client) return
+
+  const mutuals = await client.getMutualFriends(request.userId)
+
+  return mutuals
 }
 
 export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPayload) {
