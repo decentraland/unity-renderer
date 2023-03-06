@@ -172,6 +172,7 @@ import {
   FriendshipStatus,
   GetFriendshipStatusRequest
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -885,6 +886,16 @@ function getFriendRequestInfo(friend: FriendRequest, incoming: boolean) {
       }
 
   return friendRequest
+}
+
+// Get mutual friends
+export async function getMutualFriends(request: GetMutualFriendsRequest) {
+  const client: SocialAPI | null = getSocialClient(store.getState())
+  if (!client) return
+
+  const mutuals = await client.getMutualFriends(request.userId)
+
+  return mutuals
 }
 
 export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPayload) {
