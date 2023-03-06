@@ -72,6 +72,7 @@ public class ChatHUDController : IDisposable
         this.view.OnSendMessage += HandleSendMessage;
         this.view.OnMessageUpdated -= HandleMessageUpdated;
         this.view.OnMessageUpdated += HandleMessageUpdated;
+        this.view.OnMentionSuggestionSelected -= HandleMentionSuggestionSelected;
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
     }
 
@@ -190,7 +191,11 @@ public class ChatHUDController : IDisposable
 
     private void HandleMessageUpdated(string message, int cursorPosition)
     {
-        if (string.IsNullOrEmpty(message)) return;
+        if (string.IsNullOrEmpty(message))
+        {
+            view.HideMentionSuggestions();
+            return;
+        }
 
         async UniTaskVoid ShowMentionSuggestionsAsync(string name, CancellationToken cancellationToken)
         {
@@ -227,7 +232,7 @@ public class ChatHUDController : IDisposable
             mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
             mentionFromIndex = match.Index;
             mentionLength = match.Length;
-            string name = match.Name[1..];
+            string name = match.Value[1..];
             ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
         }
         else
