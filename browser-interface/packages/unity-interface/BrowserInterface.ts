@@ -11,7 +11,7 @@ import {
 } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
-import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
+import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
@@ -1008,7 +1008,7 @@ export class BrowserInterface {
     const identity = getCurrentIdentity(store.getState())
 
     const headers: Record<string, string> = identity
-      ? getAuthHeaders(data.method, data.url, data.metadata, (_payload) =>
+      ? getSignedHeaders(data.method, data.url, data.metadata, (_payload) =>
           Authenticator.signPayload(identity, data.url)
         )
       : {}
