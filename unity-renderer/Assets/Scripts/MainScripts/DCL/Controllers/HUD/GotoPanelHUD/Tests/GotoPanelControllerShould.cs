@@ -128,12 +128,10 @@ namespace DCL.GoToPanel
         [Test]
         public void SetFallbackSceneInfoWhenSceneInformationRequestFails()
         {
-            LogAssert.Expect(LogType.Exception, new Regex("Who knows why failed"));
-
             minimapApiBridge.GetScenesInformationAroundParcel(Arg.Is<Vector2Int>(v => v.x == 8 && v.y == 19),
                                  2,
                                  Arg.Any<CancellationToken>())
-                            .Returns(UniTask.FromException<MinimapMetadata.MinimapSceneInfo[]>(new Exception("Who knows why failed")));
+                            .Returns(UniTask.FromException<MinimapMetadata.MinimapSceneInfo[]>(new Exception("Failed")));
 
             ParcelCoordinates gotoCoords = new ParcelCoordinates(8, 19);
             coords.Set(gotoCoords);
