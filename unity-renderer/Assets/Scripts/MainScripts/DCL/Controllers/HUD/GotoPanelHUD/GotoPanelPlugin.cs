@@ -1,17 +1,21 @@
-public class GotoPanelPlugin : IPlugin
+using DCL.Map;
+
+namespace DCL.GoToPanel
 {
-    public GotoPanel.GotoPanelHUDController gotoPanelHUDController;
-
-    public GotoPanelPlugin()
+    public class GotoPanelPlugin : IPlugin
     {
-        gotoPanelHUDController = CreateController();
-        gotoPanelHUDController.Initialize();
-    }
+        private readonly GotoPanelHUDController controller;
 
-    internal virtual GotoPanel.GotoPanelHUDController CreateController() => new GotoPanel.GotoPanelHUDController();
+        public GotoPanelPlugin()
+        {
+            controller = new GotoPanelHUDController(GotoPanelHUDView.CreateView(),
+                DataStore.i, Environment.i.serviceLocator.Get<ITeleportController>(),
+                WebInterfaceMinimapApiBridge.i);
+        }
 
-    public void Dispose()
-    {
-        gotoPanelHUDController.Dispose();
+        public void Dispose()
+        {
+            controller.Dispose();
+        }
     }
 }
