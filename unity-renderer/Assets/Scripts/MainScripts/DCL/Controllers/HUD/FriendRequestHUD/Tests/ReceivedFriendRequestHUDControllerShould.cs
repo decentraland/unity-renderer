@@ -21,7 +21,6 @@ namespace DCL.Social.Friends
         private IReceivedFriendRequestHUDView view;
         private IFriendsController friendsController;
         private IUserProfileBridge userProfileBridge;
-        private StringVariable openPassportVariable;
         private DataStore dataStore;
         private IFriendRequestHUDView friendRequestHUDView;
 
@@ -121,7 +120,8 @@ namespace DCL.Social.Friends
 
             view.OnOpenProfile += Raise.Event<Action>();
 
-            Assert.AreEqual(SENDER_ID, openPassportVariable.Get());
+
+            Assert.AreEqual(SENDER_ID, dataStore.HUDs.currentPlayerId.Get());
         }
 
         [UnityTest]

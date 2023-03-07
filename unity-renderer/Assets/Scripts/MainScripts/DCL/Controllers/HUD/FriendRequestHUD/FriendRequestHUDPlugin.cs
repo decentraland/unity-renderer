@@ -15,7 +15,6 @@ namespace DCL.Social.Friends
             FriendsController friendsController = FriendsController.i;
             DataStore dataStore = DataStore.i;
             var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileBridge);
-            BaseVariable<string> openPassportVariable = dataStore.HUDs.currentPlayerId;
 
             var receivedFriendRequestHUDComponentView = ReceivedFriendRequestHUDComponentView.Create();
 
