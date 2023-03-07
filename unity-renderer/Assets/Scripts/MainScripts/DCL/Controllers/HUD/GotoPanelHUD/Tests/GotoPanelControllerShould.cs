@@ -128,6 +128,8 @@ namespace DCL.GoToPanel
         [Test]
         public void SetFallbackSceneInfoWhenSceneInformationRequestFails()
         {
+            LogAssert.Expect(LogType.Exception, new Regex("Failed"));
+
             minimapApiBridge.GetScenesInformationAroundParcel(Arg.Is<Vector2Int>(v => v.x == 8 && v.y == 19),
                                  2,
                                  Arg.Any<CancellationToken>())
