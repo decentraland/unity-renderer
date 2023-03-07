@@ -107,9 +107,9 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
     spawnPoints = [
       {
         position: {
-          x: [1, 15],
-          y: [0, 0],
-          z: [1, 15]
+          x: 1,
+          y: 0,
+          z: 1
         }
       }
     ]
@@ -148,8 +148,8 @@ function pickSpawnpoint(land: Scene): InstancedSpawnPoint {
     }
 
     if (!isWorldPositionInsideParcels(land.scene.parcels, finalWorldPosition)) {
-      finalPosition.x = 8
-      finalPosition.z = 8
+      finalPosition.x = 1
+      finalPosition.z = 1
     }
   }
 
