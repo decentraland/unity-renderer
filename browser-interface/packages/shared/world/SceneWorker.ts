@@ -14,7 +14,7 @@ import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/eng
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { getSceneNameFromJsonData } from 'shared/selectors'
 import { Scene } from '@dcl/schemas'
 import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'

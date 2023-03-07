@@ -12,7 +12,7 @@ import {
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getAuthHeaders } from 'lib/decentraland/authentication/signedFetch'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { setDecentralandTime } from 'shared/apis/host/EnvironmentAPI'
 import { reportScenesAroundParcel, setHomeScene } from 'shared/atlas/actions'
 import { emotesRequest, wearablesRequest } from 'shared/catalogs/actions'
