@@ -1,9 +1,32 @@
+import { Vector2 } from '@dcl/ecs-math'
+import { ENABLE_EMPTY_SCENES, isRunningTest } from 'config'
+import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
+import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
+import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { BEFORE_UNLOAD } from 'shared/actions'
+import { trackEvent } from 'shared/analytics/trackEvent'
+import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
+import { getResourcesURL } from 'shared/location'
+import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
+import {
+  getFetchContentServerFromRealmAdapter,
+  isPreviousAdapterWorld,
+  isWorldLoaderActive
+} from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
 import { signalParcelLoadingStarted } from 'shared/renderer/actions'
+import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'
+import { isLoginCompleted } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
+import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
+import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
+import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
+import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import {
   positionSettled,
@@ -21,38 +44,16 @@ import {
   TELEPORT_TO
 } from './actions'
 import { createGenesisCityLoader } from './genesis-city-loader-impl'
-import { createWorldLoader } from './world-loader-impl'
 import {
   getLoadingRadius,
   getParcelPosition,
-  isPositionSettled,
+  getPositionSettled,
   getPositionSpawnPointAndScene,
   getSceneLoader,
-  getPositionSettled
+  isPositionSettled
 } from './selectors'
-import {
-  getFetchContentServerFromRealmAdapter,
-  isPreviousAdapterWorld,
-  isWorldLoaderActive
-} from 'shared/realm/selectors'
 import { ISceneLoader, SceneLoaderPositionReport, SetDesiredScenesCommand } from './types'
-import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
-import { BEFORE_UNLOAD } from 'shared/actions'
-import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
-import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
-import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
-import { encodeParcelPosition } from 'lib/decentraland/parcels/encodeParcelPosition'
-import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
-import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { ENABLE_EMPTY_SCENES, LOS } from 'config'
-import { getResourcesURL } from 'shared/location'
-import { Vector2 } from '@dcl/ecs-math'
-import { trackEvent } from 'shared/analytics'
-import { getAllowedContentServer } from 'shared/meta/selectors'
-import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'
-import { isLoginCompleted } from 'shared/session/selectors'
-import { waitFor } from 'lib/redux'
+import { createWorldLoader } from './world-loader-impl'
 
 export function* sceneLoaderSaga() {
   yield takeLatest(SET_REALM_ADAPTER, setSceneLoaderOnSetRealmAction)
@@ -109,7 +110,7 @@ const waitForSceneLoader = waitFor(getSceneLoader, SET_SCENE_LOADER)
 // to unsettle the position.
 function* unsettlePositionOnSceneLoader() {
   const fromWorld = yield select(isPreviousAdapterWorld)
-  const unsettledPosition: ReadOnlyVector2 = fromWorld ? new Vector2(0, 0) : yield select(getParcelPosition)
+  const unsettledPosition: Vector2 = fromWorld ? new Vector2(0, 0) : yield select(getParcelPosition)
 
   yield put(teleportToAction({ position: gridToWorld(unsettledPosition.x, unsettledPosition.y) }))
 }
@@ -212,7 +213,7 @@ function* setSceneLoaderOnSetRealmAction(action: SetRealmAdapterAction) {
       })
       yield put(setSceneLoader(loader))
     } else {
-      const enableEmptyParcels = ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
+      const enableEmptyParcels = ENABLE_EMPTY_SCENES && isRunningTest
 
       const emptyParcelsBaseUrl = enableEmptyParcels
         ? getResourcesURL('.') // resolve explorer path to look for empty parcels
@@ -275,11 +276,11 @@ function* onWorldPositionChange() {
 
   // start the loop to load scenes
   while (true) {
-    const sceneLoader: ISceneLoader | undefined = yield select(getSceneLoader)
+    const { sceneLoader, position, loadingRadius } = (yield select(getPositionChangeInfo)) as ReturnType<
+      typeof getPositionChangeInfo
+    >
 
     if (sceneLoader) {
-      const position: ReadOnlyVector2 = yield select(getParcelPosition)
-      const loadingRadius: number = LOS ? +(LOS || '0') : yield select(getLoadingRadius)
       const report: SceneLoaderPositionReport = {
         loadingRadius,
         position,
@@ -314,6 +315,13 @@ function* onWorldPositionChange() {
     })
 
     if (unload) return
+  }
+}
+function getPositionChangeInfo(state: RootState) {
+  return {
+    sceneLoader: getSceneLoader(state),
+    position: getParcelPosition(state),
+    loadingRadius: getLoadingRadius(state)
   }
 }
 

@@ -9,7 +9,7 @@ import { deepEqual } from 'lib/javascript/deepEqual'
 import { isURL } from 'lib/javascript/isURL'
 import type { EventChannel } from 'redux-saga'
 import { BEFORE_UNLOAD } from 'shared/actions'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { setCatalystCandidates } from 'shared/dao/actions'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
@@ -51,6 +51,8 @@ import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { getConnectedPeerCount, processAvatarVisibility } from './peers'
 import { getCommsRoom, reconnectionState } from './selectors'
+import { RootState } from 'shared/store/rootTypes'
+import { now } from 'lib/javascript/now'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 const CHECK_UNEXPECTED_DISCONNECTION_FREQUENCY_MS = 10_000
@@ -336,20 +338,22 @@ function* respondCommsProfileRequests() {
     // wait for the next event of the channel
     yield take(chan)
 
-    const context = (yield select(getCommsRoom)) as RoomConnection | undefined
-    const profile: Avatar | null = yield select(getCurrentUserProfile)
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+      typeof getInformationForCommsProfileRequest
+    >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-    const identity: ExplorerIdentity | null = yield select(getCurrentIdentity)
 
     if (profile && context) {
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
-      const now = Date.now()
-      const elapsed = now - lastMessage
-      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) continue
-      lastMessage = now
+      const currentTimestamp = now()
+      const elapsed = currentTimestamp - lastMessage
+      if (elapsed < TIME_BETWEEN_PROFILE_RESPONSES) {
+        continue
+      }
+      lastMessage = currentTimestamp
 
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(stripSnapshots(profile)),
@@ -357,6 +361,14 @@ function* respondCommsProfileRequests() {
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
+  }
+}
+
+function getInformationForCommsProfileRequest(state: RootState) {
+  return {
+    context: getCommsRoom(state),
+    profile: getCurrentUserProfile(state),
+    identity: getCurrentIdentity(state)
   }
 }
 

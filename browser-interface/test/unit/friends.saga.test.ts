@@ -1,23 +1,16 @@
-import { buildStore } from 'shared/store/store'
 import {
-  AddChatMessagesPayload,
-  ChatMessageType,
-  AddFriendsWithDirectMessagesPayload,
-  GetFriendRequestsPayload,
-  GetFriendsPayload,
-  GetFriendsWithDirectMessagesPayload,
-  GetPrivateMessagesPayload,
-  PresenceStatus,
-  FriendshipAction
-} from 'shared/types'
-import sinon, { assert } from 'sinon'
-import * as friendsSagas from 'shared/friends/sagas'
-import { setMatrixClient } from 'shared/friends/actions'
-import * as friendsSelectors from 'shared/friends/selectors'
-import { ProfileState, ProfileUserInfo } from 'shared/profiles/types'
-import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
-import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
-import { FriendRequest, FriendsState } from 'shared/friends/types'
+  FriendRequestInfo,
+  FriendshipErrorCode
+} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
+import {
+  FriendshipStatus,
+  GetFriendshipStatusRequest
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
+import {
+  CancelFriendRequestPayload,
+  GetFriendRequestsReplyOk,
+  SendFriendRequestPayload
+} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
 import {
   Conversation,
   ConversationType,
@@ -27,29 +20,34 @@ import {
   SocialAPI,
   TextMessage
 } from 'dcl-social-client'
+import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { AddUserProfilesToCatalogPayload } from 'lib/decentraland/profiles/transformations/types'
+import { StoreEnhancer } from 'redux'
 import { expectSaga } from 'redux-saga-test-plan'
 import { select } from 'redux-saga/effects'
-import { getRealmConnectionString } from 'shared/realm/selectors'
-import { RootState } from 'shared/store/rootTypes'
-import { StoreEnhancer } from 'redux'
-import { reducers } from 'shared/store/rootReducer'
-import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { setMatrixClient } from 'shared/friends/actions'
+import * as friendsSagas from 'shared/friends/sagas'
+import * as friendsSelectors from 'shared/friends/selectors'
+import { FriendRequest, FriendsState } from 'shared/friends/types'
 import { encodeFriendRequestId } from 'shared/friends/utils'
-import {
-  FriendRequestInfo,
-  FriendshipErrorCode
-} from '@dcl/protocol/out-ts/decentraland/renderer/common/friend_request_common.gen'
-import {
-  CancelFriendRequestPayload,
-  GetFriendRequestsReplyOk
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
-import {
-  FriendshipStatus,
-  GetFriendshipStatusRequest
-} from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friends_kernel.gen'
-import { SendFriendRequestPayload } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { ProfileState, ProfileUserInfo } from 'shared/profiles/types'
 import { store } from 'shared/store/isolatedStore'
+import { reducers } from 'shared/store/rootReducer'
+import { RootState } from 'shared/store/rootTypes'
+import { buildStore } from 'shared/store/store'
+import {
+  AddChatMessagesPayload,
+  AddFriendsWithDirectMessagesPayload,
+  ChatMessageType,
+  FriendshipAction,
+  GetFriendRequestsPayload,
+  GetFriendsPayload,
+  GetFriendsWithDirectMessagesPayload,
+  GetPrivateMessagesPayload,
+  PresenceStatus
+} from 'shared/types'
+import sinon, { assert } from 'sinon'
+import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
 import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
@@ -592,10 +590,15 @@ describe('Friends sagas', () => {
       })
       await expectSaga(friendsSagas.initializeStatusUpdateInterval)
         .provide([
-          [select(friendsSelectors.getPrivateMessagingFriends), friendIds],
-          [select(getParcelPosition), { x: 1, y: 5 }],
-          [select(friendsSelectors.getSocialClient), stubClient],
-          [select(getRealmConnectionString), 'realm-test']
+          [
+            select(friendsSagas.getStatusUpdateIntervalInfo),
+            {
+              client: stubClient,
+              realmConnectionString: 'realm-test',
+              position: { x: 1, y: 5 },
+              rawFriends: friendIds
+            }
+          ]
         ])
         .dispatch(setMatrixClient(stubClient))
         .silentRun() // due to initializeStatusUpdateInterval saga is a while(true) gen
@@ -631,10 +634,15 @@ describe('Friends sagas', () => {
         })
       await expectSaga(friendsSagas.initializeStatusUpdateInterval)
         .provide([
-          [select(friendsSelectors.getPrivateMessagingFriends), friendIds],
-          [select(getParcelPosition), { x: 1, y: 5 }],
-          [select(friendsSelectors.getSocialClient), client], // override the stubClient mocked by mockStoreCalls(). need this to tweak getUserStatuses client function
-          [select(getRealmConnectionString), 'realm-test']
+          [
+            select(friendsSagas.getStatusUpdateIntervalInfo),
+            {
+              client: client,
+              realmConnectionString: 'realm-test',
+              position: { x: 1, y: 5 },
+              rawFriends: friendIds
+            }
+          ]
         ])
         .dispatch(setMatrixClient(client))
         .silentRun()
@@ -649,10 +657,15 @@ describe('Friends sagas', () => {
       unityMock.expects('UpdateUserPresence').never()
       await expectSaga(friendsSagas.initializeStatusUpdateInterval)
         .provide([
-          [select(friendsSelectors.getPrivateMessagingFriends), friendIds],
-          [select(getParcelPosition), { x: 1, y: 5 }],
-          [select(friendsSelectors.getSocialClient), stubClient],
-          [select(getRealmConnectionString), 'some-realm']
+          [
+            select(friendsSagas.getStatusUpdateIntervalInfo),
+            {
+              client: stubClient,
+              realmConnectionString: 'some-realm',
+              position: { x: 1, y: 5 },
+              rawFriends: friendIds
+            }
+          ]
         ])
         .dispatch(setMatrixClient(stubClient))
         .silentRun()
