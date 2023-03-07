@@ -25,8 +25,8 @@ public interface IChatHUDComponentView
     void FocusInputField();
     void UnfocusInputField();
     void SetInputFieldText(string text);
+    void ShowMentionSuggestions();
     void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions);
-    void ShowMentionSuggestionsLoading();
     void HideMentionSuggestions();
-    void AddMention(int fromIndex, int length, string userId, string userName);
+    void AddMentionToInputField(int fromIndex, int length, string userId, string userName);
 }

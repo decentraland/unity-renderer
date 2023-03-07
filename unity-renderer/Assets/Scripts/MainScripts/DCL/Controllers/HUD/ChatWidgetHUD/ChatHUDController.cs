@@ -19,7 +19,7 @@ public class ChatHUDController : IDisposable
     private const int MAX_CONTINUOUS_MESSAGES = 10;
     private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
     private const int MAX_HISTORY_ITERATION = 10;
-    private const int MAX_MENTION_SUGGESTIONS = 30;
+    private const int MAX_MENTION_SUGGESTIONS = 5;
 
     public event Action OnInputFieldSelected;
     public event Action<ChatMessage> OnSendMessage;
@@ -30,6 +30,7 @@ public class ChatHUDController : IDisposable
     private readonly bool detectWhisper;
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private readonly IProfanityFilter profanityFilter;
+    private readonly Regex mentionStartRegex = new(@"(\B@\w+)|(\B@+)");
     private readonly Regex mentionRegex = new (@"\B@\w{3,}");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
@@ -199,20 +200,24 @@ public class ChatHUDController : IDisposable
 
         async UniTaskVoid ShowMentionSuggestionsAsync(string name, CancellationToken cancellationToken)
         {
-            view.ShowMentionSuggestionsLoading();
-
             try
             {
                 List<UserProfile> suggestions = await chatMentionSuggestionProvider.GetProfilesStartingWith(name, MAX_MENTION_SUGGESTIONS, cancellationToken);
                 mentionSuggestedProfiles = suggestions.ToDictionary(profile => profile.userId, profile => profile);
 
-                view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
-                                                       {
-                                                           userId = profile.userId,
-                                                           userName = profile.userName,
-                                                           imageUrl = profile.face256SnapshotURL,
-                                                       })
-                                                      .ToList());
+                if (suggestions.Count == 0)
+                    view.HideMentionSuggestions();
+                else
+                {
+                    view.ShowMentionSuggestions();
+                    view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
+                                                           {
+                                                               userId = profile.userId,
+                                                               userName = profile.userName,
+                                                               imageUrl = profile.face256SnapshotURL,
+                                                           })
+                                                          .ToList());
+                }
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
@@ -225,15 +230,23 @@ public class ChatHUDController : IDisposable
         if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
             mentionFromIndex = cursorPosition;
 
-        Match match = mentionRegex.Match(message, mentionFromIndex);
+        Match match = mentionStartRegex.Match(message, mentionFromIndex);
 
         if (match.Success)
         {
-            mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
             mentionFromIndex = match.Index;
             mentionLength = match.Length;
-            string name = match.Value[1..];
-            ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
+
+            match = mentionRegex.Match(message, mentionFromIndex);
+
+            if (match.Success)
+            {
+                mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
+                mentionFromIndex = match.Index;
+                mentionLength = match.Length;
+                string name = match.Value[1..];
+                ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
+            }
         }
         else
         {
@@ -385,7 +398,7 @@ public class ChatHUDController : IDisposable
 
     private void HandleMentionSuggestionSelected(string userId)
     {
-        view.AddMention(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
+        view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
         view.HideMentionSuggestions();
     }
 }

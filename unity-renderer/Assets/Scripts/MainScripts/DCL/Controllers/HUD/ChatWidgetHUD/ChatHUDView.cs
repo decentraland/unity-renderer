@@ -199,19 +199,19 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         OnMessageUpdated?.Invoke(inputField.text, inputField.stringPosition);
     }
 
-    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions) =>
-        chatMentionSuggestions.Set(suggestions);
+    public void ShowMentionSuggestions() =>
+        chatMentionSuggestions.Show();
 
-    public void ShowMentionSuggestionsLoading()
+    public void SetMentionSuggestions(List<ChatMentionSuggestionModel> suggestions)
     {
         chatMentionSuggestions.Clear();
-        chatMentionSuggestions.Show();
+        chatMentionSuggestions.Set(suggestions);
     }
 
     public void HideMentionSuggestions() =>
         chatMentionSuggestions.Hide();
 
-    public void AddMention(int fromIndex, int length, string userId, string userName)
+    public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
     {
         string message = inputField.text;
         StringBuilder builder = new (message);
