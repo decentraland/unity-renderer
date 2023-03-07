@@ -158,6 +158,8 @@ namespace DCL.Skybox
             if (visibleState == prevVisibleState)
                 return;
 
+            if(skyboxCam == null) return;
+
             skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
         }
 

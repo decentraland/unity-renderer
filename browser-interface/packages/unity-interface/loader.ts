@@ -1,5 +1,5 @@
 import future from 'fp-future'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
 const generatedFiles = {

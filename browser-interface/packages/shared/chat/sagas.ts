@@ -11,7 +11,7 @@ import {
 import { uuid } from 'lib/javascript/uuid'
 import { ChatMessageType, ChatMessagePlayerType, ChatMessage } from 'shared/types'
 import { EXPERIENCE_STARTED } from 'shared/loading/types'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { sendPublicChatMessage } from 'shared/comms'
 import { getAllPeers } from 'shared/comms/peers'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
