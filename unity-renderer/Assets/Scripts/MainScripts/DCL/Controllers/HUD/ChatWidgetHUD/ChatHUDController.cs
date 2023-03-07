@@ -220,7 +220,7 @@ public class ChatHUDController : IDisposable
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                view.SetMentionSuggestions(new List<ChatMentionSuggestionModel>());
+                view.HideMentionSuggestions();
             }
         }
 
