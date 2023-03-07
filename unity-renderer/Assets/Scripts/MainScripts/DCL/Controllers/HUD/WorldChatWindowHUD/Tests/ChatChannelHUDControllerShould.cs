@@ -23,11 +23,12 @@ namespace DCL.Chat.HUD
         private DataStore dataStore;
         private ISocialAnalytics socialAnalytics;
         private IProfanityFilter profanityFilter;
+        private IUserProfileBridge userProfileBridge;
 
         [SetUp]
         public void SetUp()
         {
-            var userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
             var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
             ownUserProfile.UpdateData(new UserProfileModel
             {
@@ -140,6 +141,30 @@ namespace DCL.Chat.HUD
             chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
 
             chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void CheckOwnPlayerMentionInChannelsCorrectly(bool ownPlayerIsMentioned)
+        {
+            controller.SetVisibility(false);
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(null, false);
+            string testMessage = ownPlayerIsMentioned
+                ? $"Hi <link=mention://{userProfileBridge.GetOwn().userId}><color=#4886E3><u>@{userProfileBridge.GetOwn().name}</u></color></link>"
+                : "test message";
+            view.IsActive.Returns(false);
+
+            var testMentionMessage = new ChatMessage
+            {
+                messageType = ChatMessage.Type.PUBLIC,
+                body = testMessage,
+                recipient = CHANNEL_ID,
+                timestamp = 100,
+            };
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
+
+            Assert.AreEqual(ownPlayerIsMentioned ? CHANNEL_ID : null, dataStore.mentions.ownPlayerMentionedInChannel.Get());
         }
     }
 }

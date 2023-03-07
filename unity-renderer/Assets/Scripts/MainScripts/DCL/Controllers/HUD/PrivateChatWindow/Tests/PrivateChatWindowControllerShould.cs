@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Chat;
 using DCL.Interface;
 using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
@@ -28,6 +29,7 @@ public class PrivateChatWindowControllerShould
     private IChatController chatController;
     private IFriendsController friendsController;
     private IMouseCatcher mouseCatcher;
+    private DataStore dataStore;
 
     [SetUp]
     public void SetUp()
@@ -47,8 +49,9 @@ public class PrivateChatWindowControllerShould
         chatController = Substitute.For<IChatController>();
 
         mouseCatcher = Substitute.For<IMouseCatcher>();
+        dataStore = new DataStore();
         controller = new PrivateChatWindowController(
-            new DataStore(),
+            dataStore,
             userProfileBridge,
             chatController,
             friendsController,
@@ -269,6 +272,30 @@ public class PrivateChatWindowControllerShould
         });
 
         chatController.Received(1).MarkMessagesAsSeen(FRIEND_ID);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void CheckOwnPlayerMentionInDMsCorrectly(bool ownPlayerIsMentioned)
+    {
+        WhenControllerInitializes(FRIEND_ID);
+        dataStore.mentions.ownPlayerMentionedInDM.Set(null, false);
+        string testMessage = ownPlayerIsMentioned
+            ? $"Hi <link=mention://{userProfileBridge.GetOwn().userId}><color=#4886E3><u>@{userProfileBridge.GetOwn().name}</u></color></link>"
+            : "test message";
+        view.IsActive.Returns(false);
+
+        var testMentionMessage = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            body = testMessage,
+            sender = FRIEND_ID,
+            timestamp = 100,
+        };
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
+
+        Assert.AreEqual(ownPlayerIsMentioned ? FRIEND_ID : null, dataStore.mentions.ownPlayerMentionedInDM.Get());
     }
 
     private void WhenControllerInitializes(string friendId)
