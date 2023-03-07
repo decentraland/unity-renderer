@@ -2,6 +2,7 @@ using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
@@ -23,7 +24,7 @@ namespace DCL.ECSComponents.Test
         [SetUp]
         public void Setup()
         {
-            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>());
+            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>(), Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             scene = Substitute.For<IParcelScene>();
 
