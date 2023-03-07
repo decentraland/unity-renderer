@@ -400,7 +400,9 @@ function stripSnapshots(profile: Avatar): Avatar {
  * This saga handle reconnections of comms contexts.
  */
 function* handleCommsReconnectionInterval() {
+  yield call(waitForMetaConfigurationInitialization)
   const isUnexpectedDisconnectionCheckEnabled = yield select(getFeatureFlagEnabled, 'unexpected-disconnection-check')
+
   while (true) {
     const reason = yield race({
       SET_WORLD_CONTEXT: take(SET_ROOM_CONNECTION),
