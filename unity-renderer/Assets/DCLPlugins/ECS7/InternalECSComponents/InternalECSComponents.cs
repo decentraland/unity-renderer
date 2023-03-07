@@ -6,11 +6,9 @@ using System.Collections.Generic;
 
 public class InternalECSComponents : IDisposable, IInternalECSComponents
 {
-    internal readonly IList<InternalComponentWriteData> scheduledWrite = new List<InternalComponentWriteData>(50);
-    internal readonly IList<InternalComponentWriteData> scheduledDirty = new List<InternalComponentWriteData>(50);
-
-    private readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents =
+    internal readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents =
         new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
+
     private readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> removeAsDirtyComponents =
         new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
 
@@ -30,10 +28,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalSceneBoundsCheck> sceneBoundsCheckComponent { get; }
     public IInternalECSComponent<InternalAudioSource> audioSourceComponent { get; }
 
-    // TODO: remove
-    public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory)
-        : this(componentsManager, componentsFactory, null) { }
-
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
     {
@@ -45,7 +39,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalTexturizable>(
                 () => texturizableComponent, model => model.renderers.Count == 0),
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -54,7 +47,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -64,7 +56,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => onPointerColliderComponent, model => model.colliders.Count == 0),
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -74,7 +65,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => physicColliderComponent, model => model.colliders.Count == 0),
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -84,7 +74,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalRenderers>(
                 () => renderersComponent, model => model.renderers.Count == 0),
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -93,7 +82,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -102,7 +90,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -111,7 +98,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             () => new UiContainerHandler(() => uiContainerComponent),
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -120,7 +106,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors
         );
@@ -130,7 +115,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -139,7 +123,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors);
 
@@ -148,7 +131,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors
         );
@@ -158,7 +140,6 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            scheduledWrite,
             markAsDirtyComponents,
             crdtExecutors
         );

@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
@@ -8,6 +7,8 @@ using DCL.Models;
 using ECSSystems.InputSenderSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -27,15 +28,17 @@ namespace Tests
         {
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            internalComponents = new InternalECSComponents(componentsManager, componentsFactory);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             inputResultComponent = internalComponents.inputEventResultsComponent;
             componentWriter = Substitute.For<IECSComponentWriter>();
 
-            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
 
             var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, componentWriter);
+
             updateSystems = () =>
             {
                 systemUpdate();
@@ -54,11 +57,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary, hit = new RaycastHit() {} },
-                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary, hit = new RaycastHit() {}  },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction4, hit = new RaycastHit() {}  },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction3, hit = new RaycastHit() {}  },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction5, hit = new RaycastHit() {}  },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5, hit = new RaycastHit() { } },
             };
 
             foreach (var eventData in events)
@@ -70,11 +73,11 @@ namespace Tests
 
             componentWriter.Received(5)
                            .AppendComponent(
-                               scene.sceneData.sceneNumber,
-                               SpecialEntityId.SCENE_ROOT_ENTITY,
-                               ComponentID.POINTER_EVENTS_RESULT,
-                               Arg.Any<PBPointerEventsResult>(),
-                               ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+                                scene.sceneData.sceneNumber,
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.POINTER_EVENTS_RESULT,
+                                Arg.Any<PBPointerEventsResult>(),
+                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
         }
 
         [Test]
@@ -104,11 +107,11 @@ namespace Tests
 
             componentWriter.DidNotReceive()
                            .PutComponent(
-                               scene.sceneData.sceneNumber,
-                               SpecialEntityId.SCENE_ROOT_ENTITY,
-                               ComponentID.POINTER_EVENTS_RESULT,
-                               Arg.Any<PBPointerEventsResult>(),
-                               ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+                                scene.sceneData.sceneNumber,
+                                SpecialEntityId.SCENE_ROOT_ENTITY,
+                                ComponentID.POINTER_EVENTS_RESULT,
+                                Arg.Any<PBPointerEventsResult>(),
+                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
         }
 
         [Test]
