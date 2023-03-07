@@ -24,7 +24,7 @@ namespace DCL.Social.Chat.Channels
         private IChatController chatController;
         private DataStore_Channels channelsDataStore;
         private DataStore dataStore;
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<string> currentPlayerInfoCardId;
         private ISocialAnalytics socialAnalytics;
         private IChannelsFeatureFlagService channelsFeatureFlagService;
 
@@ -35,7 +35,7 @@ namespace DCL.Social.Chat.Channels
             chatController = Substitute.For<IChatController>();
             dataStore = new DataStore();
             channelsDataStore = dataStore.channels;
-            currentPlayerInfoCardId = ScriptableObject.CreateInstance<StringVariable>();
+            currentPlayerInfoCardId = dataStore.HUDs.currentPlayerId;
             socialAnalytics = Substitute.For<ISocialAnalytics>();
             channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
             channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
