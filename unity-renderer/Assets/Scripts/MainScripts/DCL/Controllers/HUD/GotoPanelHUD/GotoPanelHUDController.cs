@@ -61,9 +61,14 @@ namespace DCL.GoToPanel
                     MinimapMetadata.MinimapSceneInfo sceneInfo = scenes.First(info => info.parcels.Exists(i => i.x == coordinates.x && i.y == coordinates.y));
                     view.SetPanelInfo(coordinates, sceneInfo);
                 }
-                catch (Exception)
+                catch (OperationCanceledException)
                 {
                     view.SetPanelInfo(coordinates, null);
+                }
+                catch (Exception e)
+                {
+                    view.SetPanelInfo(coordinates, null);
+                    Debug.LogException(e);
                 }
                 finally
                 {

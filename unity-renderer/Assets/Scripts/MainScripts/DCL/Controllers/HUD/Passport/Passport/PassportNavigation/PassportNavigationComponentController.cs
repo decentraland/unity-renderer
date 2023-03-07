@@ -156,6 +156,7 @@ namespace DCL.Social.Passports
                     view.SetCollectibleWearables(containedWearables.ToArray());
                     view.SetCollectibleWearablesLoadingActive(false);
                 }
+                catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogError(e.Message); }
             }
 
