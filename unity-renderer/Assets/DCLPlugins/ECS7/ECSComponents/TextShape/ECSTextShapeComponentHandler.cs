@@ -16,23 +16,30 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
 
     private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
     private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
+    private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
     internal TextMeshPro textComponent;
     internal AssetPromise_Font fontPromise;
 
+    private IParcelScene scene;
+    private IDCLEntity entity;
     private GameObject textGameObject;
     private RectTransform rectTransform;
     private Renderer textRenderer;
     private PBTextShape currentModel;
 
-    public ECSTextShapeComponentHandler(AssetPromiseKeeper_Font fontPromiseKeeper, IInternalECSComponent<InternalRenderers> renderersInternalComponent)
+    public ECSTextShapeComponentHandler(AssetPromiseKeeper_Font fontPromiseKeeper, IInternalECSComponent<InternalRenderers> renderersInternalComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
         this.fontPromiseKeeper = fontPromiseKeeper;
         this.renderersInternalComponent = renderersInternalComponent;
+        this.sbcInternalComponent = sbcInternalComponent;
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
     {
+        this.scene = scene;
+        this.entity = entity;
+
         textGameObject = new GameObject("TextShape");
 
         rectTransform = textGameObject.AddComponent<RectTransform>();
@@ -44,16 +51,27 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         textComponent.text = string.Empty;
         textComponent.richText = true;
         textComponent.overflowMode = TextOverflowModes.Overflow;
+        textComponent.OnPreRenderText += OnTextRendererUpdated;
         renderersInternalComponent.AddRenderer(scene, entity, textRenderer);
     }
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
+        textComponent.OnPreRenderText -= OnTextRendererUpdated;
         renderersInternalComponent.RemoveRenderer(scene, entity, textRenderer);
 
         fontPromiseKeeper.Forget(fontPromise);
 
         Object.Destroy(textGameObject);
+    }
+    
+    private void OnTextRendererUpdated(TMP_TextInfo tmproInfo)
+    {
+        var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+        if (model == null) return;
+
+        model.meshesDirty = true;
+        sbcInternalComponent.PutFor(scene, entity, model);
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)

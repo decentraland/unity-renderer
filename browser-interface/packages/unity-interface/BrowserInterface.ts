@@ -1,6 +1,5 @@
-import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
-
 import { Authenticator } from '@dcl/crypto'
+import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 import { Avatar, generateLazyValidator, JSONSchema } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
