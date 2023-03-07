@@ -181,10 +181,10 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
         private static void EvaluateMeshBounds(IParcelScene scene, IDCLEntity entity, HashSet<Vector2Int> parcels, Bounds sceneOuterBounds,
             HashSet<IDCLEntity> entitiesOutsideSceneBounds, InternalSceneBoundsCheck sbcComponentModel, IECSOutOfSceneBoundsFeedbackStyle outOfBoundsVisualFeedback, bool isVisible)
         {
-            Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
-            Vector3 entityGlobalPosition = sbcComponentModel.entityPosition;
-            Vector3 globalBoundsMaxPoint = entityGlobalPosition + sbcComponentModel.entityLocalMeshBounds.max;
-            Vector3 globalBoundsMinPoint = entityGlobalPosition + sbcComponentModel.entityLocalMeshBounds.min;
+            // Since the world's reposition in Unity also affects the entities position, we must use the real entity gameobject position instead of the sbcComponentModel.entityPosition
+            Vector3 entityUnityPosition = entity.gameObject.transform.position;
+            Vector3 globalBoundsMaxPoint = entityUnityPosition + sbcComponentModel.entityLocalMeshBounds.max;
+            Vector3 globalBoundsMinPoint = entityUnityPosition + sbcComponentModel.entityLocalMeshBounds.min;
 
             // 1. Cheap outer-bounds check
             bool isInsideSceneOuterBounds = scene.isPersistent
@@ -193,6 +193,8 @@ namespace ECSSystems.ECSSceneBoundsCheckerSystem
 
             if (isInsideSceneOuterBounds)
             {
+                Vector3 worldOffset = CommonScriptableObjects.worldOffset.Get();
+
                 // 2. If entity is inside outer bounds then check full merged bounds AABB
                 bool isInsideSceneInnerBounds = scene.isPersistent
                                                || (UtilsScene.IsInsideSceneInnerBounds(parcels, scene.metricsCounter.maxCount.sceneHeight, globalBoundsMaxPoint + worldOffset, globalBoundsMaxPoint.y)
