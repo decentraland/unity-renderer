@@ -34,7 +34,7 @@ namespace Tests
             systemsUpdate = () =>
             {
                 visibilitySystemUpdate();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.MarkDirtyComponentsUpdate();
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);

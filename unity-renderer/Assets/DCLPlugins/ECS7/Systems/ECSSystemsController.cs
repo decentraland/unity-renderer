@@ -25,8 +25,8 @@ public class ECSSystemsController : IDisposable
     private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
     private readonly ECS7System componentWriteSystem;
-    private readonly ECS7System internalComponentWriteSystem;
-    private readonly ECS7System internalComponentDirtySystem;
+    private readonly ECS7System internalComponentMarkDirtySystem;
+    private readonly ECS7System internalComponentRemoveDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
     private readonly ECSBillboardSystem billboardSystem;
     private readonly ECSCameraEntitySystem cameraEntitySystem;
@@ -42,8 +42,8 @@ public class ECSSystemsController : IDisposable
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.componentWriteSystem = componentWriteSystem;
-        this.internalComponentWriteSystem = context.internalEcsComponents.WriteSystemUpdate;
-        this.internalComponentDirtySystem = context.internalEcsComponents.DirtySystemUpdate;
+        this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
+        this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -131,7 +131,7 @@ public class ECSSystemsController : IDisposable
         try
         {
             componentWriteSystem.Invoke();
-            internalComponentWriteSystem.Invoke();
+            internalComponentMarkDirtySystem.Invoke();
         }
         catch (Exception e)
         {
@@ -171,7 +171,7 @@ public class ECSSystemsController : IDisposable
 
         try
         {
-            internalComponentDirtySystem.Invoke();
+            internalComponentRemoveDirtySystem.Invoke();
         }
         catch (Exception e)
         {

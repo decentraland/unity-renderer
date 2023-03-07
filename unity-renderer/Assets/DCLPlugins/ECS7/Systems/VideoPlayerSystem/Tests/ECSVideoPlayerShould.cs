@@ -36,7 +36,7 @@ namespace Tests
             systemsUpdate = () =>
             {
                 videoPlayerSystem.Update();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.MarkDirtyComponentsUpdate();
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);

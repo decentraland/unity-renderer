@@ -2,9 +2,9 @@ using DCL.ECS7.InternalComponents;
 
 public interface IInternalECSComponents
 {
-    void WriteSystemUpdate();
+    void MarkDirtyComponentsUpdate();
 
-    void DirtySystemUpdate();
+    void ResetDirtyComponentsUpdate();
 
     IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     IInternalECSComponent<InternalMaterial> materialComponent { get; }

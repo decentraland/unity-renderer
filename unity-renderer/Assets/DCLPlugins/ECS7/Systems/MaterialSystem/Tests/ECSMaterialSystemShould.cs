@@ -49,7 +49,7 @@ namespace Tests
             systemsUpdate = () =>
             {
                 materialSystemUpdate();
-                internalEcsComponents.WriteSystemUpdate();
+                internalEcsComponents.MarkDirtyComponentsUpdate();
             };
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager);

@@ -32,7 +32,7 @@ namespace Tests
             testUtils = new ECS7TestUtilsScenesAndEntities(manager);
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1111);
-            writeSystem = internalComponents.WriteSystemUpdate;
+            writeSystem = internalComponents.MarkDirtyComponentsUpdate;
         }
 
         [TearDown]
