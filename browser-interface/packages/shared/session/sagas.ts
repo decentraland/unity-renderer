@@ -6,7 +6,6 @@ import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { initializeReferral } from 'shared/referral'
 import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -25,7 +24,6 @@ import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { saveProfileDelta } from '../profiles/actions'
 import {
   AUTHENTICATE,
@@ -69,7 +67,6 @@ export function* sessionSaga(): any {
   })
 
   yield call(initialize)
-  yield call(initializeReferral)
 }
 
 function* initialize() {
@@ -136,11 +133,6 @@ function* authenticate(action: AuthenticateAction) {
   // 4. finish sign in
   yield call(ensureMetaConfigurationInitialized)
   yield put(changeLoginState(LoginState.COMPLETED))
-
-  if (isSignUp) {
-    // HACK to fix onboarding flow, remove in RFC-1 impl
-    getUnityInstance().FadeInLoadingHUD({} as any)
-  }
 }
 
 function* authorize(requestManager: RequestManager) {
@@ -285,7 +277,7 @@ function* redirectToSignUp() {
   window.location.reload()
 }
 
-export function observeAccountStateChange(
+function observeAccountStateChange(
   store: Store<RootSessionState>,
   accountStateChange: (previous: SessionState, current: SessionState) => any
 ) {

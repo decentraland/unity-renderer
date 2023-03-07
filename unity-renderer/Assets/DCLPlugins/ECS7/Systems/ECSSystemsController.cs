@@ -55,10 +55,7 @@ public class ECSSystemsController : IDisposable
 
         BaseVariable<bool> loadingScreenVisible;
 
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-            loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
-        else
-            loadingScreenVisible = dataStoreLoadingScreen.Ref.loadingHUD.visible;
+        loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
