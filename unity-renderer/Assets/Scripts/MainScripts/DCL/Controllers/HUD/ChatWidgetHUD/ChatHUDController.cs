@@ -30,7 +30,7 @@ public class ChatHUDController : IDisposable
     private readonly bool detectWhisper;
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private readonly IProfanityFilter profanityFilter;
-    private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
+    private readonly Regex mentionRegex = new (@"\B@\w{3,}");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
     private readonly List<ChatEntryModel> spamMessages = new ();
