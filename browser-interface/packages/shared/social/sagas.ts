@@ -50,7 +50,7 @@ function* addPlayerToProfileSet(playersId: string[], setKey: ProfileSetKey) {
     let set: string[] = playersId
 
     if (profile[setKey]) {
-      idsToAdd = playersId.filter((id) => !(profile[setKey]!.indexOf(id) >= 0))
+      idsToAdd = playersId.filter((id) => !profile[setKey]!.includes(id))
       set = profile[setKey]!.concat(idsToAdd)
     }
 

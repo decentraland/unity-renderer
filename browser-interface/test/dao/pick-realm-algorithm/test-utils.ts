@@ -2,7 +2,7 @@ import { AlgorithmContext } from 'shared/dao/pick-realm-algorithm/types'
 import { Candidate, Parcel, ServerConnectionStatus } from 'shared/dao/types'
 
 // Some random parcels to use for fixture, but hardcoded to make tests repeatable
-export const someRandomParcels: Parcel[] = [
+const someRandomParcels: Parcel[] = [
   [20, -26],
   [-25, -15],
   [25, 23],
@@ -105,11 +105,11 @@ export const someRandomParcels: Parcel[] = [
   [0, -4]
 ]
 
-export function circularSlice<T>(count: number, source: T[]): T[] {
+function circularSlice<T>(count: number, source: T[]): T[] {
   return [...new Array(count).keys()].map((i) => source[i % source.length])
 }
 
-export function buildCandidate(params: Partial<Candidate>): Candidate {
+function buildCandidate(params: Partial<Candidate>): Candidate {
   const usersCount = params.usersCount ? params.usersCount : 10
   return {
     protocol: 'v2',

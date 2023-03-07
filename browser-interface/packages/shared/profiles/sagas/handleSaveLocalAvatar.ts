@@ -9,7 +9,7 @@ import { getCurrentUserId, getCurrentIdentity, getCurrentNetwork } from 'shared/
 import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
 import type { Avatar } from '@dcl/schemas'
 import { validateAvatar } from '../schemaValidation'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import { localProfilesRepo } from './local/localProfilesRepo'
 
 export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {

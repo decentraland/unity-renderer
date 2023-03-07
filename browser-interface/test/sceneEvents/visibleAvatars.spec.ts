@@ -1,9 +1,10 @@
 import * as sinon from 'sinon'
 import { expect } from 'chai'
-import * as peers from '../../packages/shared/comms/peers'
+import { receiveUserVisible } from 'shared/comms/peers'
+import * as peers from 'shared/comms/peers'
+import { TEST_OBJECT_ObservableAllScenesEvent } from 'shared/world/parcelSceneManager'
 import { buildStore } from 'shared/store/store'
 import { Color3 } from '@dcl/ecs-math'
-import { TEST_OBJECT_ObservableAllScenesEvent } from '../../packages/shared/world/parcelSceneManager'
 
 function prepareAvatar(address: string) {
   peers.receivePeerUserData(
@@ -30,7 +31,7 @@ function prepareAvatar(address: string) {
     },
     location.origin
   )
-  peers.receiveUserVisible(address, false)
+  receiveUserVisible(address, false)
 }
 
 describe('Avatar observable', () => {

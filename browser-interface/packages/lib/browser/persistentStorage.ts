@@ -1,4 +1,5 @@
 import { PersistentAsyncStorage } from 'kernel-web-interface'
+import { globalObservable } from 'shared/observables'
 
 declare let window: WindowLocalStorage
 
@@ -43,12 +44,21 @@ export async function saveToPersistentStorage(key: string, data: any) {
   return persistentStorage.setItem(key, JSON.stringify(data))
 }
 
-export async function getFromPersistentStorage(key: string) {
+export async function getFromPersistentStorage(key: string): Promise<any | null> {
   if (!persistentStorage) {
     throw new Error('Storage not supported')
   }
   const data = await persistentStorage.getItem(key)
-  return (data && JSON.parse(data)) || null
+  try {
+    return (data && JSON.parse(data)) || null
+  } catch (e) {
+    globalObservable.emit('error', {
+      error: new Error(`Impossible to parse JSON: ${key} from localStorage's value is ${data} (not JSON)`),
+      code: 'local',
+      level: 'serious'
+    })
+    return null
+  }
 }
 
 export async function removeFromPersistentStorage(key: string) {

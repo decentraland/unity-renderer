@@ -137,7 +137,6 @@ namespace DCL
                 performanceMeterController = new PerformanceMeterController();
 
                 dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange += StartSampling;
-                dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange += StartSampling;
                 CommonScriptableObjects.rendererState.OnChange += EndSampling;
             }
         }
@@ -145,7 +144,6 @@ namespace DCL
         private void StartSampling(bool current, bool previous)
         {
             dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.OnChange -= StartSampling;
-            dataStoreLoadingScreen.Ref.loadingHUD.visible.OnChange -= StartSampling;
             performanceMeterController.StartSampling(999);
         }
         private void EndSampling(bool current, bool previous)

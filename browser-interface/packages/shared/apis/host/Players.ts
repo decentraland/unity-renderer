@@ -61,8 +61,9 @@ export function registerPlayersServiceServerImplementation(port: RpcServerPort<P
       return { players: result }
     },
     async getConnectedPlayers() {
+      const userId = getCurrentUserId(store.getState())!
       return {
-        players: getVisiblePeerEthereumAddresses()
+        players: getVisiblePeerEthereumAddresses().concat({ userId })
       }
     }
   }))

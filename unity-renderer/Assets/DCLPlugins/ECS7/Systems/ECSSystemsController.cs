@@ -55,10 +55,7 @@ public class ECSSystemsController : IDisposable
 
         BaseVariable<bool> loadingScreenVisible;
 
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DataStore.i.featureFlags.DECOUPLED_LOADING_SCREEN_FF))
-            loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
-        else
-            loadingScreenVisible = dataStoreLoadingScreen.Ref.loadingHUD.visible;
+        loadingScreenVisible = dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible;
 
         uiSystem = new ECSScenesUiSystem(scenesUiDocument,
             context.internalEcsComponents.uiContainerComponent,
@@ -103,13 +100,13 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            uiInputSenderSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update,
         };
 
         lateUpdateSystems = new ECS7System[]
         {
+            uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             sceneBoundsCheckerSystem.Update // Should always be the last system

@@ -1,4 +1,5 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
+import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
 
@@ -178,6 +179,15 @@ export const ENABLE_EMPTY_SCENES = !location.search.includes('DISABLE_EMPTY_SCEN
 
 export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const state = store.getState()
+
+  if (getFeatureFlagEnabled(state, 'ab-new-cdn')) {
+    // IMPORTANT: The new ab-cdn supports versioning, so the global config is now
+    //            ignored.
+    // TODO: this will be customizable per scene/world/wearable. for now it only
+    //       has one possible value
+    return ASSET_BUNDLES_DOMAIN || getNewDefaultAssetBundlesBaseUrl(network)
+  }
+
   return (
     ASSET_BUNDLES_DOMAIN || state.meta.config.explorer?.assetBundlesFetchUrl || getDefaultAssetBundlesBaseUrl(network)
   )
@@ -186,6 +196,11 @@ export function getAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
 function getDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
   const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
   return `https://content-assets-as-bundle.decentraland.${tld}`
+}
+
+function getNewDefaultAssetBundlesBaseUrl(network: ETHEREUM_NETWORK): string {
+  const tld = network === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
+  return `https://ab-cdn.decentraland.${tld}`
 }
 
 export function getAvatarTextureAPIBaseUrl(network: ETHEREUM_NETWORK): string {

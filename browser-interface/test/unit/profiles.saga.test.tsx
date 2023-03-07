@@ -1,24 +1,26 @@
 import { expect } from 'chai'
+import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
-import { getCommsRoom } from 'shared/comms/selectors'
 import {
   addProfileToLastSentProfileVersionAndCatalog, ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG, profileRequest
 } from 'shared/profiles/actions'
-import { fetchProfile } from 'shared/profiles/sagas/fetchProfile'
-import { getLastSentProfileVersion, getProfileFromStore } from 'shared/profiles/selectors'
-import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import { ProfileUserInfo } from 'shared/profiles/types'
-import * as realmSelectors from 'shared/realm/selectors'
-import { IRealmAdapter } from 'shared/realm/types'
+import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/profiles/sagas/fetchProfile'
+import type { ProfileUserInfo } from 'shared/profiles/types'
+import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
+import { getInformationToSubmitProfileFromStore, handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { isCurrentUserId, isGuestLogin } from 'shared/session/selectors'
 import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
+
+const mockAdapter = {
+  services: {
+    legacy: {}
+  }
+} as any as IRealmAdapter
 
 describe('fetchProfile behavior', () => {
   it('avatar compatibility format', () => {
@@ -61,12 +63,18 @@ describe('fetchProfile behavior', () => {
 
   it('detects and fixes corrupted scaled snapshots', () => {
     const userId = 'user|1'
+    const action = profileRequest(userId)
 
-    return expectSaga(fetchProfile, profileRequest(userId))
+    return expectSaga(fetchProfile, action)
       .provide([
-        [select(isGuestLogin), false],
-        [select(isCurrentUserId, userId), false],
-        [select(getCommsRoom), undefined],
+        [select(getInformationToFetchProfileFromStore, action), {
+          roomConnection: undefined,
+          loadingCurrentUser: false,
+          hasRoomConnection: false,
+          existingProfile: undefined,
+          isGuestLogin: false,
+          existingProfileWithCorrectVersion: false
+        }]
       ])
       .run()
       .then((result) => {
@@ -103,18 +111,18 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '')
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfilesToCatalog').never()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 1]
+          [call(waitForRealm), mockAdapter],
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .run()
         .then((response) => {
@@ -132,18 +140,18 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '', 0)
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfilesToCatalog').never()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 0]
+          [call(waitForRealm), mockAdapter],
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .run()
         .then((response) => {
@@ -161,18 +169,18 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '', 3)
 
-      const realmAdapter = {} as IRealmAdapter
-
       unityMock.expects('AddUserProfileToCatalog').once()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
-          [select(getProfileFromStore, userId), profile],
-          [call(waitForRealm), realmAdapter],
-          [call(realmSelectors.getFetchContentUrlPrefixFromRealmAdapter, realmAdapter), 'base-url/contents/'],
-          [select(isCurrentUserId, userId), false],
-          [select(getLastSentProfileVersion, userId), 1]
+          [call(waitForRealm), mockAdapter],
+          [select(getInformationToSubmitProfileFromStore, userId), {
+            profile,
+            identity: { userId: 'invalid' },
+            isCurrentUser: false,
+            lastSentProfileVersion: 1
+          }],
         ])
         .dispatch(addProfileToLastSentProfileVersionAndCatalog(userId, 3))
         .run()
