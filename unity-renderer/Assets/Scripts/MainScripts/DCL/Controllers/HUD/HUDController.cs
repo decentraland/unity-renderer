@@ -26,7 +26,7 @@ public class HUDController : IHUDController
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private InputAction_Trigger toggleUIVisibilityTrigger;
-    private DataStore_FeatureFlag featureFlags;
+    private DataStore dataStore;
 
     private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
@@ -35,11 +35,11 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore_FeatureFlag featureFlags, IHUDFactory hudFactory = null)
+    public HUDController(IWearablesCatalogService wearablesCatalogService, DataStore dataStore, IHUDFactory hudFactory = null)
     {
         this.wearablesCatalogService = wearablesCatalogService;
         this.hudFactory = hudFactory;
-        this.featureFlags = featureFlags;
+        this.dataStore = dataStore;
     }
 
     public void Initialize()
@@ -144,7 +144,7 @@ public class HUDController : IHUDController
         bool anyInputFieldIsSelected = InputProcessor.FocusIsInInputField();
 
         if (anyInputFieldIsSelected ||
-            DataStore.i.exploreV2.isOpen.Get() ||
+            dataStore.exploreV2.isOpen.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -184,7 +184,7 @@ public class HUDController : IHUDController
             case HUDElementID.NOTIFICATION:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 if (NotificationsController.i != null)
-                    NotificationsController.i.Initialize(notificationHud, DataStore.i.notifications);
+                    NotificationsController.i.Initialize(notificationHud, dataStore.notifications);
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
@@ -555,7 +555,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        DataStore.i.HUDs.currentPlayerId.Set(newModel.userId);
+        dataStore.HUDs.currentPlayerId.Set(newModel.userId);
     }
 #endif
     public void Dispose()

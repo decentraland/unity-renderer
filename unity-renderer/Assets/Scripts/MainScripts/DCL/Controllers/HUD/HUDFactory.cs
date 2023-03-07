@@ -65,7 +65,8 @@ public class HUDFactory : IHUDFactory
                 return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    DataStore.i);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController();
             case HUDElementID.AVATAR_EDITOR:

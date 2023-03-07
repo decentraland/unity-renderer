@@ -1,3 +1,4 @@
+using DCL;
 using NUnit.Framework;
 using System.Collections;
 using NSubstitute;
@@ -21,7 +22,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
-        controller = new ProfileHUDController(userProfileBridge, socialAnalytics);
+        controller = new ProfileHUDController(userProfileBridge, socialAnalytics, Substitute.For<DataStore>());
         baseView = controller.view.GameObject.GetComponent<BaseComponentView>();
     }
 
