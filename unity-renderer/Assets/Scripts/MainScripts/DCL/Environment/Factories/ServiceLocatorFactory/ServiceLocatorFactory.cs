@@ -26,6 +26,7 @@ namespace DCL
         public static ServiceLocator CreateDefault()
         {
             var result = new ServiceLocator();
+            IRPC irpc = new RPC();
 
             //Addressable Resource Provider
             var addressableResourceProvider = new AddressableResourceProvider();
@@ -37,14 +38,14 @@ namespace DCL
             result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
-            result.Register<IRPC>(() => new RPC());
+            result.Register<IRPC>(() => irpc);
             result.Register<IWebRequestController>(() => new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
                 new WebRequestAudioFactory(),
                 new PostWebRequestFactory(),
-                RPCSignRequest.CreateSharedInstance(result.Get<IRPC>())
+                RPCSignRequest.CreateSharedInstance(irpc)
             ));
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());

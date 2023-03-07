@@ -10,16 +10,15 @@ namespace DCL
 {
     public class WebRequestController : IWebRequestController
     {
-        private const string AUTH_HEADER_1 = "x-identity-auth-chain-0";
-        private const string AUTH_HEADER_2 = "x-identity-auth-chain-1";
-        private const string AUTH_HEADER_3 = "x-identity-auth-chain-2";
+        private const string TIMESTAMP_HEADER = "x-identity-timestamp";
+        private const string METADATA_HEADER = "x-identity-metadata";
 
         private IWebRequestFactory getWebRequestFactory;
         private IWebRequestAssetBundleFactory assetBundleFactory;
         private IWebRequestTextureFactory textureFactory;
         private IWebRequestAudioFactory audioClipWebRequestFactory;
         private IPostWebRequestFactory postWebRequestFactory;
-        private IRPCSignRequest rpcSignRequest;
+        private readonly IRPCSignRequest rpcSignRequest;
 
         private readonly List<WebRequestAsyncOperation> ongoingWebRequests = new();
 
@@ -177,11 +176,14 @@ namespace DCL
 
                 if (isSigned && rpcSignRequest != null)
                 {
-                    headers ??= new Dictionary<string, string>();
                     SignBodyResponse signedFetchResponse = await rpcSignRequest.RequestSignedRequest(method, url, null, cancellationToken);
-                    headers.Add(AUTH_HEADER_1, signedFetchResponse.AuthHeader1);
-                    headers.Add(AUTH_HEADER_2, signedFetchResponse.AuthHeader2);
-                    headers.Add(AUTH_HEADER_3, signedFetchResponse.AuthHeader3);
+
+                    for (var j = 0; j < signedFetchResponse.AuthChain.Count; j++)
+                    {
+                        request.SetRequestHeader($"x-identity-auth-chain-{j}", signedFetchResponse.AuthChain[j]);
+                    }
+                    request.SetRequestHeader(TIMESTAMP_HEADER, signedFetchResponse.Timestamp.ToString());
+                    request.SetRequestHeader(METADATA_HEADER, signedFetchResponse.Metadata);
                 }
 
                 if (headers != null)
