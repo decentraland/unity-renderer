@@ -23,9 +23,18 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
 import {
-  SceneFail, SceneLoad,
-  SceneStart, SceneUnload, SCENE_FAIL, SCENE_LOAD, SCENE_START, SCENE_UNLOAD, signalSceneFail, signalSceneLoad,
-  signalSceneStart, signalSceneUnload
+  SceneFail,
+  SceneLoad,
+  SceneStart,
+  SceneUnload,
+  SCENE_FAIL,
+  SCENE_LOAD,
+  SCENE_START,
+  SCENE_UNLOAD,
+  signalSceneFail,
+  signalSceneLoad,
+  signalSceneStart,
+  signalSceneUnload
 } from 'shared/loading/actions'
 import { incrementAvatarSceneMessages } from 'shared/session/getPerformanceInfo'
 import { EntityAction, LoadableScene } from 'shared/types'

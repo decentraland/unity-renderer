@@ -1,7 +1,6 @@
 import mitt from 'mitt'
-import { incrementCounter, getAndClearOccurenceCounters } from 'shared/analytics/occurences'
+import { getAndClearOccurenceCounters, incrementCounter } from 'shared/analytics/occurences'
 import { getExplorerVersion } from 'shared/meta/version'
-
 
 const pingResponseTimes: number[] = []
 const pingResponsePercentages: number[] = []

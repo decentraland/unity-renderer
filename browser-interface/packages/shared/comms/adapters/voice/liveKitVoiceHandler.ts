@@ -252,7 +252,7 @@ export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandle
     .on(RoomEvent.RoomMetadataChanged, function (...args) {
       logger.log('RoomMetadataChanged', args)
     })
-    .on(RoomEvent.Reconnected, function (...args) {
+    .on(RoomEvent.Reconnected, function (..._args) {
       reconnectAllParticipants()
     })
     .on(RoomEvent.MediaDevicesChanged, function (...args) {

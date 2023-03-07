@@ -21,7 +21,7 @@ import { getParcelPosition } from 'shared/scene-loader/selectors'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
-import { CatalystNode } from 'shared/types'
+import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
 import { changeRealm, fetchCatalystRealms, fetchCatalystStatuses } from '.'
 import { waitForMetaConfigurationInitialization, waitForNetworkSelected } from '../meta/sagas'
 import {

@@ -25,7 +25,7 @@ export function getUsedComponentVersions() {
 }
 
 /**
- * Returns the build version 
+ * Returns the build version
  */
 export function getExplorerVersion() {
   return ((globalThis as any).ROLLOUTS || {})['@dcl/explorer']?.version || 'unknown'
