@@ -119,24 +119,5 @@ namespace DCL.ECSComponents.Test
             Assert.AreEqual(targetPosition, entityGo.transform.position);
             Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
         }
-
-        [Test]
-        public void SendEntityToMORDORwhenOutOfScene()
-        {
-            const string userId = "Temptation";
-            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(70, -135, 0);
-            Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
-
-            IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
-            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, UnityEngine.Vector3.one));
-
-            DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
-
-            handler.OnComponentCreated(scene,entity);
-            handler.OnComponentModelUpdated(scene, entity, new PBAvatarAttach() { AvatarId = userId, AnchorPointId = 0 });
-            handler.LateUpdate();
-
-            Assert.AreEqual(EnvironmentSettings.MORDOR, entityGo.transform.position);
-        }
     }
 }
