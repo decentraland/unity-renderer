@@ -1,5 +1,5 @@
 import { call } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics'
+import { trackEvent } from 'shared/analytics/trackEvent'
 import defaultLogger from 'lib/logger'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'

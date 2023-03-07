@@ -1,26 +1,24 @@
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
+import { expect } from 'chai'
 import mitt from 'mitt'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import { toEnvironmentRealmType } from 'shared/apis/host/EnvironmentAPI'
+import { bindHandlersToCommsContext } from 'shared/comms/handlers'
+import { RoomConnection } from 'shared/comms/interface'
+import { disconnectRoom, handleNewCommsContext } from 'shared/comms/sagas'
+import { commsEstablished } from 'shared/loading/types'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { setRealmAdapter } from 'shared/realm/actions'
 import { legacyServices } from 'shared/realm/local-services/legacy'
 import { realmToConnectionString } from 'shared/realm/resolver'
 import { IRealmAdapter } from 'shared/realm/types'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { reducers } from 'shared/store/rootReducer'
 import { setCommsIsland, setRoomConnection } from '../../packages/shared/comms/actions'
-import { getCommsIsland } from '../../packages/shared/comms/selectors'
 import { saveProfileDelta } from '../../packages/shared/profiles/actions'
-import { sceneEventsSaga, updateLocation } from '../../packages/shared/sceneEvents/sagas'
-import { allScenesEvent } from '../../packages/shared/world/parcelSceneManager'
 import { localCommsService } from '../../packages/shared/realm/local-services/comms'
-import { getRealmAdapter } from 'shared/realm/selectors'
-import { disconnectRoom, handleNewCommsContext } from 'shared/comms/sagas'
-import { bindHandlersToCommsContext } from 'shared/comms/handlers'
-import { commsEstablished } from 'shared/loading/types'
-import { RoomConnection } from 'shared/comms/interface'
-import { expect } from 'chai'
+import { getRealmAdapterAndIsland, sceneEventsSaga, updateLocation } from '../../packages/shared/sceneEvents/sagas'
+import { allScenesEvent } from '../../packages/shared/world/parcelSceneManager'
 
 const about: AboutResponse = {
   comms: { healthy: false, protocol: 'v2' },
@@ -69,10 +67,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
     const action = setRealmAdapter(realmAdapter)
     const island = ''
     return expectSaga(sceneEventsSaga)
-      .provide([
-        [select(getRealmAdapter), realmAdapter],
-        [select(getCommsIsland), island]
-      ])
+      .provide([[select(getRealmAdapterAndIsland), { adapter: realmAdapter, island }]])
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
@@ -83,10 +78,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
     const action = setRealmAdapter(realmAdapter)
     const island = undefined
     return expectSaga(sceneEventsSaga)
-      .provide([
-        [select(getRealmAdapter), realmAdapter],
-        [select(getCommsIsland), island]
-      ])
+      .provide([[select(getRealmAdapterAndIsland), { adapter: realmAdapter, island }]])
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
@@ -98,10 +90,7 @@ describe('when the realm change: SET_WORLD_CONTEXT', () => {
     const action = setRealmAdapter(realmAdapter)
 
     return expectSaga(sceneEventsSaga)
-      .provide([
-        [select(getRealmAdapter), realmAdapter],
-        [select(getCommsIsland), island]
-      ])
+      .provide([[select(getRealmAdapterAndIsland), { adapter: realmAdapter, island }]])
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
       .call(updateLocation, realmToConnectionString(realmAdapter), island)
@@ -142,13 +131,13 @@ describe('Comms adapter', () => {
   })
 })
 
-describe('when the island change: SET_COMMS_ISLAND', () => {
+describe('when the island changes: SET_COMMS_ISLAND', () => {
   it('should NOT call allScene events since the realm is null', () => {
     const island = 'casla-island'
     const action = setCommsIsland(island)
     return expectSaga(sceneEventsSaga)
       .withReducer(reducers)
-      .provide([[select(getRealmAdapter), null]])
+      .provide([[select(getRealmAdapterAndIsland), { adapter: null, island }]])
       .dispatch(action)
       .not.call.fn(allScenesEvent)
       .call(updateLocation, undefined, island)
@@ -160,7 +149,7 @@ describe('when the island change: SET_COMMS_ISLAND', () => {
     const action = setCommsIsland(island)
 
     return expectSaga(sceneEventsSaga)
-      .provide([[select(getRealmAdapter), realmAdapter]])
+      .provide([[select(getRealmAdapterAndIsland), { adapter: realmAdapter, island }]])
       .withReducer(reducers)
       .dispatch(action)
       .call(allScenesEvent, { eventType: 'onRealmChanged', payload: toEnvironmentRealmType(realmAdapter, island) })
