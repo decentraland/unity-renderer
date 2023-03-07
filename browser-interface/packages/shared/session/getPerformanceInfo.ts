@@ -1,5 +1,5 @@
 import mitt from 'mitt'
-import { incrementCounter, getAndClearOccurenceCounters } from 'shared/occurences'
+import { incrementCounter, getAndClearOccurenceCounters } from 'shared/analytics/occurences'
 import { getUsedComponentVersions } from 'shared/rolloutVersions'
 
 const pingResponseTimes: number[] = []
