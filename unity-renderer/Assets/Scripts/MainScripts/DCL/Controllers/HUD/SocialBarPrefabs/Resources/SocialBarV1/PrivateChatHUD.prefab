@@ -121,7 +121,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -50}
+  m_AnchoredPosition: {x: 205, y: -514}
   m_SizeDelta: {x: 380, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1261448214712527041
@@ -4087,6 +4087,10 @@ MonoBehaviour:
   nextChatInHistoryInput: {fileID: 11400000, guid: b5e17dbeae28f8748b3308516c99e26d,
     type: 2}
   previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
+    type: 2}
+  nextMentionSuggestionInput: {fileID: 11400000, guid: 766b998e6c8734e3d9971cfc48b788cb,
+    type: 2}
+  previousMentionSuggestionInput: {fileID: 11400000, guid: 06d28566773ab401d82c0f1ac66713c8,
     type: 2}
   chatMentionSuggestions: {fileID: 1011907313089259839}
   model:

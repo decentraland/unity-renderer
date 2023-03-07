@@ -29,6 +29,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] protected PoolChatEntryFactory poolChatEntryFactory;
     [SerializeField] protected InputAction_Trigger nextChatInHistoryInput;
     [SerializeField] protected InputAction_Trigger previousChatInHistoryInput;
+    [SerializeField] protected InputAction_Trigger nextMentionSuggestionInput;
+    [SerializeField] protected InputAction_Trigger previousMentionSuggestionInput;
     [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
     [SerializeField] private Model model;
 
@@ -122,7 +124,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         inputField.onSelect.AddListener(OnInputFieldSelect);
         inputField.onDeselect.AddListener(OnInputFieldDeselect);
         inputField.onValueChanged.AddListener(str => OnMessageUpdated?.Invoke(str, inputField.stringPosition));
-        chatMentionSuggestions.OnEntryClicked += model => OnMentionSuggestionSelected?.Invoke(model.userId);
+        chatMentionSuggestions.OnEntrySubmit += model => OnMentionSuggestionSelected?.Invoke(model.userId);
         ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
         model.enableFadeoutMode = true;
     }
@@ -133,6 +135,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         UpdateLayout();
         nextChatInHistoryInput.OnTriggered += HandleNextChatInHistoryInput;
         previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
+        nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
+        previousMentionSuggestionInput.OnTriggered += HandlePreviousMentionSuggestionInput;
     }
 
     public override void OnDisable()
@@ -140,6 +144,8 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         base.OnDisable();
         nextChatInHistoryInput.OnTriggered -= HandleNextChatInHistoryInput;
         previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
+        nextMentionSuggestionInput.OnTriggered -= HandleNextMentionSuggestionInput;
+        previousMentionSuggestionInput.OnTriggered -= HandlePreviousMentionSuggestionInput;
     }
 
     public override void Update()
@@ -206,6 +212,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         chatMentionSuggestions.Clear();
         chatMentionSuggestions.Set(suggestions);
+        chatMentionSuggestions.SelectFirstEntry();
     }
 
     public void HideMentionSuggestions() =>
@@ -320,6 +327,16 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
 
     private void OnInputFieldSubmit(string message)
     {
+        if (chatMentionSuggestions.IsVisible)
+        {
+            if (inputField.wasCanceled)
+                HideMentionSuggestions();
+            else
+                chatMentionSuggestions.SubmitSelectedEntry();
+
+            return;
+        }
+
         currentMessage.body = message;
         currentMessage.sender = string.Empty;
         currentMessage.messageType = ChatMessage.Type.NONE;
@@ -397,11 +414,29 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         }
     }
 
-    private void HandleNextChatInHistoryInput(DCLAction_Trigger action) =>
+    private void HandleNextChatInHistoryInput(DCLAction_Trigger action)
+    {
+        if (chatMentionSuggestions.IsVisible) return;
         OnNextChatInHistory?.Invoke();
+    }
 
-    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action) =>
+    private void HandlePreviousChatInHistoryInput(DCLAction_Trigger action)
+    {
+        if (chatMentionSuggestions.IsVisible) return;
         OnPreviousChatInHistory?.Invoke();
+    }
+
+    private void HandleNextMentionSuggestionInput(DCLAction_Trigger action)
+    {
+        if (!chatMentionSuggestions.IsVisible) return;
+        chatMentionSuggestions.SelectNextEntry();
+    }
+
+    private void HandlePreviousMentionSuggestionInput(DCLAction_Trigger action)
+    {
+        if (!chatMentionSuggestions.IsVisible) return;
+        chatMentionSuggestions.SelectPreviousEntry();
+    }
 
     private void UpdateLayout()
     {

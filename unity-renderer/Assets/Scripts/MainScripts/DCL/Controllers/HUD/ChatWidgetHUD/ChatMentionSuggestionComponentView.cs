@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Chat.HUD
@@ -15,7 +16,9 @@ namespace DCL.Chat.HUD
 
         private readonly Dictionary<ChatMentionSuggestionEntryComponentView, PoolableObject> pooledObjects = new ();
 
-        public event Action<ChatMentionSuggestionModel> OnEntryClicked;
+        public event Action<ChatMentionSuggestionModel> OnEntrySubmit;
+
+        public bool IsVisible => gameObject.activeInHierarchy;
 
         public void Clear()
         {
@@ -38,15 +41,64 @@ namespace DCL.Chat.HUD
                 entry.transform.SetParent(entryContainer, false);
                 entry.SetModel(suggestion);
                 entry.Show(true);
-                entry.OnClicked -= HandleEntryClick;
-                entry.OnClicked += HandleEntryClick;
+                entry.OnSubmitted -= HandleEntrySubmit;
+                entry.OnSubmitted += HandleEntrySubmit;
             }
 
             layout.ForceUpdateLayout();
         }
 
-        private void HandleEntryClick(ChatMentionSuggestionModel model) =>
-            OnEntryClicked?.Invoke(model);
+        public void SelectFirstEntry()
+        {
+            foreach (ChatMentionSuggestionEntryComponentView view in pooledObjects.Keys)
+            {
+                view.Select();
+                break;
+            }
+        }
+
+        public void SelectNextEntry()
+        {
+            var selectionFound = false;
+            ChatMentionSuggestionEntryComponentView[] views = pooledObjects.Keys.ToArray();
+
+            for (var i = 0; i < views.Length; i++)
+            {
+                ChatMentionSuggestionEntryComponentView view = views[i];
+                if (!view.IsSelected) continue;
+                int nextIndex = (i + 1) % views.Length;
+                view.Deselect();
+                views[nextIndex].Select();
+                selectionFound = true;
+                break;
+            }
+
+            if (!selectionFound)
+                SelectFirstEntry();
+        }
+
+        public void SelectPreviousEntry()
+        {
+            var selectionFound = false;
+            ChatMentionSuggestionEntryComponentView[] views = pooledObjects.Keys.ToArray();
+
+            for (var i = 0; i < views.Length; i++)
+            {
+                ChatMentionSuggestionEntryComponentView view = views[i];
+                if (!view.IsSelected) continue;
+                int nextIndex = i - 1 < 0 ? views.Length - 1 : i - 1;
+                view.Deselect();
+                views[nextIndex].Select();
+                selectionFound = true;
+                break;
+            }
+
+            if (!selectionFound)
+                SelectFirstEntry();
+        }
+
+        private void HandleEntrySubmit(ChatMentionSuggestionModel model) =>
+            OnEntrySubmit?.Invoke(model);
 
         private ChatMentionSuggestionEntryComponentView GetEntryFromPool()
         {
@@ -71,6 +123,12 @@ namespace DCL.Chat.HUD
             entryPool.ForcePrewarm();
 
             return entryPool;
+        }
+
+        public void SubmitSelectedEntry()
+        {
+            ChatMentionSuggestionEntryComponentView view = pooledObjects.Keys.FirstOrDefault(view => view.IsSelected);
+            view?.OnSubmit(null);
         }
     }
 }

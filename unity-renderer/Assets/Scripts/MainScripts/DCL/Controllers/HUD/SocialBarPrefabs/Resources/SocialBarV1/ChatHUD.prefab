@@ -1834,6 +1834,10 @@ MonoBehaviour:
     type: 2}
   previousChatInHistoryInput: {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4,
     type: 2}
+  nextMentionSuggestionInput: {fileID: 11400000, guid: 766b998e6c8734e3d9971cfc48b788cb,
+    type: 2}
+  previousMentionSuggestionInput: {fileID: 11400000, guid: 06d28566773ab401d82c0f1ac66713c8,
+    type: 2}
   chatMentionSuggestions: {fileID: 8679125580999122056}
   model:
     isInputFieldFocused: 0
