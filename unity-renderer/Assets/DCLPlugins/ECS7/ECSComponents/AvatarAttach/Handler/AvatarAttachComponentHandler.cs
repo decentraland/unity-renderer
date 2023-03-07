@@ -2,6 +2,7 @@
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
@@ -10,8 +11,6 @@ namespace DCL.ECSComponents
 {
     public class AvatarAttachComponentHandler : IECSComponentHandler<PBAvatarAttach>
     {
-        private const float BOUNDARIES_CHECK_INTERVAL = 5;
-        
         internal PBAvatarAttach prevModel = null;
 
         internal IAvatarAnchorPoints anchorPoints;
@@ -23,13 +22,16 @@ namespace DCL.ECSComponents
 
         internal readonly GetAnchorPointsHandler getAnchorPointsHandler;
         private readonly IUpdateEventHandler updateEventHandler;
-        
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
+
         private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
 
-        public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler)
+        public AvatarAttachComponentHandler(IUpdateEventHandler updateEventHandler, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             this.updateEventHandler = updateEventHandler;
+            this.sbcInternalComponent = sbcInternalComponent;
+
             getAnchorPointsHandler = new GetAnchorPointsHandler();
             getAnchorPointsHandler.OnAvatarRemoved += Detach;
         }
@@ -50,21 +52,21 @@ namespace DCL.ECSComponents
             // If is the same model, we skip
             if (model == null || (prevModel != null && prevModel.AvatarId == model.AvatarId && model.AnchorPointId == prevModel.AnchorPointId))
                 return;
-            
+
             // Detach previous attachments
             Detach();
             Attach(model.AvatarId, (AvatarAnchorPointIds)model.AnchorPointId);
 
             prevModel = model;
         }
-        
+
         public void Dispose()
         {
             Detach();
             getAnchorPointsHandler.OnAvatarRemoved -= Detach;
             getAnchorPointsHandler.Dispose();
         }
-        
+
         internal virtual void Detach()
         {
             StopComponentUpdate();
@@ -101,29 +103,9 @@ namespace DCL.ECSComponents
 
             var anchorPoint = anchorPoints.GetTransform(anchorPointId);
 
-            if (IsInsideScene(CommonScriptableObjects.worldOffset + anchorPoint.position))
-            {
-                entity.gameObject.transform.position = anchorPoint.position;
-                entity.gameObject.transform.rotation = anchorPoint.rotation;
-            }
-            else
-            {
-                entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
-            }
-        }
-
-        internal virtual bool IsInsideScene(UnityEngine.Vector3 position)
-        {
-            bool result = isInsideScene;
-
-            Vector2Int coords = Helpers.Utils.WorldToGridPosition(position);
-            
-            if (currentCoords == null || currentCoords != coords)
-                result = scene.IsInsideSceneBoundaries(coords, position.y);
-            
-            currentCoords = coords;
-            isInsideScene = result;
-            return result;
+            entity.gameObject.transform.position = anchorPoint.position;
+            entity.gameObject.transform.rotation = anchorPoint.rotation;
+            sbcInternalComponent.SetPosition(scene, entity, anchorPoint.position);
         }
 
         private void StartComponentUpdate()
