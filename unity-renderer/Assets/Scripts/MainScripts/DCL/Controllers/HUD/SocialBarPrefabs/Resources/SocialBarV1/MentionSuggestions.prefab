@@ -553,6 +553,7 @@ MonoBehaviour:
   mentionSuggestionPrefab: {fileID: 2243817803780923934, guid: acdf8eb48c3304da8858c98ebfcc8af4,
     type: 3}
   entryContainer: {fileID: 4950864149139077007}
+  layout: {fileID: 1749515243471668671}
 --- !u!1 &8704358582881904701
 GameObject:
   m_ObjectHideFlags: 0

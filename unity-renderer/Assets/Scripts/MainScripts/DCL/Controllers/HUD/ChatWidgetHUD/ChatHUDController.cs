@@ -30,8 +30,7 @@ public class ChatHUDController : IDisposable
     private readonly bool detectWhisper;
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
     private readonly IProfanityFilter profanityFilter;
-    private readonly Regex mentionStartRegex = new(@"(\B@\w+)|(\B@+)");
-    private readonly Regex mentionRegex = new (@"\B@\w{3,}");
+    private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
     private readonly List<ChatEntryModel> spamMessages = new ();
@@ -230,23 +229,15 @@ public class ChatHUDController : IDisposable
         if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
             mentionFromIndex = cursorPosition;
 
-        Match match = mentionStartRegex.Match(message, mentionFromIndex);
+        Match match = mentionRegex.Match(message, mentionFromIndex);
 
         if (match.Success)
         {
+            mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
             mentionFromIndex = match.Index;
             mentionLength = match.Length;
-
-            match = mentionRegex.Match(message, mentionFromIndex);
-
-            if (match.Success)
-            {
-                mentionSuggestionCancellationToken = mentionSuggestionCancellationToken.SafeRestart();
-                mentionFromIndex = match.Index;
-                mentionLength = match.Length;
-                string name = match.Value[1..];
-                ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
-            }
+            string name = match.Value[1..];
+            ShowMentionSuggestionsAsync(name, mentionSuggestionCancellationToken.Token).Forget();
         }
         else
         {

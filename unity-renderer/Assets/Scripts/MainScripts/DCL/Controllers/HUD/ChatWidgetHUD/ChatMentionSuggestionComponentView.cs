@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace DCL.Chat.HUD
 
         [SerializeField] private ChatMentionSuggestionEntryComponentView mentionSuggestionPrefab;
         [SerializeField] private RectTransform entryContainer;
+        [SerializeField] private RectTransform layout;
 
         private readonly Dictionary<ChatMentionSuggestionEntryComponentView, PoolableObject> pooledObjects = new ();
 
@@ -39,6 +41,8 @@ namespace DCL.Chat.HUD
                 entry.OnClicked -= HandleEntryClick;
                 entry.OnClicked += HandleEntryClick;
             }
+
+            layout.ForceUpdateLayout();
         }
 
         private void HandleEntryClick(ChatMentionSuggestionModel model) =>
