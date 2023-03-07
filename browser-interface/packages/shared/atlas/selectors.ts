@@ -1,6 +1,6 @@
 import { RootAtlasState } from './types'
 
-export const EMPTY_PARCEL_NAME = 'Empty parcel'
+const EMPTY_PARCEL_NAME = 'Empty parcel'
 
 export function getPoiTiles(state: RootAtlasState) {
   return state.atlas.pois

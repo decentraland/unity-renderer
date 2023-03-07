@@ -1,30 +1,25 @@
 import { Authenticator } from '@dcl/crypto'
-import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-
-import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
-
-import { createDummyLogger, createLogger } from 'lib/logger'
-import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
-import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
-
-import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
-
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
+import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 import { RequestManager } from 'eth-connect'
 import { DecentralandIdentity, LoginState } from 'kernel-web-interface'
+import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
+import { createDummyLogger, createLogger } from 'lib/logger'
 import { Store } from 'redux'
+import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { setRoomConnection } from 'shared/comms/actions'
-import { selectNetwork } from 'shared/dao/actions'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
+import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { globalObservable } from 'shared/observables'
+import { saveProfileDelta } from 'shared/profiles/actions'
 import { initialRemoteProfileLoad } from 'shared/profiles/sagas/initialRemoteProfileLoad'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { store } from 'shared/store/isolatedStore'
-import { saveProfileDelta } from '../profiles/actions'
+import { getNetworkFromProvider, registerProviderNetChanges } from 'shared/web3/lib/provider'
+import { selectNetwork } from 'shared/web3/actions'
 import {
   AUTHENTICATE,
   AuthenticateAction,
@@ -44,7 +39,7 @@ import {
   UserAuthenticated,
   USER_AUTHENTICATED
 } from './actions'
-import { retrieveLastGuestSession, retrieveLastSessionByAddress, deleteSession, storeSession } from './index'
+import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
 import { ExplorerIdentity, RootSessionState, SessionState, StoredSession } from './types'
 
@@ -107,7 +102,7 @@ function* authenticate(action: AuthenticateAction) {
   }
 
   // set the etherum network to start loading profiles
-  const net: ETHEREUM_NETWORK = yield call(getAppNetwork)
+  const net: ETHEREUM_NETWORK = yield call(getNetworkFromProvider)
   yield put(selectNetwork(net))
   registerProviderNetChanges()
 
@@ -119,8 +114,7 @@ function* authenticate(action: AuthenticateAction) {
 
   // 1. authenticate our user
   yield put(userAuthenticated(identity, net, isGuest))
-  // 2. then ask for our profile when we selected a catalyst
-  yield call(waitForRealm)
+  // 2. then ask for our profile
   const avatar = yield call(initialRemoteProfileLoad)
 
   // 3. continue with signin/signup (only not in preview)

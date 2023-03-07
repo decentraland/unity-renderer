@@ -4,7 +4,7 @@ import { RootAtlasState } from 'shared/atlas/types'
 import { RootCatalogState } from 'shared/catalogs/types'
 import { RootChatState } from 'shared/chat/types'
 import { RootCommsState } from 'shared/comms/types'
-import { RootDaoState } from 'shared/dao/types'
+import { RootCatalystSelectionState } from 'shared/catalystSelection/types'
 import { RootFriendsState } from 'shared/friends/types'
 import { RootMetaState } from 'shared/meta/types'
 import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
@@ -21,7 +21,7 @@ import { RootLoadingState } from 'shared/loading/reducer'
 
 export type RootState = RootAtlasState &
   RootProfileState &
-  RootDaoState &
+  RootCatalystSelectionState &
   RootMetaState &
   RootChatState &
   RootRealmState &

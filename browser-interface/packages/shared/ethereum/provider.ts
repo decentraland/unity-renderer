@@ -1,21 +1,23 @@
-import { AuthIdentity } from '@dcl/crypto'
 import { RequestManager } from 'eth-connect'
 import { now } from 'lib/javascript/now'
+import { StoredSession } from 'shared/session/types'
 
 export const requestManager = new RequestManager((window as any).ethereum ?? null)
 
-export function isSessionExpired(userData?: { identity: AuthIdentity }) {
-  if (!userData || !userData.identity || !userData.identity.expiration) {
+export function isSessionExpired(userData: StoredSession) {
+  if (!userData || !userData.identity) {
     return false
   }
-  const expiration = userData.identity.expiration
-  if (typeof expiration === 'number') {
+  const expiration = userData.identity.expiration as any
+  if (!expiration) {
+    return true
+  } else if (typeof expiration === 'number') {
     return expiration < now()
-  }
-  if ((expiration as any).getTime) {
+  } else if (expiration.getTime) {
     return expiration.getTime() < now()
+  } else {
+    return new Date(expiration).getTime() < now()
   }
-  return false
 }
 
 export async function getUserAccount(

@@ -9,22 +9,18 @@ import { Vector2 } from 'lib/math/Vector2'
 import { waitFor } from 'lib/redux'
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getPOIService } from 'shared/dao/selectors'
 import { SCENE_LOAD } from 'shared/loading/actions'
+import { META_CONFIGURATION_INITIALIZED } from 'shared/meta/actions'
+import { getPOIService } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
-import {
-  getOwnerNameFromJsonData,
-  getSceneDescriptionFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
 import { store } from 'shared/store/isolatedStore'
 import { LoadableScene } from 'shared/types'
-import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
-import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
-import { lastPlayerPosition } from '../world/positionThings'
+import { lastPlayerPosition } from 'shared/world/positionThings'
+import { getUnityInterface, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
 import {
   initializePoiTiles,
   INITIALIZE_POI_TILES,
@@ -45,6 +41,8 @@ import {
 import { getPoiTiles, postProcessSceneName } from './selectors'
 import { RootAtlasState } from './types'
 import { homePointKey } from './utils'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getSceneDescriptionFromJsonData } from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
 
 export function* atlasSaga(): any {
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
@@ -98,10 +96,10 @@ function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
 function* initializePois() {
   yield call(waitForRealm)
 
-  const daoPOIs: string[] | undefined = yield call(fetchPOIsFromDAO)
+  const catalystPOIs: string[] | undefined = yield call(fetchPOIsFromDAO)
 
-  if (daoPOIs) {
-    yield put(initializePoiTiles(daoPOIs))
+  if (catalystPOIs) {
+    yield put(initializePoiTiles(catalystPOIs))
   } else {
     yield put(initializePoiTiles([]))
   }
@@ -130,7 +128,7 @@ function* setHomeSceneAction(action: SetHomeScene) {
 
 function* sendHomeSceneToUnityAction(action: SendHomeScene) {
   yield call(waitForRendererInstance)
-  getUnityInstance().UpdateHomeScene(action.payload.position)
+  getUnityInterface().UpdateHomeScene(action.payload.position)
 }
 
 function* reportScenes(scenes: LoadableScene[]): any {
@@ -172,7 +170,7 @@ function* reportScenes(scenes: LoadableScene[]): any {
   })
 
   yield call(waitForRendererInstance)
-  getUnityInstance().UpdateMinimapSceneInformation(minimapSceneInfoResult)
+  getUnityInterface().UpdateMinimapSceneInformation(minimapSceneInfoResult)
 }
 
 async function fetchPOIsFromDAO(): Promise<string[] | undefined> {

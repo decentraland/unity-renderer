@@ -3,7 +3,7 @@
 import { AuthIdentity } from './dcl-crypto'
 import { PersistentAsyncStorage } from './storage'
 
-export { AuthIdentity, PersistentAsyncStorage }
+export { PersistentAsyncStorage }
 
 /**
  * @public
@@ -13,7 +13,7 @@ export type IEthereumProvider = { sendAsync: any } | { request: any }
 /**
  * @public
  */
-export interface KernelTrackingEvent {
+interface KernelTrackingEvent {
   eventName: string
   eventData: Record<string, any>
 }
@@ -21,7 +21,7 @@ export interface KernelTrackingEvent {
 /**
  * @public
  */
-export interface KernelError {
+interface KernelError {
   error: Error
   code?: string
   level?: 'critical' | 'fatal' | 'serious' | 'warning'
@@ -31,7 +31,7 @@ export interface KernelError {
 /**
  * @public
  */
-export interface KernelLoadingProgress {
+interface KernelLoadingProgress {
   progress: number
   status?: number
 }
@@ -76,7 +76,7 @@ export type DecentralandIdentity = AuthIdentity & {
 /**
  * @public
  */
-export interface KernelAccountState {
+interface KernelAccountState {
   loginStatus: LoginState
   network?: string
   identity?: DecentralandIdentity
@@ -87,21 +87,21 @@ export interface KernelAccountState {
 /**
  * @public
  */
-export interface KernelSignUpEvent {
+interface KernelSignUpEvent {
   email: string
 }
 
 /**
  * @public
  */
-export interface KernelOpenUrlEvent {
+interface KernelOpenUrlEvent {
   url: string
 }
 
 /**
  * @public
  */
-export interface KernelRendererVisibleEvent {
+interface KernelRendererVisibleEvent {
   visible: boolean
 }
 
@@ -124,14 +124,14 @@ export type KernelOptions = {
 /**
  * @public
  */
-export type KernelLogoutEvent = any
+type KernelLogoutEvent = any
 
 /**
  * @public
  *
  * This event is triggered after the kernel shuts down for any reason
  */
-export type KernelShutdownEvent = any
+type KernelShutdownEvent = any
 
 /**
  * @public

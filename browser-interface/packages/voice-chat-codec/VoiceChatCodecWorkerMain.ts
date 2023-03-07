@@ -12,7 +12,7 @@ export type EncodeStream = {
   addAudioEncodedListener(listener: EncodeListener): void
 }
 
-export type DecodeStream = {
+type DecodeStream = {
   decode(encoded: Uint8Array): void
   addAudioDecodedListener(listener: DecodeListener): void
 }

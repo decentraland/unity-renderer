@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { resolveRealmConfigFromString } from 'shared/dao'
+import { resolveRealmConfigFromString } from 'shared/realm/resolvers/resolveRealmConfigFromString'
 import * as r from 'shared/realm/resolver'
 
 function eq<T>(given: T, expected: T) {

@@ -8,11 +8,6 @@ export type EnvironmentRealm = {
   protocol: string
 }
 
-export type ExplorerConfiguration = {
-  clientUri: string
-  configurations: Record<string, string | number | boolean>
-}
-
 export const enum Platform {
   DESKTOP = 'desktop',
   BROWSER = 'browser'

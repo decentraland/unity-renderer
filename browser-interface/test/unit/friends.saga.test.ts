@@ -11,6 +11,7 @@ import {
   GetFriendRequestsReplyOk,
   SendFriendRequestPayload
 } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/friend_request_kernel.gen'
+import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
 import {
   Conversation,
   ConversationType,
@@ -47,8 +48,7 @@ import {
   PresenceStatus
 } from 'shared/types'
 import sinon, { assert } from 'sinon'
-import { getUnityInstance, setUnityInstance } from 'unity-interface/IUnityInterface'
-import { GetMutualFriendsRequest } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/mutual_friends_kernel.gen'
+import { getUnityInterface, setUnityInterface } from 'unity-interface/IUnityInterface'
 
 function getMockedAvatar(userId: string, name: string): ProfileUserInfo {
   return {
@@ -205,7 +205,7 @@ function mockStoreCalls(
   fakeCoolDownOfFriendRequests?: Map<string, number>
 ): StoreEnhancer<any, RootState> {
   // here we list all the functions that should be invoked by this tests
-  setUnityInstance({
+  setUnityInterface({
     AddUserProfilesToCatalog() {},
     AddFriends() {},
     UpdateUserPresence() {},
@@ -270,7 +270,7 @@ describe('Friends sagas', () => {
 
     describe("When there's a filter by id", () => {
       it('Should filter the responses to have only the ones that include the userId and have the full friends length as total', async () => {
-        const unityInstance = getUnityInstance()
+        const unityInstance = getUnityInterface()
         const unityMock = sinon.mock(unityInstance)
         const request: GetFriendsPayload = {
           limit: 1000,
@@ -310,10 +310,10 @@ describe('Friends sagas', () => {
           friends: expectedFriends.users.map((friend) => friend.userId),
           totalFriends: profilesFromStore.length
         }
-        sinon.mock(getUnityInstance()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
-        sinon.mock(getUnityInstance()).expects('AddFriends').once().calledWithMatch(addedFriends)
+        sinon.mock(getUnityInterface()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
+        sinon.mock(getUnityInterface()).expects('AddFriends').once().calledWithMatch(addedFriends)
         await friendsSagas.getFriends(request2)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
 
@@ -332,10 +332,10 @@ describe('Friends sagas', () => {
           friends: expectedFriends.users.map((friend) => friend.userId),
           totalFriends: 4
         }
-        sinon.mock(getUnityInstance()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
-        sinon.mock(getUnityInstance()).expects('AddFriends').once().calledWithMatch(addedFriends)
+        sinon.mock(getUnityInterface()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
+        sinon.mock(getUnityInterface()).expects('AddFriends').once().calledWithMatch(addedFriends)
         await friendsSagas.getFriends(request2)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -375,10 +375,10 @@ describe('Friends sagas', () => {
           ]
         }
 
-        sinon.mock(getUnityInstance()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
-        sinon.mock(getUnityInstance()).expects('AddFriendRequests').once().calledWithMatch(addedFriendRequests)
+        sinon.mock(getUnityInterface()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
+        sinon.mock(getUnityInterface()).expects('AddFriendRequests').once().calledWithMatch(addedFriendRequests)
         await friendsSagas.getFriendRequests(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
 
@@ -404,10 +404,10 @@ describe('Friends sagas', () => {
             .map((profile) => profileToRendererFormat(profile.data, { baseUrl: FETCH_CONTENT_SERVER }))
         }
 
-        sinon.mock(getUnityInstance()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
-        sinon.mock(getUnityInstance()).expects('AddFriendRequests').once().calledWithMatch(addedFriendRequests)
+        sinon.mock(getUnityInterface()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
+        sinon.mock(getUnityInterface()).expects('AddFriendRequests').once().calledWithMatch(addedFriendRequests)
         await friendsSagas.getFriendRequests(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -451,10 +451,10 @@ describe('Friends sagas', () => {
           ]
         }
 
-        sinon.mock(getUnityInstance()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
+        sinon.mock(getUnityInterface()).expects('AddUserProfilesToCatalog').once().calledWithMatch(expectedFriends)
         const response = await friendsSagas.getFriendRequestsProtocol(request)
         assert.match(response, expectedResponse)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -497,7 +497,7 @@ describe('Friends sagas', () => {
       })
 
       it('Should send unity the expected profiles and the expected friend conversations', async () => {
-        const unityInstance = getUnityInstance()
+        const unityInstance = getUnityInterface()
         const unityMock = sinon.mock(unityInstance)
         const request: GetFriendsWithDirectMessagesPayload = {
           limit: 1000,
@@ -563,9 +563,9 @@ describe('Friends sagas', () => {
           }))
         }
 
-        sinon.mock(getUnityInstance()).expects('AddChatMessages').once().calledWithMatch(addChatMessagesPayload)
+        sinon.mock(getUnityInterface()).expects('AddChatMessages').once().calledWithMatch(addChatMessagesPayload)
         await friendsSagas.getPrivateMessages(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -581,7 +581,7 @@ describe('Friends sagas', () => {
       const { store } = buildStore(mockStoreCalls(new Map()))
       globalThis.globalStore = store
 
-      const unityMock = sinon.mock(getUnityInstance())
+      const unityMock = sinon.mock(getUnityInterface())
       unityMock.expects('UpdateUserPresence').once().calledWithMatch({
         userId: '0xa1',
         realm: lastStatusOfFriendsEntries[0][1].realm,
@@ -622,7 +622,7 @@ describe('Friends sagas', () => {
           return m
         }
       }
-      const unityMock = sinon.mock(getUnityInstance())
+      const unityMock = sinon.mock(getUnityInterface())
       unityMock
         .expects('UpdateUserPresence')
         .once()
@@ -653,7 +653,7 @@ describe('Friends sagas', () => {
       const { store } = buildStore(mockStoreCalls(lastStatusOfFriends))
       globalThis.globalStore = store
 
-      const unityMock = sinon.mock(getUnityInstance())
+      const unityMock = sinon.mock(getUnityInterface())
       unityMock.expects('UpdateUserPresence').never()
       await expectSaga(friendsSagas.initializeStatusUpdateInterval)
         .provide([

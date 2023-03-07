@@ -24,7 +24,19 @@ export function assertHasPermission(test: PermissionItem, ctx: PortContext) {
   return true
 }
 
-export function hasPermission(test: PermissionItem, ctx: PortContext) {
+export function registerPermissionServiceServerImplementation(port: RpcServerPort<PortContext>) {
+  codegen.registerService(port, PermissionsServiceDefinition, async () => ({
+    async hasPermission(req, ctx) {
+      return { hasPermission: hasPermission(req.permission, ctx) }
+    },
+    async hasManyPermissions(req, ctx) {
+      const hasManyPermission = await Promise.all(req.permissions.map((item) => hasPermission(item, ctx)))
+      return { hasManyPermission }
+    }
+  }))
+}
+
+function hasPermission(test: PermissionItem, ctx: PortContext) {
   // Backward compatibility with parcel scene with 'requiredPermissions' in the scene.json
   //  Only the two permissions that start with ALLOW_TO_... can be conceed without user
   //  interaction
@@ -60,16 +72,4 @@ export function hasPermission(test: PermissionItem, ctx: PortContext) {
   }
 
   return ctx.permissionGranted.has(test)
-}
-
-export function registerPermissionServiceServerImplementation(port: RpcServerPort<PortContext>) {
-  codegen.registerService(port, PermissionsServiceDefinition, async () => ({
-    async hasPermission(req, ctx) {
-      return { hasPermission: hasPermission(req.permission, ctx) }
-    },
-    async hasManyPermissions(req, ctx) {
-      const hasManyPermission = await Promise.all(req.permissions.map((item) => hasPermission(item, ctx)))
-      return { hasManyPermission }
-    }
-  }))
 }

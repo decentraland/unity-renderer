@@ -1,27 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
+import { isChrome } from 'lib/browser/isChrome'
+import { createLogger } from 'lib/logger'
 import {
-  Room,
-  RoomEvent,
-  RemoteParticipant,
-  RemoteTrackPublication,
-  RemoteTrack,
-  Track,
+  LocalAudioTrack,
   ParticipantEvent,
   RemoteAudioTrack,
-  LocalAudioTrack
+  RemoteParticipant,
+  RemoteTrack,
+  RemoteTrackPublication,
+  Room,
+  RoomEvent,
+  Track
 } from 'livekit-client'
-import Html from 'shared/Html'
-import { createLogger } from 'lib/logger'
-import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
 import { getPeer } from 'shared/comms/peers'
-import { getSpatialParamsFor } from '../../../voiceChat/utils'
-import { isChrome } from 'lib/browser/isChrome'
-import { startLoopback } from './loopback'
-
-import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { shouldPlayVoice } from 'shared/voiceChat/selectors'
+import { getSpatialParamsFor } from 'shared/voiceChat/utils'
+import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { setupAudioDebugger } from './audioDebugger'
+import Html from './Html'
+import { startLoopback } from './loopback'
 
 type ParticipantInfo = {
   participant: RemoteParticipant
@@ -36,6 +35,10 @@ type ParticipantTrack = {
 
 export const createLiveKitVoiceHandler = async (room: Room): Promise<VoiceHandler> => {
   const logger = createLogger('🎙 LiveKitVoiceCommunicator: ')
+
+  if (document.location.search.includes('AUDIO_DEBUG')) {
+    setupAudioDebugger()
+  }
 
   const parentElement = Html.loopbackAudioElement()
 

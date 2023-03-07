@@ -19,7 +19,6 @@ import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { TeleportController } from 'shared/world/TeleportController'
 import { notifyStatusThroughChat } from './index'
 import defaultLogger from 'lib/logger'
-import { changeRealm } from 'shared/dao'
 import { isValidExpression, validExpressions } from 'shared/apis/expressionExplainer'
 import { SHOW_FPS_COUNTER } from 'config'
 import {
@@ -31,14 +30,15 @@ import { getSocialClient, isFriend } from 'shared/friends/selectors'
 import { fetchHotScenes } from 'shared/social/hotScenes'
 import { getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
-import { getUsedComponentVersions } from 'shared/rolloutVersions'
+import { getExplorerVersion } from 'shared/rolloutVersions'
 import { SocialAPI } from 'dcl-social-client'
 import { joinOrCreateChannel, leaveChannel, sendChannelMessage } from 'shared/friends/actions'
 import { areChannelsEnabled } from 'shared/friends/utils'
 import { getRendererModules } from 'shared/renderer/selectors'
+import { changeRealm } from 'shared/realm/changeRealm'
 
 interface IChatCommand {
   name: string
@@ -98,7 +98,7 @@ function* trackEvents(action: PayloadAction<MessageEvent, ChatMessage>) {
 
 function* handleReceivedMessage(action: MessageReceived) {
   yield call(waitForRendererInstance)
-  getUnityInstance().AddMessageToChatWindow(action.payload)
+  getUnityInterface().AddMessageToChatWindow(action.payload)
 }
 
 function* handleSendMessage(action: SendMessage) {
@@ -134,7 +134,7 @@ function* handleSendMessage(action: SendMessage) {
     }
 
     yield call(waitForRendererInstance)
-    getUnityInstance().AddMessageToChatWindow(entry)
+    getUnityInterface().AddMessageToChatWindow(entry)
   } else {
     // If the message was not a command ("/cmdname"), then send message through wire
     const currentUserId = yield select(getCurrentUserId)
@@ -169,7 +169,7 @@ function* handleSendMessage(action: SendMessage) {
       sendPublicChatMessage(message)
 
       yield call(waitForRendererInstance)
-      getUnityInstance().AddMessageToChatWindow(entry)
+      getUnityInterface().AddMessageToChatWindow(entry)
     }
   }
 }
@@ -360,7 +360,7 @@ function initChatCommands() {
 
       sendPublicChatMessage(`␐${expression} ${time}`)
 
-      getUnityInstance().TriggerSelfUserExpression(expression)
+      getUnityInterface().TriggerSelfUserExpression(expression)
       getRendererModules(store.getState())
         ?.emotes?.triggerSelfUserExpression({ id: expression })
         .catch(defaultLogger.error)
@@ -502,7 +502,7 @@ function initChatCommands() {
   })
 
   addChatCommand('version', 'Shows application version', (_message) => {
-    const { explorerVersion } = getUsedComponentVersions()
+    const explorerVersion = getExplorerVersion()
     return {
       messageId: uuid(),
       sender: 'Decentraland',
@@ -598,7 +598,7 @@ function initChatCommands() {
 
 function getDebugPanelMessage() {
   fpsConfiguration.visible = !fpsConfiguration.visible
-  fpsConfiguration.visible ? getUnityInstance().ShowFPSPanel() : getUnityInstance().HideFPSPanel()
+  fpsConfiguration.visible ? getUnityInterface().ShowFPSPanel() : getUnityInterface().HideFPSPanel()
 
   return {
     messageId: uuid(),
@@ -631,7 +631,7 @@ function parseAndSendDetectABMessage(message: string) {
     forCurrentScene = message === sceneString
   }
 
-  getUnityInstance().DetectABs({ isOn: isOn, forCurrentScene: forCurrentScene })
+  getUnityInterface().DetectABs({ isOn: isOn, forCurrentScene: forCurrentScene })
 
   return {
     messageId: uuid(),

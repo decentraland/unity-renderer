@@ -8,15 +8,13 @@ export const PROFILE_SUCCESS = '[PROFILE] Fetch succeeded'
 export const PROFILE_FAILURE = '[PROFILE] Fetch failed'
 
 export const SAVE_DELTA_PROFILE_REQUEST = '[Current User] Save Profile Requested'
-export const SAVE_PROFILE_SUCCESS = '[Current User] Save Profile Succeeded'
-export const SAVE_PROFILE_FAILURE = '[Current User] Save Profile Failure'
+const SAVE_PROFILE_FAILURE = '[Current User] Save Profile Failure'
 
 export const DEPLOY_PROFILE_REQUEST = '[Deploy Current Profile] Request'
 export const DEPLOY_PROFILE_SUCCESS = '[Deploy Current Profile] Success'
-export const DEPLOY_PROFILE_FAILURE = '[Deploy Current Profile] Failure'
+const DEPLOY_PROFILE_FAILURE = '[Deploy Current Profile] Failure'
 
 export const SEND_PROFILE_TO_RENDERER_REQUEST = 'Send Profile to Renderer Requested'
-export const SEND_PROFILE_TO_RENDERER_SUCCESS = 'Send Profile to Renderer Succeeded'
 
 export const profileRequest = (userId: string, minimumVersion?: number) =>
   action(PROFILE_REQUEST, { userId, minimumVersion })
@@ -40,7 +38,6 @@ export const saveProfileFailure = (userId: string, error: any) => action(SAVE_PR
 
 export type SaveProfileDelta = ReturnType<typeof saveProfileDelta>
 export type SendProfileToRenderer = ReturnType<typeof sendProfileToRenderer>
-export type SaveProfileFailure = ReturnType<typeof saveProfileFailure>
 
 export const deployProfile = (profile: Avatar) => action(DEPLOY_PROFILE_REQUEST, { profile })
 export const deployProfileSuccess = (userId: string, version: number, profile: Avatar) =>
@@ -48,13 +45,9 @@ export const deployProfileSuccess = (userId: string, version: number, profile: A
 export const deployProfileFailure = (userId: string, profile: Avatar, error: any) =>
   action(DEPLOY_PROFILE_FAILURE, { userId, profile, error })
 
-export type DeployProfileSuccess = ReturnType<typeof deployProfileSuccess>
 export type DeployProfile = ReturnType<typeof deployProfile>
 
 export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
-export const addedProfileToCatalog = (userId: string, profile: Avatar) =>
-  action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
-export type AddedProfileToCatalog = ReturnType<typeof addedProfileToCatalog>
 
 export const ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG = 'Add profile to last sent profile version and catalog'
 export const addProfileToLastSentProfileVersionAndCatalog = (userId: string, version: number) =>
@@ -66,8 +59,3 @@ export type AddProfileToLastSentProfileVersionAndCatalog = ReturnType<
 export const ADDED_PROFILES_TO_CATALOG = '[Success] Added profiles to catalog'
 export const addedProfilesToCatalog = (profiles: Avatar[]) => action(ADDED_PROFILES_TO_CATALOG, { profiles })
 export type AddedProfilesToCatalog = ReturnType<typeof addedProfilesToCatalog>
-
-// Profiles over comms
-export const PROFILE_RECEIVED_OVER_COMMS = 'PROFILE_RECEIVED_OVER_COMMS'
-export const profileReceivedOverComms = (profile: Avatar) => action(PROFILE_RECEIVED_OVER_COMMS, { profile })
-export type ProfileReceivedOverComms = ReturnType<typeof profileReceivedOverComms>

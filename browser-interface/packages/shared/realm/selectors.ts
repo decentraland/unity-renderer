@@ -1,4 +1,4 @@
-import { FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE } from 'config'
+import { FETCH_CONTENT_SERVICE, HOTSCENES_SERVICE, POI_SERVICE, UPDATE_CONTENT_SERVICE } from 'config'
 import { realmToConnectionString, urlWithProtocol } from './resolver'
 import type { IRealmAdapter, RootRealmState } from './types'
 import { OFFLINE_REALM } from './types'
@@ -21,6 +21,22 @@ export const getProfilesContentServerFromRealmAdapter = (adapter: IRealmAdapter)
   }
   const url = adapter.services.legacy.updateContentServer
   return urlWithProtocol(url)
+}
+
+export const getHotScenesService = (state: RootRealmState) => {
+  if (HOTSCENES_SERVICE) {
+    return HOTSCENES_SERVICE
+  }
+  return urlWithProtocol(state.realm.realmAdapter!.services.legacy.hotScenesService)
+}
+
+export const getExploreRealmsService = (state: RootRealmState) =>
+  state.realm.realmAdapter!.services.legacy.exploreRealmsService
+export const getPOIService = (state: RootRealmState) => {
+  if (POI_SERVICE) {
+    return POI_SERVICE
+  }
+  return urlWithProtocol(state.realm.realmAdapter!.services.legacy.poiService)
 }
 
 /**

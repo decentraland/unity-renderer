@@ -1,27 +1,30 @@
 import { sdk } from '@dcl/schemas'
-import { clientDebug } from 'unity-interface/ClientDebug'
+import { getClientDebug } from 'unity-interface/ClientDebug'
 import type { IUnityInterface } from 'unity-interface/IUnityInterface'
 import { DEBUG_WS_MESSAGES } from 'config/index'
-import { getPreviewSceneId, loadPreviewScene, reloadPlaygroundScene } from 'unity-interface/dcl'
+import { getPreviewSceneId } from 'unity-interface/initialScenes/loadPreviewScene'
+import { loadPreviewScene } from 'unity-interface/initialScenes/loadPreviewScene'
+import { reloadPlaygroundScene } from 'unity-interface/initialScenes/reloadPlaygroundScene'
 import { logger } from './logger'
 
 export async function startPreview(unityInterface: IUnityInterface) {
-  getPreviewSceneId()
-    .then((sceneData) => {
-      if (sceneData.sceneId) {
-        unityInterface.SetKernelConfiguration({
-          debugConfig: {
-            sceneDebugPanelTargetSceneId: sceneData.sceneId,
-            sceneLimitsWarningSceneId: sceneData.sceneId
-          }
-        })
-        clientDebug.ToggleSceneBoundingBoxes(sceneData.sceneId, false).catch((e) => logger.error(e))
-        unityInterface.SendMessageToUnity('Main', 'TogglePreviewMenu', JSON.stringify({ enabled: true }))
-      }
-    })
-    .catch((_err) => {
-      logger.info('Warning: cannot get preview scene id')
-    })
+  try {
+    const sceneData = await getPreviewSceneId()
+    if (sceneData.sceneId) {
+      unityInterface.SetKernelConfiguration({
+        debugConfig: {
+          sceneDebugPanelTargetSceneId: sceneData.sceneId,
+          sceneLimitsWarningSceneId: sceneData.sceneId
+        }
+      })
+      getClientDebug()
+        .ToggleSceneBoundingBoxes(sceneData.sceneId, false)
+        .catch((e) => logger.error(e))
+      unityInterface.SendMessageToUnity('Main', 'TogglePreviewMenu', JSON.stringify({ enabled: true }))
+    }
+  } catch (err) {
+    logger.info('Warning: cannot get preview scene id', err)
+  }
 
   function handleServerMessage(message: sdk.Messages) {
     if (DEBUG_WS_MESSAGES) {

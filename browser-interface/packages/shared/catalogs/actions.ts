@@ -1,9 +1,5 @@
 import { action } from 'typesafe-actions'
-import { Catalog, Emote, EmotesRequestFilters, WearablesRequestFilters, WearableV2 } from './types'
-
-export const CATALOG_LOADED = 'Catalog Loaded'
-export const catalogLoaded = (name: string, catalog: Catalog) => action(CATALOG_LOADED, { name, catalog })
-export type CatalogLoadedAction = ReturnType<typeof catalogLoaded>
+import { Emote, EmotesRequestFilters, WearablesRequestFilters, WearableV2 } from './types'
 
 export const WEARABLES_REQUEST = '[Request] Wearable fetch'
 export const wearablesRequest = (filters: WearablesRequestFilters, context?: string) =>

@@ -4,7 +4,7 @@ import {
   ADD_DESIRED_PORTABLE_EXPERIENCE,
   REMOVE_DESIRED_PORTABLE_EXPERIENCE
 } from 'shared/wearablesPortableExperience/actions'
-import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
+import { declareWantedPortableExperiences } from 'shared/portableExperiences/lib/utils'
 import {
   ADD_SCENE_PX,
   DENY_PORTABLE_EXPERIENCES,

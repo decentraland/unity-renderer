@@ -8,7 +8,7 @@ import {
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { action } from 'typesafe-actions'
 import { globalObservable } from '../observables'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { store } from 'shared/store/isolatedStore'
 import defaultLogger from 'lib/logger'
 
@@ -50,16 +50,6 @@ export type ErrorContextTypes =
   | typeof ErrorContext.RENDERER_ERRORHANDLER
   | typeof ErrorContext.RENDERER_NEWERRORHANDLER
 
-export function ReportFatalErrorWithCatalystPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful catalyst payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
-
-export function ReportFatalErrorWithCommsPayload(error: Error, context: ErrorContextTypes) {
-  // TODO(Brian): Get some useful comms payload to append here
-  BringDownClientAndReportFatalError(error, context)
-}
-
 Object.assign(globalThis, {
   BringDownClientAndShowError,
   ReportFatalErrorWithUnityPayloadAsync,
@@ -68,7 +58,7 @@ Object.assign(globalThis, {
 })
 
 export function ReportFatalErrorWithUnityPayloadAsync(error: Error, context: ErrorContextTypes) {
-  getUnityInstance()
+  getUnityInterface()
     .CrashPayloadRequest()
     .then((payload) => {
       defaultLogger.error(payload)

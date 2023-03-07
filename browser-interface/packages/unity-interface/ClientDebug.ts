@@ -1,6 +1,6 @@
 import { defaultLogger } from 'lib/logger'
 import { ErrorContextTypes, ReportFatalErrorWithUnityPayloadAsync } from 'shared/loading/ReportFatalError'
-import { getUnityInstance, IUnityInterface } from './IUnityInterface'
+import { getUnityInterface, IUnityInterface } from './IUnityInterface'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 
 export class ClientDebug {
@@ -101,4 +101,11 @@ export class ClientDebug {
   }
 }
 
-export const clientDebug: ClientDebug = new ClientDebug(getUnityInstance())
+let clientDebug: ClientDebug | undefined
+export function getClientDebug() {
+  if (!clientDebug) {
+    clientDebug = new ClientDebug(getUnityInterface())
+    globalThis.clientDebug = clientDebug
+  }
+  return clientDebug
+}

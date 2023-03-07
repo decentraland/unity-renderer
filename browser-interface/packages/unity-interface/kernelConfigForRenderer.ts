@@ -1,24 +1,23 @@
-import { KernelConfigForRenderer } from 'shared/types'
+import { getWorld } from '@dcl/schemas'
 import {
-  getAvatarTextureAPIBaseUrl,
   commConfigurations,
-  WSS_ENABLED,
-  WITH_FIXED_ITEMS,
-  WITH_FIXED_COLLECTIONS,
-  PREVIEW,
   DEBUG,
+  ETHEREUM_NETWORK,
+  getAvatarTextureAPIBaseUrl,
   getTLD,
-  ETHEREUM_NETWORK
+  PREVIEW,
+  WITH_FIXED_COLLECTIONS,
+  WITH_FIXED_ITEMS,
+  WSS_ENABLED
 } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
-import { getWorld } from '@dcl/schemas'
-import { injectVersions } from 'shared/rolloutVersions'
-import { store } from 'shared/store/isolatedStore'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { isGifWebSupported } from 'shared/meta/selectors'
+import { getExplorerVersion } from 'shared/rolloutVersions'
+import { store } from 'shared/store/isolatedStore'
+import type { KernelConfigForRenderer } from 'shared/types'
 
 export function kernelConfigForRenderer(): KernelConfigForRenderer {
-  const versions = injectVersions({})
   const globalState = store.getState()
 
   let network = 'mainnet'
@@ -52,8 +51,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
       isGifWebSupported(globalState),
     network,
     validWorldRanges: getWorld().validWorldRanges,
-    kernelVersion: versions['@dcl/explorer'] || 'unknown-kernel-version',
-    rendererVersion: versions['@dcl/explorer'] || 'unknown-renderer-version',
+    rendererVersion: getExplorerVersion() || 'unknown-renderer-version',
     avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState)),
     urlParamsForWearablesDebug: urlParamsForWearablesDebug
   }

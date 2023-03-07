@@ -5,9 +5,10 @@ import * as peers from 'shared/comms/peers'
 import { TEST_OBJECT_ObservableAllScenesEvent } from 'shared/world/parcelSceneManager'
 import { buildStore } from 'shared/store/store'
 import { Color3 } from '@dcl/ecs-math'
+import { setupAvatarObservables } from 'shared/sceneEvents/sagas'
 
 function prepareAvatar(address: string) {
-  peers.receivePeerUserData(
+  peers.updateAvatarScenePeerData(
     {
       ethAddress: address,
       hasClaimedName: false,
@@ -40,6 +41,7 @@ describe('Avatar observable', () => {
   const userC = '0xc00000000000000000000000000000000000000c'
 
   let lastEvent: any = null
+  setupAvatarObservables()
 
   before(() => {
     TEST_OBJECT_ObservableAllScenesEvent.add((x) => {

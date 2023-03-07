@@ -1,5 +1,5 @@
 import * as sinon from 'sinon'
-import { getUnityInstance, setUnityInstance } from '../../packages/unity-interface/IUnityInterface'
+import { getUnityInterface, setUnityInterface } from '../../packages/unity-interface/IUnityInterface'
 import defaultLogger from '../../packages/lib/logger'
 import { lastPlayerPosition } from '../../packages/shared/world/positionThings'
 import { PermissionItem, permissionItemToJSON } from '@dcl/protocol/out-ts/decentraland/kernel/apis/permissions.gen'
@@ -16,12 +16,12 @@ describe('RestrictedActions tests', () => {
   beforeEach(() => {
     sinon.reset()
     sinon.restore()
-    setUnityInstance({ Teleport: () => {}, TriggerSelfUserExpression: () => {} } as any)
+    setUnityInterface({ Teleport: () => {}, TriggerSelfUserExpression: () => {} } as any)
     buildStore()
   })
 
   after(() => {
-    setUnityInstance(new UnityInterface())
+    setUnityInterface(new UnityInterface())
   })
 
   describe('TriggerEmote tests', () => {
@@ -30,7 +30,7 @@ describe('RestrictedActions tests', () => {
     it('should trigger emote', async () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE)
-      const stub = sinon.stub(getUnityInstance(), 'TriggerSelfUserExpression')
+      const stub = sinon.stub(getUnityInterface(), 'TriggerSelfUserExpression')
 
       triggerEmote({ predefinedEmote: emote }, ctx)
       Sinon.assert.calledWithExactly(stub, emote)
@@ -39,7 +39,7 @@ describe('RestrictedActions tests', () => {
     it('should fail when scene does not have permissions', async () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions()
-      const stub = sinon.stub(getUnityInstance(), 'TriggerSelfUserExpression')
+      const stub = sinon.stub(getUnityInterface(), 'TriggerSelfUserExpression')
 
       expect(() => triggerEmote({ predefinedEmote: 'emote' }, ctx)).to.throw(
         /This scene doesn't have some of the next permissions: PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE/
@@ -52,7 +52,7 @@ describe('RestrictedActions tests', () => {
       setLastPlayerPosition(false)
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE)
 
-      const stub = sinon.stub(getUnityInstance(), 'TriggerSelfUserExpression')
+      const stub = sinon.stub(getUnityInterface(), 'TriggerSelfUserExpression')
       const errorSpy = sinon.spy(defaultLogger, 'error')
 
       triggerEmote({ predefinedEmote: 'emote' }, ctx)
@@ -66,7 +66,7 @@ describe('RestrictedActions tests', () => {
     it('should move the player', async () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE)
-      const stub = sinon.stub(getUnityInstance(), 'Teleport')
+      const stub = sinon.stub(getUnityInterface(), 'Teleport')
 
       movePlayerTo({ newRelativePosition: new Vector3(8, 0, 8) }, ctx)
 
@@ -77,7 +77,7 @@ describe('RestrictedActions tests', () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE)
       const errorSpy = sinon.spy(defaultLogger, 'error')
-      const stub = sinon.stub(getUnityInstance(), 'Teleport')
+      const stub = sinon.stub(getUnityInterface(), 'Teleport')
       movePlayerTo({ newRelativePosition: new Vector3(21, 0, 32) }, ctx)
       Sinon.assert.calledWithExactly(errorSpy, 'Error: Position is out of scene', { x: 21, y: 0, z: 1648 })
       Sinon.assert.callCount(stub, 0)
@@ -86,7 +86,7 @@ describe('RestrictedActions tests', () => {
     it('should fail when scene does not have permissions', async () => {
       setLastPlayerPosition()
       const ctx = getContextWithPermissions()
-      const stub = sinon.stub(getUnityInstance(), 'Teleport')
+      const stub = sinon.stub(getUnityInterface(), 'Teleport')
 
       expect(() => movePlayerTo({ newRelativePosition: new Vector3(8, 0, 8) }, ctx)).to.throw(
         /This scene doesn't have some of the next permissions: PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE/
@@ -99,7 +99,7 @@ describe('RestrictedActions tests', () => {
     it('should fail when player is out of scene and try to move', async () => {
       setLastPlayerPosition(false)
       const ctx = getContextWithPermissions(PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE)
-      const stub = sinon.stub(getUnityInstance(), 'Teleport')
+      const stub = sinon.stub(getUnityInterface(), 'Teleport')
       const errorSpy = sinon.spy(defaultLogger, 'error')
 
       movePlayerTo({ newRelativePosition: new Vector3(8, 0, 8) }, ctx)

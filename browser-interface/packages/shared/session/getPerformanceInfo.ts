@@ -1,6 +1,5 @@
-import mitt from 'mitt'
-import { incrementCounter, getAndClearOccurenceCounters } from 'shared/occurences'
-import { getUsedComponentVersions } from 'shared/rolloutVersions'
+import { incrementCounter, getAndClearOccurenceCounters } from 'shared/analytics/occurences'
+import { getExplorerVersion } from 'shared/rolloutVersions'
 
 const pingResponseTimes: number[] = []
 const pingResponsePercentages: number[] = []
@@ -39,17 +38,12 @@ export function incrementCommsMessageReceived() {
   receivedCommsMessagesCounter++
 }
 
-export const commsPerfObservable = mitt<any>()
-
 export function incrementCommsMessageReceivedByName(event: string) {
-  commsPerfObservable.emit(event, { value: 1 })
   incrementCounter(`commMessage:${event}`)
   // NOTE:          ^^^^^^^^^^^ do NOT fix that typo
 }
 
-export function incrementAvatarSceneMessages(value: number) {
-  commsPerfObservable.emit('avatar-renderer', { value })
-}
+export function incrementAvatarSceneMessages(_: number) {}
 
 export function incrementCommsMessageSent(_bytes: number) {
   sentCommsMessagesCounter++
@@ -130,7 +124,7 @@ export function getPerformanceInfo(data: {
 
   const isHidden = (globalThis as any).document?.hidden
 
-  const { explorerVersion } = getUsedComponentVersions()
+  const explorerVersion = getExplorerVersion()
 
   const ret = {
     runtime,

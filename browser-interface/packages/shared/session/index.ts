@@ -4,10 +4,10 @@ import {
   removeFromPersistentStorage,
   saveToPersistentStorage
 } from 'lib/browser/persistentStorage'
-import { StoredSession } from './types'
 import { getProvider as getProviderSelector } from './selectors'
 import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
+import { StoredSession } from './types'
 
 /**
  * Store a session into the current PersistentStorage

@@ -1,11 +1,13 @@
 import { Vector3, EcsMathReadOnlyVector3, EcsMathReadOnlyQuaternion, Quaternion } from '@dcl/ecs-math'
 import { Observable } from 'mz-observable'
-import { InstancedSpawnPoint } from '../types'
+import type { InstancedSpawnPoint } from '../types'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { isWorldPositionInsideParcels } from 'lib/decentraland/parcels/isWorldPositionInsideParcels'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
-import { DEBUG, playerConfigurations } from 'config'
-import { isInsideWorldLimits, Scene } from '@dcl/schemas'
+import { DEBUG, playerHeight } from 'config'
+import { Scene } from '@dcl/schemas'
+import { isInsideWorldLimits } from '@dcl/schemas'
+import type { Vector2 } from 'lib/math/Vector2'
 
 export type PositionReport = {
   /** Camera position, world space */
@@ -38,7 +40,7 @@ const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
-  playerHeight: playerConfigurations.height,
+  playerHeight: playerHeight,
   mousePosition: Vector3.Zero(),
   immediate: false, // By default the renderer lerps avatars position
   cameraQuaternion: Quaternion.Identity,
@@ -66,9 +68,9 @@ export function receivePositionReport(
 }
 
 // sets the initial state of the position based on the URL query params
-export function getInitialPositionFromUrl(): ReadOnlyVector2 | undefined {
+export function getInitialPositionFromUrl(url: string): Vector2 | undefined {
   // LOAD INITIAL POSITION IF SET TO ZERO
-  const query = new URLSearchParams(location.search)
+  const query = new URLSearchParams(url)
   const position = query.get('position')
   if (typeof position === 'string') {
     const { x, y } = parseParcelPosition(position)

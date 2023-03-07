@@ -1,18 +1,22 @@
-import { createLogger } from 'lib/logger'
-import { VoiceHandler } from '../../../voiceChat/VoiceHandler'
-import { VoiceCommunicator } from '../../../voiceChat/VoiceCommunicator'
-import { commConfigurations } from 'config'
-import Html from 'shared/Html'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { getSpatialParamsFor } from '../../../voiceChat/utils'
 import * as rfc4 from '@dcl/protocol/out-ts/decentraland/kernel/comms/rfc4/comms.gen'
-import { store } from 'shared/store/isolatedStore'
+import { commConfigurations } from 'config'
 import withCache from 'lib/javascript/withCache'
-
-import './audioDebugger'
+import { createLogger } from 'lib/logger'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { store } from 'shared/store/isolatedStore'
+import { getSpatialParamsFor } from 'shared/voiceChat/utils'
+import { VoiceCommunicator } from 'shared/voiceChat/VoiceCommunicator'
+import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { setupAudioDebugger } from './audioDebugger'
+import Html from './Html'
 
 const getVoiceCommunicator = withCache(() => {
   const logger = createLogger('OpusVoiceCommunicator: ')
+
+  if (document.location.search.includes('AUDIO_DEBUG')) {
+    setupAudioDebugger()
+  }
+
   return new VoiceCommunicator(
     {
       send(frame: rfc4.Voice) {

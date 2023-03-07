@@ -13,7 +13,7 @@ import {
 } from 'shared/portableExperiences/actions'
 import { LoadableScene } from 'shared/types'
 import { getDesiredPortableExperiences } from 'shared/portableExperiences/selectors'
-import { declareWantedPortableExperiences } from 'unity-interface/portableExperiencesUtils'
+import { declareWantedPortableExperiences } from 'shared/portableExperiences/lib/utils'
 import { RootPortableExperiencesState } from 'shared/portableExperiences/types'
 import { reducers } from 'shared/store/rootReducer'
 import { expect } from 'chai'

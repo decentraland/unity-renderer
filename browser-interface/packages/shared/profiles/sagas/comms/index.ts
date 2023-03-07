@@ -2,9 +2,9 @@ import type { Avatar } from '@dcl/schemas'
 import { COMMS_PROFILE_TIMEOUT } from 'config'
 import { storeCondition } from 'lib/redux'
 import { delay } from 'redux-saga/effects'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { requestProfileFromPeers } from 'shared/comms/handlers'
 import { RoomConnection } from 'shared/comms/interface'
-import { incrementCounter } from 'shared/occurences'
 import { RootProfileState } from 'shared/profiles/types'
 
 export async function fetchPeerProfile(

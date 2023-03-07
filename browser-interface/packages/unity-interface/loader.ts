@@ -1,6 +1,7 @@
 import future from 'fp-future'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
+import { CommonRendererOptions } from 'kernel-web-interface/renderer'
 
 const generatedFiles = {
   frameworkUrl: 'unity.framework.js',
@@ -8,7 +9,7 @@ const generatedFiles = {
   codeUrl: 'unity.wasm'
 }
 
-export type LoadRendererResult = {
+type LoadRendererResult = {
   createWebRenderer(canvas: HTMLCanvasElement): Promise<DecentralandRendererInstance>
 }
 
@@ -18,7 +19,7 @@ export type LoadRendererResult = {
 declare function createUnityInstance(canvas: HTMLCanvasElement, config: any, onProgress?: (progress: number) => void, onSuccess?: (unityInstance: any) => void, onError?: (message: any) => void): Promise<UnityGame>
 
 /** Expose the original interface from the Unity Instance. */
-export type UnityGame = {
+type UnityGame = {
   Module: {
     /** this handler can be overwritten, return true to stop error propagation */
     errorHandler?: (message: string, filename: string, lineno: number) => boolean
@@ -28,7 +29,7 @@ export type UnityGame = {
   Quit(): Promise<void>
 }
 
-export type RendererOptions = {
+type RendererOptions = {
   canvas: HTMLCanvasElement
 
   onProgress?: (progress: number) => void
@@ -52,26 +53,18 @@ export type RendererOptions = {
   dontCheckMobile?: boolean
 }
 
-export type DecentralandRendererInstance = {
+type DecentralandRendererInstance = {
   /**
    * Signal sent by unity after it started correctly
    * it is a promise, that makes it awaitable.
    * The content of the resolved promise is an empty object to
    * enable future extensions.
    */
-  engineStartedFuture: Promise<any>
+  rendererInitializationFuture: Promise<any>
 
   // soon there will be more protocol functions here https://github.com/decentraland/renderer-protocol
   // and originalUnity will be deprecated to decouple the kernel from unity's impl internals
   originalUnity: UnityGame
-}
-
-/**
- * The following options are common to all kinds of renderers, it abstracts
- * what we need to implement in our end to support a renderer. WIP
- */
-export type CommonRendererOptions = {
-  onMessage: (type: string, payload: string) => void
 }
 
 function extractSemver(url: string): string | null {
@@ -110,14 +103,14 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
     ...(options.extraConfig || {})
   }
 
-  const engineStartedFuture = future<any>()
+  const rendererInitializationFuture = future<any>()
 
   // The namespace DCL is exposed to global because the unity template uses it to send the messages
   // @see https://github.com/decentraland/unity-renderer/blob/bc2bf1ee0d685132c85606055e592bac038b3471/unity-renderer/Assets/Plugins/JSFunctions.jslib#L6-L29
   ;(globalThis as any).DCL = {
-    // This function get's called by the engine
+    // UnityRenderer Finished Initialization
     EngineStarted() {
-      engineStartedFuture.resolve({})
+      rendererInitializationFuture.resolve({})
     },
 
     // This function is called from the unity renderer to send messages back to the scenes
@@ -136,7 +129,7 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
   // TODO: replace originalUnity.errorHandler with a version that redirects errors to -> onError
 
   return {
-    engineStartedFuture,
+    rendererInitializationFuture: rendererInitializationFuture,
     originalUnity
   }
 }

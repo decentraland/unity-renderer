@@ -1,4 +1,4 @@
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { getServerConfigurations, PREVIEW, RENDERER_WS } from 'config'
 import { store } from 'shared/store/isolatedStore'
 import { getCommsIsland } from 'shared/comms/selectors'

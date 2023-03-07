@@ -1,6 +1,6 @@
 import { signedFetch } from 'lib/decentraland/authentication/signedFetch'
 import { ETHEREUM_NETWORK } from 'config'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { isGuestLogin } from 'shared/session/selectors'
 import { onLoginCompleted } from 'shared/session/onLoginCompleted'
@@ -11,7 +11,7 @@ import * as codegen from '@dcl/rpc/dist/codegen'
 
 import { SignedFetchServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/signed_fetch.gen'
 import { getRealmAdapter } from 'shared/realm/selectors'
-import type { Realm } from 'shared/dao/types'
+import type { Realm } from 'shared/catalystSelection/types'
 
 export function registerSignedFetchServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, SignedFetchServiceDefinition, async () => ({

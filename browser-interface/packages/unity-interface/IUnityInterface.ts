@@ -79,15 +79,15 @@ export type MinimapSceneInfo = {
   isPOI: boolean
 }
 
-let instance: IUnityInterface | null = null
+let unityInterface: IUnityInterface | null = null
 
-export function setUnityInstance(_instance: IUnityInterface) {
-  instance = _instance
+export function setUnityInterface(_interface: IUnityInterface) {
+  unityInterface = _interface
 }
 
-export function getUnityInstance(): IUnityInterface {
-  if (!instance) throw new Error('unityInstance not initialized yet')
-  return instance
+export function getUnityInterface(): IUnityInterface {
+  if (!unityInterface) throw new Error('unityInterface not initialized yet')
+  return unityInterface
 }
 
 export interface IUnityInterface {

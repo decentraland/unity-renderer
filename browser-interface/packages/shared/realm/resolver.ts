@@ -1,4 +1,4 @@
-import { Candidate, Realm } from 'shared/dao/types'
+import { Candidate, Realm } from 'shared/catalystSelection/types'
 import { AboutResponse } from '@dcl/protocol/out-ts/decentraland/bff/http_endpoints.gen'
 import { ExplorerIdentity } from 'shared/session/types'
 import { createBffRpcConnection } from './connections/BFFConnection'

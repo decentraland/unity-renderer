@@ -3,10 +3,10 @@ import { RendererProtocolContext } from '../context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { AnalyticsKernelServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/kernel_services/analytics.gen'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { setDelightedSurveyEnabled } from 'unity-interface/delightedSurvey'
 import { browserInterface } from 'unity-interface/BrowserInterface'
+import { setDelightedSurveyEnabled } from 'unity-interface/dom/delightedSurvey'
 
 type UnityEvent = any
 
@@ -26,9 +26,9 @@ export function registerAnalyticsKernelService(port: RpcServerPort<RendererProto
     async performanceReport(req, _) {
       let estimatedAllocatedMemory = 0
       let estimatedTotalMemory = 0
-      if (getUnityInstance()?.Module?.asmLibraryArg?._GetDynamicMemorySize) {
-        estimatedAllocatedMemory = getUnityInstance().Module.asmLibraryArg._GetDynamicMemorySize()
-        estimatedTotalMemory = getUnityInstance().Module.asmLibraryArg._GetTotalMemorySize()
+      if (getUnityInterface()?.Module?.asmLibraryArg?._GetDynamicMemorySize) {
+        estimatedAllocatedMemory = getUnityInterface().Module.asmLibraryArg._GetDynamicMemorySize()
+        estimatedTotalMemory = getUnityInterface().Module.asmLibraryArg._GetTotalMemorySize()
       }
       const perfReport = getPerformanceInfo({ ...(req as any), estimatedAllocatedMemory, estimatedTotalMemory })
       trackEvent('performance report', perfReport)

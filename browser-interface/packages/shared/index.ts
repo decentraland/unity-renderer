@@ -4,8 +4,8 @@ import { globalObservable } from './observables'
 import { RootStore } from './store/rootTypes'
 import { initializeSessionObserver } from './session/sagas'
 import { hookAnalyticsObservables } from './analytics/hookAnalyticsObservables'
-import { beforeUnloadAction } from './actions'
 import { isRendererVisible } from './loadingScreen/selectors'
+import { beforeUnloadAction } from './renderer/actions'
 
 declare const globalThis: { globalStore: RootStore }
 

@@ -12,7 +12,7 @@ import {
   UnmutePlayers,
   UNMUTE_PLAYERS
 } from './actions'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { Avatar } from '@dcl/schemas'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
@@ -57,7 +57,7 @@ function* addPlayerToProfileSet(playersId: string[], setKey: ProfileSetKey) {
     yield put(saveProfileDelta({ [setKey]: set }))
     if (setKey === 'muted') {
       yield call(waitForRendererInstance)
-      getUnityInstance().SetUsersMuted(idsToAdd, true)
+      getUnityInterface().SetUsersMuted(idsToAdd, true)
     }
   }
 }
@@ -70,7 +70,7 @@ function* removePlayerFromProfileSet(playersId: string[], setKey: ProfileSetKey)
     yield put(saveProfileDelta({ ...profile, [setKey]: set }))
     if (setKey === 'muted') {
       yield call(waitForRendererInstance)
-      getUnityInstance().SetUsersMuted(playersId, false)
+      getUnityInterface().SetUsersMuted(playersId, false)
     }
   }
 }

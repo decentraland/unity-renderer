@@ -1,5 +1,5 @@
 import type { Avatar } from '@dcl/schemas'
-import { isFeatureToggleEnabled } from 'shared/selectors'
+import { isSceneFeatureToggleEnabled } from 'lib/decentraland/sceneJson/isSceneFeatureToggleEnabled'
 import { isFriend } from 'shared/friends/selectors'
 import type { RootFriendsState } from 'shared/friends/types'
 import { getBannedUsers } from 'shared/meta/selectors'
@@ -20,15 +20,13 @@ export const getVoiceChatState = (store: RootVoiceChatState) => store.voiceChat
 
 export const isRequestedVoiceChatRecording = (store: RootVoiceChatState) => store.voiceChat.requestRecording
 
-export const isVoiceChatRecording = (store: RootVoiceChatState) => store.voiceChat.recording
-
-export const getVoicePolicy = (store: RootVoiceChatState) => store.voiceChat.policy
+const getVoicePolicy = (store: RootVoiceChatState) => store.voiceChat.policy
 
 export const getVoiceHandler = (store: RootVoiceChatState) => store.voiceChat.voiceHandler
 
 export function isVoiceChatAllowedByCurrentScene(store: RootVoiceChatState & RootWorldState) {
   const currentScene = store.world.currentScene ? getSceneWorkerBySceneID(store.world.currentScene) : undefined
-  return isFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.loadableScene.entity.metadata)
+  return isSceneFeatureToggleEnabled(VOICE_CHAT_FEATURE_TOGGLE, currentScene?.loadableScene.entity.metadata)
 }
 
 export function isBlockedOrBanned(profile: Avatar, bannedUsers: BannedUsers, userId: string): boolean {
@@ -69,7 +67,7 @@ export function shouldPlayVoice(
   )
 }
 
-export function isVoiceAllowedByPolicy(
+function isVoiceAllowedByPolicy(
   state: RootVoiceChatState & RootFriendsState & RootProfileState,
   voiceUserId: string
 ): boolean {

@@ -19,7 +19,7 @@ export const getChannels = (
  * Get all current conversations the user has including DMs, channels, etc
  * @return `conversation` & `unreadMessages` boolean that indicates whether the conversation has unread messages.
  */
-export const getConversations = (
+const getConversations = (
   store: RootFriendsState,
   conversationType: ConversationType
 ): Array<{ conversation: Conversation; unreadMessages: boolean }> => {

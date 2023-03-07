@@ -1,7 +1,7 @@
 import * as EthProvider from 'shared/ethereum/provider'
 import * as EthService from 'shared/ethereum/EthereumService'
 
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 
 import * as codegen from '@dcl/rpc/dist/codegen'
 import type { RpcServerPort } from '@dcl/rpc/dist/types'
@@ -26,7 +26,7 @@ import { assertHasPermission } from './Permissions'
 async function requirePayment(req: RequirePaymentRequest, ctx: PortContext): Promise<RequirePaymentResponse> {
   assertHasPermission(PermissionItem.PI_USE_WEB3_API, ctx)
 
-  await getUnityInstance().RequestWeb3ApiUse('requirePayment', {
+  await getUnityInterface().RequestWeb3ApiUse('requirePayment', {
     ...req,
     sceneId: ctx.sceneData.id,
     sceneNumber: ctx.sceneData.sceneNumber
@@ -41,7 +41,7 @@ async function requirePayment(req: RequirePaymentRequest, ctx: PortContext): Pro
 async function signMessage(req: SignMessageRequest, ctx: PortContext): Promise<SignMessageResponse> {
   assertHasPermission(PermissionItem.PI_USE_WEB3_API, ctx)
 
-  await getUnityInstance().RequestWeb3ApiUse('signMessage', {
+  await getUnityInterface().RequestWeb3ApiUse('signMessage', {
     message: await EthService.messageToString(req.message),
     sceneId: ctx.sceneData.id,
     sceneNumber: ctx.sceneData.sceneNumber
@@ -68,7 +68,7 @@ async function sendAsync(req: SendAsyncRequest, ctx: PortContext): Promise<SendA
 
   assertHasPermission(PermissionItem.PI_USE_WEB3_API, ctx)
   if (EthService.rpcRequireSign(message)) {
-    await getUnityInstance().RequestWeb3ApiUse('sendAsync', {
+    await getUnityInterface().RequestWeb3ApiUse('sendAsync', {
       message: `${message.method}(${message.params.join(',')})`,
       sceneId: ctx.sceneData.id,
       sceneNumber: ctx.sceneData.sceneNumber

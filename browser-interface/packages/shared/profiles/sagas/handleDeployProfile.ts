@@ -9,7 +9,7 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import defaultLogger from 'lib/logger'
 import { getProfilesContentServerFromRealmAdapter } from 'shared/realm/selectors'
 import type { IRealmAdapter } from 'shared/realm/types'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { waitForRealm } from 'shared/realm/waitFor/realm'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import type { DeployProfile } from '../actions'
@@ -62,12 +62,7 @@ async function buildSnapshotContent(selector: string, value: string) {
   return { name, hash, contentFile }
 }
 
-export async function deployAvatar(params: {
-  url: string
-  userId: string
-  identity: ExplorerIdentity
-  profile: Avatar
-}) {
+async function deployAvatar(params: { url: string; userId: string; identity: ExplorerIdentity; profile: Avatar }) {
   const { url, profile, identity } = params
   const { avatar } = profile
 

@@ -9,11 +9,11 @@ import { fetchProfile, getInformationToFetchProfileFromStore } from 'shared/prof
 import type { ProfileUserInfo } from 'shared/profiles/types'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
-import { getInformationToSubmitProfileFromStore, handleSubmitProfileToRenderer } from 'shared/renderer/sagas'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
+import { getInformationToSubmitProfileFromStore, handleSubmitProfileToRenderer } from 'shared/renderer/sagas/profiles'
 import { buildStore } from 'shared/store/store'
 import sinon from 'sinon'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { setUnityInterface } from 'unity-interface/IUnityInterface'
 import { PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
 
 const mockAdapter = {
@@ -89,15 +89,16 @@ describe('fetchProfile behavior', () => {
 })
 
 describe('Handle submit profile to renderer', () => {
-  sinon.mock()
-
-  const unityInstance = getUnityInstance()
-  const unityMock = sinon.mock(unityInstance)
+  const unityMock = {
+    AddUserProfileToCatalog: () => ({})
+  }
+  const addUsers = sinon.spy(unityMock.AddUserProfileToCatalog)
 
   beforeEach(() => {
     sinon.reset()
     sinon.restore()
     buildStore()
+    setUnityInterface(unityMock as any)
   })
 
   afterEach(() => {
@@ -111,8 +112,6 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '')
 
-      unityMock.expects('AddUserProfilesToCatalog').never()
-
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
@@ -128,9 +127,8 @@ describe('Handle submit profile to renderer', () => {
         .then((response) => {
           const putEffects = response.effects.put
           expect(putEffects).to.be.undefined
+          expect(addUsers.notCalled)
         })
-
-      unityMock.verify()
     })
   })
 
@@ -140,8 +138,6 @@ describe('Handle submit profile to renderer', () => {
 
       const profile = getMockedProfileUserInfo(userId, '', 0)
 
-      unityMock.expects('AddUserProfilesToCatalog').never()
-
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
           [call(waitForRendererInstance), true],
@@ -157,9 +153,8 @@ describe('Handle submit profile to renderer', () => {
         .then((response) => {
           const putEffects = response.effects.put
           expect(putEffects).to.be.undefined
+          expect(addUsers.notCalled)
         })
-
-      unityMock.verify()
     })
   })
 
@@ -168,8 +163,6 @@ describe('Handle submit profile to renderer', () => {
       const userId = '0x11pizarnik00'
 
       const profile = getMockedProfileUserInfo(userId, '', 3)
-
-      unityMock.expects('AddUserProfileToCatalog').once()
 
       await expectSaga(handleSubmitProfileToRenderer, { type: 'Send Profile to Renderer Requested', payload: { userId } })
         .provide([
@@ -188,9 +181,8 @@ describe('Handle submit profile to renderer', () => {
           const putEffects = response.effects.put
           const lastPut = putEffects[putEffects.length - 1].payload.action
           expect(lastPut.type).to.eq(ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG)
+          expect(addUsers.calledOnce)
         })
-
-      unityMock.verify()
     })
   })
 })

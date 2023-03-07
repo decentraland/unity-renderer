@@ -24,7 +24,7 @@ import {
   UpdateTotalUnseenMessagesByChannelPayload
 } from 'shared/types'
 import sinon from 'sinon'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { Avatar } from '@dcl/schemas'
 
 const channelMessages: TextMessage[] = [
@@ -212,9 +212,9 @@ describe('Friends sagas - Channels Feature', () => {
           })
         }
 
-        sinon.mock(getUnityInstance()).expects('UpdateChannelInfo').once().withExactArgs(channelsInfo)
+        sinon.mock(getUnityInterface()).expects('UpdateChannelInfo').once().withExactArgs(channelsInfo)
         friendsSagas.getJoinedChannels(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
 
@@ -247,9 +247,9 @@ describe('Friends sagas - Channels Feature', () => {
           })
         }
 
-        sinon.mock(getUnityInstance()).expects('UpdateChannelInfo').once().withExactArgs(channelsInfo)
+        sinon.mock(getUnityInterface()).expects('UpdateChannelInfo').once().withExactArgs(channelsInfo)
         friendsSagas.getJoinedChannels(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -290,12 +290,12 @@ describe('Friends sagas - Channels Feature', () => {
         }
 
         sinon
-          .mock(getUnityInstance())
+          .mock(getUnityInterface())
           .expects('UpdateTotalUnseenMessagesByChannel')
           .once()
           .calledWithMatch(totalUnseenMessagesByChannel)
         friendsSagas.getUnseenMessagesByChannel()
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -339,9 +339,9 @@ describe('Friends sagas - Channels Feature', () => {
           }))
         }
 
-        sinon.mock(getUnityInstance()).expects('AddChatMessages').once().withExactArgs(addChatMessagesPayload)
+        sinon.mock(getUnityInterface()).expects('AddChatMessages').once().withExactArgs(addChatMessagesPayload)
         await friendsSagas.getChannelMessages(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
 
       it('And they scrollbackwards, should send the expected messages', async () => {
@@ -366,9 +366,9 @@ describe('Friends sagas - Channels Feature', () => {
           }))
         }
 
-        sinon.mock(getUnityInstance()).expects('AddChatMessages').once().withExactArgs(addChatMessagesPayload)
+        sinon.mock(getUnityInterface()).expects('AddChatMessages').once().withExactArgs(addChatMessagesPayload)
         await friendsSagas.getChannelMessages(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })
@@ -421,9 +421,9 @@ describe('Friends sagas - Channels Feature', () => {
           channels: channelsToReturn
         }
 
-        sinon.mock(getUnityInstance()).expects('UpdateChannelSearchResults').once().withExactArgs(searchResult)
+        sinon.mock(getUnityInterface()).expects('UpdateChannelSearchResults').once().withExactArgs(searchResult)
         await friendsSagas.searchChannels(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
 
@@ -459,9 +459,9 @@ describe('Friends sagas - Channels Feature', () => {
           channels: channelsToReturn
         }
 
-        sinon.mock(getUnityInstance()).expects('UpdateChannelSearchResults').once().withExactArgs(searchResult)
+        sinon.mock(getUnityInterface()).expects('UpdateChannelSearchResults').once().withExactArgs(searchResult)
         await friendsSagas.searchChannels(request)
-        sinon.mock(getUnityInstance()).verify()
+        sinon.mock(getUnityInterface()).verify()
       })
     })
   })

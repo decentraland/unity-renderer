@@ -1,5 +1,5 @@
 import type { BannedUsers, FeatureFlag, FeatureFlagsName, RootMetaState, WorldConfig } from './types'
-import { AlgorithmChainConfig } from 'shared/dao/pick-realm-algorithm/types'
+import { AlgorithmChainConfig } from 'shared/catalystSelection/pickAlgorithm/types'
 import { BYPASS_CONTENT_ALLOWLIST, SOCIAL_SERVER_URL } from 'config'
 import { urlWithProtocol } from 'shared/realm/resolver'
 import { DEFAULT_MAX_VISIBLE_PEERS } from '.'
@@ -16,7 +16,7 @@ export const getAddedServers = (store: RootMetaState): string[] => {
   return config.servers.added
 }
 
-export const getContentWhitelist = (store: RootMetaState): string[] => {
+const getContentWhitelist = (store: RootMetaState): string[] => {
   const { config } = store.meta
 
   if (!config || !config.servers || !config.servers.contentWhitelist) {
@@ -24,12 +24,6 @@ export const getContentWhitelist = (store: RootMetaState): string[] => {
   }
 
   return config.servers.contentWhitelist
-}
-
-export const getMinCatalystVersion = (store: RootMetaState): string | undefined => {
-  const { config } = store.meta
-
-  return config.minCatalystVersion
 }
 
 export const isMetaConfigurationInitialized = (store: RootMetaState): boolean => store.meta.initialized
@@ -53,9 +47,6 @@ export const getDisabledCatalystConfig = (store: RootMetaState): string[] => {
     }
   })
 }
-
-export const isLiveKitVoiceChatFeatureFlag = (store: RootMetaState): boolean =>
-  getFeatureFlagEnabled(store, 'livekit-voicechat') as boolean
 
 // Enable the gif processor on the web instead of processing it in Unity (just for WebGL build)
 export const isGifWebSupported = (store: RootMetaState): boolean => getFeatureFlagEnabled(store, 'gif-web') as boolean

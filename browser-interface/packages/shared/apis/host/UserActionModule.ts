@@ -1,9 +1,7 @@
-import {
-  getOwnerNameFromJsonData,
-  getSceneNameFromJsonData,
-  getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getThumbnailUrlFromJsonDataAndContent } from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
+import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
+import { getOwnerNameFromJsonData } from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { UserActionModuleServiceDefinition } from '@dcl/protocol/out-ts/decentraland/kernel/apis/user_action_module.gen'
 import type { PortContext } from './context'
 import type { RpcServerPort } from '@dcl/rpc'
@@ -11,13 +9,14 @@ import * as codegen from '@dcl/rpc/dist/codegen'
 import type { Scene } from '@dcl/schemas'
 import { postProcessSceneName } from 'shared/atlas/selectors'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
+import { jsonFetch } from 'lib/javascript/jsonFetch'
 
 export function registerUserActionModuleServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, UserActionModuleServiceDefinition, async () => ({
     async requestTeleport(req, ctx) {
       const { destination } = req
       if (destination === 'magic' || destination === 'crowd') {
-        getUnityInstance().RequestTeleport({ destination })
+        getUnityInterface().RequestTeleport({ destination })
         return {}
       } else if (!/^\-?\d+\,\-?\d+$/.test(destination)) {
         ctx.logger.error(`teleportTo: invalid destination ${destination}`)
@@ -49,8 +48,7 @@ export function registerUserActionModuleServiceServerImplementation(port: RpcSer
       }
 
       try {
-        const response = await fetch(`https://events.decentraland.org/api/events/?position=${destination}`)
-        const json = await response.json()
+        const json = await jsonFetch(`https://events.decentraland.org/api/events/?position=${destination}`)
         if (json.data.length > 0) {
           sceneEvent = {
             name: json.data[0].name,
@@ -63,7 +61,7 @@ export function registerUserActionModuleServiceServerImplementation(port: RpcSer
         ctx.logger.error(e)
       }
 
-      getUnityInstance().RequestTeleport({
+      getUnityInterface().RequestTeleport({
         destination,
         sceneEvent,
         sceneData

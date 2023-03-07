@@ -9,7 +9,7 @@ import { ErrorContext, BringDownClientAndReportFatalError } from '../loading/Rep
 import defaultLogger from 'lib/logger'
 import { setStore } from './isolatedStore'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { logTrace } from 'unity-interface/trace'
+import { logTrace } from 'shared/analytics/trace'
 
 export const sagaMiddleware = createSagaMiddleware({
   sagaMonitor: undefined,

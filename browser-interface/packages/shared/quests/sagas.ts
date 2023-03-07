@@ -3,7 +3,7 @@ import { call, delay, put, select, takeEvery } from 'redux-saga/effects'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { questsInitialized, questsUpdated, QUESTS_INITIALIZED, QUESTS_UPDATED } from './actions'
 import { questsRequest } from './client'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { toRendererQuest } from '@dcl/ecs-quests/@dcl/mappings'
 import { getPreviousQuests, getQuests } from './selectors'
 import { deepEqual } from 'lib/javascript/deepEqual'
@@ -69,7 +69,7 @@ function* updateQuestsLogData() {
 
   quests.forEach((it) => {
     if (hasChanged(it)) {
-      getUnityInstance().UpdateQuestProgress(toRendererQuest(it))
+      getUnityInterface().UpdateQuestProgress(toRendererQuest(it))
     }
   })
 }
@@ -77,5 +77,5 @@ function* updateQuestsLogData() {
 function initQuestsLogData(quests: QuestState[]) {
   const rendererQuests = quests.map((it) => toRendererQuest(it))
 
-  getUnityInstance().InitQuestsInfo(rendererQuests)
+  getUnityInterface().InitQuestsInfo(rendererQuests)
 }

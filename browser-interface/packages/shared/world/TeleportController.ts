@@ -1,22 +1,22 @@
 import { getWorld, isInsideWorldLimits } from '@dcl/schemas'
 
-import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 import defaultLogger from 'lib/logger'
+import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
+import { changeToMostPopulatedRealm } from 'shared/realm/changeToMostPopulatedRealm'
 
-import { store } from 'shared/store/isolatedStore'
-import { getRealmAdapter } from 'shared/realm/selectors'
-import { Parcel } from 'shared/dao/types'
-import { urlWithProtocol } from 'shared/realm/resolver'
+import { Parcel } from 'shared/catalystSelection/types'
 import { trackTeleportTriggered } from 'shared/loading/types'
+import { urlWithProtocol } from 'shared/realm/resolver'
+import { getRealmAdapter } from 'shared/realm/selectors'
 import { teleportToAction } from 'shared/scene-loader/actions'
 import { getParcelPosition } from 'shared/scene-loader/selectors'
+import { store } from 'shared/store/isolatedStore'
 
-import { lastPlayerPosition } from 'shared/world/positionThings'
 import { homePointKey } from 'shared/atlas/utils'
+import { lastPlayerPosition } from 'shared/world/positionThings'
 import { getFromPersistentStorage } from 'lib/browser/persistentStorage'
-import { changeToMostPopulatedRealm } from '../dao'
 
 const descriptiveValidWorldRanges = getWorld()
   .validWorldRanges.map((range) => `(X from ${range.xMin} to ${range.xMax}, and Y from ${range.yMin} to ${range.yMax})`)

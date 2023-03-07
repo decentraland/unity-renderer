@@ -47,16 +47,16 @@ import {
 } from './types'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { CatalystClient } from 'dcl-catalyst-client/dist/CatalystClient'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { ExplorerIdentity } from 'shared/session/types'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { IRealmAdapter } from 'shared/realm/types'
 import { getFetchContentServerFromRealmAdapter, getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { ErrorContext, BringDownClientAndReportFatalError } from 'shared/loading/ReportFatalError'
 import { OwnedItemsWithDefinition } from 'dcl-catalyst-client/dist/LambdasAPI'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { waitForRealm } from 'shared/realm/waitFor/realm'
 
 const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
 const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
@@ -481,13 +481,13 @@ function areFiltersValid(filters: WearablesRequestFilters | EmotesRequestFilters
 }
 
 function informRequestFailure(error: string, context: string | undefined) {
-  getUnityInstance().WearablesRequestFailed(error, context)
+  getUnityInterface().WearablesRequestFailed(error, context)
 }
 
 function sendWearablesCatalog(wearables: WearableV2[], context: string | undefined) {
-  getUnityInstance().AddWearablesToCatalog(wearables, context)
+  getUnityInterface().AddWearablesToCatalog(wearables, context)
 }
 
 function sendEmotesCatalog(emotes: Emote[], context: string | undefined) {
-  getUnityInstance().AddEmotesToCatalog(emotes, context)
+  getUnityInterface().AddEmotesToCatalog(emotes, context)
 }

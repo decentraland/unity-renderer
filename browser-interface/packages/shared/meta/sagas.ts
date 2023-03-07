@@ -1,14 +1,14 @@
 import { FeatureFlagsResult, fetchFlags } from '@dcl/feature-flags'
 import { ETHEREUM_NETWORK, getAssetBundlesBaseUrl, getServerConfigurations, PREVIEW, rootURLPreviewMode } from 'config'
+import defaultLogger from 'lib/logger'
 import { all, call, fork, put, select, take } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { SELECT_NETWORK } from 'shared/dao/actions'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 import { addKernelPortableExperience } from 'shared/portableExperiences/actions'
+import { getPortableExperienceFromUrn } from 'shared/portableExperiences/lib/utils'
 import { RootState } from 'shared/store/rootTypes'
 import { LoadableScene } from 'shared/types'
-import { getPortableExperienceFromUrn } from 'unity-interface/portableExperiencesUtils'
-import defaultLogger from 'lib/logger'
+import { SELECT_NETWORK } from 'shared/web3/actions'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import { getFeatureFlagVariantValue, isMetaConfigurationInitialized } from './selectors'
 import { FeatureFlagsName, MetaConfiguration } from './types'
@@ -21,7 +21,7 @@ export function* waitForMetaConfigurationInitialization() {
 }
 
 export function* waitForNetworkSelected() {
-  while (!(yield select((state: RootState) => !!state.dao.network))) {
+  while (!(yield select((state: RootState) => !!state.catalystSelection.network))) {
     yield take(SELECT_NETWORK)
   }
   const net: ETHEREUM_NETWORK = yield select(getSelectedNetwork)

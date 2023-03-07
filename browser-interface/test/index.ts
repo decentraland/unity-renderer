@@ -33,7 +33,7 @@ import './unit/meta.test'
 import './sceneEvents/visibleAvatars.spec'
 import './sceneEvents/comms.spec'
 
-import './dao'
+import './catalystSelection'
 
 declare let mocha: Mocha
 declare let globalThis: any

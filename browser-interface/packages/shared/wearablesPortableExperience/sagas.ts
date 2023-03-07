@@ -18,7 +18,7 @@ import {
   PROCESS_WEARABLES,
   removeDesiredPortableExperience
 } from './actions'
-import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { waitForRealm } from 'shared/realm/waitFor/realm'
 
 export function* wearablesPortableExperienceSaga(): any {
   yield takeLatest(PROFILE_SUCCESS, handleSelfProfileSuccess)

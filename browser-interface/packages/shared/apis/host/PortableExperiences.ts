@@ -2,7 +2,7 @@ import {
   spawnScenePortableExperienceSceneFromUrn,
   getPortableExperiencesLoaded,
   getRunningPortableExperience
-} from 'unity-interface/portableExperiencesUtils'
+} from 'shared/portableExperiences/lib/utils'
 import { store } from 'shared/store/isolatedStore'
 import { removeScenePortableExperience } from 'shared/portableExperiences/actions'
 

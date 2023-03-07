@@ -15,7 +15,7 @@ import { Observable } from 'mz-observable'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { Emote, WearableV2 } from 'shared/catalogs/types'
 import { FeatureFlag } from 'shared/meta/types'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { getProvider } from 'shared/session/index'
 import {
   AddChatMessagesPayload,
@@ -51,8 +51,8 @@ import {
   WorldPosition
 } from 'shared/types'
 import { futures } from './BrowserInterface'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
-import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
+import { setDelightedSurveyEnabled } from './dom/delightedSurvey'
+import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInterface } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 
 const MINIMAP_CHUNK_SIZE = 100
@@ -722,4 +722,6 @@ export class UnityInterface implements IUnityInterface {
   }
 }
 
-setUnityInstance(new UnityInterface())
+export async function initializeUnityInterface() {
+  setUnityInterface(new UnityInterface())
+}

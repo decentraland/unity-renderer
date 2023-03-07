@@ -4,7 +4,7 @@ import { loadingSaga } from 'shared/loading/sagas'
 import { profileSaga } from 'shared/profiles/sagas'
 import { rendererSaga } from 'shared/renderer/sagas'
 import { metricSaga } from './metricSaga'
-import { daoSaga } from 'shared/dao/sagas'
+import { catalystSelectionSaga } from 'shared/catalystSelection/sagas'
 import { metaSaga } from 'shared/meta/sagas'
 import { chatSaga } from 'shared/chat/sagas'
 import { sessionSaga } from 'shared/session/sagas'
@@ -33,7 +33,7 @@ export function createRootSaga() {
     yield fork(profileSaga)
     yield fork(chatSaga)
     yield fork(atlasSaga)
-    yield fork(daoSaga)
+    yield fork(catalystSelectionSaga)
     yield fork(metricSaga)
     yield fork(loadingSaga)
     yield fork(socialSaga)

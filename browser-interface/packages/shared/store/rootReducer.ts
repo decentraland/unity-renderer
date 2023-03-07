@@ -5,7 +5,7 @@ import { catalogsReducer } from 'shared/catalogs/reducer'
 import { rendererReducer } from 'shared/renderer/reducer'
 import { loadingReducer } from 'shared/loading/reducer'
 import { atlasReducer } from 'shared/atlas/reducer'
-import { daoReducer } from 'shared/dao/reducer'
+import { catalystSelectionReducer } from 'shared/catalystSelection/reducer'
 import { metaReducer } from 'shared/meta/reducer'
 import { chatReducer } from 'shared/chat/reducer'
 import { commsReducer } from 'shared/comms/reducer'
@@ -28,7 +28,7 @@ export const reducers = combineReducers({
   profiles: profileReducer,
   catalogs: catalogsReducer,
   renderer: rendererReducer,
-  dao: daoReducer,
+  catalystSelection: catalystSelectionReducer,
   comms: commsReducer,
   realm: realmReducer,
   voiceChat: voiceChatReducer,

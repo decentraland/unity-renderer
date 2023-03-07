@@ -54,8 +54,6 @@ import { trackEvent } from 'shared/analytics/trackEvent'
 import { SendPrivateMessage, SEND_PRIVATE_MESSAGE } from 'shared/chat/actions'
 import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
 import { getPeer } from 'shared/comms/peers'
-import { waitForRoomConnection } from 'shared/dao/sagas'
-import { getSelectedNetwork } from 'shared/dao/selectors'
 import {
   JoinOrCreateChannel,
   JOIN_OR_CREATE_CHANNEL,
@@ -104,6 +102,7 @@ import {
 } from 'shared/profiles/selectors'
 import { ProfileUserInfo } from 'shared/profiles/types'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
+import { waitForRoomConnection } from 'shared/comms/waitFor/roomConnection'
 import { getFetchContentUrlPrefixFromRealmAdapter, getRealmConnectionString } from 'shared/realm/selectors'
 import { OFFLINE_REALM } from 'shared/realm/types'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
@@ -153,8 +152,8 @@ import {
   UpdateTotalUnseenMessagesPayload,
   UpdateUserUnseenMessagesPayload
 } from 'shared/types'
-import { fetchENSOwner } from 'shared/web3'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { fetchENSOwner } from 'shared/web3/lib/fetchENSOwner'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { ensureFriendProfile } from './ensureFriendProfile'
 import {
   areChannelsEnabled,
@@ -171,6 +170,7 @@ import {
   isNewFriendRequestEnabled,
   validateFriendRequestId
 } from './utils'
+import { getSelectedNetwork } from 'shared/catalystSelection/selectors'
 
 const logger = DEBUG_KERNEL_LOG ? createLogger('chat: ') : createDummyLogger()
 
@@ -221,7 +221,7 @@ function* initializeFriendsSaga() {
 
     // guests must not use the friends & private messaging features.
     if (isGuest) {
-      getUnityInstance().InitializeChat({
+      getUnityInterface().InitializeChat({
         totalUnseenMessages: 0,
         channelToJoin: undefined
       })
@@ -317,7 +317,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
           if (!isAddedToCatalog(store.getState(), userId)) {
             await ensureFriendProfile(userId)
           }
-          getUnityInstance().AddFriends({
+          getUnityInterface().AddFriends({
             friends: [userId],
             totalFriends: getTotalFriends(store.getState())
           })
@@ -406,7 +406,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
           total: unreadMessages
         }
 
-        getUnityInstance().UpdateUserUnseenMessages(updateUnseenMessages)
+        getUnityInterface().UpdateUserUnseenMessages(updateUnseenMessages)
       }
 
       // send total unseen messages update
@@ -415,7 +415,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
       const updateTotalUnseenMessages: UpdateTotalUnseenMessagesPayload = {
         total: totalUnreadMessages
       }
-      getUnityInstance().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
+      getUnityInterface().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
     } catch (error) {
       const message = 'Failed while processing message'
       defaultLogger.error(message, error)
@@ -478,7 +478,7 @@ function* configureMatrixClient(action: SetMatrixClient) {
           muted: false
         }
 
-        getUnityInstance().JoinChannelConfirmation({ channelInfoPayload: [channel] })
+        getUnityInterface().JoinChannelConfirmation({ channelInfoPayload: [channel] })
         break
       case 'leave':
         const joinedMembers = client.getChannel(conversation.id)?.userIds?.length ?? 0
@@ -500,8 +500,8 @@ function* configureMatrixClient(action: SetMatrixClient) {
           total: totalUnreadMessages
         }
 
-        getUnityInstance().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
-        getUnityInstance().UpdateChannelInfo({ channelInfoPayload: [leavingChannelPayload] })
+        getUnityInterface().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
+        getUnityInterface().UpdateChannelInfo({ channelInfoPayload: [leavingChannelPayload] })
         break
     }
   })
@@ -642,8 +642,8 @@ function* refreshFriends() {
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
 
-    getUnityInstance().InitializeFriends(initFriendsMessage)
-    getUnityInstance().InitializeChat(initChatMessage)
+    getUnityInterface().InitializeFriends(initFriendsMessage)
+    getUnityInterface().InitializeChat(initChatMessage)
     const { lastStatusOfFriends, numberOfFriendRequests, coolDownOfFriendRequests } = (yield select(
       getFriendStatusInfo
     )) as ReturnType<typeof getFriendStatusInfo>
@@ -752,7 +752,7 @@ export async function getFriends(request: GetFriendsPayload) {
       baseUrl: fetchContentServerWithPrefix
     })
   )
-  getUnityInstance().AddUserProfilesToCatalog({ users: profilesForRenderer })
+  getUnityInterface().AddUserProfilesToCatalog({ users: profilesForRenderer })
 
   const friendIdsToReturn = friendsToReturn.map((friend) => friend.data.userId)
 
@@ -761,7 +761,7 @@ export async function getFriends(request: GetFriendsPayload) {
     totalFriends: friendsIds.length
   }
 
-  getUnityInstance().AddFriends(addFriendsPayload)
+  getUnityInterface().AddFriends(addFriendsPayload)
 
   store.dispatch(addedProfilesToCatalog(friendsToReturn.map((friend) => friend.data)))
 
@@ -815,11 +815,11 @@ export async function getFriendRequests(request: GetFriendRequestsPayload) {
   )
 
   // send friend requests profiles
-  getUnityInstance().AddUserProfilesToCatalog({ users: profilesForRenderer })
+  getUnityInterface().AddUserProfilesToCatalog({ users: profilesForRenderer })
   store.dispatch(addedProfilesToCatalog(friendRequestsProfiles.map((friend) => friend.data)))
 
   // send friend requests
-  getUnityInstance().AddFriendRequests(addFriendRequestsPayload)
+  getUnityInterface().AddFriendRequests(addFriendRequestsPayload)
 }
 
 export async function getFriendRequestsProtocol(request: GetFriendRequestsPayload) {
@@ -860,7 +860,7 @@ export async function getFriendRequestsProtocol(request: GetFriendRequestsPayloa
     )
 
     // Send profiles to unity
-    getUnityInstance().AddUserProfilesToCatalog({ users: profilesForRenderer })
+    getUnityInterface().AddUserProfilesToCatalog({ users: profilesForRenderer })
     store.dispatch(addedProfilesToCatalog(friendRequestsProfiles.map((friend) => friend.data)))
 
     // Map response
@@ -944,8 +944,8 @@ export async function markAsSeenPrivateChatMessages(userId: MarkMessagesAsSeenPa
     total: totalUnreadMessages
   }
 
-  getUnityInstance().UpdateUserUnseenMessages(updateUnseenMessages)
-  getUnityInstance().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
+  getUnityInterface().UpdateUserUnseenMessages(updateUnseenMessages)
+  getUnityInterface().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
 }
 
 export async function getPrivateMessages(getPrivateMessagesPayload: GetPrivateMessagesPayload) {
@@ -994,7 +994,7 @@ export async function getPrivateMessages(getPrivateMessagesPayload: GetPrivateMe
     }))
   }
 
-  getUnityInstance().AddChatMessages(addChatMessagesPayload)
+  getUnityInterface().AddChatMessages(addChatMessagesPayload)
 }
 
 export function getUnseenMessagesByUser() {
@@ -1013,7 +1013,7 @@ export function getUnseenMessagesByUser() {
     })
   }
 
-  getUnityInstance().UpdateTotalUnseenMessagesByUser(updateTotalUnseenMessagesByUserPayload)
+  getUnityInterface().UpdateTotalUnseenMessagesByUser(updateTotalUnseenMessagesByUserPayload)
 }
 
 export async function getFriendsWithDirectMessages(request: GetFriendsWithDirectMessagesPayload) {
@@ -1063,10 +1063,10 @@ export async function getFriendsWithDirectMessages(request: GetFriendsWithDirect
     })
   )
 
-  getUnityInstance().AddUserProfilesToCatalog({ users: profilesForRenderer })
+  getUnityInterface().AddUserProfilesToCatalog({ users: profilesForRenderer })
   store.dispatch(addedProfilesToCatalog(friendsConversations.map((friend) => friend.avatar)))
 
-  getUnityInstance().AddFriendsWithDirectMessages(addFriendsWithDirectMessagesPayload)
+  getUnityInterface().AddFriendsWithDirectMessages(addFriendsWithDirectMessagesPayload)
 
   const client = getSocialClient(store.getState())
   if (!client) {
@@ -1107,7 +1107,7 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
     presence: isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE
   }
 
-  getUnityInstance().UpdateUserPresence(updateMessage)
+  getUnityInterface().UpdateUserPresence(updateMessage)
 }
 
 function updateUserStatus(client: SocialAPI, ...socialIds: string[]) {
@@ -1191,7 +1191,7 @@ function parseUserId(socialId: string) {
 }
 
 function addNewChatMessage(chatMessage: ChatMessage) {
-  getUnityInstance().AddMessageToChatWindow(chatMessage)
+  getUnityInterface().AddMessageToChatWindow(chatMessage)
 }
 
 function* handleSendChannelMessage(action: SendChannelMessage) {
@@ -1212,7 +1212,7 @@ function* handleSendChannelMessage(action: SendChannelMessage) {
       if (messageId) {
         message.messageId = messageId
       }
-      getUnityInstance().AddMessageToChatWindow(message)
+      getUnityInterface().AddMessageToChatWindow(message)
     }
   } catch (e: any) {
     logger.error(e)
@@ -1251,7 +1251,7 @@ function* handleSendPrivateMessage(action: SendPrivateMessage) {
     if (messageId) {
       message.messageId = messageId
     }
-    getUnityInstance().AddMessageToChatWindow(message)
+    getUnityInterface().AddMessageToChatWindow(message)
   } catch (e: any) {
     logger.error(e)
     trackEvent('error', {
@@ -1337,7 +1337,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           // Update notification badges
           const conversationId = yield call(async () => await conversationIdPromise)
           const unreadMessages = client.getConversationUnreadMessages(conversationId).length
-          getUnityInstance().UpdateUserUnseenMessages({
+          getUnityInterface().UpdateUserUnseenMessages({
             userId: getUserIdFromMatrix(userId),
             total: unreadMessages
           })
@@ -1345,7 +1345,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
           // Update notification badges
           const friends = yield call(async () => await friendsPromise)
           const totalUnseenMessages = getTotalUnseenMessages(client, getUserIdFromMatrix(ownId), friends)
-          getUnityInstance().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
+          getUnityInterface().UpdateTotalUnseenMessages({ total: totalUnseenMessages })
         }
       }
       // The approved should not have a break since it should execute all the code as the rejected case
@@ -1497,8 +1497,8 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       }
     }
 
-    getUnityInstance().UpdateTotalFriendRequests(updateTotalFriendRequestsPayload)
-    getUnityInstance().UpdateTotalFriends({ totalFriends })
+    getUnityInterface().UpdateTotalFriendRequests(updateTotalFriendRequestsPayload)
+    getUnityInterface().UpdateTotalFriends({ totalFriends })
 
     if (newState) {
       yield put(updatePrivateMessagingState(newState))
@@ -1514,7 +1514,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
       // + The new friend request flow is disabled
       // + The new friend request flow is enabled and the action is an incoming/outgoing delete
       if (!newFriendRequestFlow || (newFriendRequestFlow && action === FriendshipAction.DELETED)) {
-        getUnityInstance().UpdateFriendshipStatus(payload)
+        getUnityInterface().UpdateFriendshipStatus(payload)
       }
     }
 
@@ -1593,7 +1593,7 @@ function* trackEvents({ payload }: UpdateFriendship) {
 }
 
 function showErrorNotification(message: string) {
-  getUnityInstance().ShowNotification({
+  getUnityInterface().ShowNotification({
     type: NotificationType.GENERIC,
     message,
     buttonMessage: 'OK',
@@ -1778,7 +1778,7 @@ function* handleJoinOrCreateChannel(action: JoinOrCreateChannel) {
       }
 
       if (created) {
-        getUnityInstance().JoinChannelConfirmation({ channelInfoPayload: [channel] })
+        getUnityInterface().JoinChannelConfirmation({ channelInfoPayload: [channel] })
       } else {
         yield apply(client, client.joinChannel, [conversation.id])
       }
@@ -1789,7 +1789,7 @@ function* handleJoinOrCreateChannel(action: JoinOrCreateChannel) {
       if (channelByName) {
         yield apply(client, client.joinChannel, [channelByName.id])
       } else {
-        getUnityInstance().AddMessageToChatWindow({
+        getUnityInterface().AddMessageToChatWindow({
           messageType: ChatMessageType.SYSTEM,
           messageId: uuid(),
           sender: 'Decentraland',
@@ -1865,7 +1865,7 @@ export async function createChannel(request: CreateChannelPayload) {
       muted: false
     }
 
-    getUnityInstance().JoinChannelConfirmation({ channelInfoPayload: [channel] })
+    getUnityInterface().JoinChannelConfirmation({ channelInfoPayload: [channel] })
   } catch (e) {
     if (e instanceof ChannelsError) {
       let errorCode = ChannelErrorCode.UNKNOWN
@@ -1886,7 +1886,7 @@ export function getUnseenMessagesByChannel() {
     getTotalUnseenMessagesByChannel()
 
   // send total unseen messages by channels to unity
-  getUnityInstance().UpdateTotalUnseenMessagesByChannel(updateTotalUnseenMessagesByChannelPayload)
+  getUnityInterface().UpdateTotalUnseenMessagesByChannel(updateTotalUnseenMessagesByChannelPayload)
 }
 
 // Get user's joined channels
@@ -1912,7 +1912,7 @@ export function getJoinedChannels(request: GetJoinedChannelsPayload) {
     muted: profile?.muted?.includes(conv.conversation.id) ?? false
   }))
 
-  getUnityInstance().UpdateChannelInfo({ channelInfoPayload: channelsToReturn })
+  getUnityInterface().UpdateChannelInfo({ channelInfoPayload: channelsToReturn })
 }
 
 // Mark channel messages as seen
@@ -1941,8 +1941,8 @@ export async function markAsSeenChannelMessages(request: MarkChannelMessagesAsSe
   const updateTotalUnseenMessagesByChannel: UpdateTotalUnseenMessagesByChannelPayload =
     getTotalUnseenMessagesByChannel()
 
-  getUnityInstance().UpdateTotalUnseenMessagesByChannel(updateTotalUnseenMessagesByChannel)
-  getUnityInstance().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
+  getUnityInterface().UpdateTotalUnseenMessagesByChannel(updateTotalUnseenMessagesByChannel)
+  getUnityInterface().UpdateTotalUnseenMessages(updateTotalUnseenMessages)
 }
 
 // Get channel messages
@@ -2002,7 +2002,7 @@ export async function getChannelMessages(request: GetChannelMessagesPayload) {
     })
   }
 
-  getUnityInstance().AddChatMessages(addChatMessages)
+  getUnityInterface().AddChatMessages(addChatMessages)
 }
 
 // Find members that are not added to the catalog. It filters the own profile.
@@ -2059,7 +2059,7 @@ export async function searchChannels(request: GetChannelsPayload) {
     channels: channelsSorted
   }
 
-  getUnityInstance().UpdateChannelSearchResults(searchResult)
+  getUnityInterface().UpdateChannelSearchResults(searchResult)
 }
 
 /**
@@ -2074,7 +2074,7 @@ function notifyJoinChannelError(channelId: string, errorCode: number) {
   }
 
   // send error message to unity
-  getUnityInstance().JoinChannelError(joinChannelError)
+  getUnityInterface().JoinChannelError(joinChannelError)
 }
 
 /**
@@ -2087,7 +2087,7 @@ function notifyLeaveChannelError(channelId: string, errorCode: ChannelErrorCode)
     channelId,
     errorCode
   }
-  getUnityInstance().LeaveChannelError(leaveChannelError)
+  getUnityInterface().LeaveChannelError(leaveChannelError)
 }
 
 /**
@@ -2100,7 +2100,7 @@ function notifyMuteChannelError(channelId: string, errorCode: ChannelErrorCode) 
     channelId,
     errorCode
   }
-  getUnityInstance().MuteChannelError(muteChannelError)
+  getUnityInterface().MuteChannelError(muteChannelError)
 }
 
 /**
@@ -2172,7 +2172,7 @@ export function muteChannel(muteChannel: MuteChannelPayload) {
   }
 
   // send message to unity
-  getUnityInstance().UpdateChannelInfo({ channelInfoPayload: [channelInfo] })
+  getUnityInterface().UpdateChannelInfo({ channelInfoPayload: [channelInfo] })
 }
 
 /**
@@ -2219,7 +2219,7 @@ export function getChannelInfo(request: GetChannelInfoPayload) {
       muted
     })
   }
-  getUnityInstance().UpdateChannelInfo({ channelInfoPayload: channels })
+  getUnityInterface().UpdateChannelInfo({ channelInfoPayload: channels })
 }
 
 // Get channel members
@@ -2243,7 +2243,7 @@ export async function getChannelMembers(request: GetChannelMembersPayload) {
 
   if (allMembers.length === 0) {
     // it means the channel has no members
-    getUnityInstance().UpdateChannelMembers(channelMembersPayload)
+    getUnityInterface().UpdateChannelMembers(channelMembersPayload)
     return
   }
 
@@ -2267,7 +2267,7 @@ export async function getChannelMembers(request: GetChannelMembersPayload) {
 
   // send info to unity
   channelMembersPayload.members.push(...membersPayload)
-  getUnityInstance().UpdateChannelMembers(channelMembersPayload)
+  getUnityInterface().UpdateChannelMembers(channelMembersPayload)
 }
 
 export async function requestFriendship(request: SendFriendRequestPayload) {
@@ -2546,7 +2546,7 @@ function sendMissingProfiles(members: ChannelMember[], ownId: string) {
 
   if (missingUsers.length > 0) {
     const missingProfiles = getMissingProfiles(missingUsers)
-    getUnityInstance().AddUserProfilesToCatalog({ users: missingProfiles })
+    getUnityInterface().AddUserProfilesToCatalog({ users: missingProfiles })
   }
 }
 

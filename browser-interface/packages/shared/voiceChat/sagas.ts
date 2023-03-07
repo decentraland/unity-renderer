@@ -1,9 +1,15 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { trackEvent } from 'shared/analytics/trackEvent'
+import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
+import { RoomConnection } from 'shared/comms/interface'
 import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
 import { receiveUserTalking } from 'shared/comms/peers'
+import { getCommsRoom } from 'shared/comms/selectors'
+import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { store } from 'shared/store/isolatedStore'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
+import { RootWorldState } from 'shared/world/types'
 import { VOICE_CHAT_SAMPLE_RATE } from 'voice-chat-codec/constants'
 import {
   clearVoiceChatError,
@@ -41,13 +47,6 @@ import {
 } from './selectors'
 import { RootVoiceChatState, VoiceChatState } from './types'
 import { VoiceHandler } from './VoiceHandler'
-
-import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
-import { RoomConnection } from 'shared/comms/interface'
-import { getCommsRoom } from 'shared/comms/selectors'
-import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { incrementCounter } from 'shared/occurences'
-import { RootWorldState } from 'shared/world/types'
 
 let audioRequestInitialized = false
 

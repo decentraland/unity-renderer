@@ -22,10 +22,12 @@ import { getRealmAdapter } from './selectors'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
 import { FATAL_ERROR } from 'shared/loading/types'
-import { BEFORE_UNLOAD } from 'shared/actions'
+import { BEFORE_UNLOAD } from 'shared/renderer/actions'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { realmToConnectionString } from './resolver'
 import { hookConnectToFixedAdaptersIfNecessary } from './logic'
+import { PingResult, ServerConnectionStatus } from 'shared/catalystSelection/types'
+import { ping } from 'shared/catalystSelection/fetch/ping'
 
 const logger = createLogger('realm')
 
@@ -164,4 +166,13 @@ globalThis.setAdapter = function setAdapter(connectionString: string) {
       peers: {}
     })
   )
+}
+
+export async function checkValidRealm(baseUrl: string): Promise<PingResult | null> {
+  const pingResult = await ping(baseUrl + '/about')
+  const acceptingUsers = pingResult.result && (pingResult.result.acceptingUsers ?? true)
+  if (pingResult.status === ServerConnectionStatus.OK && acceptingUsers) {
+    return pingResult
+  }
+  return null
 }

@@ -5,10 +5,9 @@ import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { worldToGrid } from 'lib/decentraland/parcels/worldToGrid'
 import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-import { BEFORE_UNLOAD } from 'shared/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { SceneFail, SceneStart, SceneUnload, SCENE_FAIL, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
-import { getResourcesURL } from 'shared/location'
+import { getResourcesURL } from 'lib/decentraland/url/resourcesUrl'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import {
@@ -17,7 +16,7 @@ import {
   isWorldLoaderActive
 } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
-import { signalParcelLoadingStarted } from 'shared/renderer/actions'
+import { BEFORE_UNLOAD, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { CHANGE_LOGIN_STAGE } from 'shared/session/actions'
 import { isLoginCompleted } from 'shared/session/selectors'
@@ -27,7 +26,7 @@ import { LoadableScene } from 'shared/types'
 import { getSceneWorkerBySceneID, setDesiredParcelScenes } from 'shared/world/parcelSceneManager'
 import { pickWorldSpawnpoint, positionObservable, receivePositionReport } from 'shared/world/positionThings'
 import { sceneEvents, SceneWorker } from 'shared/world/SceneWorker'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import {
   positionSettled,
   PositionSettled,
@@ -184,7 +183,7 @@ function* rendererPositionSettler() {
       receivePositionReport(spawnPointAndScene.spawnPoint.position)
     }
     // then update the position in the engine
-    getUnityInstance().Teleport(spawnPointAndScene.spawnPoint)
+    getUnityInterface().Teleport(spawnPointAndScene.spawnPoint)
     yield take([POSITION_SETTLED, POSITION_UNSETTLED])
   }
 }

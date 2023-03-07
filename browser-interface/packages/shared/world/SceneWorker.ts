@@ -4,7 +4,7 @@ import {
   ETHEREUM_NETWORK,
   FORCE_SEND_MESSAGE,
   getAssetBundlesBaseUrl,
-  playerConfigurations,
+  playerHeight,
   WSS_ENABLED
 } from 'config'
 import { PositionReport } from './positionThings'
@@ -13,9 +13,9 @@ import { WebWorkerTransport } from '@dcl/rpc/dist/transports/WebWorker'
 import { EventDataType } from '@dcl/protocol/out-ts/decentraland/kernel/apis/engine_api.gen'
 import { registerServices } from 'shared/apis/host'
 import { PortContext } from 'shared/apis/host/context'
-import { getUnityInstance } from 'unity-interface/IUnityInterface'
+import { getUnityInterface } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getSceneNameFromJsonData } from 'shared/selectors'
+import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
 import { Scene } from '@dcl/schemas'
 import { RpcSceneControllerServiceDefinition } from '@dcl/protocol/out-ts/decentraland/renderer/renderer_services/scene_controller.gen'
 import * as codegen from '@dcl/rpc/dist/codegen'
@@ -75,9 +75,6 @@ const sdk7RuntimeRaw =
 
 const sdk7RuntimeBLOB = new Blob([sdk7RuntimeRaw])
 const sdk7RuntimeUrl = URL.createObjectURL(sdk7RuntimeBLOB)
-
-export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready' | 'failed'
-export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCycleStatusType }
 
 export const sceneEvents = mitt<{
   [SCENE_LOAD]: SceneLoad
@@ -396,7 +393,7 @@ export class SceneWorker {
 
     function flush() {
       if (len) {
-        getUnityInstance().SendSceneMessage(messages.join('\n'))
+        getUnityInterface().SendSceneMessage(messages.join('\n'))
         messages.length = 0
         len = 0
       }
@@ -446,7 +443,7 @@ export class SceneWorker {
               y: positionReport.position.y
             },
             cameraPosition: positionReport.position,
-            playerHeight: playerConfigurations.height
+            playerHeight: playerHeight
           }
         })
 
