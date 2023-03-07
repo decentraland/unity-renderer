@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Chat.HUD;
 using DCL.Interface;
@@ -23,6 +24,7 @@ public class PublicChatWindowControllerShould
     private IChatController chatController;
     private IUserProfileBridge userProfileBridge;
     private IMouseCatcher mouseCatcher;
+    private DataStore dataStore;
 
     [SetUp]
     public void SetUp()
@@ -34,10 +36,11 @@ public class PublicChatWindowControllerShould
         chatController.GetAllocatedChannel(CHANNEL_ID).Returns(new Channel(CHANNEL_ID, CHANNEL_ID,
             0, 1, true, false, ""));
         mouseCatcher = Substitute.For<IMouseCatcher>();
+        dataStore = new DataStore();
         controller = new PublicChatWindowController(
             chatController,
             userProfileBridge,
-            new DataStore(),
+            dataStore,
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             mouseCatcher,
             ScriptableObject.CreateInstance<InputAction_Trigger>(),
@@ -222,6 +225,31 @@ public class PublicChatWindowControllerShould
                                                                 && p.name == CHANNEL_ID
                                                                 && p.joined == true
                                                                 && p.muted == true));
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void CheckOwnPlayerMentionInNearByCorrectly(bool ownPlayerIsMentioned)
+    {
+        dataStore.mentions.ownPlayerMentionedInChannel.Set(null, false);
+        string testMessage = ownPlayerIsMentioned
+            ? $"Hi <link=mention://{userProfileBridge.GetOwn().userId}><color=#4886E3><u>@{userProfileBridge.GetOwn().name}</u></color></link>"
+            : "test message";
+        controller.Setup(CHANNEL_ID);
+        view.IsActive.Returns(false);
+
+        var testMentionMessage = new ChatMessage
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            body = testMessage,
+            sender = TEST_USER_ID,
+            timestamp = 100,
+            recipient = null,
+        };
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
+
+        Assert.AreEqual(ownPlayerIsMentioned ? ChatUtils.NEARBY_CHANNEL_ID : null, dataStore.mentions.ownPlayerMentionedInChannel.Get());
     }
 
     private void GivenOwnProfile()

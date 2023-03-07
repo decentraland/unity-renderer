@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
-using NSubstitute;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
