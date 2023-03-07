@@ -13,7 +13,6 @@ using DCl.Social.Friends;
 using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
-using DCL.Chat.HUD;
 
 public class WorldChatWindowController : IHUD
 {
@@ -31,6 +30,7 @@ public class WorldChatWindowController : IHUD
     private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
     private readonly IBrowserBridge browserBridge;
     private readonly RendererState rendererState;
+    private readonly DataStore_Mentions mentionsDataStore;
     private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
     private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
     private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
@@ -73,7 +73,8 @@ public class WorldChatWindowController : IHUD
         ISocialAnalytics socialAnalytics,
         IChannelsFeatureFlagService channelsFeatureFlagService,
         IBrowserBridge browserBridge,
-        RendererState rendererState)
+        RendererState rendererState,
+        DataStore_Mentions mentionsDataStore)
     {
         this.userProfileBridge = userProfileBridge;
         this.friendsController = friendsController;
@@ -84,12 +85,13 @@ public class WorldChatWindowController : IHUD
         this.channelsFeatureFlagService = channelsFeatureFlagService;
         this.browserBridge = browserBridge;
         this.rendererState = rendererState;
+        this.mentionsDataStore = mentionsDataStore;
     }
 
     public void Initialize(IWorldChatWindowView view, bool isVisible = true)
     {
         this.view = view;
-        view.Initialize(chatController);
+        view.Initialize(chatController, mentionsDataStore);
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += HandleViewCloseRequest;

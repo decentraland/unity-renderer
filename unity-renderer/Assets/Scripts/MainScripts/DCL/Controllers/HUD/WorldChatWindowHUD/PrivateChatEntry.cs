@@ -18,6 +18,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject onlineStatusContainer;
         [SerializeField] internal GameObject offlineStatusContainer;
         [SerializeField] internal RectTransform userContextMenuPositionReference;
+        [SerializeField] internal GameObject ownPlayerMentionMark;
 
         private UserContextMenu userContextMenu;
         private IChatController chatController;
@@ -25,7 +26,7 @@ namespace DCL.Chat.HUD
         public PrivateChatEntryModel Model => model;
 
         public event Action<PrivateChatEntry> OnOpenChat;
-    
+
         public static PrivateChatEntry Create()
         {
             return Instantiate(Resources.Load<PrivateChatEntry>("SocialBarV1/WhisperChannelElement"));
@@ -39,7 +40,13 @@ namespace DCL.Chat.HUD
                 userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
             });
-            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this)); 
+            openChatButton.onClick.AddListener(() =>
+            {
+                if (ownPlayerMentionMark != null)
+                    ownPlayerMentionMark.SetActive(false);
+
+                OnOpenChat?.Invoke(this);
+            });
             onFocused += isFocused =>
             {
                 if (optionsButton == null) return;
@@ -51,7 +58,8 @@ namespace DCL.Chat.HUD
         }
 
         public void Initialize(IChatController chatController,
-            UserContextMenu userContextMenu)
+            UserContextMenu userContextMenu,
+            DataStore_Mentions mentionsDataStore)
         {
             this.chatController = chatController;
             this.userContextMenu = userContextMenu;
@@ -59,8 +67,10 @@ namespace DCL.Chat.HUD
             userContextMenu.OnHide += HandleContextMenuHidden;
             userContextMenu.OnBlock -= HandleUserBlocked;
             userContextMenu.OnBlock += HandleUserBlocked;
+            mentionsDataStore.ownPlayerMentionedInDM.OnChange -= HandleOwnPlayerMentioned;
+            mentionsDataStore.ownPlayerMentionedInDM.OnChange += HandleOwnPlayerMentioned;
         }
-    
+
         public void Configure(PrivateChatEntryModel newModel)
         {
             model = newModel;
@@ -75,17 +85,23 @@ namespace DCL.Chat.HUD
             SetBlockStatus(model.isBlocked);
             SetPresence(model.isOnline);
             unreadNotifications.Initialize(chatController, model.userId);
-        
+
             if (model.imageFetchingEnabled)
                 EnableAvatarSnapshotFetching();
             else
                 DisableAvatarSnapshotFetching();
         }
-    
+
         private void HandleUserBlocked(string userId, bool blocked)
         {
             if (userId != model.userId) return;
             SetBlockStatus(blocked);
+        }
+
+        private void HandleOwnPlayerMentioned(string userId, string _)
+        {
+            if (model.userId != userId) return;
+            ownPlayerMentionMark.SetActive(true);
         }
 
         public void SetBlockStatus(bool isBlocked)
@@ -107,7 +123,7 @@ namespace DCL.Chat.HUD
             menuTransform.pivot = userContextMenuPositionReference.pivot;
             menuTransform.position = userContextMenuPositionReference.position;
         }
-    
+
         public bool IsVisible(RectTransform container)
         {
             if (!gameObject.activeSelf) return false;
@@ -127,7 +143,7 @@ namespace DCL.Chat.HUD
             picture.SetImage((string) null);
             model.imageFetchingEnabled = false;
         }
-        
+
         private void HandleContextMenuHidden()
         {
             optionsButton.gameObject.SetActive(false);

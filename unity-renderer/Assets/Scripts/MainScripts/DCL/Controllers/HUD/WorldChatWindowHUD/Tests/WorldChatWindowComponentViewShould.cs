@@ -1,3 +1,4 @@
+using DCL;
 using System.Collections;
 using DCL.Chat.HUD;
 using DCL.Interface;
@@ -14,7 +15,7 @@ public class WorldChatWindowComponentViewShould
     public void SetUp()
     {
         view = WorldChatWindowComponentView.Create();
-        view.Initialize(Substitute.For<IChatController>());
+        view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
     }
 
     [TearDown]
@@ -104,9 +105,9 @@ public class WorldChatWindowComponentViewShould
     {
         GivenPrivateChat("pepe");
         GivenPrivateChat("bleh");
-        
+
         yield return null;
-        
+
         Assert.AreEqual(2, view.directChatList.Count());
         Assert.AreEqual(0, view.searchResultsList.Count());
         Assert.AreEqual(0, view.publicChannelList.Count());
@@ -180,7 +181,7 @@ public class WorldChatWindowComponentViewShould
         const string channelId = "nearby";
 
         GivenPublicChannel(channelId, "nearby");
-        
+
         yield return null;
 
         Assert.AreEqual(0, view.directChatList.Count());
@@ -188,7 +189,7 @@ public class WorldChatWindowComponentViewShould
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.IsNotNull(view.publicChannelList.Get(channelId));
     }
-    
+
     [UnityTest]
     public IEnumerator CreateManyPublicChannels()
     {
@@ -337,7 +338,7 @@ public class WorldChatWindowComponentViewShould
         yield return null;
 
         view.EnableSearchMode();
-        
+
         view.SetPrivateChat(new PrivateChatModel
         {
             user = GivenProfile("genio"),
@@ -351,7 +352,7 @@ public class WorldChatWindowComponentViewShould
         view.SetPublicChat(new PublicChatModel("nearby", "nearby", "", true, 1, false, true));
 
         yield return null;
-        
+
         Assert.AreEqual(3, view.directChatList.Count());
         Assert.AreEqual(3, view.searchResultsList.Count());
         Assert.AreEqual(1, view.publicChannelList.Count());
@@ -371,9 +372,9 @@ public class WorldChatWindowComponentViewShould
     public IEnumerator ClearFilter()
     {
         yield return Filter();
-        
+
         view.DisableSearchMode();
-        
+
         Assert.AreEqual(3, view.directChatList.Count());
         Assert.AreEqual(1, view.publicChannelList.Count());
         Assert.AreEqual("Direct Messages (3)", view.directChatsHeaderLabel.text);
@@ -460,7 +461,7 @@ public class WorldChatWindowComponentViewShould
     public void ShowConnectWallet()
     {
         view.ShowConnectWallet();
-        
+
         Assert.IsTrue(view.connectWalletContainer.activeSelf);
         Assert.IsFalse(view.searchBarContainer.activeSelf);
     }
@@ -469,7 +470,7 @@ public class WorldChatWindowComponentViewShould
     public void HideConnectWallet()
     {
         view.HideConnectWallet();
-        
+
         Assert.IsFalse(view.connectWalletContainer.activeSelf);
         Assert.IsTrue(view.searchBarContainer.activeSelf);
     }
@@ -478,10 +479,10 @@ public class WorldChatWindowComponentViewShould
     public void TriggerSignUpWhenConnectWalletButtonClicks()
     {
         var called = false;
-        view.OnSignUp += () => called = true; 
-        
+        view.OnSignUp += () => called = true;
+
         view.connectWalletButton.onClick.Invoke();
-        
+
         Assert.IsTrue(called);
     }
 

@@ -9,7 +9,7 @@ using UnityEngine;
 public class CollapsableDirectChatListComponentView : CollapsableSortedListComponentView<string, PrivateChatEntry>
 {
     private const string POOL_NAME_PREFIX = "DirectChatEntriesPool_";
-    
+
     [SerializeField] private PrivateChatEntry entryPrefab;
     [SerializeField] private UserContextMenu userContextMenu;
 
@@ -17,6 +17,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
     private Pool entryPool;
     private IChatController chatController;
     private bool releaseEntriesFromPool = true;
+    private DataStore_Mentions mentionsDataStore;
 
     public event Action<PrivateChatEntry> OnOpenChat;
     public event Action<string> OnUnfriend
@@ -25,9 +26,12 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         remove => userContextMenu.OnUnfriend -= value;
     }
 
-    public void Initialize(IChatController chatController)
+    public void Initialize(
+        IChatController chatController,
+        DataStore_Mentions mentionsDataStore)
     {
         this.chatController = chatController;
+        this.mentionsDataStore = mentionsDataStore;
     }
 
     public void Filter(string search)
@@ -54,9 +58,9 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         {
             if (pooleableEntries.ContainsKey(key))
                 pooleableEntries[key].Release();
-            pooleableEntries.Remove(key);    
+            pooleableEntries.Remove(key);
         }
-        
+
         return base.Remove(key);
     }
 
@@ -90,7 +94,7 @@ public class CollapsableDirectChatListComponentView : CollapsableSortedListCompo
         pooleableEntries.Add(userId, newFriendEntry);
         var entry = newFriendEntry.gameObject.GetComponent<PrivateChatEntry>();
         Add(userId, entry);
-        entry.Initialize(chatController, userContextMenu);
+        entry.Initialize(chatController, userContextMenu, mentionsDataStore);
         entry.OnOpenChat -= OnEntryOpenChat;
         entry.OnOpenChat += OnEntryOpenChat;
     }

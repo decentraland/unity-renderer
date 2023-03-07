@@ -1,9 +1,10 @@
+using DCL.Chat.HUD.Mentions;
 using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
+using NSubstitute;
 using Channel = DCL.Chat.Channels.Channel;
 
 namespace DCL.Chat.HUD
@@ -191,8 +192,12 @@ namespace DCL.Chat.HUD
         {
             var messageLogUpdated = false;
 
+            var ownPlayerAlreadyMentioned = false;
             foreach (var message in messages)
             {
+                if (!ownPlayerAlreadyMentioned)
+                    ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInNearBy(message);
+
                 if (message.messageType != ChatMessage.Type.PUBLIC
                     && message.messageType != ChatMessage.Type.SYSTEM) continue;
                 if (!string.IsNullOrEmpty(message.recipient)) continue;
@@ -203,6 +208,21 @@ namespace DCL.Chat.HUD
 
             if (View.IsActive && messageLogUpdated)
                 MarkChannelMessagesAsRead();
+        }
+
+        private bool CheckOwnPlayerMentionInNearBy(ChatMessage message)
+        {
+            string ownUserId = userProfileBridge.GetOwn().userId;
+
+            if (message.sender == ownUserId ||
+                message.messageType != ChatMessage.Type.PUBLIC ||
+                !string.IsNullOrEmpty(message.recipient) ||
+                View.IsActive ||
+                !MentionsUtils.IsUserMentionedInText(ownUserId, message.body))
+                return false;
+
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(ChatUtils.NEARBY_CHANNEL_ID, true);
+            return true;
         }
 
         private void Hide() => SetVisibility(false);

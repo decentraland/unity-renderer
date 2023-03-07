@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Chat.HUD.Mentions;
 using DCL.Interface;
 using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
@@ -208,8 +209,12 @@ public class PrivateChatWindowController : IHUD
     {
         var messageLogUpdated = false;
 
+        var ownPlayerAlreadyMentioned = false;
         foreach (var message in messages)
         {
+            if (!ownPlayerAlreadyMentioned)
+                ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInDMs(message);
+
             if (!IsMessageFomCurrentConversation(message)) continue;
 
             chatHudController.AddChatMessage(message, limitMaxEntries: false);
@@ -231,6 +236,20 @@ public class PrivateChatWindowController : IHUD
 
         if (View.IsActive && messageLogUpdated)
             MarkUserChatMessagesAsRead();
+    }
+
+    private bool CheckOwnPlayerMentionInDMs(ChatMessage message)
+    {
+        string ownUserId = userProfileBridge.GetOwn().userId;
+
+        if (message.sender == ownUserId ||
+            (message.sender == conversationUserId && View.IsActive) ||
+            message.messageType != ChatMessage.Type.PRIVATE ||
+            !MentionsUtils.IsUserMentionedInText(ownUserId, message.body))
+            return false;
+
+        dataStore.mentions.ownPlayerMentionedInDM.Set(message.sender, true);
+        return true;
     }
 
     private void Hide()

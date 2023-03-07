@@ -20,7 +20,8 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject openChatContainer;
         [SerializeField] internal GameObject joinedContainer;
         [SerializeField] internal Toggle muteNotificationsToggle;
-    
+        [SerializeField] internal GameObject ownPlayerMentionMark;
+
         private IChatController chatController;
 
         public PublicChatEntryModel Model => model;
@@ -38,21 +39,33 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
-            openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
-        
+            openChatButton.onClick.AddListener(() =>
+            {
+                if (ownPlayerMentionMark != null)
+                    ownPlayerMentionMark.SetActive(false);
+
+                OnOpenChat?.Invoke(this);
+            });
+
             if (optionsButton)
                 optionsButton.onClick.AddListener(() => OnOpenOptions?.Invoke(this));
-        
+
             if (leaveButton)
                 leaveButton.onClick.AddListener(() => OnLeave?.Invoke(this));
-            
+
             if (joinButton)
                 joinButton.onClick.AddListener(() => OnJoin?.Invoke(this));
         }
 
-        public void Initialize(IChatController chatController)
+        public void Initialize(
+            IChatController chatController,
+            DataStore_Mentions mentionsDataStore)
         {
             this.chatController = chatController;
+
+            if (mentionsDataStore == null) return;
+            mentionsDataStore.ownPlayerMentionedInChannel.OnChange -= HandleOwnPlayerMentioned;
+            mentionsDataStore.ownPlayerMentionedInChannel.OnChange += HandleOwnPlayerMentioned;
         }
 
         public void Configure(PublicChatEntryModel newModel)
@@ -81,6 +94,12 @@ namespace DCL.Chat.HUD
         public void Dock(ChannelContextualMenu contextualMenu)
         {
             contextualMenu.transform.position = optionsButton.transform.position;
+        }
+
+        private void HandleOwnPlayerMentioned(string channelId, string previous)
+        {
+            if (model.channelId != channelId) return;
+            ownPlayerMentionMark.SetActive(true);
         }
     }
 }

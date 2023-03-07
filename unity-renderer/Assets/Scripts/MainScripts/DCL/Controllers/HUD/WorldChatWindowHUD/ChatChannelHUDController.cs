@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Chat.HUD.Mentions;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using SocialFeaturesAnalytics;
 using UnityEngine;
@@ -82,6 +82,7 @@ namespace DCL.Chat.HUD
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
+            chatController.OnAddMessage += HandleMessageReceived;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += Hide;
@@ -120,7 +121,6 @@ namespace DCL.Chat.HUD
             {
                 ClearChatControllerListeners();
 
-                chatController.OnAddMessage += HandleMessageReceived;
                 chatController.OnChannelLeft += HandleChannelLeft;
                 chatController.OnChannelUpdated += HandleChannelUpdated;
 
@@ -180,6 +180,9 @@ namespace DCL.Chat.HUD
 
             hideLoadingCancellationToken.Dispose();
             channelMembersHUDController.Dispose();
+
+            if (chatController != null)
+                chatController.OnAddMessage -= HandleMessageReceived;
         }
 
         private void HandleSendChatMessage(ChatMessage message)
@@ -215,8 +218,14 @@ namespace DCL.Chat.HUD
         {
             var messageLogUpdated = false;
 
+            var ownPlayerAlreadyMentioned = false;
             foreach (var message in messages)
             {
+                if (!ownPlayerAlreadyMentioned)
+                    ownPlayerAlreadyMentioned = CheckOwnPlayerMentionInChannels(message);
+
+                if (!isVisible) continue;
+
                 if (!IsMessageFomCurrentChannel(message)) continue;
 
                 UpdateOldestMessage(message);
@@ -238,6 +247,21 @@ namespace DCL.Chat.HUD
                 // The messages from 'channelId' are marked as read if the channel window is currently open
                 MarkChannelMessagesAsRead();
             }
+        }
+
+        private bool CheckOwnPlayerMentionInChannels(ChatMessage message)
+        {
+            string ownUserId = userProfileBridge.GetOwn().userId;
+
+            if (message.sender == ownUserId ||
+                message.messageType != ChatMessage.Type.PUBLIC ||
+                string.IsNullOrEmpty(message.recipient) ||
+                (message.recipient == channelId && View.IsActive) ||
+                !MentionsUtils.IsUserMentionedInText(ownUserId, message.body))
+                return false;
+
+            dataStore.mentions.ownPlayerMentionedInChannel.Set(message.recipient, true);
+            return true;
         }
 
         private void UpdateOldestMessage(ChatMessage message)
@@ -378,7 +402,6 @@ namespace DCL.Chat.HUD
         private void ClearChatControllerListeners()
         {
             if (chatController == null) return;
-            chatController.OnAddMessage -= HandleMessageReceived;
             chatController.OnChannelLeft -= HandleChannelLeft;
             chatController.OnChannelUpdated -= HandleChannelUpdated;
         }
