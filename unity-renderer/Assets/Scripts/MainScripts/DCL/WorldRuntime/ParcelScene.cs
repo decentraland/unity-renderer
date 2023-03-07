@@ -4,7 +4,6 @@ using DCL.Helpers;
 using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
-using DCL.CRDT;
 using DCL.Interface;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using System;
@@ -51,8 +50,6 @@ namespace DCL.Controllers
 
         public SceneLifecycleHandler sceneLifecycleHandler;
 
-        public ICRDTExecutor crdtExecutor { get; set; }
-
         public bool isReleased { get; private set; }
 
         private Bounds outerBounds = new Bounds();
@@ -71,7 +68,6 @@ namespace DCL.Controllers
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             metricsCounter?.Dispose();
-            crdtExecutor?.Dispose();
         }
 
         void OnDisable()
@@ -205,12 +201,6 @@ namespace DCL.Controllers
             }
 
             componentsManagerLegacy.DisposeAllSceneComponents();
-
-            if (crdtExecutor != null)
-            {
-                crdtExecutor.Dispose();
-                crdtExecutor = null;
-            }
 
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
