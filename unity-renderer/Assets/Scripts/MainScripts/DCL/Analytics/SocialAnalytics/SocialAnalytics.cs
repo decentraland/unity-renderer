@@ -42,6 +42,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
         private const string MENTION_MESSAGE_SENT = "mention_message_sent";
+        private const string MENTION_AUTOCOMPLETE = "mention_autocomplete";
 
         public static SocialAnalytics i { get; private set; }
 
@@ -285,6 +286,16 @@ namespace SocialFeaturesAnalytics
             data.Add("source", source.ToString());
 
             analytics.SendAnalytic(FRIEND_DELETED, data);
+        }
+
+        public void SendMessageWithMention()
+        {
+            analytics.SendAnalytic(MENTION_MESSAGE_SENT, new Dictionary<string, string>());
+        }
+
+        public void SendMentionAutocomplete()
+        {
+            analytics.SendAnalytic(MENTION_AUTOCOMPLETE, new Dictionary<string, string>());
         }
 
         public void SendPassportOpen(bool found = true, AvatarOpenOrigin source = AvatarOpenOrigin.World)

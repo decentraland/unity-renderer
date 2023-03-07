@@ -26,6 +26,8 @@ namespace SocialFeaturesAnalytics
         void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage);
         void SendFriendRequestCancelled(string fromUserId, string toUserId, string source);
         void SendFriendDeleted(string fromUserId, string toUserId, PlayerActionSource source);
+        void SendMessageWithMention();
+        void SendMentionAutocomplete();
         void SendPassportOpen(bool found = true, AvatarOpenOrigin source = AvatarOpenOrigin.World);
         void SendPassportClose(double timeSpent);
         void SendPlayerBlocked(bool isFriend, PlayerActionSource source);
