@@ -41,8 +41,9 @@ namespace Tests
 
             updateSystems = () =>
             {
-                systemUpdate();
                 internalComponents.MarkDirtyComponentsUpdate();
+                systemUpdate();
+                internalComponents.ResetDirtyComponentsUpdate();
             };
         }
 
@@ -85,11 +86,11 @@ namespace Tests
         {
             IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
             {
-                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
+                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction4, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction3, hit = new RaycastHit() { } },
+                new InternalInputEventResults.EventData() { button = InputAction.IaAction5, hit = new RaycastHit() { } },
             };
 
             foreach (var eventData in events)
@@ -101,7 +102,10 @@ namespace Tests
             var model = compData.model;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
-            internalComponents.MarkDirtyComponentsUpdate(); //clean dirty
+
+            //clean dirty
+            internalComponents.MarkDirtyComponentsUpdate();
+            internalComponents.ResetDirtyComponentsUpdate();
 
             updateSystems();
 
@@ -112,34 +116,6 @@ namespace Tests
                                 ComponentID.POINTER_EVENTS_RESULT,
                                 Arg.Any<PBPointerEventsResult>(),
                                 ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
-        }
-
-        [Test]
-        public void NotRemoveEventsFromInternalComponent()
-        {
-            IList<InternalInputEventResults.EventData> events = new List<InternalInputEventResults.EventData>()
-            {
-                new InternalInputEventResults.EventData() { button = InputAction.IaPrimary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaSecondary },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction4 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction3 },
-                new InternalInputEventResults.EventData() { button = InputAction.IaAction5 },
-            };
-
-            foreach (var eventData in events)
-            {
-                inputResultComponent.AddEvent(scene, eventData);
-            }
-
-            updateSystems();
-
-            var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var model = compData.model;
-
-            for (int i = 0; i < events.Count; i++)
-            {
-                Assert.AreEqual(events[i].button, model.events.Dequeue().button);
-            }
         }
     }
 }
