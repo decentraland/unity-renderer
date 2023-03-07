@@ -21,7 +21,6 @@ using Environment = DCL.Environment;
 // TODO: refactor into MVC
 public class UserContextMenu : MonoBehaviour
 {
-    private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
     private const string BLOCK_BTN_BLOCK_TEXT = "Block";
     private const string BLOCK_BTN_UNBLOCK_TEXT = "Unblock";
     private const string DELETE_MSG_PATTERN = "Are you sure you want to delete {0} as a friend?";
@@ -79,7 +78,7 @@ public class UserContextMenu : MonoBehaviour
     public event Action<string> OnUnfriend;
     public event Action OnHide;
 
-    private static StringVariable currentPlayerId;
+    private static BaseVariable<string> currentPlayerId;
     private string userId;
     private bool isBlocked;
     private MenuConfigFlags currentConfigFlags;
@@ -147,9 +146,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void Awake()
     {
-        if (!currentPlayerId)
-            currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
         passportButton.onClick.AddListener(OnPassportButtonPressed);
         blockButton.onClick.AddListener(OnBlockUserButtonPressed);
         reportButton.onClick.AddListener(OnReportUserButtonPressed);

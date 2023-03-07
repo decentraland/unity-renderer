@@ -17,7 +17,7 @@ namespace DCL.Social.Chat.Channels
         private readonly DataStore dataStore;
         internal readonly DataStore_Channels channelsDataStore;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly StringVariable currentPlayerInfoCardId;
+        private readonly BaseVariable<string> currentPlayerInfoCardId;
         private readonly IChannelsFeatureFlagService channelsFeatureFlagService;
         private CancellationTokenSource joinChannelCancellationToken = new ();
         private string channelName;
@@ -27,7 +27,6 @@ namespace DCL.Social.Chat.Channels
             IChatController chatController,
             DataStore dataStore,
             ISocialAnalytics socialAnalytics,
-            StringVariable currentPlayerInfoCardId,
             IChannelsFeatureFlagService channelsFeatureFlagService)
         {
             this.view = view;
@@ -35,7 +34,7 @@ namespace DCL.Social.Chat.Channels
             this.dataStore = dataStore;
             channelsDataStore = dataStore.channels;
             this.socialAnalytics = socialAnalytics;
-            this.currentPlayerInfoCardId = currentPlayerInfoCardId;
+            this.currentPlayerInfoCardId = dataStore.HUDs.currentPlayerId;
             this.channelsFeatureFlagService = channelsFeatureFlagService;
 
             channelsDataStore.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;

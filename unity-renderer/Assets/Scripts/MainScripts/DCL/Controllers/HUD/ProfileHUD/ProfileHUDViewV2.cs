@@ -84,7 +84,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private UserProfile profile = null;
     private string description;
     private string userId;
-    private StringVariable currentPlayerId;
+    private BaseVariable<string> currentPlayerId;
 
     public event EventHandler ClaimNamePressed;
     public event EventHandler SignedUpPressed;
@@ -210,8 +210,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
 
     private void Awake()
     {
-        if (currentPlayerId == null)
-            currentPlayerId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerId = DataStore.i.HUDs.currentPlayerId;
 
         buttonLogOut.onClick.AddListener(() => LogedOutPressed?.Invoke(this, EventArgs.Empty));
         buttonSignUp.onClick.AddListener(() => SignedUpPressed?.Invoke(this, EventArgs.Empty));

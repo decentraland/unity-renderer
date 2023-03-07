@@ -15,6 +15,13 @@ namespace SocialFeaturesAnalytics
         ProfileEditHUD
     }
 
+    public enum AvatarOpenOrigin
+    {
+        FriendsHUD,
+        Mention,
+        World
+    }
+
     public enum ItemType
     {
         Wearable,

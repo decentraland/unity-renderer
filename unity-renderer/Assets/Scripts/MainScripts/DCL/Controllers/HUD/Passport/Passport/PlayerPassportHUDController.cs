@@ -18,7 +18,7 @@ namespace DCL.Social.Passports
         private static readonly string[] ALLOWED_TYPES = { NAME_TYPE, "parcel", "estate" };
 
         private readonly IPlayerPassportHUDView view;
-        private readonly StringVariable currentPlayerId;
+        private readonly BaseVariable<string> currentPlayerId;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPassportApiBridge passportApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
@@ -42,7 +42,6 @@ namespace DCL.Social.Passports
             PassportPlayerInfoComponentController playerInfoController,
             PassportPlayerPreviewComponentController playerPreviewController,
             PassportNavigationComponentController passportNavigationController,
-            StringVariable currentPlayerId,
             IUserProfileBridge userProfileBridge,
             IPassportApiBridge passportApiBridge,
             ISocialAnalytics socialAnalytics,
@@ -54,12 +53,12 @@ namespace DCL.Social.Passports
             this.playerInfoController = playerInfoController;
             this.playerPreviewController = playerPreviewController;
             this.passportNavigationController = passportNavigationController;
-            this.currentPlayerId = currentPlayerId;
             this.userProfileBridge = userProfileBridge;
             this.passportApiBridge = passportApiBridge;
             this.socialAnalytics = socialAnalytics;
             this.dataStore = dataStore;
             this.playerInfoCardVisibleState = playerInfoCardVisibleState;
+            this.currentPlayerId = dataStore.HUDs.currentPlayerId;
 
             view.Initialize(mouseCatcher);
             view.OnClose += ClosePassport;
@@ -73,7 +72,7 @@ namespace DCL.Social.Passports
             passportNavigationController.OnClickCollectibles += ClickedCollectibles;
 
             currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
-            OnCurrentPlayerIdChanged(currentPlayerId, null);
+            OnCurrentPlayerIdChanged(currentPlayerId.Get(), null);
 
             playerInfoController.OnClosePassport += ClosePassport;
             dataStore.HUDs.closedWalletModal.OnChange += ClosedGuestWalletPanel;

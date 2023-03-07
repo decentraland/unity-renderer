@@ -16,7 +16,7 @@ namespace DCL.Social.Friends
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IFriendsController friendsController;
         private readonly ISocialAnalytics socialAnalytics;
-        private readonly StringVariable openPassportVariable;
+        private readonly BaseVariable<string> openPassportVariable;
 
         private CancellationTokenSource friendRequestOperationsCancellationToken = new ();
         private string friendRequestId;
@@ -26,15 +26,14 @@ namespace DCL.Social.Friends
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IFriendsController friendsController,
-            ISocialAnalytics socialAnalytics,
-            StringVariable openPassportVariable)
+            ISocialAnalytics socialAnalytics)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
             this.socialAnalytics = socialAnalytics;
-            this.openPassportVariable = openPassportVariable;
+            this.openPassportVariable = dataStore.HUDs.currentPlayerId;
 
             dataStore.HUDs.openSentFriendRequestDetail.OnChange += ShowOrHide;
             view.OnCancel += Cancel;

@@ -41,6 +41,7 @@ namespace SocialFeaturesAnalytics
         private const string CHANNEL_LEAVE = "player_leaves_channel";
         private const string CHANNEL_SEARCH = "player_search_channel";
         private const string CHANNEL_LINK_CLICK = "player_clicks_channel_link";
+        private const string MENTION_MESSAGE_SENT = "mention_message_sent";
 
         public static SocialAnalytics i { get; private set; }
 
@@ -286,9 +287,15 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_DELETED, data);
         }
 
-        public void SendPassportOpen()
+        public void SendPassportOpen(bool found = true, AvatarOpenOrigin source = AvatarOpenOrigin.World)
         {
-            analytics.SendAnalytic(PASSPORT_OPENED, new Dictionary<string, string>());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                {"source", source.ToString()},
+                {"found", found.ToString()}
+            };
+
+            analytics.SendAnalytic(PASSPORT_OPENED, data);
         }
 
         public void SendPassportClose(double timeSpent)
@@ -301,9 +308,11 @@ namespace SocialFeaturesAnalytics
 
         public void SendPlayerBlocked(bool isFriend, PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("friend", isFriend.ToString());
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "friend", isFriend.ToString() },
+                { "source", source.ToString() },
+            };
 
             analytics.SendAnalytic(PLAYER_BLOCKED, data);
         }

@@ -54,7 +54,6 @@ namespace DCL.ECSComponents
     {
         private const float AVATAR_Y_AXIS_OFFSET = -0.72f;
         private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
-        private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
         internal const string IN_HIDE_AREA = "IN_HIDE_AREA";
 
         [SerializeField] private GameObject avatarContainer;
@@ -70,7 +69,7 @@ namespace DCL.ECSComponents
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
-        private StringVariable currentPlayerInfoCardId;
+        private BaseVariable<string> currentPlayerInfoCardId;
 
         internal bool initializedPosition = false;
 
@@ -98,7 +97,7 @@ namespace DCL.ECSComponents
             // TODO: avoid instantiation, user profile bridge should be retrieved from the service locator
             userProfileBridge = new UserProfileWebInterfaceBridge();
 
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
             Visibility visibility = new Visibility();
             avatarMovementController.SetAvatarTransform(transform);
 

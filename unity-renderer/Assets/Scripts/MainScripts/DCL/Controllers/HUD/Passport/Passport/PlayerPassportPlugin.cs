@@ -22,7 +22,6 @@ public class PlayerPassportPlugin : IPlugin
         passportController = new PlayerPassportHUDController(
                         referenceContainer.PassportView,
                         new PassportPlayerInfoComponentController(
-                            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                             referenceContainer.PlayerInfoView,
                             DataStore.i,
                             Environment.i.serviceLocator.Get<IProfanityFilter>(),
@@ -48,7 +47,6 @@ public class PlayerPassportPlugin : IPlugin
                             Environment.i.serviceLocator.Get<ILandsService>(),
                             new UserProfileWebInterfaceBridge(),
                             DataStore.i),
-                        Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(

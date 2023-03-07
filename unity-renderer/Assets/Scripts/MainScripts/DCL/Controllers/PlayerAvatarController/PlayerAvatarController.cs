@@ -44,7 +44,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private BaseRefCounter<AvatarModifierAreaID> currentActiveModifiers;
     private Service<IEmotesCatalogService> emotesCatalog;
     private ISocialAnalytics socialAnalytics;
-    private StringVariable currentPlayerInfoCardId;
+    private BaseVariable<string> currentPlayerInfoCardId;
     private IAvatar avatar;
 
     private void Start()
@@ -70,7 +70,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
         mainCamera = Camera.main;
         currentActiveModifiers = new BaseRefCounter<AvatarModifierAreaID>();
-        currentPlayerInfoCardId = Resources.Load<StringVariable>("CurrentPlayerInfoCardId");
+        currentPlayerInfoCardId = DataStore.i.HUDs.currentPlayerId;
 
         onPointerDown.OnPointerDownReport -= PlayerClicked;
         onPointerDown.OnPointerDownReport += PlayerClicked;

@@ -43,7 +43,6 @@ namespace DCL.Social.Chat.Channels
             joinChannelComponentController = new JoinChannelComponentController(view, chatController,
                 dataStore,
                 socialAnalytics,
-                currentPlayerInfoCardId,
                 channelsFeatureFlagService);
         }
 

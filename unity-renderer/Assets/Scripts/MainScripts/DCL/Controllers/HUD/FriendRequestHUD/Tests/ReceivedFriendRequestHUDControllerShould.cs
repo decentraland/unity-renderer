@@ -62,7 +62,6 @@ namespace DCL.Social.Friends
 
             userProfileBridge.GetOwn().Returns(ownProfile);
             userProfileBridge.Get(SENDER_ID).Returns(recipientProfile);
-            openPassportVariable = ScriptableObject.CreateInstance<StringVariable>();
             dataStore = new DataStore();
 
             friendRequestHUDView = Substitute.For<IFriendRequestHUDView>();
@@ -72,7 +71,6 @@ namespace DCL.Social.Friends
                 new FriendRequestHUDController(friendRequestHUDView),
                 friendsController,
                 userProfileBridge,
-                openPassportVariable,
                 Substitute.For<ISocialAnalytics>());
 
             view.ClearReceivedCalls();

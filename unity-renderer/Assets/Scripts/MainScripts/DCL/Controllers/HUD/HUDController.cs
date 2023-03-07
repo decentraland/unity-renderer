@@ -555,7 +555,7 @@ public class HUDController : IHUDController
             "dcl://halloween_2019/bride_of_frankie_upper_body",
             "dcl://halloween_2019/creepy_nurse_upper_body",
         });
-        Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
+        DataStore.i.HUDs.currentPlayerId.Set(newModel.userId);
     }
 #endif
     public void Dispose()
