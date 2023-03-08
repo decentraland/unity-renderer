@@ -1,7 +1,11 @@
+using Cysharp.Threading.Tasks;
+using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using UnityEngine.Networking;
 using static HotScenesController;
 
 public interface IPlacesAPIController
@@ -16,13 +20,14 @@ public interface IPlacesAPIController
     /// Request all favorite places from the server.
     /// </summary>
     /// <param name="OnCompleted">It will be triggered when the operation has finished successfully.</param>
-    void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted);
+    UniTask GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted);
 }
 
 [ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
     private readonly HotScenesController hotScenesController = HotScenesController.i;
+    private Service<IWebRequestController> webRequestController;
 
     internal event Action<List<HotSceneInfo>> OnGetOperationCompleted;
 
@@ -35,9 +40,12 @@ public class PlacesAPIController : IPlacesAPIController
         hotScenesController.OnHotSceneListFinishUpdating += OnFetchHotScenes;
     }
 
-    public void GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted)
+    public async UniTask GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted)
     {
-        OnCompleted?.Invoke(new List<HotSceneInfo>());
+        UnityWebRequest result = await webRequestController.Ref.GetAsync("https://places.decentraland.org?only_favorites=true", isSigned: true);
+        string data = result.downloadHandler.text;
+        var favoriteScenes = Utils.SafeFromJson<List<HotSceneInfo>>(data);
+        OnCompleted?.Invoke(favoriteScenes);
     }
 
     private void OnFetchHotScenes()
