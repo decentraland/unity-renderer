@@ -71,11 +71,11 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
         gameObject.SetActive(isVisible);
     }
 
-    public void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem w)> wearables)
+    public void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem wearable)> iconsWithWearables)
     {
         nftWearableViews.Clear();
 
-        foreach (var wearableData in wearables)
+        foreach (var wearableData in iconsWithWearables)
         {
             PoolableObject poolableObject = nftElementsEntryPool.Get();
             nftElementsPoolableQueue.Add(poolableObject);
@@ -88,10 +88,10 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
             nftIconComponentView.onFocused -= FocusOnNFTIconView;
             nftIconComponentView.onFocused += FocusOnNFTIconView;
 
-            if (wearableData.w != null)
+            if (wearableData.wearable != null)
             {
                 nftIconComponentView.onDetailInfoButtonClick.AddListener(() => nftIconComponentView.SetNFTItemInfoActive(true));
-                nftIconComponentView.ConfigureNFTItemInfo(nftItemInfo, wearableData.w, !wearableData.w.IsEmote());
+                nftIconComponentView.ConfigureNFTItemInfo(nftItemInfo, wearableData.wearable, !wearableData.wearable.IsEmote());
             }
             else
                 nftIconComponentView.onDetailInfoButtonClick.RemoveAllListeners();

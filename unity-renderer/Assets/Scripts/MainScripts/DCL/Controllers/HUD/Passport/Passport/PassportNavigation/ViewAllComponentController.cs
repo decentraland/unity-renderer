@@ -79,9 +79,9 @@ public class ViewAllComponentController : IDisposable
         view.CloseAllNftItemInfos();
     }
 
-    private void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem w)> wearables)
+    private void ShowNftIcons(List<(NFTIconComponentModel model, WearableItem wearable)> iconsWithWearables)
     {
-        view.ShowNftIcons(wearables);
+        view.ShowNftIcons(iconsWithWearables);
     }
 
     public void Dispose()
