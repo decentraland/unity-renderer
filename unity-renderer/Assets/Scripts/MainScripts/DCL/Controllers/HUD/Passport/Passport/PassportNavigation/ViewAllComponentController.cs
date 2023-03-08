@@ -184,10 +184,12 @@ public class ViewAllComponentController : IDisposable
         List<(NFTIconComponentModel Model, WearableItem w)> wearableModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var wearable in wearables)
         {
+            bool isWearableCollectible = wearable.IsCollectible();
+
             wearableModels.Add((new NFTIconComponentModel
             {
-                showMarketplaceButton = wearable.IsCollectible(),
-                showType = wearable.IsCollectible(),
+                showMarketplaceButton = isWearableCollectible,
+                showType = isWearableCollectible,
                 type = wearable.data.category,
                 marketplaceURI = "",
                 name = wearable.GetName(),
