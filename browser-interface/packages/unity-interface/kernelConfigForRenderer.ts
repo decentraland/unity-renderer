@@ -12,13 +12,13 @@ import {
 } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
 import { getWorld } from '@dcl/schemas'
-import { injectVersions } from 'shared/rolloutVersions'
 import { store } from 'shared/store/isolatedStore'
 import { getSelectedNetwork } from 'shared/dao/selectors'
 import { isGifWebSupported } from 'shared/meta/selectors'
+import { getExplorerVersion } from 'shared/meta/version'
 
 export function kernelConfigForRenderer(): KernelConfigForRenderer {
-  const versions = injectVersions({})
+  const explorerVersion = getExplorerVersion()
   const globalState = store.getState()
 
   let network = 'mainnet'
@@ -52,8 +52,9 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
       isGifWebSupported(globalState),
     network,
     validWorldRanges: getWorld().validWorldRanges,
-    kernelVersion: versions['@dcl/explorer'] || 'unknown-kernel-version',
-    rendererVersion: versions['@dcl/explorer'] || 'unknown-renderer-version',
+    kernelVersion: explorerVersion,
+    /** @deprecated */
+    rendererVersion: explorerVersion,
     avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState)),
     urlParamsForWearablesDebug: urlParamsForWearablesDebug
   }
