@@ -132,8 +132,8 @@ commands:
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-{{ checksum "/tmp/target" }}-{{ .Branch }}
-            - library-{{ checksum "/tmp/target" }}-dev
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-dev
       - run:
           name: Build Unity Project
           no_output_timeout: 45m
@@ -156,7 +156,7 @@ commands:
           paths: *CACHED_PATHS
       - save_cache:
           name: Store library
-          key: library-{{ checksum "/tmp/target" }}-{{ .Branch }}
+          key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}
           paths:
             - ./unity-renderer/Library
       - run:

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Interface;
 using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
@@ -8,6 +9,8 @@ using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
 {
+    private const int REQUEST_TIMEOUT = 30;
+
     public static UserProfileController i { get; private set; }
 
     public event Action OnBaseWereablesFail;
@@ -144,6 +147,8 @@ public class UserProfileController : MonoBehaviour
         cancellationToken.RegisterWithoutCaptureExecutionContext(() => task.TrySetCanceled());
         pendingUserProfileTasks[userId] = task;
 
-        return task.Task;
+        WebInterface.SendRequestUserProfile(userId);
+
+        return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
     }
 }

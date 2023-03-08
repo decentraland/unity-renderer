@@ -73,6 +73,7 @@ public class ECSSystemsController : IDisposable
         uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
+            DataStore.i.ecs7.scenes,
             context.internalEcsComponents.sceneBoundsCheckComponent,
             context.internalEcsComponents.visibilityComponent,
             context.internalEcsComponents.renderersComponent,
@@ -100,13 +101,13 @@ public class ECSSystemsController : IDisposable
                 Environment.i.world.state,
                 DataStore.i.ecs7),
             ECSInputSenderSystem.CreateSystem(context.internalEcsComponents.inputEventResultsComponent, context.componentWriter),
-            uiInputSenderSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update,
         };
 
         lateUpdateSystems = new ECS7System[]
         {
+            uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             sceneBoundsCheckerSystem.Update // Should always be the last system
@@ -120,6 +121,7 @@ public class ECSSystemsController : IDisposable
         uiSystem.Dispose();
         cameraEntitySystem.Dispose();
         playerTransformSystem.Dispose();
+        sceneBoundsCheckerSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }
