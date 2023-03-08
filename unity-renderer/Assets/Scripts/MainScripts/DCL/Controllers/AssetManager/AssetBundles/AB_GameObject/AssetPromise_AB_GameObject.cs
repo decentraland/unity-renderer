@@ -177,7 +177,7 @@ namespace DCL
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.GetName();
 #endif
-                
+
             }
         }
 
@@ -191,8 +191,8 @@ namespace DCL
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
 
-                Physics.BakeMesh(mesh.GetInstanceID(), false);
-                mesh.UploadMeshData(true);
+                //Physics.BakeMesh(mesh.GetInstanceID(), false);
+                //mesh.UploadMeshData(true);
             }
         }
 
