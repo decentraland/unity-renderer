@@ -1,8 +1,8 @@
-using DCL.Helpers;
 using DCL;
-using UnityEngine;
 using System;
+using UnityEngine;
 
+[Obsolete("This bridge will be replaced by WebInterfaceMinimapApiBridge in the future")]
 public class MinimapMetadataController : MonoBehaviour
 {
     private MinimapMetadata minimapMetadata => MinimapMetadata.GetMetadata();
@@ -20,18 +20,8 @@ public class MinimapMetadataController : MonoBehaviour
     {
         if (sceneCoordinates == null)
             return;
-        
+
         homePoint.Set(new Vector2Int(Int32.Parse(sceneCoordinates.Split(',')[0]), Int32.Parse(sceneCoordinates.Split(',')[1])));
         OnHomeChanged?.Invoke(homePoint.Get());
-    }
-
-    public void UpdateMinimapSceneInformation(string scenesInfoJson)
-    {
-        var scenesInfo = Utils.ParseJsonArray<MinimapMetadata.MinimapSceneInfo[]>(scenesInfoJson);
-
-        foreach (var sceneInfo in scenesInfo)
-        {
-            minimapMetadata.AddSceneInfo(sceneInfo);
-        }
     }
 }

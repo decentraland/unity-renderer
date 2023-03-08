@@ -14,6 +14,7 @@ using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 using DCL.Chat.HUD;
+using DCL.Tasks;
 
 public class WorldChatWindowController : IHUD
 {
@@ -50,6 +51,7 @@ public class WorldChatWindowController : IHUD
     private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
     private CancellationTokenSource reloadingChannelsInfoCancellationToken = new CancellationTokenSource();
+    private CancellationTokenSource showDMsCancellationToken = new ();
     private bool showOnlyOnlineMembersOnPublicChannels => !dataStore.featureFlags.flags.Get().IsFeatureEnabled("matrix_presence_disabled");
 
     private bool isVisible = true;
@@ -189,10 +191,9 @@ public class WorldChatWindowController : IHUD
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OnUserProfileUpdate;
 
-        hideChannelsLoadingCancellationToken?.Cancel();
-        hideChannelsLoadingCancellationToken?.Dispose();
-        reloadingChannelsInfoCancellationToken.Cancel();
-        reloadingChannelsInfoCancellationToken.Dispose();
+        hideChannelsLoadingCancellationToken?.SafeCancelAndDispose();
+        reloadingChannelsInfoCancellationToken.SafeCancelAndDispose();
+        showDMsCancellationToken.SafeCancelAndDispose();
 
         channelsFeatureFlagService.OnAllowedToCreateChannelsChanged -= OnAllowedToCreateChannelsChanged;
     }
@@ -390,41 +391,69 @@ public class WorldChatWindowController : IHUD
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)
     {
-        for (var i = 0; i < usersWithDM.Count; i++)
+        async UniTaskVoid HandleFriendsWithDirectMessagesAddedAsync(List<FriendWithDirectMessages> usersWithDM, CancellationToken cancellationToken)
         {
-            var profile = userProfileBridge.Get(usersWithDM[i].userId);
-            if (profile == null) continue;
-
-            var lastMessage = new ChatMessage
+            for (var i = 0; i < usersWithDM.Count; i++)
             {
-                messageType = ChatMessage.Type.PRIVATE,
-                body = usersWithDM[i].lastMessageBody,
-                timestamp = (ulong) usersWithDM[i].lastMessageTimestamp
-            };
+                FriendWithDirectMessages dm = usersWithDM[i];
 
-            if (lastPrivateMessages.ContainsKey(profile.userId))
-            {
-                if (lastMessage.timestamp > lastPrivateMessages[profile.userId].timestamp)
-                    lastPrivateMessages[profile.userId] = lastMessage;
+                var lastMessage = new ChatMessage
+                {
+                    messageType = ChatMessage.Type.PRIVATE,
+                    body = dm.lastMessageBody,
+                    timestamp = (ulong) dm.lastMessageTimestamp
+                };
+
+                string userId = dm.userId;
+
+                if (lastPrivateMessages.ContainsKey(userId))
+                {
+                    if (lastMessage.timestamp > lastPrivateMessages[userId].timestamp)
+                        lastPrivateMessages[userId] = lastMessage;
+                }
+                else
+                    lastPrivateMessages[userId] = lastMessage;
+
+                var profile = userProfileBridge.Get(userId);
+
+                try { profile ??= await userProfileBridge.RequestFullUserProfileAsync(userId, cancellationToken); }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    var fallbackDM = new PrivateChatModel
+                    {
+                        recentMessage = lastMessage,
+                        faceSnapshotUrl = "",
+                        isBlocked = ownUserProfile.IsBlocked(userId),
+                        isOnline = false,
+                        userId = userId,
+                        userName = userId,
+                    };
+
+                    view.SetPrivateChat(fallbackDM);
+
+                    throw;
+                }
+
+                view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
             }
-            else
-                lastPrivateMessages[profile.userId] = lastMessage;
 
-            view.SetPrivateChat(CreatePrivateChatModel(lastMessage, profile));
+            UpdateMoreChannelsToLoadHint();
+            view.HidePrivateChatsLoading();
+            view.HideSearchLoading();
+
+            isRequestingDMs = false;
         }
 
-        UpdateMoreChannelsToLoadHint();
-        view.HidePrivateChatsLoading();
-        view.HideSearchLoading();
-
-        isRequestingDMs = false;
+        HandleFriendsWithDirectMessagesAddedAsync(usersWithDM, showDMsCancellationToken.Token).Forget();
     }
 
     private PrivateChatModel CreatePrivateChatModel(ChatMessage recentMessage, UserProfile profile)
     {
         return new PrivateChatModel
         {
-            user = profile,
+            userId = profile.userId,
+            userName = profile.userName,
+            faceSnapshotUrl = profile.face256SnapshotURL,
             recentMessage = recentMessage,
             isBlocked = ownUserProfile.IsBlocked(profile.userId),
             isOnline = friendsController.GetUserStatus(profile.userId).presence == PresenceStatus.ONLINE
