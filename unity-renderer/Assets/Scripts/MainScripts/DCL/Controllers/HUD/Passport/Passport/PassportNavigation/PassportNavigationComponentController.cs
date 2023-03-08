@@ -155,7 +155,7 @@ namespace DCL.Social.Passports
                     var wearables = await wearablesCatalogService.RequestOwnedWearablesAsync(
                         userProfile.userId,
                         1,
-                        MAX_NFT_COUNT + 1,
+                        MAX_NFT_COUNT,
                         true,
                         ct);
 
@@ -164,7 +164,6 @@ namespace DCL.Social.Passports
 
                     var containedWearables = wearableItems
                                             .Select(g => g.First())
-                                            .Take(MAX_NFT_COUNT)
                                             .Where(wearable => wearablesCatalogService.IsValidWearable(wearable.id));
 
                     view.SetCollectibleWearables(containedWearables.ToArray());
@@ -193,36 +192,44 @@ namespace DCL.Social.Passports
         {
             view.SetCollectibleNamesLoadingActive(true);
             view.SetViewAllButtonActive(PassportSection.Names, false);
-            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT + 1, CancellationToken.None);
+            using var pagePointer = namesService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var namesResult = Array.Empty<NamesResponse.NameEntry>();
-            view.SetViewAllButtonActive(PassportSection.Names, response.response.TotalAmount > MAX_NFT_COUNT);
+            var showViewAllButton = false;
 
             if (response.success)
+            {
                 namesResult = response.response.Names.ToArray();
+                showViewAllButton = response.response.TotalAmount > MAX_NFT_COUNT;
+            }
             else
                 Debug.LogError("Error requesting names lambdas!");
 
             view.SetCollectibleNames(namesResult);
             view.SetCollectibleNamesLoadingActive(false);
+            view.SetViewAllButtonActive(PassportSection.Names, showViewAllButton);
         }
 
         private async UniTask LoadAndShowOwnedLandsAsync(UserProfile userProfile, CancellationToken ct)
         {
             view.SetCollectibleLandsLoadingActive(true);
             view.SetViewAllButtonActive(PassportSection.Lands, false);
-            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT + 1, CancellationToken.None);
+            using var pagePointer = landsService.GetPaginationPointer(userProfile.userId, MAX_NFT_COUNT, CancellationToken.None);
             var response = await pagePointer.GetPageAsync(1, ct);
             var landsResult = Array.Empty<LandsResponse.LandEntry>();
-            view.SetViewAllButtonActive(PassportSection.Lands, response.response.TotalAmount > MAX_NFT_COUNT);
+            var showViewAllButton = false;
 
             if (response.success)
+            {
                 landsResult = response.response.Lands.ToArray();
+                showViewAllButton = response.response.TotalAmount > MAX_NFT_COUNT;
+            }
             else
                 Debug.LogError("Error requesting lands lambdas!");
 
             view.SetCollectibleLands(landsResult);
             view.SetCollectibleLandsLoadingActive(false);
+            view.SetViewAllButtonActive(PassportSection.Lands, showViewAllButton);
         }
 
         private async UniTask<string> FilterContentAsync(string filterContent) =>
