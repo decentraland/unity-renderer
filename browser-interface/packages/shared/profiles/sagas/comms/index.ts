@@ -4,7 +4,7 @@ import { storeCondition } from 'lib/redux'
 import { delay } from 'redux-saga/effects'
 import { requestProfileFromPeers } from 'shared/comms/handlers'
 import { RoomConnection } from 'shared/comms/interface'
-import { incrementCounter } from 'shared/occurences'
+import { incrementCounter } from 'shared/analytics/occurences'
 import { RootProfileState } from 'shared/profiles/types'
 
 export async function fetchPeerProfile(

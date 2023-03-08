@@ -4,7 +4,7 @@ import {
   ETHEREUM_NETWORK,
   FORCE_SEND_MESSAGE,
   getAssetBundlesBaseUrl,
-  playerConfigurations,
+  playerHeight,
   WSS_ENABLED
 } from 'config'
 import { PositionReport } from './positionThings'
@@ -446,7 +446,7 @@ export class SceneWorker {
               y: positionReport.position.y
             },
             cameraPosition: positionReport.position,
-            playerHeight: playerConfigurations.height
+            playerHeight: playerHeight
           }
         })
 
