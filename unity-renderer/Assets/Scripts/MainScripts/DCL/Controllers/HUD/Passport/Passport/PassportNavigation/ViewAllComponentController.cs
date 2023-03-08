@@ -120,7 +120,7 @@ public class ViewAllComponentController : IDisposable
                 await wearablesCatalogService.RequestOwnedWearablesAsync(userId, pageNumber, pageSize, cleanCachedWearablesPages, ct);
 
             cleanCachedWearablesPages = false;
-            ProcessReceivedWearables(ownedWearableItems.wearables.ToArray());
+            ProcessReceivedWearables(ownedWearableItems.wearables);
             view.SetTotalElements(ownedWearableItems.totalAmount);
             view.SetLoadingActive(false);
         }
@@ -141,7 +141,7 @@ public class ViewAllComponentController : IDisposable
 
             if (response.success)
             {
-                ProcessReceivedNames(response.response.Names.ToArray());
+                ProcessReceivedNames(response.response.Names);
                 view.SetTotalElements(response.response.TotalAmount);
                 view.SetLoadingActive(false);
             }
@@ -165,7 +165,7 @@ public class ViewAllComponentController : IDisposable
 
             if (response.success)
             {
-                ProcessReceivedLands(response.response.Lands.ToArray());
+                ProcessReceivedLands(response.response.Lands);
                 view.SetTotalElements(response.response.TotalAmount);
                 view.SetLoadingActive(false);
             }
@@ -178,7 +178,7 @@ public class ViewAllComponentController : IDisposable
         }
     }
 
-    private void ProcessReceivedWearables(WearableItem[] wearables)
+    private void ProcessReceivedWearables(IReadOnlyList<WearableItem> wearables)
     {
         List<(NFTIconComponentModel Model, WearableItem w)> wearableModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var wearable in wearables)
@@ -218,7 +218,7 @@ public class ViewAllComponentController : IDisposable
         ShowNftIcons(emoteModels);
     }
 
-    private void ProcessReceivedNames(NamesResponse.NameEntry[] names)
+    private void ProcessReceivedNames(IReadOnlyList<NamesResponse.NameEntry> names)
     {
         List<(NFTIconComponentModel Model, WearableItem w)> nameModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var name in names)
@@ -238,7 +238,7 @@ public class ViewAllComponentController : IDisposable
         ShowNftIcons(nameModels);
     }
 
-    private void ProcessReceivedLands(LandsResponse.LandEntry[] lands)
+    private void ProcessReceivedLands(IReadOnlyList<LandsResponse.LandEntry> lands)
     {
         List<(NFTIconComponentModel Model, WearableItem w)> landModels = new List<(NFTIconComponentModel Model, WearableItem w)>();
         foreach (var land in lands)
