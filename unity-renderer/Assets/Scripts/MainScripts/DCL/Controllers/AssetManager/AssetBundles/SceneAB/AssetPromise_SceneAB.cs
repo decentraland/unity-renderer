@@ -28,7 +28,6 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         {
             cancellationTokenSource = new CancellationTokenSource();
             this.hash = GetEntityIdFromSceneId(sceneId);
-            Debug.Log(this.hash);
         }
 
         private string GetEntityIdFromSceneId(string sceneId)
