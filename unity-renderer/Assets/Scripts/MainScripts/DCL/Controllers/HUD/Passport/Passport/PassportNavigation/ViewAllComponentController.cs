@@ -6,7 +6,6 @@ using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Type = DCL.NotificationModel.Type;
 
@@ -18,7 +17,9 @@ public class ViewAllComponentController : IDisposable
     private const string REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
 
     public event Action OnBackFromViewAll;
-    public event Action<string, string> OnClickBuyNft;
+    public delegate void ClickBuyNftDelegate(string wearableId, string wearableType);
+    public event ClickBuyNftDelegate OnClickBuyNft;
+
 
     private readonly IWearablesCatalogService wearablesCatalogService;
     private readonly IViewAllComponentView view;
@@ -45,7 +46,7 @@ public class ViewAllComponentController : IDisposable
         this.notificationsController = notificationsController;
         view.OnBackFromViewAll += BackFromViewAll;
         view.OnRequestCollectibleElements += RequestCollectibleElements;
-        view.OnClickBuyNft += (s1, s2) => OnClickBuyNft?.Invoke(s1, s2);
+        view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableId, wearableType);
     }
 
     public void OpenViewAllSection(PassportSection section)
