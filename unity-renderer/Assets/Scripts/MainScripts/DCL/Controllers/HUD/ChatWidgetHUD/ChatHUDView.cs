@@ -41,6 +41,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     private readonly Dictionary<Action, UnityAction<string>> inputFieldSelectedListeners = new ();
     private readonly Dictionary<Action, UnityAction<string>> inputFieldUnselectedListeners = new ();
     private readonly Regex emptyMentionTagRegex = new (@"<link=mention://\w*><color=#4886E3><u>\s*</u></color></link>");
+    private readonly Regex invalidMentionRegex = new (@"<link=mention://\w*><color=#4886E3><u>$");
 
     private int updateLayoutDelayedFrames;
     private bool isSortingDirty;
@@ -133,6 +134,15 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
             if (removedEmptyMentions)
             {
                 inputField.text = messageWithoutEmptyMentions;
+                return;
+            }
+
+            // when deleting all the text from the input field, some link tags are not correctly removed, so we have to do it manually
+            (bool removedInvalidMentions, string messageWithoutInvalidMentions) = RemoveInvalidMentionLink(str);
+
+            if (removedInvalidMentions)
+            {
+                inputField.text = messageWithoutInvalidMentions;
                 return;
             }
 
@@ -484,11 +494,17 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         return firstEntry;
     }
 
-    private (bool removed, string result) RemoveEmptyMentionLink(string message)
-    {
-        MatchCollection matches = emptyMentionTagRegex.Matches(message);
+    private (bool removed, string result) RemoveEmptyMentionLink(string message) =>
+        RemoveMatchesFromRegex(message, emptyMentionTagRegex);
 
-        if (matches.Count <= 0) return (false, message);
+    private (bool removed, string result) RemoveInvalidMentionLink(string message) =>
+        RemoveMatchesFromRegex(message, invalidMentionRegex);
+
+    private (bool removed, string result) RemoveMatchesFromRegex(string message, Regex regex)
+    {
+        MatchCollection matches = regex.Matches(message);
+
+        if (matches.Count == 0) return (false, message);
 
         StringBuilder stringBuilder = new(message);
 
