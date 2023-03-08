@@ -8,7 +8,7 @@ import { getAuthChainSignature } from 'lib/decentraland/authentication/signedFet
 import { RendererProtocolContext } from '../context'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function registerFriendRequestRendererService<Context extends {}>(
+export function registerSignRequestService<Context extends {}>(
   port: RpcServerPort<RendererProtocolContext>
 ) {
   codegen.registerService(port, SignRequestKernelServiceDefinition, async () => ({
