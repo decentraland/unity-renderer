@@ -1,9 +1,9 @@
 import { isAddress } from 'eth-connect'
 import { ethereumConfigurations } from 'config'
-import { fetchENSOwnersContains } from 'shared/web3'
-import { getEthereumNetworkFromProvider } from "shared/getEthereumNetworkFromProvider"
+import { getEthereumNetworkFromProvider } from 'lib/web3/getEthereumNetworkFromProvider'
 import type { Avatar } from '@dcl/schemas'
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
+import { fetchENSOwnersContains } from 'lib/web3/fetchENSOwnersContains'
 
 export async function fetchENSOwnerProfile(name: string, maxResults: number = 1): Promise<Avatar[]> {
   let userIds: string[]

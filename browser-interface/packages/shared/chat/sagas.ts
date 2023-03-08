@@ -32,8 +32,11 @@ import { PayloadAction } from 'typesafe-actions'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import {
   MessageReceived,
-  messageReceived, MESSAGE_RECEIVED, SendMessage,
-  sendPrivateMessage, SEND_MESSAGE
+  messageReceived,
+  MESSAGE_RECEIVED,
+  SendMessage,
+  sendPrivateMessage,
+  SEND_MESSAGE
 } from './actions'
 import { notifyStatusThroughChat } from './index'
 

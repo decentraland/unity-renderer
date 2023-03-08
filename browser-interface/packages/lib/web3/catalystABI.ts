@@ -58,5 +58,5 @@ export const catalystABI = [
     payable: false,
     stateMutability: 'view',
     type: 'function'
-  },
-];
+  }
+]

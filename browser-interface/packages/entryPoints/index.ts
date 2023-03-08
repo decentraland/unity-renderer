@@ -47,22 +47,18 @@ globalThis.DecentralandKernel = {
      * These are executed asynchronously. After initShared sets up the redux store and sagas, we can return
      * control back to the caller.
      */
-    setTimeout(
-      async () => {
-        try {
+    setTimeout(async () => {
+      try {
+        // TODO: is there a reason why initial teleport needs to happen before initializing a session?
+        // TODO: do we need `initSession`? Can't it be just a fork at the begining of the main saga?
+        await setupHomeAndInitialTeleport()
+        store.dispatch(initSession())
 
-          // TODO: is there a reason why initial teleport needs to happen before initializing a session?
-          // TODO: do we need `initSession`? Can't it be just a fork at the begining of the main saga?
-          await setupHomeAndInitialTeleport()
-          store.dispatch(initSession())
-
-          await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
-
-        } catch (err: any) {
-          BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
-        }
-      }, 0
-    )
+        await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
+      } catch (err: any) {
+        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+      }
+    }, 0)
 
     return {
       authenticate: authenticateCallback,
