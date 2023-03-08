@@ -4,7 +4,6 @@ using DCL.Helpers;
 using System;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
 
 namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 {
