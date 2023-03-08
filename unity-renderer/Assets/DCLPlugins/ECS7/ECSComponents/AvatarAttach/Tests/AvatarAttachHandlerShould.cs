@@ -2,6 +2,7 @@ using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using NSubstitute;
@@ -23,7 +24,7 @@ namespace DCL.ECSComponents.Test
         [SetUp]
         public void Setup()
         {
-            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>());
+            handler = Substitute.ForPartsOf<AvatarAttachComponentHandler>(Substitute.For<IUpdateEventHandler>(), Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             scene = Substitute.For<IParcelScene>();
 
@@ -33,18 +34,18 @@ namespace DCL.ECSComponents.Test
 
             entity = Substitute.For<IDCLEntity>();
             entity.Configure().gameObject.Returns(entityGo);
-            
+
             userProfile = UserProfile.GetOwnUserProfile();
             userProfile.UpdateData(new UserProfileModel() { userId = "ownUserId" });
         }
-        
+
         [TearDown]
         public void TearDown()
         {
             if (userProfile != null && AssetDatabase.Contains(userProfile))
             {
                 Resources.UnloadAsset(userProfile);
-            }            
+            }
             handler.Dispose();
             DataStore.Clear();
             Object.Destroy(entityGo);
@@ -54,7 +55,7 @@ namespace DCL.ECSComponents.Test
         public void DoNotDetachOrAttachIfIdMatchPreviousModel()
         {
             handler.prevModel = new PBAvatarAttach() { AvatarId = "Temptation" };
-            var newModel = new PBAvatarAttach() { AvatarId = "Temptation" }; 
+            var newModel = new PBAvatarAttach() { AvatarId = "Temptation" };
 
             handler.OnComponentModelUpdated(Substitute.For<IParcelScene>(),Substitute.For<IDCLEntity>(), newModel);
             handler.DidNotReceive().Detach();
@@ -64,7 +65,7 @@ namespace DCL.ECSComponents.Test
         [Test]
         public void AttachWhenValidUserId()
         {
-            var newModel = new PBAvatarAttach() { AvatarId = "Temptation" }; 
+            var newModel = new PBAvatarAttach() { AvatarId = "Temptation" };
 
             handler.OnComponentModelUpdated(Substitute.For<IParcelScene>(),Substitute.For<IDCLEntity>(), newModel);
             handler.Received(1).Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
@@ -77,12 +78,11 @@ namespace DCL.ECSComponents.Test
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId });
             var newModel = new PBAvatarAttach() { AvatarId = userId };
-            handler.IsInsideScene(Arg.Any<UnityEngine.Vector3>()).Returns(true);
 
             handler.OnComponentCreated(scene, entity);
 
             handler.OnComponentModelUpdated(scene, entity, newModel);
-            
+
             DataStore.i.player.otherPlayers.Remove(userId);
             handler.Received(2).Detach();
         }
@@ -110,34 +110,14 @@ namespace DCL.ECSComponents.Test
             IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
             anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, UnityEngine.Vector3.one));
 
-            handler.IsInsideScene(Arg.Any<UnityEngine.Vector3>()).Returns(true);
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
             handler.OnComponentCreated(scene, entity);
-            
+
             handler.OnComponentModelUpdated(scene, entity, new PBAvatarAttach() { AvatarId = userId, AnchorPointId = 0 });
             handler.LateUpdate();
 
             Assert.AreEqual(targetPosition, entityGo.transform.position);
             Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
-        }
-
-        [Test]
-        public void SendEntityToMORDORwhenOutOfScene()
-        {
-            const string userId = "Temptation";
-            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(70, -135, 0);
-            Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
-
-            IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
-            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, UnityEngine.Vector3.one));
-
-            DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
-
-            handler.OnComponentCreated(scene,entity);
-            handler.OnComponentModelUpdated(scene, entity, new PBAvatarAttach() { AvatarId = userId, AnchorPointId = 0 });
-            handler.LateUpdate();
-
-            Assert.AreEqual(EnvironmentSettings.MORDOR, entityGo.transform.position);
         }
     }
 }
