@@ -50,6 +50,7 @@ public enum DCLAction_Trigger
     ChatNextInHistory = 153,
     ChatMentionNextEntry = 154,
     ChatMentionPreviousEntry = 155,
+    CloseMentionSuggestions = 156,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -160,7 +161,7 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.CloseWindow:
                     if (!allUIHidden && !DataStore.i.common.isSignUpFlow.Get())
-                        InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
+                        InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.NotOnMentionSuggestions);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -245,6 +246,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ChatMentionPreviousEntry:
                     InputProcessor.FromKey(action, KeyCode.UpArrow, modifiers: InputProcessor.Modifier.NotInStartMenu);
+                    break;
+                case DCLAction_Trigger.CloseMentionSuggestions:
+                    InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.NeedsFocusOnMentionSuggestions);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);

@@ -4,5 +4,6 @@
     {
         public readonly BaseVariable<string> ownPlayerMentionedInDM = new BaseVariable<string>();
         public readonly BaseVariable<string> ownPlayerMentionedInChannel = new BaseVariable<string>();
+        public readonly BaseVariable<bool> isMentionSuggestionVisible = new ();
     }
 }

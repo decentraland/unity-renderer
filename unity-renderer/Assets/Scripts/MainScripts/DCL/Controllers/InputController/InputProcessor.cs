@@ -21,7 +21,9 @@ public static class InputProcessor
         NeedsPointerLocked = 0b0000001, // The pointer must be locked to the game
         FocusNotInInput = 0b0000010, // The game focus cannot be in an input field
         NotInStartMenu = 0b0000100, // The game focus cannot be in full-screen start menu
-        OnlyWithInputFocused = 0b0001000 // The game focus must be in an input field
+        OnlyWithInputFocused = 0b0001000, // The game focus must be in an input field
+        NeedsFocusOnMentionSuggestions = 0b0010000,
+        NotOnMentionSuggestions = 0b0100000,
     }
 
     /// <summary>
@@ -84,8 +86,17 @@ public static class InputProcessor
         if (IsModifierSet(modifiers, Modifier.NotInStartMenu) && IsStartMenuVisible())
             return false;
 
+        if (IsModifierSet(modifiers, Modifier.NeedsFocusOnMentionSuggestions) && !IsMentionSuggestionsVisible())
+            return false;
+
+        if (IsModifierSet(modifiers, Modifier.NotOnMentionSuggestions) && IsMentionSuggestionsVisible())
+            return false;
+
         return true;
     }
+
+    private static bool IsMentionSuggestionsVisible() =>
+        DataStore.i.mentions.isMentionSuggestionVisible.Get();
 
     private static bool IsStartMenuVisible() => DataStore.i.exploreV2.isOpen.Get();
 

@@ -32,6 +32,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     [SerializeField] protected InputAction_Trigger previousChatInHistoryInput;
     [SerializeField] protected InputAction_Trigger nextMentionSuggestionInput;
     [SerializeField] protected InputAction_Trigger previousMentionSuggestionInput;
+    [SerializeField] protected InputAction_Trigger closeMentionSuggestionsInput;
     [SerializeField] protected ChatMentionSuggestionComponentView chatMentionSuggestions;
     [SerializeField] private Model model;
 
@@ -150,6 +151,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         previousChatInHistoryInput.OnTriggered += HandlePreviousChatInHistoryInput;
         nextMentionSuggestionInput.OnTriggered += HandleNextMentionSuggestionInput;
         previousMentionSuggestionInput.OnTriggered += HandlePreviousMentionSuggestionInput;
+        closeMentionSuggestionsInput.OnTriggered += HandleCloseMentionSuggestionsInput;
     }
 
     public override void OnDisable()
@@ -159,6 +161,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
         previousChatInHistoryInput.OnTriggered -= HandlePreviousChatInHistoryInput;
         nextMentionSuggestionInput.OnTriggered -= HandleNextMentionSuggestionInput;
         previousMentionSuggestionInput.OnTriggered -= HandlePreviousMentionSuggestionInput;
+        closeMentionSuggestionsInput.OnTriggered -= HandleCloseMentionSuggestionsInput;
     }
 
     public override void Update()
@@ -342,9 +345,7 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         if (chatMentionSuggestions.IsVisible)
         {
-            if (inputField.wasCanceled)
-                HideMentionSuggestions();
-            else
+            if (!inputField.wasCanceled)
                 chatMentionSuggestions.SubmitSelectedEntry();
 
             return;
@@ -449,6 +450,12 @@ public class ChatHUDView : BaseComponentView, IChatHUDComponentView
     {
         if (!chatMentionSuggestions.IsVisible) return;
         chatMentionSuggestions.SelectPreviousEntry();
+    }
+
+    private void HandleCloseMentionSuggestionsInput(DCLAction_Trigger action)
+    {
+        if (!chatMentionSuggestions.IsVisible) return;
+        chatMentionSuggestions.Hide();
     }
 
     private void UpdateLayout()

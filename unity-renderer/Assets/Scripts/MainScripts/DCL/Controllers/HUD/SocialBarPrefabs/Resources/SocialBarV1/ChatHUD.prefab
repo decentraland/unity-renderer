@@ -410,7 +410,7 @@ MonoBehaviour:
   m_OnFocusSelectAll: 0
   m_ResetOnDeActivation: 1
   m_KeepTextSelectionVisible: 0
-  m_RestoreOriginalTextOnEscape: 1
+  m_RestoreOriginalTextOnEscape: 0
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   isAlert: 0
@@ -1837,6 +1837,8 @@ MonoBehaviour:
   nextMentionSuggestionInput: {fileID: 11400000, guid: 766b998e6c8734e3d9971cfc48b788cb,
     type: 2}
   previousMentionSuggestionInput: {fileID: 11400000, guid: 06d28566773ab401d82c0f1ac66713c8,
+    type: 2}
+  closeMentionSuggestionsInput: {fileID: 11400000, guid: 8c4093231e53544689734f8b077bc0fc,
     type: 2}
   chatMentionSuggestions: {fileID: 8679125580999122056}
   model:

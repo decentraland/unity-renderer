@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-public class ChatHUDController : IDisposable
+public class ChatHUDController : IHUD
 {
     public const int MAX_CHAT_ENTRIES = 30;
     private const int TEMPORARILY_MUTE_MINUTES = 3;
@@ -29,6 +29,7 @@ public class ChatHUDController : IDisposable
     private readonly IUserProfileBridge userProfileBridge;
     private readonly bool detectWhisper;
     private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
+    private readonly InputAction_Trigger closeMentionSuggestionsTrigger;
     private readonly IProfanityFilter profanityFilter;
     private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
     private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
@@ -74,6 +75,12 @@ public class ChatHUDController : IDisposable
         this.view.OnMessageUpdated += HandleMessageUpdated;
         this.view.OnMentionSuggestionSelected -= HandleMentionSuggestionSelected;
         this.view.OnMentionSuggestionSelected += HandleMentionSuggestionSelected;
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (!visible)
+            HideMentionSuggestions();
     }
 
     public void AddChatMessage(ChatMessage message, bool setScrollPositionToBottom = false, bool spamFiltering = true, bool limitMaxEntries = true)
@@ -193,7 +200,7 @@ public class ChatHUDController : IDisposable
     {
         if (string.IsNullOrEmpty(message))
         {
-            view.HideMentionSuggestions();
+            HideMentionSuggestions();
             return;
         }
 
@@ -205,10 +212,11 @@ public class ChatHUDController : IDisposable
                 mentionSuggestedProfiles = suggestions.ToDictionary(profile => profile.userId, profile => profile);
 
                 if (suggestions.Count == 0)
-                    view.HideMentionSuggestions();
+                    HideMentionSuggestions();
                 else
                 {
                     view.ShowMentionSuggestions();
+                    dataStore.mentions.isMentionSuggestionVisible.Set(true);
                     view.SetMentionSuggestions(suggestions.Select(profile => new ChatMentionSuggestionModel
                                                            {
                                                                userId = profile.userId,
@@ -220,11 +228,11 @@ public class ChatHUDController : IDisposable
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                view.HideMentionSuggestions();
+                HideMentionSuggestions();
             }
         }
 
-        int lastWrittenCharacterIndex = Math.Max(0, cursorPosition - 1);
+       int lastWrittenCharacterIndex = Math.Max(0, cursorPosition - 1);
 
         if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
             mentionFromIndex = cursorPosition;
@@ -243,14 +251,14 @@ public class ChatHUDController : IDisposable
         {
             mentionSuggestionCancellationToken.SafeCancelAndDispose();
             mentionFromIndex = lastWrittenCharacterIndex;
-            view.HideMentionSuggestions();
+            HideMentionSuggestions();
         }
     }
 
     private void HandleSendMessage(ChatMessage message)
     {
         mentionFromIndex = 0;
-        view.HideMentionSuggestions();
+        HideMentionSuggestions();
 
         var ownProfile = userProfileBridge.GetOwn();
         message.sender = ownProfile.userId;
@@ -390,6 +398,12 @@ public class ChatHUDController : IDisposable
     private void HandleMentionSuggestionSelected(string userId)
     {
         view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
+        HideMentionSuggestions();
+    }
+
+    private void HideMentionSuggestions()
+    {
         view.HideMentionSuggestions();
+        dataStore.mentions.isMentionSuggestionVisible.Set(false);
     }
 }

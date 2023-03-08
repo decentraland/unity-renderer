@@ -110,12 +110,13 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if(isVisible == visible)
+            if (isVisible == visible)
                 return;
 
             isVisible = visible;
 
             SetVisiblePanelList(visible);
+            chatHudController.SetVisibility(visible);
 
             if (visible)
             {
@@ -167,6 +168,7 @@ namespace DCL.Chat.HUD
 
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
 
             if (View != null)
             {
@@ -219,6 +221,7 @@ namespace DCL.Chat.HUD
             var messageLogUpdated = false;
 
             var ownPlayerAlreadyMentioned = false;
+
             foreach (var message in messages)
             {
                 if (!ownPlayerAlreadyMentioned)
@@ -231,6 +234,7 @@ namespace DCL.Chat.HUD
                 UpdateOldestMessage(message);
 
                 message.isChannelMessage = true;
+
                 // TODO: right now the channel history is disabled, but we must find a workaround to support history + max message limit allocation for performance reasons
                 // one approach could be to increment the max amount of messages depending on how many pages you loaded from the history
                 // for example: 1 page = 30 messages, 2 pages = 60 messages, and so on..
@@ -278,12 +282,14 @@ namespace DCL.Chat.HUD
             OnClosed?.Invoke();
         }
 
-        private void HandlePressBack() => OnPressBack?.Invoke();
+        private void HandlePressBack() =>
+            OnPressBack?.Invoke();
 
         private bool IsMessageFomCurrentChannel(ChatMessage message) =>
             message.sender == channelId || message.recipient == channelId || (View.IsActive && message.messageType == ChatMessage.Type.SYSTEM);
 
-        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
+        private void MarkChannelMessagesAsRead() =>
+            chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void HandleChatInputTriggered(DCLAction_Trigger action)
         {
@@ -335,6 +341,7 @@ namespace DCL.Chat.HUD
             await UniTask.WaitUntil(() =>
                     Time.realtimeSinceStartup - lastRequestTime > REQUEST_MESSAGES_TIME_OUT,
                 cancellationToken: cancellationToken);
+
             if (cancellationToken.IsCancellationRequested) return;
 
             View?.SetLoadingMessagesActive(false);
@@ -368,9 +375,11 @@ namespace DCL.Chat.HUD
             channelMembersHUDController.SetMembersCount(updatedChannel.MemberCount);
         }
 
-        private void ShowMembersList() => channelMembersHUDController.SetVisibility(true);
+        private void ShowMembersList() =>
+            channelMembersHUDController.SetVisibility(true);
 
-        private void HideMembersList() => channelMembersHUDController.SetVisibility(false);
+        private void HideMembersList() =>
+            channelMembersHUDController.SetVisibility(false);
 
         private void MuteChannel(bool muted)
         {
@@ -416,7 +425,7 @@ namespace DCL.Chat.HUD
         {
             chatHudController.AddChatMessage(new ChatEntryModel
             {
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,

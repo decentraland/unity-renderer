@@ -64,6 +64,7 @@ namespace DCL.Chat.HUD
                 true,
                 chatMentionSuggestionProvider,
                 profanityFilter);
+
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.OnSendMessage += SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam += HandleMessageBlockedBySpam;
@@ -104,26 +105,26 @@ namespace DCL.Chat.HUD
 
             chatHudController.OnSendMessage -= SendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock -= Hide;
 
             toggleChatTrigger.OnTriggered -= HandleChatInputTriggered;
 
-            if (View != null)
-            {
-                View.Dispose();
-            }
+            View?.Dispose();
         }
 
         public void SetVisibility(bool visible, bool focusInputField)
         {
-            if(isVisible == visible)
+            if (isVisible == visible)
                 return;
 
             isVisible = visible;
 
             SetVisiblePanelList(visible);
+            chatHudController.SetVisibility(visible);
+
             if (visible)
             {
                 View.Show();
@@ -139,10 +140,13 @@ namespace DCL.Chat.HUD
             }
         }
 
+        public void SetVisibility(bool visible) =>
+            SetVisibility(visible, false);
+
         private void SendChatMessage(ChatMessage message)
         {
-            var isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
-            var isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
+            bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
+            bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
 
             if (isValidMessage)
             {
@@ -162,11 +166,10 @@ namespace DCL.Chat.HUD
             chatController.Send(message);
         }
 
-        public void SetVisibility(bool visible) => SetVisibility(visible, false);
-
         private void SetVisiblePanelList(bool visible)
         {
             HashSet<string> newSet = visibleTaskbarPanels.Get();
+
             if (visible)
                 newSet.Add("PublicChatChannel");
             else
@@ -175,7 +178,8 @@ namespace DCL.Chat.HUD
             visibleTaskbarPanels.Set(newSet, true);
         }
 
-        private void MarkChannelMessagesAsRead() => chatController.MarkChannelMessagesAsSeen(channelId);
+        private void MarkChannelMessagesAsRead() =>
+            chatController.MarkChannelMessagesAsSeen(channelId);
 
         private void HandleViewClosed()
         {
@@ -192,6 +196,7 @@ namespace DCL.Chat.HUD
             var messageLogUpdated = false;
 
             var ownPlayerAlreadyMentioned = false;
+
             foreach (var message in messages)
             {
                 if (!ownPlayerAlreadyMentioned)
@@ -199,6 +204,7 @@ namespace DCL.Chat.HUD
 
                 if (message.messageType != ChatMessage.Type.PUBLIC
                     && message.messageType != ChatMessage.Type.SYSTEM) continue;
+
                 if (!string.IsNullOrEmpty(message.recipient)) continue;
 
                 chatHudController.AddChatMessage(message, View.IsActive);
@@ -224,7 +230,8 @@ namespace DCL.Chat.HUD
             return true;
         }
 
-        private void Hide() => SetVisibility(false);
+        private void Hide() =>
+            SetVisibility(false);
 
         private void HandleChatInputTriggered(DCLAction_Trigger action)
         {
@@ -236,7 +243,7 @@ namespace DCL.Chat.HUD
         {
             chatHudController.AddChatMessage(new ChatEntryModel
             {
-                timestamp = (ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 bodyText = "You sent too many messages in a short period of time. Please wait and try again later.",
                 messageId = Guid.NewGuid().ToString(),
                 messageType = ChatMessage.Type.SYSTEM,

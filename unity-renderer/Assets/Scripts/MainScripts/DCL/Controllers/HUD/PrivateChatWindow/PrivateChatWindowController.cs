@@ -107,6 +107,7 @@ public class PrivateChatWindowController : IHUD
             return;
 
         SetVisiblePanelList(visible);
+        chatHudController.SetVisibility(visible);
 
         if (visible)
         {
@@ -149,6 +150,7 @@ public class PrivateChatWindowController : IHUD
             chatHudController.OnInputFieldSelected -= HandleInputFieldSelected;
             chatHudController.OnSendMessage -= HandleSendChatMessage;
             chatHudController.OnMessageSentBlockedBySpam -= HandleMessageBlockedBySpam;
+            chatHudController.Dispose();
         }
 
         if (chatController != null)
