@@ -47,6 +47,7 @@ public class PlacesAPIController : IPlacesAPIController
         string data = result.downloadHandler.text;
         Debug.Log($"data {data}");
         var favoriteScenes = Utils.SafeFromJson<List<HotSceneInfo>>(data);
+        Debug.Log($"fav count {favoriteScenes.Count}");
         OnCompleted?.Invoke(favoriteScenes);
     }
 
