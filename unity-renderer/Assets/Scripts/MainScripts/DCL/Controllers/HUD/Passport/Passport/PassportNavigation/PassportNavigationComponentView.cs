@@ -545,7 +545,7 @@ namespace DCL.Social.Passports
                         name = names[i + j].Name,
                         rarity = NAME_TYPE,
                         imageURI = "",
-                        nftId = (names[i + j].ContractAddress, NAME_TYPE)
+                        nftInfo = names[i + j].GetNftInfo(),
                     };
                 }
                 else
@@ -581,7 +581,7 @@ namespace DCL.Social.Passports
                         name = wearables[i + j].GetName(),
                         rarity = wearables[i + j].rarity,
                         imageURI = wearables[i + j].ComposeThumbnailUrl(),
-                        nftId = (wearables[i + j].id, wearables[i + j].data.category)
+                        nftInfo = wearables[i + j].GetNftInfo(),
                     };
                     wearableItemsForThisPage[j] = wearables[i + j];
                 }
@@ -624,7 +624,7 @@ namespace DCL.Social.Passports
                         name = wearables[i + j].GetName(),
                         rarity = wearables[i + j].rarity,
                         imageURI = wearables[i + j].ComposeThumbnailUrl(),
-                        nftId = (wearables[i + j].id, EMOTE_TYPE)
+                        nftInfo = wearables[i + j].GetNftInfo(),
                     };
 
                     wearableItemsForThisPage[j] = wearables[i + j];
@@ -667,7 +667,7 @@ namespace DCL.Social.Passports
                         name = !string.IsNullOrEmpty(lands[i + j].Name) ? lands[i + j].Name : lands[i + j].Category,
                         rarity = LAND_RARITY,
                         imageURI = lands[i + j].Image,
-                        nftId = (lands[i + j].ContractAddress, lands[i + j].Category)
+                        nftInfo = lands[i + j].GetNftInfo(),
                     };
                 }
                 else

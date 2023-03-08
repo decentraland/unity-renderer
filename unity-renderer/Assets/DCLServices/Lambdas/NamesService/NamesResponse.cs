@@ -17,6 +17,13 @@ namespace DCLServices.Lambdas.NamesService
             public string Name => name;
             public string ContractAddress => contractAddress;
             public string Price => price;
+
+            public NftInfo GetNftInfo() =>
+                new()
+                {
+                    Id = contractAddress,
+                    Category = "name",
+                };
         }
 
         [SerializeField] private List<NameEntry> names;

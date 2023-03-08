@@ -25,6 +25,13 @@ namespace DCLServices.Lambdas.LandsService
             public string Y => y;
             public string Price => price;
             public string Image => image;
+
+            public NftInfo GetNftInfo() =>
+                new()
+                {
+                    Id = contractAddress,
+                    Category = category,
+                };
         }
 
         [SerializeField] private List<LandEntry> lands;

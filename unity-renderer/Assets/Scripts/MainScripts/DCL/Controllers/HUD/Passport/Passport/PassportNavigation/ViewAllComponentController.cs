@@ -17,7 +17,7 @@ public class ViewAllComponentController : IDisposable
     private const string REQUEST_ERROR_MESSAGE = "There was an error while trying to process your request. Please try again.";
 
     public event Action OnBackFromViewAll;
-    public delegate void ClickBuyNftDelegate(string wearableId, string wearableType);
+    public delegate void ClickBuyNftDelegate(NftInfo nftInfo);
     public event ClickBuyNftDelegate OnClickBuyNft;
 
 
@@ -46,7 +46,7 @@ public class ViewAllComponentController : IDisposable
         this.notificationsController = notificationsController;
         view.OnBackFromViewAll += BackFromViewAll;
         view.OnRequestCollectibleElements += RequestCollectibleElements;
-        view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableId, wearableType);
+        view.OnClickBuyNft += (nftId) => OnClickBuyNft?.Invoke(nftId);
     }
 
     public void OpenViewAllSection(PassportSection section)
@@ -195,7 +195,7 @@ public class ViewAllComponentController : IDisposable
                 name = wearable.GetName(),
                 rarity = wearable.rarity,
                 imageURI = wearable.ComposeThumbnailUrl(),
-                nftId = (wearable.id, wearable.data.category)
+                nftInfo = wearable.GetNftInfo(),
             }, wearable));
         }
         ShowNftIcons(wearableModels);
@@ -215,7 +215,7 @@ public class ViewAllComponentController : IDisposable
                 name = emote.GetName(),
                 rarity = emote.rarity,
                 imageURI = emote.ComposeThumbnailUrl(),
-                nftId = (emote.id, EMOTE_TYPE)
+                nftInfo = emote.GetNftInfo(),
             }, emote));
         }
         ShowNftIcons(emoteModels);
@@ -235,7 +235,7 @@ public class ViewAllComponentController : IDisposable
                 name = name.Name,
                 rarity = NAME_TYPE,
                 imageURI = "",
-                nftId = (name.ContractAddress, NAME_TYPE)
+                nftInfo = name.GetNftInfo(),
             }, null));
         }
         ShowNftIcons(nameModels);
@@ -255,7 +255,7 @@ public class ViewAllComponentController : IDisposable
                 name = !string.IsNullOrEmpty(land.Name) ? land.Name : land.Category,
                 rarity = LAND_TYPE,
                 imageURI = land.Image,
-                nftId = (land.ContractAddress, land.Category)
+                nftInfo = land.GetNftInfo(),
             }, null));
         }
         ShowNftIcons(landModels);

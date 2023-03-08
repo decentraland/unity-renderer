@@ -75,7 +75,7 @@ namespace DCL.Social.Passports
             view.OnClickedViewAll += ClickedViewAll;
             view.OnClickDescriptionCoordinates += OpenGoToPanel;
             viewAllController.OnBackFromViewAll += BackFromViewAll;
-            viewAllController.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
+            viewAllController.OnClickBuyNft += (nftId) => OnClickBuyNft?.Invoke(nftId.Category is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : nftId.Id, nftId.Category);
         }
 
         private void BackFromViewAll()
