@@ -6,7 +6,8 @@ import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, PREVIEW } from 'config'
 import { createDummyLogger, createLogger } from 'lib/logger'
 import { getUserAccount, isSessionExpired, requestManager } from 'shared/ethereum/provider'
 import { awaitingUserSignature, AWAITING_USER_SIGNATURE } from 'shared/loading/types'
-import { getAppNetwork, registerProviderNetChanges } from 'shared/web3'
+import { registerProviderNetChanges } from 'shared/web3'
+import { getEthereumNetworkFromProvider } from "shared/getEthereumNetworkFromProvider"
 
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
 
@@ -107,7 +108,7 @@ function* authenticate(action: AuthenticateAction) {
   }
 
   // set the etherum network to start loading profiles
-  const net: ETHEREUM_NETWORK = yield call(getAppNetwork)
+  const net: ETHEREUM_NETWORK = yield call(getEthereumNetworkFromProvider)
   yield put(selectNetwork(net))
   registerProviderNetChanges()
 

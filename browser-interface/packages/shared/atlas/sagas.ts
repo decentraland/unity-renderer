@@ -16,10 +16,14 @@ import { waitForRendererInstance } from 'shared/renderer/sagas-helper'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import {
-  getOwnerNameFromJsonData,
-  getSceneDescriptionFromJsonData,
   getThumbnailUrlFromJsonDataAndContent
-} from 'shared/selectors'
+} from 'lib/decentraland/sceneJson/getThumbnailUrlFromJsonDataAndContent'
+import {
+  getOwnerNameFromJsonData,
+} from 'lib/decentraland/sceneJson/getOwnerNameFromJsonData'
+import {
+  getSceneDescriptionFromJsonData,
+} from 'lib/decentraland/sceneJson/getSceneDescriptionFromJsonData'
 import { store } from 'shared/store/isolatedStore'
 import { LoadableScene } from 'shared/types'
 import { getUnityInstance, MinimapSceneInfo } from 'unity-interface/IUnityInterface'
