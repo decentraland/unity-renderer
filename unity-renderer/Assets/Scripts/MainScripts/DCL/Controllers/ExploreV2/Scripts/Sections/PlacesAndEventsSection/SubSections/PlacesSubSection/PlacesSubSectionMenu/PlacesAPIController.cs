@@ -5,6 +5,7 @@ using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 using UnityEngine.Networking;
 using static HotScenesController;
 
@@ -42,8 +43,9 @@ public class PlacesAPIController : IPlacesAPIController
 
     public async UniTask GetAllFavorites(Action<List<HotSceneInfo>> OnCompleted)
     {
-        UnityWebRequest result = await webRequestController.Ref.GetAsync("https://places.decentraland.org?only_favorites=true", isSigned: true);
+        UnityWebRequest result = await webRequestController.Ref.GetAsync("https://places.decentraland.org/api/places?only_favorites=true", isSigned: true);
         string data = result.downloadHandler.text;
+        Debug.Log($"data {data}");
         var favoriteScenes = Utils.SafeFromJson<List<HotSceneInfo>>(data);
         OnCompleted?.Invoke(favoriteScenes);
     }

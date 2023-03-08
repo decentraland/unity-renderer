@@ -186,6 +186,7 @@ namespace DCL
 
                     for (var j = 0; j < signedFetchResponse.AuthChain.Count; j++)
                     {
+                        await UniTask.SwitchToMainThread();
                         Debug.Log($"auth header {signedFetchResponse.AuthChain[j]}");
                         request.SetRequestHeader($"x-identity-auth-chain-{j}", signedFetchResponse.AuthChain[j]);
                     }

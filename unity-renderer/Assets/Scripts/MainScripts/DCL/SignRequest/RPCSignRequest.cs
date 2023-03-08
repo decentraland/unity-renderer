@@ -28,6 +28,9 @@ public class RPCSignRequest : IRPCSignRequest
 
     public async UniTask<SignBodyResponse> RequestSignedRequest(RequestMethod method, string url, string metadata, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(metadata))
+            metadata = "{}";
+
         SignBodyResponse response = await rpc.SignRequestKernelService()
                                              .GetRequestSignature(new SignBodyRequest()
                                               {
