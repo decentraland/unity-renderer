@@ -127,11 +127,12 @@ public class ViewAllComponentView : BaseComponentView, IViewAllComponentView
 
     private Pool GetNftElementsEntryPool()
     {
-        var pool = PoolManager.i.GetPool(NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID());
+        string poolEntryId = NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID();
+        var pool = PoolManager.i.GetPool(poolEntryId);
         if (pool != null) return pool;
 
         pool = PoolManager.i.AddPool(
-            NFT_ELEMENTS_POOL_NAME_PREFIX + name + GetInstanceID(),
+            poolEntryId,
             Instantiate(nftPageElement).gameObject,
             maxPrewarmCount: ELEMENTS_PER_PAGE,
             isPersistent: true);
