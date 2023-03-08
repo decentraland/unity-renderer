@@ -224,7 +224,7 @@ public class ChatHUDController : IDisposable
             }
         }
 
-        int lastWrittenCharacterIndex = cursorPosition - 1;
+        int lastWrittenCharacterIndex = Math.Max(0, cursorPosition - 1);
 
         if (mentionFromIndex >= message.Length || message[lastWrittenCharacterIndex] == ' ')
             mentionFromIndex = cursorPosition;
@@ -242,7 +242,7 @@ public class ChatHUDController : IDisposable
         else
         {
             mentionSuggestionCancellationToken.SafeCancelAndDispose();
-            mentionFromIndex = Math.Max(0, lastWrittenCharacterIndex);
+            mentionFromIndex = lastWrittenCharacterIndex;
             view.HideMentionSuggestions();
         }
     }
